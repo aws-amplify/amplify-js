@@ -37,12 +37,19 @@ on:
       yarn_script:
         required: false
         type: string
+      env:
+        required: false
+        type: string
 
 env:
   AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
   CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
   CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
   CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
+  CYPRESS_AUTH0_CLIENTID: ${{ secrets.CYPRESS_AUTH0_CLIENTID }}
+  CYPRESS_AUTH0_SECRET: ${{ secrets.CYPRESS_AUTH0_SECRET }}
+  CYPRESS_AUTH0_AUDIENCE: ${{ secrets.CYPRESS_AUTH0_AUDIENCE }}
+  CYPRESS_AUTH0_DOMAIN: ${{ secrets.CYPRESS_AUTH0_DOMAIN }}
 
 jobs:
   e2e-test:
@@ -84,6 +91,7 @@ jobs:
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
           E2E_YARN_SCRIPT: ${{ inputs.yarn_script }}
+          E2E_ENV: ${{ inputs.env }}
         run: |
           if [ -z "$E2E_YARN_SCRIPT" ]; then
             ../amplify-js/scripts/retry-yarn-script.sh -s \
@@ -95,7 +103,8 @@ jobs:
             $E2E_BROWSER \
             dev \
             $E2E_BACKEND \
-            $E2E_AMPLIFY_JS_DIR" \
+            $E2E_AMPLIFY_JS_DIR \
+            --env $(echo $E2E_ENV | jq -r 'tostring')" \
             $E2E_YARN_SCRIPT \
             -n $E2E_RETRY_COUNT
           else
@@ -115,6 +124,7 @@ jobs:
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
           E2E_YARN_SCRIPT: ${{ inputs.yarn_script }}
+          E2E_ENV: ${{ inputs.env }}
         run: |
           if [ -z "$E2E_YARN_SCRIPT" ]; then
             ../amplify-js/scripts/retry-yarn-script.sh -s \
@@ -126,7 +136,8 @@ jobs:
             $E2E_BROWSER \
             prod \
             $E2E_BACKEND \
-            $E2E_AMPLIFY_JS_DIR" \
+            $E2E_AMPLIFY_JS_DIR \
+            --env $(echo $E2E_ENV | jq -r 'tostring')" \
             $E2E_YARN_SCRIPT \
             -n $E2E_RETRY_COUNT
           else

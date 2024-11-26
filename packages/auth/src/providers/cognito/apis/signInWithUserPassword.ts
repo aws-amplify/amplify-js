@@ -25,10 +25,19 @@ import {
 	SignInWithUserPasswordInput,
 	SignInWithUserPasswordOutput,
 } from '../types';
+<<<<<<< HEAD
+import {
+	cleanActiveSignInState,
+	setActiveSignInState,
+} from '../../../client/utils/store';
+=======
 import { setActiveSignInState, signInStore } from '../utils/signInStore';
+>>>>>>> joonwonc/auth-resumable-signin
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
@@ -81,7 +90,11 @@ export async function signInWithUserPassword(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
+<<<<<<< HEAD
+			cleanActiveSignInState();
+=======
 			signInStore.dispatch({ type: 'RESET_STATE' });
+>>>>>>> joonwonc/auth-resumable-signin
 			await cacheCognitoTokens({
 				...AuthenticationResult,
 				username: activeUsername,
@@ -96,6 +109,8 @@ export async function signInWithUserPassword(
 
 			await dispatchSignedInHubEvent();
 
+			resetAutoSignIn();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -107,7 +122,12 @@ export async function signInWithUserPassword(
 			challengeParameters: retriedChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
+<<<<<<< HEAD
+		cleanActiveSignInState();
+		resetAutoSignIn();
+=======
 		signInStore.dispatch({ type: 'RESET_STATE' });
+>>>>>>> joonwonc/auth-resumable-signin
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

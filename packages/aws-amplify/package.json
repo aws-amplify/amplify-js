@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.6.2",
+	"version": "6.10.0",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.49",
-		"@aws-amplify/api": "6.0.51",
-		"@aws-amplify/auth": "6.4.2",
-		"@aws-amplify/core": "6.4.2",
-		"@aws-amplify/datastore": "5.0.51",
-		"@aws-amplify/notifications": "2.0.49",
-		"@aws-amplify/storage": "6.6.7",
+		"@aws-amplify/analytics": "7.0.60",
+		"@aws-amplify/api": "6.1.5",
+		"@aws-amplify/auth": "6.8.0",
+		"@aws-amplify/core": "6.7.0",
+		"@aws-amplify/datastore": "5.0.62",
+		"@aws-amplify/notifications": "2.0.60",
+		"@aws-amplify/storage": "6.7.1",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -293,31 +293,31 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.25 kB"
+			"limit": "17.60 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./dist/esm/analytics/kinesis/index.mjs",
 			"import": "{ record }",
-			"limit": "48.74 kB"
+			"limit": "48.8 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
 			"path": "./dist/esm/analytics/kinesis-firehose/index.mjs",
 			"import": "{ record }",
-			"limit": "45.76 kB"
+			"limit": "45.85 kB"
 		},
 		{
 			"name": "[Analytics] record (Personalize)",
 			"path": "./dist/esm/analytics/personalize/index.mjs",
 			"import": "{ record }",
-			"limit": "49.58 kB"
+			"limit": "49.67 kB"
 		},
 		{
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.75 kB"
+			"limit": "16.10 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "43.1 kB"
+			"limit": "44.23 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -353,61 +353,65 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "12.57 kB"
+			"limit": "12.68 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmResetPassword }",
-			"limit": "12.51 kB"
+			"limit": "12.63 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn }",
-			"limit": "30.00 kB"
+			"limit": "28.78 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resendSignUpCode }",
-			"limit": "12.53 kB"
+			"limit": "12.64 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignUp }",
-			"limit": "31.00 kB"
+			"limit": "29.40 kB"
 		},
 		{
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
+<<<<<<< HEAD
+			"limit": "28.46 kB"
+=======
 			"limit": "28.60 kB"
+>>>>>>> joonwonc/auth-resumable-signin
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "11.98 kB"
+			"limit": "12.11 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchMFAPreference }",
-			"limit": "12.1 kB"
+			"limit": "12.14 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "12.86 kB"
+			"limit": "12.99 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "12.87 kB"
+			"limit": "12.99 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -419,85 +423,111 @@
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "12.1 kB"
+			"limit": "12.21 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "7.97 kB"
+			"limit": "8.09 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmUserAttribute }",
-			"limit": "12.86 kB"
+			"limit": "12.98 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "21.19 kB"
+			"limit": "21.21 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "11.93 kB"
+			"limit": "12.03 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
+<<<<<<< HEAD
+			"limit": "30.56 kB"
+=======
 			"limit": "30.45 kB"
+>>>>>>> joonwonc/auth-resumable-signin
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "21.66 kB"
+			"limit": "21.64 kB"
+		},
+		{
+			"name": "[Auth] Associate WebAuthN Credential (Cognito)",
+			"path": "./dist/esm/auth/index.mjs",
+			"import": "{ associateWebAuthnCredential }",
+			"limit": "13.55 kB"
+		},
+		{
+			"name": "[Auth] List WebAuthN Credentials (Cognito)",
+			"path": "./dist/esm/auth/index.mjs",
+			"import": "{ listWebAuthnCredentials }",
+			"limit": "12.14 kB"
+		},
+		{
+			"name": "[Auth] Delete WebAuthN Credential (Cognito)",
+			"path": "./dist/esm/auth/index.mjs",
+			"import": "{ deleteWebAuthnCredential }",
+			"limit": "12.01 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "14.86 kB"
+			"limit": "16.39 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "15.45 kB"
+			"limit": "16.73 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "14.71 kB"
+			"limit": "15.99 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "15.95 kB"
+			"limit": "17.22 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "15.31 kB"
+			"limit": "16.74 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "14.57 kB"
+			"limit": "15.83 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
+<<<<<<< HEAD
+			"limit": "22.81 kB"
+=======
 			"limit": "19.99 kB"
+>>>>>>> joonwonc/auth-resumable-signin
 		}
 	]
 }

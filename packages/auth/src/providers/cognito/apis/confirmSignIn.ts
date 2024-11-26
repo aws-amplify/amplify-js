@@ -10,7 +10,15 @@ import {
 	VerifySoftwareTokenException,
 } from '../types/errors';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
+<<<<<<< HEAD
+import {
+	cleanActiveSignInState,
+	setActiveSignInState,
+	signInStore,
+} from '../../../client/utils/store';
+=======
 import { setActiveSignInState, signInStore } from '../utils/signInStore';
+>>>>>>> joonwonc/auth-resumable-signin
 import { AuthError } from '../../../errors/AuthError';
 import {
 	getNewDeviceMetadata,
@@ -67,8 +75,8 @@ export async function confirmSignIn(
 		throw new AuthError({
 			name: AuthErrorCodes.SignInException,
 			message: `
-			An error occurred during the sign in process. 
-			
+			An error occurred during the sign in process.
+
 			This most likely occurred due to:
 			1. signIn was not called before confirmSignIn.
 			2. signIn threw an exception.
