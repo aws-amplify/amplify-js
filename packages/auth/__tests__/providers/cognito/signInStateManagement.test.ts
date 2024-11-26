@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 
 import { getCurrentUser, signIn } from '../../../src/providers/cognito';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
-import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
+import { signInStore } from '../../../src/client/utils/store';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 

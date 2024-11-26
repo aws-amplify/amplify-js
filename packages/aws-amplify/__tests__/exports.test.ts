@@ -180,6 +180,9 @@ describe('aws-amplify Exports', () => {
 					'autoSignIn',
 					'fetchAuthSession',
 					'decodeJWT',
+					'associateWebAuthnCredential',
+					'listWebAuthnCredentials',
+					'deleteWebAuthnCredential',
 				].sort(),
 			);
 		});

@@ -90,6 +90,10 @@ export enum AuthAction {
 	FetchDevices = '34',
 	SendUserAttributeVerificationCode = '35',
 	SignInWithRedirect = '36',
+	StartWebAuthnRegistration = '37',
+	CompleteWebAuthnRegistration = '38',
+	ListWebAuthnCredentials = '39',
+	DeleteWebAuthnCredential = '40',
 }
 export enum DataStoreAction {
 	Subscribe = '1',
