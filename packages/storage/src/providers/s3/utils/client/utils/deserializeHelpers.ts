@@ -5,6 +5,7 @@ import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
 import { ServiceError } from '@aws-amplify/core/internals/utils';
 
 import { StorageError } from '../../../../../errors/StorageError';
+import { CompletedPart } from '../s3data';
 
 type PropertyNameWithStringValue = string;
 type PropertyNameWithSubsequentDeserializer<T> = [string, (arg: any) => T];
@@ -105,6 +106,47 @@ export const deserializeTimestamp = (value: string): Date | undefined => {
 };
 
 /**
+ * Create a function deserializing a string to an enum value. If the string is not a valid enum value, it throws a
+ * StorageError.
+ *
+ * @example
+ * ```typescript
+ * const deserializeStringEnum = createStringEnumDeserializer(['a', 'b', 'c'] as const, 'FieldName');
+ * const deserializedArray = ['a', 'b', 'c'].map(deserializeStringEnum);
+ * // deserializedArray = ['a', 'b', 'c']
+ *
+ * const invalidValue = deserializeStringEnum('d');
+ * // Throws InvalidFieldName: Invalid FieldName: d
+ * ```
+ *
+ * @internal
+ */
+export const createStringEnumDeserializer = <T extends readonly string[]>(
+	enumValues: T,
+	fieldName: string,
+) => {
+	const deserializeStringEnum = (
+		value: any,
+	): T extends (infer E)[] ? E : never => {
+		const parsedEnumValue = value
+			? (enumValues.find(enumValue => enumValue === value) as any)
+			: undefined;
+		if (!parsedEnumValue) {
+			throw new StorageError({
+				name: `Invalid${fieldName}`,
+				message: `Invalid ${fieldName}: ${value}`,
+				recoverySuggestion:
+					'This is likely to be a bug. Please reach out to library authors.',
+			});
+		}
+
+		return parsedEnumValue;
+	};
+
+	return deserializeStringEnum;
+};
+
+/**
  * Function that makes sure the deserializer receives non-empty array.
  *
  * @internal
@@ -161,3 +203,17 @@ export const buildStorageServiceError = (
 
 	return storageError;
 };
+
+/**
+ * Internal-only method used for deserializing the parts of a multipart upload.
+ *
+ * @internal
+ */
+export const deserializeCompletedPartList = (input: any[]): CompletedPart[] =>
+	input.map(item =>
+		map(item, {
+			PartNumber: ['PartNumber', deserializeNumber],
+			ETag: 'ETag',
+			ChecksumCRC32: 'ChecksumCRC32',
+		}),
+	);

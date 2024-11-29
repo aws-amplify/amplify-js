@@ -7,6 +7,7 @@ import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 import { isInputWithPath } from './isInputWithPath';
 import { STORAGE_INPUT_KEY, STORAGE_INPUT_PATH } from './constants';
+import { resolveIdentityId } from './resolveIdentityId';
 
 export const validateStorageOperationInput = (
 	input: Input,
@@ -22,7 +23,10 @@ export const validateStorageOperationInput = (
 
 	if (isInputWithPath(input)) {
 		const { path } = input;
-		const objectKey = typeof path === 'string' ? path : path({ identityId });
+		const objectKey =
+			typeof path === 'string'
+				? path
+				: path({ identityId: resolveIdentityId(identityId) });
 
 		assertValidationError(
 			!objectKey.startsWith('/'),

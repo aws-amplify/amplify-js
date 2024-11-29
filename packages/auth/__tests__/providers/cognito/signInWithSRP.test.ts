@@ -210,7 +210,7 @@ describe('signIn API happy path cases', () => {
 			setDeviceKeys();
 			handleUserSRPAuthflowSpy.mockRestore();
 			mockInitiateAuth.mockResolvedValueOnce({
-				ChallengeName: 'SRP_AUTH',
+				ChallengeName: 'PASSWORD_VERIFIER',
 				Session: '1234234232',
 				$metadata: {},
 				ChallengeParameters: {
@@ -279,7 +279,7 @@ describe('Cognito ASF', () => {
 
 	beforeEach(() => {
 		mockInitiateAuth.mockResolvedValueOnce({
-			ChallengeName: 'SRP_AUTH',
+			ChallengeName: 'PASSWORD_VERIFIER',
 			Session: '1234234232',
 			$metadata: {},
 			ChallengeParameters: {

@@ -25,7 +25,7 @@ export async function handleMFAChallenge({
 }: HandleAuthChallengeRequest & {
 	challengeName: Extract<
 		ChallengeName,
-		'EMAIL_OTP' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
+		'EMAIL_OTP' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | 'SMS_OTP'
 	>;
 }) {
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
@@ -40,6 +40,10 @@ export async function handleMFAChallenge({
 
 	if (challengeName === 'SMS_MFA') {
 		challengeResponses.SMS_MFA_CODE = challengeResponse;
+	}
+
+	if (challengeName === 'SMS_OTP') {
+		challengeResponses.SMS_OTP_CODE = challengeResponse;
 	}
 
 	if (challengeName === 'SOFTWARE_TOKEN_MFA') {

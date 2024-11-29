@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.7.0...@aws-amplify/storage@6.7.1) (2024-11-25)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [6.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.16...@aws-amplify/storage@6.7.0) (2024-11-20)
+
+### Features
+
+- **storage:** Integrity changes for storage browser ([#13909](https://github.com/aws-amplify/amplify-js/issues/13909)) ([ec7bf6f](https://github.com/aws-amplify/amplify-js/commit/ec7bf6ff2fb4af84425eca4f2d68c2bef7f49d03)), closes [#13478](https://github.com/aws-amplify/amplify-js/issues/13478) [#13474](https://github.com/aws-amplify/amplify-js/issues/13474)
+
 ## [6.6.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.15...@aws-amplify/storage@6.6.16) (2024-11-13)
 
 **Note:** Version bump only for package @aws-amplify/storage

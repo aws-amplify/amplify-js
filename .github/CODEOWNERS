@@ -8,6 +8,8 @@
 /packages/geo @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /packages/pubsub @aws-amplify/amplify-js @aws-amplify/amplify-data
 /packages/aws-amplify/package.json @aws-amplify/amplify-js-admins
+/packages/storage/src/storageBrowser @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/storage/storage-browser @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /.circleci/ @aws-amplify/amplify-js @aws-amplify/amplify-devops
 /.github/ @aws-amplify/amplify-js-admins
 

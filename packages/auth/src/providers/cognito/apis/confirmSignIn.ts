@@ -14,7 +14,7 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { AuthError } from '../../../errors/AuthError';
 import {
 	getNewDeviceMetadata,

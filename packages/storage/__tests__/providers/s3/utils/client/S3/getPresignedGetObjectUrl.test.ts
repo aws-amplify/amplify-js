@@ -3,7 +3,7 @@
 
 import { presignUrl } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { getPresignedGetObjectUrl } from '../../../../../../src/providers/s3/utils/client';
+import { getPresignedGetObjectUrl } from '../../../../../../src/providers/s3/utils/client/s3data';
 
 import { defaultConfigWithStaticCredentials } from './cases/shared';
 
