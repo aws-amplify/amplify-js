@@ -108,6 +108,9 @@ export type LegacyUserAttributeKey = Uppercase<AuthStandardAttributeKey>;
 
 export type AuthVerifiableAttributeKey = 'email' | 'phone_number';
 
+type UserGroupName = string;
+type UserGroupPrecedence = Record<string, number>;
+
 export type AuthConfigUserAttributes = Partial<
 	Record<AuthStandardAttributeKey, { required: boolean }>
 >;
@@ -130,6 +133,7 @@ export interface AuthIdentityPoolConfig {
 		userAttributes?: never;
 		mfa?: never;
 		passwordFormat?: never;
+		groups?: never;
 	};
 }
 
@@ -171,6 +175,7 @@ export interface CognitoUserPoolConfig {
 		requireNumbers?: boolean;
 		requireSpecialCharacters?: boolean;
 	};
+	groups?: Record<UserGroupName, UserGroupPrecedence>[];
 }
 
 export interface OAuthConfig {
@@ -194,7 +199,6 @@ export type OAuthScope =
 	| 'email'
 	| 'openid'
 	| 'phone'
-	| 'email'
 	| 'profile'
 	| 'aws.cognito.signin.user.admin'
 	| CustomScope;
@@ -255,6 +259,7 @@ interface AWSAuthSignInDetails {
  * @deprecated
  */
 type AuthFlowType =
+	| 'USER_AUTH'
 	| 'USER_SRP_AUTH'
 	| 'CUSTOM_WITH_SRP'
 	| 'CUSTOM_WITHOUT_SRP'

@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/storage",
-	"version": "6.6.15",
+	"version": "6.7.1",
 	"description": "Storage category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -40,6 +40,9 @@
 			"s3": [
 				"./dist/esm/providers/s3/index.d.ts"
 			],
+			"internals": [
+				"./dist/esm/internals/index.d.ts"
+			],
 			"server": [
 				"./dist/esm/server.d.ts"
 			],
@@ -61,6 +64,7 @@
 	"files": [
 		"dist/cjs",
 		"dist/esm",
+		"internals",
 		"src",
 		"server",
 		"s3"
@@ -69,6 +73,7 @@
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/md5-js": "2.0.7",
 		"buffer": "4.9.2",
+		"crc-32": "1.2.2",
 		"fast-xml-parser": "^4.4.1",
 		"tslib": "^2.5.0"
 	},
@@ -78,6 +83,11 @@
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
 			"react-native": "./src/index.ts"
+		},
+		"./internals": {
+			"types": "./dist/esm/internals/index.d.ts",
+			"import": "./dist/esm/internals/index.mjs",
+			"require": "./dist/cjs/internals/index.js"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
@@ -101,8 +111,9 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.5.2",
+		"@aws-amplify/core": "6.7.0",
 		"@aws-amplify/react-native": "1.1.6",
+		"@types/node": "20.14.12",
 		"typescript": "5.0.2"
 	}
 }

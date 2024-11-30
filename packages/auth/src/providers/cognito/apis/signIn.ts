@@ -13,6 +13,8 @@ import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
+import { signInWithUserAuth } from './signInWithUserAuth';
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Signs a user in
@@ -26,6 +28,12 @@ import { signInWithUserPassword } from './signInWithUserPassword';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signIn(input: SignInInput): Promise<SignInOutput> {
+	// Here we want to reset the store but not reassign the callback.
+	// The callback is reset when the underlying promise resolves or rejects.
+	// With the advent of session based sign in, this guarantees that the signIn API initiates a new auth flow,
+	// regardless of whether it is called for a user currently engaged in an active auto sign in session.
+	resetAutoSignIn(false);
+
 	const authFlowType = input.options?.authFlowType;
 	await assertUserNotAuthenticated();
 	switch (authFlowType) {
@@ -37,6 +45,8 @@ export async function signIn(input: SignInInput): Promise<SignInOutput> {
 			return signInWithCustomAuth(input);
 		case 'CUSTOM_WITH_SRP':
 			return signInWithCustomSRPAuth(input);
+		case 'USER_AUTH':
+			return signInWithUserAuth(input);
 		default:
 			return signInWithSRP(input);
 	}
