@@ -42,7 +42,7 @@ export interface AmplifyOutputsAuthProperties {
 	unauthenticated_identities_enabled?: boolean;
 	mfa_configuration?: string;
 	mfa_methods?: string[];
-	groups?: Record<UserGroupName, UserGroupPrecedence>[];
+	groups?: Partial<Record<UserGroupName, UserGroupPrecedence>>[];
 }
 
 export interface AmplifyOutputsStorageBucketProperties {
