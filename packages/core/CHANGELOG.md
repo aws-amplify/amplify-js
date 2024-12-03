@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.0...@aws-amplify/core@6.7.1) (2024-12-03)
+
+### Bug Fixes
+
+- amplify configure with auth userGroups ([#14046](https://github.com/aws-amplify/amplify-js/issues/14046)) ([4278be2](https://github.com/aws-amplify/amplify-js/commit/4278be2b07374a98724e4d787891a36a2bf55c05))
+
 # [6.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.6.0...@aws-amplify/core@6.7.0) (2024-11-25)
 
 ### Features
