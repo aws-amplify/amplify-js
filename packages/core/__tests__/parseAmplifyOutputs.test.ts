@@ -133,6 +133,7 @@ describe('parseAmplifyOutputs tests', () => {
 					unauthenticated_identities_enabled: true,
 					mfa_configuration: 'OPTIONAL',
 					mfa_methods: ['SMS'],
+					groups: [{ ADMIN: { precedence: 0 }, USER: { precedence: 0 } }],
 				},
 			};
 
@@ -174,6 +175,7 @@ describe('parseAmplifyOutputs tests', () => {
 								scopes: ['profile', '...'],
 							},
 						},
+						groups: [{ ADMIN: { precedence: 0 }, USER: { precedence: 0 } }],
 					},
 				},
 			});
