@@ -91,7 +91,6 @@ export async function signInWithSRP(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
@@ -103,7 +102,8 @@ export async function signInWithSRP(
 				}),
 				signInDetails,
 			});
-
+			cleanActiveSignInState();
+			
 			await dispatchSignedInHubEvent();
 
 			resetAutoSignIn();

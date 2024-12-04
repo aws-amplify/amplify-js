@@ -84,8 +84,6 @@ export async function signInWithCustomAuth(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
-
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
@@ -97,7 +95,8 @@ export async function signInWithCustomAuth(
 				}),
 				signInDetails,
 			});
-
+			cleanActiveSignInState();
+			
 			await dispatchSignedInHubEvent();
 
 			return {
