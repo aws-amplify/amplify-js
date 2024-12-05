@@ -7,15 +7,21 @@ import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
 
 export type ChallengeName =
 	| 'SMS_MFA'
+	| 'SMS_OTP'
 	| 'SOFTWARE_TOKEN_MFA'
+	| 'EMAIL_OTP'
 	| 'SELECT_MFA_TYPE'
+	| 'SELECT_CHALLENGE'
 	| 'MFA_SETUP'
+	| 'PASSWORD'
+	| 'PASSWORD_SRP'
 	| 'PASSWORD_VERIFIER'
 	| 'CUSTOM_CHALLENGE'
 	| 'DEVICE_SRP_AUTH'
 	| 'DEVICE_PASSWORD_VERIFIER'
 	| 'ADMIN_NO_SRP_AUTH'
-	| 'NEW_PASSWORD_REQUIRED';
+	| 'NEW_PASSWORD_REQUIRED'
+	| 'WEB_AUTHN';
 
 export type ChallengeParameters = {
 	CODE_DELIVERY_DESTINATION?: string;
@@ -26,9 +32,10 @@ export type ChallengeParameters = {
 	PASSWORD_CLAIM_SIGNATURE?: string;
 	MFAS_CAN_CHOOSE?: string;
 	MFAS_CAN_SETUP?: string;
+	CREDENTIAL_REQUEST_OPTIONS?: string;
 } & Record<string, unknown>;
 
-export type CognitoMFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
+export type CognitoMFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | 'EMAIL_OTP';
 
 export interface CognitoMFASettings {
 	Enabled?: boolean;
@@ -55,6 +62,11 @@ declare enum ChallengeNameType {
 	SELECT_MFA_TYPE = 'SELECT_MFA_TYPE',
 	SMS_MFA = 'SMS_MFA',
 	SOFTWARE_TOKEN_MFA = 'SOFTWARE_TOKEN_MFA',
+	PASSWORD = 'PASSWORD',
+	PASSWORD_SRP = 'PASSWORD_SRP',
+	WEB_AUTHN = 'WEB_AUTHN',
+	SMS_OTP = 'SMS_OTP',
+	EMAIL_OTP = 'EMAIL_OTP',
 }
 declare enum DeliveryMediumType {
 	EMAIL = 'EMAIL',
@@ -694,7 +706,15 @@ export interface ConfirmSignUpRequest {
 /**
  * <p>Represents the response from the server for the registration confirmation.</p>
  */
-export type ConfirmSignUpResponse = Record<never, never>;
+export interface ConfirmSignUpResponse {
+	/**
+	 * <p>Your <code>ConfirmSignUp</code> request might produce a challenge that your user must
+	 *             respond to, for example a one-time code. The <code>Session</code> parameter tracks the
+	 *             session in the flow of challenge responses and requests. Include this parameter in
+	 *                 <code>RespondToAuthChallenge</code> API requests.</p>
+	 */
+	Session?: string;
+}
 export type DeleteUserCommandInput = DeleteUserRequest;
 export interface DeleteUserCommandOutput
 	extends DeleteUserResponse,
@@ -1081,6 +1101,13 @@ export interface InitiateAuthRequest {
 	 * <p>Contextual data such as the user's device fingerprint, IP address, or location used for evaluating the risk of an unexpected event by Amazon Cognito advanced security.</p>
 	 */
 	UserContextData?: UserContextDataType;
+
+	/**
+	 * <p>The optional session ID from a <code>ConfirmSignUp</code> API
+	 *             request. You can sign in a user directly from the sign-up process with the
+	 *             <code>USER_AUTH</code> authentication flow.</p>
+	 */
+	Session?: string;
 }
 /**
  * <p>Initiates the authentication response.</p>
@@ -1131,8 +1158,10 @@ export interface InitiateAuthResponse {
 	 */
 	ChallengeName?: ChallengeNameType | string;
 	/**
-	 * <p>The session that should pass both ways in challenge-response calls to the service. If the caller must pass another challenge, they return a session with other challenge parameters. This session
-	 *             should be passed as it is to the next <code>RespondToAuthChallenge</code> API call.</p>
+	 * <p>The session that should pass both ways in challenge-response calls to the service. If
+	 *             the caller must pass another challenge, they return a session with other challenge
+	 *             parameters. Include this session identifier in a <code>RespondToAuthChallenge</code> API
+	 *             request.</p>
 	 */
 	Session?: string;
 	/**
@@ -1143,9 +1172,15 @@ export interface InitiateAuthResponse {
 	ChallengeParameters?: Record<string, string>;
 	/**
 	 * <p>The result of the authentication response. This result is only returned if the caller doesn't need to pass another challenge. If the caller does need to pass another challenge before it gets
-	 *             tokens, <code>ChallengeName</code>, <code>ChallengeParameters</code>, and <code>Session</code> are returned.</p>
+	 *             tokens, <code>ChallengeName</code>, <code>ChallengeParameters</code>, <code>AvailableChallenges</code>, and <code>Session</code> are returned.</p>
 	 */
 	AuthenticationResult?: AuthenticationResultType;
+	/**
+	 * <p>This response parameter prompts a user to select from multiple available challenges
+	 *             that they can complete authentication with. For example, they might be able to continue
+	 *             with passwordless authentication or with a one-time password from an SMS message.</p>
+	 */
+	AvailableChallenges?: ChallengeNameType[];
 }
 export type ListDevicesCommandInput = ListDevicesRequest;
 export interface ListDevicesCommandOutput
@@ -1431,6 +1466,10 @@ export interface SetUserMFAPreferenceRequest {
 	 */
 	SoftwareTokenMfaSettings?: SoftwareTokenMfaSettingsType;
 	/**
+	 * <p>The email message multi-factor authentication (MFA) settings.</p>
+	 */
+	EmailMfaSettings?: EmailMfaSettingsType;
+	/**
 	 * <p>The access token for the user.</p>
 	 */
 	AccessToken: string | undefined;
@@ -1521,6 +1560,13 @@ export interface SignUpResponse {
 	 * <p>The UUID of the authenticated user. This isn't the same as <code>username</code>.</p>
 	 */
 	UserSub: string | undefined;
+
+	/**
+	 * <p>A session Id that you can pass to <code>ConfirmSignUp</code> when you want to
+	 *         immediately sign in your user with the <code>USER_AUTH</code> flow after they complete
+	 *         sign-up.</p>
+	 */
+	Session?: string;
 }
 /**
  * <p>The type used for enabling software token MFA at the user level. If an MFA type is activated for a user, the user will be prompted for MFA during all sign-in attempts, unless device tracking
@@ -1535,6 +1581,22 @@ export interface SoftwareTokenMfaSettingsType {
 	Enabled?: boolean;
 	/**
 	 * <p>Specifies whether software token MFA is the preferred MFA method.</p>
+	 */
+	PreferredMfa?: boolean;
+}
+/**
+ * <p>The type used for enabling email MFA at the user level. If an MFA type is activated for a user, the user will be prompted for MFA during all sign-in attempts, unless device tracking
+ *             is turned on and the device has been trusted. If you want MFA to be applied selectively based on the assessed risk level of sign-in attempts, deactivate MFA for users and turn on Adaptive
+ *             Authentication for the user pool.</p>
+ */
+export interface EmailMfaSettingsType {
+	/**
+	 * <p>Specifies whether email MFA is activated. If an MFA type is activated for a user, the user will be prompted for MFA during all sign-in attempts, unless device tracking is turned
+	 *             on and the device has been trusted.</p>
+	 */
+	Enabled?: boolean;
+	/**
+	 * <p>Specifies whether email MFA is the preferred MFA method.</p>
 	 */
 	PreferredMfa?: boolean;
 }
@@ -1710,3 +1772,99 @@ export interface DeleteUserAttributesRequest {
  */
 export type DeleteUserAttributesResponse = Record<never, never>;
 export {};
+
+export interface StartWebAuthnRegistrationRequest {
+	/**
+	 * A valid access token that Amazon Cognito issued to the user whose passkey metadata you want to
+	 *             generate.
+	 */
+	AccessToken: string | undefined;
+}
+
+export interface StartWebAuthnRegistrationResponse {
+	/**
+	 * The information that a user can provide in their request to register with their
+	 *             passkey provider.
+	 */
+	CredentialCreationOptions: Record<never, never> | undefined;
+}
+
+export type StartWebAuthnRegistrationCommandInput =
+	StartWebAuthnRegistrationRequest;
+
+export interface StartWebAuthnRegistrationCommandOutput
+	extends StartWebAuthnRegistrationResponse,
+		__MetadataBearer {}
+
+export interface CompleteWebAuthnRegistrationRequest {
+	/**
+	 * A valid access token that Amazon Cognito issued to the user whose passkey registration you want
+	 *             to verify. This information informs your user pool of the details of the user's
+	 *             successful registration with their passkey provider.
+	 */
+	AccessToken: string | undefined;
+
+	/**
+	 * A <a href="https://www.w3.org/TR/webauthn-3/#dictdef-registrationresponsejson">RegistrationResponseJSON</a> public-key credential response from the
+	 *             user's passkey provider.
+	 */
+	Credential: Record<never, never> | undefined;
+}
+
+export type CompleteWebAuthnRegistrationResponse = Record<never, never>;
+
+export type CompleteWebAuthnRegistrationCommandInput =
+	CompleteWebAuthnRegistrationRequest;
+
+export interface CompleteWebAuthnRegistrationCommandOutput
+	extends CompleteWebAuthnRegistrationResponse,
+		__MetadataBearer {}
+
+/**
+ * <p>The request to list WebAuthN credentials.</p>
+ */
+export interface ListWebAuthnCredentialsInput {
+	AccessToken: string | undefined;
+	NextToken?: string;
+	MaxResults?: number;
+}
+
+export interface WebAuthnCredentialDescription {
+	CredentialId: string | undefined;
+	FriendlyCredentialName: string | undefined;
+	RelyingPartyId: string | undefined;
+	AuthenticatorAttachment?: string;
+	AuthenticatorTransports: string[] | undefined;
+	CreatedAt: number | undefined;
+}
+
+/**
+ * <p>The response containing the list of WebAuthN credentials.</p>
+ */
+export interface ListWebAuthnCredentialsOutput {
+	Credentials: WebAuthnCredentialDescription[] | undefined;
+	NextToken?: string;
+}
+
+export type ListWebAuthnCredentialsCommandInput = ListWebAuthnCredentialsInput;
+
+export interface ListWebAuthnCredentialsCommandOutput
+	extends ListWebAuthnCredentialsOutput,
+		__MetadataBearer {}
+
+/**
+ * The request to delete a WebAuthN credential.
+ */
+export interface DeleteWebAuthnCredentialInput {
+	AccessToken: string | undefined;
+	CredentialId: string | undefined;
+}
+
+export type DeleteWebAuthnCredentialOutput = Record<never, never>;
+
+export type DeleteWebAuthnCredentialCommandInput =
+	DeleteWebAuthnCredentialInput;
+
+export interface DeleteWebAuthnCredentialCommandOutput
+	extends DeleteWebAuthnCredentialOutput,
+		__MetadataBearer {}

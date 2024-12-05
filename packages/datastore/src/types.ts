@@ -506,6 +506,10 @@ export type TypeConstructorMap = Record<
 export declare const __identifierBrand__: unique symbol;
 export type IdentifierBrand<T, K> = T & { [__identifierBrand__]: K };
 
+interface GenericIdentifier {
+	field: any;
+}
+
 // datastore generates a uuid for you
 export type ManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
 	{ field: F extends string ? F : never; type: T },
@@ -548,7 +552,9 @@ export type IdentifierFields<
 				infer B
 		  >
 		? B[number] // B[number]
-		: MetadataOrDefault<T, M>['identifier']['field']) &
+		: MetadataOrDefault<T, M>['identifier'] extends GenericIdentifier
+			? MetadataOrDefault<T, M>['identifier']['field']
+			: unknown) &
 	string;
 
 export type IdentifierFieldsForInit<
@@ -646,7 +652,7 @@ export type MetadataReadOnlyFields<
 // This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
 export type ModelInitBase<
 	T extends PersistentModel,
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	M extends PersistentModelMetaData<T> = {},
 > = Omit<
 	T,
@@ -661,7 +667,7 @@ export type ModelInitBase<
 
 export type ModelInit<
 	T extends PersistentModel,
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	M extends PersistentModelMetaData<T> = {},
 > = {
 	[P in keyof OmitOptionalRelatives<ModelInitBase<T, M>>]: SettableFieldType<
@@ -687,7 +693,7 @@ type DeepWritable<T> = {
 
 export type MutableModel<
 	T extends PersistentModel,
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	M extends PersistentModelMetaData<T> = {},
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
@@ -710,7 +716,9 @@ export type IdentifierFieldValue<
 		? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
 			? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
 			: never
-		: T[MetadataOrDefault<T, M>['identifier']['field']];
+		: MetadataOrDefault<T, M>['identifier'] extends GenericIdentifier
+			? T[MetadataOrDefault<T, M>['identifier']['field']]
+			: unknown;
 
 export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,

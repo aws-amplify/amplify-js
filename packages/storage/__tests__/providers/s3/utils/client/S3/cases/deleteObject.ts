@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { deleteObject } from '../../../../../../../src/providers/s3/utils/client';
+import { deleteObject } from '../../../../../../../src/providers/s3/utils/client/s3data';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -36,4 +36,34 @@ const deleteObjectHappyCase: ApiFunctionalTestCase<typeof deleteObject> = [
 	},
 ];
 
-export default [deleteObjectHappyCase];
+const deleteObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof deleteObject
+> = [
+	'happy case',
+	'deleteObject with custom endpoint',
+	deleteObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
+export default [deleteObjectHappyCase, deleteObjectHappyCaseCustomEndpoint];

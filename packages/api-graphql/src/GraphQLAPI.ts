@@ -1,12 +1,27 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
-import { ApiAction, Category } from '@aws-amplify/core/internals/utils';
-import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
+import {
+	ApiAction,
+	Category,
+	CustomUserAgentDetails,
+} from '@aws-amplify/core/internals/utils';
+import {
+	CustomHeaders,
+	INTERNAL_USER_AGENT_OVERRIDE,
+} from '@aws-amplify/data-schema/runtime';
 import { Observable } from 'rxjs';
 
 import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals/InternalGraphQLAPI';
+
+function isGraphQLOptionsWithOverride(
+	options: GraphQLOptions,
+): options is GraphQLOptions & {
+	[INTERNAL_USER_AGENT_OVERRIDE]: CustomUserAgentDetails;
+} {
+	return INTERNAL_USER_AGENT_OVERRIDE in options;
+}
 
 export const graphqlOperation = (
 	query: any,
@@ -38,9 +53,25 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		return super.graphql(amplify, options, additionalHeaders, {
+		const userAgentDetails: CustomUserAgentDetails = {
 			category: Category.API,
 			action: ApiAction.GraphQl,
+		};
+
+		if (isGraphQLOptionsWithOverride(options)) {
+			const {
+				[INTERNAL_USER_AGENT_OVERRIDE]: internalUserAgentOverride,
+				...cleanOptions
+			} = options;
+
+			return super.graphql(amplify, cleanOptions, additionalHeaders, {
+				...userAgentDetails,
+				...internalUserAgentOverride,
+			});
+		}
+
+		return super.graphql(amplify, options, additionalHeaders, {
+			...userAgentDetails,
 		});
 	}
 

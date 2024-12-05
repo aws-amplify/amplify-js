@@ -13,7 +13,8 @@ export type AmplifyOutputsAuthMFAConfiguration =
 	| 'NONE';
 
 export type AmplifyOutputsAuthMFAMethod = 'SMS' | 'TOTP';
-
+type UserGroupName = string;
+type UserGroupPrecedence = Record<string, number>;
 export interface AmplifyOutputsAuthProperties {
 	aws_region: string;
 	authentication_flow_type?: 'USER_SRP_AUTH' | 'CUSTOM_AUTH';
@@ -41,6 +42,7 @@ export interface AmplifyOutputsAuthProperties {
 	unauthenticated_identities_enabled?: boolean;
 	mfa_configuration?: string;
 	mfa_methods?: string[];
+	groups?: Partial<Record<UserGroupName, UserGroupPrecedence>>[];
 }
 
 export interface AmplifyOutputsStorageBucketProperties {
@@ -50,6 +52,8 @@ export interface AmplifyOutputsStorageBucketProperties {
 	bucket_name: string;
 	/** Region for the bucket */
 	aws_region: string;
+	/** Paths to object with access permissions */
+	paths?: Record<string, Record<string, string[] | undefined>>;
 }
 export interface AmplifyOutputsStorageProperties {
 	/** Default region for Storage */
@@ -94,6 +98,17 @@ export interface AmplifyOutputsDataProperties {
 	conflict_resolution_mode?: string;
 }
 
+export interface AmplifyOutputsCustomProperties {
+	// @experimental
+	events?: {
+		url: string;
+		aws_region: string;
+		default_authorization_type: string;
+		api_key?: string;
+	};
+	[key: string]: any;
+}
+
 export interface AmplifyOutputsNotificationsProperties {
 	aws_region: string;
 	amazon_pinpoint_app_id: string;
@@ -107,5 +122,6 @@ export interface AmplifyOutputs {
 	analytics?: AmplifyOutputsAnalyticsProperties;
 	geo?: AmplifyOutputsGeoProperties;
 	data?: AmplifyOutputsDataProperties;
+	custom?: AmplifyOutputsCustomProperties;
 	notifications?: AmplifyOutputsNotificationsProperties;
 }

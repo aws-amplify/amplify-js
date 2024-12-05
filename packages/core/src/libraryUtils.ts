@@ -78,6 +78,7 @@ export {
 	getAmplifyUserAgent,
 } from './Platform';
 export {
+	AiAction,
 	ApiAction,
 	AuthAction,
 	AnalyticsAction,
@@ -97,6 +98,7 @@ export {
 	AuthUserAgentInput,
 	InAppMessagingUserAgentInput,
 	GeoUserAgentInput,
+	AiUserAgentInput,
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
 

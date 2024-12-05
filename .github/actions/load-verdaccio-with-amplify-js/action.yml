@@ -6,8 +6,7 @@ runs:
   steps:
     - name: Start verdaccio
       run: |
-        # This version supports Node.js v22
-        npx verdaccio@5.31.1 &
+        npx verdaccio@5.25.0 &
         while ! nc -z localhost 4873; do
           echo "Verdaccio not running yet"
           sleep 1
@@ -19,30 +18,25 @@ runs:
     - name: Install and run npm-cli-login
       shell: bash
       env:
-        NPM_REGISTRY_HOST: localhost:4873
-        NPM_REGISTRY: http://localhost:4873
+        NPM_REGISTRY: http://localhost:4873/
         NPM_USER: verdaccio
         NPM_PASS: verdaccio
         NPM_EMAIL: verdaccio@amplify.js
       run: |
-        # Make the HTTP request that npm addUser makes to avoid the "Exit handler never called" error
-        TOKEN=$(curl -s \
-        -H "Accept: application/json" \
-        -H "Content-Type:application/json" \
-        -X PUT --data "{\"name\": \"$NPM_USER\", \"password\": \"$NPM_PASS\", \"email\": \"$NPM_EMAIL\"}" \
-        $NPM_REGISTRY/-/user/org.couchdb.user:$NPM_USER 2>&1 | jq -r '.token')
-
-        # Set the Verdaccio registry and set the token for logging in
-        yarn config set registry $NPM_REGISTRY
-        npm set registry $NPM_REGISTRY
-        npm set //"$NPM_REGISTRY_HOST"/:_authToken $TOKEN
-    - name: Configure git
+        npm i -g npm-cli-adduser
+        npm-cli-adduser
+        sleep 1
+    - name: Configure registry and git
       shell: bash
       working-directory: ./amplify-js
       env:
+        NPM_REGISTRY: http://localhost:4873/
         NPM_USER: verdaccio
+        NPM_PASS: verdaccio
         NPM_EMAIL: verdaccio@amplify.js
       run: |
+        yarn config set registry $NPM_REGISTRY
+        npm set registry $NPM_REGISTRY
         git config --global user.email $NPM_EMAIL
         git config --global user.name $NPM_USER
         git status

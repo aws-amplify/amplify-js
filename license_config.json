@@ -40,6 +40,7 @@
 		"**/rollup.config.mjs",
 		"rollup",
 		".husky",
+		"eslint.config.mjs",
 		"packages/core/metadata"
 	],
 	"ignoreFile": ".gitignore",

@@ -8,29 +8,31 @@
 /packages/geo @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /packages/pubsub @aws-amplify/amplify-js @aws-amplify/amplify-data
 /packages/aws-amplify/package.json @aws-amplify/amplify-js-admins
+/packages/storage/src/storageBrowser @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/storage/storage-browser @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /.circleci/ @aws-amplify/amplify-js @aws-amplify/amplify-devops
 /.github/ @aws-amplify/amplify-js-admins
 
 # The following paths involve server-side use cases, token/user session management.
 # Changes made to these paths requires additional reviews and approvals.
-/packages/auth @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/aws-amplify/src/adapter-core @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/adapterCore @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/singleton @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/utils/convert @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/utils/WordArray.ts @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/storage @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/utils/generateRandomString.ts @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/utils/globalHelpers @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/utils/urlSafeDecode.ts @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/awsClients/cognitoIdentity @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/clients/internal @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/core/src/Hub @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/adapter-nextjs @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/rtn-web-browser @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/storage/src/providers/s3/apis/internal @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/storage/src/providers/s3/apis/server @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/api-rest/src/apis/server.ts @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/api-rest/src/apis/common/internalPost.ts @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/api-graphql/src/server @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
-/packages/api-graphql/src/internals/server @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
+/packages/auth @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/aws-amplify/src/adapter-core @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/adapterCore @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/singleton @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/convert @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/WordArray.ts @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/storage @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/generateRandomString.ts @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/globalHelpers @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/urlSafeDecode.ts @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/awsClients/cognitoIdentity @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/clients/internal @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/core/src/Hub @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/adapter-nextjs @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/rtn-web-browser @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/storage/src/providers/s3/apis/internal @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/storage/src/providers/s3/apis/server @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/api-rest/src/apis/server.ts @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/api-rest/src/apis/common/internalPost.ts @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/api-graphql/src/server @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/api-graphql/src/internals/server @sktimalsina @cshfang @HuiSF @pranavosu

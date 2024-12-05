@@ -25,5 +25,5 @@
 		"module": "es2020",
 		"types": ["node", "jest"]
 	},
-	"exclude": ["node_modules", "dist", ".eslintrc.js", "scripts"]
+	"exclude": ["node_modules", "dist", ".eslintrc.js"]
 }

@@ -11,6 +11,7 @@ import { getUpdatedSystemClockOffset } from '../../../../src/clients/middleware/
 import {
 	HttpRequest,
 	HttpResponse,
+	Middleware,
 	MiddlewareHandler,
 } from '../../../../src/clients/types';
 
@@ -113,6 +114,30 @@ describe('Signing middleware', () => {
 		expect(credentialsProvider).toHaveBeenCalledTimes(1);
 	});
 
+	test('should forceRefresh credentials provider if middleware context isCredentialsInvalid flag is set', async () => {
+		expect.assertions(2);
+		const credentialsProvider = jest.fn().mockResolvedValue(credentials);
+		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
+		const setInvalidCredsMiddleware: Middleware<any, any, any> =
+			() => (next, context) => request => {
+				context.isCredentialsExpired = true;
+
+				return next(request);
+			};
+		const signableHandler = composeTransferHandler<
+			[any, SigningOptions],
+			HttpRequest,
+			HttpResponse
+		>(nextHandler, [setInvalidCredsMiddleware, signingMiddlewareFactory]);
+		const config = {
+			...defaultSigningOptions,
+			credentials: credentialsProvider,
+		};
+		await signableHandler(defaultRequest, config);
+		expect(credentialsProvider).toHaveBeenCalledTimes(1);
+		expect(credentialsProvider).toHaveBeenCalledWith({ forceRefresh: true });
+	});
+
 	test.each([
 		['response with Date header', 'Date'],
 		['response with date header', 'date'],
@@ -128,6 +153,7 @@ describe('Signing middleware', () => {
 
 		const middlewareFunction = signingMiddlewareFactory(defaultSigningOptions)(
 			nextHandler,
+			{},
 		);
 
 		await middlewareFunction(defaultRequest);

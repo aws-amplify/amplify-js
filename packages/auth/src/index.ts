@@ -87,3 +87,17 @@ export {
 	AuthTokens,
 	JWT,
 } from '@aws-amplify/core';
+
+export { associateWebAuthnCredential } from './client/apis';
+
+export {
+	listWebAuthnCredentials,
+	deleteWebAuthnCredential,
+} from './client/apis';
+
+export {
+	AuthWebAuthnCredential,
+	DeleteWebAuthnCredentialInput,
+	ListWebAuthnCredentialsInput,
+	ListWebAuthnCredentialsOutput,
+} from './foundation/types';

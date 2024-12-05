@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.8.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.8.1...@aws-amplify/auth@6.8.2) (2024-12-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.8.0...@aws-amplify/auth@6.8.1) (2024-12-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+# [6.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.7.0...@aws-amplify/auth@6.8.0) (2024-11-25)
+
+### Features
+
+- **auth:** passwordless ([#14032](https://github.com/aws-amplify/amplify-js/issues/14032)) ([68c7f6f](https://github.com/aws-amplify/amplify-js/commit/68c7f6fbaa903ac8e45035bc25a71321a6240aec)), closes [#1](https://github.com/aws-amplify/amplify-js/issues/1) [#3](https://github.com/aws-amplify/amplify-js/issues/3) [#6](https://github.com/aws-amplify/amplify-js/issues/6) [#8](https://github.com/aws-amplify/amplify-js/issues/8) [#2](https://github.com/aws-amplify/amplify-js/issues/2) [#11](https://github.com/aws-amplify/amplify-js/issues/11) [#7](https://github.com/aws-amplify/amplify-js/issues/7) [#14](https://github.com/aws-amplify/amplify-js/issues/14) [#15](https://github.com/aws-amplify/amplify-js/issues/15) [#16](https://github.com/aws-amplify/amplify-js/issues/16) [#18](https://github.com/aws-amplify/amplify-js/issues/18) [#17](https://github.com/aws-amplify/amplify-js/issues/17) [#19](https://github.com/aws-amplify/amplify-js/issues/19) [#22](https://github.com/aws-amplify/amplify-js/issues/22)
+
+# [6.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.6.2...@aws-amplify/auth@6.7.0) (2024-11-20)
+
+### Features
+
+- **storage:** Integrity changes for storage browser ([#13909](https://github.com/aws-amplify/amplify-js/issues/13909)) ([ec7bf6f](https://github.com/aws-amplify/amplify-js/commit/ec7bf6ff2fb4af84425eca4f2d68c2bef7f49d03)), closes [#13478](https://github.com/aws-amplify/amplify-js/issues/13478) [#13474](https://github.com/aws-amplify/amplify-js/issues/13474)
+
+## [6.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.6.1...@aws-amplify/auth@6.6.2) (2024-11-13)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.6.0...@aws-amplify/auth@6.6.1) (2024-11-12)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+# [6.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.5...@aws-amplify/auth@6.6.0) (2024-10-31)
+
+### Features
+
+- **auth:** add support for Email MFA ([#13945](https://github.com/aws-amplify/amplify-js/issues/13945)) ([42db720](https://github.com/aws-amplify/amplify-js/commit/42db720ac46d8c1bbd307cd21924b934e7b1b270)), closes [#13720](https://github.com/aws-amplify/amplify-js/issues/13720) [#13745](https://github.com/aws-amplify/amplify-js/issues/13745)
+
+## [6.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.4...@aws-amplify/auth@6.5.5) (2024-10-29)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.3...@aws-amplify/auth@6.5.4) (2024-10-25)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.2...@aws-amplify/auth@6.5.3) (2024-10-21)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.1...@aws-amplify/auth@6.5.2) (2024-10-15)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.0...@aws-amplify/auth@6.5.1) (2024-10-05)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+# [6.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.4.2...@aws-amplify/auth@6.5.0) (2024-09-30)
+
+### Bug Fixes
+
+- **auth:** remove redundant remove guest identityId call ([#13789](https://github.com/aws-amplify/amplify-js/issues/13789)) ([a0d1447](https://github.com/aws-amplify/amplify-js/commit/a0d1447b6234ab1678a837d90deddf805779bc3a))
+
+### Features
+
+- **auth:** Enable resumable SignIn ([#13483](https://github.com/aws-amplify/amplify-js/issues/13483)) ([f3421f1](https://github.com/aws-amplify/amplify-js/commit/f3421f190da7473c30b5688c281935645488c663))
+
+### Reverts
+
+- Revert "feat(auth): Enable resumable SignIn" (#13855) ([b26e719](https://github.com/aws-amplify/amplify-js/commit/b26e7199d25cbc1821ff7c45b8ad78b5544b7a2f)), closes [#13855](https://github.com/aws-amplify/amplify-js/issues/13855) [#13483](https://github.com/aws-amplify/amplify-js/issues/13483)
+
+## [6.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.4.1...@aws-amplify/auth@6.4.2) (2024-09-17)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.4.0...@aws-amplify/auth@6.4.1) (2024-09-16)
+
+### Bug Fixes
+
+- **auth:** custom `userPoolEndpoint` cannot be applied on the server-side ([#13739](https://github.com/aws-amplify/amplify-js/issues/13739)) ([a76b594](https://github.com/aws-amplify/amplify-js/commit/a76b594562430a85fd37f00bb2788959f7a69d6a))
+
 # [6.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.17...@aws-amplify/auth@6.4.0) (2024-09-04)
 
 ### Features

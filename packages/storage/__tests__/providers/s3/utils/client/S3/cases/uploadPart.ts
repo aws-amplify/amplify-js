@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { uploadPart } from '../../../../../../../src/providers/s3/utils/client';
+import { uploadPart } from '../../../../../../../src/providers/s3/utils/client/s3data';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -44,4 +44,36 @@ const uploadPartHappyCase: ApiFunctionalTestCase<typeof uploadPart> = [
 	},
 ];
 
-export default [uploadPartHappyCase];
+const uploadPartHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof uploadPart
+> = [
+	'happy case',
+	'uploadPart with custom endpoint',
+	uploadPart,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+		PartNumber: 1,
+		UploadId: 'uploadId',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key?partNumber=1&uploadId=uploadId',
+		}),
+	}),
+	{
+		status: 200,
+		headers: { ...DEFAULT_RESPONSE_HEADERS, etag: 'etag' },
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
+export default [uploadPartHappyCase, uploadPartHappyCaseCustomEndpoint];

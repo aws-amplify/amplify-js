@@ -30,10 +30,12 @@ import {
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Signs a user in
@@ -104,6 +106,8 @@ export async function signInWithSRP(
 
 			await dispatchSignedInHubEvent();
 
+			resetAutoSignIn();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -116,6 +120,7 @@ export async function signInWithSRP(
 		});
 	} catch (error) {
 		cleanActiveSignInState();
+		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

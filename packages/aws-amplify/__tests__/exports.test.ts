@@ -55,6 +55,7 @@ describe('aws-amplify Exports', () => {
 					'ConnectionState',
 					'GraphQLAuthError',
 					'del',
+					'events',
 					'generateClient',
 					'get',
 					'head',
@@ -179,6 +180,9 @@ describe('aws-amplify Exports', () => {
 					'autoSignIn',
 					'fetchAuthSession',
 					'decodeJWT',
+					'associateWebAuthnCredential',
+					'listWebAuthnCredentials',
+					'deleteWebAuthnCredential',
 				].sort(),
 			);
 		});
@@ -238,6 +242,7 @@ describe('aws-amplify Exports', () => {
 					'getUrl',
 					'isCancelError',
 					'StorageError',
+					'DEFAULT_PART_SIZE',
 				].sort(),
 			);
 		});
@@ -252,6 +257,7 @@ describe('aws-amplify Exports', () => {
 					'getProperties',
 					'copy',
 					'getUrl',
+					'DEFAULT_PART_SIZE',
 				].sort(),
 			);
 		});

@@ -31,6 +31,11 @@ export type MiddlewareHandler<Input, Output> = (
  */
 export interface MiddlewareContext {
 	/**
+	 * Whether an error indicating expired credentials has been returned from server-side.
+	 * This is set by the retry middleware.
+	 */
+	isCredentialsExpired?: boolean;
+	/**
 	 * The number of times the request has been attempted. This is set by retry middleware
 	 */
 	attemptsCount?: number;
