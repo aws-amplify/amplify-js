@@ -37,6 +37,9 @@ on:
       yarn_script:
         required: false
         type: string
+      yarn_script_args:
+        required: false
+        type: number
       env:
         required: false
         type: string
@@ -124,6 +127,7 @@ jobs:
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
           E2E_YARN_SCRIPT: ${{ inputs.yarn_script }}
+          E2E_YARN_SCRIPT_ARGS: ${{ inputs.yarn_script_args }}
           E2E_ENV: ${{ inputs.env }}
         run: |
           if [ -z "$E2E_YARN_SCRIPT" ]; then
@@ -141,7 +145,7 @@ jobs:
             $E2E_YARN_SCRIPT \
             -n $E2E_RETRY_COUNT
           else
-            yarn "$E2E_YARN_SCRIPT"
+            yarn "$E2E_YARN_SCRIPT" "$E2E_YARN_SCRIPT_ARGS"
           fi
       - name: Upload artifact
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
