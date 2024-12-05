@@ -4,6 +4,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
+	GraphQLOptions,
 	GraphQLOptionsV6,
 	GraphQLResponseV6,
 	V6Client,
@@ -113,10 +114,11 @@ export function graphql<
 	 * Neither of these can actually be validated at runtime. Hence, we don't perform
 	 * any validation or type-guarding here.
 	 */
+
 	const result = GraphQLAPI.graphql(
 		// TODO: move V6Client back into this package?
 		internals.amplify as any,
-		options,
+		options as GraphQLOptions,
 		headers,
 	);
 

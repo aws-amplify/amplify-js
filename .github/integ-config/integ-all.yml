@@ -900,7 +900,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-email
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-email
   - test_name: integ_next_mfa_req_phone
@@ -909,7 +909,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-phone
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-phone
   - test_name: integ_next_mfa_opt_email
@@ -918,7 +918,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-email
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-email
   - test_name: integ_next_mfa_opt_phone
@@ -927,7 +927,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-phone
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-phone
   - test_name: integ_next_mfa_setup
@@ -936,7 +936,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-setup
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup
   - test_name: integ_next_passwordless_auto_sign_in
@@ -945,8 +945,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/auto-sign-in
-    # browser: *minimal_browser_list
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-autosignin
   - test_name: integ_next_passwordless_first_factor_selection
@@ -955,8 +954,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/first-factor-selection
-    # browser: *minimal_browser_list
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-ffselect
   - test_name: integ_next_passwordless_preferred_challenge
@@ -965,8 +963,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/preferred-challenge
-    # browser: *minimal_browser_list
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-prefchal
   - test_name: integ_next_passwordless_sign_up
@@ -975,8 +972,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/sign-up
-    # browser: *minimal_browser_list
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-signup
   - test_name: integ_next_passwordless_misc
@@ -985,8 +981,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/miscellaneous
-    # browser: *minimal_browser_list
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-misc
   - test_name: integ_next_passwordless_webauthn
