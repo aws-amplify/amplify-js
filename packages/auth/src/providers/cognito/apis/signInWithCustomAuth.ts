@@ -21,14 +21,10 @@ import {
 	SignInWithCustomAuthInput,
 	SignInWithCustomAuthOutput,
 } from '../types';
-<<<<<<< HEAD
 import {
-	cleanActiveSignInState,
 	setActiveSignInState,
-} from '../../../client/utils/store';
-=======
-import { setActiveSignInState, signInStore } from '../utils/signInStore';
->>>>>>> joonwonc/auth-resumable-signin
+	signInStore,
+} from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,

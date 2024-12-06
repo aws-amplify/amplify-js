@@ -1,7 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CognitoAuthSignInDetails } from '../../../providers/cognito/types';
+
 import { syncSessionStorage } from '@aws-amplify/core';
+
+import { CognitoAuthSignInDetails } from '../../../providers/cognito/types';
 import { ChallengeName } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 import { Reducer, Store } from './types';
@@ -22,15 +24,6 @@ type SignInAction =
 	| { type: 'SET_SIGN_IN_SESSION'; value?: string }
 	| { type: 'RESET_STATE' };
 
-<<<<<<< HEAD:packages/auth/src/client/utils/store/signInStore.ts
-=======
-type Store<State, Action> = (reducer: Reducer<State, Action>) => {
-	getState(): ReturnType<Reducer<State, Action>>;
-	dispatch(action: Action): void;
-};
-
-type Reducer<State, Action> = (state: State, action: Action) => State;
-
 // Minutes until stored session invalidates
 const MS_TO_EXPIRY = 3 * 60 * 1000; // 3 mins
 const TGT_STATE = 'CognitoSignInState';
@@ -41,7 +34,6 @@ const SIGN_IN_STATE_KEYS = {
 	expiry: `${TGT_STATE}.expiry`,
 };
 
->>>>>>> joonwonc/auth-resumable-signin:packages/auth/src/providers/cognito/utils/signInStore.ts
 const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 	switch (action.type) {
 		case 'SET_SIGN_IN_SESSION':

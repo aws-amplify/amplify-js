@@ -5,7 +5,7 @@ import { Amplify, syncSessionStorage } from '@aws-amplify/core';
 import {
 	setActiveSignInState,
 	signInStore,
-} from '../../../src/providers/cognito/utils/signInStore';
+} from '../../../src/client/utils/store/signInStore';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 import {
 	ChallengeName,
@@ -17,7 +17,7 @@ import { signIn } from '../../../src/providers/cognito';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
-const signInStoreImplementation = require('../../../src/providers/cognito/utils/signInStore');
+const signInStoreImplementation = require('../../../src/client/utils/store/signInStore');
 
 jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');

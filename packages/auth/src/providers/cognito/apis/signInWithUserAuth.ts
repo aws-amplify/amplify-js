@@ -28,8 +28,8 @@ import {
 } from '../types';
 import {
 	autoSignInStore,
-	cleanActiveSignInState,
 	setActiveSignInState,
+	signInStore,
 } from '../../../client/utils/store';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
@@ -100,7 +100,7 @@ export async function signInWithUserAuth(
 		});
 
 		if (response.AuthenticationResult) {
-			cleanActiveSignInState();
+			signInStore.dispatch({ type: 'RESET_STATE' });
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...response.AuthenticationResult,
@@ -131,7 +131,7 @@ export async function signInWithUserAuth(
 					: undefined,
 		});
 	} catch (error) {
-		cleanActiveSignInState();
+		signInStore.dispatch({ type: 'RESET_STATE' });
 		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
