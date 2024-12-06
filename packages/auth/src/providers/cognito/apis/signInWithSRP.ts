@@ -103,7 +103,7 @@ export async function signInWithSRP(
 				signInDetails,
 			});
 			cleanActiveSignInState();
-			
+
 			await dispatchSignedInHubEvent();
 
 			resetAutoSignIn();

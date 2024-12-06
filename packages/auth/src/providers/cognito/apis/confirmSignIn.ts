@@ -121,7 +121,7 @@ export async function confirmSignIn(
 				signInDetails,
 			});
 			cleanActiveSignInState();
-			
+
 			await dispatchSignedInHubEvent();
 
 			return {

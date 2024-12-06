@@ -112,7 +112,7 @@ export async function signInWithUserAuth(
 				signInDetails,
 			});
 			cleanActiveSignInState();
-			
+
 			await dispatchSignedInHubEvent();
 
 			resetAutoSignIn();

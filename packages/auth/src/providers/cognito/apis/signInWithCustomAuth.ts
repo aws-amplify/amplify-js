@@ -96,7 +96,7 @@ export async function signInWithCustomAuth(
 				signInDetails,
 			});
 			cleanActiveSignInState();
-			
+
 			await dispatchSignedInHubEvent();
 
 			return {

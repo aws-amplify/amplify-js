@@ -98,7 +98,7 @@ export async function signInWithUserPassword(
 				signInDetails,
 			});
 			cleanActiveSignInState();
-			
+
 			await dispatchSignedInHubEvent();
 
 			resetAutoSignIn();
