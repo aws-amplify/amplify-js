@@ -104,7 +104,47 @@ export function graphql<
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	// inject client-level auth
 	const internals = getInternals(this as any);
-	options.authMode = options.authMode || internals.authMode;
+
+	/**
+	 * The custom `endpoint` (or `undefined`) specific to `generateClient()`.
+	 */
+	const clientEndpoint: string = (internals as any).endpoint;
+
+	/**
+	 * The `authMode` requested by the individual GraphQL request.
+	 *
+	 * If an `endpoint` is present in the request, we create a "gate" at the request
+	 * level to prevent "more general" `authMode` settings (from the client or config)
+	 * from being exposed unintentionally to an unrelated API.
+	 */
+	const requestAuthMode =
+		options.authMode ?? (options.endpoint ? 'none' : undefined);
+
+	/**
+	 * The `authMode` requested by the generated client.
+	 *
+	 * If an `endpoint` is present on the client, we create a "gate" around at the
+	 * client level to prevent "more general" `authMode` settings (from the config)
+	 * from being exposed unintentionally to an unrelated API.
+	 */
+	const clientAuthMode =
+		internals.authMode ?? (clientEndpoint ? 'none' : undefined);
+
+	/**
+	 * The most specific `authMode` wins. Setting an `endpoint` value without also
+	 * setting an `authMode` value is treated as explicitly setting `authMode` to "none".
+	 *
+	 * E.g., if `.graphql({ endpoint })`, `authMode` is treated as explicitly 'none' at
+	 * the request level, and any `authMode` provided to `generateClient()` or to
+	 * `Amplify.configure()` is ignored.
+	 *
+	 * Reiterating, this serves as a gating mechanism to ensure auth details are not
+	 * unexpected sent to API's they don't belong to. However, if `authMode` has been
+	 * explicitly set alongside `endpoint`, we will assume this was intentional and
+	 * use the normal/configured auth details for the endpoint.
+	 */
+	options.authMode = requestAuthMode || clientAuthMode;
+
 	options.authToken = options.authToken || internals.authToken;
 	const headers = additionalHeaders || internals.headers;
 
@@ -116,7 +156,10 @@ export function graphql<
 	const result = GraphQLAPI.graphql(
 		// TODO: move V6Client back into this package?
 		internals.amplify as any,
-		options,
+		{
+			...options,
+			endpoint: options.endpoint || clientEndpoint,
+		},
 		headers,
 	);
 

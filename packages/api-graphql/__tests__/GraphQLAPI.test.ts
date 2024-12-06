@@ -1560,7 +1560,7 @@ describe('API test', () => {
 	});
 
 	describe.only('custom endpoints', () => {
-		describe.only('query operations', () => {
+		describe.only('non-subscription operations', () => {
 			test.only('sets authMode to "none" by default', async () => {
 				// just need to fill this test out to call POC done and start designing
 				// the behavior for the other auth modes.
@@ -1627,6 +1627,8 @@ describe('API test', () => {
 				expect(errors).toBe(undefined);
 				expect(thread).toEqual(graphqlResponse.data.getThread);
 			});
+
+			test.only('', async () => {});
 
 			test('something something CUP auth', async () => {});
 
