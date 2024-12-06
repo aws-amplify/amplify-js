@@ -86,7 +86,6 @@ export async function signInWithUserPassword(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
 			await cacheCognitoTokens({
 				...AuthenticationResult,
 				username: activeUsername,
@@ -98,6 +97,7 @@ export async function signInWithUserPassword(
 				}),
 				signInDetails,
 			});
+			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 
