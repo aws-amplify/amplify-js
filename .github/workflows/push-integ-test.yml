@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - refactor/clean_signIn_state
 
 jobs:
   e2e:
