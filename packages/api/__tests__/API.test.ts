@@ -151,6 +151,7 @@ describe.only('Custom Endpoints', () => {
 
 	test('client { endpoint: N, authMode: N } + op { endpoint: N, authMode: N } -> config.authMode', async () => {
 		const client = generateClient();
+
 		await client.graphql({ query: 'query A { queryA { a b c } }' });
 
 		expectPost({
@@ -161,6 +162,7 @@ describe.only('Custom Endpoints', () => {
 
 	test('client { endpoint: N, authMode: N } + op { endpoint: N, authMode: Y } -> op.authMode', async () => {
 		const client = generateClient();
+
 		await client.graphql({
 			query: 'query A { queryA { a b c } }',
 			authMode: 'none',
@@ -174,6 +176,7 @@ describe.only('Custom Endpoints', () => {
 
 	test('client { endpoint: N, authMode: N } + op { endpoint: Y, authMode: N } -> none (defaulted)', async () => {
 		const client = generateClient();
+
 		await client.graphql({
 			query: 'query A { queryA { a b c } }',
 			endpoint: CUSTOM_ENDPOINT,
@@ -187,6 +190,7 @@ describe.only('Custom Endpoints', () => {
 
 	test('client { endpoint: N, authMode: N } + op { endpoint: Y, authMode: Y } -> op.authMode', async () => {
 		const client = generateClient();
+
 		await client.graphql({
 			query: 'query A { queryA { a b c } }',
 			endpoint: CUSTOM_ENDPOINT,
@@ -377,7 +381,7 @@ describe.only('Custom Endpoints', () => {
 		});
 	});
 
-	test('client { endpoint: Y, authMode: Y } + op { endpoint: Y, authMode: Y } -> none (defaulted)', async () => {
+	test('client { endpoint: Y, authMode: Y } + op { endpoint: Y, authMode: Y } -> op.authMode', async () => {
 		const client = generateClient({
 			endpoint: CUSTOM_ENDPOINT,
 			authMode: 'none',
