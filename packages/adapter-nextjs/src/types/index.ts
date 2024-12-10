@@ -6,8 +6,3 @@ import { CognitoJwtVerifier } from 'aws-jwt-verify';
 export { NextServer } from './NextServer';
 
 export type JwtVerifier = ReturnType<typeof CognitoJwtVerifier.create>;
-
-export interface TokenVerifierMap {
-	id?: JwtVerifier;
-	access?: JwtVerifier;
-}

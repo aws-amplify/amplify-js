@@ -4,7 +4,7 @@
 import { KeyValueStorageMethodValidator } from '@aws-amplify/core/internals/adapter-core';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 
-import { TokenVerifierMap } from '../types';
+import { JwtVerifier } from '../types';
 
 import { isValidCognitoToken } from './isValidCognitoToken';
 
@@ -20,35 +20,42 @@ export const createTokenValidator = ({
 	userPoolId,
 	userPoolClientId: clientId,
 }: CreateTokenValidatorInput): KeyValueStorageMethodValidator => {
-	const verifierMap: TokenVerifierMap = {};
-	if (userPoolId && clientId) {
-		verifierMap.id = CognitoJwtVerifier.create({
-			userPoolId,
-			tokenUse: 'id',
-			clientId,
-		});
-		verifierMap.access = CognitoJwtVerifier.create({
-			userPoolId,
-			tokenUse: 'access',
-			clientId,
-		});
-	}
+	let idTokenVerifier: JwtVerifier;
+	let accessTokenVerifier: JwtVerifier;
 
 	return {
 		// validate access, id tokens
 		getItem: async (key: string, value: string): Promise<boolean> => {
-			const verifier = key.includes('.accessToken')
-				? verifierMap.access
-				: key.includes('.idToken')
-					? verifierMap.id
-					: null;
+			const isAccessToken = key.includes('.accessToken');
+			const isIdToken = key.includes('.idToken');
 
-			if (!verifier) return true;
-			if (!userPoolId || !clientId) return false;
+			if (!isAccessToken && !isIdToken) {
+				return true;
+			}
+
+			if (!userPoolId || !clientId) {
+				return false;
+			}
+
+			if (isAccessToken && !accessTokenVerifier) {
+				accessTokenVerifier = CognitoJwtVerifier.create({
+					userPoolId,
+					tokenUse: 'access',
+					clientId,
+				});
+			}
+
+			if (isIdToken && !idTokenVerifier) {
+				idTokenVerifier = CognitoJwtVerifier.create({
+					userPoolId,
+					tokenUse: 'id',
+					clientId,
+				});
+			}
 
 			return isValidCognitoToken({
 				token: value,
-				verifier,
+				verifier: isAccessToken ? accessTokenVerifier : idTokenVerifier,
 			});
 		},
 	};
