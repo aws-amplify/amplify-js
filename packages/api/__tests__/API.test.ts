@@ -277,4 +277,121 @@ describe.only('Custom Endpoints', () => {
 			withApiKey: false, // from client.endpoint -> default = none
 		});
 	});
+
+	test('client { endpoint: Y, authMode: N } + op { endpoint: N, authMode: Y } -> op.authMode', async () => {
+		const client = generateClient({
+			endpoint: CUSTOM_ENDPOINT,
+		});
+
+		await client.graphql({
+			query: 'query A { queryA { a b c } }',
+			authMode: 'apiKey',
+		});
+
+		expectPost({
+			endpoint: CUSTOM_ENDPOINT,
+			withApiKey: true, // from op.authMode = apiKey
+		});
+	});
+
+	test('client { endpoint: Y, authMode: N } + op { endpoint: Y, authMode: N } -> none (defaulted)', async () => {
+		const client = generateClient({
+			endpoint: CUSTOM_ENDPOINT,
+		});
+
+		await client.graphql({
+			query: 'query A { queryA { a b c } }',
+			endpoint: CUSTOM_ENDPOINT + '-from-op',
+		});
+
+		expectPost({
+			endpoint: CUSTOM_ENDPOINT + '-from-op',
+			withApiKey: false, // from op.endpoint -> default = none
+		});
+	});
+
+	test('client { endpoint: Y, authMode: N } + op { endpoint: Y, authMode: Y } -> op.authMode', async () => {
+		const client = generateClient({
+			endpoint: CUSTOM_ENDPOINT,
+		});
+
+		await client.graphql({
+			query: 'query A { queryA { a b c } }',
+			endpoint: CUSTOM_ENDPOINT + '-from-op',
+			authMode: 'apiKey',
+		});
+
+		expectPost({
+			endpoint: CUSTOM_ENDPOINT + '-from-op',
+			withApiKey: true, // from op.authMode = apiKey
+		});
+	});
+
+	test('client { endpoint: Y, authMode: Y } + op { endpoint: N, authMode: N } -> client.authMode', async () => {
+		const client = generateClient({
+			endpoint: CUSTOM_ENDPOINT,
+			authMode: 'apiKey',
+		});
+
+		await client.graphql({
+			query: 'query A { queryA { a b c } }',
+		});
+
+		expectPost({
+			endpoint: CUSTOM_ENDPOINT,
+			withApiKey: true, // from client.authMode = apiKey
+		});
+	});
+
+	test('client { endpoint: Y, authMode: Y } + op { endpoint: N, authMode: Y } -> op.authMode', async () => {
+		const client = generateClient({
+			endpoint: CUSTOM_ENDPOINT,
+			authMode: 'none',
+		});
+
+		await client.graphql({
+			query: 'query A { queryA { a b c } }',
+			authMode: 'apiKey',
+		});
+
+		expectPost({
+			endpoint: CUSTOM_ENDPOINT,
+			withApiKey: true, // from op.authMode = apiKey
+		});
+	});
+
+	test('client { endpoint: Y, authMode: Y } + op { endpoint: Y, authMode: N } -> none (defaulted)', async () => {
+		const client = generateClient({
+			endpoint: CUSTOM_ENDPOINT,
+			authMode: 'apiKey',
+		});
+
+		await client.graphql({
+			query: 'query A { queryA { a b c } }',
+			endpoint: CUSTOM_ENDPOINT + '-from-op',
+		});
+
+		expectPost({
+			endpoint: CUSTOM_ENDPOINT + '-from-op',
+			withApiKey: false, // from op.endpoint -> default = none
+		});
+	});
+
+	test('client { endpoint: Y, authMode: Y } + op { endpoint: Y, authMode: Y } -> none (defaulted)', async () => {
+		const client = generateClient({
+			endpoint: CUSTOM_ENDPOINT,
+			authMode: 'none',
+		});
+
+		await client.graphql({
+			query: 'query A { queryA { a b c } }',
+			endpoint: CUSTOM_ENDPOINT + '-from-op',
+			authMode: 'apiKey',
+		});
+
+		expectPost({
+			endpoint: CUSTOM_ENDPOINT + '-from-op',
+			withApiKey: true, // from op.authMode = apiKey
+		});
+	});
 });
