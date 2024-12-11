@@ -11,10 +11,9 @@ import {
 } from '../types/errors';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
 import {
-	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
-} from '../../../client/utils/store';
+} from '../../../client/utils/store/signInStore';
 import { AuthError } from '../../../errors/AuthError';
 import {
 	getNewDeviceMetadata,
@@ -66,7 +65,8 @@ export async function confirmSignIn(
 		AuthValidationErrorCode.EmptyChallengeResponse,
 	);
 
-	if (!username || !challengeName || !signInSession)
+	if (!username || !challengeName || !signInSession) {
+		console.warn(username, challengeName, signInSession);
 		// TODO: remove this error message for production apps
 		throw new AuthError({
 			name: AuthErrorCodes.SignInException,
@@ -82,6 +82,7 @@ export async function confirmSignIn(
 				'Make sure a successful call to signIn is made before calling confirmSignIn' +
 				'and that the page is not refreshed until the sign in process is done.',
 		});
+	}
 
 	try {
 		const {
@@ -121,6 +122,8 @@ export async function confirmSignIn(
 				signInDetails,
 			});
 			cleanActiveSignInState();
+
+			signInStore.dispatch({ type: 'RESET_STATE' });
 
 			await dispatchSignedInHubEvent();
 

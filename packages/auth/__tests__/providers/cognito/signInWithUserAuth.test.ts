@@ -9,7 +9,6 @@ import { InitiateAuthCommandOutput } from '../../../src/foundation/factories/ser
 
 jest.mock('../../../src/providers/cognito/utils/signInHelpers', () => ({
 	...jest.requireActual('../../../src/providers/cognito/utils/signInHelpers'),
-	cleanActiveSignInState: jest.fn(),
 	setActiveSignInState: jest.fn(),
 	getNewDeviceMetadata: jest.fn(),
 	getActiveSignInUsername: jest.fn(username => username),

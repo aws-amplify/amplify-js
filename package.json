@@ -8,6 +8,7 @@
 		"bootstrap": "lerna bootstrap",
 		"test": "yarn test:no-datastore && yarn test:datastore && yarn test:license && yarn test:github-actions && yarn test:tsc-compliance",
 		"test:no-datastore": "lerna run test --stream --ignore @aws-amplify/datastore",
+		"test:auth": "lerna run test --stream --scope @aws-amplify/auth",
 		"test:datastore": "lerna run test --stream --scope @aws-amplify/datastore",
 		"test:size": "lerna run test:size --no-bail",
 		"test:duplicates": "./scripts/duplicates-yarn.sh",
