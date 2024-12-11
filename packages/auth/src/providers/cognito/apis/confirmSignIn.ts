@@ -121,7 +121,6 @@ export async function confirmSignIn(
 				}),
 				signInDetails,
 			});
-
 			signInStore.dispatch({ type: 'RESET_STATE' });
 
 			await dispatchSignedInHubEvent();
