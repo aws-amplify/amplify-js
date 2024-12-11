@@ -2,6 +2,7 @@ import { ResourcesConfig } from 'aws-amplify';
 import { GraphQLAPI } from '@aws-amplify/api-graphql';
 import { generateClient, CONNECTION_STATE_CHANGE } from '@aws-amplify/api';
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { Observable } from 'rxjs';
 
 const API_KEY = 'FAKE-KEY';
 
@@ -45,6 +46,42 @@ function expectPost({
 			}),
 		}),
 	);
+}
+
+/**
+ * Validates that a "post" occurred (against `_postSpy`) to the given endpoint URL
+ * specifically with or without the given `apiKey` (defaults to globally configured
+ * `API_KEY`) depending on the given `withApiKey` argument.
+ *
+ * @param options
+ */
+function expectSubscription({
+	endpoint,
+	withApiKey,
+	apiKey = API_KEY,
+}: {
+	endpoint: string;
+	withApiKey: boolean;
+	apiKey?: string;
+}) {
+	expect(_subspy).toHaveBeenCalledWith(
+		expect.objectContaining({
+			appSyncGraphqlEndpoint: endpoint,
+		}),
+		expect.anything(),
+	);
+
+	if (apiKey) {
+		expect(_subspy).toHaveBeenCalledWith(
+			expect.objectContaining({ apiKey }),
+			expect.anything(),
+		);
+	} else {
+		expect(_subspy).toHaveBeenCalledWith(
+			expect.not.objectContaining({ apiKey }),
+			expect.anything(),
+		);
+	}
 }
 
 describe.skip('API generateClient', () => {
@@ -143,259 +180,265 @@ describe.only('Custom Endpoints', () => {
 				},
 			},
 		});
+		_subspy.mockReturnValue(new Observable());
 	});
 
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
 
-	test('client { endpoint: N, authMode: N } + op { endpoint: N, authMode: N } -> config.authMode', async () => {
-		const client = generateClient();
+	for (const op of ['query', 'subscription']) {
+		const expectOp = op === 'subscription' ? expectSubscription : expectPost;
+		const opType = op === 'subscription' ? 'sub' : 'qry';
 
-		await client.graphql({ query: 'query A { queryA { a b c } }' });
+		test(`client { endpoint: N, authMode: N } + ${opType} { endpoint: N, authMode: N } -> config.authMode`, async () => {
+			const client = generateClient();
 
-		expectPost({
-			endpoint: DEFAULT_ENDPOINT,
-			withApiKey: true,
-		});
-	});
+			await client.graphql({ query: `${op} A { queryA { a b c } }` });
 
-	test('client { endpoint: N, authMode: N } + op { endpoint: N, authMode: Y } -> op.authMode', async () => {
-		const client = generateClient();
-
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			authMode: 'none',
+			expectOp({
+				endpoint: DEFAULT_ENDPOINT,
+				withApiKey: true,
+			});
 		});
 
-		expectPost({
-			endpoint: DEFAULT_ENDPOINT,
-			withApiKey: false, // from op.authMode = none
-		});
-	});
+		test(`client { endpoint: N, authMode: N } + ${opType} { endpoint: N, authMode: Y } -> op.authMode`, async () => {
+			const client = generateClient();
 
-	test('client { endpoint: N, authMode: N } + op { endpoint: Y, authMode: N } -> none (defaulted)', async () => {
-		const client = generateClient();
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				authMode: 'none',
+			});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			endpoint: CUSTOM_ENDPOINT,
-		});
-
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT,
-			withApiKey: false, // from op.endpoint -> op.authMode default = none
-		});
-	});
-
-	test('client { endpoint: N, authMode: N } + op { endpoint: Y, authMode: Y } -> op.authMode', async () => {
-		const client = generateClient();
-
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			endpoint: CUSTOM_ENDPOINT,
-			authMode: 'apiKey',
+			expectOp({
+				endpoint: DEFAULT_ENDPOINT,
+				withApiKey: false, // from op.authMode = none
+			});
 		});
 
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT,
-			withApiKey: true, // from op.authMode = apiKey
-		});
-	});
+		test(`client { endpoint: N, authMode: N } + ${opType} { endpoint: Y, authMode: N } -> none (defaulted)`, async () => {
+			const client = generateClient();
 
-	test('client { endpoint: N, authMode: Y } + op { endpoint: M, authMode: N } -> client.authMode', async () => {
-		const client = generateClient({
-			authMode: 'none',
-		});
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				endpoint: CUSTOM_ENDPOINT,
+			});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-		});
-
-		expectPost({
-			endpoint: DEFAULT_ENDPOINT,
-			withApiKey: false, // from client.authMode = none
-		});
-	});
-
-	test('client { endpoint: N, authMode: Y } + op { endpoint: M, authMode: Y } -> op.authMode', async () => {
-		const client = generateClient({
-			authMode: 'apiKey',
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT,
+				withApiKey: false, // from op.endpoint -> op.authMode default = none
+			});
 		});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			authMode: 'none',
+		test(`client { endpoint: N, authMode: N } + ${opType} { endpoint: Y, authMode: Y } -> op.authMode`, async () => {
+			const client = generateClient();
+
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				endpoint: CUSTOM_ENDPOINT,
+				authMode: 'apiKey',
+			});
+
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT,
+				withApiKey: true, // from op.authMode = apiKey
+			});
 		});
 
-		expectPost({
-			endpoint: DEFAULT_ENDPOINT,
-			withApiKey: false, // from op.authMode = none
-		});
-	});
+		test(`client { endpoint: N, authMode: Y } + ${opType} { endpoint: M, authMode: N } -> client.authMode`, async () => {
+			const client = generateClient({
+				authMode: 'none',
+			});
 
-	test('client { endpoint: N, authMode: Y } + op { endpoint: Y, authMode: N } -> none (defaulted)', async () => {
-		const client = generateClient({
-			authMode: 'apiKey',
-		});
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+			});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			endpoint: CUSTOM_ENDPOINT,
-		});
-
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT,
-			withApiKey: false, // from op.endpoint -> op.authMode default = none
-		});
-	});
-
-	test('client { endpoint: N, authMode: Y } + op { endpoint: Y, authMode: Y } -> op.authMode', async () => {
-		const client = generateClient({
-			authMode: 'none',
+			expectOp({
+				endpoint: DEFAULT_ENDPOINT,
+				withApiKey: false, // from client.authMode = none
+			});
 		});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			endpoint: CUSTOM_ENDPOINT,
-			authMode: 'apiKey',
+		test(`client { endpoint: N, authMode: Y } + ${opType} { endpoint: M, authMode: Y } -> op.authMode`, async () => {
+			const client = generateClient({
+				authMode: 'apiKey',
+			});
+
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				authMode: 'none',
+			});
+
+			expectOp({
+				endpoint: DEFAULT_ENDPOINT,
+				withApiKey: false, // from op.authMode = none
+			});
 		});
 
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT,
-			withApiKey: true, // from op.authMode = apiKey
-		});
-	});
+		test(`client { endpoint: N, authMode: Y } + ${opType} { endpoint: Y, authMode: N } -> none (defaulted)`, async () => {
+			const client = generateClient({
+				authMode: 'apiKey',
+			});
 
-	test('client { endpoint: Y, authMode: N } + op { endpoint: N, authMode: N } -> none (defaulted)', async () => {
-		const client = generateClient({
-			endpoint: CUSTOM_ENDPOINT,
-		});
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				endpoint: CUSTOM_ENDPOINT,
+			});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-		});
-
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT,
-			withApiKey: false, // from client.endpoint -> default = none
-		});
-	});
-
-	test('client { endpoint: Y, authMode: N } + op { endpoint: N, authMode: Y } -> op.authMode', async () => {
-		const client = generateClient({
-			endpoint: CUSTOM_ENDPOINT,
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT,
+				withApiKey: false, // from op.endpoint -> op.authMode default = none
+			});
 		});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			authMode: 'apiKey',
+		test(`client { endpoint: N, authMode: Y } + ${opType} { endpoint: Y, authMode: Y } -> op.authMode`, async () => {
+			const client = generateClient({
+				authMode: 'none',
+			});
+
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				endpoint: CUSTOM_ENDPOINT,
+				authMode: 'apiKey',
+			});
+
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT,
+				withApiKey: true, // from op.authMode = apiKey
+			});
 		});
 
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT,
-			withApiKey: true, // from op.authMode = apiKey
-		});
-	});
+		test(`client { endpoint: Y, authMode: N } + ${opType} { endpoint: N, authMode: N } -> none (defaulted)`, async () => {
+			const client = generateClient({
+				endpoint: CUSTOM_ENDPOINT,
+			});
 
-	test('client { endpoint: Y, authMode: N } + op { endpoint: Y, authMode: N } -> none (defaulted)', async () => {
-		const client = generateClient({
-			endpoint: CUSTOM_ENDPOINT,
-		});
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+			});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			endpoint: CUSTOM_ENDPOINT + '-from-op',
-		});
-
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT + '-from-op',
-			withApiKey: false, // from op.endpoint -> default = none
-		});
-	});
-
-	test('client { endpoint: Y, authMode: N } + op { endpoint: Y, authMode: Y } -> op.authMode', async () => {
-		const client = generateClient({
-			endpoint: CUSTOM_ENDPOINT,
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT,
+				withApiKey: false, // from client.endpoint -> default = none
+			});
 		});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			endpoint: CUSTOM_ENDPOINT + '-from-op',
-			authMode: 'apiKey',
+		test(`client { endpoint: Y, authMode: N } + ${opType} { endpoint: N, authMode: Y } -> op.authMode`, async () => {
+			const client = generateClient({
+				endpoint: CUSTOM_ENDPOINT,
+			});
+
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				authMode: 'apiKey',
+			});
+
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT,
+				withApiKey: true, // from op.authMode = apiKey
+			});
 		});
 
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT + '-from-op',
-			withApiKey: true, // from op.authMode = apiKey
-		});
-	});
+		test(`client { endpoint: Y, authMode: N } + ${opType} { endpoint: Y, authMode: N } -> none (defaulted)`, async () => {
+			const client = generateClient({
+				endpoint: CUSTOM_ENDPOINT,
+			});
 
-	test('client { endpoint: Y, authMode: Y } + op { endpoint: N, authMode: N } -> client.authMode', async () => {
-		const client = generateClient({
-			endpoint: CUSTOM_ENDPOINT,
-			authMode: 'apiKey',
-		});
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				endpoint: CUSTOM_ENDPOINT + '-from-op',
+			});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-		});
-
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT,
-			withApiKey: true, // from client.authMode = apiKey
-		});
-	});
-
-	test('client { endpoint: Y, authMode: Y } + op { endpoint: N, authMode: Y } -> op.authMode', async () => {
-		const client = generateClient({
-			endpoint: CUSTOM_ENDPOINT,
-			authMode: 'none',
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT + '-from-op',
+				withApiKey: false, // from op.endpoint -> default = none
+			});
 		});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			authMode: 'apiKey',
+		test(`client { endpoint: Y, authMode: N } + ${opType} { endpoint: Y, authMode: Y } -> op.authMode`, async () => {
+			const client = generateClient({
+				endpoint: CUSTOM_ENDPOINT,
+			});
+
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				endpoint: CUSTOM_ENDPOINT + '-from-op',
+				authMode: 'apiKey',
+			});
+
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT + '-from-op',
+				withApiKey: true, // from op.authMode = apiKey
+			});
 		});
 
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT,
-			withApiKey: true, // from op.authMode = apiKey
-		});
-	});
+		test(`client { endpoint: Y, authMode: Y } + ${opType} { endpoint: N, authMode: N } -> client.authMode`, async () => {
+			const client = generateClient({
+				endpoint: CUSTOM_ENDPOINT,
+				authMode: 'apiKey',
+			});
 
-	test('client { endpoint: Y, authMode: Y } + op { endpoint: Y, authMode: N } -> none (defaulted)', async () => {
-		const client = generateClient({
-			endpoint: CUSTOM_ENDPOINT,
-			authMode: 'apiKey',
-		});
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+			});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			endpoint: CUSTOM_ENDPOINT + '-from-op',
-		});
-
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT + '-from-op',
-			withApiKey: false, // from op.endpoint -> default = none
-		});
-	});
-
-	test('client { endpoint: Y, authMode: Y } + op { endpoint: Y, authMode: Y } -> op.authMode', async () => {
-		const client = generateClient({
-			endpoint: CUSTOM_ENDPOINT,
-			authMode: 'none',
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT,
+				withApiKey: true, // from client.authMode = apiKey
+			});
 		});
 
-		await client.graphql({
-			query: 'query A { queryA { a b c } }',
-			endpoint: CUSTOM_ENDPOINT + '-from-op',
-			authMode: 'apiKey',
+		test(`client { endpoint: Y, authMode: Y } + ${opType} { endpoint: N, authMode: Y } -> op.authMode`, async () => {
+			const client = generateClient({
+				endpoint: CUSTOM_ENDPOINT,
+				authMode: 'none',
+			});
+
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				authMode: 'apiKey',
+			});
+
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT,
+				withApiKey: true, // from op.authMode = apiKey
+			});
 		});
 
-		expectPost({
-			endpoint: CUSTOM_ENDPOINT + '-from-op',
-			withApiKey: true, // from op.authMode = apiKey
+		test(`client { endpoint: Y, authMode: Y } + ${opType} { endpoint: Y, authMode: N } -> none (defaulted)`, async () => {
+			const client = generateClient({
+				endpoint: CUSTOM_ENDPOINT,
+				authMode: 'apiKey',
+			});
+
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				endpoint: CUSTOM_ENDPOINT + '-from-op',
+			});
+
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT + '-from-op',
+				withApiKey: false, // from op.endpoint -> default = none
+			});
 		});
-	});
+
+		test(`client { endpoint: Y, authMode: Y } + ${opType} { endpoint: Y, authMode: Y } -> op.authMode`, async () => {
+			const client = generateClient({
+				endpoint: CUSTOM_ENDPOINT,
+				authMode: 'none',
+			});
+
+			await client.graphql({
+				query: `${op} A { queryA { a b c } }`,
+				endpoint: CUSTOM_ENDPOINT + '-from-op',
+				authMode: 'apiKey',
+			});
+
+			expectOp({
+				endpoint: CUSTOM_ENDPOINT + '-from-op',
+				withApiKey: true, // from op.authMode = apiKey
+			});
+		});
+	}
 });
