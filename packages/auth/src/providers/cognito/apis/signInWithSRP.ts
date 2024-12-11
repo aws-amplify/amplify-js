@@ -102,6 +102,7 @@ export async function signInWithSRP(
 				}),
 				signInDetails,
 			});
+			cleanActiveSignInState();
 
 			signInStore.dispatch({ type: 'RESET_STATE' });
 

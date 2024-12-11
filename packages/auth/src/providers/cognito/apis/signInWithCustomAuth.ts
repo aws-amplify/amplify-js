@@ -95,6 +95,7 @@ export async function signInWithCustomAuth(
 				}),
 				signInDetails,
 			});
+			cleanActiveSignInState();
 
 			signInStore.dispatch({ type: 'RESET_STATE' });
 
