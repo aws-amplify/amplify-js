@@ -91,7 +91,7 @@ export class InternalGraphQLAPIClass {
 		{
 			query: paramQuery,
 			variables = {},
-			authMode: givenAuthMode,
+			authMode,
 			authToken,
 			endpoint,
 		}: GraphQLOptions,
@@ -110,11 +110,6 @@ export class InternalGraphQLAPIClass {
 			operationDef as OperationDefinitionNode;
 
 		const headers = additionalHeaders || {};
-
-		// If a custom endpoint is provided, we don't want to inadvertently expose
-		// any auth tokens, keys, etc. to a third party. However, if a customer
-		// sets `authMode` explicitly, we will respect it.
-		const authMode = endpoint && !givenAuthMode ? 'none' : givenAuthMode;
 
 		switch (operationType) {
 			case 'query':
