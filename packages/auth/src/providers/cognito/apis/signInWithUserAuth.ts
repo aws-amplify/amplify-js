@@ -100,7 +100,6 @@ export async function signInWithUserAuth(
 		});
 
 		if (response.AuthenticationResult) {
-			signInStore.dispatch({ type: 'RESET_STATE' });
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...response.AuthenticationResult,
@@ -112,6 +111,9 @@ export async function signInWithUserAuth(
 				}),
 				signInDetails,
 			});
+
+			signInStore.dispatch({ type: 'RESET_STATE' });
+
 			await dispatchSignedInHubEvent();
 
 			resetAutoSignIn();

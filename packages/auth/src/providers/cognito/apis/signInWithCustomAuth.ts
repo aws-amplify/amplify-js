@@ -84,8 +84,6 @@ export async function signInWithCustomAuth(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			signInStore.dispatch({ type: 'RESET_STATE' });
-
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
@@ -97,6 +95,8 @@ export async function signInWithCustomAuth(
 				}),
 				signInDetails,
 			});
+
+			signInStore.dispatch({ type: 'RESET_STATE' });
 
 			await dispatchSignedInHubEvent();
 

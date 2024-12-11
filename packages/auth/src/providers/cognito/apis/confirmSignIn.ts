@@ -110,8 +110,6 @@ export async function confirmSignIn(
 		});
 
 		if (AuthenticationResult) {
-			signInStore.dispatch({ type: 'RESET_STATE' });
-
 			await cacheCognitoTokens({
 				username,
 				...AuthenticationResult,
@@ -123,6 +121,8 @@ export async function confirmSignIn(
 				}),
 				signInDetails,
 			});
+
+			signInStore.dispatch({ type: 'RESET_STATE' });
 
 			await dispatchSignedInHubEvent();
 
