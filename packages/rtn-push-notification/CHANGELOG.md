@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.1.14...@aws-amplify/rtn-push-notification@1.1.15) (2024-12-11)
+
+### Bug Fixes
+
+- **rtn-push-notification:** wrong namespace is being used ([#14060](https://github.com/aws-amplify/amplify-js/issues/14060)) ([bc37719](https://github.com/aws-amplify/amplify-js/commit/bc37719edadc6b8d4fe44495152f66b952e62661))
+
 ## 1.1.14 (2024-03-21)
 
 ### Bug Fixes
