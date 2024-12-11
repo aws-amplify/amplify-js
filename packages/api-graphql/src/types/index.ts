@@ -215,7 +215,6 @@ export interface GraphQLOptionsV6<
 	TYPED_GQL_STRING extends string = string,
 > {
 	query: TYPED_GQL_STRING | DocumentNode;
-	endpoint?: string;
 	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 	authMode?: GraphQLAuthMode;
 	authToken?: string;

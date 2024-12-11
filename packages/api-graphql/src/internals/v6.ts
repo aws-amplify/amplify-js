@@ -111,16 +111,6 @@ export function graphql<
 	const clientEndpoint: string = (internals as any).endpoint;
 
 	/**
-	 * The `authMode` requested by the individual GraphQL request.
-	 *
-	 * If an `endpoint` is present in the request, we create a "gate" at the request
-	 * level to prevent "more general" `authMode` settings (from the client or config)
-	 * from being exposed unintentionally to an unrelated API.
-	 */
-	const requestAuthMode =
-		options.authMode ?? (options.endpoint ? 'none' : undefined);
-
-	/**
 	 * The `authMode` requested by the generated client.
 	 *
 	 * If an `endpoint` is present on the client, we create a "gate" around at the
@@ -143,7 +133,7 @@ export function graphql<
 	 * explicitly set alongside `endpoint`, we will assume this was intentional and
 	 * use the normal/configured auth details for the endpoint.
 	 */
-	options.authMode = requestAuthMode || clientAuthMode;
+	options.authMode = options.authMode || clientAuthMode;
 
 	options.authToken = options.authToken || internals.authToken;
 	const headers = additionalHeaders || internals.headers;
@@ -158,7 +148,7 @@ export function graphql<
 		internals.amplify as any,
 		{
 			...options,
-			endpoint: options.endpoint || clientEndpoint,
+			endpoint: clientEndpoint,
 		},
 		headers,
 	);
