@@ -97,8 +97,7 @@ export async function signInWithUserPassword(
 				}),
 				signInDetails,
 			});
-			cleanActiveSignInState();
-
+			
 			signInStore.dispatch({ type: 'RESET_STATE' });
 
 			await dispatchSignedInHubEvent();

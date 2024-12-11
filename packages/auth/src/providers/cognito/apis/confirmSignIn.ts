@@ -121,7 +121,6 @@ export async function confirmSignIn(
 				}),
 				signInDetails,
 			});
-			cleanActiveSignInState();
 
 			signInStore.dispatch({ type: 'RESET_STATE' });
 
