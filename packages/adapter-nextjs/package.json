@@ -5,7 +5,7 @@
 	"description": "The adapter for the supporting of using Amplify APIs in Next.js.",
 	"peerDependencies": {
 		"aws-amplify": "^6.0.7",
-		"next": ">=13.5.0 <15.0.0"
+		"next": ">=13.5.0 <16.0.0"
 	},
 	"dependencies": {
 		"aws-jwt-verify": "^4.0.1",
