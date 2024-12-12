@@ -5,9 +5,6 @@ import { JwtVerifier } from '../../src/types';
 
 describe('isValidCognitoToken', () => {
 	const token = 'mocked-token';
-	// const userPoolId = 'us-east-1_test';
-	// const clientId = 'client-id-test';
-	// const tokenType = 'id';
 
 	beforeEach(() => {
 		jest.clearAllMocks();
