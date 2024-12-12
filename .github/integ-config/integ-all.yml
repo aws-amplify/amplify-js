@@ -891,14 +891,24 @@ tests:
   #   spec: duplicate-packages
   #   browser: *minimal_browser_list
 
-  # SSR context isolation
-  - test_name: integ_ssr_context_isolation
-    desc: 'SSR Context Isolation'
+  # Next.js use cases
+  - test_name: integ_next-use-cases-14
+    desc: 'Next.js use cases tests with v14'
     framework: next
     category: ssr-adapter
-    sample_name: ssr-context-isolation
-    spec: ssr-context-isolation
-    yarn_script: ci:ssr-context-isolation
+    sample_name: next-use-cases-14
+    spec: next-use-cases
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: 14
+    browser: [chrome]
+  - test_name: integ_next-use-cases-15
+    desc: 'Next.js use cases tests with v15'
+    framework: next
+    category: ssr-adapter
+    sample_name: next-use-cases-15
+    spec: next-use-cases
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: 15
     browser: [chrome]
   - test_name: integ_next_mfa_req_email
     desc: 'mfa required with email sign in attribute'
