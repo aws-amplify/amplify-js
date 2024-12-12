@@ -21,3 +21,10 @@ export interface CookieStorageData {
 	secure?: boolean;
 	sameSite?: SameSite;
 }
+
+export interface SyncStorage {
+	setItem(key: string, value: string): void;
+	getItem(key: string): string | null;
+	removeItem(key: string): void;
+	clear(): void;
+}

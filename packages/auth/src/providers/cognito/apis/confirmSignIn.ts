@@ -11,10 +11,9 @@ import {
 } from '../types/errors';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
 import {
-	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
-} from '../../../client/utils/store';
+} from '../../../client/utils/store/signInStore';
 import { AuthError } from '../../../errors/AuthError';
 import {
 	getNewDeviceMetadata,
@@ -120,7 +119,7 @@ export async function confirmSignIn(
 				}),
 				signInDetails,
 			});
-			cleanActiveSignInState();
+			signInStore.dispatch({ type: 'RESET_STATE' });
 
 			await dispatchSignedInHubEvent();
 

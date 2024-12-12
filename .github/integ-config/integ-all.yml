@@ -609,6 +609,20 @@ tests:
     sample_name: [subdomains]
     spec: subdomains
     browser: [chrome]
+  - test_name: integ_next_custom_auth
+    desc: 'Sign-in with Custom Auth flow'
+    framework: next
+    category: auth
+    sample_name: [custom-auth]
+    spec: custom-auth
+    browser: *minimal_browser_list
+  - test_name: integ_next_auth_sign_in_with_sms_mfa
+    desc: 'Resumable sign in with SMS MFA flow'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: sign-in-resumable-mfa
+    browser: [chrome]
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
