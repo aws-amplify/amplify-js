@@ -41,7 +41,7 @@ export function generateClient<T extends Record<any, any> = never>(
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
 		[__authToken]: params.authToken,
-		[__endpoint]: params.endpoint,
+		[__endpoint]: 'endpoint' in params ? params.endpoint : undefined,
 		[__headers]: params.headers,
 		graphql,
 		cancel,
@@ -55,7 +55,7 @@ export function generateClient<T extends Record<any, any> = never>(
 
 	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
 
-	if (!params.endpoint) {
+	if (!client[__endpoint]) {
 		if (isApiGraphQLConfig(apiGraphqlConfig)) {
 			addSchemaToClient(client, apiGraphqlConfig, getInternals);
 		} else {

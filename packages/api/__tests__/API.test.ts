@@ -1,13 +1,21 @@
-import { ResourcesConfig } from 'aws-amplify';
+import { Amplify, ResourcesConfig } from 'aws-amplify';
 import { GraphQLAPI } from '@aws-amplify/api-graphql';
 import { generateClient, CONNECTION_STATE_CHANGE } from '@aws-amplify/api';
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { Observable } from 'rxjs';
+import { decodeJWT } from '@aws-amplify/core';
 
 const API_KEY = 'FAKE-KEY';
+const CUSTOM_API_KEY = 'CUSTOM-API-KEY';
 
 const DEFAULT_ENDPOINT = 'https://a-default-appsync-endpoint.local/graphql';
 const CUSTOM_ENDPOINT = 'https://a-custom-appsync-endpoint.local/graphql';
+
+/**
+ * Valid JWT string, borrowed from Auth tests
+ */
+const JWT_STRING =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
 
 const _postSpy = jest.spyOn((GraphQLAPI as any)._api, 'post');
 const _subspy = jest.spyOn((GraphQLAPI as any).appSyncRealTime, 'subscribe');
@@ -155,8 +163,8 @@ describe.skip('API generateClient', () => {
 
 describe.only('Custom Endpoints', () => {
 	beforeEach(() => {
-		jest.spyOn(AmplifyClassV6.prototype, 'getConfig').mockImplementation(() => {
-			return {
+		Amplify.configure(
+			{
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -165,8 +173,36 @@ describe.only('Custom Endpoints', () => {
 						region: 'north-pole-7',
 					},
 				},
-			};
-		});
+				Auth: {
+					Cognito: {
+						userPoolId: 'north-pole-7:santas-little-helpers',
+						identityPoolId: 'north-pole-7:santas-average-sized-helpers',
+						userPoolClientId: 'the-mrs-claus-oversight-committee',
+					},
+				},
+			},
+			{
+				Auth: {
+					credentialsProvider: {
+						getCredentialsAndIdentityId: async arg => ({
+							credentials: {
+								accessKeyId: 'accessKeyIdValue',
+								secretAccessKey: 'secretAccessKeyValue',
+								sessionToken: 'sessionTokenValue',
+								expiration: new Date(123),
+							},
+							identityId: 'mrs-clause-naturally',
+						}),
+						clearCredentialsAndIdentityId: async () => {},
+					},
+					tokenProvider: {
+						getTokens: async () => ({
+							accessToken: decodeJWT(JWT_STRING),
+						}),
+					},
+				},
+			},
+		);
 		_postSpy.mockReturnValue({
 			body: {
 				json() {
@@ -247,9 +283,10 @@ describe.only('Custom Endpoints', () => {
 			});
 		});
 
-		test(`client { endpoint: Y, authMode: N } + ${opType} { authMode: N } -> none (defaulted)`, async () => {
+		test.only(`client { endpoint: Y, authMode: N } + ${opType} { authMode: N } -> none (defaulted)`, async () => {
 			const client = generateClient({
 				endpoint: CUSTOM_ENDPOINT,
+				authMode: 'lambda',
 			});
 
 			await client.graphql({
@@ -265,6 +302,7 @@ describe.only('Custom Endpoints', () => {
 		test(`client { endpoint: Y, authMode: N } + ${opType} { authMode: Y } -> op.authMode`, async () => {
 			const client = generateClient({
 				endpoint: CUSTOM_ENDPOINT,
+				authMode: 'lambda',
 			});
 
 			await client.graphql({
@@ -282,6 +320,7 @@ describe.only('Custom Endpoints', () => {
 			const client = generateClient({
 				endpoint: CUSTOM_ENDPOINT,
 				authMode: 'apiKey',
+				apiKey: CUSTOM_API_KEY,
 			});
 
 			await client.graphql({
@@ -291,6 +330,7 @@ describe.only('Custom Endpoints', () => {
 			expectOp({
 				endpoint: CUSTOM_ENDPOINT,
 				withApiKey: true, // from client.authMode = apiKey
+				apiKey: CUSTOM_API_KEY,
 			});
 		});
 

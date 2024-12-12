@@ -16,9 +16,23 @@ export type ClientGenerationParams = {
 /**
  * Common options that can be used on public `generateClient()` interfaces.
  */
-export interface CommonPublicClientOptions {
-	authMode?: GraphQLAuthMode;
-	authToken?: string;
-	headers?: CustomHeaders;
-	endpoint?: string;
-}
+export type CommonPublicClientOptions =
+	| {
+			endpoint?: never;
+			authMode?: GraphQLAuthMode;
+			authToken?: string;
+			headers?: CustomHeaders;
+	  }
+	| {
+			endpoint: string;
+			authMode: 'apiKey';
+			apiKey: string;
+			authToken?: string;
+			headers?: CustomHeaders;
+	  }
+	| {
+			endpoint: string;
+			authMode: Exclude<GraphQLAuthMode, 'apiKey'>;
+			authToken?: string;
+			headers?: CustomHeaders;
+	  };
