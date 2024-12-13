@@ -5,7 +5,17 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { Observable } from 'rxjs';
 import { decodeJWT } from '@aws-amplify/core';
 
-const API_KEY = 'FAKE-KEY';
+type AuthMode =
+	| 'apiKey'
+	| 'oidc'
+	| 'userPool'
+	| 'iam'
+	| 'identityPool'
+	| 'lambda'
+	| 'none';
+
+const DEFAULT_AUTH_MODE = 'apiKey';
+const DEFAULT_API_KEY = 'FAKE-KEY';
 const CUSTOM_API_KEY = 'CUSTOM-API-KEY';
 
 const DEFAULT_ENDPOINT = 'https://a-default-appsync-endpoint.local/graphql';
@@ -14,82 +24,160 @@ const CUSTOM_ENDPOINT = 'https://a-custom-appsync-endpoint.local/graphql';
 /**
  * Valid JWT string, borrowed from Auth tests
  */
-const JWT_STRING =
+const DEFAULT_AUTH_TOKEN =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
 
 const _postSpy = jest.spyOn((GraphQLAPI as any)._api, 'post');
 const _subspy = jest.spyOn((GraphQLAPI as any).appSyncRealTime, 'subscribe');
 
 /**
- * Validates that a "post" occurred (against `_postSpy`) to the given endpoint URL
- * specifically with or without the given `apiKey` (defaults to globally configured
- * `API_KEY`) depending on the given `withApiKey` argument.
+ * Validates that a specific "post" occurred (against `_postSpy`).
  *
  * @param options
  */
 function expectPost({
 	endpoint,
-	withApiKey,
-	apiKey = API_KEY,
+	authMode,
+	apiKey,
+	authToken,
 }: {
 	endpoint: string;
-	withApiKey: boolean;
-	apiKey?: string;
+	authMode: AuthMode;
+	apiKey: string | undefined;
+	authToken: string | undefined;
 }) {
+	if (authMode === 'apiKey') expect(apiKey).not.toBeFalsy(); // sanity check
 	expect(_postSpy).toHaveBeenCalledWith(
 		expect.anything(), // amplify instance
 		expect.objectContaining({
-			options: expect.objectContaining({
-				headers: withApiKey
-					? expect.objectContaining({
-							'X-Api-Key': apiKey,
-						})
-					: expect.not.objectContaining({
-							'X-Api-Key': apiKey,
-						}),
-			}),
 			// `url` is an instance of `URL`
 			url: expect.objectContaining({
 				href: endpoint,
 			}),
 		}),
 	);
+	expect(_postSpy).toHaveBeenCalledWith(
+		expect.anything(), // amplify instance
+		expect.objectContaining({
+			options: expect.objectContaining({
+				headers:
+					authMode === 'apiKey'
+						? expect.objectContaining({
+								'X-Api-Key': apiKey,
+							})
+						: expect.not.objectContaining({
+								'X-Api-Key': expect.anything(),
+							}),
+			}),
+		}),
+	);
+	expect(_postSpy).toHaveBeenCalledWith(
+		expect.anything(), // amplify instance
+		expect.objectContaining({
+			options: expect.objectContaining({
+				headers: ['oidc', 'userPool', 'lambda'].includes(authMode)
+					? expect.objectContaining({
+							Authorization: authToken || DEFAULT_AUTH_TOKEN,
+						})
+					: expect.not.objectContaining({
+							Authorization: expect.anything(),
+						}),
+			}),
+		}),
+	);
 }
 
 /**
- * Validates that a "post" occurred (against `_postSpy`) to the given endpoint URL
- * specifically with or without the given `apiKey` (defaults to globally configured
- * `API_KEY`) depending on the given `withApiKey` argument.
+ * Validates that a specific subscription occurred (against `_subSpy`).
  *
  * @param options
  */
 function expectSubscription({
 	endpoint,
-	withApiKey,
-	apiKey = API_KEY,
+	authMode,
+	apiKey,
+	authToken,
 }: {
 	endpoint: string;
-	withApiKey: boolean;
-	apiKey?: string;
+	authMode: AuthMode;
+	apiKey: string | undefined;
+	authToken: string | undefined;
 }) {
+	if (authMode === 'apiKey') expect(apiKey).not.toBeFalsy(); // sanity check
+
+	// `authMode` is provided to subs, which then determine how to handle it.
+	// subs always receives `apiKey`, because `.graphql()` determines which to use.
+	// subs only receive `authMode` when it is provided to `generateClient()` or
+	// `.graphql()` directly.
 	expect(_subspy).toHaveBeenCalledWith(
 		expect.objectContaining({
 			appSyncGraphqlEndpoint: endpoint,
+			authenticationType: authMode,
+			authToken,
+			apiKey,
 		}),
 		expect.anything(),
 	);
+}
 
-	if (apiKey) {
-		expect(_subspy).toHaveBeenCalledWith(
-			expect.objectContaining({ apiKey }),
-			expect.anything(),
-		);
-	} else {
-		expect(_subspy).toHaveBeenCalledWith(
-			expect.not.objectContaining({ apiKey }),
-			expect.anything(),
-		);
-	}
+/**
+ * Validates that a specific operation was submitted to the correct underlying
+ * execution mechanism (post or AppSyncRealtime).
+ *
+ * ---
+ *
+ * ## IMPORTANT!
+ *
+ * ### You MUST omit `authToken` in most cases.
+ *
+ * Like this:
+ *
+ * ```ts
+ * expectOp({
+ * 	// ...
+ * 	authToken: undefined,  // or omit entirely
+ * })
+ * ```
+ *
+ * *(This is due to difference in the way queries/subs mocks are handled, which is
+ * done the way it is to avoid mocking the deep guts of AppSyncRealtime.)*
+ *
+ * ---
+ *
+ * ### When *should* you provide `authToken`?
+ *
+ * When it has been provided to either `generateClient()` or `client.graphql()` directly.
+ *
+ * ```ts
+ * // like this
+ * const client = generateClient({ authToken: SOME_TOKEN }
+ *
+ * // or this
+ * client.graphql({
+ * 	// ...
+ * 	authToken: SOME_TOKEN
+ * })
+ * ```
+ *
+ * Otherwise, `expectOp` will use the config-mocked `authToken` appropriately.
+ *
+ * @param param0
+ */
+function expectOp({
+	op,
+	endpoint,
+	authMode,
+	apiKey,
+	authToken,
+}: {
+	op: 'subscription' | 'query';
+	endpoint: string;
+	authMode: AuthMode;
+	apiKey: string | undefined;
+	authToken?: string | undefined;
+}) {
+	const expecto = op === 'subscription' ? expectSubscription : expectPost;
+	expecto({ endpoint, authMode, apiKey, authToken }); // test pass ... umm ...
 }
 
 describe.skip('API generateClient', () => {
@@ -167,8 +255,8 @@ describe.only('Custom Endpoints', () => {
 			{
 				API: {
 					GraphQL: {
-						defaultAuthMode: 'apiKey',
-						apiKey: API_KEY,
+						defaultAuthMode: DEFAULT_AUTH_MODE,
+						apiKey: DEFAULT_API_KEY,
 						endpoint: DEFAULT_ENDPOINT,
 						region: 'north-pole-7',
 					},
@@ -197,7 +285,7 @@ describe.only('Custom Endpoints', () => {
 					},
 					tokenProvider: {
 						getTokens: async () => ({
-							accessToken: decodeJWT(JWT_STRING),
+							accessToken: decodeJWT(DEFAULT_AUTH_TOKEN),
 						}),
 					},
 				},
@@ -223,8 +311,7 @@ describe.only('Custom Endpoints', () => {
 		jest.resetAllMocks();
 	});
 
-	for (const op of ['query', 'subscription']) {
-		const expectOp = op === 'subscription' ? expectSubscription : expectPost;
+	for (const op of ['query', 'subscription'] as const) {
 		const opType = op === 'subscription' ? 'sub' : 'qry';
 
 		test(`client { endpoint: N, authMode: N } + ${opType} { authMode: N } -> config.authMode`, async () => {
@@ -233,8 +320,11 @@ describe.only('Custom Endpoints', () => {
 			await client.graphql({ query: `${op} A { queryA { a b c } }` });
 
 			expectOp({
+				op,
 				endpoint: DEFAULT_ENDPOINT,
-				withApiKey: true,
+				authMode: DEFAULT_AUTH_MODE,
+				apiKey: DEFAULT_API_KEY,
+				authToken: undefined,
 			});
 		});
 
@@ -247,8 +337,11 @@ describe.only('Custom Endpoints', () => {
 			});
 
 			expectOp({
+				op,
 				endpoint: DEFAULT_ENDPOINT,
-				withApiKey: false, // from op.authMode = none
+				authMode: 'none',
+				apiKey: DEFAULT_API_KEY,
+				authToken: undefined,
 			});
 		});
 
@@ -262,8 +355,11 @@ describe.only('Custom Endpoints', () => {
 			});
 
 			expectOp({
+				op,
 				endpoint: DEFAULT_ENDPOINT,
-				withApiKey: false, // from client.authMode = none
+				authMode: 'none',
+				apiKey: DEFAULT_API_KEY,
+				authToken: undefined,
 			});
 		});
 
@@ -278,15 +374,18 @@ describe.only('Custom Endpoints', () => {
 			});
 
 			expectOp({
+				op,
 				endpoint: DEFAULT_ENDPOINT,
-				withApiKey: false, // from op.authMode = none
+				authMode: 'none',
+				apiKey: DEFAULT_API_KEY,
+				authToken: undefined,
 			});
 		});
 
-		test.only(`client { endpoint: Y, authMode: N } + ${opType} { authMode: N } -> none (defaulted)`, async () => {
+		test(`client { endpoint: Y, authMode: N } + ${opType} { authMode: N } -> none (defaulted)`, async () => {
 			const client = generateClient({
 				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'lambda',
+				authMode: 'userPool',
 			});
 
 			await client.graphql({
@@ -294,25 +393,32 @@ describe.only('Custom Endpoints', () => {
 			});
 
 			expectOp({
+				op,
 				endpoint: CUSTOM_ENDPOINT,
-				withApiKey: false, // from client.endpoint -> default = none
+				authMode: 'userPool',
+				apiKey: DEFAULT_API_KEY,
+				authToken: undefined,
 			});
 		});
 
 		test(`client { endpoint: Y, authMode: N } + ${opType} { authMode: Y } -> op.authMode`, async () => {
 			const client = generateClient({
 				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'lambda',
+				authMode: 'apiKey',
+				apiKey: CUSTOM_API_KEY,
 			});
 
 			await client.graphql({
 				query: `${op} A { queryA { a b c } }`,
-				authMode: 'apiKey',
+				authMode: 'userPool',
 			});
 
 			expectOp({
+				op,
 				endpoint: CUSTOM_ENDPOINT,
-				withApiKey: true, // from op.authMode = apiKey
+				authMode: 'userPool',
+				apiKey: CUSTOM_API_KEY,
+				authToken: undefined,
 			});
 		});
 
@@ -328,9 +434,11 @@ describe.only('Custom Endpoints', () => {
 			});
 
 			expectOp({
+				op,
 				endpoint: CUSTOM_ENDPOINT,
-				withApiKey: true, // from client.authMode = apiKey
+				authMode: 'apiKey',
 				apiKey: CUSTOM_API_KEY,
+				authToken: undefined,
 			});
 		});
 
@@ -346,8 +454,11 @@ describe.only('Custom Endpoints', () => {
 			});
 
 			expectOp({
+				op,
 				endpoint: CUSTOM_ENDPOINT,
-				withApiKey: true, // from op.authMode = apiKey
+				authMode: 'apiKey',
+				apiKey: DEFAULT_API_KEY,
+				authToken: undefined,
 			});
 		});
 	}

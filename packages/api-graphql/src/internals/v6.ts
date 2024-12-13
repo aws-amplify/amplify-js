@@ -106,9 +106,13 @@ export function graphql<
 	const internals = getInternals(this as any);
 
 	/**
-	 * The custom `endpoint` (or `undefined`) specific to `generateClient()`.
+	 * The custom `endpoint` + `apiKey` (or `undefined`) specific to `generateClient()`.
+	 *
+	 * Q: Can we safely add these to the internals type and remove the cast? Or, does this
+	 * force updates to the data-schema package?
 	 */
 	const clientEndpoint: string = (internals as any).endpoint;
+	options.apiKey = options.apiKey ?? (internals as any).apiKey;
 
 	/**
 	 * The `authMode` requested by the generated client.

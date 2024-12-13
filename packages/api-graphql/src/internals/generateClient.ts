@@ -13,6 +13,7 @@ import {
 import {
 	V6Client,
 	__amplify,
+	__apiKey,
 	__authMode,
 	__authToken,
 	__endpoint,
@@ -41,6 +42,7 @@ export function generateClient<T extends Record<any, any> = never>(
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
 		[__authToken]: params.authToken,
+		[__apiKey]: 'apiKey' in params ? params.apiKey : undefined,
 		[__endpoint]: 'endpoint' in params ? params.endpoint : undefined,
 		[__headers]: params.headers,
 		graphql,

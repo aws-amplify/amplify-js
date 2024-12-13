@@ -35,6 +35,7 @@ export interface GraphQLOptions {
 	variables?: Record<string, DocumentType>;
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
+	apiKey?: string;
 	/**
 	 * @deprecated This property should not be used
 	 */
@@ -217,6 +218,7 @@ export interface GraphQLOptionsV6<
 	query: TYPED_GQL_STRING | DocumentNode;
 	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 	authMode?: GraphQLAuthMode;
+	apiKey?: string;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used
@@ -370,6 +372,7 @@ export type GeneratedSubscription<InputType, OutputType> = string & {
 export const __amplify = Symbol('amplify');
 export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
+export const __apiKey = Symbol('apiKey');
 export const __headers = Symbol('headers');
 export const __endpoint = Symbol('endpoint');
 
@@ -378,6 +381,7 @@ export function getInternals(client: BaseClient): ClientInternals {
 
 	return {
 		amplify: c[__amplify],
+		apiKey: c[__apiKey],
 		authMode: c[__authMode],
 		authToken: c[__authToken],
 		endpoint: c[__endpoint],

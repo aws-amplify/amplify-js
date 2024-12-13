@@ -94,6 +94,7 @@ export class InternalGraphQLAPIClass {
 			authMode,
 			authToken,
 			endpoint,
+			apiKey,
 		}: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails,
@@ -121,7 +122,7 @@ export class InternalGraphQLAPIClass {
 				if (isAmplifyInstance(amplify)) {
 					responsePromise = this._graphql<T>(
 						amplify,
-						{ query, variables, authMode, endpoint },
+						{ query, variables, authMode, apiKey, endpoint },
 						headers,
 						abortController,
 						customUserAgentDetails,
@@ -133,7 +134,7 @@ export class InternalGraphQLAPIClass {
 					const wrapper = async (amplifyInstance: AmplifyClassV6) => {
 						const result = await this._graphql<T>(
 							amplifyInstance,
-							{ query, variables, authMode, endpoint },
+							{ query, variables, authMode, apiKey, endpoint },
 							headers,
 							abortController,
 							customUserAgentDetails,
@@ -158,7 +159,7 @@ export class InternalGraphQLAPIClass {
 			case 'subscription':
 				return this._graphqlSubscribe(
 					amplify as AmplifyClassV6,
-					{ query, variables, authMode, endpoint },
+					{ query, variables, authMode, apiKey, endpoint },
 					headers,
 					customUserAgentDetails,
 					authToken,
@@ -173,8 +174,9 @@ export class InternalGraphQLAPIClass {
 		{
 			query,
 			variables,
-			authMode: explicitAuthMode,
+			authMode: authModeOverride,
 			endpoint: endpointOverride,
+			apiKey: apiKeyOverride,
 		}: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
@@ -190,7 +192,7 @@ export class InternalGraphQLAPIClass {
 			defaultAuthMode,
 		} = resolveConfig(amplify);
 
-		const initialAuthMode = explicitAuthMode || defaultAuthMode || 'iam';
+		const initialAuthMode = authModeOverride || defaultAuthMode || 'iam';
 		// identityPool is an alias for iam. TODO: remove 'iam' in v7
 		const authMode =
 			initialAuthMode === 'identityPool' ? 'iam' : initialAuthMode;
@@ -237,7 +239,7 @@ export class InternalGraphQLAPIClass {
 		const authHeaders = await headerBasedAuth(
 			amplify,
 			authMode,
-			apiKey,
+			apiKeyOverride ?? apiKey,
 			additionalCustomHeaders,
 		);
 
@@ -353,7 +355,13 @@ export class InternalGraphQLAPIClass {
 
 	private _graphqlSubscribe(
 		amplify: AmplifyClassV6,
-		{ query, variables, authMode: explicitAuthMode, endpoint }: GraphQLOptions,
+		{
+			query,
+			variables,
+			authMode: authModeOverride,
+			apiKey: apiKeyOverride,
+			endpoint,
+		}: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails,
 		authToken?: string,
@@ -361,7 +369,7 @@ export class InternalGraphQLAPIClass {
 		const config = resolveConfig(amplify);
 
 		const initialAuthMode =
-			explicitAuthMode || config?.defaultAuthMode || 'iam';
+			authModeOverride || config?.defaultAuthMode || 'iam';
 		// identityPool is an alias for iam. TODO: remove 'iam' in v7
 		const authMode =
 			initialAuthMode === 'identityPool' ? 'iam' : initialAuthMode;
@@ -384,7 +392,7 @@ export class InternalGraphQLAPIClass {
 					appSyncGraphqlEndpoint: endpoint ?? config?.endpoint,
 					region: config?.region,
 					authenticationType: authMode,
-					apiKey: config?.apiKey,
+					apiKey: apiKeyOverride ?? config?.apiKey,
 					additionalHeaders,
 					authToken,
 					libraryConfigHeaders,
