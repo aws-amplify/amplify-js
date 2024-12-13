@@ -38,53 +38,44 @@ const _subspy = jest.spyOn((GraphQLAPI as any).appSyncRealTime, 'subscribe');
 function expectPost({
 	endpoint,
 	authMode,
-	apiKey,
-	authToken,
+	apiKeyOverride,
+	authTokenOverride,
 }: {
 	endpoint: string;
 	authMode: AuthMode;
-	apiKey: string | undefined;
-	authToken: string | undefined;
+	apiKeyOverride: string | undefined;
+	authTokenOverride: string | undefined;
 }) {
-	if (authMode === 'apiKey') expect(apiKey).not.toBeFalsy(); // sanity check
-	expect(_postSpy).toHaveBeenCalledWith(
-		expect.anything(), // amplify instance
-		expect.objectContaining({
-			// `url` is an instance of `URL`
-			url: expect.objectContaining({
-				href: endpoint,
-			}),
-		}),
-	);
-	expect(_postSpy).toHaveBeenCalledWith(
-		expect.anything(), // amplify instance
-		expect.objectContaining({
-			options: expect.objectContaining({
-				headers:
-					authMode === 'apiKey'
-						? expect.objectContaining({
-								'X-Api-Key': apiKey,
-							})
-						: expect.not.objectContaining({
-								'X-Api-Key': expect.anything(),
-							}),
-			}),
-		}),
-	);
-	expect(_postSpy).toHaveBeenCalledWith(
-		expect.anything(), // amplify instance
-		expect.objectContaining({
-			options: expect.objectContaining({
-				headers: ['oidc', 'userPool', 'lambda'].includes(authMode)
-					? expect.objectContaining({
-							Authorization: authToken || DEFAULT_AUTH_TOKEN,
-						})
-					: expect.not.objectContaining({
-							Authorization: expect.anything(),
-						}),
-			}),
-		}),
-	);
+	// Grabbing the call and asserting on the object is significantly simpler for some
+	// of the is-unknown-or-absent types of assertions we need.
+	//
+	// It is also incidentally much simpler for most the other assertions too ...
+	//
+	const postOptions = _postSpy.mock.calls[0][1] as {
+		// just the things we care about
+		url: URL;
+		options: {
+			headers: Record<string, string>;
+		};
+	};
+
+	expect(postOptions.url.toString()).toEqual(endpoint);
+
+	if (authMode === 'apiKey') {
+		expect(postOptions.options.headers['X-Api-Key']).toEqual(
+			apiKeyOverride ?? DEFAULT_API_KEY,
+		);
+	} else {
+		expect(postOptions.options.headers['X-Api-Key']).toBeUndefined();
+	}
+
+	if (['oidc', 'userPool'].includes(authMode)) {
+		expect(postOptions.options.headers['Authorization']).toEqual(
+			authTokenOverride ?? DEFAULT_AUTH_TOKEN,
+		);
+	} else {
+		expect(postOptions.options.headers['Authorization']).toBeUndefined();
+	}
 }
 
 /**
@@ -95,26 +86,27 @@ function expectPost({
 function expectSubscription({
 	endpoint,
 	authMode,
-	apiKey,
-	authToken,
+	apiKeyOverride,
+	authTokenOverride,
 }: {
 	endpoint: string;
 	authMode: AuthMode;
-	apiKey: string | undefined;
-	authToken: string | undefined;
+	apiKeyOverride: string | undefined;
+	authTokenOverride: string | undefined;
 }) {
-	if (authMode === 'apiKey') expect(apiKey).not.toBeFalsy(); // sanity check
-
-	// `authMode` is provided to subs, which then determine how to handle it.
-	// subs always receives `apiKey`, because `.graphql()` determines which to use.
-	// subs only receive `authMode` when it is provided to `generateClient()` or
-	// `.graphql()` directly.
+	// `authMode` is provided to appsync provider, which then determines how to
+	// handle auth internally.
 	expect(_subspy).toHaveBeenCalledWith(
 		expect.objectContaining({
 			appSyncGraphqlEndpoint: endpoint,
 			authenticationType: authMode,
-			authToken,
-			apiKey,
+
+			// appsync provider only receive an authToken if it has been explicitly overridden.
+			authToken: authTokenOverride,
+
+			// appsync provider already receive an apiKey.
+			// (but it should not send it unless authMode is apiKey.)
+			apiKey: apiKeyOverride ?? DEFAULT_API_KEY,
 		}),
 		expect.anything(),
 	);
@@ -124,60 +116,23 @@ function expectSubscription({
  * Validates that a specific operation was submitted to the correct underlying
  * execution mechanism (post or AppSyncRealtime).
  *
- * ---
- *
- * ## IMPORTANT!
- *
- * ### You MUST omit `authToken` in most cases.
- *
- * Like this:
- *
- * ```ts
- * expectOp({
- * 	// ...
- * 	authToken: undefined,  // or omit entirely
- * })
- * ```
- *
- * *(This is due to difference in the way queries/subs mocks are handled, which is
- * done the way it is to avoid mocking the deep guts of AppSyncRealtime.)*
- *
- * ---
- *
- * ### When *should* you provide `authToken`?
- *
- * When it has been provided to either `generateClient()` or `client.graphql()` directly.
- *
- * ```ts
- * // like this
- * const client = generateClient({ authToken: SOME_TOKEN }
- *
- * // or this
- * client.graphql({
- * 	// ...
- * 	authToken: SOME_TOKEN
- * })
- * ```
- *
- * Otherwise, `expectOp` will use the config-mocked `authToken` appropriately.
- *
  * @param param0
  */
 function expectOp({
 	op,
 	endpoint,
 	authMode,
-	apiKey,
-	authToken,
+	apiKeyOverride,
+	authTokenOverride,
 }: {
 	op: 'subscription' | 'query';
 	endpoint: string;
 	authMode: AuthMode;
-	apiKey: string | undefined;
-	authToken?: string | undefined;
+	apiKeyOverride?: string | undefined;
+	authTokenOverride?: string | undefined;
 }) {
 	const expecto = op === 'subscription' ? expectSubscription : expectPost;
-	expecto({ endpoint, authMode, apiKey, authToken }); // test pass ... umm ...
+	expecto({ endpoint, authMode, apiKeyOverride, authTokenOverride }); // test pass ... umm ...
 }
 
 describe.skip('API generateClient', () => {
@@ -323,8 +278,6 @@ describe.only('Custom Endpoints', () => {
 				op,
 				endpoint: DEFAULT_ENDPOINT,
 				authMode: DEFAULT_AUTH_MODE,
-				apiKey: DEFAULT_API_KEY,
-				authToken: undefined,
 			});
 		});
 
@@ -340,8 +293,6 @@ describe.only('Custom Endpoints', () => {
 				op,
 				endpoint: DEFAULT_ENDPOINT,
 				authMode: 'none',
-				apiKey: DEFAULT_API_KEY,
-				authToken: undefined,
 			});
 		});
 
@@ -358,8 +309,6 @@ describe.only('Custom Endpoints', () => {
 				op,
 				endpoint: DEFAULT_ENDPOINT,
 				authMode: 'none',
-				apiKey: DEFAULT_API_KEY,
-				authToken: undefined,
 			});
 		});
 
@@ -377,8 +326,6 @@ describe.only('Custom Endpoints', () => {
 				op,
 				endpoint: DEFAULT_ENDPOINT,
 				authMode: 'none',
-				apiKey: DEFAULT_API_KEY,
-				authToken: undefined,
 			});
 		});
 
@@ -396,8 +343,6 @@ describe.only('Custom Endpoints', () => {
 				op,
 				endpoint: CUSTOM_ENDPOINT,
 				authMode: 'userPool',
-				apiKey: DEFAULT_API_KEY,
-				authToken: undefined,
 			});
 		});
 
@@ -417,8 +362,7 @@ describe.only('Custom Endpoints', () => {
 				op,
 				endpoint: CUSTOM_ENDPOINT,
 				authMode: 'userPool',
-				apiKey: CUSTOM_API_KEY,
-				authToken: undefined,
+				apiKeyOverride: CUSTOM_API_KEY,
 			});
 		});
 
@@ -437,8 +381,7 @@ describe.only('Custom Endpoints', () => {
 				op,
 				endpoint: CUSTOM_ENDPOINT,
 				authMode: 'apiKey',
-				apiKey: CUSTOM_API_KEY,
-				authToken: undefined,
+				apiKeyOverride: CUSTOM_API_KEY,
 			});
 		});
 
@@ -457,8 +400,6 @@ describe.only('Custom Endpoints', () => {
 				op,
 				endpoint: CUSTOM_ENDPOINT,
 				authMode: 'apiKey',
-				apiKey: DEFAULT_API_KEY,
-				authToken: undefined,
 			});
 		});
 	}
