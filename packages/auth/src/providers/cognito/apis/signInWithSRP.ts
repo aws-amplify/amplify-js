@@ -120,6 +120,7 @@ export async function signInWithSRP(
 		});
 	} catch (error) {
 		signInStore.dispatch({ type: 'RESET_STATE' });
+		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;
