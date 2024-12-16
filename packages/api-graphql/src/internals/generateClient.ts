@@ -35,9 +35,13 @@ import { ClientGenerationParams } from './types';
  * @param params
  * @returns
  */
-export function generateClient<T extends Record<any, any> = never>(
-	params: ClientGenerationParams,
-): V6Client<T> {
+export function generateClient<
+	T extends Record<any, any> = never,
+	WithCustomEndpoint extends boolean = false,
+	WithApiKey extends boolean = false,
+>(
+	params: ClientGenerationParams<WithCustomEndpoint, WithApiKey>,
+): V6Client<T, WithCustomEndpoint, WithApiKey> {
 	const client = {
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,

@@ -33,14 +33,26 @@ import {
  *   }),
  * });
  */
-export function generateClient<T extends Record<any, any> = never>({
+export function generateClient<
+	T extends Record<any, any> = never,
+	WithCustomEndpoint extends boolean = false,
+	WithApiKey extends boolean = false,
+>({
 	config,
 	authMode,
 	authToken,
-}: GenerateServerClientParams): V6ClientSSRRequest<T> {
+}: GenerateServerClientParams<
+	WithCustomEndpoint,
+	WithApiKey
+>): V6ClientSSRRequest<T, WithCustomEndpoint, WithApiKey> {
 	// passing `null` instance because each (future model) method must retrieve a valid instance
 	// from server context
-	const client = generateClientWithAmplifyInstance<T, V6ClientSSRRequest<T>>({
+	const client = generateClientWithAmplifyInstance<
+		T,
+		any,
+		any,
+		V6ClientSSRRequest<T, any, any>
+	>({
 		amplify: null,
 		config,
 		authMode,
@@ -48,7 +60,10 @@ export function generateClient<T extends Record<any, any> = never>({
 	});
 
 	// TODO: improve this and the next type
-	const prevGraphql = client.graphql as unknown as GraphQLMethod;
+	const prevGraphql = client.graphql as unknown as GraphQLMethod<
+		WithCustomEndpoint,
+		WithApiKey
+	>;
 
 	const wrappedGraphql = (
 		contextSpec: AmplifyServer.ContextSpec,
@@ -59,12 +74,15 @@ export function generateClient<T extends Record<any, any> = never>({
 
 		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },
-			options,
+			options as any,
 			additionalHeaders as any,
 		);
 	};
 
-	client.graphql = wrappedGraphql as unknown as GraphQLMethodSSR;
+	client.graphql = wrappedGraphql as unknown as GraphQLMethodSSR<
+		WithCustomEndpoint,
+		WithApiKey
+	>;
 
 	return client;
 }

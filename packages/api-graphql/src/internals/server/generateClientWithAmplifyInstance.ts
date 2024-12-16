@@ -9,8 +9,10 @@ import {
 	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 	__amplify,
+	__apiKey,
 	__authMode,
 	__authToken,
+	__endpoint,
 	__headers,
 	getInternals,
 } from '../../types';
@@ -30,16 +32,25 @@ import { cancel, graphql, isCancelError } from '..';
  */
 export function generateClientWithAmplifyInstance<
 	T extends Record<any, any> = never,
+	WithCustomEndpoint extends boolean = false,
+	WithApiKey extends boolean = false,
 	ClientType extends
-		| V6ClientSSRRequest<T>
-		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>,
+		| V6ClientSSRRequest<T, WithCustomEndpoint, WithApiKey>
+		| V6ClientSSRCookies<
+				T,
+				WithCustomEndpoint,
+				WithApiKey
+		  > = V6ClientSSRCookies<T, WithCustomEndpoint, WithApiKey>,
 >(
-	params: ServerClientGenerationParams & CommonPublicClientOptions,
+	params: ServerClientGenerationParams &
+		CommonPublicClientOptions<WithCustomEndpoint, WithApiKey>,
 ): ClientType {
 	const client = {
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
 		[__authToken]: params.authToken,
+		[__apiKey]: 'apiKey' in params ? params.apiKey : undefined,
+		[__endpoint]: 'endpoint' in params ? params.endpoint : undefined,
 		[__headers]: params.headers,
 		graphql,
 		cancel,
@@ -48,7 +59,7 @@ export function generateClientWithAmplifyInstance<
 
 	const apiGraphqlConfig = params.config?.API?.GraphQL;
 
-	if (isApiGraphQLConfig(apiGraphqlConfig)) {
+	if (!client[__endpoint] && isApiGraphQLConfig(apiGraphqlConfig)) {
 		addSchemaToClientWithInstance<T>(client, params, getInternals);
 	}
 

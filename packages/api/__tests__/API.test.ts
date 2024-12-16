@@ -388,19 +388,30 @@ describe.only('Custom Endpoints', () => {
 		test(`client { endpoint: Y, authMode: Y } + ${opType} { authMode: Y } -> op.authMode`, async () => {
 			const client = generateClient({
 				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'none',
+				authMode: 'userPool',
 			});
 
 			await client.graphql({
 				query: `${op} A { queryA { a b c } }`,
 				authMode: 'apiKey',
-			});
+				apiKey: CUSTOM_API_KEY
+			})
 
 			expectOp({
 				op,
 				endpoint: CUSTOM_ENDPOINT,
 				authMode: 'apiKey',
+				apiKeyOverride: CUSTOM_API_KEY
 			});
 		});
 	}
 });
+
+
+// // because the client has an `endpoint` but no `apiKey`, using `apiKey` auth
+// // in `.graphql()` also requires `apiKey` to be specified in the call
+// // @ts-expect-error
+// await client.graphql({
+// 	query: `${op} A { queryA { a b c } }`,
+// 	authMode: 'apiKey',
+// });
