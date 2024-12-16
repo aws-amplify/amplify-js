@@ -48,8 +48,8 @@ jobs:
         run: |
           cp credentials-auth.spec.js new-react-app.spec.js
         working-directory: amplify-js-samples-staging/cypress/integration/auth
-      - name: Install amplify
-        run: npm install amplify
+      - name: Install dependencies
+        run: npm install
         working-directory: amplify-js-samples-staging/samples/react/auth/new-react-app
       - name: Start new application and run test
         run: |
@@ -114,7 +114,7 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
       - name: Copy files from samples staging repo
         run: |
-          rm -r ./samples/next/auth/new-next-app 
+          rm -r ./samples/next/auth/new-next-app
           cp -r ./samples/next/auth/auth-rsc ./samples/next/auth/new-next-app
         working-directory: amplify-js-samples-staging
       - name: Copy test file from samples staging repo
@@ -123,11 +123,6 @@ jobs:
         working-directory: amplify-js-samples-staging/cypress/integration/auth
       - name: Install dependencies
         run: npm install
-        working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
-      - name: Install amplify
-        run: |
-          npm install -g npm@latest
-          npm install aws-amplify -legacy-peer-deps
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
       - name: Start application and run test
         run: |
@@ -194,7 +189,7 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/javascript/datastore/new-javascript-app
       - name: Copy files from samples staging repo
         run: |
-          rm -r ./samples/javascript/datastore/new-javascript-app 
+          rm -r ./samples/javascript/datastore/new-javascript-app
           cp -r ./samples/javascript/datastore/basic-crud ./samples/javascript/datastore/new-javascript-app
         working-directory: amplify-js-samples-staging
       - name: Copy test file from samples staging repo
