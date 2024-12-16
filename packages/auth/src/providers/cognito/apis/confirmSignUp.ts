@@ -12,16 +12,15 @@ import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { ConfirmSignUpException } from '../types/errors';
-import { confirmSignUp as confirmSignUpClient } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { AutoSignInEventData } from '../types/models';
-import {
-	isAutoSignInStarted,
-	isAutoSignInUserUsingConfirmSignUp,
-	setAutoSignInStarted,
-} from '../utils/signUpHelpers';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getUserContextData } from '../utils/userContextData';
+import { createConfirmSignUpClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
+import { autoSignInStore } from '../../../client/utils/store';
+
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Confirms a new user account.
@@ -41,7 +40,7 @@ export async function confirmSignUp(
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { userPoolId, userPoolClientId } = authConfig;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig;
 	const clientMetadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
@@ -58,9 +57,15 @@ export async function confirmSignUp(
 		userPoolClientId,
 	});
 
-	await confirmSignUpClient(
+	const confirmSignUpClient = createConfirmSignUpClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
+	const { Session: session } = await confirmSignUpClient(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegionFromUserPoolId(authConfig.userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignUp),
 		},
 		{
@@ -81,15 +86,19 @@ export async function confirmSignUp(
 					signUpStep: 'DONE',
 				},
 			};
+			const autoSignInStoreState = autoSignInStore.getState();
 
 			if (
-				!isAutoSignInStarted() ||
-				!isAutoSignInUserUsingConfirmSignUp(username)
+				!autoSignInStoreState.active ||
+				autoSignInStoreState.username !== username
 			) {
 				resolve(signUpOut);
+				resetAutoSignIn();
 
 				return;
 			}
+
+			autoSignInStore.dispatch({ type: 'SET_SESSION', value: session });
 
 			const stopListener = HubInternal.listen<AutoSignInEventData>(
 				'auth-internal',
@@ -102,7 +111,6 @@ export async function confirmSignUp(
 									signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 								},
 							});
-							setAutoSignInStarted(false);
 							stopListener();
 					}
 				},

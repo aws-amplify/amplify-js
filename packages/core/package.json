@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "6.3.4",
+	"version": "6.7.3",
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -60,7 +60,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/react-native": "1.1.2",
+		"@aws-amplify/react-native": "1.1.6",
 		"@types/js-cookie": "3.0.2",
 		"genversion": "^2.2.0",
 		"typescript": "5.0.2"
@@ -82,13 +82,13 @@
 			"name": "Custom clients (fetch handler)",
 			"path": "./dist/esm/clients/handlers/fetch.mjs",
 			"import": "{ fetchTransferHandler }",
-			"limit": "500 B"
+			"limit": "575 B"
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
 			"path": "./dist/esm/clients/handlers/unauthenticated.mjs",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "1 kB"
+			"limit": "1.15 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
@@ -106,7 +106,7 @@
 			"name": "Cache (default browser storage)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Cache }",
-			"limit": "3.3 kB"
+			"limit": "3.4 kB"
 		}
 	],
 	"exports": {

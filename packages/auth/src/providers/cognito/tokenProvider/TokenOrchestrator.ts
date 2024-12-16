@@ -9,6 +9,7 @@ import {
 } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
+	AmplifyErrorCode,
 	assertTokenProviderConfig,
 	isBrowser,
 	isTokenExpired,
@@ -25,6 +26,7 @@ import {
 	AuthTokenStore,
 	CognitoAuthTokens,
 	DeviceMetadata,
+	OAuthMetadata,
 	TokenRefresher,
 } from './types';
 
@@ -168,7 +170,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	private handleErrors(err: unknown) {
 		assertServiceError(err);
-		if (err.message !== 'Network error') {
+		if (err.name !== AmplifyErrorCode.NetworkError) {
 			// TODO(v6): Check errors on client
 			this.clearTokens();
 		}
@@ -202,5 +204,13 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	clearDeviceMetadata(username?: string): Promise<void> {
 		return this.getTokenStore().clearDeviceMetadata(username);
+	}
+
+	setOAuthMetadata(metadata: OAuthMetadata): Promise<void> {
+		return this.getTokenStore().setOAuthMetadata(metadata);
+	}
+
+	getOAuthMetadata(): Promise<OAuthMetadata | null> {
+		return this.getTokenStore().getOAuthMetadata();
 	}
 }

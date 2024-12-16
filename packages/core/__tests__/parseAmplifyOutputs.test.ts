@@ -133,6 +133,7 @@ describe('parseAmplifyOutputs tests', () => {
 					unauthenticated_identities_enabled: true,
 					mfa_configuration: 'OPTIONAL',
 					mfa_methods: ['SMS'],
+					groups: [{ ADMIN: { precedence: 0 }, USER: { precedence: 0 } }],
 				},
 			};
 
@@ -174,6 +175,7 @@ describe('parseAmplifyOutputs tests', () => {
 								scopes: ['profile', '...'],
 							},
 						},
+						groups: [{ ADMIN: { precedence: 0 }, USER: { precedence: 0 } }],
 					},
 				},
 			});
@@ -225,6 +227,124 @@ describe('parseAmplifyOutputs tests', () => {
 					S3: {
 						bucket: 'storage-bucket-test',
 						region: 'us-west-2',
+					},
+				},
+			});
+		});
+		it('should parse storage multi bucket', () => {
+			const amplifyOutputs: AmplifyOutputs = {
+				version: '1',
+				storage: {
+					aws_region: 'us-west-2',
+					bucket_name: 'storage-bucket-test',
+					buckets: [
+						{
+							name: 'default-bucket',
+							bucket_name: 'storage-bucket-test',
+							aws_region: 'us-west-2',
+						},
+						{
+							name: 'bucket-2',
+							bucket_name: 'storage-bucket-test-2',
+							aws_region: 'us-west-2',
+						},
+					],
+				},
+			};
+
+			const result = parseAmplifyOutputs(amplifyOutputs);
+
+			expect(result).toEqual({
+				Storage: {
+					S3: {
+						bucket: 'storage-bucket-test',
+						region: 'us-west-2',
+						buckets: {
+							'bucket-2': {
+								bucketName: 'storage-bucket-test-2',
+								region: 'us-west-2',
+							},
+							'default-bucket': {
+								bucketName: 'storage-bucket-test',
+								region: 'us-west-2',
+							},
+						},
+					},
+				},
+			});
+		});
+		it('should throw for storage multi bucket parsing with same friendly name', () => {
+			const amplifyOutputs: AmplifyOutputs = {
+				version: '1',
+				storage: {
+					aws_region: 'us-west-2',
+					bucket_name: 'storage-bucket-test',
+					buckets: [
+						{
+							name: 'default-bucket',
+							bucket_name: 'storage-bucket-test',
+							aws_region: 'us-west-2',
+						},
+						{
+							name: 'default-bucket',
+							bucket_name: 'storage-bucket-test-2',
+							aws_region: 'us-west-2',
+						},
+					],
+				},
+			};
+
+			expect(() => parseAmplifyOutputs(amplifyOutputs)).toThrow();
+		});
+		it('should parse storage bucket with paths', () => {
+			const amplifyOutputs: AmplifyOutputs = {
+				version: '1.2',
+				storage: {
+					aws_region: 'us-west-2',
+					bucket_name: 'storage-bucket-test',
+					buckets: [
+						{
+							name: 'default-bucket',
+							bucket_name: 'storage-bucket-test',
+							aws_region: 'us-west-2',
+							paths: {
+								'other/*': {
+									guest: ['get', 'list'],
+									authenticated: ['get', 'list', 'write'],
+								},
+								'admin/*': {
+									groupsauditor: ['get', 'list'],
+									groupsadmin: ['get', 'list', 'write', 'delete'],
+								},
+							},
+						},
+					],
+				},
+			};
+
+			const result = parseAmplifyOutputs(amplifyOutputs);
+
+			expect(result).toEqual({
+				Storage: {
+					S3: {
+						bucket: 'storage-bucket-test',
+						region: 'us-west-2',
+						buckets: {
+							'default-bucket': {
+								bucketName: 'storage-bucket-test',
+								region: 'us-west-2',
+								paths: {
+									'other/*': {
+										guest: ['get', 'list'],
+										authenticated: ['get', 'list', 'write'],
+									},
+									'admin/*': {
+										groupsauditor: ['get', 'list'],
+										groupsadmin: ['get', 'list', 'write', 'delete'],
+									},
+								},
+							},
+						},
 					},
 				},
 			});

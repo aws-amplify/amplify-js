@@ -4,6 +4,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
+	GraphQLOptions,
 	GraphQLOptionsV6,
 	GraphQLResponseV6,
 	V6Client,
@@ -106,17 +107,19 @@ export function graphql<
 	const internals = getInternals(this as any);
 	options.authMode = options.authMode || internals.authMode;
 	options.authToken = options.authToken || internals.authToken;
+	const headers = additionalHeaders || internals.headers;
 
 	/**
 	 * The correctness of these typings depends on correct string branding or overrides.
 	 * Neither of these can actually be validated at runtime. Hence, we don't perform
 	 * any validation or type-guarding here.
 	 */
+
 	const result = GraphQLAPI.graphql(
 		// TODO: move V6Client back into this package?
 		internals.amplify as any,
-		options,
-		additionalHeaders,
+		options as GraphQLOptions,
+		headers,
 	);
 
 	return result as any;

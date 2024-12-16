@@ -13,12 +13,21 @@ export enum StorageValidationErrorCode {
 	NoDestinationPath = 'NoDestinationPath',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
+	InvalidStorageBucket = 'InvalidStorageBucket',
+	InvalidCopyOperationStorageBucket = 'InvalidCopyOperationStorageBucket',
 	InvalidStorageOperationPrefixInput = 'InvalidStorageOperationPrefixInput',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
+	InvalidAWSAccountID = 'InvalidAWSAccountID',
 	InvalidStoragePathInput = 'InvalidStoragePathInput',
 	InvalidUploadSource = 'InvalidUploadSource',
 	ObjectIsTooLarge = 'ObjectIsTooLarge',
 	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
+	InvalidLocationCredentialsCacheSize = 'InvalidLocationCredentialsCacheSize',
+	LocationCredentialsStoreDestroyed = 'LocationCredentialsStoreDestroyed',
+	InvalidS3Uri = 'InvalidS3Uri',
+	InvalidCustomEndpoint = 'InvalidCustomEndpoint',
+	ForcePathStyleEndpointNotSupported = 'ForcePathStyleEndpointNotSupported',
+	DnsIncompatibleBucketName = 'DnsIncompatibleBucketName',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -64,10 +73,38 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 		message:
 			'Path or key parameter must be specified in the input. Both can not be specified at the same time.',
 	},
+	[StorageValidationErrorCode.InvalidAWSAccountID]: {
+		message: 'Invalid AWS account ID was provided.',
+	},
 	[StorageValidationErrorCode.InvalidStorageOperationPrefixInput]: {
 		message: 'Both path and prefix can not be specified at the same time.',
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
 		message: 'Input `path` does not allow a leading slash (/).',
+	},
+	[StorageValidationErrorCode.InvalidLocationCredentialsCacheSize]: {
+		message: 'locationCredentialsCacheSize must be a positive integer.',
+	},
+	[StorageValidationErrorCode.LocationCredentialsStoreDestroyed]: {
+		message: `Location-specific credentials store has been destroyed.`,
+	},
+	[StorageValidationErrorCode.InvalidS3Uri]: {
+		message: 'Invalid S3 URI.',
+	},
+	[StorageValidationErrorCode.InvalidStorageBucket]: {
+		message:
+			'Unable to lookup bucket from provided name in Amplify configuration.',
+	},
+	[StorageValidationErrorCode.InvalidCopyOperationStorageBucket]: {
+		message: 'Missing bucket option in either source or destination.',
+	},
+	[StorageValidationErrorCode.InvalidCustomEndpoint]: {
+		message: 'Invalid S3 custom endpoint.',
+	},
+	[StorageValidationErrorCode.ForcePathStyleEndpointNotSupported]: {
+		message: 'Path style URLs are not supported with S3 Transfer Acceleration.',
+	},
+	[StorageValidationErrorCode.DnsIncompatibleBucketName]: {
+		message: `The bucket name isn't DNS compatible.`,
 	},
 };

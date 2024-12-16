@@ -94,7 +94,10 @@ export type GetPropertiesWithPathOutput = ItemBase & StorageItemWithPath;
  * @deprecated Use {@link ListAllWithPathOutput} instead.
  * Output type for S3 list API. Lists all bucket objects.
  */
-export type ListAllOutput = StorageListOutput<ListOutputItem>;
+export type ListAllOutput = Omit<
+	StorageListOutput<ListOutputItem>,
+	'excludedSubpaths'
+>;
 
 /**
  * Output type with path for S3 list API. Lists all bucket objects.
@@ -105,7 +108,10 @@ export type ListAllWithPathOutput = StorageListOutput<ListOutputItemWithPath>;
  * @deprecated Use {@link ListPaginateWithPathOutput} instead.
  * Output type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateOutput = StorageListOutput<ListOutputItem> & {
+export type ListPaginateOutput = Omit<
+	StorageListOutput<ListOutputItem>,
+	'excludedSubpaths'
+> & {
 	nextToken?: string;
 };
 

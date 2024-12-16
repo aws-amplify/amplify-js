@@ -1,9 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export interface Base64EncoderConvertOptions {
+interface Base64ConvertOptions {
 	urlSafe: boolean;
 }
+export interface Base64EncoderConvertOptions extends Base64ConvertOptions {
+	skipPadding?: boolean;
+}
+
+export type Base64DecoderConvertOptions = Base64ConvertOptions;
 
 export interface Base64Encoder {
 	convert(
@@ -13,5 +18,5 @@ export interface Base64Encoder {
 }
 
 export interface Base64Decoder {
-	convert(input: string): string;
+	convert(input: string, options?: Base64DecoderConvertOptions): string;
 }

@@ -74,6 +74,11 @@ export type SignInWithCustomAuthOutput = AuthSignInOutput;
 export type SignInWithSRPOutput = AuthSignInOutput;
 
 /**
+ * Output type for Cognito signInWithUserAuth API.
+ */
+export type SignInWithUserAuthOutput = AuthSignInOutput;
+
+/**
  * Output type for Cognito signInWithUserPassword API.
  */
 export type SignInWithUserPasswordOutput = AuthSignInOutput;

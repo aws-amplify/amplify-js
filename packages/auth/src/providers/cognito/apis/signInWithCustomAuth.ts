@@ -9,7 +9,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetatada,
+	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleCustomAuthFlowWithoutSRP,
@@ -24,12 +24,12 @@ import {
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/CognitoIdentityProvider/types';
+} from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
@@ -84,18 +84,18 @@ export async function signInWithCustomAuth(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
-
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetatada(
-					authConfig.userPoolId,
-					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken,
-				),
+				NewDeviceMetadata: await getNewDeviceMetadata({
+					userPoolId: authConfig.userPoolId,
+					userPoolEndpoint: authConfig.userPoolEndpoint,
+					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+					accessToken: AuthenticationResult.AccessToken,
+				}),
 				signInDetails,
 			});
+			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 

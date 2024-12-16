@@ -1,0 +1,31 @@
+name: Issue Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  adjust-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      REPOSITORY_NAME: ${{ github.event.repository.full_name }}
+    steps:
+      - name: Remove pending-community-response when new comment received
+        if: ${{ !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && !github.event.issue.pull_request }}
+        shell: bash
+        run: |
+          gh issue edit $ISSUE_NUMBER --repo $REPOSITORY_NAME --remove-label "pending-community-response"
+      - name: Add pending-maintainer-response when new community comment received
+        if: ${{ !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) }}
+        shell: bash
+        run: |
+          gh issue edit $ISSUE_NUMBER --repo $REPOSITORY_NAME --add-label "pending-maintainer-response"
+      - name: Remove pending-maintainer-response when new owner/member comment received
+        if: ${{ contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) }}
+        shell: bash
+        run: |
+          gh issue edit $ISSUE_NUMBER --repo $REPOSITORY_NAME --remove-label "pending-maintainer-response"

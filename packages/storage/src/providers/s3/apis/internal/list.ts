@@ -5,32 +5,37 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
-	ListAllInput,
 	ListAllOutput,
-	ListAllWithPathInput,
 	ListAllWithPathOutput,
 	ListOutputItem,
 	ListOutputItemWithPath,
-	ListPaginateInput,
 	ListPaginateOutput,
-	ListPaginateWithPathInput,
 	ListPaginateWithPathOutput,
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
+	urlDecode,
+	validateBucketOwnerID,
 	validateStorageOperationInputWithPrefix,
 } from '../../utils';
-import { ResolvedS3Config } from '../../types/options';
+import {
+	ListAllWithPathOptions,
+	ListPaginateWithPathOptions,
+	ResolvedS3Config,
+} from '../../types/options';
 import {
 	ListObjectsV2Input,
 	ListObjectsV2Output,
 	listObjectsV2,
-} from '../../utils/client';
+} from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
-import { CommonPrefix } from '../../utils/client/types';
-import { StorageSubpathStrategy } from '../../../../types';
+import { CommonPrefix } from '../../utils/client/s3data/types';
+import { IntegrityError } from '../../../../errors/IntegrityError';
+import { ListAllInput, ListPaginateInput } from '../../types/inputs';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { ListInput as ListWithPathInputAndAdvancedOptions } from '../../../../internals/types/inputs';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -42,11 +47,7 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input:
-		| ListAllInput
-		| ListPaginateInput
-		| ListAllWithPathInput
-		| ListPaginateWithPathInput,
+	input: ListAllInput | ListPaginateInput | ListWithPathInputAndAdvancedOptions,
 ): Promise<
 	| ListAllOutput
 	| ListPaginateOutput
@@ -59,12 +60,13 @@ export const list = async (
 		bucket,
 		keyPrefix: generatedPrefix,
 		identityId,
-	} = await resolveS3ConfigAndInput(amplify, options);
+	} = await resolveS3ConfigAndInput(amplify, input);
 
 	const { inputType, objectKey } = validateStorageOperationInputWithPrefix(
 		input,
 		identityId,
 	);
+	validateBucketOwnerID(options.expectedBucketOwner);
 	const isInputWithPrefix = inputType === STORAGE_INPUT_PREFIX;
 
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
@@ -76,12 +78,15 @@ export const list = async (
 			} ${anyOptions?.nextToken ? `nextToken: ${anyOptions?.nextToken}` : ''}.`,
 		);
 	}
+
 	const listParams = {
 		Bucket: bucket,
 		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
-		Delimiter: getDelimiter(options.subpathStrategy),
+		Delimiter: getDelimiter(options),
+		ExpectedBucketOwner: options?.expectedBucketOwner,
+		EncodingType: 'url',
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -156,14 +161,18 @@ const _listWithPrefix = async ({
 		listParamsClone,
 	);
 
-	if (!response?.Contents) {
+	const listOutput = decodeEncodedElements(response);
+
+	validateEchoedElements(listParamsClone, listOutput);
+
+	if (!listOutput?.Contents) {
 		return {
 			items: [],
 		};
 	}
 
 	return {
-		items: response.Contents.map(item => ({
+		items: listOutput.Contents.map(item => ({
 			key: generatedPrefix
 				? item.Key!.substring(generatedPrefix.length)
 				: item.Key!,
@@ -171,7 +180,7 @@ const _listWithPrefix = async ({
 			lastModified: item.LastModified,
 			size: item.Size,
 		})),
-		nextToken: response.NextContinuationToken,
+		nextToken: listOutput.NextContinuationToken,
 	};
 };
 
@@ -216,11 +225,7 @@ const _listWithPath = async ({
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
 	}
 
-	const {
-		Contents: contents,
-		NextContinuationToken: nextContinuationToken,
-		CommonPrefixes: commonPrefixes,
-	}: ListObjectsV2Output = await listObjectsV2(
+	const response = await listObjectsV2(
 		{
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
@@ -228,12 +233,23 @@ const _listWithPath = async ({
 		listParamsClone,
 	);
 
+	const listOutput = decodeEncodedElements(response);
+
+	validateEchoedElements(listParamsClone, listOutput);
+
+	const {
+		Contents: contents,
+		NextContinuationToken: nextContinuationToken,
+		CommonPrefixes: commonPrefixes,
+	}: ListObjectsV2Output = listOutput;
+
 	const excludedSubpaths =
 		commonPrefixes && mapCommonPrefixesToExcludedSubpaths(commonPrefixes);
 
 	if (!contents) {
 		return {
 			items: [],
+			nextToken: nextContinuationToken,
 			excludedSubpaths,
 		};
 	}
@@ -263,9 +279,67 @@ const mapCommonPrefixesToExcludedSubpaths = (
 };
 
 const getDelimiter = (
-	subpathStrategy?: StorageSubpathStrategy,
+	options?: ListAllWithPathOptions | ListPaginateWithPathOptions,
 ): string | undefined => {
-	if (subpathStrategy?.strategy === 'exclude') {
-		return subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;
+	if (options?.subpathStrategy?.strategy === 'exclude') {
+		return options?.subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;
 	}
+};
+
+const validateEchoedElements = (
+	listInput: ListObjectsV2Input,
+	listOutput: ListObjectsV2Output,
+) => {
+	const validEchoedParameters =
+		listInput.Bucket === listOutput.Name &&
+		listInput.Delimiter === listOutput.Delimiter &&
+		listInput.MaxKeys === listOutput.MaxKeys &&
+		listInput.Prefix === listOutput.Prefix &&
+		listInput.ContinuationToken === listOutput.ContinuationToken;
+
+	if (!validEchoedParameters) {
+		throw new IntegrityError();
+	}
+};
+
+/**
+ * Decodes URL-encoded elements in the S3 `ListObjectsV2Output` response when `EncodingType` is `'url'`.
+ * Applies to values for 'Delimiter', 'Prefix', 'StartAfter' and 'Key' in the response.
+ */
+const decodeEncodedElements = (
+	listOutput: ListObjectsV2Output,
+): ListObjectsV2Output => {
+	if (listOutput.EncodingType !== 'url') {
+		return listOutput;
+	}
+
+	const decodedListOutput = { ...listOutput };
+
+	// Decode top-level properties
+	(['Delimiter', 'Prefix', 'StartAfter'] as const).forEach(prop => {
+		const value = listOutput[prop];
+		if (typeof value === 'string') {
+			decodedListOutput[prop] = urlDecode(value);
+		}
+	});
+
+	// Decode 'Key' in each item of 'Contents', if it exists
+	if (listOutput.Contents) {
+		decodedListOutput.Contents = listOutput.Contents.map(content => ({
+			...content,
+			Key: content.Key ? urlDecode(content.Key) : content.Key,
+		}));
+	}
+
+	// Decode 'Prefix' in each item of 'CommonPrefixes', if it exists
+	if (listOutput.CommonPrefixes) {
+		decodedListOutput.CommonPrefixes = listOutput.CommonPrefixes.map(
+			content => ({
+				...content,
+				Prefix: content.Prefix ? urlDecode(content.Prefix) : content.Prefix,
+			}),
+		);
+	}
+
+	return decodedListOutput;
 };

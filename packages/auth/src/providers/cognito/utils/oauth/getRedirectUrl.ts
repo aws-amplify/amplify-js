@@ -2,27 +2,44 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	invalidOriginException,
+	invalidPreferredRedirectUrlException,
 	invalidRedirectException,
 } from '../../../../errors/constants';
 
 /** @internal */
-export function getRedirectUrl(redirects: string[]): string {
-	const redirectUrlFromTheSameOrigin =
-		redirects?.find(isSameOriginAndPathName) ??
-		redirects?.find(isTheSameDomain);
-	const redirectUrlFromDifferentOrigin =
-		redirects?.find(isHttps) ?? redirects?.find(isHttp);
-	if (redirectUrlFromTheSameOrigin) {
-		return redirectUrlFromTheSameOrigin;
-	} else if (redirectUrlFromDifferentOrigin) {
-		throw invalidOriginException;
+export function getRedirectUrl(
+	redirects: string[],
+	preferredRedirectUrl?: string,
+): string {
+	if (preferredRedirectUrl) {
+		const redirectUrl = redirects?.find(
+			redirect => redirect === preferredRedirectUrl,
+		);
+		if (!redirectUrl) {
+			throw invalidPreferredRedirectUrlException;
+		}
+
+		return redirectUrl;
+	} else {
+		const redirectUrlFromTheSameOrigin =
+			redirects?.find(isSameOriginAndPathName) ??
+			redirects?.find(isTheSameDomain);
+		const redirectUrlFromDifferentOrigin =
+			redirects?.find(isHttps) ?? redirects?.find(isHttp);
+
+		if (redirectUrlFromTheSameOrigin) {
+			return redirectUrlFromTheSameOrigin;
+		} else if (redirectUrlFromDifferentOrigin) {
+			throw invalidOriginException;
+		}
+		throw invalidRedirectException;
 	}
-	throw invalidRedirectException;
 }
 
 // origin + pathname => https://example.com/app
 const isSameOriginAndPathName = (redirect: string) =>
 	redirect.startsWith(
+		// eslint-disable-next-line no-constant-binary-expression
 		String(window.location.origin + window.location.pathname ?? '/'),
 	);
 // domain => outlook.live.com, github.com

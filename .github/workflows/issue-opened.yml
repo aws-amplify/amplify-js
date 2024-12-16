@@ -1,0 +1,25 @@
+name: Issue Opened
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add-issue-opened-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      REPOSITORY_NAME: ${{ github.event.repository.full_name }}
+    steps:
+      - name: Add the pending-triage label
+        shell: bash
+        run: |
+          gh issue edit $ISSUE_NUMBER --repo $REPOSITORY_NAME --add-label "pending-triage"
+      - name: Add the pending-maintainer-response label
+        if: ${{ !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.issue.author_association) }}
+        shell: bash
+        run: |
+          gh issue edit $ISSUE_NUMBER --repo $REPOSITORY_NAME --add-label "pending-maintainer-response"

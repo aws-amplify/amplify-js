@@ -14,10 +14,10 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { AuthError } from '../../../errors/AuthError';
 import {
-	getNewDeviceMetatada,
+	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleChallengeName,
@@ -27,12 +27,12 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import { tokenOrchestrator } from '../tokenProvider';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/CognitoIdentityProvider/types';
-import { tokenOrchestrator } from '../tokenProvider';
-import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+} from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -71,8 +71,8 @@ export async function confirmSignIn(
 		throw new AuthError({
 			name: AuthErrorCodes.SignInException,
 			message: `
-			An error occurred during the sign in process. 
-			
+			An error occurred during the sign in process.
+
 			This most likely occurred due to:
 			1. signIn was not called before confirmSignIn.
 			2. signIn threw an exception.
@@ -109,17 +109,18 @@ export async function confirmSignIn(
 		});
 
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
 			await cacheCognitoTokens({
 				username,
 				...AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetatada(
-					authConfig.userPoolId,
-					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken,
-				),
+				NewDeviceMetadata: await getNewDeviceMetadata({
+					userPoolId: authConfig.userPoolId,
+					userPoolEndpoint: authConfig.userPoolEndpoint,
+					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+					accessToken: AuthenticationResult.AccessToken,
+				}),
 				signInDetails,
 			});
+			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 

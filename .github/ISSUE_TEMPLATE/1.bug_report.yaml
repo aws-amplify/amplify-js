@@ -1,6 +1,5 @@
 name: Bug report
 description: Create a report to help us improve Amplify JS
-labels: pending-triage
 
 body:
   - type: markdown
@@ -127,7 +126,7 @@ body:
       multiple: false
       options:
         - Amplify CLI
-        - Amplify Gen 2 (Preview)
+        - Amplify Gen 2
         - CDK
         - Other
   - type: textarea

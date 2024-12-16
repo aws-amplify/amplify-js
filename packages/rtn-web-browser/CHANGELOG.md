@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.1.0...@aws-amplify/rtn-web-browser@1.1.1) (2024-09-30)
+
+### Bug Fixes
+
+- **rtn-web-browser:** prevent CustomTab to show in recent used app ([#13847](https://github.com/aws-amplify/amplify-js/issues/13847)) ([c586b7b](https://github.com/aws-amplify/amplify-js/commit/c586b7b1d243df4cdaf5a4fe15deeac545639b24))
+
+# [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.0.31...@aws-amplify/rtn-web-browser@1.1.0) (2024-09-04)
+
+### Features
+
+- **auth:** HostedUI oidc signout ([#13512](https://github.com/aws-amplify/amplify-js/issues/13512)) ([e8fb997](https://github.com/aws-amplify/amplify-js/commit/e8fb9973f8e3e3490619416a778ec1460cafaf9a)), closes [#13712](https://github.com/aws-amplify/amplify-js/issues/13712) [#13736](https://github.com/aws-amplify/amplify-js/issues/13736)
+
+## [1.0.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.0.30...@aws-amplify/rtn-web-browser@1.0.31) (2024-07-23)
+
+### Bug Fixes
+
+- **rtn-web-browser:** signInWithRedirect needs to be called twice on Android ([b473ce3](https://github.com/aws-amplify/amplify-js/commit/b473ce34bac46c4bec6226e4a62f078dbd75fb94))
+
 ## [1.0.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.0.29...@aws-amplify/rtn-web-browser@1.0.30) (2024-05-13)
 
 **Note:** Version bump only for package @aws-amplify/rtn-web-browser

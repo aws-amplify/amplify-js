@@ -26,4 +26,14 @@ describe('base64Decoder (non-native)', () => {
 		expect(mockGetAtob).toHaveBeenCalled();
 		expect(mockAtob).toHaveBeenCalledWith('test');
 	});
+
+	it('makes the result url safe if urlSafe is true', () => {
+		const mockInput = 'test-test_test';
+		const mockOutput = 'test+test/test';
+
+		base64Decoder.convert(mockInput, { urlSafe: true });
+
+		expect(mockGetAtob).toHaveBeenCalled();
+		expect(mockAtob).toHaveBeenCalledWith(mockOutput);
+	});
 });

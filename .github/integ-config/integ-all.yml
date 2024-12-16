@@ -514,6 +514,13 @@ tests:
     sample_name: [sign-in-with-oauth]
     spec: sign-in-with-oauth
     browser: [chrome]
+  - test_name: integ_vue_sign_out_of_oidc_provider
+    desc: 'Sign-out of OIDC provider'
+    framework: vue
+    category: auth
+    sample_name: [sign-in-with-oauth]
+    spec: sign-out-oidc-provider
+    browser: [chrome]
 
   # AUTH GEN2
   - test_name: integ_react_javascript_authentication_gen2
@@ -594,6 +601,13 @@ tests:
     category: auth
     sample_name: [sign-in-with-oauth]
     spec: sign-in-with-oauth
+    browser: [chrome]
+  - test_name: subdomain_authentication
+    desc: 'Sign-in with the OAuth flow and subdomains'
+    framework: next
+    category: auth
+    sample_name: [subdomains]
+    spec: subdomains
     browser: [chrome]
 
   # DISABLED Angular/Vue tests:
@@ -813,6 +827,13 @@ tests:
     sample_name: [multi-part-copy]
     spec: multi-part-copy
     browser: *minimal_browser_list
+  - test_name: integ_react_storage_browser
+    desc: 'React Storage Browser'
+    framework: vite
+    category: storage
+    sample_name: [storage-browser]
+    spec: storage-browser
+    browser: *minimal_browser_list
 
   # GEN2 STORAGE
   - test_name: integ_react_storage
@@ -822,14 +843,21 @@ tests:
     sample_name: [storage-gen2]
     spec: storage-gen2
     browser: *minimal_browser_list
-  - test_name: storage-guest-access
-    desc: 'Next Storage guest access'
+  - test_name: integ_react_storage_internal
+    desc: 'React Storage Gen2 Internal APIs'
+    framework: react
+    category: storage
+    sample_name: [storage-gen2-internal]
+    spec: storage-gen2-internal
+    browser: *minimal_browser_list
+  - test_name: integ_next_storage
+    desc: 'Next Storage Auth'
     framework: next
     category: storage
-    sample_name: [guest-access]
+    sample_name: [storage-auth]
     spec: storage-client-server
-    browser: *minimal_browser_list
-  
+    browser: [chrome] # firefox issues with secure cookies in cypress, manual testing works fine
+
   # INAPPMESSAGING
   - test_name: integ_in_app_messaging
     desc: 'React InApp Messaging'
@@ -847,12 +875,123 @@ tests:
   #   spec: duplicate-packages
   #   browser: *minimal_browser_list
 
-  # SSR context isolation
-  - test_name: integ_ssr_context_isolation
-    desc: 'SSR Context Isolation'
+  # Next.js use cases
+  - test_name: integ_next-use-cases-14
+    desc: 'Next.js use cases tests with v14'
     framework: next
     category: ssr-adapter
-    sample_name: ssr-context-isolation
-    spec: ssr-context-isolation
-    yarn_script: ci:ssr-context-isolation
+    sample_name: next-use-cases-14
+    spec: next-use-cases
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: 14
     browser: [chrome]
+  - test_name: integ_next-use-cases-15
+    desc: 'Next.js use cases tests with v15'
+    framework: next
+    category: ssr-adapter
+    sample_name: next-use-cases-15
+    spec: next-use-cases
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: 15
+    browser: [chrome]
+  - test_name: integ_next_mfa_req_email
+    desc: 'mfa required with email sign in attribute'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-req-email
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-email
+  - test_name: integ_next_mfa_req_phone
+    desc: 'mfa required with phone sign in attribute'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-req-phone
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-phone
+  - test_name: integ_next_mfa_opt_email
+    desc: 'mfa optional with email sign in attribute'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-opt-email
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-email
+  - test_name: integ_next_mfa_opt_phone
+    desc: 'mfa optional with phone sign in attribute'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-opt-phone
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-phone
+  - test_name: integ_next_mfa_setup
+    desc: 'mfa setup sign in flow'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-setup
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup
+  - test_name: integ_next_passwordless_auto_sign_in
+    desc: 'passwordless auto sign in with session'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/auto-sign-in
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-autosignin
+  - test_name: integ_next_passwordless_first_factor_selection
+    desc: 'passwordless sign in with first factor selection'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/first-factor-selection
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-ffselect
+  - test_name: integ_next_passwordless_preferred_challenge
+    desc: 'passwordless sign in with preferred challenge'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/preferred-challenge
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-prefchal
+  - test_name: integ_next_passwordless_sign_up
+    desc: 'passwordless sign up'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/sign-up
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-signup
+  - test_name: integ_next_passwordless_misc
+    desc: 'passwordless miscellaneous flows'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/miscellaneous
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-misc
+  - test_name: integ_next_passwordless_webauthn
+    desc: 'passwordless webauthn sign in and lifecycle management'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/webauthn
+    # chrome only
+    # https://chromedevtools.github.io/devtools-protocol/tot/WebAuthn/
+    browser: [chrome]
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-webauthn

@@ -3,6 +3,121 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.7.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.7.3...@aws-amplify/storage@6.7.4) (2024-12-12)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.7.2...@aws-amplify/storage@6.7.3) (2024-12-03)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.7.1...@aws-amplify/storage@6.7.2) (2024-12-03)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.7.0...@aws-amplify/storage@6.7.1) (2024-11-25)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [6.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.16...@aws-amplify/storage@6.7.0) (2024-11-20)
+
+### Features
+
+- **storage:** Integrity changes for storage browser ([#13909](https://github.com/aws-amplify/amplify-js/issues/13909)) ([ec7bf6f](https://github.com/aws-amplify/amplify-js/commit/ec7bf6ff2fb4af84425eca4f2d68c2bef7f49d03)), closes [#13478](https://github.com/aws-amplify/amplify-js/issues/13478) [#13474](https://github.com/aws-amplify/amplify-js/issues/13474)
+
+## [6.6.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.15...@aws-amplify/storage@6.6.16) (2024-11-13)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.14...@aws-amplify/storage@6.6.15) (2024-11-12)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.13...@aws-amplify/storage@6.6.14) (2024-10-31)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.12...@aws-amplify/storage@6.6.13) (2024-10-29)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.11...@aws-amplify/storage@6.6.12) (2024-10-25)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.10...@aws-amplify/storage@6.6.11) (2024-10-21)
+
+### Bug Fixes
+
+- **storage:** multipart upload is firing on 0 bytes data ([#13927](https://github.com/aws-amplify/amplify-js/issues/13927)) ([952f64b](https://github.com/aws-amplify/amplify-js/commit/952f64bd874b6a481a754ebfb15eaa42a272d027))
+- **storage:** nextToken is not surfaced when list result contain only CommonPrefix ([#13933](https://github.com/aws-amplify/amplify-js/issues/13933)) ([bf58ebc](https://github.com/aws-amplify/amplify-js/commit/bf58ebc391dacf529aa1127e737c51b64d2fb96e))
+
+## [6.6.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.9...@aws-amplify/storage@6.6.10) (2024-10-15)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.8...@aws-amplify/storage@6.6.9) (2024-10-05)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.7...@aws-amplify/storage@6.6.8) (2024-09-30)
+
+### Bug Fixes
+
+- **storage:** md5 calculation for react native ([#13836](https://github.com/aws-amplify/amplify-js/issues/13836)) ([63bceab](https://github.com/aws-amplify/amplify-js/commit/63bceabcaf0085fa46aa2d5c976fed709c63ef9d))
+
+## [6.6.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.6...@aws-amplify/storage@6.6.7) (2024-09-17)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.5...@aws-amplify/storage@6.6.6) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.4...@aws-amplify/storage@6.6.5) (2024-09-04)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.3...@aws-amplify/storage@6.6.4) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.2...@aws-amplify/storage@6.6.3) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.1...@aws-amplify/storage@6.6.2) (2024-08-21)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.0...@aws-amplify/storage@6.6.1) (2024-08-15)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [6.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.4...@aws-amplify/storage@6.6.0) (2024-08-07)
+
+### Features
+
+- **storage:** add support for content disposition and content type in getUrl ([#13615](https://github.com/aws-amplify/amplify-js/issues/13615)) ([28434a6](https://github.com/aws-amplify/amplify-js/commit/28434a69d6956369ebd7b2ac4b67e0ec1bb14748))
+
+## [6.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.3...@aws-amplify/storage@6.5.4) (2024-08-05)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.2...@aws-amplify/storage@6.5.3) (2024-07-23)
+
+### Bug Fixes
+
+- **storage:** omit subPathStrategy when prefix is defined ([#13618](https://github.com/aws-amplify/amplify-js/issues/13618)) ([3d70792](https://github.com/aws-amplify/amplify-js/commit/3d70792afc120ac38aed145b1c87797890262184)), closes [#13606](https://github.com/aws-amplify/amplify-js/issues/13606)
+
+## [6.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.1...@aws-amplify/storage@6.5.2) (2024-07-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.0...@aws-amplify/storage@6.5.1) (2024-07-19)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
 # [6.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.4.7...@aws-amplify/storage@6.5.0) (2024-07-08)
 
 ### Features

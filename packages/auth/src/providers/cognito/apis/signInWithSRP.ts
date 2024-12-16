@@ -10,14 +10,14 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/CognitoIdentityProvider/types';
+} from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetatada,
+	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
@@ -30,10 +30,12 @@ import {
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Signs a user in
@@ -89,19 +91,22 @@ export async function signInWithSRP(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetatada(
-					authConfig.userPoolId,
-					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken,
-				),
+				NewDeviceMetadata: await getNewDeviceMetadata({
+					userPoolId: authConfig.userPoolId,
+					userPoolEndpoint: authConfig.userPoolEndpoint,
+					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+					accessToken: AuthenticationResult.AccessToken,
+				}),
 				signInDetails,
 			});
+			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
+
+			resetAutoSignIn();
 
 			return {
 				isSignedIn: true,
@@ -115,6 +120,7 @@ export async function signInWithSRP(
 		});
 	} catch (error) {
 		cleanActiveSignInState();
+		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

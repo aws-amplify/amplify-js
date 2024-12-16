@@ -47,6 +47,37 @@ export interface APIGraphQLConfig {
 	modelIntrospection?: ModelIntrospectionSchema;
 }
 
+/**
+ * @experimental
+ */
+export interface APIEventsConfig {
+	/**
+	 * Required GraphQL endpoint, must be a valid URL string.
+	 */
+	endpoint: string;
+	/**
+	 * Optional region string used to sign the request. Required only if the auth mode is 'iam'.
+	 */
+	region?: string;
+	/**
+	 * Optional API key string. Required only if the auth mode is 'apiKey'.
+	 */
+	apiKey?: string;
+	/**
+	 * Custom domain endpoint for GraphQL API.
+	 */
+	customEndpoint?: string;
+	/**
+	 * Optional region string used to sign the request to `customEndpoint`. Effective only if `customEndpoint` is
+	 * specified, and the auth mode is 'iam'.
+	 */
+	customEndpointRegion?: string;
+	/**
+	 * Default auth mode for all the API calls to given service.
+	 */
+	defaultAuthMode: GraphQLAuthMode;
+}
+
 export interface APIRestConfig {
 	/**
 	 * Required REST endpoint, must be a valid URL string.
@@ -75,7 +106,13 @@ export interface GraphQLProviderConfig {
 	GraphQL: APIGraphQLConfig;
 }
 
-export type APIConfig = AtLeastOne<RESTProviderConfig & GraphQLProviderConfig>;
+export interface EventsProviderConfig {
+	Events: APIEventsConfig;
+}
+
+export type APIConfig = AtLeastOne<
+	RESTProviderConfig & GraphQLProviderConfig & EventsProviderConfig
+>;
 
 export type GraphQLAuthMode =
 	| 'apiKey'
@@ -111,6 +148,8 @@ export interface ModelIntrospectionSchema {
 	queries?: CustomOperations;
 	mutations?: CustomOperations;
 	subscriptions?: CustomOperations;
+	conversations?: SchemaConversationRoutes;
+	generations?: SchemaGenerationRoutes;
 }
 
 /**
@@ -120,6 +159,27 @@ export type SchemaModels = Record<string, SchemaModel>;
 export type SchemaNonModels = Record<string, SchemaNonModel>;
 export type SchemaEnums = Record<string, SchemaEnum>;
 export type CustomOperations = Record<string, CustomOperation>;
+type SchemaConversationRoutes = Record<string, SchemaConversationRoute>;
+type SchemaGenerationRoutes = Record<string, CustomOperation>;
+
+interface SchemaConversationRoute {
+	name: string;
+	models: SchemaModels;
+	nonModels: SchemaNonModels;
+	enums: SchemaEnums;
+	conversation: SchemaConversation;
+	message: SchemaConversationMessage;
+}
+
+interface SchemaConversation {
+	modelName: string;
+}
+
+interface SchemaConversationMessage {
+	modelName: string;
+	subscribe: CustomOperation;
+	send: CustomOperation;
+}
 
 export interface SchemaModel {
 	name: string;
@@ -164,7 +224,7 @@ export type CustomOperationArguments = Record<string, CustomOperationArgument>;
 
 export interface CustomOperationArgument {
 	name: string;
-	type: FieldType;
+	type: InputFieldType;
 	isArray: boolean;
 	isRequired: boolean;
 	isArrayNullable?: boolean;
@@ -192,7 +252,15 @@ export interface NonModelFieldType {
 	nonModel: string;
 }
 
-export type FieldType =
+interface EnumType {
+	enum: string;
+}
+
+interface InputType {
+	input: string;
+}
+
+type ScalarType =
 	| 'ID'
 	| 'String'
 	| 'Int'
@@ -206,10 +274,12 @@ export type FieldType =
 	| 'AWSIPAddress'
 	| 'Boolean'
 	| 'AWSJSON'
-	| 'AWSPhone'
-	| { enum: string }
-	| ModelFieldType
-	| NonModelFieldType;
+	| 'AWSPhone';
+
+type FieldType = ScalarType | EnumType | ModelFieldType | NonModelFieldType;
+
+type InputFieldType = ScalarType | EnumType | InputType;
+
 export type FieldAttribute = ModelAttribute;
 
 /**

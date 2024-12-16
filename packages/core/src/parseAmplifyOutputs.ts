@@ -4,11 +4,11 @@
 /* This is because JSON schema contains keys with snake_case */
 /* eslint-disable camelcase */
 
-/* Does not like exahaustive checks */
-/* eslint-disable no-case-declarations */
+/* Does not like exhaustive checks */
 
 import {
 	APIConfig,
+	APIEventsConfig,
 	APIGraphQLConfig,
 	GraphQLAuthMode,
 	ModelIntrospectionSchema,
@@ -22,14 +22,17 @@ import {
 	AmplifyOutputs,
 	AmplifyOutputsAnalyticsProperties,
 	AmplifyOutputsAuthProperties,
+	AmplifyOutputsCustomProperties,
 	AmplifyOutputsDataProperties,
 	AmplifyOutputsGeoProperties,
 	AmplifyOutputsNotificationsProperties,
+	AmplifyOutputsStorageBucketProperties,
 	AmplifyOutputsStorageProperties,
 } from './singleton/AmplifyOutputs/types';
 import {
 	AnalyticsConfig,
 	AuthConfig,
+	BucketInfo,
 	GeoConfig,
 	LegacyConfig,
 	ResourcesConfig,
@@ -56,12 +59,13 @@ function parseStorage(
 		return undefined;
 	}
 
-	const { bucket_name, aws_region } = amplifyOutputsStorageProperties;
+	const { bucket_name, aws_region, buckets } = amplifyOutputsStorageProperties;
 
 	return {
 		S3: {
 			bucket: bucket_name,
 			region: aws_region,
+			buckets: buckets && createBucketInfoMap(buckets),
 		},
 	};
 }
@@ -84,12 +88,14 @@ function parseAuth(
 		oauth,
 		username_attributes,
 		standard_required_attributes,
+		groups,
 	} = amplifyOutputsAuthProperties;
 
 	const authConfig = {
 		Cognito: {
 			userPoolId: user_pool_id,
 			userPoolClientId: user_pool_client_id,
+			groups,
 		},
 	} as AuthConfig;
 
@@ -220,6 +226,28 @@ function parseData(
 	};
 }
 
+function parseCustom(
+	amplifyOutputsCustomProperties?: AmplifyOutputsCustomProperties,
+) {
+	if (!amplifyOutputsCustomProperties?.events) {
+		return undefined;
+	}
+
+	const { url, aws_region, api_key, default_authorization_type } =
+		amplifyOutputsCustomProperties.events;
+
+	const Events: APIEventsConfig = {
+		endpoint: url,
+		defaultAuthMode: getGraphQLAuthMode(default_authorization_type),
+		region: aws_region,
+		apiKey: api_key,
+	};
+
+	return {
+		Events,
+	};
+}
+
 function parseNotifications(
 	amplifyOutputsNotificationsProperties?: AmplifyOutputsNotificationsProperties,
 ): NotificationsConfig | undefined {
@@ -287,6 +315,14 @@ export function parseAmplifyOutputs(
 		resourcesConfig.API = parseData(amplifyOutputs.data);
 	}
 
+	if (amplifyOutputs.custom) {
+		const customConfig = parseCustom(amplifyOutputs.custom);
+
+		if (customConfig && 'Events' in customConfig) {
+			resourcesConfig.API = { ...resourcesConfig.API, ...customConfig };
+		}
+	}
+
 	if (amplifyOutputs.notifications) {
 		resourcesConfig.Notifications = parseNotifications(
 			amplifyOutputs.notifications,
@@ -332,4 +368,28 @@ function getMfaStatus(
 	if (mfaConfiguration === 'REQUIRED') return 'on';
 
 	return 'off';
+}
+
+function createBucketInfoMap(
+	buckets: AmplifyOutputsStorageBucketProperties[],
+): Record<string, BucketInfo> {
+	const mappedBuckets: Record<string, BucketInfo> = {};
+
+	buckets.forEach(
+		({ name, bucket_name: bucketName, aws_region: region, paths }) => {
+			if (name in mappedBuckets) {
+				throw new Error(
+					`Duplicate friendly name found: ${name}. Name must be unique.`,
+				);
+			}
+
+			mappedBuckets[name] = {
+				bucketName,
+				region,
+				paths,
+			};
+		},
+	);
+
+	return mappedBuckets;
 }
