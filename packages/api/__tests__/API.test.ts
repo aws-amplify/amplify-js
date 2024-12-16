@@ -22,7 +22,7 @@ const DEFAULT_ENDPOINT = 'https://a-default-appsync-endpoint.local/graphql';
 const CUSTOM_ENDPOINT = 'https://a-custom-appsync-endpoint.local/graphql';
 
 /**
- * Valid JWT string, borrowed from Auth tests
+ * Validly parsable JWT string. (Borrowed from Auth tests.)
  */
 const DEFAULT_AUTH_TOKEN =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
@@ -46,6 +46,7 @@ function expectPost({
 	apiKeyOverride: string | undefined;
 	authTokenOverride: string | undefined;
 }) {
+	//
 	// Grabbing the call and asserting on the object is significantly simpler for some
 	// of the is-unknown-or-absent types of assertions we need.
 	//
@@ -135,6 +136,63 @@ function expectOp({
 	expecto({ endpoint, authMode, apiKeyOverride, authTokenOverride }); // test pass ... umm ...
 }
 
+function prepareMocks() {
+	Amplify.configure(
+		{
+			API: {
+				GraphQL: {
+					defaultAuthMode: DEFAULT_AUTH_MODE,
+					apiKey: DEFAULT_API_KEY,
+					endpoint: DEFAULT_ENDPOINT,
+					region: 'north-pole-7',
+				},
+			},
+			Auth: {
+				Cognito: {
+					userPoolId: 'north-pole-7:santas-little-helpers',
+					identityPoolId: 'north-pole-7:santas-average-sized-helpers',
+					userPoolClientId: 'the-mrs-claus-oversight-committee',
+				},
+			},
+		},
+		{
+			Auth: {
+				credentialsProvider: {
+					getCredentialsAndIdentityId: async arg => ({
+						credentials: {
+							accessKeyId: 'accessKeyIdValue',
+							secretAccessKey: 'secretAccessKeyValue',
+							sessionToken: 'sessionTokenValue',
+							expiration: new Date(123),
+						},
+						identityId: 'mrs-clause-naturally',
+					}),
+					clearCredentialsAndIdentityId: async () => {},
+				},
+				tokenProvider: {
+					getTokens: async () => ({
+						accessToken: decodeJWT(DEFAULT_AUTH_TOKEN),
+					}),
+				},
+			},
+		},
+	);
+	_postSpy.mockReturnValue({
+		body: {
+			json() {
+				return JSON.stringify({
+					data: {
+						someOperation: {
+							someField: 'some value',
+						},
+					},
+				});
+			},
+		},
+	});
+	_subspy.mockReturnValue(new Observable());
+}
+
 describe.skip('API generateClient', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
@@ -204,62 +262,9 @@ describe.skip('API generateClient', () => {
 	// });
 });
 
-describe.only('Custom Endpoints', () => {
+describe.only('generateClient', () => {
 	beforeEach(() => {
-		Amplify.configure(
-			{
-				API: {
-					GraphQL: {
-						defaultAuthMode: DEFAULT_AUTH_MODE,
-						apiKey: DEFAULT_API_KEY,
-						endpoint: DEFAULT_ENDPOINT,
-						region: 'north-pole-7',
-					},
-				},
-				Auth: {
-					Cognito: {
-						userPoolId: 'north-pole-7:santas-little-helpers',
-						identityPoolId: 'north-pole-7:santas-average-sized-helpers',
-						userPoolClientId: 'the-mrs-claus-oversight-committee',
-					},
-				},
-			},
-			{
-				Auth: {
-					credentialsProvider: {
-						getCredentialsAndIdentityId: async arg => ({
-							credentials: {
-								accessKeyId: 'accessKeyIdValue',
-								secretAccessKey: 'secretAccessKeyValue',
-								sessionToken: 'sessionTokenValue',
-								expiration: new Date(123),
-							},
-							identityId: 'mrs-clause-naturally',
-						}),
-						clearCredentialsAndIdentityId: async () => {},
-					},
-					tokenProvider: {
-						getTokens: async () => ({
-							accessToken: decodeJWT(DEFAULT_AUTH_TOKEN),
-						}),
-					},
-				},
-			},
-		);
-		_postSpy.mockReturnValue({
-			body: {
-				json() {
-					return JSON.stringify({
-						data: {
-							someOperation: {
-								someField: 'some value',
-							},
-						},
-					});
-				},
-			},
-		});
-		_subspy.mockReturnValue(new Observable());
+		prepareMocks()
 	});
 
 	afterEach(() => {
@@ -269,149 +274,210 @@ describe.only('Custom Endpoints', () => {
 	for (const op of ['query', 'subscription'] as const) {
 		const opType = op === 'subscription' ? 'sub' : 'qry';
 
-		test(`client { endpoint: N, authMode: N } + ${opType} { authMode: N } -> config.authMode`, async () => {
-			const client = generateClient();
+		describe(`[${opType}] without a custom endpoint`, () => {
+			test("does not require `authMode` or `apiKey` override", () => {
+				expect(() => generateClient()).not.toThrow();
+			});
 
-			await client.graphql({ query: `${op} A { queryA { a b c } }` });
+			test("does not require `authMode` or `apiKey` override in client.graphql()", async () => {
+				const client = generateClient();
 
-			expectOp({
-				op,
-				endpoint: DEFAULT_ENDPOINT,
-				authMode: DEFAULT_AUTH_MODE,
+				await client.graphql({ query: `${op} A { queryA { a b c } }` });
+	
+				expectOp({
+					op,
+					endpoint: DEFAULT_ENDPOINT,
+					authMode: DEFAULT_AUTH_MODE,
+				});
+			});
+
+			test("allows `authMode` override in client", async () => {
+				const client = generateClient({
+					authMode: 'userPool',
+				});
+	
+				await client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+				});
+	
+				expectOp({
+					op,
+					endpoint: DEFAULT_ENDPOINT,
+					authMode: 'userPool',
+				});
+			});
+
+			test("allows `authMode` override in `client.graphql()`", async () => {
+				const client = generateClient();
+	
+				await client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+					authMode: 'userPool',
+				});
+	
+				expectOp({
+					op,
+					endpoint: DEFAULT_ENDPOINT,
+					authMode: 'userPool',
+				});
+			});
+
+			test("allows `apiKey` override in `client.graphql()`", async () => {
+				const client = generateClient();
+	
+				await client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+					apiKey: CUSTOM_API_KEY,
+				});
+	
+				expectOp({
+					op,
+					endpoint: DEFAULT_ENDPOINT,
+					authMode: 'apiKey',
+					apiKeyOverride: CUSTOM_API_KEY
+				});
+			});
+
+			test("allows `authMode` + `apiKey` override in `client.graphql()`", async () => {
+				const client = generateClient({
+					authMode: 'userPool'
+				});
+	
+				await client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+					authMode: 'apiKey',
+					apiKey: CUSTOM_API_KEY,
+				});
+	
+				expectOp({
+					op,
+					endpoint: DEFAULT_ENDPOINT,
+					authMode: 'apiKey',
+					apiKeyOverride: CUSTOM_API_KEY
+				});
 			});
 		});
 
-		test(`client { endpoint: N, authMode: N } + ${opType} { authMode: Y } -> op.authMode`, async () => {
-			const client = generateClient();
-
-			await client.graphql({
-				query: `${op} A { queryA { a b c } }`,
-				authMode: 'none',
-			});
-
-			expectOp({
-				op,
-				endpoint: DEFAULT_ENDPOINT,
-				authMode: 'none',
-			});
-		});
-
-		test(`client { endpoint: N, authMode: Y } + ${opType} { authMode: N } -> client.authMode`, async () => {
-			const client = generateClient({
-				authMode: 'none',
-			});
-
-			await client.graphql({
-				query: `${op} A { queryA { a b c } }`,
-			});
-
-			expectOp({
-				op,
-				endpoint: DEFAULT_ENDPOINT,
-				authMode: 'none',
-			});
-		});
-
-		test(`client { endpoint: N, authMode: Y } + ${opType} { authMode: Y } -> op.authMode`, async () => {
-			const client = generateClient({
-				authMode: 'apiKey',
-			});
-
-			await client.graphql({
-				query: `${op} A { queryA { a b c } }`,
-				authMode: 'none',
-			});
-
-			expectOp({
-				op,
-				endpoint: DEFAULT_ENDPOINT,
-				authMode: 'none',
-			});
-		});
-
-		test(`client { endpoint: Y, authMode: N } + ${opType} { authMode: N } -> none (defaulted)`, async () => {
-			const client = generateClient({
-				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'userPool',
-			});
-
-			await client.graphql({
-				query: `${op} A { queryA { a b c } }`,
-			});
-
-			expectOp({
-				op,
-				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'userPool',
-			});
-		});
-
-		test(`client { endpoint: Y, authMode: N } + ${opType} { authMode: Y } -> op.authMode`, async () => {
-			const client = generateClient({
-				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'apiKey',
-				apiKey: CUSTOM_API_KEY,
-			});
-
-			await client.graphql({
-				query: `${op} A { queryA { a b c } }`,
-				authMode: 'userPool',
-			});
-
-			expectOp({
-				op,
-				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'userPool',
-				apiKeyOverride: CUSTOM_API_KEY,
-			});
-		});
-
-		test(`client { endpoint: Y, authMode: Y } + ${opType} { authMode: N } -> client.authMode`, async () => {
-			const client = generateClient({
-				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'apiKey',
-				apiKey: CUSTOM_API_KEY,
-			});
-
-			await client.graphql({
-				query: `${op} A { queryA { a b c } }`,
-			});
-
-			expectOp({
-				op,
-				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'apiKey',
-				apiKeyOverride: CUSTOM_API_KEY,
-			});
-		});
-
-		test(`client { endpoint: Y, authMode: Y } + ${opType} { authMode: Y } -> op.authMode`, async () => {
-			const client = generateClient({
-				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'userPool',
-			});
-
-			await client.graphql({
-				query: `${op} A { queryA { a b c } }`,
-				authMode: 'apiKey',
-				apiKey: CUSTOM_API_KEY
+		describe(`[${opType}] with a custom endpoint`, () => {
+			test("requires `authMode` override", () => {
+				// @ts-expect-error
+				expect(() => generateClient({
+					endpoint: CUSTOM_ENDPOINT
+				})).toThrow()
 			})
 
-			expectOp({
-				op,
-				endpoint: CUSTOM_ENDPOINT,
-				authMode: 'apiKey',
-				apiKeyOverride: CUSTOM_API_KEY
+			test("requires `apiKey` with `authMode: 'apiKey'` override in client", async () => {
+				expect(() =>  generateClient({
+					endpoint: CUSTOM_ENDPOINT,
+					// @ts-ignore
+					authMode: 'apiKey',
+				})).toThrow();
 			});
-		});
-	}
+
+			test("allows `authMode` override in client", async () => {
+				const client = generateClient({
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'userPool',
+				});
+	
+				await client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+				});
+	
+				expectOp({
+					op,
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'userPool',
+				});
+			});
+
+			test("allows `authMode: 'none'` override in client.graphql()", async () => {
+				const client = generateClient({
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'none',
+				});
+	
+				await client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+				});
+	
+				expectOp({
+					op,
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'none',
+				});
+			});
+
+			test("allows `authMode: 'apiKey'` + `apiKey` override in client", async () => {
+				const client = generateClient({
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'apiKey',
+					apiKey: CUSTOM_API_KEY
+				});
+	
+				await client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+				});
+	
+				expectOp({
+					op,
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'apiKey',
+					apiKeyOverride: CUSTOM_API_KEY
+				});
+			});
+
+			test("allows `authMode` override in client.graphql()", async () => {
+				const client = generateClient({
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'none',
+				});
+	
+				await client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+					authMode: 'userPool'
+				});
+	
+				expectOp({
+					op,
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'userPool',
+				});
+			});
+
+			test("requires `apiKey` with `authMode: 'apiKey'` override in client.graphql()", async () => {
+				const client = generateClient({
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'none',
+				});
+	
+				// @ts-expect-error
+				expect(() => client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+					authMode: 'apiKey'
+				})).toThrow()
+			});
+
+			test("allows `authMode: 'apiKey'` + `apiKey` override in client.graphql()", async () => {
+				const client = generateClient({
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'none',
+				});
+	
+				await client.graphql({
+					query: `${op} A { queryA { a b c } }`,
+					authMode: 'apiKey',
+					apiKey: CUSTOM_API_KEY
+				});
+	
+				expectOp({
+					op,
+					endpoint: CUSTOM_ENDPOINT,
+					authMode: 'apiKey',
+					apiKeyOverride: CUSTOM_API_KEY
+				});
+			});
+		})
+	};
+	
 });
-
-
-// // because the client has an `endpoint` but no `apiKey`, using `apiKey` auth
-// // in `.graphql()` also requires `apiKey` to be specified in the call
-// // @ts-expect-error
-// await client.graphql({
-// 	query: `${op} A { queryA { a b c } }`,
-// 	authMode: 'apiKey',
-// });

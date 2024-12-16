@@ -61,6 +61,19 @@ export function generateClient<
 
 	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
 
+	if (client[__endpoint]) {
+		if (!client[__authMode]) {
+			throw new Error(
+				'generateClient() requires an explicit `authMode` when `endpoint` is provided.',
+			);
+		}
+		if (client[__authMode] === 'apiKey' && !client[__apiKey]) {
+			throw new Error(
+				"generateClient() requires an explicit `apiKey` when `endpoint` is provided and `authMode = 'apiKey'`.",
+			);
+		}
+	}
+
 	if (!client[__endpoint]) {
 		if (isApiGraphQLConfig(apiGraphqlConfig)) {
 			addSchemaToClient(client, apiGraphqlConfig, getInternals);

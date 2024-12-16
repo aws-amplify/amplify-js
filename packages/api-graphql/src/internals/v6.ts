@@ -106,40 +106,41 @@ export function graphql<
 	const internals = getInternals(this as any);
 
 	/**
-	 * The custom `endpoint` + `apiKey` (or `undefined`) specific to `generateClient()`.
-	 *
-	 * Q: Can we safely add these to the internals type and remove the cast? Or, does this
-	 * force updates to the data-schema package?
+	 * The custom `endpoint` specific to the client
 	 */
 	const clientEndpoint: string = (internals as any).endpoint;
-	options.apiKey = options.apiKey ?? (internals as any).apiKey;
 
 	/**
-	 * The `authMode` requested by the generated client.
-	 *
-	 * If an `endpoint` is present on the client, we create a "gate" around at the
-	 * client level to prevent "more general" `authMode` settings (from the config)
-	 * from being exposed unintentionally to an unrelated API.
+	 * The `authMode` specific to the client.
 	 */
-	const clientAuthMode =
-		internals.authMode ?? (clientEndpoint ? 'none' : undefined);
+	const clientAuthMode = internals.authMode;
+
+	/**
+	 * The `apiKey` specific to the client.
+	 */
+	const clientApiKey = (internals as any).apiKey;
 
 	/**
 	 * The most specific `authMode` wins. Setting an `endpoint` value without also
-	 * setting an `authMode` value is treated as explicitly setting `authMode` to "none".
+	 * setting an `authMode` value is invalid. This helps to prevent customers apps
+	 * from unexpectedly sending auth details to endpoints the auth details do not
+	 * belong to.
 	 *
-	 * E.g., if `.graphql({ endpoint })`, `authMode` is treated as explicitly 'none' at
-	 * the request level, and any `authMode` provided to `generateClient()` or to
-	 * `Amplify.configure()` is ignored.
-	 *
-	 * Reiterating, this serves as a gating mechanism to ensure auth details are not
-	 * unexpected sent to API's they don't belong to. However, if `authMode` has been
-	 * explicitly set alongside `endpoint`, we will assume this was intentional and
-	 * use the normal/configured auth details for the endpoint.
+	 * This is especially pronounced for `apiKey`. When both an `endpoint` *and*
+	 * `authMode: 'apiKey'` are provided, an explicit `apiKey` override is required
+	 * to prevent inadvertent sending of an API's `apiKey` to an endpoint is does
+	 * not belong to.
 	 */
 	options.authMode = options.authMode || clientAuthMode;
-
+	options.apiKey = options.apiKey ?? clientApiKey;
 	options.authToken = options.authToken || internals.authToken;
+
+	if (clientEndpoint && options.authMode === 'apiKey' && !options.apiKey) {
+		throw new Error(
+			"graphql() requires an explicit `apiKey` for a custom `endpoint` when `authMode = 'apiKey'`.",
+		);
+	}
+
 	const headers = additionalHeaders || internals.headers;
 
 	/**
