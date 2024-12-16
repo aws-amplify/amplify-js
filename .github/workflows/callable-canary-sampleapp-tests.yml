@@ -48,8 +48,8 @@ jobs:
         run: |
           cp credentials-auth.spec.js new-react-app.spec.js
         working-directory: amplify-js-samples-staging/cypress/integration/auth
-      - name: Install dependencies
-        run: npm install
+      - name: Install amplify
+        run: npm install amplify
         working-directory: amplify-js-samples-staging/samples/react/auth/new-react-app
       - name: Start new application and run test
         run: |
