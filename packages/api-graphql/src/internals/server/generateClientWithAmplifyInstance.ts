@@ -32,18 +32,11 @@ import { cancel, graphql, isCancelError } from '..';
  */
 export function generateClientWithAmplifyInstance<
 	T extends Record<any, any> = never,
-	WithCustomEndpoint extends boolean = false,
-	WithApiKey extends boolean = false,
 	ClientType extends
-		| V6ClientSSRRequest<T, WithCustomEndpoint, WithApiKey>
-		| V6ClientSSRCookies<
-				T,
-				WithCustomEndpoint,
-				WithApiKey
-		  > = V6ClientSSRCookies<T, WithCustomEndpoint, WithApiKey>,
+		| V6ClientSSRRequest<T, any, any>
+		| V6ClientSSRCookies<T, any, any> = V6ClientSSRCookies<T, any, any>,
 >(
-	params: ServerClientGenerationParams &
-		CommonPublicClientOptions<WithCustomEndpoint, WithApiKey>,
+	params: ServerClientGenerationParams & CommonPublicClientOptions<any, any>,
 ): ClientType {
 	const client = {
 		[__amplify]: params.amplify,
@@ -58,6 +51,19 @@ export function generateClientWithAmplifyInstance<
 	} as any;
 
 	const apiGraphqlConfig = params.config?.API?.GraphQL;
+
+	if (client[__endpoint]) {
+		if (!client[__authMode]) {
+			throw new Error(
+				'generateClient() requires an explicit `authMode` when `endpoint` is provided.',
+			);
+		}
+		if (client[__authMode] === 'apiKey' && !client[__apiKey]) {
+			throw new Error(
+				"generateClient() requires an explicit `apiKey` when `endpoint` is provided and `authMode = 'apiKey'`.",
+			);
+		}
+	}
 
 	if (!client[__endpoint] && isApiGraphQLConfig(apiGraphqlConfig)) {
 		addSchemaToClientWithInstance<T>(client, params, getInternals);

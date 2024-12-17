@@ -4,6 +4,10 @@ import { CommonPublicClientOptions, V6Client } from '@aws-amplify/api-graphql';
 import { generateClient as internalGenerateClient } from '@aws-amplify/api-graphql/internals';
 import { Amplify } from '@aws-amplify/core';
 
+// NOTE: The type narrowing on CommonPublicClientOptions seems to hinge on
+// defining these signatures separately. Not sure why offhand. This is worth
+// some investigation later.
+
 /**
  * Generates an API client that can work with models or raw GraphQL
  *

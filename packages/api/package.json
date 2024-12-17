@@ -68,7 +68,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"typescript": "5.0.2"
+		"typescript": "5.0.2",
+		"jest-fetch-mock": "3.0.3"
 	},
 	"files": [
 		"dist/cjs",
