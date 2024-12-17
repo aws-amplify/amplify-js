@@ -98,8 +98,6 @@ export function generateServerClientUsingCookies<
 
 	return generateClientWithAmplifyInstance<
 		T,
-		WithCustomEndpoint,
-		WithApiKey,
 		V6ClientSSRCookies<T, WithCustomEndpoint, WithApiKey>
 	>({
 		amplify: getAmplify,
