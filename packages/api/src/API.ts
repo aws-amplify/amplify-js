@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CommonPublicClientOptions, V6Client } from '@aws-amplify/api-graphql';
-import { generateClient as internalGenerateClient } from '@aws-amplify/api-graphql/internals';
+import { V6Client } from '@aws-amplify/api-graphql';
+import {
+	CommonPublicClientOptions,
+	generateClient as internalGenerateClient,
+} from '@aws-amplify/api-graphql/internals';
 import { Amplify } from '@aws-amplify/core';
 
 // NOTE: The type narrowing on CommonPublicClientOptions seems to hinge on

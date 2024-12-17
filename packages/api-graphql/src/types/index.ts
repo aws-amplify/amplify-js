@@ -26,7 +26,7 @@ export { CONTROL_MSG, ConnectionState } from './PubSub';
 
 export { SelectionSet } from '@aws-amplify/data-schema/runtime';
 
-export { CommonPublicClientOptions };
+export type { CommonPublicClientOptions };
 
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
