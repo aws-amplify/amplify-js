@@ -36,10 +36,7 @@ describe('server generateClient', () => {
 		test('subscriptions are disabled', () => {
 			const getAmplify = async (fn: any) => await fn(Amplify);
 
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
+			const client = generateClientWithAmplifyInstance<Schema>({
 				amplify: getAmplify,
 				config: config,
 			});
@@ -71,10 +68,7 @@ describe('server generateClient', () => {
 
 			const getAmplify = async (fn: any) => await fn(Amplify);
 
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
+			const client = generateClientWithAmplifyInstance<Schema>({
 				amplify: getAmplify,
 				config: config,
 			});
@@ -118,10 +112,7 @@ describe('server generateClient', () => {
 
 			const getAmplify = async (fn: any) => await fn(Amplify);
 
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
+			const client = generateClientWithAmplifyInstance<Schema>({
 				amplify: getAmplify,
 				config: config,
 			});
@@ -167,10 +158,7 @@ describe('server generateClient', () => {
 
 			const getAmplify = async (fn: any) => await fn(Amplify);
 
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
+			const client = generateClientWithAmplifyInstance<Schema>({
 				amplify: getAmplify,
 				config: config,
 			});
@@ -197,10 +185,7 @@ describe('server generateClient', () => {
 
 		describe('with request', () => {
 			test('subscriptions are disabled', () => {
-				const client = generateClientWithAmplifyInstance<
-					Schema,
-					V6ClientSSRRequest<Schema>
-				>({
+				const client = generateClientWithAmplifyInstance<Schema>({
 					amplify: null,
 					config: config,
 				});
@@ -215,10 +200,7 @@ describe('server generateClient', () => {
 				Amplify.configure(configFixture as any);
 				const config = Amplify.getConfig();
 
-				const client = generateClientWithAmplifyInstance<
-					Schema,
-					V6ClientSSRRequest<Schema>
-				>({
+				const client = generateClientWithAmplifyInstance<Schema>({
 					amplify: null,
 					config: config,
 				});

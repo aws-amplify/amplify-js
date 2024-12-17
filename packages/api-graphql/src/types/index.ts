@@ -18,22 +18,26 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
+import { CommonPublicClientOptions } from '../internals/types';
+
 export { OperationTypeNode } from 'graphql';
 
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 
 export { SelectionSet } from '@aws-amplify/data-schema/runtime';
 
-export { CommonPublicClientOptions } from '../internals/types';
+export { CommonPublicClientOptions };
 
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
  */
 export interface GraphQLOptions {
 	query: string | DocumentNode;
+	endpoint?: string;
 	variables?: Record<string, DocumentType>;
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
+	apiKey?: string;
 	/**
 	 * @deprecated This property should not be used
 	 */
@@ -209,19 +213,69 @@ export type GraphQLOperation = Source | string;
  * API V6 `graphql({options})` type that can leverage branded graphql `query`
  * objects and fallback types.
  */
-export interface GraphQLOptionsV6<
+export type GraphQLOptionsV6<
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string,
-> extends Record<string, unknown> {
-	query: TYPED_GQL_STRING | DocumentNode;
-	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
-	authMode?: GraphQLAuthMode;
-	authToken?: string;
-	/**
-	 * @deprecated This property should not be used
-	 */
-	userAgentSuffix?: string;
-}
+	WithCustomEndpoint extends boolean = false,
+	WithApiKey extends boolean = false, // i.e., The client already has apiKey configured.
+> = WithCustomEndpoint extends true
+	? WithApiKey extends true
+		? {
+				query: TYPED_GQL_STRING | DocumentNode;
+				variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+				authMode?: GraphQLAuthMode;
+				apiKey?: string;
+				authToken?: string;
+				/**
+				 * @deprecated This property should not be used
+				 */
+				userAgentSuffix?: string;
+			}
+		:
+				| {
+						query: TYPED_GQL_STRING | DocumentNode;
+						variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+						authMode?: never;
+						apiKey?: never;
+						authToken?: string;
+						/**
+						 * @deprecated This property should not be used
+						 */
+						userAgentSuffix?: string;
+				  }
+				| {
+						query: TYPED_GQL_STRING | DocumentNode;
+						variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+						authMode: 'apiKey';
+						apiKey: string;
+						authToken?: string;
+						/**
+						 * @deprecated This property should not be used
+						 */
+						userAgentSuffix?: string;
+				  }
+				| {
+						query: TYPED_GQL_STRING | DocumentNode;
+						variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+						authMode: Exclude<GraphQLAuthMode, 'apiKey'>;
+						apiKey?: never;
+						authToken?: string;
+						/**
+						 * @deprecated This property should not be used
+						 */
+						userAgentSuffix?: string;
+				  }
+	: {
+			query: TYPED_GQL_STRING | DocumentNode;
+			variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+			authMode?: GraphQLAuthMode;
+			apiKey?: string;
+			authToken?: string;
+			/**
+			 * @deprecated This property should not be used
+			 */
+			userAgentSuffix?: string;
+		};
 
 /**
  * Result type for `graphql()` operations that don't include any specific
@@ -369,15 +423,19 @@ export type GeneratedSubscription<InputType, OutputType> = string & {
 export const __amplify = Symbol('amplify');
 export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
+export const __apiKey = Symbol('apiKey');
 export const __headers = Symbol('headers');
+export const __endpoint = Symbol('endpoint');
 
 export function getInternals(client: BaseClient): ClientInternals {
 	const c = client as any;
 
 	return {
 		amplify: c[__amplify],
+		apiKey: c[__apiKey],
 		authMode: c[__authMode],
 		authToken: c[__authToken],
+		endpoint: c[__endpoint],
 		headers: c[__headers],
 	} as any;
 }
@@ -387,38 +445,60 @@ export type ClientWithModels =
 	| V6ClientSSRRequest
 	| V6ClientSSRCookies;
 
-export type V6Client<T extends Record<any, any> = never> = {
-	graphql: GraphQLMethod;
+export type V6Client<
+	T extends Record<any, any> = never,
+	WithCustomEndpoint extends boolean = false,
+	WithApiKey extends boolean = false,
+> = {
+	graphql: GraphQLMethod<WithCustomEndpoint, WithApiKey>;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
 } & ClientExtensions<T>;
 
-export type V6ClientSSRRequest<T extends Record<any, any> = never> = {
-	graphql: GraphQLMethodSSR;
+export type V6ClientSSRRequest<
+	T extends Record<any, any> = never,
+	WithCustomEndpoint extends boolean = false,
+	WithApiKey extends boolean = false,
+> = {
+	graphql: GraphQLMethodSSR<WithCustomEndpoint, WithApiKey>;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
 } & ClientExtensionsSSRRequest<T>;
 
-export type V6ClientSSRCookies<T extends Record<any, any> = never> = {
-	graphql: GraphQLMethod;
+export type V6ClientSSRCookies<
+	T extends Record<any, any> = never,
+	WithCustomEndpoint extends boolean = false,
+	WithApiKey extends boolean = false,
+> = {
+	graphql: GraphQLMethod<WithCustomEndpoint, WithApiKey>;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
 } & ClientExtensionsSSRCookies<T>;
 
-export type GraphQLMethod = <
-	FALLBACK_TYPES = unknown,
-	TYPED_GQL_STRING extends string = string,
->(
-	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
+export type GraphQLMethod<
+	WithCustomEndpoint extends boolean,
+	WithApiKey extends boolean,
+> = <FALLBACK_TYPES = unknown, TYPED_GQL_STRING extends string = string>(
+	options: GraphQLOptionsV6<
+		FALLBACK_TYPES,
+		TYPED_GQL_STRING,
+		WithCustomEndpoint,
+		WithApiKey
+	>,
 	additionalHeaders?: CustomHeaders | undefined,
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
-export type GraphQLMethodSSR = <
-	FALLBACK_TYPES = unknown,
-	TYPED_GQL_STRING extends string = string,
->(
+export type GraphQLMethodSSR<
+	WithCustomEndpoint extends boolean,
+	WithApiKey extends boolean,
+> = <FALLBACK_TYPES = unknown, TYPED_GQL_STRING extends string = string>(
 	contextSpec: AmplifyServer.ContextSpec,
-	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
+	options: GraphQLOptionsV6<
+		FALLBACK_TYPES,
+		TYPED_GQL_STRING,
+		WithCustomEndpoint,
+		WithApiKey
+	>,
 	additionalHeaders?: CustomHeaders | undefined,
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
@@ -450,8 +530,9 @@ export interface AuthModeParams extends Record<string, unknown> {
 	authToken?: string;
 }
 
-export interface GenerateServerClientParams {
+export type GenerateServerClientParams<
+	WithCustomEndpoint extends boolean,
+	WithApiKey extends boolean,
+> = {
 	config: ResourcesConfig;
-	authMode?: GraphQLAuthMode;
-	authToken?: string;
-}
+} & CommonPublicClientOptions<WithCustomEndpoint, WithApiKey>;

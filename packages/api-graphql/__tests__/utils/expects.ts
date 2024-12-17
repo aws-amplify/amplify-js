@@ -2,6 +2,18 @@ import { parse, print, DocumentNode } from 'graphql';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
 import { Amplify } from 'aws-amplify';
 
+type SpecialRequestVariations = {
+	/**
+	 * A string or jest matcher.
+	 */
+	endpoint?: any;
+
+	/**
+	 * Object or jest matcher.
+	 */
+	headers?: any;
+};
+
 /**
  * Performs an `expect()` on a jest spy with some basic nested argument checks
  * based on the given mutation `opName` and `item`.
@@ -14,12 +26,16 @@ export function expectMutation(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
+	{
+		endpoint = 'https://localhost/graphql',
+		headers = expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+	}: SpecialRequestVariations = {},
 ) {
 	expect(spy).toHaveBeenCalledWith({
 		abortController: expect.any(AbortController),
-		url: new URL('https://localhost/graphql'),
+		url: new URL(endpoint),
 		options: expect.objectContaining({
-			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+			headers,
 			body: expect.objectContaining({
 				query: expect.stringContaining(
 					`${opName}(input: $input, condition: $condition)`,
@@ -44,6 +60,10 @@ export function expectGet(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
+	{
+		endpoint = 'https://localhost/graphql',
+		headers = expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+	}: SpecialRequestVariations = {},
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
@@ -53,9 +73,9 @@ export function expectGet(
 		}),
 		{
 			abortController: expect.any(AbortController),
-			url: new URL('https://localhost/graphql'),
+			url: new URL(endpoint),
 			options: expect.objectContaining({
-				headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+				headers,
 				body: expect.objectContaining({
 					query: expect.stringContaining(`${opName}(id: $id)`),
 					variables: expect.objectContaining(item),
@@ -77,12 +97,16 @@ export function expectList(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
+	{
+		endpoint = 'https://localhost/graphql',
+		headers = expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+	}: SpecialRequestVariations = {},
 ) {
 	expect(spy).toHaveBeenCalledWith({
 		abortController: expect.any(AbortController),
-		url: new URL('https://localhost/graphql'),
+		url: new URL(endpoint),
 		options: expect.objectContaining({
-			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+			headers,
 			body: expect.objectContaining({
 				query: expect.stringContaining(
 					`${opName}(filter: $filter, limit: $limit, nextToken: $nextToken)`,
@@ -105,12 +129,20 @@ export function expectSub(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
+	{
+		endpoint = 'https://localhost/graphql',
+		authenticationType = 'apiKey',
+		apiKey = 'FAKE-KEY',
+	}: SpecialRequestVariations & {
+		authenticationType?: string;
+		apiKey?: string;
+	} = {},
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
-			authenticationType: 'apiKey',
-			apiKey: 'FAKE-KEY',
-			appSyncGraphqlEndpoint: 'https://localhost/graphql',
+			authenticationType,
+			apiKey,
+			appSyncGraphqlEndpoint: endpoint,
 			// Code-gen'd queries have an owner param; TypeBeast queries don't:
 			query: expect.stringContaining(`${opName}(filter: $filter`),
 			variables: expect.objectContaining(item),
@@ -136,13 +168,21 @@ export function expectSubWithHeaders(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
-	headers?: CustomHeaders,
+	{
+		endpoint = 'https://localhost/graphql',
+		authenticationType = 'apiKey',
+		apiKey = 'FAKE-KEY',
+		headers = {},
+	}: SpecialRequestVariations & {
+		authenticationType?: string;
+		apiKey?: string;
+	} = {},
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
-			authenticationType: 'apiKey',
-			apiKey: 'FAKE-KEY',
-			appSyncGraphqlEndpoint: 'https://localhost/graphql',
+			authenticationType,
+			apiKey,
+			appSyncGraphqlEndpoint: endpoint,
 			// Code-gen'd queries have an owner param; TypeBeast queries don't:
 			query: expect.stringContaining(`${opName}(filter: $filter`),
 			variables: expect.objectContaining(item),
@@ -168,12 +208,16 @@ export function expectSubWithHeadersFn(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
+	{
+		endpoint = 'https://localhost/graphql',
+		headers = expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+	}: SpecialRequestVariations = {},
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
 			authenticationType: 'apiKey',
 			apiKey: 'FAKE-KEY',
-			appSyncGraphqlEndpoint: 'https://localhost/graphql',
+			appSyncGraphqlEndpoint: endpoint,
 			// Code-gen'd queries have an owner param; TypeBeast queries don't:
 			query: expect.stringContaining(`${opName}(filter: $filter`),
 			variables: expect.objectContaining(item),

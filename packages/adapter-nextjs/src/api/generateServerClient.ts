@@ -8,30 +8,34 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 import {
+	CommonPublicClientOptions,
 	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 } from '@aws-amplify/api-graphql';
-import {
-	GraphQLAuthMode,
-	parseAmplifyConfig,
-} from '@aws-amplify/core/internals/utils';
+import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
 
 import { NextServer } from '../types';
 
 import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 
-interface CookiesClientParams {
+type CookiesClientParams<
+	WithEndpoint extends boolean,
+	WithApiKey extends boolean,
+> = {
 	cookies: NextServer.ServerComponentContext['cookies'];
 	config: NextServer.CreateServerRunnerInput['config'];
-	authMode?: GraphQLAuthMode;
-	authToken?: string;
-}
+} & CommonPublicClientOptions<WithEndpoint, WithApiKey>;
 
-interface ReqClientParams {
+type ReqClientParams<
+	WithEndpoint extends boolean,
+	WithApiKey extends boolean,
+> = {
 	config: NextServer.CreateServerRunnerInput['config'];
-	authMode?: GraphQLAuthMode;
-	authToken?: string;
-}
+} & CommonPublicClientOptions<WithEndpoint, WithApiKey>;
+
+// NOTE: The type narrowing on CommonPublicClientOptions seems to hinge on
+// defining these signatures separately. Not sure why offhand. This is worth
+// some investigation later.
 
 /**
  * Generates an API client that can be used inside a Next.js Server Component with Dynamic Rendering
@@ -44,13 +48,30 @@ interface ReqClientParams {
  */
 export function generateServerClientUsingCookies<
 	T extends Record<any, any> = never,
->({
-	config,
-	cookies,
-	authMode,
-	authToken,
-}: CookiesClientParams): V6ClientSSRCookies<T> {
-	if (typeof cookies !== 'function') {
+>(
+	options: CookiesClientParams<false, false>,
+): V6ClientSSRCookies<T, false, false>;
+export function generateServerClientUsingCookies<
+	T extends Record<any, any> = never,
+>(
+	options: CookiesClientParams<false, true>,
+): V6ClientSSRCookies<T, false, true>;
+export function generateServerClientUsingCookies<
+	T extends Record<any, any> = never,
+>(
+	options: CookiesClientParams<true, false>,
+): V6ClientSSRCookies<T, true, false>;
+export function generateServerClientUsingCookies<
+	T extends Record<any, any> = never,
+>(options: CookiesClientParams<true, true>): V6ClientSSRCookies<T, true, true>;
+export function generateServerClientUsingCookies<
+	T extends Record<any, any> = never,
+	WithCustomEndpoint extends boolean = false,
+	WithApiKey extends boolean = false,
+>(
+	options: CookiesClientParams<WithCustomEndpoint, WithApiKey>,
+): V6ClientSSRCookies<T, WithCustomEndpoint, WithApiKey> {
+	if (typeof options.cookies !== 'function') {
 		throw new AmplifyServerContextError({
 			message:
 				'generateServerClientUsingCookies is only compatible with the `cookies` Dynamic Function available in Server Components.',
@@ -61,24 +82,28 @@ export function generateServerClientUsingCookies<
 	}
 
 	const { runWithAmplifyServerContext, resourcesConfig } =
-		createServerRunnerForAPI({ config });
+		createServerRunnerForAPI({ config: options.config });
 
 	// This function reference gets passed down to InternalGraphQLAPI.ts.graphql
 	// where this._graphql is passed in as the `fn` argument
 	// causing it to always get invoked inside `runWithAmplifyServerContext`
 	const getAmplify = (fn: (amplify: any) => Promise<any>) =>
 		runWithAmplifyServerContext({
-			nextServerContext: { cookies },
+			nextServerContext: { cookies: options.cookies },
 			operation: contextSpec =>
 				fn(getAmplifyServerContext(contextSpec).amplify),
 		});
 
-	return generateClientWithAmplifyInstance<T, V6ClientSSRCookies<T>>({
+	const { cookies: _cookies, config: _config, ...params } = options;
+
+	return generateClientWithAmplifyInstance<
+		T,
+		V6ClientSSRCookies<T, WithCustomEndpoint, WithApiKey>
+	>({
 		amplify: getAmplify,
 		config: resourcesConfig,
-		authMode,
-		authToken,
-	});
+		...params,
+	} as any); // TS can't narrow the type here.
 }
 
 /**
@@ -99,12 +124,29 @@ export function generateServerClientUsingCookies<
  */
 export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never,
->({ config, authMode, authToken }: ReqClientParams): V6ClientSSRRequest<T> {
-	const amplifyConfig = parseAmplifyConfig(config);
+>(options: ReqClientParams<false, false>): V6ClientSSRRequest<T, false, false>;
+export function generateServerClientUsingReqRes<
+	T extends Record<any, any> = never,
+>(options: ReqClientParams<false, true>): V6ClientSSRRequest<T, false, true>;
+export function generateServerClientUsingReqRes<
+	T extends Record<any, any> = never,
+>(options: ReqClientParams<true, false>): V6ClientSSRRequest<T, true, false>;
+export function generateServerClientUsingReqRes<
+	T extends Record<any, any> = never,
+>(options: ReqClientParams<true, true>): V6ClientSSRRequest<T, true, true>;
+export function generateServerClientUsingReqRes<
+	T extends Record<any, any> = never,
+	WithCustomEndpoint extends boolean = false,
+	WithApiKey extends boolean = false,
+>(
+	options: ReqClientParams<WithCustomEndpoint, WithApiKey>,
+): V6ClientSSRRequest<T, WithCustomEndpoint, WithApiKey> {
+	const amplifyConfig = parseAmplifyConfig(options.config);
 
-	return generateClient<T>({
+	const { config: _config, ...params } = options;
+
+	return generateClient<T, WithCustomEndpoint, WithApiKey>({
 		config: amplifyConfig,
-		authMode,
-		authToken,
-	});
+		...params,
+	} as any); // TS can't narrow the type here.
 }
