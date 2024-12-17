@@ -24,7 +24,7 @@ import {
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
@@ -84,8 +84,6 @@ export async function signInWithCustomAuth(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
-
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
@@ -97,6 +95,7 @@ export async function signInWithCustomAuth(
 				}),
 				signInDetails,
 			});
+			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 

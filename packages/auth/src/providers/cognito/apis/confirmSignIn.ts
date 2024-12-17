@@ -14,7 +14,7 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { AuthError } from '../../../errors/AuthError';
 import {
 	getNewDeviceMetadata,
@@ -109,7 +109,6 @@ export async function confirmSignIn(
 		});
 
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
 			await cacheCognitoTokens({
 				username,
 				...AuthenticationResult,
@@ -121,6 +120,7 @@ export async function confirmSignIn(
 				}),
 				signInDetails,
 			});
+			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 

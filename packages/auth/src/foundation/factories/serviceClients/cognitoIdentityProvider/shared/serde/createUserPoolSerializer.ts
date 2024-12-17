@@ -30,7 +30,11 @@ type ClientOperation =
 	| 'DeleteUserAttributes'
 	| 'UpdateDeviceStatus'
 	| 'ListDevices'
-	| 'RevokeToken';
+	| 'RevokeToken'
+	| 'StartWebAuthnRegistration'
+	| 'CompleteWebAuthnRegistration'
+	| 'ListWebAuthnCredentials'
+	| 'DeleteWebAuthnCredential';
 
 export const createUserPoolSerializer =
 	<Input>(operation: ClientOperation) =>

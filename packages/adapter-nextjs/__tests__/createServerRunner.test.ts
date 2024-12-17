@@ -150,7 +150,7 @@ describe('createServerRunner', () => {
 					remove: jest.fn(),
 				};
 
-				it('should create auth providers with cookie storage adapter', () => {
+				it('should create auth providers with cookie storage adapter', async () => {
 					const operation = jest.fn();
 
 					mockCreateKeyValueStorageFromCookieStorageAdapter.mockReturnValueOnce(
@@ -159,7 +159,7 @@ describe('createServerRunner', () => {
 					const { runWithAmplifyServerContext } = createServerRunner({
 						config: mockAmplifyConfig,
 					});
-					runWithAmplifyServerContext({
+					await runWithAmplifyServerContext({
 						operation,
 						nextServerContext:
 							mockNextServerContext as unknown as NextServer.Context,

@@ -37,7 +37,7 @@ export const createRunWithAmplifyServerContext = ({
 					nextServerContext === null
 						? sharedInMemoryStorage
 						: createKeyValueStorageFromCookieStorageAdapter(
-								createCookieStorageAdapterFromNextServerContext(
+								await createCookieStorageAdapterFromNextServerContext(
 									nextServerContext,
 								),
 								createTokenValidator({
