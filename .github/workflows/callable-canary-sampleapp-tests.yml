@@ -184,8 +184,7 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/javascript/datastore
       - name: Install amplify
         run: |
-          npm install -g npm@latest
-          npm install aws-amplify -legacy-peer-deps
+          npm install aws-amplify@latest
         working-directory: amplify-js-samples-staging/samples/javascript/datastore/new-javascript-app
       - name: Remove existing src folder
         run: rm -rf src
