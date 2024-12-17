@@ -68,6 +68,19 @@ export const identifyUser = async ({
 	await updateEndpoint({
 		appId,
 		category: 'Analytics',
+		channelType: 'EMAIL',
+		credentials,
+		identityId,
+		region,
+		userAttributes,
+		userId,
+		userProfile,
+		userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.IdentifyUser),
+	});
+	await updateEndpoint({
+		appId,
+		category: 'InAppMessaging',
+		channelType: 'IN_APP',
 		credentials,
 		identityId,
 		region,

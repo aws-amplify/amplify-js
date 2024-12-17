@@ -26,7 +26,7 @@ export const updateEndpoint = async ({
 	channelType,
 	credentials,
 	identityId,
-	optOut,
+	optOut = 'NONE',
 	region,
 	userAttributes,
 	userId,

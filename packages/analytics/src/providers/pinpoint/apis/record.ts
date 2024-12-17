@@ -72,6 +72,21 @@ export const record = (input: RecordInput): void => {
 			recordCore({
 				appId,
 				category: 'Analytics',
+				channelType: 'EMAIL',
+				credentials,
+				event: input,
+				identityId,
+				region,
+				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
+				bufferSize,
+				flushSize,
+				flushInterval,
+				resendLimit,
+			});
+			recordCore({
+				appId,
+				category: 'InAppMessaging',
+				channelType: 'IN_APP',
 				credentials,
 				event: input,
 				identityId,

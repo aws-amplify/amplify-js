@@ -12,7 +12,12 @@ export type SupportedCategory =
 	| 'InAppMessaging'
 	| 'PushNotification';
 
-type SupportedChannelType = 'APNS' | 'APNS_SANDBOX' | 'GCM' | 'IN_APP';
+type SupportedChannelType =
+	| 'APNS'
+	| 'APNS_SANDBOX'
+	| 'GCM'
+	| 'IN_APP'
+	| 'EMAIL';
 
 export interface PinpointProviderConfig {
 	Pinpoint: Partial<EventBufferConfig> & {
