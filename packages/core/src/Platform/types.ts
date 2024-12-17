@@ -90,6 +90,10 @@ export enum AuthAction {
 	FetchDevices = '34',
 	SendUserAttributeVerificationCode = '35',
 	SignInWithRedirect = '36',
+	StartWebAuthnRegistration = '37',
+	CompleteWebAuthnRegistration = '38',
+	ListWebAuthnCredentials = '39',
+	DeleteWebAuthnCredential = '40',
 }
 export enum DataStoreAction {
 	Subscribe = '1',
@@ -133,6 +137,8 @@ export enum StorageAction {
 	Remove = '5',
 	GetProperties = '6',
 	GetUrl = '7',
+	GetDataAccess = '8',
+	ListCallerAccessGrants = '9',
 }
 
 interface ActionMap {

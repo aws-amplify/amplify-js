@@ -18,8 +18,11 @@ import { SignUpOutput } from './outputs';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
+ * USER_AUTH is a superset that can handle both USER_SRP_AUTH and USER_PASSWORD_AUTH,
+ * providing flexibility for future authentication methods.
  */
 export type AuthFlowType =
+	| 'USER_AUTH'
 	| 'USER_SRP_AUTH'
 	| 'CUSTOM_WITH_SRP'
 	| 'CUSTOM_WITHOUT_SRP'
@@ -37,6 +40,16 @@ export const cognitoHostedUIIdentityProviderMap: Record<AuthProvider, string> =
  * Arbitrary key/value pairs that may be passed as part of certain Cognito requests
  */
 export type ClientMetadata = Record<string, string>;
+
+/**
+ * Allowed values for preferredChallenge
+ */
+export type AuthFactorType =
+	| 'WEB_AUTHN'
+	| 'EMAIL_OTP'
+	| 'SMS_OTP'
+	| 'PASSWORD'
+	| 'PASSWORD_SRP';
 
 /**
  * The user attribute types available for Cognito.

@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.7...@aws-amplify/api@6.1.8) (2024-12-12)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.6...@aws-amplify/api@6.1.7) (2024-12-03)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.5...@aws-amplify/api@6.1.6) (2024-12-03)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.4...@aws-amplify/api@6.1.5) (2024-11-25)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.3...@aws-amplify/api@6.1.4) (2024-11-20)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.2...@aws-amplify/api@6.1.3) (2024-11-13)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.1...@aws-amplify/api@6.1.2) (2024-11-12)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.0...@aws-amplify/api@6.1.1) (2024-10-31)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+# [6.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.56...@aws-amplify/api@6.1.0) (2024-10-29)
+
+### Features
+
+- **data:** events client ([#13923](https://github.com/aws-amplify/amplify-js/issues/13923)) ([847fb51](https://github.com/aws-amplify/amplify-js/commit/847fb51acee1ee8585503625a6f73d67265217d0))
+
+## [6.0.56](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.55...@aws-amplify/api@6.0.56) (2024-10-25)
+
+**Note:** Version bump only for package @aws-amplify/api
+
 ## [6.0.55](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.54...@aws-amplify/api@6.0.55) (2024-10-21)
 
 **Note:** Version bump only for package @aws-amplify/api

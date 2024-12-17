@@ -8,6 +8,8 @@ import {
 	Response,
 } from '../../types/core';
 
+import { RetryDeciderOutput } from './types';
+
 const DEFAULT_RETRY_ATTEMPTS = 3;
 
 /**
@@ -19,9 +21,14 @@ export interface RetryOptions<TResponse = Response> {
 	 *
 	 * @param response Optional response of the request.
 	 * @param error Optional error thrown from previous attempts.
+	 * @param middlewareContext Optional context object to store data between retries.
 	 * @returns True if the request should be retried.
 	 */
-	retryDecider(response?: TResponse, error?: unknown): Promise<boolean>;
+	retryDecider(
+		response?: TResponse,
+		error?: unknown,
+		middlewareContext?: MiddlewareContext,
+	): Promise<RetryDeciderOutput>;
 	/**
 	 * Function to compute the delay in milliseconds before the next retry based
 	 * on the number of attempts.
@@ -87,7 +94,14 @@ export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
 						? (context.attemptsCount ?? 0)
 						: attemptsCount + 1;
 				context.attemptsCount = attemptsCount;
-				if (await retryDecider(response, error)) {
+				const { isCredentialsExpiredError, retryable } = await retryDecider(
+					response,
+					error,
+					context,
+				);
+				if (retryable) {
+					// Setting isCredentialsInvalid flag to notify signing middleware to forceRefresh credentials provider.
+					context.isCredentialsExpired = !!isCredentialsExpiredError;
 					if (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 						// prevent sleep for last attempt or cancelled request;
 						const delay = computeDelay(attemptsCount);

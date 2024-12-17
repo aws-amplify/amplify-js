@@ -10,7 +10,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
-import { MESSAGE_TYPES } from '../constants';
+import { DEFAULT_KEEP_ALIVE_TIMEOUT, MESSAGE_TYPES } from '../constants';
 import { AWSWebSocketProvider } from '../AWSWebSocketProvider';
 import { awsRealTimeHeaderBasedAuth } from '../AWSWebSocketProvider/authHeaders';
 
@@ -42,10 +42,15 @@ interface DataPayload {
 
 const PROVIDER_NAME = 'AWSAppSyncRealTimeProvider';
 const WS_PROTOCOL_NAME = 'graphql-ws';
+const CONNECT_URI = '/connect';
 
 export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 	constructor() {
-		super({ providerName: PROVIDER_NAME, wsProtocolName: WS_PROTOCOL_NAME });
+		super({
+			providerName: PROVIDER_NAME,
+			wsProtocolName: WS_PROTOCOL_NAME,
+			connectUri: CONNECT_URI,
+		});
 	}
 
 	getProviderName() {
@@ -157,5 +162,24 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 			id: subscriptionId,
 			type: MESSAGE_TYPES.GQL_STOP,
 		};
+	}
+
+	protected _extractConnectionTimeout(data: Record<string, any>): number {
+		const {
+			payload: { connectionTimeoutMs = DEFAULT_KEEP_ALIVE_TIMEOUT } = {},
+		} = data;
+
+		return connectionTimeoutMs;
+	}
+
+	protected _extractErrorCodeAndType(data: any): {
+		errorCode: number;
+		errorType: string;
+	} {
+		const {
+			payload: { errors: [{ errorType = '', errorCode = 0 } = {}] = [] } = {},
+		} = data;
+
+		return { errorCode, errorType };
 	}
 }

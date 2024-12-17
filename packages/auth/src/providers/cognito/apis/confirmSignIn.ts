@@ -14,7 +14,7 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { AuthError } from '../../../errors/AuthError';
 import {
 	getNewDeviceMetadata,
@@ -71,8 +71,8 @@ export async function confirmSignIn(
 		throw new AuthError({
 			name: AuthErrorCodes.SignInException,
 			message: `
-			An error occurred during the sign in process. 
-			
+			An error occurred during the sign in process.
+
 			This most likely occurred due to:
 			1. signIn was not called before confirmSignIn.
 			2. signIn threw an exception.
@@ -109,7 +109,6 @@ export async function confirmSignIn(
 		});
 
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
 			await cacheCognitoTokens({
 				username,
 				...AuthenticationResult,
@@ -121,6 +120,7 @@ export async function confirmSignIn(
 				}),
 				signInDetails,
 			});
+			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 

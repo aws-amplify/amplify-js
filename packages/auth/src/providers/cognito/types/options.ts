@@ -8,7 +8,12 @@ import {
 	AuthUserAttributes,
 } from '../../../types';
 
-import { AuthFlowType, ClientMetadata, ValidationData } from './models';
+import {
+	AuthFactorType,
+	AuthFlowType,
+	ClientMetadata,
+	ValidationData,
+} from './models';
 
 /**
  * Options specific to Cognito Confirm Reset Password.
@@ -37,6 +42,7 @@ export type ResetPasswordOptions = AuthServiceOptions & {
 export type SignInOptions = AuthServiceOptions & {
 	authFlowType?: AuthFlowType;
 	clientMetadata?: ClientMetadata;
+	preferredChallenge?: AuthFactorType;
 };
 
 /**
