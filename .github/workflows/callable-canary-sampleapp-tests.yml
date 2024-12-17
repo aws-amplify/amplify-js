@@ -124,6 +124,9 @@ jobs:
       - name: Install dependencies
         run: npm install
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
+      - name: Install latest stable amplify version
+        run: npm install aws-amplify@latest @aws-amplify/adapter-nextjs@latest
+        working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
       - name: Start application and run test
         run: |
           ../amplify-js/scripts/retry-yarn-script.sh -s \
