@@ -38,16 +38,27 @@ jest.mock('../src/utils/createTokenValidator', () => ({
 		getItem: jest.fn(),
 	})),
 }));
+
 describe('createServerRunner', () => {
 	let createServerRunner: NextServer.CreateServerRunner;
 
-	const mockParseAmplifyConfig = jest.fn();
+	const AMPLIFY_APP_ORIGIN = 'https://test.com';
+	const originalProcessEnv = { ...process.env };
+	const modifiedProcessEnv = {
+		...originalProcessEnv,
+		AMPLIFY_APP_ORIGIN,
+	};
+
+	const mockParseAmplifyConfig = jest.fn(config => config);
 	const mockCreateAWSCredentialsAndIdentityIdProvider = jest.fn();
 	const mockCreateKeyValueStorageFromCookieStorageAdapter = jest.fn();
 	const mockCreateUserPoolsTokenProvider = jest.fn();
 	const mockRunWithAmplifyServerContextCore = jest.fn();
+	const mockCreateAuthRouteHandlersFactory = jest.fn(() => jest.fn());
 
 	beforeEach(() => {
+		process.env = modifiedProcessEnv;
+
 		jest.resetModules();
 		jest.doMock('aws-amplify/adapter-core', () => ({
 			createAWSCredentialsAndIdentityIdProvider:
@@ -60,16 +71,24 @@ describe('createServerRunner', () => {
 		jest.doMock('@aws-amplify/core/internals/utils', () => ({
 			parseAmplifyConfig: mockParseAmplifyConfig,
 		}));
+		jest.doMock('../src/auth', () => ({
+			createAuthRouteHandlersFactory: mockCreateAuthRouteHandlersFactory,
+		}));
 
 		({ createServerRunner } = require('../src'));
+
+		mockCreateAuthRouteHandlersFactory.mockReturnValue(jest.fn());
 	});
 
 	afterEach(() => {
+		process.env = originalProcessEnv;
+
 		mockParseAmplifyConfig.mockClear();
 		mockCreateAWSCredentialsAndIdentityIdProvider.mockClear();
 		mockCreateKeyValueStorageFromCookieStorageAdapter.mockClear();
 		mockCreateUserPoolsTokenProvider.mockClear();
 		mockRunWithAmplifyServerContextCore.mockClear();
+		mockCreateAuthRouteHandlersFactory.mockClear();
 	});
 
 	it('calls parseAmplifyConfig when the config object is imported from amplify configuration file', () => {
@@ -81,6 +100,19 @@ describe('createServerRunner', () => {
 		const result = createServerRunner({ config: mockAmplifyConfig });
 		expect(result).toMatchObject({
 			runWithAmplifyServerContext: expect.any(Function),
+		});
+	});
+
+	it('returns createAuthRoutesHandlers function', () => {
+		const result = createServerRunner({ config: mockAmplifyConfig });
+
+		expect(mockCreateAuthRouteHandlersFactory).toHaveBeenCalledWith({
+			config: mockAmplifyConfig,
+			runtimeOptions: undefined,
+			amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
+		});
+		expect(result).toMatchObject({
+			createAuthRouteHandlers: expect.any(Function),
 		});
 	});
 
