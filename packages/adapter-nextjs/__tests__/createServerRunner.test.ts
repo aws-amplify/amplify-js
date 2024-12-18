@@ -176,7 +176,7 @@ describe('createServerRunner', () => {
 					);
 				});
 
-				it('should call createKeyValueStorageFromCookieStorageAdapter with specified runtimeOptions.cookies', () => {
+				it('should call createKeyValueStorageFromCookieStorageAdapter with specified runtimeOptions.cookies', async () => {
 					const testCookiesOptions: NextServer.CreateServerRunnerRuntimeOptions['cookies'] =
 						{
 							domain: '.example.com',
@@ -194,7 +194,7 @@ describe('createServerRunner', () => {
 						},
 					});
 
-					runWithAmplifyServerContext({
+					await runWithAmplifyServerContext({
 						nextServerContext:
 							mockNextServerContext as unknown as NextServer.Context,
 						operation: jest.fn(),
