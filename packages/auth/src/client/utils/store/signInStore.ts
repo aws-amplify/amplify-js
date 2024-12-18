@@ -108,22 +108,21 @@ const getInitialState = (): SignInState => {
 		clearPersistedSignInState();
 
 		return getDefaultState();
-	} else {
-		const username =
-			syncSessionStorage.getItem(SIGN_IN_STATE_KEYS.username) ?? undefined;
-
-		const challengeName = (syncSessionStorage.getItem(
-			SIGN_IN_STATE_KEYS.challengeName,
-		) ?? undefined) as ChallengeName;
-		const signInSession =
-			syncSessionStorage.getItem(SIGN_IN_STATE_KEYS.signInSession) ?? undefined;
-
-		return {
-			username,
-			challengeName,
-			signInSession,
-		};
 	}
+	const username =
+		syncSessionStorage.getItem(SIGN_IN_STATE_KEYS.username) ?? undefined;
+
+	const challengeName = (syncSessionStorage.getItem(
+		SIGN_IN_STATE_KEYS.challengeName,
+	) ?? undefined) as ChallengeName;
+	const signInSession =
+		syncSessionStorage.getItem(SIGN_IN_STATE_KEYS.signInSession) ?? undefined;
+
+	return {
+		username,
+		challengeName,
+		signInSession,
+	};
 };
 
 const createStore: Store<SignInState, SignInAction> = reducer => {
