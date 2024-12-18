@@ -8,10 +8,13 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 import {
-	CommonPublicClientOptions,
 	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 } from '@aws-amplify/api-graphql';
+import {
+	CommonPublicClientOptions,
+	DefaultCommonClientOptions,
+} from '@aws-amplify/api-graphql/dist/esm/internals/types';
 import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
 
 import { NextServer } from '../types';
@@ -39,7 +42,7 @@ interface ReqClientParams {
 export function generateServerClientUsingCookies<
 	T extends Record<any, any> = never,
 	Options extends CommonPublicClientOptions &
-		CookiesClientParams = CookiesClientParams,
+		CookiesClientParams = DefaultCommonClientOptions & CookiesClientParams,
 >(options: Options): V6ClientSSRCookies<T, Options> {
 	if (typeof options.cookies !== 'function') {
 		throw new AmplifyServerContextError({
@@ -91,7 +94,8 @@ export function generateServerClientUsingCookies<
  */
 export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never,
-	Options extends CommonPublicClientOptions & ReqClientParams = ReqClientParams,
+	Options extends CommonPublicClientOptions &
+		ReqClientParams = DefaultCommonClientOptions & ReqClientParams,
 >(options: Options): V6ClientSSRRequest<T, Options> {
 	const amplifyConfig = parseAmplifyConfig(options.config);
 
