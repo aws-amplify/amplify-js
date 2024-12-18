@@ -7,8 +7,5 @@ import { SupportedRoutePaths } from '../types';
 export function isSupportedAuthApiRoutePath(
 	path?: string,
 ): path is SupportedRoutePaths {
-	return (
-		path !== undefined &&
-		supportedRoutePaths.includes(path as SupportedRoutePaths)
-	);
+	return supportedRoutePaths.includes(path as SupportedRoutePaths);
 }
