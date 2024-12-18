@@ -26,7 +26,7 @@ import {
 	SignInWithUserPasswordOutput,
 } from '../types';
 import {
-	cleanActiveSignInState,
+	resetActiveSignInState,
 	setActiveSignInState,
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
@@ -97,7 +97,7 @@ export async function signInWithUserPassword(
 				}),
 				signInDetails,
 			});
-			cleanActiveSignInState();
+			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 
@@ -114,7 +114,7 @@ export async function signInWithUserPassword(
 			challengeParameters: retriedChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		cleanActiveSignInState();
+		resetActiveSignInState();
 		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);

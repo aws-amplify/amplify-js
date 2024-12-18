@@ -3,7 +3,7 @@
 import { Amplify, syncSessionStorage } from '@aws-amplify/core';
 
 import {
-	cleanActiveSignInState,
+	resetActiveSignInState,
 	setActiveSignInState,
 	signInStore,
 } from '../../../src/client/utils/store/signInStore';
@@ -132,7 +132,7 @@ describe('signInStore', () => {
 			signInSession: undefined,
 			username: undefined,
 		});
-		cleanActiveSignInState();
+		resetActiveSignInState();
 	});
 
 	test('State is set after calling setActiveSignInState', async () => {
@@ -146,7 +146,7 @@ describe('signInStore', () => {
 		expect(localSignInState).toEqual(user1);
 		expect(persistSignInStateSpy).toHaveBeenCalledTimes(1);
 		expect(persistSignInStateSpy).toHaveBeenCalledWith(user1);
-		cleanActiveSignInState();
+		resetActiveSignInState();
 	});
 
 	test('State is updated after calling SignIn', async () => {
@@ -193,7 +193,7 @@ describe('signInStore', () => {
 			challengeName: user1.challengeName,
 			signInSession: user1.signInSession,
 		});
-		cleanActiveSignInState();
+		resetActiveSignInState();
 	});
 
 	test('sign-in store should return undefined state when the sign-in session is expired', async () => {
@@ -206,7 +206,7 @@ describe('signInStore', () => {
 			challengeName: undefined,
 			signInSession: undefined,
 		});
-		cleanActiveSignInState();
+		resetActiveSignInState();
 	});
 
 	test('State SignInSession is updated after dispatching custom session value', () => {

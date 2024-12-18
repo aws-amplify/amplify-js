@@ -88,7 +88,7 @@ const isExpired = (expiryDate: string | null): boolean => {
 	return expiryTimestamp <= currentTimestamp;
 };
 
-export const cleanActiveSignInState = () => {
+export const resetActiveSignInState = () => {
 	signInStore.dispatch({ type: 'RESET_STATE' });
 };
 
@@ -108,7 +108,7 @@ const getDefaultState = (): SignInState => ({
 const getInitialState = (): SignInState => {
 	const expiry = syncSessionStorage.getItem(SIGN_IN_STATE_KEYS.expiry);
 
-	if (!expiry || (expiry && isExpired(expiry))) {
+	if (!expiry || isExpired(expiry)) {
 		clearPersistedSignInState();
 
 		return getDefaultState();
