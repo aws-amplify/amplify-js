@@ -8,25 +8,13 @@ import {
 	isNextApiRequest,
 	isNextApiResponse,
 	isNextRequest,
-} from '../../../src/auth/utils/handlerParametersTypeAssertions';
+} from '../../../src/auth/utils/predicates';
 
 describe('isAuthRoutesHandlersContext', () => {
 	test.each([
 		[{}, false],
-		[
-			{
-				params: {},
-			},
-			false,
-		],
-		[
-			{
-				params: {
-					slug: 'sign-in',
-				},
-			},
-			true,
-		],
+		[{ params: {} }, false],
+		[{ params: { slug: 'sign-in' } }, true],
 	] as [object, boolean][])(
 		'when call with %o it returns %s',
 		(input, expectedResult) => {

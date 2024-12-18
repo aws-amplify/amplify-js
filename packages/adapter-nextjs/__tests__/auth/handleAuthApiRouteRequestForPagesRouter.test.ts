@@ -17,10 +17,14 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 		scopes: ['openid', 'email'],
 	};
 	const testSetCookieOptions = {};
+	const mockEnd = jest.fn();
+	const mockStatus = jest.fn(() => ({ end: mockEnd }));
+
+	afterEach(() => {
+		mockEnd.mockClear();
+	});
 
 	it('sets response.status(405) when request has an unsupported method', () => {
-		const mockEnd = jest.fn();
-		const mockStatus = jest.fn(() => ({ end: mockEnd }));
 		const mockRequest = { method: 'POST' } as any;
 		const mockResponse = { status: mockStatus } as any;
 
@@ -38,8 +42,6 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 	});
 
 	it('sets response.status(400) when request.query.slug is undefined', () => {
-		const mockEnd = jest.fn();
-		const mockStatus = jest.fn(() => ({ end: mockEnd }));
 		const mockRequest = { method: 'GET', query: {} } as any;
 		const mockResponse = { status: mockStatus } as any;
 
@@ -57,8 +59,6 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 	});
 
 	it('sets response.status(404) when request.query.slug is is not a supported path', () => {
-		const mockEnd = jest.fn();
-		const mockStatus = jest.fn(() => ({ end: mockEnd }));
 		const mockRequest = {
 			method: 'GET',
 			query: { slug: 'exchange-token' },
@@ -80,8 +80,6 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 
 	// TODO(HuiSF): add use cases tests for each supported path when implemented
 	it('sets response.status(501) when handlerContext.params.slug is a supported path', () => {
-		const mockEnd = jest.fn();
-		const mockStatus = jest.fn(() => ({ end: mockEnd }));
 		const mockRequest = {
 			method: 'GET',
 			query: { slug: 'sign-in' },

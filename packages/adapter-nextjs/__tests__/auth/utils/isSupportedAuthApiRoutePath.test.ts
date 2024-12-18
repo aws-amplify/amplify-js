@@ -8,6 +8,7 @@ describe('isSupportedAuthApiRoutePath', () => {
 		['sign-out', true],
 		['sign-out-callback', true],
 		['fancy-route', false],
+		[undefined, false],
 	])('when call with %s it returns %s', (input, expectedResult) => {
 		expect(isSupportedAuthApiRoutePath(input)).toBe(expectedResult);
 	});

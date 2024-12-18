@@ -27,9 +27,9 @@ import { handleAuthApiRouteRequestForPagesRouter } from './handleAuthApiRouteReq
 export const createAuthRouteHandlersFactory = ({
 	config: resourcesConfig,
 	runtimeOptions = {},
+	amplifyAppOrigin,
 }: CreateAuthRouteHandlersFactoryInput): CreateAuthRouteHandlers => {
-	const origin = process.env.AMPLIFY_APP_ORIGIN;
-	if (!origin)
+	if (!amplifyAppOrigin)
 		throw new AmplifyServerContextError({
 			message: 'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
 			recoverySuggestion:
@@ -39,11 +39,7 @@ export const createAuthRouteHandlersFactory = ({
 	assertTokenProviderConfig(resourcesConfig.Auth?.Cognito);
 	assertOAuthConfig(resourcesConfig.Auth.Cognito);
 
-	const {
-		Cognito: {
-			loginWith: { oauth: oAuthConfig },
-		},
-	} = resourcesConfig.Auth;
+	const { oauth: oAuthConfig } = resourcesConfig.Auth.Cognito.loginWith;
 	const { cookies: setCookieOptions = {} } = runtimeOptions;
 
 	const handleRequest = async (
@@ -58,7 +54,7 @@ export const createAuthRouteHandlersFactory = ({
 				handlerInput,
 				oAuthConfig,
 				setCookieOptions,
-				origin,
+				origin: amplifyAppOrigin,
 			});
 
 			// In the Pages Router, the final response is handled by contextOrResponse
@@ -76,7 +72,7 @@ export const createAuthRouteHandlersFactory = ({
 				handlerInput,
 				oAuthConfig,
 				setCookieOptions,
-				origin,
+				origin: amplifyAppOrigin,
 			});
 		}
 

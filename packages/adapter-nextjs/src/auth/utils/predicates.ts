@@ -19,7 +19,7 @@ export function isAuthRoutesHandlersContext(
 ): context is AuthRoutesHandlerContext {
 	return (
 		'params' in context &&
-		typeof context.params === 'object' &&
+		context.params !== undefined &&
 		context.params !== null &&
 		isAuthRouteHandlerParams(context.params)
 	);

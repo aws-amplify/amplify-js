@@ -6,5 +6,5 @@ export {
 	isNextApiRequest,
 	isNextApiResponse,
 	isNextRequest,
-} from './handlerParametersTypeAssertions';
+} from './predicates';
 export { isSupportedAuthApiRoutePath } from './isSupportedAuthApiRoutePath';

@@ -31,7 +31,7 @@ export interface AuthRoutesHandlerContext {
  * The handler function for handling the GET requests sent to the Auth API routes.
  * Only `GET` method gets handled, otherwise it rejects.
  *
- * @param request - `request` can be he following:
+ * @param request - `request` can be the following:
  *   1. a `NextRequest` when the handler is used in the App Router of Next.js
  *   2. a `NextApiRequest` when the handler is used in the Pages Router of Next.js
  * @param contextOrRequest - `contextOrRequest` can be the following:
@@ -55,12 +55,12 @@ export interface CreateAuthRoutesHandlersInput {
 	 */
 	customState?: string;
 	/**
-	 * The app route redirect to when a sign-in flow completes. Defaults o the
+	 * The app route redirect to when a sign-in flow completes. Defaults to the
 	 * root of the app if not provided.
 	 */
 	redirectOnSignInComplete?: string;
 	/**
-	 * The app route redirect to when a sign-out flow completes. Defaults o the
+	 * The app route redirect to when a sign-out flow completes. Defaults to the
 	 * root of the app if not provided.
 	 */
 	redirectOnSignOutComplete?: string;
@@ -73,6 +73,7 @@ export type CreateAuthRouteHandlers = (
 export interface CreateAuthRouteHandlersFactoryInput {
 	config: ResourcesConfig;
 	runtimeOptions: NextServer.CreateServerRunnerRuntimeOptions | undefined;
+	amplifyAppOrigin?: string;
 }
 
 export type CreateOAuthRouteHandlersFactory = (

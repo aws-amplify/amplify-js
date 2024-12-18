@@ -42,6 +42,13 @@ jest.mock('../src/utils/createTokenValidator', () => ({
 describe('createServerRunner', () => {
 	let createServerRunner: NextServer.CreateServerRunner;
 
+	const AMPLIFY_APP_ORIGIN = 'https://test.com';
+	const originalProcessEnv = { ...process.env };
+	const modifiedProcessEnv = {
+		...originalProcessEnv,
+		AMPLIFY_APP_ORIGIN,
+	};
+
 	const mockParseAmplifyConfig = jest.fn(config => config);
 	const mockCreateAWSCredentialsAndIdentityIdProvider = jest.fn();
 	const mockCreateKeyValueStorageFromCookieStorageAdapter = jest.fn();
@@ -50,6 +57,8 @@ describe('createServerRunner', () => {
 	const mockCreateAuthRouteHandlersFactory = jest.fn(() => jest.fn());
 
 	beforeEach(() => {
+		process.env = modifiedProcessEnv;
+
 		jest.resetModules();
 		jest.doMock('aws-amplify/adapter-core', () => ({
 			createAWSCredentialsAndIdentityIdProvider:
@@ -72,6 +81,8 @@ describe('createServerRunner', () => {
 	});
 
 	afterEach(() => {
+		process.env = originalProcessEnv;
+
 		mockParseAmplifyConfig.mockClear();
 		mockCreateAWSCredentialsAndIdentityIdProvider.mockClear();
 		mockCreateKeyValueStorageFromCookieStorageAdapter.mockClear();
@@ -98,6 +109,7 @@ describe('createServerRunner', () => {
 		expect(mockCreateAuthRouteHandlersFactory).toHaveBeenCalledWith({
 			config: mockAmplifyConfig,
 			runtimeOptions: undefined,
+			amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 		});
 		expect(result).toMatchObject({
 			createAuthRouteHandlers: expect.any(Function),

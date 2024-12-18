@@ -10,6 +10,7 @@ import { handleAuthApiRouteRequestForPagesRouter } from '../../src/auth/handleAu
 import { NextServer } from '../../src';
 import {
 	AuthRouteHandlers,
+	CreateAuthRouteHandlersFactoryInput,
 	CreateAuthRoutesHandlersInput,
 } from '../../src/auth/types';
 import {
@@ -64,26 +65,14 @@ const mockIsAuthRoutesHandlersContext = jest.mocked(
 );
 
 describe('createAuthRoutesHandlersFactory', () => {
-	const existingProcessEnvVars = { ...process.env };
-	const modifiedProcessEnvVars = {
-		...process.env,
-		AMPLIFY_APP_ORIGIN: 'https://example.com',
-	};
+	const AMPLIFY_APP_ORIGIN = 'https://example.com';
 
-	beforeEach(() => {
-		process.env = modifiedProcessEnvVars;
-	});
-
-	afterEach(() => {
-		process.env = existingProcessEnvVars;
-	});
-
-	it('throws an error if the AMPLIFY_APP_ORIGIN environment variable is not set', () => {
-		process.env = { ...existingProcessEnvVars, AMPLIFY_APP_ORIGIN: undefined };
+	it('throws an error if the `amplifyAppOrigin` param has value of `undefined`', () => {
 		expect(() =>
 			createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
 				runtimeOptions: mockRuntimeOptions,
+				amplifyAppOrigin: undefined,
 			}),
 		).toThrow('Could not find the AMPLIFY_APP_ORIGIN environment variable.');
 	});
@@ -92,6 +81,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 		createAuthRouteHandlersFactory({
 			config: mockAmplifyConfig,
 			runtimeOptions: mockRuntimeOptions,
+			amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 		});
 
 		expect(mockAssertTokenProviderConfig).toHaveBeenCalledWith(
@@ -103,10 +93,12 @@ describe('createAuthRoutesHandlersFactory', () => {
 	});
 
 	describe('the created route handler function', () => {
-		const testCreateAuthRoutesHandlersFactoryInput = {
-			config: mockAmplifyConfig,
-			runtimeOptions: mockRuntimeOptions,
-		};
+		const testCreateAuthRoutesHandlersFactoryInput: CreateAuthRouteHandlersFactoryInput =
+			{
+				config: mockAmplifyConfig,
+				runtimeOptions: mockRuntimeOptions,
+				amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
+			};
 		const testCreateAuthRoutesHandlersInput: CreateAuthRoutesHandlersInput = {
 			customState: 'random-state',
 			redirectOnSignInComplete: '/home',
@@ -115,15 +107,10 @@ describe('createAuthRoutesHandlersFactory', () => {
 		let handler: AuthRouteHandlers;
 
 		beforeAll(() => {
-			process.env = modifiedProcessEnvVars;
 			const createAuthRoutesHandlers = createAuthRouteHandlersFactory(
 				testCreateAuthRoutesHandlersFactoryInput,
 			);
 			handler = createAuthRoutesHandlers(testCreateAuthRoutesHandlersInput);
-		});
-
-		afterAll(() => {
-			process.env = existingProcessEnvVars;
 		});
 
 		afterEach(() => {
@@ -190,6 +177,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 			const createAuthRoutesHandlers = createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
 				runtimeOptions: undefined,
+				amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 			});
 			const handlerWithDefaultParamValues =
 				createAuthRoutesHandlers(/* undefined */);
