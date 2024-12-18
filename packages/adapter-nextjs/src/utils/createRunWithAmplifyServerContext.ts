@@ -17,10 +17,15 @@ import { createCookieStorageAdapterFromNextServerContext } from './createCookieS
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
 	tokenValidator,
+	runtimeOptions = {},
 }: {
 	config: ResourcesConfig;
 	tokenValidator?: KeyValueStorageMethodValidator;
+	runtimeOptions?: NextServer.CreateServerRunnerRuntimeOptions;
 }) => {
+	const setCookieOptions = {
+		...runtimeOptions.cookies,
+	};
 	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 		async ({ nextServerContext, operation }) => {
 			// When the Auth config is presented, attempt to create a Amplify server
@@ -38,6 +43,7 @@ export const createRunWithAmplifyServerContext = ({
 									nextServerContext,
 								),
 								tokenValidator,
+								setCookieOptions,
 							);
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,
