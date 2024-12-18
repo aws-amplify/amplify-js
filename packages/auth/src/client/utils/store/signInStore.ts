@@ -89,7 +89,7 @@ const isExpired = (expiryDate: string | null): boolean => {
 };
 
 const clearPersistedSignInState = () => {
-	for (const storedKey of Object.values(SIGN_IN_STATE_KEYS)) {
+	for (const stateKey of Object.values(SIGN_IN_STATE_KEYS)) {
 		syncSessionStorage.removeItem(storedKey);
 	}
 };
