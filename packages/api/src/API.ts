@@ -3,13 +3,10 @@
 import { V6Client } from '@aws-amplify/api-graphql';
 import {
 	CommonPublicClientOptions,
+	DefaultCommonClientOptions,
 	generateClient as internalGenerateClient,
 } from '@aws-amplify/api-graphql/internals';
 import { Amplify } from '@aws-amplify/core';
-
-// NOTE: The type narrowing on CommonPublicClientOptions seems to hinge on
-// defining these signatures separately. Not sure why offhand. This is worth
-// some investigation later.
 
 /**
  * Generates an API client that can work with models or raw GraphQL
@@ -19,7 +16,7 @@ import { Amplify } from '@aws-amplify/core';
  */
 export function generateClient<
 	T extends Record<any, any> = never,
-	Options extends CommonPublicClientOptions = object,
+	Options extends CommonPublicClientOptions = DefaultCommonClientOptions,
 >(options?: Options): V6Client<T, Options> {
 	return internalGenerateClient({
 		...(options || ({} as any)),

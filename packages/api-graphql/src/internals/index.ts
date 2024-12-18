@@ -7,4 +7,4 @@ export {
 
 export { graphql, cancel, isCancelError } from './v6';
 export { generateClient } from './generateClient';
-export { CommonPublicClientOptions } from './types';
+export { CommonPublicClientOptions, DefaultCommonClientOptions } from './types';

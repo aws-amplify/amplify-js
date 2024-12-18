@@ -24,7 +24,7 @@ import {
 import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
 import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
 import { cancel, graphql, isCancelError } from './v6';
-import { ClientGenerationParams, CommonPublicClientOptions } from './types';
+import { ClientGenerationParams } from './types';
 
 /**
  * @private
@@ -37,8 +37,8 @@ import { ClientGenerationParams, CommonPublicClientOptions } from './types';
  */
 export function generateClient<
 	T extends Record<any, any> = never,
-	Options extends CommonPublicClientOptions = object,
->(params: ClientGenerationParams): V6Client<T, Options> {
+	Options extends ClientGenerationParams = ClientGenerationParams,
+>(params: Options): V6Client<T, Options> {
 	const client = {
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
