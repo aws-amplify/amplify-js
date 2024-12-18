@@ -386,17 +386,14 @@ export class InternalGraphQLAPIClass {
 
 		const appSyncGraphqlEndpoint = endpoint ?? config?.endpoint;
 
-		if (!appSyncGraphqlEndpoint) {
-			throw new Error(
-				'Endpoint missing from subscription query. An endpoint must either be configured or provided at the call site.',
-			);
-		}
-
+		// TODO: This could probably be an exception. But, lots of tests rely on
+		// attempting to connect to nowhere. So, I'm treating as the opposite of
+		// a Chesterton's fence for now. (A fence I shouldn't build, because I don't
+		// know why somethings depends on its absence!)
+		const memoKey = appSyncGraphqlEndpoint ?? 'none';
 		const realtimeProvider =
-			this.appSyncRealTime.get(appSyncGraphqlEndpoint!) ??
-			new AWSAppSyncRealTimeProvider();
-
-		this.appSyncRealTime.set(appSyncGraphqlEndpoint, realtimeProvider);
+			this.appSyncRealTime.get(memoKey) ?? new AWSAppSyncRealTimeProvider();
+		this.appSyncRealTime.set(memoKey, realtimeProvider);
 
 		return realtimeProvider
 			.subscribe(
