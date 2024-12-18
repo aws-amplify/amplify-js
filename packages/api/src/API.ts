@@ -17,27 +17,12 @@ import { Amplify } from '@aws-amplify/core';
  * @returns {@link V6Client}
  * @throws {@link Error} - Throws error when client cannot be generated due to configuration issues.
  */
-export function generateClient<T extends Record<any, any> = never>(
-	options?: CommonPublicClientOptions<false, false>,
-): V6Client<T, false, false>;
-export function generateClient<T extends Record<any, any> = never>(
-	options?: CommonPublicClientOptions<false, true>,
-): V6Client<T, false, true>;
-export function generateClient<T extends Record<any, any> = never>(
-	options?: CommonPublicClientOptions<true, false>,
-): V6Client<T, true, false>;
-export function generateClient<T extends Record<any, any> = never>(
-	options?: CommonPublicClientOptions<true, true>,
-): V6Client<T, true, true>;
 export function generateClient<
-	WithCustomEndpoint extends boolean,
-	WithApiKey extends boolean,
 	T extends Record<any, any> = never,
->(
-	options?: CommonPublicClientOptions<WithCustomEndpoint, WithApiKey>,
-): V6Client<T, WithCustomEndpoint, WithApiKey> {
+	Options extends CommonPublicClientOptions = object,
+>(options?: Options): V6Client<T, Options> {
 	return internalGenerateClient({
 		...(options || ({} as any)),
 		amplify: Amplify,
-	}) as unknown as V6Client<T, WithCustomEndpoint, WithApiKey>;
+	}) as unknown as V6Client<T, Options>;
 }

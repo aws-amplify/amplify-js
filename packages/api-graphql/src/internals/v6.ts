@@ -4,6 +4,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
+	CommonPublicClientOptions,
 	GraphQLOptionsV6,
 	GraphQLResponseV6,
 	V6Client,
@@ -97,9 +98,10 @@ import {
 export function graphql<
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string,
+	Options extends CommonPublicClientOptions = object,
 >(
 	this: V6Client,
-	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
+	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>,
 	additionalHeaders?: CustomHeaders,
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	// inject client-level auth
@@ -154,7 +156,7 @@ export function graphql<
 		{
 			...options,
 			endpoint: clientEndpoint,
-		},
+		} as any,
 		headers,
 	);
 

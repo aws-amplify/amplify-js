@@ -18,24 +18,14 @@ import { NextServer } from '../types';
 
 import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 
-type CookiesClientParams<
-	WithEndpoint extends boolean,
-	WithApiKey extends boolean,
-> = {
+interface CookiesClientParams {
 	cookies: NextServer.ServerComponentContext['cookies'];
 	config: NextServer.CreateServerRunnerInput['config'];
-} & CommonPublicClientOptions<WithEndpoint, WithApiKey>;
+}
 
-type ReqClientParams<
-	WithEndpoint extends boolean,
-	WithApiKey extends boolean,
-> = {
+interface ReqClientParams {
 	config: NextServer.CreateServerRunnerInput['config'];
-} & CommonPublicClientOptions<WithEndpoint, WithApiKey>;
-
-// NOTE: The type narrowing on CommonPublicClientOptions seems to hinge on
-// defining these signatures separately. Not sure why offhand. This is worth
-// some investigation later.
+}
 
 /**
  * Generates an API client that can be used inside a Next.js Server Component with Dynamic Rendering
@@ -48,29 +38,9 @@ type ReqClientParams<
  */
 export function generateServerClientUsingCookies<
 	T extends Record<any, any> = never,
->(
-	options: CookiesClientParams<false, false>,
-): V6ClientSSRCookies<T, false, false>;
-export function generateServerClientUsingCookies<
-	T extends Record<any, any> = never,
->(
-	options: CookiesClientParams<false, true>,
-): V6ClientSSRCookies<T, false, true>;
-export function generateServerClientUsingCookies<
-	T extends Record<any, any> = never,
->(
-	options: CookiesClientParams<true, false>,
-): V6ClientSSRCookies<T, true, false>;
-export function generateServerClientUsingCookies<
-	T extends Record<any, any> = never,
->(options: CookiesClientParams<true, true>): V6ClientSSRCookies<T, true, true>;
-export function generateServerClientUsingCookies<
-	T extends Record<any, any> = never,
-	WithCustomEndpoint extends boolean = false,
-	WithApiKey extends boolean = false,
->(
-	options: CookiesClientParams<WithCustomEndpoint, WithApiKey>,
-): V6ClientSSRCookies<T, WithCustomEndpoint, WithApiKey> {
+	Options extends CommonPublicClientOptions &
+		CookiesClientParams = CookiesClientParams,
+>(options: Options): V6ClientSSRCookies<T, Options> {
 	if (typeof options.cookies !== 'function') {
 		throw new AmplifyServerContextError({
 			message:
@@ -96,10 +66,7 @@ export function generateServerClientUsingCookies<
 
 	const { cookies: _cookies, config: _config, ...params } = options;
 
-	return generateClientWithAmplifyInstance<
-		T,
-		V6ClientSSRCookies<T, WithCustomEndpoint, WithApiKey>
-	>({
+	return generateClientWithAmplifyInstance<T, V6ClientSSRCookies<T, Options>>({
 		amplify: getAmplify,
 		config: resourcesConfig,
 		...params,
@@ -124,29 +91,14 @@ export function generateServerClientUsingCookies<
  */
 export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never,
->(options: ReqClientParams<false, false>): V6ClientSSRRequest<T, false, false>;
-export function generateServerClientUsingReqRes<
-	T extends Record<any, any> = never,
->(options: ReqClientParams<false, true>): V6ClientSSRRequest<T, false, true>;
-export function generateServerClientUsingReqRes<
-	T extends Record<any, any> = never,
->(options: ReqClientParams<true, false>): V6ClientSSRRequest<T, true, false>;
-export function generateServerClientUsingReqRes<
-	T extends Record<any, any> = never,
->(options: ReqClientParams<true, true>): V6ClientSSRRequest<T, true, true>;
-export function generateServerClientUsingReqRes<
-	T extends Record<any, any> = never,
-	WithCustomEndpoint extends boolean = false,
-	WithApiKey extends boolean = false,
->(
-	options: ReqClientParams<WithCustomEndpoint, WithApiKey>,
-): V6ClientSSRRequest<T, WithCustomEndpoint, WithApiKey> {
+	Options extends CommonPublicClientOptions & ReqClientParams = ReqClientParams,
+>(options: Options): V6ClientSSRRequest<T, Options> {
 	const amplifyConfig = parseAmplifyConfig(options.config);
 
 	const { config: _config, ...params } = options;
 
-	return generateClient<T, WithCustomEndpoint, WithApiKey>({
+	return generateClient<T>({
 		config: amplifyConfig,
 		...params,
-	} as any); // TS can't narrow the type here.
+	}) as any;
 }

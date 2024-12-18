@@ -33,10 +33,10 @@ import { cancel, graphql, isCancelError } from '..';
 export function generateClientWithAmplifyInstance<
 	T extends Record<any, any> = never,
 	ClientType extends
-		| V6ClientSSRRequest<T, any, any>
-		| V6ClientSSRCookies<T, any, any> = V6ClientSSRCookies<T, any, any>,
+		| V6ClientSSRRequest<T>
+		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>,
 >(
-	params: ServerClientGenerationParams & CommonPublicClientOptions<any, any>,
+	params: ServerClientGenerationParams & CommonPublicClientOptions,
 ): ClientType {
 	const client = {
 		[__amplify]: params.amplify,
