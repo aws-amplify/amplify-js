@@ -68,6 +68,9 @@ export interface AuthSignInWithRedirectInput {
 		 * On all other platforms, this flag is ignored.
 		 */
 		preferPrivateSession?: boolean;
+		loginHint?: string;
+		lang?: string;
+		nonce?: string;
 	};
 }
 
