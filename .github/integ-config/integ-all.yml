@@ -622,7 +622,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: sign-in-resumable-mfa
-    browser: [chrome]
+    browser: *minimal_browser_list
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
