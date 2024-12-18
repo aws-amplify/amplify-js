@@ -16,7 +16,7 @@ import { createCookieStorageAdapterFromNextServerContext } from './createCookieS
 
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
-	runtimeOptions = { cookies: {} },
+	runtimeOptions = {},
 }: {
 	config: ResourcesConfig;
 	runtimeOptions?: NextServer.CreateServerRunnerRuntimeOptions;
@@ -37,7 +37,7 @@ export const createRunWithAmplifyServerContext = ({
 					nextServerContext === null
 						? sharedInMemoryStorage
 						: createKeyValueStorageFromCookieStorageAdapter(
-								createCookieStorageAdapterFromNextServerContext(
+								await createCookieStorageAdapterFromNextServerContext(
 									nextServerContext,
 								),
 								createTokenValidator({

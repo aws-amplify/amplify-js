@@ -14,15 +14,13 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { ConfirmSignUpException } from '../types/errors';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { AutoSignInEventData } from '../types/models';
-import {
-	isAutoSignInStarted,
-	isAutoSignInUserUsingConfirmSignUp,
-	setAutoSignInStarted,
-} from '../utils/signUpHelpers';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getUserContextData } from '../utils/userContextData';
 import { createConfirmSignUpClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
+import { autoSignInStore } from '../../../client/utils/store';
+
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Confirms a new user account.
@@ -65,7 +63,7 @@ export async function confirmSignUp(
 		}),
 	});
 
-	await confirmSignUpClient(
+	const { Session: session } = await confirmSignUpClient(
 		{
 			region: getRegionFromUserPoolId(authConfig.userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignUp),
@@ -88,15 +86,19 @@ export async function confirmSignUp(
 					signUpStep: 'DONE',
 				},
 			};
+			const autoSignInStoreState = autoSignInStore.getState();
 
 			if (
-				!isAutoSignInStarted() ||
-				!isAutoSignInUserUsingConfirmSignUp(username)
+				!autoSignInStoreState.active ||
+				autoSignInStoreState.username !== username
 			) {
 				resolve(signUpOut);
+				resetAutoSignIn();
 
 				return;
 			}
+
+			autoSignInStore.dispatch({ type: 'SET_SESSION', value: session });
 
 			const stopListener = HubInternal.listen<AutoSignInEventData>(
 				'auth-internal',
@@ -109,7 +111,6 @@ export async function confirmSignUp(
 									signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 								},
 							});
-							setAutoSignInStarted(false);
 							stopListener();
 					}
 				},

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.2...@aws-amplify/core@6.7.3) (2024-12-12)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.1...@aws-amplify/core@6.7.2) (2024-12-03)
+
+### Bug Fixes
+
+- bump package version ([c5ab404](https://github.com/aws-amplify/amplify-js/commit/c5ab40454c22b91fd54a293831e88c4bb9ae45ee))
+
+## [6.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.0...@aws-amplify/core@6.7.1) (2024-12-03)
+
+### Bug Fixes
+
+- amplify configure with auth userGroups ([#14046](https://github.com/aws-amplify/amplify-js/issues/14046)) ([4278be2](https://github.com/aws-amplify/amplify-js/commit/4278be2b07374a98724e4d787891a36a2bf55c05))
+
+# [6.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.6.0...@aws-amplify/core@6.7.0) (2024-11-25)
+
+### Features
+
+- **auth:** passwordless ([#14032](https://github.com/aws-amplify/amplify-js/issues/14032)) ([68c7f6f](https://github.com/aws-amplify/amplify-js/commit/68c7f6fbaa903ac8e45035bc25a71321a6240aec)), closes [#1](https://github.com/aws-amplify/amplify-js/issues/1) [#3](https://github.com/aws-amplify/amplify-js/issues/3) [#6](https://github.com/aws-amplify/amplify-js/issues/6) [#8](https://github.com/aws-amplify/amplify-js/issues/8) [#2](https://github.com/aws-amplify/amplify-js/issues/2) [#11](https://github.com/aws-amplify/amplify-js/issues/11) [#7](https://github.com/aws-amplify/amplify-js/issues/7) [#14](https://github.com/aws-amplify/amplify-js/issues/14) [#15](https://github.com/aws-amplify/amplify-js/issues/15) [#16](https://github.com/aws-amplify/amplify-js/issues/16) [#18](https://github.com/aws-amplify/amplify-js/issues/18) [#17](https://github.com/aws-amplify/amplify-js/issues/17) [#19](https://github.com/aws-amplify/amplify-js/issues/19) [#22](https://github.com/aws-amplify/amplify-js/issues/22)
+
 # [6.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.5.3...@aws-amplify/core@6.6.0) (2024-11-20)
 
 ### Features

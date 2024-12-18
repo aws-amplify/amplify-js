@@ -28,10 +28,12 @@ import {
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
@@ -99,6 +101,8 @@ export async function signInWithUserPassword(
 
 			await dispatchSignedInHubEvent();
 
+			resetAutoSignIn();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -111,6 +115,7 @@ export async function signInWithUserPassword(
 		});
 	} catch (error) {
 		cleanActiveSignInState();
+		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

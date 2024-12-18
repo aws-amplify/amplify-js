@@ -212,7 +212,7 @@ export type GraphQLOperation = Source | string;
 export interface GraphQLOptionsV6<
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string,
-> {
+> extends Record<string, unknown> {
 	query: TYPED_GQL_STRING | DocumentNode;
 	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 	authMode?: GraphQLAuthMode;
