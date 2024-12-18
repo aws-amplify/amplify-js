@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - feat/proactive-token-refresh
+      - replace-with-your-branch
 
 jobs:
   e2e:
