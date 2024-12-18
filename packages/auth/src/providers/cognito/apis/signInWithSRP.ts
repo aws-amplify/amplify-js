@@ -28,8 +28,8 @@ import {
 	SignInWithSRPOutput,
 } from '../types';
 import {
+	cleanActiveSignInState,
 	setActiveSignInState,
-	signInStore,
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
@@ -102,7 +102,7 @@ export async function signInWithSRP(
 				}),
 				signInDetails,
 			});
-			signInStore.dispatch({ type: 'RESET_STATE' });
+			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 
@@ -119,7 +119,7 @@ export async function signInWithSRP(
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		signInStore.dispatch({ type: 'RESET_STATE' });
+		cleanActiveSignInState();
 		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);

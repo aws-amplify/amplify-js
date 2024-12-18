@@ -24,8 +24,8 @@ import {
 	SignInWithCustomSRPAuthOutput,
 } from '../types';
 import {
+	cleanActiveSignInState,
 	setActiveSignInState,
-	signInStore,
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
@@ -100,7 +100,7 @@ export async function signInWithCustomSRPAuth(
 				}),
 				signInDetails,
 			});
-			signInStore.dispatch({ type: 'RESET_STATE' });
+			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 
@@ -115,7 +115,7 @@ export async function signInWithCustomSRPAuth(
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		signInStore.dispatch({ type: 'RESET_STATE' });
+		cleanActiveSignInState();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;
