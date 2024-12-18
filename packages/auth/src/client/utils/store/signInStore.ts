@@ -68,7 +68,7 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 			};
 
 		case 'SET_INITIAL_STATE':
-			return initializeState();
+			return getInitialState();
 
 		case 'RESET_STATE':
 			clearPersistedSignInState();
@@ -90,7 +90,7 @@ const isExpired = (expiryDate: string | null): boolean => {
 
 const clearPersistedSignInState = () => {
 	for (const stateKey of Object.values(SIGN_IN_STATE_KEYS)) {
-		syncSessionStorage.removeItem(storedKey);
+		syncSessionStorage.removeItem(stateKey);
 	}
 };
 
@@ -100,8 +100,8 @@ const getDefaultState = (): SignInState => ({
 	signInSession: undefined,
 });
 
-// Hydrate signInStore from Synced Session Storage
-const initializeState = (): SignInState => {
+// Hydrate signInStore from syncSessionStorage
+const getInitialState = (): SignInState => {
 	const expiry = syncSessionStorage.getItem(SIGN_IN_STATE_KEYS.expiry);
 
 	if (!expiry || (expiry && isExpired(expiry))) {

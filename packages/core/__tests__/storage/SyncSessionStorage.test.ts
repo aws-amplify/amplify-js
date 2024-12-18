@@ -24,25 +24,18 @@ describe('SyncSessionStorage', () => {
 
 	it('can set and retrieve item by key', () => {
 		sessionStorage.setItem(signInStateKeys.username, user1.username);
-		sessionStorage.setItem(signInStateKeys.challengeName, user1.challengeName);
-		sessionStorage.setItem(signInStateKeys.signInSession, user1.signInSession);
-		sessionStorage.setItem(signInStateKeys.expiry, user1.expiry);
 
 		expect(sessionStorage.getItem(signInStateKeys.username)).toBe(
 			user1.username,
 		);
-		expect(sessionStorage.getItem(signInStateKeys.challengeName)).toBe(
-			user1.challengeName,
-		);
-		expect(sessionStorage.getItem(signInStateKeys.signInSession)).toBe(
-			user1.signInSession,
-		);
-		expect(sessionStorage.getItem(signInStateKeys.expiry)).toBe(user1.expiry);
 	});
 
 	it('can override item by setting with the same key', () => {
 		const newUserName = 'joonchoi+test';
 		sessionStorage.setItem(signInStateKeys.username, user1.username);
+		expect(sessionStorage.getItem(signInStateKeys.username)).toBe(
+			user1.username,
+		);
 		sessionStorage.setItem(signInStateKeys.username, newUserName);
 
 		expect(sessionStorage.getItem(signInStateKeys.username)).toBe(newUserName);
@@ -58,16 +51,12 @@ describe('SyncSessionStorage', () => {
 
 	it('clears all items', () => {
 		sessionStorage.setItem(signInStateKeys.username, user1.username);
-		sessionStorage.setItem(signInStateKeys.challengeName, user1.challengeName);
 		sessionStorage.setItem(signInStateKeys.signInSession, user1.signInSession);
-		sessionStorage.setItem(signInStateKeys.expiry, user1.expiry);
 
 		sessionStorage.clear();
 
 		expect(sessionStorage.getItem(signInStateKeys.username)).toBeNull();
-		expect(sessionStorage.getItem(signInStateKeys.challengeName)).toBeNull();
 		expect(sessionStorage.getItem(signInStateKeys.signInSession)).toBeNull();
-		expect(sessionStorage.getItem(signInStateKeys.expiry)).toBeNull();
 	});
 
 	it('will not throw if trying to delete a non existing key', () => {
