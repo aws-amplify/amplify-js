@@ -16,7 +16,7 @@ jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
 	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
-jest.mock('../../../src/client/utils/store/signInStore');
+jest.mock('../../../src/client/utils/store');
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );

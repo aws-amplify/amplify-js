@@ -10,10 +10,7 @@ import {
 	VerifySoftwareTokenException,
 } from '../types/errors';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
-import {
-	setActiveSignInState,
-	signInStore,
-} from '../../../client/utils/store/signInStore';
+import { setActiveSignInState, signInStore } from '../../../client/utils/store';
 import { AuthError } from '../../../errors/AuthError';
 import {
 	getNewDeviceMetadata,
