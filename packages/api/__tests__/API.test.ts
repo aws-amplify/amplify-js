@@ -33,7 +33,20 @@ const DEFAULT_AUTH_TOKEN =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
 
 const _postSpy = jest.spyOn((GraphQLAPI as any)._api, 'post');
-const _subspy = jest.spyOn((GraphQLAPI as any).appSyncRealTime, 'subscribe');
+const _subspy = jest.fn();
+
+/**
+ * Should be called on every subscription, ensuring that realtime provider instances
+ * are re-used for each distinct endpoint.
+ */
+const _setProviderSpy = jest.fn();
+
+(GraphQLAPI as any).appSyncRealTime = {
+	get() {
+		return { subscribe: _subspy }
+	},
+	set: _setProviderSpy
+};
 
 /**
  * Validates that a specific "post" occurred (against `_postSpy`).
@@ -116,6 +129,7 @@ function expectSubscription({
 		}),
 		expect.anything(),
 	);
+	expect(_setProviderSpy).toHaveBeenCalledWith(endpoint, expect.anything());
 }
 
 /**
@@ -204,7 +218,7 @@ describe('generateClient (web)', () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	for (const op of ['query', 'subscription'] as const) {

@@ -52,7 +52,7 @@ export class InternalGraphQLAPIClass {
 	/**
 	 * @private
 	 */
-	private appSyncRealTime = new AWSAppSyncRealTimeProvider();
+	private appSyncRealTime = new Map<string, AWSAppSyncRealTimeProvider>();
 
 	private _api = {
 		post,
@@ -384,12 +384,26 @@ export class InternalGraphQLAPIClass {
 		 */
 		const { headers: libraryConfigHeaders } = resolveLibraryOptions(amplify);
 
-		return this.appSyncRealTime
+		const appSyncGraphqlEndpoint = endpoint ?? config?.endpoint;
+
+		if (!appSyncGraphqlEndpoint) {
+			throw new Error(
+				'Endpoint missing from subscription query. An endpoint must either be configured or provided at the call site.',
+			);
+		}
+
+		const realtimeProvider =
+			this.appSyncRealTime.get(appSyncGraphqlEndpoint!) ??
+			new AWSAppSyncRealTimeProvider();
+
+		this.appSyncRealTime.set(appSyncGraphqlEndpoint, realtimeProvider);
+
+		return realtimeProvider
 			.subscribe(
 				{
 					query: print(query as DocumentNode),
 					variables,
-					appSyncGraphqlEndpoint: endpoint ?? config?.endpoint,
+					appSyncGraphqlEndpoint,
 					region: config?.region,
 					authenticationType: authMode,
 					apiKey: apiKeyOverride ?? config?.apiKey,
