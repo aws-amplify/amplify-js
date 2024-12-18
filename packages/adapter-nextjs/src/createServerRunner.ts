@@ -29,6 +29,7 @@ import { createTokenValidator } from './utils/createTokenValidator';
  */
 export const createServerRunner: NextServer.CreateServerRunner = ({
 	config,
+	runtimeOptions,
 }) => {
 	const amplifyConfig = parseAmplifyConfig(config);
 
@@ -45,6 +46,7 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
 			config: amplifyConfig,
 			tokenValidator,
+			runtimeOptions,
 		}),
 	};
 };
