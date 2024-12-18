@@ -26,11 +26,11 @@ import {
 	SignInWithUserAuthInput,
 	SignInWithUserAuthOutput,
 } from '../types';
+import { autoSignInStore } from '../../../client/utils/store';
 import {
-	autoSignInStore,
 	resetActiveSignInState,
 	setActiveSignInState,
-} from '../../../client/utils/store';
+} from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { tokenOrchestrator } from '../tokenProvider';
