@@ -1,85 +1,108 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { CognitoJwtVerifier } from 'aws-jwt-verify';
+
 import { isValidCognitoToken } from '../../src/utils/isValidCognitoToken';
 import { createTokenValidator } from '../../src/utils/createTokenValidator';
+import { JwtVerifier } from '../../src/types';
 
+jest.mock('aws-jwt-verify');
 jest.mock('../../src/utils/isValidCognitoToken');
 
-const mockIsValidCognitoToken = isValidCognitoToken as jest.Mock;
+describe('createTokenValidator', () => {
+	const userPoolId = 'userPoolId';
+	const userPoolClientId = 'clientId';
+	const accessToken = {
+		key: 'CognitoIdentityServiceProvider.clientId.usersub.accessToken',
+		value: 'access-token-value',
+	};
+	const idToken = {
+		key: 'CognitoIdentityServiceProvider.clientId.usersub.idToken',
+		value: 'id-token-value',
+	};
 
-const userPoolId = 'userPoolId';
-const userPoolClientId = 'clientId';
-const tokenValidatorInput = {
-	userPoolId,
-	userPoolClientId,
-};
-const accessToken = {
-	key: 'CognitoIdentityServiceProvider.clientId.usersub.accessToken',
-	value:
-		'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTEiLCJpc3MiOiJodHRwc',
-};
-const idToken = {
-	key: 'CognitoIdentityServiceProvider.clientId.usersub.idToken',
-	value: 'eyJzdWIiOiIxMTEiLCJpc3MiOiJodHRwc.XAiOiJKV1QiLCJhbGciOiJIUzI1NiJ',
-};
+	const mockIsValidCognitoToken = jest.mocked(isValidCognitoToken);
+	const mockCognitoJwtVerifier = {
+		create: jest.mocked(CognitoJwtVerifier.create),
+	};
 
-const tokenValidator = createTokenValidator({
-	userPoolId,
-	userPoolClientId,
-});
-
-describe('Validator', () => {
 	afterEach(() => {
-		jest.resetAllMocks();
-	});
-	it('should return a validator', () => {
-		expect(createTokenValidator(tokenValidatorInput)).toBeDefined();
+		mockIsValidCognitoToken.mockClear();
 	});
 
-	it('should return true for non-token keys', async () => {
-		const result = await tokenValidator.getItem?.('mockKey', 'mockValue');
-		expect(result).toBe(true);
-		expect(mockIsValidCognitoToken).toHaveBeenCalledTimes(0);
-	});
-
-	it('should return true for valid accessToken', async () => {
-		mockIsValidCognitoToken.mockImplementation(() => Promise.resolve(true));
-
-		const result = await tokenValidator.getItem?.(
-			accessToken.key,
-			accessToken.value,
-		);
-
-		expect(result).toBe(true);
-		expect(mockIsValidCognitoToken).toHaveBeenCalledTimes(1);
-		expect(mockIsValidCognitoToken).toHaveBeenCalledWith({
-			userPoolId,
-			clientId: userPoolClientId,
-			token: accessToken.value,
-			tokenType: 'access',
+	it('should return a token validator', () => {
+		expect(
+			createTokenValidator({
+				userPoolId,
+				userPoolClientId,
+			}),
+		).toStrictEqual({
+			getItem: expect.any(Function),
 		});
 	});
 
-	it('should return true for valid idToken', async () => {
-		mockIsValidCognitoToken.mockImplementation(() => Promise.resolve(true));
-
-		const result = await tokenValidator.getItem?.(idToken.key, idToken.value);
-		expect(result).toBe(true);
-		expect(mockIsValidCognitoToken).toHaveBeenCalledTimes(1);
-		expect(mockIsValidCognitoToken).toHaveBeenCalledWith({
-			userPoolId,
-			clientId: userPoolClientId,
-			token: idToken.value,
-			tokenType: 'id',
+	describe('created token validator', () => {
+		afterEach(() => {
+			mockCognitoJwtVerifier.create.mockReset();
 		});
-	});
 
-	it('should return false if invalid tokenType is access', async () => {
-		mockIsValidCognitoToken.mockImplementation(() => Promise.resolve(false));
+		it('should return true if key is not for access or id tokens', async () => {
+			const tokenValidator = createTokenValidator({
+				userPoolId,
+				userPoolClientId,
+			});
 
-		const result = await tokenValidator.getItem?.(idToken.key, idToken.value);
-		expect(result).toBe(false);
-		expect(mockIsValidCognitoToken).toHaveBeenCalledTimes(1);
+			expect(await tokenValidator.getItem?.('key', 'value')).toBe(true);
+			expect(mockIsValidCognitoToken).not.toHaveBeenCalled();
+		});
+
+		it('should return false if validator created without user pool or client ids', async () => {
+			const tokenValidator = createTokenValidator({});
+
+			expect(
+				await tokenValidator.getItem?.(accessToken.key, accessToken.value),
+			).toBe(false);
+			expect(await tokenValidator.getItem?.(idToken.key, idToken.value)).toBe(
+				false,
+			);
+			expect(mockIsValidCognitoToken).not.toHaveBeenCalled();
+		});
+
+		describe.each([
+			{ tokenUse: 'access', token: accessToken },
+			{ tokenUse: 'id', token: idToken },
+		])('$tokenUse token verifier', ({ tokenUse, token }) => {
+			const mockTokenVerifier = {} as JwtVerifier;
+			const tokenValidator = createTokenValidator({
+				userPoolId,
+				userPoolClientId,
+			});
+
+			beforeAll(() => {
+				mockCognitoJwtVerifier.create.mockReturnValue(mockTokenVerifier);
+			});
+
+			it('should create a jwt verifier and use it to validate', async () => {
+				await tokenValidator.getItem?.(token.key, token.value);
+
+				expect(mockCognitoJwtVerifier.create).toHaveBeenCalledWith({
+					userPoolId,
+					clientId: userPoolClientId,
+					tokenUse,
+				});
+				expect(mockIsValidCognitoToken).toHaveBeenCalledWith({
+					token: token.value,
+					verifier: mockTokenVerifier,
+				});
+			});
+
+			it('should not re-create the jwt verifier', async () => {
+				await tokenValidator.getItem?.(token.key, token.value);
+
+				expect(mockCognitoJwtVerifier.create).not.toHaveBeenCalled();
+				expect(mockIsValidCognitoToken).toHaveBeenCalled();
+			});
+		});
 	});
 });

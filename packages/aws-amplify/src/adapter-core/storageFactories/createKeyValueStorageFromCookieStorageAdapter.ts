@@ -23,7 +23,7 @@ const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
  */
 export const createKeyValueStorageFromCookieStorageAdapter = (
 	cookieStorageAdapter: CookieStorage.Adapter,
-	validatorMap?: KeyValueStorageMethodValidator,
+	validator?: KeyValueStorageMethodValidator,
 ): KeyValueStorageInterface => {
 	return {
 		setItem(key, value) {
@@ -44,8 +44,8 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 			const cookie = cookieStorageAdapter.get(key);
 			const value = cookie?.value ?? null;
 
-			if (value && validatorMap?.getItem) {
-				const isValid = await validatorMap.getItem(key, value);
+			if (value && validator?.getItem) {
+				const isValid = await validator.getItem(key, value);
 				if (!isValid) return null;
 			}
 

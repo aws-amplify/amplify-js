@@ -114,7 +114,7 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
       - name: Copy files from samples staging repo
         run: |
-          rm -r ./samples/next/auth/new-next-app 
+          rm -r ./samples/next/auth/new-next-app
           cp -r ./samples/next/auth/auth-rsc ./samples/next/auth/new-next-app
         working-directory: amplify-js-samples-staging
       - name: Copy test file from samples staging repo
@@ -124,10 +124,8 @@ jobs:
       - name: Install dependencies
         run: npm install
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
-      - name: Install amplify
-        run: |
-          npm install -g npm@latest
-          npm install aws-amplify -legacy-peer-deps
+      - name: Install latest stable amplify version
+        run: npm install aws-amplify@latest @aws-amplify/adapter-nextjs@latest
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
       - name: Start application and run test
         run: |
@@ -186,15 +184,14 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/javascript/datastore
       - name: Install amplify
         run: |
-          npm install -g npm@latest
-          npm install aws-amplify -legacy-peer-deps
+          npm install aws-amplify@latest
         working-directory: amplify-js-samples-staging/samples/javascript/datastore/new-javascript-app
       - name: Remove existing src folder
         run: rm -rf src
         working-directory: amplify-js-samples-staging/samples/javascript/datastore/new-javascript-app
       - name: Copy files from samples staging repo
         run: |
-          rm -r ./samples/javascript/datastore/new-javascript-app 
+          rm -r ./samples/javascript/datastore/new-javascript-app
           cp -r ./samples/javascript/datastore/basic-crud ./samples/javascript/datastore/new-javascript-app
         working-directory: amplify-js-samples-staging
       - name: Copy test file from samples staging repo

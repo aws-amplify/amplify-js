@@ -11,7 +11,7 @@ import {
 } from '../types/errors';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
 import {
-	cleanActiveSignInState,
+	resetActiveSignInState,
 	setActiveSignInState,
 	signInStore,
 } from '../../../client/utils/store';
@@ -120,7 +120,7 @@ export async function confirmSignIn(
 				}),
 				signInDetails,
 			});
-			cleanActiveSignInState();
+			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 
