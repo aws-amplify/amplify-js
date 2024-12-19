@@ -270,7 +270,14 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const spy = jest.fn(() => from([graphqlMessage]));
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+			(raw.GraphQLAPI as any).appSyncRealTime = {
+				get() {
+					return { subscribe: spy }
+				},
+				set() {
+					// not needed for test mock
+				}
+			};
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
@@ -497,7 +504,14 @@ describe('generateClient', () => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 
 				const spy = jest.fn(() => from([graphqlMessage]));
-				(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+				(raw.GraphQLAPI as any).appSyncRealTime = {
+					get() {
+						return { subscribe: spy }
+					},
+					set() {
+						// not needed for test mock
+					}
+				};
 
 				client.models.Note.onCreate({
 					filter: graphqlVariables.filter,
@@ -531,7 +545,14 @@ describe('generateClient', () => {
 				});
 
 				const spy = jest.fn(() => from([graphqlMessage]));
-				(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+				(raw.GraphQLAPI as any).appSyncRealTime = {
+					get() {
+						return { subscribe: spy }
+					},
+					set() {
+						// not needed for test mock
+					}
+				};
 
 				client.models.Note.onCreate({
 					filter: graphqlVariables.filter,
@@ -561,7 +582,14 @@ describe('generateClient', () => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 
 				const spy = jest.fn(() => from([graphqlMessage]));
-				(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+				(raw.GraphQLAPI as any).appSyncRealTime = {
+					get() {
+						return { subscribe: spy }
+					},
+					set() {
+						// not needed for test mock
+					}
+				};
 
 				client.models.Note.onCreate({
 					filter: graphqlVariables.filter,
@@ -583,7 +611,14 @@ describe('generateClient', () => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 
 				const spy = jest.fn(() => from([graphqlMessage]));
-				(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+				(raw.GraphQLAPI as any).appSyncRealTime = {
+					get() {
+						return { subscribe: spy }
+					},
+					set() {
+						// not needed for test mock
+					}
+				};
 
 				client.models.Note.onCreate({
 					filter: graphqlVariables.filter,
@@ -711,7 +746,14 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const spy = jest.fn(() => from([graphqlMessage]));
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+			(raw.GraphQLAPI as any).appSyncRealTime = {
+				get() {
+					return { subscribe: spy }
+				},
+				set() {
+					// not needed for test mock
+				}
+			};
 
 			client.models.Note.onCreate({
 				filter: graphqlVariables.filter,

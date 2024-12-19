@@ -52,7 +52,7 @@ export class InternalGraphQLAPIClass {
 	/**
 	 * @private
 	 */
-	private appSyncRealTime = new AWSAppSyncRealTimeProvider();
+	private appSyncRealTime = new Map<string, AWSAppSyncRealTimeProvider>();
 
 	private _api = {
 		post,
@@ -88,7 +88,14 @@ export class InternalGraphQLAPIClass {
 		amplify:
 			| AmplifyClassV6
 			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
-		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+		{
+			query: paramQuery,
+			variables = {},
+			authMode,
+			authToken,
+			endpoint,
+			apiKey,
+		}: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
@@ -115,7 +122,7 @@ export class InternalGraphQLAPIClass {
 				if (isAmplifyInstance(amplify)) {
 					responsePromise = this._graphql<T>(
 						amplify,
-						{ query, variables, authMode },
+						{ query, variables, authMode, apiKey, endpoint },
 						headers,
 						abortController,
 						customUserAgentDetails,
@@ -127,7 +134,7 @@ export class InternalGraphQLAPIClass {
 					const wrapper = async (amplifyInstance: AmplifyClassV6) => {
 						const result = await this._graphql<T>(
 							amplifyInstance,
-							{ query, variables, authMode },
+							{ query, variables, authMode, apiKey, endpoint },
 							headers,
 							abortController,
 							customUserAgentDetails,
@@ -152,7 +159,7 @@ export class InternalGraphQLAPIClass {
 			case 'subscription':
 				return this._graphqlSubscribe(
 					amplify as AmplifyClassV6,
-					{ query, variables, authMode },
+					{ query, variables, authMode, apiKey, endpoint },
 					headers,
 					customUserAgentDetails,
 					authToken,
@@ -164,7 +171,13 @@ export class InternalGraphQLAPIClass {
 
 	private async _graphql<T = any>(
 		amplify: AmplifyClassV6,
-		{ query, variables, authMode: explicitAuthMode }: GraphQLOptions,
+		{
+			query,
+			variables,
+			authMode: authModeOverride,
+			endpoint: endpointOverride,
+			apiKey: apiKeyOverride,
+		}: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails,
@@ -179,7 +192,7 @@ export class InternalGraphQLAPIClass {
 			defaultAuthMode,
 		} = resolveConfig(amplify);
 
-		const initialAuthMode = explicitAuthMode || defaultAuthMode || 'iam';
+		const initialAuthMode = authModeOverride || defaultAuthMode || 'iam';
 		// identityPool is an alias for iam. TODO: remove 'iam' in v7
 		const authMode =
 			initialAuthMode === 'identityPool' ? 'iam' : initialAuthMode;
@@ -205,7 +218,7 @@ export class InternalGraphQLAPIClass {
 			const requestOptions: RequestOptions = {
 				method: 'POST',
 				url: new AmplifyUrl(
-					customEndpoint || appSyncGraphqlEndpoint || '',
+					endpointOverride || customEndpoint || appSyncGraphqlEndpoint || '',
 				).toString(),
 				queryString: print(query as DocumentNode),
 			};
@@ -226,7 +239,7 @@ export class InternalGraphQLAPIClass {
 		const authHeaders = await headerBasedAuth(
 			amplify,
 			authMode,
-			apiKey,
+			apiKeyOverride ?? apiKey,
 			additionalCustomHeaders,
 		);
 
@@ -282,7 +295,8 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
-		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
+		const endpoint =
+			endpointOverride || customEndpoint || appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
 			throw createGraphQLResultWithError<T>(new GraphQLApiError(NO_ENDPOINT));
@@ -341,7 +355,13 @@ export class InternalGraphQLAPIClass {
 
 	private _graphqlSubscribe(
 		amplify: AmplifyClassV6,
-		{ query, variables, authMode: explicitAuthMode }: GraphQLOptions,
+		{
+			query,
+			variables,
+			authMode: authModeOverride,
+			apiKey: apiKeyOverride,
+			endpoint,
+		}: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails,
 		authToken?: string,
@@ -349,7 +369,7 @@ export class InternalGraphQLAPIClass {
 		const config = resolveConfig(amplify);
 
 		const initialAuthMode =
-			explicitAuthMode || config?.defaultAuthMode || 'iam';
+			authModeOverride || config?.defaultAuthMode || 'iam';
 		// identityPool is an alias for iam. TODO: remove 'iam' in v7
 		const authMode =
 			initialAuthMode === 'identityPool' ? 'iam' : initialAuthMode;
@@ -364,15 +384,26 @@ export class InternalGraphQLAPIClass {
 		 */
 		const { headers: libraryConfigHeaders } = resolveLibraryOptions(amplify);
 
-		return this.appSyncRealTime
+		const appSyncGraphqlEndpoint = endpoint ?? config?.endpoint;
+
+		// TODO: This could probably be an exception. But, lots of tests rely on
+		// attempting to connect to nowhere. So, I'm treating as the opposite of
+		// a Chesterton's fence for now. (A fence I shouldn't build, because I don't
+		// know why somethings depends on its absence!)
+		const memoKey = appSyncGraphqlEndpoint ?? 'none';
+		const realtimeProvider =
+			this.appSyncRealTime.get(memoKey) ?? new AWSAppSyncRealTimeProvider();
+		this.appSyncRealTime.set(memoKey, realtimeProvider);
+
+		return realtimeProvider
 			.subscribe(
 				{
 					query: print(query as DocumentNode),
 					variables,
-					appSyncGraphqlEndpoint: config?.endpoint,
+					appSyncGraphqlEndpoint,
 					region: config?.region,
 					authenticationType: authMode,
-					apiKey: config?.apiKey,
+					apiKey: apiKeyOverride ?? config?.apiKey,
 					additionalHeaders,
 					authToken,
 					libraryConfigHeaders,
