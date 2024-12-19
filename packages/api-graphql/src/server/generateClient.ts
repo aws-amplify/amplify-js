@@ -50,15 +50,15 @@ export function generateClient<
 
 	const wrappedGraphql = (
 		contextSpec: AmplifyServer.ContextSpec,
-		innerOptions: GraphQLOptionsV6,
+		innerOptions: GraphQLOptionsV6<unknown, string, Options>,
 		additionalHeaders?: CustomHeaders,
 	) => {
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
 
 		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },
-			innerOptions as any,
-			additionalHeaders as any,
+			innerOptions,
+			additionalHeaders,
 		);
 	};
 

@@ -426,7 +426,10 @@ export const __apiKey = Symbol('apiKey');
 export const __headers = Symbol('headers');
 export const __endpoint = Symbol('endpoint');
 
-export function getInternals(client: BaseClient): ClientInternals {
+export function getInternals(client: BaseClient): ClientInternals & {
+	apiKey?: string;
+	endpoint?: string;
+} {
 	const c = client as any;
 
 	return {

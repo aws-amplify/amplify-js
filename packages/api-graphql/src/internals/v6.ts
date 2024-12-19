@@ -5,6 +5,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
 	CommonPublicClientOptions,
+	GraphQLOptions,
 	GraphQLOptionsV6,
 	GraphQLResponseV6,
 	V6Client,
@@ -105,12 +106,12 @@ export function graphql<
 	additionalHeaders?: CustomHeaders,
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	// inject client-level auth
-	const internals = getInternals(this as any);
+	const internals = getInternals(this);
 
 	/**
 	 * The custom `endpoint` specific to the client
 	 */
-	const clientEndpoint: string = (internals as any).endpoint;
+	const clientEndpoint = internals.endpoint;
 
 	/**
 	 * The `authMode` specific to the client.
@@ -120,7 +121,7 @@ export function graphql<
 	/**
 	 * The `apiKey` specific to the client.
 	 */
-	const clientApiKey = (internals as any).apiKey;
+	const clientApiKey = internals.apiKey;
 
 	/**
 	 * The most specific `authMode` wins. Setting an `endpoint` value without also
@@ -156,7 +157,7 @@ export function graphql<
 		{
 			...options,
 			endpoint: clientEndpoint,
-		} as any,
+		} as GraphQLOptions,
 		headers,
 	);
 
