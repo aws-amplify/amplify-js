@@ -1,6 +1,9 @@
 import { isTokenExpired } from '../src/libraryUtils';
 
 describe('isTokenExpired', () => {
+	const mockDate = Date.now();
+	jest.spyOn(Date, 'now').mockImplementation(() => mockDate);
+
 	it('should return true when token is expired', () => {
 		const result = isTokenExpired({
 			expiresAt: Date.now() - 1,
