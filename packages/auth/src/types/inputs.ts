@@ -54,6 +54,23 @@ export interface AuthSignOutInput {
 
 export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 
+export type OAuthUrlReservedKeys =
+	| 'redirect_uri'
+	| 'response_type'
+	| 'client_id'
+	| 'identity_provider'
+	| 'scope'
+	| 'state'
+	| 'responseType';
+
+/**
+ * User-defined custom query params for oAuthUrl.
+ */
+export type ExtraQueryParameters = Omit<
+	Record<string, string>,
+	OAuthUrlReservedKeys
+>;
+
 export interface AuthSignInWithRedirectInput {
 	provider?: AuthProvider | { custom: string };
 	customState?: string;
@@ -69,6 +86,7 @@ export interface AuthSignInWithRedirectInput {
 		 */
 		preferPrivateSession?: boolean;
 	};
+	extraQueryParams?: ExtraQueryParameters;
 }
 
 /**
