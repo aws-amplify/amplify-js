@@ -10,6 +10,7 @@ describe('isTokenExpired', () => {
 
 		expect(result).toBe(true);
 	});
+
 	it('should return false when token is not expired', () => {
 		const result = isTokenExpired({
 			expiresAt: Date.now() + 1,
@@ -22,16 +23,17 @@ describe('isTokenExpired', () => {
 
 	it('should return false when expiration time is within tolerance', () => {
 		const result = isTokenExpired({
-			expiresAt: Date.now() + 5001,
+			expiresAt: Date.now() + 5001, // more than 5 seconds remaining until expiration
 			clockDrift: 0,
 			tolerance: 5000,
 		});
 
 		expect(result).toBe(false);
 	});
+
 	it('should return true when expiration time is outside tolerance', () => {
 		const result = isTokenExpired({
-			expiresAt: Date.now() + 4999,
+			expiresAt: Date.now() + 4999, // less than 5 seconds remaining until expiration
 			clockDrift: 0,
 			tolerance: 5000,
 		});
