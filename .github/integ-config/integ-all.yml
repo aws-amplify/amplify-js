@@ -623,7 +623,9 @@ tests:
     sample_name: [mfa]
     spec: sign-in-resumable-mfa
     browser: *minimal_browser_list
-
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: resum-signin
+      
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
 
