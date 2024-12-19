@@ -43,4 +43,14 @@ describe('isTokenExpired', () => {
 
 		expect(result).toBe(true);
 	});
+
+	it('should return false when expiration time is equal to tolerance', () => {
+		const result = isTokenExpired({
+			expiresAt: Date.now() + 5000, // exactly 5 seconds remaining until expiration
+			clockDrift: 0,
+			tolerance: 5000,
+		});
+
+		expect(result).toBe(false);
+	});
 });
