@@ -97,24 +97,16 @@ export class DefaultTokenStore implements AuthTokenStore {
 		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
 
 		const lastAuthUser = tokens.username;
-		if (lastAuthUser) {
-			await this.getKeyValueStorage().setItem(
-				this.getLastAuthUserKey(),
-				lastAuthUser,
-			);
-		} else {
-			await this.getKeyValueStorage().removeItem(this.getLastAuthUserKey());
-		}
+		await this.getKeyValueStorage().setItem(
+			this.getLastAuthUserKey(),
+			lastAuthUser,
+		);
 
 		const authKeys = await this.getAuthKeys();
-		if (authKeys.accessToken) {
-			await this.getKeyValueStorage().setItem(
-				authKeys.accessToken,
-				tokens.accessToken.toString(),
-			);
-		} else {
-			await this.getKeyValueStorage().removeItem(authKeys.accessToken);
-		}
+		await this.getKeyValueStorage().setItem(
+			authKeys.accessToken,
+			tokens.accessToken.toString(),
+		);
 
 		if (tokens.idToken) {
 			await this.getKeyValueStorage().setItem(
@@ -162,13 +154,18 @@ export class DefaultTokenStore implements AuthTokenStore {
 			await this.getKeyValueStorage().removeItem(authKeys.signInDetails);
 		}
 
-		if (authKeys.clockDrift) {
+		await this.getKeyValueStorage().setItem(
+			authKeys.clockDrift,
+			`${tokens.clockDrift}`,
+		);
+
+		if (authKeys.oauthMetadata) {
 			await this.getKeyValueStorage().setItem(
-				authKeys.clockDrift,
-				`${tokens.clockDrift}`,
-			);
+				authKeys.oauthMetadata,
+				JSON.stringify(tokens.oauthMetadata),
+			)
 		} else {
-			await this.getKeyValueStorage().removeItem(authKeys.clockDrift);
+			await this.getKeyValueStorage().removeItem(authKeys.oauthMetadata);
 		}
 	}
 
