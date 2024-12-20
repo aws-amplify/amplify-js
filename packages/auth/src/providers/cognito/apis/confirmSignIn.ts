@@ -76,11 +76,11 @@ export async function confirmSignIn(
 			This most likely occurred due to:
 			1. signIn was not called before confirmSignIn.
 			2. signIn threw an exception.
-			3. page was refreshed during the sign in flow.
+			3. the session has expired.
 			`,
 			recoverySuggestion:
 				'Make sure a successful call to signIn is made before calling confirmSignIn' +
-				'and that the page is not refreshed until the sign in process is done.',
+				'and that the session has not expired.',
 		});
 
 	try {
