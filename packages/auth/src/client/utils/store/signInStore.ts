@@ -24,10 +24,8 @@ type SignInAction =
 	| { type: 'SET_SIGN_IN_SESSION'; value?: string }
 	| { type: 'RESET_STATE' };
 
-/**
- * Minutes until stored session invalidates is defaulted to 3 minutes
- * to maintain parity with Amazon Cognito user pools API behavior
-**/
+// Minutes until stored session invalidates is defaulted to 3 minutes
+// to maintain parity with Amazon Cognito user pools API behavior
 const MS_TO_EXPIRY = 3 * 60 * 1000;
 const TGT_STATE = 'CognitoSignInState';
 const SIGN_IN_STATE_KEYS = {
@@ -107,7 +105,7 @@ const getDefaultState = (): SignInState => ({
 	signInSession: undefined,
 });
 
-// Hydrate signInStore from syncSessionStorage
+// Hydrate signInStore from syncSessionStorage if the session has not expired
 const getInitialState = (): SignInState => {
 	const expiry = syncSessionStorage.getItem(SIGN_IN_STATE_KEYS.expiry);
 
