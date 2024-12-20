@@ -6,6 +6,7 @@ import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { CredentialsAndIdentityId } from '../../src/singleton/Auth/types';
 import { ResourcesConfig, fetchAuthSession } from '../../src';
+import mockAmplifyOutputs from '../utils/mockBackendConfigs/amplify_outputs.json';
 
 Object.assign(global, { TextDecoder, TextEncoder });
 
@@ -160,9 +161,18 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 	it('should take the legacy CLI shaped config object for configuring and return it from getConfig()', () => {
 		Amplify.configure(mockLegacyConfig);
 		const result = Amplify.getConfig();
-
 		expect(result).toEqual(expectedResourceConfig);
 	});
+
+	it(`should successfully configure from a 'amplify_outputs.json' file`, () => {
+		Amplify.configure(mockAmplifyOutputs);
+	});
+
+	// it.only(`should successfully configure from a 'amplifyconfiguration.json' file`, () => {
+	// 	Amplify.configure(mockAmplifyConfiguration);
+	// 	const result = Amplify.getConfig();
+	// 	expect(result).toEqual(expectedResourceConfig);
+	// });
 
 	it('dispatches hub event with parsed ResourceConfig from the legacy config', () => {
 		Amplify.configure(mockLegacyConfig);
