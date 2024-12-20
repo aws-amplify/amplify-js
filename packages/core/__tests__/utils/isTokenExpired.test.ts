@@ -1,4 +1,4 @@
-import { isTokenExpired } from '../src/libraryUtils';
+import { isTokenExpired } from '../../src/libraryUtils';
 
 describe('isTokenExpired', () => {
 	const mockDate = Date.now();
