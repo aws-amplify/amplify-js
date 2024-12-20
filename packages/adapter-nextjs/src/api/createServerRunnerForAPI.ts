@@ -9,7 +9,10 @@ import { NextServer } from '../types';
 
 export const createServerRunnerForAPI = ({
 	config,
-}: NextServer.CreateServerRunnerInput): NextServer.CreateServerRunnerOutput & {
+}: NextServer.CreateServerRunnerInput): Omit<
+	NextServer.CreateServerRunnerOutput,
+	'createAuthRouteHandlers'
+> & {
 	resourcesConfig: ResourcesConfig;
 } => {
 	const amplifyConfig = parseAmplifyConfig(config);

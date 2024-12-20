@@ -8,6 +8,7 @@ import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
 import { createRunWithAmplifyServerContext } from './utils';
 import { NextServer } from './types';
 import { createTokenValidator } from './utils/createTokenValidator';
+import { createAuthRouteHandlersFactory } from './auth';
 
 /**
  * Creates the `runWithAmplifyServerContext` function to run Amplify server side APIs in an isolated request context.
@@ -32,6 +33,7 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 	runtimeOptions,
 }) => {
 	const amplifyConfig = parseAmplifyConfig(config);
+	const amplifyAppOrigin = process.env.AMPLIFY_APP_ORIGIN;
 
 	let tokenValidator: KeyValueStorageMethodValidator | undefined;
 	if (amplifyConfig?.Auth) {
@@ -47,6 +49,11 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 			config: amplifyConfig,
 			tokenValidator,
 			runtimeOptions,
+		}),
+		createAuthRouteHandlers: createAuthRouteHandlersFactory({
+			config: amplifyConfig,
+			runtimeOptions,
+			amplifyAppOrigin,
 		}),
 	};
 };
