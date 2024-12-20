@@ -24,8 +24,11 @@ type SignInAction =
 	| { type: 'SET_SIGN_IN_SESSION'; value?: string }
 	| { type: 'RESET_STATE' };
 
-// Minutes until stored session invalidates
-const MS_TO_EXPIRY = 3 * 60 * 1000; // 3 mins
+/**
+ * Minutes until stored session invalidates is defaulted to 3 minutes
+ * to maintain parity with Amazon Cognito user pools API behavior
+**/
+const MS_TO_EXPIRY = 3 * 60 * 1000;
 const TGT_STATE = 'CognitoSignInState';
 const SIGN_IN_STATE_KEYS = {
 	username: `${TGT_STATE}.username`,
