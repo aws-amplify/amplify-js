@@ -5,6 +5,7 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+import { ResourcesConfig } from '@aws-amplify/core';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 import { generateClientWithAmplifyInstance } from '../internals/server';
@@ -33,38 +34,35 @@ import {
  *   }),
  * });
  */
-export function generateClient<T extends Record<any, any> = never>({
-	config,
-	authMode,
-	authToken,
-}: GenerateServerClientParams): V6ClientSSRRequest<T> {
+export function generateClient<
+	T extends Record<any, any> = never,
+	Options extends GenerateServerClientParams = { config: ResourcesConfig },
+>(options: Options): V6ClientSSRRequest<T, Options> {
 	// passing `null` instance because each (future model) method must retrieve a valid instance
 	// from server context
 	const client = generateClientWithAmplifyInstance<T, V6ClientSSRRequest<T>>({
 		amplify: null,
-		config,
-		authMode,
-		authToken,
+		...options,
 	});
 
 	// TODO: improve this and the next type
-	const prevGraphql = client.graphql as unknown as GraphQLMethod;
+	const prevGraphql = client.graphql as unknown as GraphQLMethod<Options>;
 
 	const wrappedGraphql = (
 		contextSpec: AmplifyServer.ContextSpec,
-		options: GraphQLOptionsV6,
+		innerOptions: GraphQLOptionsV6<unknown, string, Options>,
 		additionalHeaders?: CustomHeaders,
 	) => {
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
 
 		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },
-			options,
-			additionalHeaders as any,
+			innerOptions,
+			additionalHeaders,
 		);
 	};
 
-	client.graphql = wrappedGraphql as unknown as GraphQLMethodSSR;
+	client.graphql = wrappedGraphql as unknown as GraphQLMethodSSR<Options>;
 
 	return client;
 }

@@ -4,6 +4,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
+	CommonPublicClientOptions,
 	GraphQLOptions,
 	GraphQLOptionsV6,
 	GraphQLResponseV6,
@@ -98,15 +99,51 @@ import {
 export function graphql<
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string,
+	Options extends CommonPublicClientOptions = object,
 >(
 	this: V6Client,
-	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
+	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>,
 	additionalHeaders?: CustomHeaders,
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	// inject client-level auth
-	const internals = getInternals(this as any);
-	options.authMode = options.authMode || internals.authMode;
+	const internals = getInternals(this);
+
+	/**
+	 * The custom `endpoint` specific to the client
+	 */
+	const clientEndpoint = internals.endpoint;
+
+	/**
+	 * The `authMode` specific to the client.
+	 */
+	const clientAuthMode = internals.authMode;
+
+	/**
+	 * The `apiKey` specific to the client.
+	 */
+	const clientApiKey = internals.apiKey;
+
+	/**
+	 * The most specific `authMode` wins. Setting an `endpoint` value without also
+	 * setting an `authMode` value is invalid. This helps to prevent customers apps
+	 * from unexpectedly sending auth details to endpoints the auth details do not
+	 * belong to.
+	 *
+	 * This is especially pronounced for `apiKey`. When both an `endpoint` *and*
+	 * `authMode: 'apiKey'` are provided, an explicit `apiKey` override is required
+	 * to prevent inadvertent sending of an API's `apiKey` to an endpoint is does
+	 * not belong to.
+	 */
+	options.authMode = options.authMode || clientAuthMode;
+	options.apiKey = options.apiKey ?? clientApiKey;
 	options.authToken = options.authToken || internals.authToken;
+
+	if (clientEndpoint && options.authMode === 'apiKey' && !options.apiKey) {
+		throw new Error(
+			"graphql() requires an explicit `apiKey` for a custom `endpoint` when `authMode = 'apiKey'`.",
+		);
+	}
+
 	const headers = additionalHeaders || internals.headers;
 
 	/**
@@ -114,11 +151,13 @@ export function graphql<
 	 * Neither of these can actually be validated at runtime. Hence, we don't perform
 	 * any validation or type-guarding here.
 	 */
-
 	const result = GraphQLAPI.graphql(
 		// TODO: move V6Client back into this package?
 		internals.amplify as any,
-		options as GraphQLOptions,
+		{
+			...options,
+			endpoint: clientEndpoint,
+		} as GraphQLOptions,
 		headers,
 	);
 
