@@ -11,7 +11,7 @@ export {
 	createAuthFlowProofCookiesRemoveOptions,
 } from './authFlowProofCookies';
 export { createAuthFlowProofs } from './createAuthFlowProofs';
-export { createOnSignInCompletedRedirectIntermediate } from './createOnSignInCompletedRedirectIntermediate';
+export { createOnSignInCompleteRedirectIntermediate } from './createOnSignInCompleteRedirectIntermediate';
 export { createUrlSearchParamsForSignInSignUp } from './createUrlSearchParams';
 export {
 	createAuthorizeEndpoint,

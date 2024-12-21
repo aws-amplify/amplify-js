@@ -3,6 +3,7 @@ import { resolveIdentityProviderFromUrl } from '../../../src/auth/utils/resolveI
 describe('resolveIdentityProviderFromUrl', () => {
 	test.each([
 		['https://example.com?provider=Google', 'Google'],
+		['https://example.com?provider=GOogLe', 'Google'],
 		['https://example.com?provider=Facebook', 'Facebook'],
 		['https://example.com?provider=Amazon', 'LoginWithAmazon'],
 		['https://example.com?provider=Apple', 'SignInWithApple'],

@@ -9,7 +9,7 @@ import { handleSignInCallbackRequest } from '../../../src/auth/handlers/handleSi
 import {
 	appendSetCookieHeaders,
 	createAuthFlowProofCookiesRemoveOptions,
-	createOnSignInCompletedRedirectIntermediate,
+	createOnSignInCompleteRedirectIntermediate,
 	createSignInFlowProofCookies,
 	createTokenCookies,
 	createTokenCookiesSetOptions,
@@ -30,8 +30,8 @@ const mockAppendSetCookieHeaders = jest.mocked(appendSetCookieHeaders);
 const mockCreateAuthFlowProofCookiesRemoveOptions = jest.mocked(
 	createAuthFlowProofCookiesRemoveOptions,
 );
-const mockCreateOnSignInCompletedRedirectIntermediate = jest.mocked(
-	createOnSignInCompletedRedirectIntermediate,
+const mockCreateOnSignInCompleteRedirectIntermediate = jest.mocked(
+	createOnSignInCompleteRedirectIntermediate,
 );
 const mockCreateSignInFlowProofCookies = jest.mocked(
 	createSignInFlowProofCookies,
@@ -58,7 +58,7 @@ describe('handleSignInCallbackRequest', () => {
 	afterEach(() => {
 		mockAppendSetCookieHeaders.mockClear();
 		mockCreateAuthFlowProofCookiesRemoveOptions.mockClear();
-		mockCreateOnSignInCompletedRedirectIntermediate.mockClear();
+		mockCreateOnSignInCompleteRedirectIntermediate.mockClear();
 		mockCreateSignInFlowProofCookies.mockClear();
 		mockCreateTokenCookies.mockClear();
 		mockCreateTokenCookiesSetOptions.mockClear();
@@ -188,6 +188,11 @@ describe('handleSignInCallbackRequest', () => {
 			'/',
 			`<html>redirect to /</html>`,
 		],
+		[
+			{ ...mockHandlerInput, redirectOnSignInComplete: '' },
+			'/',
+			`<html>redirect to /</html>`,
+		],
 	] as [CreateAuthRoutesHandlersInput, string, string][])(
 		'returns a 200 response with expected redirect target: with handlerInput=%p, expectedFinalRedirect=%s, generates expected html=%s',
 		async (handlerInput, expectedFinalRedirect, expectedHtml) => {
@@ -245,7 +250,7 @@ describe('handleSignInCallbackRequest', () => {
 				headers.append('Set-cookie', 'mock-cookie-1');
 				headers.append('Set-cookie', 'mock-cookie-2');
 			});
-			mockCreateOnSignInCompletedRedirectIntermediate.mockImplementationOnce(
+			mockCreateOnSignInCompleteRedirectIntermediate.mockImplementationOnce(
 				({ redirectOnSignInComplete }) =>
 					`<html>redirect to ${redirectOnSignInComplete}</html>`,
 			);
@@ -297,7 +302,7 @@ describe('handleSignInCallbackRequest', () => {
 				mockCreateAuthFlowProofCookiesRemoveOptionsResult,
 			);
 			expect(
-				mockCreateOnSignInCompletedRedirectIntermediate,
+				mockCreateOnSignInCompleteRedirectIntermediate,
 			).toHaveBeenCalledWith({
 				redirectOnSignInComplete: expectedFinalRedirect,
 			});

@@ -47,13 +47,9 @@ export const createUrlSearchParamsForTokenExchange = (input: {
 	redirect_uri: string;
 	code_verifier: string;
 	grant_type: string;
-}): URLSearchParams => createUrlSearchParamsFromObject(input);
+}): URLSearchParams => new URLSearchParams(input);
 
 export const createUrlSearchParamsForTokenRevocation = (input: {
 	token: string;
 	client_id: string;
-}): URLSearchParams => createUrlSearchParamsFromObject(input);
-
-const createUrlSearchParamsFromObject = (
-	input: Record<string, string>,
-): URLSearchParams => new URLSearchParams(input);
+}): URLSearchParams => new URLSearchParams(input);

@@ -44,30 +44,28 @@ describe('createTokenCookies', () => {
 			userPoolClientId: mockUserPoolClientId,
 		});
 
-		expect(result.sort()).toEqual(
-			[
-				{
-					name: `${expectedCookieNamePrefix}.accessToken`,
-					value: 'access_token',
-				},
-				{
-					name: `${expectedCookieNamePrefix}.idToken`,
-					value: 'id_token',
-				},
-				{
-					name: `${expectedCookieNamePrefix}.refreshToken`,
-					value: 'refresh_token',
-				},
-				{
-					name: `${expectedCookieNamePrefix}.clockDrift`,
-					value: '-42',
-				},
-				{
-					name: `${AUTH_KEY_PREFIX}.${mockUserPoolClientId}.LastAuthUser`,
-					value: mockUserName,
-				},
-			].sort(),
-		);
+		expect(result).toEqual([
+			{
+				name: `${expectedCookieNamePrefix}.accessToken`,
+				value: 'access_token',
+			},
+			{
+				name: `${expectedCookieNamePrefix}.idToken`,
+				value: 'id_token',
+			},
+			{
+				name: `${expectedCookieNamePrefix}.refreshToken`,
+				value: 'refresh_token',
+			},
+			{
+				name: `${expectedCookieNamePrefix}.clockDrift`,
+				value: '-42',
+			},
+			{
+				name: `${AUTH_KEY_PREFIX}.${mockUserPoolClientId}.LastAuthUser`,
+				value: mockUserName,
+			},
+		]);
 	});
 });
 

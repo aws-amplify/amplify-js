@@ -26,6 +26,6 @@ export const handleSignOutRequestForPagesRouter: HandleSignOutRequestForPagesRou
 
 		response.redirect(
 			302,
-			createLogoutEndpoint(oAuthConfig.domain, urlSearchParams).toString(),
+			createLogoutEndpoint(oAuthConfig.domain, urlSearchParams),
 		);
 	};

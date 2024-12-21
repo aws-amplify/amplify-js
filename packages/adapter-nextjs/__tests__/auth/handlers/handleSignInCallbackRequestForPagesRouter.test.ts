@@ -9,7 +9,7 @@ import { handleSignInCallbackRequestForPagesRouter } from '../../../src/auth/han
 import {
 	appendSetCookieHeadersToNextApiResponse,
 	createAuthFlowProofCookiesRemoveOptions,
-	createOnSignInCompletedRedirectIntermediate,
+	createOnSignInCompleteRedirectIntermediate,
 	createSignInFlowProofCookies,
 	createTokenCookies,
 	createTokenCookiesSetOptions,
@@ -33,8 +33,8 @@ const mockAppendSetCookieHeadersToNextApiResponse = jest.mocked(
 const mockCreateAuthFlowProofCookiesRemoveOptions = jest.mocked(
 	createAuthFlowProofCookiesRemoveOptions,
 );
-const mockCreateOnSignInCompletedRedirectIntermediate = jest.mocked(
-	createOnSignInCompletedRedirectIntermediate,
+const mockCreateOnSignInCompleteRedirectIntermediate = jest.mocked(
+	createOnSignInCompleteRedirectIntermediate,
 );
 const mockCreateSignInFlowProofCookies = jest.mocked(
 	createSignInFlowProofCookies,
@@ -70,7 +70,7 @@ describe('handleSignInCallbackRequest', () => {
 	afterEach(() => {
 		mockAppendSetCookieHeadersToNextApiResponse.mockClear();
 		mockCreateAuthFlowProofCookiesRemoveOptions.mockClear();
-		mockCreateOnSignInCompletedRedirectIntermediate.mockClear();
+		mockCreateOnSignInCompleteRedirectIntermediate.mockClear();
 		mockCreateSignInFlowProofCookies.mockClear();
 		mockCreateTokenCookies.mockClear();
 		mockCreateTokenCookiesSetOptions.mockClear();
@@ -283,7 +283,7 @@ describe('handleSignInCallbackRequest', () => {
 					response.appendHeader('Set-cookie', 'mock-cookie-2');
 				},
 			);
-			mockCreateOnSignInCompletedRedirectIntermediate.mockImplementationOnce(
+			mockCreateOnSignInCompleteRedirectIntermediate.mockImplementationOnce(
 				({ redirectOnSignInComplete }) =>
 					`<html>redirect to ${redirectOnSignInComplete}</html>`,
 			);
@@ -334,7 +334,7 @@ describe('handleSignInCallbackRequest', () => {
 			);
 
 			expect(
-				mockCreateOnSignInCompletedRedirectIntermediate,
+				mockCreateOnSignInCompleteRedirectIntermediate,
 			).toHaveBeenCalledWith({
 				redirectOnSignInComplete: expectedFinalRedirect,
 			});

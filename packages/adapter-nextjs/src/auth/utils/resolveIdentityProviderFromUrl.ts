@@ -17,4 +17,4 @@ const resolveProvider = (provider: string | null): string | null => {
 };
 
 const capitalize = (value: string) =>
-	`${value[0].toUpperCase()}${value.substring(1)}`;
+	`${value[0].toUpperCase()}${value.substring(1).toLowerCase()}`;

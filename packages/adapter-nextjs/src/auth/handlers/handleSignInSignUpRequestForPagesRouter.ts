@@ -40,10 +40,10 @@ export const handleSignInSignUpRequestForPagesRouter: HandleSignInSignUpRequestF
 			createAuthFlowProofCookiesSetOptions(setCookieOptions),
 		);
 
-		response.redirect(
-			302,
+		const redirectUrl =
 			type === 'signIn'
 				? createAuthorizeEndpoint(oAuthConfig.domain, redirectUrlSearchParams)
-				: createSignUpEndpoint(oAuthConfig.domain, redirectUrlSearchParams),
-		);
+				: createSignUpEndpoint(oAuthConfig.domain, redirectUrlSearchParams);
+
+		response.redirect(302, redirectUrl);
 	};

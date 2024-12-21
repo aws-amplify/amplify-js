@@ -16,14 +16,11 @@ export const getCookieValuesFromRequest = <CookieNames extends string[]>(
 	const cookieValues: Record<string, string> = cookieHeader
 		.split(';')
 		.map(cookie => cookie.trim().split('='))
-		.reduce(
-			(result, [key, value]) => {
-				result[key] = value;
+		.reduce<Record<string, string>>((result, [key, value]) => {
+			result[key] = value;
 
-				return result;
-			},
-			{} as Record<string, string>,
-		);
+			return result;
+		}, {});
 
 	const result: Record<string, string | undefined> = {};
 	for (const cookieName of cookieNames) {

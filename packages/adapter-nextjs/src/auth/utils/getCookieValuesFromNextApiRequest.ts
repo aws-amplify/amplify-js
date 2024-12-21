@@ -3,18 +3,20 @@
 
 import { NextApiRequest } from 'next';
 
-export const getCookieValuesFromNextApiRequest = <CookieNames extends string[]>(
+export const getCookieValuesFromNextApiRequest = <
+	CookieNames extends string[],
+	R = {
+		[key in CookieNames[number]]?: string | undefined;
+	},
+>(
 	request: NextApiRequest,
 	cookieNames: CookieNames,
-): {
-	[key in CookieNames[number]]?: string | undefined;
-} => {
+): R => {
 	const result: Record<string, string | undefined> = {};
+
 	for (const cookieName of cookieNames) {
 		result[cookieName] = request.cookies[cookieName];
 	}
 
-	return result as {
-		[key in CookieNames[number]]?: string | undefined;
-	};
+	return result as R;
 };

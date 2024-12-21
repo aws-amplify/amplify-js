@@ -5,7 +5,7 @@ import { PKCE_COOKIE_NAME, STATE_COOKIE_NAME } from '../constant';
 import {
 	appendSetCookieHeaders,
 	createAuthFlowProofCookiesRemoveOptions,
-	createOnSignInCompletedRedirectIntermediate,
+	createOnSignInCompleteRedirectIntermediate,
 	createSignInFlowProofCookies,
 	createTokenCookies,
 	createTokenCookiesSetOptions,
@@ -73,8 +73,8 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 	headers.set('Content-Type', 'text/html');
 
 	return new Response(
-		createOnSignInCompletedRedirectIntermediate({
-			redirectOnSignInComplete: handlerInput.redirectOnSignInComplete ?? '/',
+		createOnSignInCompleteRedirectIntermediate({
+			redirectOnSignInComplete: handlerInput.redirectOnSignInComplete || '/',
 		}),
 		{
 			status: 200,
