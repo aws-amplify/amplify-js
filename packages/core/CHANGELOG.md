@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.3...@aws-amplify/core@6.8.0) (2024-12-19)
+
+### Features
+
+- **auth:** Enable resumable SignIn ([#13855](https://github.com/aws-amplify/amplify-js/issues/13855)) ([#14074](https://github.com/aws-amplify/amplify-js/issues/14074)) ([fe315be](https://github.com/aws-amplify/amplify-js/commit/fe315be4da6d814f2b802cf1acbb00513ca238ac))
+
 ## [6.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.2...@aws-amplify/core@6.7.3) (2024-12-12)
 
 **Note:** Version bump only for package @aws-amplify/core
