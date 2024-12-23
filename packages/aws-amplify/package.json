@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "44.26 kB"
+			"limit": "45.47 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -449,7 +449,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.88 kB"
+			"limit": "30.89 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
