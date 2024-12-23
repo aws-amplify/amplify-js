@@ -24,7 +24,7 @@ const compat = new FlatCompat({
 const customClientDtsFiles = customClientDtsBundlerConfig.entries
 	.map(clientBundlerConfig => clientBundlerConfig.outFile)
 	.filter(outFile => outFile?.length > 0)
-	.map(outFile => outFile.replace(__dirname + path.sep, '')) // Convert absolute path to relative path
+	.map(outFile => outFile.replace(__dirname + path.sep, '')); // Convert absolute path to relative path
 
 export default [
 	{
@@ -147,6 +147,7 @@ export default [
 			'import/no-mutable-exports': 'error',
 			'import/no-relative-packages': 'error',
 			'import/newline-after-import': 'error',
+			'import/no-extraneous-dependencies': ['warn'],
 
 			'import/order': [
 				'error',
