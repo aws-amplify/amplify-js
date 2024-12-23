@@ -3,7 +3,7 @@
 
 import { HandleAuthApiRouteRequestForAppRouter } from './types';
 import {
-	hasUserSignedInWithAppRouter,
+	hasActiveUserSessionWithAppRouter,
 	isSupportedAuthApiRoutePath,
 } from './utils';
 import {
@@ -40,12 +40,12 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 
 		switch (slug) {
 			case 'sign-up': {
-				const hasUserSignedIn = await hasUserSignedInWithAppRouter({
+				const hasActiveUserSession = await hasActiveUserSessionWithAppRouter({
 					request,
 					runWithAmplifyServerContext,
 				});
 
-				if (hasUserSignedIn) {
+				if (hasActiveUserSession) {
 					return new Response(null, {
 						status: 302,
 						headers: new Headers({
@@ -65,12 +65,12 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 				});
 			}
 			case 'sign-in': {
-				const hasUserSignedIn = await hasUserSignedInWithAppRouter({
+				const hasActiveUserSession = await hasActiveUserSessionWithAppRouter({
 					request,
 					runWithAmplifyServerContext,
 				});
 
-				if (hasUserSignedIn) {
+				if (hasActiveUserSession) {
 					return new Response(null, {
 						status: 302,
 						headers: new Headers({

@@ -3,7 +3,7 @@
 
 import { HandleAuthApiRouteRequestForPagesRouter } from './types';
 import {
-	hasUserSignedInWithPagesRouter,
+	hasActiveUserSessionWithPagesRouter,
 	isSupportedAuthApiRoutePath,
 } from './utils';
 import {
@@ -46,13 +46,13 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 
 		switch (slug) {
 			case 'sign-up': {
-				const hasUserSignedIn = await hasUserSignedInWithPagesRouter({
+				const hasActiveUserSession = await hasActiveUserSessionWithPagesRouter({
 					request,
 					response,
 					runWithAmplifyServerContext,
 				});
 
-				if (hasUserSignedIn) {
+				if (hasActiveUserSession) {
 					response.redirect(302, handlerInput.redirectOnSignInComplete ?? '/');
 
 					return;
@@ -71,13 +71,13 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 				break;
 			}
 			case 'sign-in': {
-				const hasUserSignedIn = await hasUserSignedInWithPagesRouter({
+				const hasActiveUserSession = await hasActiveUserSessionWithPagesRouter({
 					request,
 					response,
 					runWithAmplifyServerContext,
 				});
 
-				if (hasUserSignedIn) {
+				if (hasActiveUserSession) {
 					response.redirect(302, handlerInput.redirectOnSignInComplete ?? '/');
 
 					return;
