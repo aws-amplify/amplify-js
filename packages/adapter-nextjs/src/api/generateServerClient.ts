@@ -14,7 +14,7 @@ import {
 import {
 	CommonPublicClientOptions,
 	DefaultCommonClientOptions,
-} from '@aws-amplify/api-graphql/dist/esm/internals/types';
+} from '@aws-amplify/api-graphql/internals';
 import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
 
 import { NextServer } from '../types';
