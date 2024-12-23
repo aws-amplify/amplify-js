@@ -33,15 +33,18 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 	const amplifyConfig = parseAmplifyConfig(config);
 	const amplifyAppOrigin = process.env.AMPLIFY_APP_ORIGIN;
 
+	const runWithAmplifyServerContext = createRunWithAmplifyServerContext({
+		config: amplifyConfig,
+		runtimeOptions,
+	});
+
 	return {
-		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
-			config: amplifyConfig,
-			runtimeOptions,
-		}),
+		runWithAmplifyServerContext,
 		createAuthRouteHandlers: createAuthRouteHandlersFactory({
 			config: amplifyConfig,
 			runtimeOptions,
 			amplifyAppOrigin,
+			runWithAmplifyServerContext,
 		}),
 	};
 };

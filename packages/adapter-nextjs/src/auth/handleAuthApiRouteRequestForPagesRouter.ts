@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HandleAuthApiRouteRequestForPagesRouter } from './types';
-import { isSupportedAuthApiRoutePath } from './utils';
+import {
+	hasActiveUserSessionWithPagesRouter,
+	isSupportedAuthApiRoutePath,
+} from './utils';
 import {
 	handleSignInCallbackRequestForPagesRouter,
 	handleSignInSignUpRequestForPagesRouter,
@@ -19,6 +22,7 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 		handlerInput,
 		origin,
 		setCookieOptions,
+		runWithAmplifyServerContext,
 	}) => {
 		if (request.method !== 'GET') {
 			response.status(405).end();
@@ -41,7 +45,19 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 		}
 
 		switch (slug) {
-			case 'sign-up':
+			case 'sign-up': {
+				const hasActiveUserSession = await hasActiveUserSessionWithPagesRouter({
+					request,
+					response,
+					runWithAmplifyServerContext,
+				});
+
+				if (hasActiveUserSession) {
+					response.redirect(302, handlerInput.redirectOnSignInComplete ?? '/');
+
+					return;
+				}
+
 				handleSignInSignUpRequestForPagesRouter({
 					request,
 					response,
@@ -53,7 +69,20 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 					type: 'signUp',
 				});
 				break;
+			}
 			case 'sign-in': {
+				const hasActiveUserSession = await hasActiveUserSessionWithPagesRouter({
+					request,
+					response,
+					runWithAmplifyServerContext,
+				});
+
+				if (hasActiveUserSession) {
+					response.redirect(302, handlerInput.redirectOnSignInComplete ?? '/');
+
+					return;
+				}
+
 				handleSignInSignUpRequestForPagesRouter({
 					request,
 					response,

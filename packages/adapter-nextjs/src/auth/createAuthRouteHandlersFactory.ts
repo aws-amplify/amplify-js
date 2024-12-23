@@ -28,6 +28,7 @@ export const createAuthRouteHandlersFactory = ({
 	config: resourcesConfig,
 	runtimeOptions = {},
 	amplifyAppOrigin,
+	runWithAmplifyServerContext,
 }: CreateAuthRouteHandlersFactoryInput): CreateAuthRouteHandlers => {
 	if (!amplifyAppOrigin)
 		throw new AmplifyServerContextError({
@@ -61,6 +62,7 @@ export const createAuthRouteHandlersFactory = ({
 				oAuthConfig,
 				setCookieOptions,
 				origin: amplifyAppOrigin,
+				runWithAmplifyServerContext,
 			});
 
 			// In the Pages Router, the final response is handled by contextOrResponse
@@ -80,6 +82,7 @@ export const createAuthRouteHandlersFactory = ({
 				oAuthConfig,
 				setCookieOptions,
 				origin: amplifyAppOrigin,
+				runWithAmplifyServerContext,
 			});
 		}
 

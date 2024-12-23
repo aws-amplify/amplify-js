@@ -29,6 +29,10 @@ export {
 	isNextApiResponse,
 	isNextRequest,
 } from './predicates';
+export {
+	hasActiveUserSessionWithAppRouter,
+	hasActiveUserSessionWithPagesRouter,
+} from './hasActiveUserSession';
 export { isSupportedAuthApiRoutePath } from './isSupportedAuthApiRoutePath';
 export { resolveCodeAndStateFromUrl } from './resolveCodeAndStateFromUrl';
 export { resolveIdentityProviderFromUrl } from './resolveIdentityProviderFromUrl';
