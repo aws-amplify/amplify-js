@@ -11,7 +11,7 @@ import {
 } from '../../src/auth/handlers';
 import { NextServer } from '../../src';
 import {
-	hasUserSignedInWithPagesRouter,
+	hasActiveUserSessionWithPagesRouter,
 	isSupportedAuthApiRoutePath,
 } from '../../src/auth/utils';
 
@@ -36,7 +36,7 @@ const mockIsSupportedAuthApiRoutePath = jest.mocked(
 	isSupportedAuthApiRoutePath,
 );
 const mockHasUserSignedInWithPagesRouter = jest.mocked(
-	hasUserSignedInWithPagesRouter,
+	hasActiveUserSessionWithPagesRouter,
 );
 const mockRunWithAmplifyServerContext =
 	jest.fn() as jest.MockedFunction<NextServer.RunOperationWithContext>;

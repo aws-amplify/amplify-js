@@ -7,9 +7,9 @@ import { AuthUser } from '@aws-amplify/auth/cognito';
 import { NextApiRequest } from 'next';
 
 import {
-	hasUserSignedInWithAppRouter,
-	hasUserSignedInWithPagesRouter,
-} from '../../../src/auth/utils/hasUserSignedIn';
+	hasActiveUserSessionWithAppRouter,
+	hasActiveUserSessionWithPagesRouter,
+} from '../../../src/auth/utils/hasActiveUserSession';
 import { NextServer } from '../../../src/types';
 import { createMockNextApiResponse } from '../testUtils';
 
@@ -44,7 +44,7 @@ describe('hasUserSignedIn', () => {
 		const mockRequest = new NextRequest('https://example.com/api/auth/sign-in');
 
 		it('invokes server getCurrentUser() with expected parameter within the injected runWithAmplifyServerContext function', async () => {
-			await hasUserSignedInWithAppRouter({
+			await hasActiveUserSessionWithAppRouter({
 				request: mockRequest,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
@@ -60,7 +60,7 @@ describe('hasUserSignedIn', () => {
 		});
 
 		it('returns true when getCurrentUser() resolves (returned auth tokens)', async () => {
-			const result = await hasUserSignedInWithAppRouter({
+			const result = await hasActiveUserSessionWithAppRouter({
 				request: mockRequest,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
@@ -71,7 +71,7 @@ describe('hasUserSignedIn', () => {
 		it('returns false when getCurrentUser() rejects (no auth tokens)', async () => {
 			mockGetCurrentUser.mockRejectedValueOnce(new Error('No current user'));
 
-			const result = await hasUserSignedInWithAppRouter({
+			const result = await hasActiveUserSessionWithAppRouter({
 				request: mockRequest,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
@@ -87,7 +87,7 @@ describe('hasUserSignedIn', () => {
 		const { mockResponse } = createMockNextApiResponse();
 
 		it('invokes server getCurrentUser() with expected parameter within the injected runWithAmplifyServerContext function', async () => {
-			await hasUserSignedInWithPagesRouter({
+			await hasActiveUserSessionWithPagesRouter({
 				request: mockRequest,
 				response: mockResponse,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
@@ -104,7 +104,7 @@ describe('hasUserSignedIn', () => {
 		});
 
 		it('returns true when getCurrentUser() resolves (returned auth tokens)', async () => {
-			const result = await hasUserSignedInWithPagesRouter({
+			const result = await hasActiveUserSessionWithPagesRouter({
 				request: mockRequest,
 				response: mockResponse,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
@@ -116,7 +116,7 @@ describe('hasUserSignedIn', () => {
 		it('returns false when getCurrentUser() rejects (no auth tokens)', async () => {
 			mockGetCurrentUser.mockRejectedValueOnce(new Error('No current user'));
 
-			const result = await hasUserSignedInWithPagesRouter({
+			const result = await hasActiveUserSessionWithPagesRouter({
 				request: mockRequest,
 				response: mockResponse,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,

@@ -7,7 +7,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { NextServer } from '../../types';
 
-export const hasUserSignedInWithAppRouter = async ({
+export const hasActiveUserSessionWithAppRouter = async ({
 	request,
 	runWithAmplifyServerContext,
 }: {
@@ -31,7 +31,7 @@ export const hasUserSignedInWithAppRouter = async ({
 	}
 };
 
-export const hasUserSignedInWithPagesRouter = async ({
+export const hasActiveUserSessionWithPagesRouter = async ({
 	request,
 	response,
 	runWithAmplifyServerContext,

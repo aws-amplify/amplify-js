@@ -14,7 +14,7 @@ import {
 } from '../../src/auth/handlers';
 import { NextServer } from '../../src';
 import {
-	hasUserSignedInWithAppRouter,
+	hasActiveUserSessionWithAppRouter,
 	isSupportedAuthApiRoutePath,
 } from '../../src/auth/utils';
 
@@ -30,7 +30,7 @@ const mockHandleSignOutCallbackRequest = jest.mocked(
 	handleSignOutCallbackRequest,
 );
 const mockHasUserSignedInWithAppRouter = jest.mocked(
-	hasUserSignedInWithAppRouter,
+	hasActiveUserSessionWithAppRouter,
 );
 const mockIsSupportedAuthApiRoutePath = jest.mocked(
 	isSupportedAuthApiRoutePath,
