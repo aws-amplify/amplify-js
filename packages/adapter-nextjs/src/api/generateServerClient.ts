@@ -12,9 +12,10 @@ import {
 	V6ClientSSRRequest,
 } from '@aws-amplify/api-graphql';
 import {
-	GraphQLAuthMode,
-	parseAmplifyConfig,
-} from '@aws-amplify/core/internals/utils';
+	CommonPublicClientOptions,
+	DefaultCommonClientOptions,
+} from '@aws-amplify/api-graphql/internals';
+import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
 
 import { NextServer } from '../types';
 
@@ -23,14 +24,10 @@ import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 interface CookiesClientParams {
 	cookies: NextServer.ServerComponentContext['cookies'];
 	config: NextServer.CreateServerRunnerInput['config'];
-	authMode?: GraphQLAuthMode;
-	authToken?: string;
 }
 
 interface ReqClientParams {
 	config: NextServer.CreateServerRunnerInput['config'];
-	authMode?: GraphQLAuthMode;
-	authToken?: string;
 }
 
 /**
@@ -44,13 +41,10 @@ interface ReqClientParams {
  */
 export function generateServerClientUsingCookies<
 	T extends Record<any, any> = never,
->({
-	config,
-	cookies,
-	authMode,
-	authToken,
-}: CookiesClientParams): V6ClientSSRCookies<T> {
-	if (typeof cookies !== 'function') {
+	Options extends CommonPublicClientOptions &
+		CookiesClientParams = DefaultCommonClientOptions & CookiesClientParams,
+>(options: Options): V6ClientSSRCookies<T, Options> {
+	if (typeof options.cookies !== 'function') {
 		throw new AmplifyServerContextError({
 			message:
 				'generateServerClientUsingCookies is only compatible with the `cookies` Dynamic Function available in Server Components.',
@@ -61,24 +55,25 @@ export function generateServerClientUsingCookies<
 	}
 
 	const { runWithAmplifyServerContext, resourcesConfig } =
-		createServerRunnerForAPI({ config });
+		createServerRunnerForAPI({ config: options.config });
 
 	// This function reference gets passed down to InternalGraphQLAPI.ts.graphql
 	// where this._graphql is passed in as the `fn` argument
 	// causing it to always get invoked inside `runWithAmplifyServerContext`
 	const getAmplify = (fn: (amplify: any) => Promise<any>) =>
 		runWithAmplifyServerContext({
-			nextServerContext: { cookies },
+			nextServerContext: { cookies: options.cookies },
 			operation: contextSpec =>
 				fn(getAmplifyServerContext(contextSpec).amplify),
 		});
 
-	return generateClientWithAmplifyInstance<T, V6ClientSSRCookies<T>>({
+	const { cookies: _cookies, config: _config, ...params } = options;
+
+	return generateClientWithAmplifyInstance<T, V6ClientSSRCookies<T, Options>>({
 		amplify: getAmplify,
 		config: resourcesConfig,
-		authMode,
-		authToken,
-	});
+		...params,
+	} as any); // TS can't narrow the type here.
 }
 
 /**
@@ -99,12 +94,15 @@ export function generateServerClientUsingCookies<
  */
 export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never,
->({ config, authMode, authToken }: ReqClientParams): V6ClientSSRRequest<T> {
-	const amplifyConfig = parseAmplifyConfig(config);
+	Options extends CommonPublicClientOptions &
+		ReqClientParams = DefaultCommonClientOptions & ReqClientParams,
+>(options: Options): V6ClientSSRRequest<T, Options> {
+	const amplifyConfig = parseAmplifyConfig(options.config);
+
+	const { config: _config, ...params } = options;
 
 	return generateClient<T>({
 		config: amplifyConfig,
-		authMode,
-		authToken,
-	});
+		...params,
+	}) as any;
 }
