@@ -31,21 +31,7 @@
 			"require_uppercase": true,
 			"require_symbols": true,
 			"min_length": 6
-		},
-		"groups": [
-			{
-				"ADMIN": { "precedence": 0 },
-				"USER": { "precedence": 1 }
-			},
-			{
-				"USER": { "precedence": 0 }
-			},
-			{
-				"TEST": { "precedence": 2 },
-				"USER": { "precedence": 1 },
-				"ADMIN": { "precedence": 0 }
-			}
-		]
+		}
 	},
 	"data": {
 		"aws_region": "us-west-2",
