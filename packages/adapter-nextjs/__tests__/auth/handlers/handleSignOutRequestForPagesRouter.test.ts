@@ -9,7 +9,7 @@ import {
 	createAuthFlowProofCookiesSetOptions,
 	createLogoutEndpoint,
 	createSignOutFlowProofCookies,
-	isNonSSLOrigin,
+	isSSLOrigin,
 	resolveRedirectSignOutUrl,
 } from '../../../src/auth/utils';
 import { createMockNextApiResponse } from '../testUtils';
@@ -27,7 +27,7 @@ const mockCreateSignOutFlowProofCookies = jest.mocked(
 	createSignOutFlowProofCookies,
 );
 const mockResolveRedirectSignOutUrl = jest.mocked(resolveRedirectSignOutUrl);
-const mockIsNonSSLOrigin = jest.mocked(isNonSSLOrigin);
+const mockIsSSLOrigin = jest.mocked(isSSLOrigin);
 
 describe('handleSignOutRequest', () => {
 	const {
@@ -40,7 +40,7 @@ describe('handleSignOutRequest', () => {
 	} = createMockNextApiResponse();
 
 	beforeAll(() => {
-		mockIsNonSSLOrigin.mockReturnValue(true);
+		mockIsSSLOrigin.mockReturnValue(true);
 	});
 
 	afterEach(() => {
@@ -123,7 +123,7 @@ describe('handleSignOutRequest', () => {
 			expect.any(URLSearchParams),
 		);
 		expect(mockCreateSignOutFlowProofCookies).toHaveBeenCalled();
-		expect(mockIsNonSSLOrigin).toHaveBeenCalledWith(mockOrigin);
+		expect(mockIsSSLOrigin).toHaveBeenCalledWith(mockOrigin);
 		expect(mockCreateAuthFlowProofCookiesSetOptions).toHaveBeenCalledWith(
 			mockSetCookieOptions,
 			{

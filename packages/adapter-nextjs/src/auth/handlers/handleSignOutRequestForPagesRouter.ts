@@ -6,7 +6,7 @@ import {
 	createAuthFlowProofCookiesSetOptions,
 	createLogoutEndpoint,
 	createSignOutFlowProofCookies,
-	isNonSSLOrigin,
+	isSSLOrigin,
 	resolveRedirectSignOutUrl,
 } from '../utils';
 
@@ -23,7 +23,7 @@ export const handleSignOutRequestForPagesRouter: HandleSignOutRequestForPagesRou
 			response,
 			createSignOutFlowProofCookies(),
 			createAuthFlowProofCookiesSetOptions(setCookieOptions, {
-				secure: isNonSSLOrigin(origin),
+				secure: isSSLOrigin(origin),
 			}),
 		);
 

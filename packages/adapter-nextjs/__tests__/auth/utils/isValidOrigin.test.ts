@@ -1,7 +1,4 @@
-import {
-	isNonSSLOrigin,
-	isValidOrigin,
-} from '../../../src/auth/utils/isValidOrigin';
+import { isSSLOrigin, isValidOrigin } from '../../../src/auth/utils/origin';
 
 describe('isValidOrigin', () => {
 	test.each([
@@ -52,10 +49,11 @@ describe('isValidOrigin', () => {
 
 describe('isNonSSLLocalhostOrigin', () => {
 	test.each([
-		['http://localhost', true],
-		['http://localhost:3000', true],
-		['https://some-app.com', false],
+		['https://some-app.com', true],
+		['http://localhost', false],
+		['http://localhost:3000', false],
+		['https:// some-app.com', false],
 	])('check origin is non-SSL localhost %s as %s', (origin, expected) => {
-		expect(isNonSSLOrigin(origin)).toBe(expected);
+		expect(isSSLOrigin(origin)).toBe(expected);
 	});
 });

@@ -13,7 +13,7 @@ import {
 	createSignInFlowProofCookies,
 	createSignUpEndpoint,
 	createUrlSearchParamsForSignInSignUp,
-	isNonSSLOrigin,
+	isSSLOrigin,
 } from '../../../src/auth/utils';
 
 jest.mock('../../../src/auth/utils');
@@ -31,7 +31,7 @@ const mockCreateSignUpEndpoint = jest.mocked(createSignUpEndpoint);
 const mockCreateUrlSearchParamsForSignInSignUp = jest.mocked(
 	createUrlSearchParamsForSignInSignUp,
 );
-const mockIsNonSSLOrigin = jest.mocked(isNonSSLOrigin);
+const mockIsSSLOrigin = jest.mocked(isSSLOrigin);
 
 describe('handleSignInSignUpRequest', () => {
 	const mockCustomState = 'mockCustomState';
@@ -44,7 +44,7 @@ describe('handleSignInSignUpRequest', () => {
 	const mockToCodeChallenge = jest.fn(() => 'mockCodeChallenge');
 
 	beforeAll(() => {
-		mockIsNonSSLOrigin.mockReturnValue(true);
+		mockIsSSLOrigin.mockReturnValue(true);
 	});
 
 	afterEach(() => {
@@ -56,7 +56,7 @@ describe('handleSignInSignUpRequest', () => {
 		mockCreateSignUpEndpoint.mockClear();
 		mockCreateUrlSearchParamsForSignInSignUp.mockClear();
 		mockToCodeChallenge.mockClear();
-		mockIsNonSSLOrigin.mockClear();
+		mockIsSSLOrigin.mockClear();
 	});
 
 	test.each(['signIn' as const, 'signUp' as const])(
@@ -164,7 +164,7 @@ describe('handleSignInSignUpRequest', () => {
 				mockCreateSignInFlowProofCookiesResult,
 				mockCreateAuthFlowProofCookiesSetOptionsResult,
 			);
-			expect(isNonSSLOrigin).toHaveBeenCalledWith(mockOrigin);
+			expect(isSSLOrigin).toHaveBeenCalledWith(mockOrigin);
 		},
 	);
 });

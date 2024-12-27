@@ -9,7 +9,7 @@ import {
 	createAuthFlowProofCookiesSetOptions,
 	createLogoutEndpoint,
 	createSignOutFlowProofCookies,
-	isNonSSLOrigin,
+	isSSLOrigin,
 	resolveRedirectSignOutUrl,
 } from '../../../src/auth/utils';
 
@@ -24,11 +24,11 @@ const mockCreateSignOutFlowProofCookies = jest.mocked(
 	createSignOutFlowProofCookies,
 );
 const mockResolveRedirectSignOutUrl = jest.mocked(resolveRedirectSignOutUrl);
-const mockIsNonSSLOrigin = jest.mocked(isNonSSLOrigin);
+const mockIsSSLOrigin = jest.mocked(isSSLOrigin);
 
 describe('handleSignOutRequest', () => {
 	beforeAll(() => {
-		mockIsNonSSLOrigin.mockReturnValue(true);
+		mockIsSSLOrigin.mockReturnValue(true);
 	});
 
 	afterEach(() => {
@@ -37,7 +37,7 @@ describe('handleSignOutRequest', () => {
 		mockCreateLogoutEndpoint.mockClear();
 		mockCreateSignOutFlowProofCookies.mockClear();
 		mockResolveRedirectSignOutUrl.mockClear();
-		mockIsNonSSLOrigin.mockClear();
+		mockIsSSLOrigin.mockClear();
 	});
 
 	it('returns a 302 response with the correct headers and cookies', async () => {
@@ -100,7 +100,7 @@ describe('handleSignOutRequest', () => {
 			expect.any(URLSearchParams),
 		);
 		expect(mockCreateSignOutFlowProofCookies).toHaveBeenCalled();
-		expect(mockIsNonSSLOrigin).toHaveBeenCalledWith(mockOrigin);
+		expect(mockIsSSLOrigin).toHaveBeenCalledWith(mockOrigin);
 		expect(mockCreateAuthFlowProofCookiesSetOptions).toHaveBeenCalledWith(
 			mockSetCookieOptions,
 			{

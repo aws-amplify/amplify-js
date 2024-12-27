@@ -9,7 +9,7 @@ import {
 	createSignInFlowProofCookies,
 	createSignUpEndpoint,
 	createUrlSearchParamsForSignInSignUp,
-	isNonSSLOrigin,
+	isSSLOrigin,
 } from '../utils';
 
 import { HandleSignInSignUpRequest } from './types';
@@ -45,7 +45,7 @@ export const handleSignInSignUpRequest: HandleSignInSignUpRequest = ({
 		headers,
 		createSignInFlowProofCookies({ state, pkce: codeVerifier.value }),
 		createAuthFlowProofCookiesSetOptions(setCookieOptions, {
-			secure: isNonSSLOrigin(origin),
+			secure: isSSLOrigin(origin),
 		}),
 	);
 
