@@ -4,11 +4,12 @@
 import {
 	AUTH_KEY_PREFIX,
 	CookieStorage,
-	DEFAULT_COOKIE_EXPIRY,
+	DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE,
 	createKeysForAuthStorage,
 } from 'aws-amplify/adapter-core';
 
 import { OAuthTokenResponsePayload } from '../types';
+import { REMOVE_COOKIE_MAX_AGE } from '../constant';
 
 import { getAccessTokenUsernameAndClockDrift } from './getAccessTokenUsernameAndClockDrift';
 
@@ -55,22 +56,31 @@ export const createTokenRemoveCookies = (keys: string[]) =>
 	keys.map(key => ({ name: key, value: '' }));
 
 export const createTokenCookiesSetOptions = (
-	setCookieOptions: CookieStorage.SetCookieOptions,
+	{ domain, sameSite, expires, maxAge }: CookieStorage.SetCookieOptions,
 	overrides?: Pick<CookieStorage.SetCookieOptions, 'secure'>,
-) => ({
-	domain: setCookieOptions?.domain,
-	path: '/',
-	httpOnly: true,
-	secure: overrides?.secure ?? true,
-	sameSite: setCookieOptions.sameSite ?? 'strict',
-	expires:
-		setCookieOptions?.expires ?? new Date(Date.now() + DEFAULT_COOKIE_EXPIRY),
-});
+) => {
+	const result = {
+		domain,
+		path: '/',
+		httpOnly: true,
+		secure: overrides?.secure ?? true,
+		sameSite: sameSite ?? 'strict',
+		expires,
+		maxAge,
+	};
+
+	// when expires and maxAge both are not specified, we set a default maxAge
+	if (!result.expires && !result.maxAge) {
+		result.maxAge = DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE;
+	}
+
+	return result;
+};
 
 export const createTokenCookiesRemoveOptions = (
 	setCookieOptions: CookieStorage.SetCookieOptions,
 ) => ({
 	domain: setCookieOptions?.domain,
 	path: '/',
-	expires: new Date('1970-01-01'),
+	maxAge: REMOVE_COOKIE_MAX_AGE, // Expire immediately (remove the cookie)
 });

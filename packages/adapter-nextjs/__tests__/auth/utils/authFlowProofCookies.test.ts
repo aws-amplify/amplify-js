@@ -1,7 +1,7 @@
 import { CookieStorage } from 'aws-amplify/adapter-core';
 
 import {
-	AUTH_FLOW_PROOF_COOKIE_EXPIRY,
+	AUTH_FLOW_PROOF_MAX_AGE,
 	IS_SIGNING_OUT_COOKIE_NAME,
 	PKCE_COOKIE_NAME,
 	STATE_COOKIE_NAME,
@@ -37,16 +37,6 @@ describe('createSignOutFlowProofCookies', () => {
 });
 
 describe('createAuthFlowProofCookiesSetOptions', () => {
-	let nowSpy: jest.SpyInstance;
-
-	beforeAll(() => {
-		nowSpy = jest.spyOn(Date, 'now').mockReturnValue(0);
-	});
-
-	afterAll(() => {
-		jest.restoreAllMocks();
-	});
-
 	it('returns expected cookie serialization options with specified parameters', () => {
 		const setCookieOptions: CookieStorage.SetCookieOptions = {
 			domain: '.example.com',
@@ -55,14 +45,13 @@ describe('createAuthFlowProofCookiesSetOptions', () => {
 
 		const options = createAuthFlowProofCookiesSetOptions(setCookieOptions);
 
-		expect(nowSpy).toHaveBeenCalled();
 		expect(options).toEqual({
 			domain: setCookieOptions?.domain,
 			path: '/',
 			httpOnly: true,
 			secure: true,
 			sameSite: 'lax' as const,
-			expires: new Date(0 + AUTH_FLOW_PROOF_COOKIE_EXPIRY),
+			maxAge: AUTH_FLOW_PROOF_MAX_AGE,
 		});
 	});
 
@@ -76,14 +65,13 @@ describe('createAuthFlowProofCookiesSetOptions', () => {
 			secure: false,
 		});
 
-		expect(nowSpy).toHaveBeenCalled();
 		expect(options).toEqual({
 			domain: setCookieOptions?.domain,
 			path: '/',
 			httpOnly: true,
 			secure: false,
 			sameSite: 'lax' as const,
-			expires: new Date(0 + AUTH_FLOW_PROOF_COOKIE_EXPIRY),
+			maxAge: AUTH_FLOW_PROOF_MAX_AGE,
 		});
 	});
 });
@@ -99,7 +87,7 @@ describe('createAuthFlowProofCookiesRemoveOptions', () => {
 		expect(options).toEqual({
 			domain: setCookieOptions?.domain,
 			path: '/',
-			expires: new Date('1970-01-01'),
+			maxAge: -1,
 		});
 	});
 });
