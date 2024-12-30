@@ -33,18 +33,9 @@
 			"min_length": 6
 		},
 		"groups": [
-			{
-				"ADMIN": { "precedence": 0 },
-				"USER": { "precedence": 1 }
-			},
-			{
-				"USER": { "precedence": 0 }
-			},
-			{
-				"TEST": { "precedence": 2 },
-				"USER": { "precedence": 1 },
-				"ADMIN": { "precedence": 0 }
-			}
+			{ "ADMIN": { "precedence": 0 } },
+			{ "USER": { "precedence": 1 } },
+			{ "TEST": { "precedence": 2 } }
 		]
 	},
 	"data": {
