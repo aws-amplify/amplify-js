@@ -11,6 +11,7 @@ export {
 	generateRandomString,
 	isBrowser,
 	isNonRetryableError,
+	isTokenExpired,
 	isWebWorker,
 	jitteredBackoff,
 	jitteredExponentialRetry,
@@ -38,7 +39,6 @@ export {
 	assertIdentityPoolIdConfig,
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
-export { isTokenExpired } from './singleton/Auth';
 export {
 	AssociationBelongsTo,
 	AssociationHasMany,
