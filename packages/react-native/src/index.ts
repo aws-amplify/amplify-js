@@ -6,6 +6,9 @@ export {
 	computeS,
 	getOperatingSystem,
 	getDeviceName,
+	getPasskey,
+	createPasskey,
+	getIsPasskeySupported,
 } from './apis';
 export {
 	loadAmplifyPushNotification,

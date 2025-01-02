@@ -3,21 +3,33 @@
 
 #import <React/RCTBridgeModule.h>
 
-@interface RCT_EXTERN_MODULE(AmplifyRTNCore, NSObject)
+@interface RCT_EXTERN_MODULE (AmplifyRTNCore, NSObject)
 
-RCT_EXTERN_METHOD(computeModPow:(NSDictionary*)payload
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(computeModPow
+                  : (NSDictionary *)payload withResolver
+                  : (RCTPromiseResolveBlock)resolve withRejecter
+                  : (RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(computeS:(NSDictionary*)payload
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(computeS
+                  : (NSDictionary *)payload withResolver
+                  : (RCTPromiseResolveBlock)resolve withRejecter
+                  : (RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(getDeviceName:(RCTPromiseResolveBlock)resolve
-                  withResolver:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(getDeviceName
+                  : (RCTPromiseResolveBlock)resolve withResolver
+                  : (RCTPromiseRejectBlock)reject)
 
-+ (BOOL)requiresMainQueueSetup
-{
+RCT_EXTERN_METHOD(getPasskey
+                  : (NSString)request withResolver
+                  : (RCTPromiseResolveBlock)resolve withRejecter
+                  : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(createPasskey
+                  : (NSString)request withResolver
+                  : (RCTPromiseResolveBlock)resolve withRejecter
+                  : (RCTPromiseRejectBlock)reject)
+
++ (BOOL)requiresMainQueueSetup {
   return NO;
 }
 

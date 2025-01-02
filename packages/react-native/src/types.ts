@@ -18,4 +18,7 @@ export interface RTNCore {
 	}): Promise<string>;
 
 	getDeviceName(): Promise<string>;
+
+	getPasskey(a: string): Promise<string>;
+	createPasskey(a: string): Promise<string>;
 }

@@ -92,6 +92,16 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+	// for credential manager API
+	// https://developer.android.com/identity/sign-in/credential-manager#add-dependencies
+
+	implementation "androidx.credentials:credentials:1.3.0"
+
+    // optional - needed for credentials support from play services, for devices running
+    // Android 13 and below.
+    implementation "androidx.credentials:credentials-play-services-auth:1.3.0"
+
 }
 
 if (isNewArchitectureEnabled()) {
