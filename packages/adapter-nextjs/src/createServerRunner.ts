@@ -44,16 +44,19 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 		});
 	}
 
+	const runWithAmplifyServerContext = createRunWithAmplifyServerContext({
+		config: amplifyConfig,
+		tokenValidator,
+		runtimeOptions,
+	});
+
 	return {
-		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
-			config: amplifyConfig,
-			tokenValidator,
-			runtimeOptions,
-		}),
+		runWithAmplifyServerContext,
 		createAuthRouteHandlers: createAuthRouteHandlersFactory({
 			config: amplifyConfig,
 			runtimeOptions,
 			amplifyAppOrigin,
+			runWithAmplifyServerContext,
 		}),
 	};
 };
