@@ -17,11 +17,12 @@ import {
 	OAuthMetadata,
 } from './types';
 import { TokenProviderErrorCode, assert } from './errorHelpers';
+import { AUTH_KEY_PREFIX } from './constants';
 
 export class DefaultTokenStore implements AuthTokenStore {
 	private authConfig?: AuthConfig;
 	keyValueStorage?: KeyValueStorageInterface;
-	private name = 'CognitoIdentityServiceProvider'; // To be backwards compatible with V5, no migration needed
+
 	getKeyValueStorage(): KeyValueStorageInterface {
 		if (!this.keyValueStorage) {
 			throw new AuthError({
@@ -205,7 +206,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		const lastAuthUser = username ?? (await this.getLastAuthUser());
 
 		return createKeysForAuthStorage(
-			this.name,
+			AUTH_KEY_PREFIX,
 			`${this.authConfig.Cognito.userPoolClientId}.${lastAuthUser}`,
 		);
 	}
@@ -214,7 +215,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		assertTokenProviderConfig(this.authConfig?.Cognito);
 		const identifier = this.authConfig.Cognito.userPoolClientId;
 
-		return `${this.name}.${identifier}.LastAuthUser`;
+		return `${AUTH_KEY_PREFIX}.${identifier}.LastAuthUser`;
 	}
 
 	async getLastAuthUser(): Promise<string> {
