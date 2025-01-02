@@ -32,17 +32,4 @@ describe('getAccessTokenUsernameAndClockDrift', () => {
 			}),
 		);
 	});
-
-	it('should return default username and clock drift when username is not present in the payload', () => {
-		mockDecodeJWT.mockReturnValueOnce({
-			payload: {},
-		});
-
-		expect(getAccessTokenUsernameAndClockDrift('accessToken')).toEqual(
-			expect.objectContaining({
-				username: 'username',
-				clockDrift: 0,
-			}),
-		);
-	});
 });

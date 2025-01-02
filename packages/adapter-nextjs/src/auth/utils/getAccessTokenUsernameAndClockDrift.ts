@@ -12,7 +12,7 @@ export const getAccessTokenUsernameAndClockDrift = (
 	const decoded = decodeJWT(accessToken);
 	const issuedAt = (decoded.payload.iat ?? 0) * 1000;
 	const clockDrift = issuedAt > 0 ? issuedAt - Date.now() : 0;
-	const username = (decoded.payload.username as string) ?? 'username';
+	const username = decoded.payload.username as string;
 
 	return {
 		username,
