@@ -47,13 +47,13 @@ describe('isValidOrigin', () => {
 	});
 });
 
-describe('isNonSSLLocalhostOrigin', () => {
+describe('isSSLOrigin', () => {
 	test.each([
 		['https://some-app.com', true],
 		['http://localhost', false],
 		['http://localhost:3000', false],
 		['https:// some-app.com', false],
-	])('check origin is non-SSL localhost %s as %s', (origin, expected) => {
+	])('check origin SSL %s status as %s', (origin, expected) => {
 		expect(isSSLOrigin(origin)).toBe(expected);
 	});
 });
