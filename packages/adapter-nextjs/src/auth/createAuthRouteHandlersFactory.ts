@@ -39,6 +39,7 @@ export const createAuthRouteHandlersFactory = ({
 	assertTokenProviderConfig(resourcesConfig.Auth?.Cognito);
 	assertOAuthConfig(resourcesConfig.Auth.Cognito);
 
+	const { userPoolClientId } = resourcesConfig.Auth.Cognito;
 	const { oauth: oAuthConfig } = resourcesConfig.Auth.Cognito.loginWith;
 	const { cookies: setCookieOptions = {} } = runtimeOptions;
 
@@ -46,12 +47,17 @@ export const createAuthRouteHandlersFactory = ({
 		request: NextRequest | NextApiRequest,
 		contextOrResponse: AuthRoutesHandlerContext | NextApiResponse,
 		handlerInput: CreateAuthRoutesHandlersInput,
-	) => {
+	): Promise<Response | undefined> => {
 		if (isNextApiRequest(request) && isNextApiResponse(contextOrResponse)) {
-			handleAuthApiRouteRequestForPagesRouter({
+			// In pages router the response is sent via calling `response.end()` or
+			// `response.send()`. The response is not returned from the handler.
+			// To ensure these two methods are called before the handler returns,
+			// we use `await` here.
+			await handleAuthApiRouteRequestForPagesRouter({
 				request,
 				response: contextOrResponse,
 				handlerInput,
+				userPoolClientId,
 				oAuthConfig,
 				setCookieOptions,
 				origin: amplifyAppOrigin,
@@ -70,6 +76,7 @@ export const createAuthRouteHandlersFactory = ({
 				request,
 				handlerContext: contextOrResponse,
 				handlerInput,
+				userPoolClientId,
 				oAuthConfig,
 				setCookieOptions,
 				origin: amplifyAppOrigin,
