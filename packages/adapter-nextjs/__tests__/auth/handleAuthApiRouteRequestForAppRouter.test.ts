@@ -6,6 +6,23 @@ import { OAuthConfig } from '@aws-amplify/core';
 
 import { handleAuthApiRouteRequestForAppRouter } from '../../src/auth/handleAuthApiRouteRequestForAppRouter';
 import { CreateAuthRoutesHandlersInput } from '../../src/auth/types';
+import {
+	handleSignInCallbackRequest,
+	handleSignInSignUpRequest,
+	handleSignOutCallbackRequest,
+	handleSignOutRequest,
+} from '../../src/auth/handlers';
+
+jest.mock('../../src/auth/handlers');
+
+const mockHandleSignInSignUpRequest = jest.mocked(handleSignInSignUpRequest);
+const mockHandleSignOutRequest = jest.mocked(handleSignOutRequest);
+const mockHandleSignInCallbackRequest = jest.mocked(
+	handleSignInCallbackRequest,
+);
+const mockHandleSignOutCallbackRequest = jest.mocked(
+	handleSignOutCallbackRequest,
+);
 
 describe('handleAuthApiRouteRequestForAppRouter', () => {
 	const testOrigin = 'https://example.com';
@@ -23,17 +40,18 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 	};
 	const _ = handleAuthApiRouteRequestForAppRouter;
 
-	it('returns a 405 response when input.request has an unsupported method', () => {
+	it('returns a 405 response when input.request has an unsupported method', async () => {
 		const request = new NextRequest(
 			new URL('https://example.com/api/auth/sign-in'),
 			{
 				method: 'POST',
 			},
 		);
-		const response = handleAuthApiRouteRequestForAppRouter({
+		const response = await handleAuthApiRouteRequestForAppRouter({
 			request,
 			handlerContext: testHandlerContext,
 			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
@@ -42,17 +60,18 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 		expect(response.status).toBe(405);
 	});
 
-	it('returns a 400 response when handlerContext.params.slug is undefined', () => {
+	it('returns a 400 response when handlerContext.params.slug is undefined', async () => {
 		const request = new NextRequest(
 			new URL('https://example.com/api/auth/sign-in'),
 			{
 				method: 'GET',
 			},
 		);
-		const response = handleAuthApiRouteRequestForAppRouter({
+		const response = await handleAuthApiRouteRequestForAppRouter({
 			request,
 			handlerContext: { params: { slug: undefined } },
 			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
@@ -61,17 +80,18 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 		expect(response.status).toBe(400);
 	});
 
-	it('returns a 404 response when handlerContext.params.slug is not a supported path', () => {
+	it('returns a 404 response when handlerContext.params.slug is not a supported path', async () => {
 		const request = new NextRequest(
 			new URL('https://example.com/api/auth/exchange-token'),
 			{
 				method: 'GET',
 			},
 		);
-		const response = handleAuthApiRouteRequestForAppRouter({
+		const response = await handleAuthApiRouteRequestForAppRouter({
 			request,
 			handlerContext: { params: { slug: 'exchange-token' } },
 			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
@@ -80,23 +100,135 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 		expect(response.status).toBe(404);
 	});
 
-	// TODO(HuiSF): add use cases tests for each supported path when implemented
-	it('returns a 501 response when handlerContext.params.slug is a supported path', () => {
-		const request = new NextRequest(
-			new URL('https://example.com/api/auth/sign-in'),
+	test.each([
+		['sign-in', 'signIn'],
+		['sign-up', 'signUp'],
+	])(
+		`calls handleSignInSignUpRequest with correct params when handlerContext.params.slug is %s`,
+		async (slug, expectedType) => {
+			const mockRequest = new NextRequest(
+				new URL('https://example.com/api/auth/sign-in'),
+				{
+					method: 'GET',
+				},
+			);
+			const mockResponse = new Response(null, { status: 302 });
+
+			mockHandleSignInSignUpRequest.mockReturnValueOnce(mockResponse);
+
+			const response = await handleAuthApiRouteRequestForAppRouter({
+				request: mockRequest,
+				handlerContext: { params: { slug } },
+				handlerInput: testHandlerInput,
+				userPoolClientId: 'userPoolClientId',
+				oAuthConfig: testOAuthConfig,
+				setCookieOptions: {},
+				origin: testOrigin,
+			});
+
+			expect(response).toBe(mockResponse);
+			expect(mockHandleSignInSignUpRequest).toHaveBeenCalledWith({
+				request: mockRequest,
+				userPoolClientId: 'userPoolClientId',
+				oAuthConfig: testOAuthConfig,
+				customState: testHandlerInput.customState,
+				origin: testOrigin,
+				setCookieOptions: {},
+				type: expectedType,
+			});
+		},
+	);
+
+	it('calls handleSignOutRequest with correct params when handlerContext.params.slug is sign-out', async () => {
+		const mockRequest = new NextRequest(
+			new URL('https://example.com/api/auth/sign-out'),
 			{
 				method: 'GET',
 			},
 		);
-		const response = handleAuthApiRouteRequestForAppRouter({
-			request,
-			handlerContext: { params: { slug: 'sign-in' } },
+		const mockResponse = new Response(null, { status: 302 });
+
+		mockHandleSignOutRequest.mockReturnValueOnce(mockResponse);
+
+		const response = await handleAuthApiRouteRequestForAppRouter({
+			request: mockRequest,
+			handlerContext: { params: { slug: 'sign-out' } },
 			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
 		});
 
-		expect(response.status).toBe(501);
+		expect(response).toBe(mockResponse);
+		expect(mockHandleSignOutRequest).toHaveBeenCalledWith({
+			userPoolClientId: 'userPoolClientId',
+			oAuthConfig: testOAuthConfig,
+			origin: testOrigin,
+			setCookieOptions: {},
+		});
+	});
+
+	it('calls handleSignInCallbackRequest with correct params when handlerContext.params.slug is sign-in-callback', async () => {
+		const mockRequest = new NextRequest(
+			new URL('https://example.com/api/auth/sign-in-callback'),
+			{
+				method: 'GET',
+			},
+		);
+		const mockResponse = new Response(null, { status: 302 });
+
+		mockHandleSignInCallbackRequest.mockResolvedValueOnce(mockResponse);
+
+		const response = await handleAuthApiRouteRequestForAppRouter({
+			request: mockRequest,
+			handlerContext: { params: { slug: 'sign-in-callback' } },
+			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
+			oAuthConfig: testOAuthConfig,
+			setCookieOptions: {},
+			origin: testOrigin,
+		});
+
+		expect(response).toBe(mockResponse);
+		expect(mockHandleSignInCallbackRequest).toHaveBeenCalledWith({
+			request: mockRequest,
+			handlerInput: testHandlerInput,
+			oAuthConfig: testOAuthConfig,
+			origin: testOrigin,
+			setCookieOptions: {},
+			userPoolClientId: 'userPoolClientId',
+		});
+	});
+
+	it('calls handleSignOutCallbackRequest with correct params when handlerContext.params.slug is sign-out-callback', async () => {
+		const mockRequest = new NextRequest(
+			new URL('https://example.com/api/auth/sign-out-callback'),
+			{
+				method: 'GET',
+			},
+		);
+		const mockResponse = new Response(null, { status: 302 });
+
+		mockHandleSignOutCallbackRequest.mockResolvedValueOnce(mockResponse);
+
+		const response = await handleAuthApiRouteRequestForAppRouter({
+			request: mockRequest,
+			handlerContext: { params: { slug: 'sign-out-callback' } },
+			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
+			oAuthConfig: testOAuthConfig,
+			setCookieOptions: {},
+			origin: testOrigin,
+		});
+
+		expect(response).toBe(mockResponse);
+		expect(mockHandleSignOutCallbackRequest).toHaveBeenCalledWith({
+			request: mockRequest,
+			handlerInput: testHandlerInput,
+			oAuthConfig: testOAuthConfig,
+			setCookieOptions: {},
+			userPoolClientId: 'userPoolClientId',
+		});
 	});
 });
