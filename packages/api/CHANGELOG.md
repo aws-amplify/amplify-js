@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.9...@aws-amplify/api@6.2.0) (2025-01-03)
+
+### Features
+
+- **api:** add custom endpoint support to API ([#14086](https://github.com/aws-amplify/amplify-js/issues/14086)) ([ca2e4b8](https://github.com/aws-amplify/amplify-js/commit/ca2e4b87a456dfe9a027e49bdcd912a2cba8e59d))
+
 ## [6.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.1.8...@aws-amplify/api@6.1.9) (2024-12-19)
 
 **Note:** Version bump only for package @aws-amplify/api
