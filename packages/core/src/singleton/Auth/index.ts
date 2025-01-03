@@ -9,18 +9,6 @@ import {
 	LibraryAuthOptions,
 } from './types';
 
-export function isTokenExpired({
-	expiresAt,
-	clockDrift,
-}: {
-	expiresAt: number;
-	clockDrift: number;
-}): boolean {
-	const currentTime = Date.now();
-
-	return currentTime + clockDrift > expiresAt;
-}
-
 export class AuthClass {
 	private authConfig?: AuthConfig;
 	private authOptions?: LibraryAuthOptions;

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.70](https://github.com/aws-amplify/amplify-js/compare/tsc-compliance-test@0.1.69...tsc-compliance-test@0.1.70) (2025-01-03)
+
+**Note:** Version bump only for package tsc-compliance-test
+
 ## [0.1.69](https://github.com/aws-amplify/amplify-js/compare/tsc-compliance-test@0.1.68...tsc-compliance-test@0.1.69) (2024-12-19)
 
 **Note:** Version bump only for package tsc-compliance-test
