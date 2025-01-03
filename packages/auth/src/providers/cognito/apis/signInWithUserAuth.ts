@@ -26,11 +26,11 @@ import {
 	SignInWithUserAuthInput,
 	SignInWithUserAuthOutput,
 } from '../types';
+import { autoSignInStore } from '../../../client/utils/store';
 import {
-	autoSignInStore,
-	cleanActiveSignInState,
+	resetActiveSignInState,
 	setActiveSignInState,
-} from '../../../client/utils/store';
+} from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { tokenOrchestrator } from '../tokenProvider';
@@ -100,7 +100,6 @@ export async function signInWithUserAuth(
 		});
 
 		if (response.AuthenticationResult) {
-			cleanActiveSignInState();
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...response.AuthenticationResult,
@@ -112,6 +111,8 @@ export async function signInWithUserAuth(
 				}),
 				signInDetails,
 			});
+			resetActiveSignInState();
+
 			await dispatchSignedInHubEvent();
 
 			resetAutoSignIn();
@@ -131,7 +132,7 @@ export async function signInWithUserAuth(
 					: undefined,
 		});
 	} catch (error) {
-		cleanActiveSignInState();
+		resetActiveSignInState();
 		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);

@@ -13,11 +13,30 @@ export type ClientGenerationParams = {
 	amplify: AmplifyClassV6;
 } & CommonPublicClientOptions;
 
-/**
- * Common options that can be used on public `generateClient()` interfaces.
- */
-export interface CommonPublicClientOptions {
+export interface DefaultCommonClientOptions {
+	endpoint?: never;
 	authMode?: GraphQLAuthMode;
+	apiKey?: string;
 	authToken?: string;
 	headers?: CustomHeaders;
 }
+
+/**
+ * Common options that can be used on public `generateClient()` interfaces.
+ */
+export type CommonPublicClientOptions =
+	| DefaultCommonClientOptions
+	| {
+			endpoint: string;
+			authMode: 'apiKey';
+			apiKey: string;
+			authToken?: string;
+			headers?: CustomHeaders;
+	  }
+	| {
+			endpoint: string;
+			authMode: Exclude<GraphQLAuthMode, 'apiKey'>;
+			apiKey?: string;
+			authToken?: string;
+			headers?: CustomHeaders;
+	  };

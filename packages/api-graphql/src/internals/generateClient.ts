@@ -13,8 +13,10 @@ import {
 import {
 	V6Client,
 	__amplify,
+	__apiKey,
 	__authMode,
 	__authToken,
+	__endpoint,
 	__headers,
 	getInternals,
 } from '../types';
@@ -33,13 +35,16 @@ import { ClientGenerationParams } from './types';
  * @param params
  * @returns
  */
-export function generateClient<T extends Record<any, any> = never>(
-	params: ClientGenerationParams,
-): V6Client<T> {
+export function generateClient<
+	T extends Record<any, any> = never,
+	Options extends ClientGenerationParams = ClientGenerationParams,
+>(params: Options): V6Client<T, Options> {
 	const client = {
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
 		[__authToken]: params.authToken,
+		[__apiKey]: 'apiKey' in params ? params.apiKey : undefined,
+		[__endpoint]: 'endpoint' in params ? params.endpoint : undefined,
 		[__headers]: params.headers,
 		graphql,
 		cancel,
@@ -53,22 +58,37 @@ export function generateClient<T extends Record<any, any> = never>(
 
 	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
 
-	if (isApiGraphQLConfig(apiGraphqlConfig)) {
-		addSchemaToClient(client, apiGraphqlConfig, getInternals);
-	} else {
-		// This happens when the `Amplify.configure()` call gets evaluated after the `generateClient()` call.
-		//
-		// Cause: when the `generateClient()` and the `Amplify.configure()` calls are located in
-		// different source files, script bundlers may randomly arrange their orders in the production
-		// bundle.
-		//
-		// With the current implementation, the `client.models` instance created by `generateClient()`
-		// will be rebuilt on every `Amplify.configure()` call that's provided with a valid GraphQL
-		// provider configuration.
-		//
-		// TODO: revisit, and reverify this approach when enabling multiple clients for multi-endpoints
-		// configuration.
-		generateModelsPropertyOnAmplifyConfigure(client);
+	if (client[__endpoint]) {
+		if (!client[__authMode]) {
+			throw new Error(
+				'generateClient() requires an explicit `authMode` when `endpoint` is provided.',
+			);
+		}
+		if (client[__authMode] === 'apiKey' && !client[__apiKey]) {
+			throw new Error(
+				"generateClient() requires an explicit `apiKey` when `endpoint` is provided and `authMode = 'apiKey'`.",
+			);
+		}
+	}
+
+	if (!client[__endpoint]) {
+		if (isApiGraphQLConfig(apiGraphqlConfig)) {
+			addSchemaToClient(client, apiGraphqlConfig, getInternals);
+		} else {
+			// This happens when the `Amplify.configure()` call gets evaluated after the `generateClient()` call.
+			//
+			// Cause: when the `generateClient()` and the `Amplify.configure()` calls are located in
+			// different source files, script bundlers may randomly arrange their orders in the production
+			// bundle.
+			//
+			// With the current implementation, the `client.models` instance created by `generateClient()`
+			// will be rebuilt on every `Amplify.configure()` call that's provided with a valid GraphQL
+			// provider configuration.
+			//
+			// TODO: revisit, and reverify this approach when enabling multiple clients for multi-endpoints
+			// configuration.
+			generateModelsPropertyOnAmplifyConfigure(client);
+		}
 	}
 
 	return client as any;

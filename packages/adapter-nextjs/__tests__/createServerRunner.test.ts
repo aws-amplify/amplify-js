@@ -20,7 +20,6 @@ const mockAmplifyConfig: ResourcesConfig = {
 		},
 	},
 };
-
 jest.mock(
 	'../src/utils/createCookieStorageAdapterFromNextServerContext',
 	() => ({
@@ -30,6 +29,7 @@ jest.mock(
 
 describe('createServerRunner', () => {
 	let createServerRunner: any;
+	let createRunWithAmplifyServerContextSpy: any;
 
 	const mockParseAmplifyConfig = jest.fn();
 	const mockCreateAWSCredentialsAndIdentityIdProvider = jest.fn();
@@ -50,11 +50,16 @@ describe('createServerRunner', () => {
 		jest.doMock('@aws-amplify/core/internals/utils', () => ({
 			parseAmplifyConfig: mockParseAmplifyConfig,
 		}));
+		createRunWithAmplifyServerContextSpy = jest.spyOn(
+			require('../src/utils/createRunWithAmplifyServerContext'),
+			'createRunWithAmplifyServerContext',
+		);
 
 		({ createServerRunner } = require('../src'));
 	});
 
 	afterEach(() => {
+		createRunWithAmplifyServerContextSpy.mockClear();
 		mockParseAmplifyConfig.mockClear();
 		mockCreateAWSCredentialsAndIdentityIdProvider.mockClear();
 		mockCreateKeyValueStorageFromCookieStorageAdapter.mockClear();
@@ -98,6 +103,10 @@ describe('createServerRunner', () => {
 					{},
 					operation,
 				);
+				expect(createRunWithAmplifyServerContextSpy).toHaveBeenCalledWith({
+					config: mockAmplifyConfigWithoutAuth,
+					tokenValidator: undefined,
+				});
 			});
 		});
 
@@ -120,11 +129,17 @@ describe('createServerRunner', () => {
 						mockAmplifyConfig.Auth,
 						sharedInMemoryStorage,
 					);
+					expect(createRunWithAmplifyServerContextSpy).toHaveBeenCalledWith({
+						config: mockAmplifyConfig,
+						tokenValidator: expect.objectContaining({
+							getItem: expect.any(Function),
+						}),
+					});
 				});
 			});
 
 			describe('when nextServerContext is not null', () => {
-				it('should create auth providers with cookie storage adapter', () => {
+				it('should create auth providers with cookie storage adapter', async () => {
 					const operation = jest.fn();
 					const mockCookieStorageAdapter = {
 						get: jest.fn(),
@@ -147,7 +162,7 @@ describe('createServerRunner', () => {
 					const { runWithAmplifyServerContext } = createServerRunner({
 						config: mockAmplifyConfig,
 					});
-					runWithAmplifyServerContext({
+					await runWithAmplifyServerContext({
 						operation,
 						nextServerContext:
 							mockNextServerContext as unknown as NextServer.Context,
@@ -162,6 +177,12 @@ describe('createServerRunner', () => {
 						mockAmplifyConfig.Auth,
 						mockCookieStorageAdapter,
 					);
+					expect(createRunWithAmplifyServerContextSpy).toHaveBeenCalledWith({
+						config: mockAmplifyConfig,
+						tokenValidator: expect.objectContaining({
+							getItem: expect.any(Function),
+						}),
+					});
 				});
 			});
 		});

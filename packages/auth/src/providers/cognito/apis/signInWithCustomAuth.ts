@@ -22,9 +22,9 @@ import {
 	SignInWithCustomAuthOutput,
 } from '../types';
 import {
-	cleanActiveSignInState,
+	resetActiveSignInState,
 	setActiveSignInState,
-} from '../../../client/utils/store';
+} from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
@@ -84,8 +84,6 @@ export async function signInWithCustomAuth(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
-
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
@@ -97,6 +95,7 @@ export async function signInWithCustomAuth(
 				}),
 				signInDetails,
 			});
+			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 
@@ -111,7 +110,7 @@ export async function signInWithCustomAuth(
 			challengeParameters: retiredChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		cleanActiveSignInState();
+		resetActiveSignInState();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

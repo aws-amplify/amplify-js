@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig, sharedInMemoryStorage } from '@aws-amplify/core';
+import { KeyValueStorageMethodValidator } from '@aws-amplify/core/internals/adapter-core';
 import {
 	createAWSCredentialsAndIdentityIdProvider,
 	createKeyValueStorageFromCookieStorageAdapter,
@@ -11,13 +12,14 @@ import {
 
 import { NextServer } from '../types';
 
-import { createTokenValidator } from './createTokenValidator';
 import { createCookieStorageAdapterFromNextServerContext } from './createCookieStorageAdapterFromNextServerContext';
 
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
+	tokenValidator,
 }: {
 	config: ResourcesConfig;
+	tokenValidator?: KeyValueStorageMethodValidator;
 }) => {
 	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 		async ({ nextServerContext, operation }) => {
@@ -32,14 +34,10 @@ export const createRunWithAmplifyServerContext = ({
 					nextServerContext === null
 						? sharedInMemoryStorage
 						: createKeyValueStorageFromCookieStorageAdapter(
-								createCookieStorageAdapterFromNextServerContext(
+								await createCookieStorageAdapterFromNextServerContext(
 									nextServerContext,
 								),
-								createTokenValidator({
-									userPoolId: resourcesConfig?.Auth.Cognito?.userPoolId,
-									userPoolClientId:
-										resourcesConfig?.Auth.Cognito?.userPoolClientId,
-								}),
+								tokenValidator,
 							);
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,

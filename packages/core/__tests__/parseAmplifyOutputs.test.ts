@@ -133,6 +133,7 @@ describe('parseAmplifyOutputs tests', () => {
 					unauthenticated_identities_enabled: true,
 					mfa_configuration: 'OPTIONAL',
 					mfa_methods: ['SMS'],
+					groups: [{ ADMIN: { precedence: 0 }, USER: { precedence: 0 } }],
 				},
 			};
 
@@ -174,6 +175,7 @@ describe('parseAmplifyOutputs tests', () => {
 								scopes: ['profile', '...'],
 							},
 						},
+						groups: [{ ADMIN: { precedence: 0 }, USER: { precedence: 0 } }],
 					},
 				},
 			});
@@ -316,6 +318,17 @@ describe('parseAmplifyOutputs tests', () => {
 								},
 							},
 						},
+						{
+							name: 'bucket-2',
+							bucket_name: 'storage-bucket-test-2',
+							aws_region: 'us-west-2',
+							paths: {
+								'public/*': {
+									guest: ['get', 'list', 'write', 'delete'],
+									authenticated: ['get', 'list', 'write', 'delete'],
+								},
+							},
+						},
 					],
 				},
 			};
@@ -339,6 +352,16 @@ describe('parseAmplifyOutputs tests', () => {
 									'admin/*': {
 										groupsauditor: ['get', 'list'],
 										groupsadmin: ['get', 'list', 'write', 'delete'],
+									},
+								},
+							},
+							'bucket-2': {
+								bucketName: 'storage-bucket-test-2',
+								region: 'us-west-2',
+								paths: {
+									'public/*': {
+										authenticated: ['get', 'list', 'write', 'delete'],
+										guest: ['get', 'list', 'write', 'delete'],
 									},
 								},
 							},

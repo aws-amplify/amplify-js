@@ -21,11 +21,7 @@ import {
 	getNewDeviceMetadata,
 	getSignInResult,
 } from '../../../providers/cognito/utils/signInHelpers';
-import {
-	cleanActiveSignInState,
-	setActiveSignInState,
-	signInStore,
-} from '../../../client/utils/store';
+import { setActiveSignInState, signInStore } from '../../../client/utils/store';
 import { AuthSignInOutput } from '../../../types';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getPasskey } from '../../utils/passkey';
@@ -106,7 +102,7 @@ export async function handleWebAuthnSignInResult(
 			}),
 			signInDetails,
 		});
-		cleanActiveSignInState();
+		signInStore.dispatch({ type: 'RESET_STATE' });
 		await dispatchSignedInHubEvent();
 
 		return {
