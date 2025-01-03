@@ -17,7 +17,7 @@ type UserGroupName = string;
 type UserGroupPrecedence = Record<string, number>;
 export interface AmplifyOutputsAuthProperties {
 	aws_region: string;
-	authentication_flow_type?: 'USER_SRP_AUTH' | 'CUSTOM_AUTH';
+	authentication_flow_type?: string;
 	user_pool_id: string;
 	user_pool_client_id: string;
 	identity_pool_id?: string;
