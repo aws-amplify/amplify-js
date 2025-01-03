@@ -66,9 +66,19 @@ export interface CreateAuthRoutesHandlersInput {
 	redirectOnSignOutComplete?: string;
 }
 
-export type CreateAuthRouteHandlers = (
+export type InternalCreateAuthRouteHandlers = (
 	input?: CreateAuthRoutesHandlersInput,
 ) => AuthRouteHandlers;
+
+export type CreateAuthRouteHandlers = (
+	input?: CreateAuthRoutesHandlersInput,
+) =>
+	| AuthRouteHandlers
+	// Forcing the handler interface to be any to ensure the single handler can
+	// work in both App Router `routes.ts` and Pages router. The former has a
+	// restrict handler function interface type check. The parameters types are
+	// properly typed internally, and runtime validation is place.
+	| any;
 
 export interface CreateAuthRouteHandlersFactoryInput {
 	config: ResourcesConfig;
