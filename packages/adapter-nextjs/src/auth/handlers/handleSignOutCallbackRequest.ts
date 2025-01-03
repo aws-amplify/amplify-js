@@ -12,6 +12,7 @@ import {
 	createTokenCookiesRemoveOptions,
 	createTokenRemoveCookies,
 	getCookieValuesFromRequest,
+	getRedirectOrDefault,
 	revokeAuthNTokens,
 } from '../utils';
 
@@ -40,7 +41,9 @@ export const handleSignOutCallbackRequest: HandleSignOutCallbackRequest =
 			return new Response(null, {
 				status: 302,
 				headers: new Headers({
-					Location: handlerInput.redirectOnSignOutComplete ?? '/',
+					Location: getRedirectOrDefault(
+						handlerInput.redirectOnSignOutComplete,
+					),
 				}),
 			});
 		}
@@ -56,7 +59,9 @@ export const handleSignOutCallbackRequest: HandleSignOutCallbackRequest =
 			return new Response(null, {
 				status: 302,
 				headers: new Headers({
-					Location: handlerInput.redirectOnSignOutComplete ?? '/',
+					Location: getRedirectOrDefault(
+						handlerInput.redirectOnSignOutComplete,
+					),
 				}),
 			});
 		}
@@ -84,7 +89,10 @@ export const handleSignOutCallbackRequest: HandleSignOutCallbackRequest =
 			createTokenCookiesRemoveOptions(setCookieOptions),
 		);
 
-		headers.set('Location', handlerInput.redirectOnSignOutComplete ?? '/');
+		headers.set(
+			'Location',
+			getRedirectOrDefault(handlerInput.redirectOnSignOutComplete),
+		);
 
 		return new Response(null, {
 			status: 302,

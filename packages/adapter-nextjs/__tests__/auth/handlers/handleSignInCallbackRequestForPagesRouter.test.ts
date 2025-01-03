@@ -15,6 +15,7 @@ import {
 	createTokenCookiesSetOptions,
 	exchangeAuthNTokens,
 	getCookieValuesFromNextApiRequest,
+	getRedirectOrDefault,
 	resolveCodeAndStateFromUrl,
 	resolveRedirectSignInUrl,
 } from '../../../src/auth/utils';
@@ -49,6 +50,7 @@ const mockGetCookieValuesFromNextApiRequest = jest.mocked(
 );
 const mockResolveCodeAndStateFromUrl = jest.mocked(resolveCodeAndStateFromUrl);
 const mockResolveRedirectSignInUrl = jest.mocked(resolveRedirectSignInUrl);
+const mockGetRedirectOrDefault = jest.mocked(getRedirectOrDefault);
 
 describe('handleSignInCallbackRequest', () => {
 	const mockHandlerInput: CreateAuthRoutesHandlersInput = {
@@ -67,6 +69,12 @@ describe('handleSignInCallbackRequest', () => {
 		mockResponse,
 	} = createMockNextApiResponse();
 
+	beforeAll(() => {
+		mockGetRedirectOrDefault.mockImplementation(
+			(redirect: string | undefined) => redirect || '/',
+		);
+	});
+
 	afterEach(() => {
 		mockAppendSetCookieHeadersToNextApiResponse.mockClear();
 		mockCreateAuthFlowProofCookiesRemoveOptions.mockClear();
@@ -78,6 +86,7 @@ describe('handleSignInCallbackRequest', () => {
 		mockGetCookieValuesFromNextApiRequest.mockClear();
 		mockResolveCodeAndStateFromUrl.mockClear();
 		mockResolveRedirectSignInUrl.mockClear();
+		mockGetRedirectOrDefault.mockClear();
 
 		mockResponseAppendHeader.mockClear();
 		mockResponseEnd.mockClear();
@@ -339,6 +348,9 @@ describe('handleSignInCallbackRequest', () => {
 			).toHaveBeenCalledWith({
 				redirectOnSignInComplete: expectedFinalRedirect,
 			});
+			expect(getRedirectOrDefault).toHaveBeenCalledWith(
+				handlerInput.redirectOnSignInComplete,
+			);
 		},
 	);
 });

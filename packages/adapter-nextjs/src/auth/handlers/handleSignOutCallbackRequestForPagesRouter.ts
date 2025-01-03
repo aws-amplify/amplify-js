@@ -12,6 +12,7 @@ import {
 	createTokenCookiesRemoveOptions,
 	createTokenRemoveCookies,
 	getCookieValuesFromNextApiRequest,
+	getRedirectOrDefault,
 	revokeAuthNTokens,
 } from '../utils';
 
@@ -40,7 +41,10 @@ export const handleSignOutCallbackRequestForPagesRouter: HandleSignOutCallbackRe
 			getCookieValuesFromNextApiRequest(request, [lastAuthUserCookieName]);
 
 		if (!username) {
-			response.redirect(302, handlerInput.redirectOnSignOutComplete ?? '/');
+			response.redirect(
+				302,
+				getRedirectOrDefault(handlerInput.redirectOnSignOutComplete),
+			);
 
 			return;
 		}
@@ -56,7 +60,10 @@ export const handleSignOutCallbackRequestForPagesRouter: HandleSignOutCallbackRe
 			]);
 
 		if (!refreshToken) {
-			response.redirect(302, handlerInput.redirectOnSignOutComplete ?? '/');
+			response.redirect(
+				302,
+				getRedirectOrDefault(handlerInput.redirectOnSignOutComplete),
+			);
 
 			return;
 		}
@@ -85,5 +92,8 @@ export const handleSignOutCallbackRequestForPagesRouter: HandleSignOutCallbackRe
 			createTokenCookiesRemoveOptions(setCookieOptions),
 		);
 
-		response.redirect(302, handlerInput.redirectOnSignOutComplete ?? '/');
+		response.redirect(
+			302,
+			getRedirectOrDefault(handlerInput.redirectOnSignOutComplete),
+		);
 	};

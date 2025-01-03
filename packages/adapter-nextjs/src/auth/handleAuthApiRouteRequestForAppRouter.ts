@@ -3,6 +3,7 @@
 
 import { HandleAuthApiRouteRequestForAppRouter } from './types';
 import {
+	getRedirectOrDefault,
 	hasActiveUserSessionWithAppRouter,
 	isSupportedAuthApiRoutePath,
 } from './utils';
@@ -49,7 +50,9 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 					return new Response(null, {
 						status: 302,
 						headers: new Headers({
-							Location: handlerInput.redirectOnSignInComplete ?? '/',
+							Location: getRedirectOrDefault(
+								handlerInput.redirectOnSignInComplete,
+							),
 						}),
 					});
 				}
@@ -74,7 +77,9 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 					return new Response(null, {
 						status: 302,
 						headers: new Headers({
-							Location: handlerInput.redirectOnSignInComplete ?? '/',
+							Location: getRedirectOrDefault(
+								handlerInput.redirectOnSignInComplete,
+							),
 						}),
 					});
 				}
