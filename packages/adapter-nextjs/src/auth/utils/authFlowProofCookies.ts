@@ -36,11 +36,12 @@ export const createSignOutFlowProofCookies = () => [
 
 export const createAuthFlowProofCookiesSetOptions = (
 	setCookieOptions: CookieStorage.SetCookieOptions,
+	overrides?: Pick<CookieStorage.SetCookieOptions, 'secure'>,
 ) => ({
 	domain: setCookieOptions?.domain,
 	path: '/',
 	httpOnly: true,
-	secure: true,
+	secure: overrides?.secure ?? true,
 	sameSite: 'lax' as const,
 	expires: new Date(Date.now() + AUTH_FLOW_PROOF_COOKIE_EXPIRY),
 });

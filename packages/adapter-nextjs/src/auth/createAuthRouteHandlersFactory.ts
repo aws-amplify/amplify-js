@@ -20,6 +20,7 @@ import {
 	isNextApiRequest,
 	isNextApiResponse,
 	isNextRequest,
+	isValidOrigin,
 } from './utils';
 import { handleAuthApiRouteRequestForAppRouter } from './handleAuthApiRouteRequestForAppRouter';
 import { handleAuthApiRouteRequestForPagesRouter } from './handleAuthApiRouteRequestForPagesRouter';
@@ -30,12 +31,22 @@ export const createAuthRouteHandlersFactory = ({
 	amplifyAppOrigin,
 	runWithAmplifyServerContext,
 }: CreateAuthRouteHandlersFactoryInput): InternalCreateAuthRouteHandlers => {
-	if (!amplifyAppOrigin)
+	if (!amplifyAppOrigin) {
 		throw new AmplifyServerContextError({
 			message: 'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
 			recoverySuggestion:
 				'Add the AMPLIFY_APP_ORIGIN environment variable to the `.env` file of your Next.js project.',
 		});
+	}
+
+	if (!isValidOrigin(amplifyAppOrigin)) {
+		throw new AmplifyServerContextError({
+			message:
+				'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
+			recoverySuggestion:
+				'Ensure the AMPLIFY_APP_ORIGIN environment variable is a valid origin string.',
+		});
+	}
 
 	assertTokenProviderConfig(resourcesConfig.Auth?.Cognito);
 	assertOAuthConfig(resourcesConfig.Auth.Cognito);
