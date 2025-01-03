@@ -34,6 +34,7 @@ export {
 	hasActiveUserSessionWithPagesRouter,
 } from './hasActiveUserSession';
 export { isSupportedAuthApiRoutePath } from './isSupportedAuthApiRoutePath';
+export { isValidOrigin, isSSLOrigin } from './origin';
 export { resolveCodeAndStateFromUrl } from './resolveCodeAndStateFromUrl';
 export { resolveIdentityProviderFromUrl } from './resolveIdentityProviderFromUrl';
 export {

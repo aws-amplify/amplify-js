@@ -65,6 +65,27 @@ describe('createAuthFlowProofCookiesSetOptions', () => {
 			expires: new Date(0 + AUTH_FLOW_PROOF_COOKIE_EXPIRY),
 		});
 	});
+
+	it('returns expected cookie serialization options with specified parameters with overridden secure attribute', () => {
+		const setCookieOptions: CookieStorage.SetCookieOptions = {
+			domain: '.example.com',
+			sameSite: 'strict',
+		};
+
+		const options = createAuthFlowProofCookiesSetOptions(setCookieOptions, {
+			secure: false,
+		});
+
+		expect(nowSpy).toHaveBeenCalled();
+		expect(options).toEqual({
+			domain: setCookieOptions?.domain,
+			path: '/',
+			httpOnly: true,
+			secure: false,
+			sameSite: 'lax' as const,
+			expires: new Date(0 + AUTH_FLOW_PROOF_COOKIE_EXPIRY),
+		});
+	});
 });
 
 describe('createAuthFlowProofCookiesRemoveOptions', () => {
