@@ -4,9 +4,10 @@
 import { CookieStorage } from 'aws-amplify/adapter-core';
 
 import {
-	AUTH_FLOW_PROOF_COOKIE_EXPIRY,
+	AUTH_FLOW_PROOF_MAX_AGE,
 	IS_SIGNING_OUT_COOKIE_NAME,
 	PKCE_COOKIE_NAME,
+	REMOVE_COOKIE_MAX_AGE,
 	STATE_COOKIE_NAME,
 } from '../constant';
 
@@ -43,7 +44,7 @@ export const createAuthFlowProofCookiesSetOptions = (
 	httpOnly: true,
 	secure: overrides?.secure ?? true,
 	sameSite: 'lax' as const,
-	expires: new Date(Date.now() + AUTH_FLOW_PROOF_COOKIE_EXPIRY),
+	maxAge: AUTH_FLOW_PROOF_MAX_AGE,
 });
 
 export const createAuthFlowProofCookiesRemoveOptions = (
@@ -51,5 +52,5 @@ export const createAuthFlowProofCookiesRemoveOptions = (
 ) => ({
 	domain: setCookieOptions?.domain,
 	path: '/',
-	expires: new Date('1970-01-01'),
+	maxAge: REMOVE_COOKIE_MAX_AGE,
 });

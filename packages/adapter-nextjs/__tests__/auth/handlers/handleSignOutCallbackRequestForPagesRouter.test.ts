@@ -257,7 +257,7 @@ describe('handleSignOutCallbackRequest', () => {
 			const mockCreateTokenCookiesRemoveOptionsResult = {
 				domain: mockSetCookieOptions.domain,
 				path: '/',
-				expires: new Date('1970-01-01'),
+				maxAge: -1,
 			};
 			mockCreateTokenCookiesRemoveOptions.mockReturnValueOnce(
 				mockCreateTokenCookiesRemoveOptionsResult,

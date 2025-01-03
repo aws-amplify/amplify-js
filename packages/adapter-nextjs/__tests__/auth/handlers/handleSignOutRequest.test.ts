@@ -68,6 +68,7 @@ describe('handleSignOutRequest', () => {
 			secure: true,
 			sameSite: 'lax' as const,
 			expires: new Date('2024-09-18'),
+			maxAge: 3600,
 		};
 		mockCreateAuthFlowProofCookiesSetOptions.mockReturnValueOnce(
 			mockCreateAuthFlowProofCookiesSetOptionsResult,

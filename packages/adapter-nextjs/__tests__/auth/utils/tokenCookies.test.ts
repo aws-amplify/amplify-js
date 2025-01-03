@@ -1,7 +1,7 @@
 import {
 	AUTH_KEY_PREFIX,
 	CookieStorage,
-	DEFAULT_COOKIE_EXPIRY,
+	DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE,
 } from 'aws-amplify/adapter-core';
 
 import { OAuthTokenResponsePayload } from '../../../src/auth/types';
@@ -113,7 +113,7 @@ describe('createTokenCookiesSetOptions', () => {
 			httpOnly: true,
 			secure: true,
 			sameSite: 'strict',
-			expires: new Date(0 + DEFAULT_COOKIE_EXPIRY),
+			maxAge: DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE,
 		});
 
 		dateNowSpy.mockRestore();
@@ -154,7 +154,7 @@ describe('createTokenCookiesRemoveOptions', () => {
 		expect(result).toEqual({
 			domain: mockSetCookieOptions?.domain,
 			path: '/',
-			expires: new Date('1970-01-01'),
+			maxAge: -1,
 		});
 	});
 });

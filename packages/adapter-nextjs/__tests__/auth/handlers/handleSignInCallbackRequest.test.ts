@@ -218,6 +218,7 @@ describe('handleSignInCallbackRequest', () => {
 				httpOnly: true,
 				sameSite: 'strict' as const,
 				expires: new Date('2024-9-17'),
+				maxAge: 3600,
 			};
 			mockCreateTokenCookiesSetOptions.mockReturnValueOnce(
 				mockCreateTokenCookiesSetOptionsResult,
@@ -231,7 +232,7 @@ describe('handleSignInCallbackRequest', () => {
 			const mockCreateAuthFlowProofCookiesRemoveOptionsResult = {
 				domain: 'example.com',
 				path: '/',
-				expires: new Date('1970-1-1'),
+				maxAge: -1,
 			};
 			mockCreateAuthFlowProofCookiesRemoveOptions.mockReturnValueOnce(
 				mockCreateAuthFlowProofCookiesRemoveOptionsResult,
