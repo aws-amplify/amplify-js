@@ -3,6 +3,7 @@
 
 import { HandleAuthApiRouteRequestForPagesRouter } from './types';
 import {
+	getRedirectOrDefault,
 	hasActiveUserSessionWithPagesRouter,
 	isSupportedAuthApiRoutePath,
 } from './utils';
@@ -53,7 +54,10 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 				});
 
 				if (hasActiveUserSession) {
-					response.redirect(302, handlerInput.redirectOnSignInComplete ?? '/');
+					response.redirect(
+						302,
+						getRedirectOrDefault(handlerInput.redirectOnSignInComplete),
+					);
 
 					return;
 				}
@@ -78,7 +82,10 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 				});
 
 				if (hasActiveUserSession) {
-					response.redirect(302, handlerInput.redirectOnSignInComplete ?? '/');
+					response.redirect(
+						302,
+						getRedirectOrDefault(handlerInput.redirectOnSignInComplete),
+					);
 
 					return;
 				}

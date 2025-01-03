@@ -11,6 +11,7 @@ import {
 } from '../../src/auth/handlers';
 import { NextServer } from '../../src';
 import {
+	getRedirectOrDefault,
 	hasActiveUserSessionWithPagesRouter,
 	isSupportedAuthApiRoutePath,
 } from '../../src/auth/utils';
@@ -40,6 +41,7 @@ const mockHasUserSignedInWithPagesRouter = jest.mocked(
 );
 const mockRunWithAmplifyServerContext =
 	jest.fn() as jest.MockedFunction<NextServer.RunOperationWithContext>;
+const mockGetRedirectOrDefault = jest.mocked(getRedirectOrDefault);
 
 describe('handleAuthApiRouteRequestForPagesRouter', () => {
 	const testOrigin = 'https://example.com';
@@ -67,6 +69,9 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 	beforeAll(() => {
 		mockHasUserSignedInWithPagesRouter.mockResolvedValue(false);
 		mockIsSupportedAuthApiRoutePath.mockReturnValue(true);
+		mockGetRedirectOrDefault.mockImplementation(
+			(redirect: string | undefined) => redirect || '/',
+		);
 	});
 
 	afterEach(() => {
@@ -75,6 +80,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 		mockResponseStatus.mockClear();
 		mockResponseSend.mockClear();
 		mockResponseRedirect.mockClear();
+		mockGetRedirectOrDefault.mockClear();
 	});
 
 	it('sets response.status(405) when request has an unsupported method', () => {
@@ -197,6 +203,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 			});
 
 			expect(mockResponseRedirect).toHaveBeenCalledWith(302, '/');
+			expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(undefined);
 		},
 	);
 

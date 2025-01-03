@@ -14,6 +14,7 @@ import {
 } from '../../src/auth/handlers';
 import { NextServer } from '../../src';
 import {
+	getRedirectOrDefault,
 	hasActiveUserSessionWithAppRouter,
 	isSupportedAuthApiRoutePath,
 } from '../../src/auth/utils';
@@ -37,6 +38,7 @@ const mockIsSupportedAuthApiRoutePath = jest.mocked(
 );
 const mockRunWithAmplifyServerContext =
 	jest.fn() as jest.MockedFunction<NextServer.RunOperationWithContext>;
+const mockGetRedirectOrDefault = jest.mocked(getRedirectOrDefault);
 
 describe('handleAuthApiRouteRequestForAppRouter', () => {
 	const testOrigin = 'https://example.com';
@@ -57,6 +59,13 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 	beforeAll(() => {
 		mockHasUserSignedInWithAppRouter.mockResolvedValue(false);
 		mockIsSupportedAuthApiRoutePath.mockReturnValue(true);
+		mockGetRedirectOrDefault.mockImplementation(
+			(redirect: string | undefined) => redirect || '/',
+		);
+	});
+
+	afterEach(() => {
+		mockGetRedirectOrDefault.mockClear();
 	});
 
 	it('returns a 405 response when input.request has an unsupported method', async () => {
@@ -192,6 +201,7 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 
 			expect(response.status).toBe(302);
 			expect(response.headers.get('Location')).toBe('/');
+			expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(undefined);
 		},
 	);
 
