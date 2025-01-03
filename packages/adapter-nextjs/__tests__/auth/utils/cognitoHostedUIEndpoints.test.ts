@@ -44,7 +44,6 @@ describe('cognitoHostedUIEndpoints', () => {
 	test.each(testCase)(
 		'factory %s returns expected url: %s',
 		(fn, expected, args) => {
-			// eslint-disable-next-line import/namespace
 			expect(cognitoHostedUIEndpoints[fn].apply(null, args)).toBe(expected);
 		},
 	);

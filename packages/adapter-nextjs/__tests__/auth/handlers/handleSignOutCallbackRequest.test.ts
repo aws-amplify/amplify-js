@@ -16,6 +16,7 @@ import {
 	createTokenCookiesRemoveOptions,
 	createTokenRemoveCookies,
 	getCookieValuesFromRequest,
+	getRedirectOrDefault,
 	revokeAuthNTokens,
 } from '../../../src/auth/utils';
 
@@ -33,6 +34,7 @@ const mockCreateTokenRemoveCookies = jest.mocked(createTokenRemoveCookies);
 const mockGetCookieValuesFromRequest = jest.mocked(getCookieValuesFromRequest);
 const mockRevokeAuthNTokens = jest.mocked(revokeAuthNTokens);
 const mockCreateKeysForAuthStorage = jest.mocked(createKeysForAuthStorage);
+const mockGetRedirectOrDefault = jest.mocked(getRedirectOrDefault);
 
 describe('handleSignOutCallbackRequest', () => {
 	const mockRequest = new Request(
@@ -45,12 +47,19 @@ describe('handleSignOutCallbackRequest', () => {
 		domain: '.example.com',
 	};
 
+	beforeAll(() => {
+		mockGetRedirectOrDefault.mockImplementation(
+			(redirect: string | undefined) => redirect || '/',
+		);
+	});
+
 	afterEach(() => {
 		mockAppendSetCookieHeaders.mockClear();
 		mockCreateTokenCookiesRemoveOptions.mockClear();
 		mockCreateTokenRemoveCookies.mockClear();
 		mockGetCookieValuesFromRequest.mockClear();
 		mockRevokeAuthNTokens.mockClear();
+		mockGetRedirectOrDefault.mockClear();
 	});
 
 	it(`returns a 400 response when the request does not have the "${IS_SIGNING_OUT_COOKIE_NAME}" cookie`, async () => {
@@ -125,6 +134,7 @@ describe('handleSignOutCallbackRequest', () => {
 		// verify the response
 		expect(response.status).toBe(302);
 		expect(response.headers.get('Location')).toBe('/');
+		expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(undefined);
 
 		// verify the calls to dependencies
 		expect(mockGetCookieValuesFromRequest).toHaveBeenCalledWith(mockRequest, [
@@ -283,6 +293,9 @@ describe('handleSignOutCallbackRequest', () => {
 				expect.any(Headers),
 				mockCreateTokenRemoveCookiesResult,
 				mockCreateTokenCookiesRemoveOptionsResult,
+			);
+			expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(
+				handlerInput.redirectOnSignOutComplete,
 			);
 		},
 	);
