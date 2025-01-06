@@ -7,7 +7,7 @@ import {
 	KeyValueStorageMethodValidator,
 } from '@aws-amplify/core/internals/adapter-core';
 
-import { DEFAULT_COOKIE_EXPIRY } from '../constants';
+import { DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE } from '../constants';
 
 export const defaultSetCookieOptions: CookieStorage.SetCookieOptions = {
 	// TODO: allow configure with a public interface
@@ -34,12 +34,17 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 			// SetCookie: key=value;expires=Date.now() + 365 days;path=/;secure=true
 			cookieStorageAdapter.delete(key);
 
-			// TODO(HuiSF): follow up the default CookieSerializeOptions values
-			cookieStorageAdapter.set(key, value, {
+			const mergedCookieOptions = {
 				...defaultSetCookieOptions,
-				expires: new Date(Date.now() + DEFAULT_COOKIE_EXPIRY),
 				...setCookieOptions,
-			});
+			};
+
+			// when expires and maxAge both are not specified, we set a default maxAge
+			if (!mergedCookieOptions.expires && !mergedCookieOptions.maxAge) {
+				mergedCookieOptions.maxAge = DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE;
+			}
+
+			cookieStorageAdapter.set(key, value, mergedCookieOptions);
 
 			return Promise.resolve();
 		},
