@@ -23,6 +23,7 @@ export {
 export { getAccessTokenUsernameAndClockDrift } from './getAccessTokenUsernameAndClockDrift';
 export { getCookieValuesFromNextApiRequest } from './getCookieValuesFromNextApiRequest';
 export { getCookieValuesFromRequest } from './getCookieValuesFromRequest';
+export { getRedirectOrDefault } from './getRedirectOrDefault';
 export {
 	isAuthRoutesHandlersContext,
 	isNextApiRequest,

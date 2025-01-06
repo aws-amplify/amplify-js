@@ -17,6 +17,7 @@ import {
 	createTokenCookiesRemoveOptions,
 	createTokenRemoveCookies,
 	getCookieValuesFromNextApiRequest,
+	getRedirectOrDefault,
 	revokeAuthNTokens,
 } from '../../../src/auth/utils';
 import { createMockNextApiResponse } from '../testUtils';
@@ -39,6 +40,7 @@ const mockGetCookieValuesFromNextApiRequest = jest.mocked(
 );
 const mockRevokeAuthNTokens = jest.mocked(revokeAuthNTokens);
 const mockCreateKeysForAuthStorage = jest.mocked(createKeysForAuthStorage);
+const mockGetRedirectOrDefault = jest.mocked(getRedirectOrDefault);
 
 describe('handleSignOutCallbackRequest', () => {
 	const mockRequest = {
@@ -59,12 +61,19 @@ describe('handleSignOutCallbackRequest', () => {
 		mockResponse,
 	} = createMockNextApiResponse();
 
+	beforeAll(() => {
+		mockGetRedirectOrDefault.mockImplementation(
+			(redirect: string | undefined) => redirect || '/',
+		);
+	});
+
 	afterEach(() => {
 		mockAppendSetCookieHeadersToNextApiResponse.mockClear();
 		mockCreateTokenCookiesRemoveOptions.mockClear();
 		mockCreateTokenRemoveCookies.mockClear();
 		mockGetCookieValuesFromNextApiRequest.mockClear();
 		mockRevokeAuthNTokens.mockClear();
+		mockGetRedirectOrDefault.mockClear();
 
 		mockResponseAppendHeader.mockClear();
 		mockResponseEnd.mockClear();
@@ -114,6 +123,7 @@ describe('handleSignOutCallbackRequest', () => {
 
 		// verify the response
 		expect(mockResponseRedirect).toHaveBeenCalledWith(302, '/');
+		expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(undefined);
 
 		// verify the calls to dependencies
 		expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
@@ -331,6 +341,9 @@ describe('handleSignOutCallbackRequest', () => {
 				mockResponse,
 				mockCreateTokenRemoveCookiesResult,
 				mockCreateTokenCookiesRemoveOptionsResult,
+			);
+			expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(
+				handlerInput.redirectOnSignOutComplete,
 			);
 		},
 	);
