@@ -81,7 +81,7 @@ export declare namespace NextServer {
 	export interface CreateServerRunnerRuntimeOptions {
 		cookies?: Pick<
 			CookieStorage.SetCookieOptions,
-			'domain' | 'expires' | 'sameSite'
+			'domain' | 'expires' | 'sameSite' | 'maxAge'
 		>;
 	}
 

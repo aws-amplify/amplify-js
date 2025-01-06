@@ -158,6 +158,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			httpOnly: true,
 			secure: true,
 			path: '/a-path',
+			maxAge: 3600,
 		};
 
 		it('gets cookie by calling `get` method of the underlying cookie store', () => {
@@ -185,7 +186,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 					mockSerializeOptions.domain
 				};Expires=${mockSerializeOptions.expires.toUTCString()};HttpOnly;SameSite=${
 					mockSerializeOptions.sameSite
-				};Secure;Path=${mockSerializeOptions.path}`,
+				};Secure;Path=${mockSerializeOptions.path};Max-Age=${mockSerializeOptions.maxAge}`,
 			);
 		});
 
@@ -197,7 +198,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 					mockSerializeOptions.domain
 				};Expires=${mockSerializeOptions.expires.toUTCString()};HttpOnly;SameSite=${
 					mockSerializeOptions.sameSite
-				};Secure;Path=${mockSerializeOptions.path}`,
+				};Secure;Path=${mockSerializeOptions.path};Max-Age=${mockSerializeOptions.maxAge}`,
 			);
 		});
 

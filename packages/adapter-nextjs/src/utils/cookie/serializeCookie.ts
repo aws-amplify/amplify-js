@@ -13,7 +13,7 @@ export const serializeCookie = (
 const serializeSetCookieOptions = (
 	options: CookieStorage.SetCookieOptions,
 ): string => {
-	const { expires, domain, httpOnly, sameSite, secure, path } = options;
+	const { expires, domain, httpOnly, sameSite, secure, path, maxAge } = options;
 	const serializedOptions: string[] = [];
 	if (domain) {
 		serializedOptions.push(`Domain=${domain}`);
@@ -32,6 +32,9 @@ const serializeSetCookieOptions = (
 	}
 	if (path) {
 		serializedOptions.push(`Path=${path}`);
+	}
+	if (maxAge) {
+		serializedOptions.push(`Max-Age=${maxAge}`);
 	}
 
 	return serializedOptions.join(';');
