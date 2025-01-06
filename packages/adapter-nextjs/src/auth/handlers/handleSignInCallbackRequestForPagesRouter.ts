@@ -11,6 +11,7 @@ import {
 	createTokenCookiesSetOptions,
 	exchangeAuthNTokens,
 	getCookieValuesFromNextApiRequest,
+	getRedirectOrDefault,
 	resolveCodeAndStateFromUrl,
 	resolveRedirectSignInUrl,
 } from '../utils';
@@ -86,8 +87,9 @@ export const handleSignInCallbackRequestForPagesRouter: HandleSignInCallbackRequ
 			.status(200)
 			.send(
 				createOnSignInCompleteRedirectIntermediate({
-					redirectOnSignInComplete:
-						handlerInput.redirectOnSignInComplete || '/',
+					redirectOnSignInComplete: getRedirectOrDefault(
+						handlerInput.redirectOnSignInComplete,
+					),
 				}),
 			);
 	};
