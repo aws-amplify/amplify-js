@@ -116,6 +116,7 @@ describe('handleSignInSignUpRequest', () => {
 				secure: true,
 				sameSite: 'lax' as const,
 				expires: new Date(),
+				maxAge: 3600,
 			};
 			mockCreateAuthFlowProofCookiesSetOptions.mockReturnValueOnce(
 				mockCreateAuthFlowProofCookiesSetOptionsResult,

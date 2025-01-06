@@ -23,4 +23,4 @@ export {
 	createKeysForAuthStorage,
 	AUTH_KEY_PREFIX,
 } from '@aws-amplify/auth/cognito';
-export { DEFAULT_COOKIE_EXPIRY } from './constants';
+export { DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE } from './constants';
