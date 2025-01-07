@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.8.0...@aws-amplify/core@6.9.0) (2025-01-03)
+
+### Bug Fixes
+
+- **auth:** fall back to user agent if deviceName resolves to empty st… ([#14102](https://github.com/aws-amplify/amplify-js/issues/14102)) ([9a73470](https://github.com/aws-amplify/amplify-js/commit/9a73470be85b6056939631d86cf87d502728fb5c))
+- **core:** amplify configure with storage path type issue ([#14088](https://github.com/aws-amplify/amplify-js/issues/14088)) ([0ecded1](https://github.com/aws-amplify/amplify-js/commit/0ecded15a4d1318fe10b16dbe534a111a12bdc21))
+
+### Features
+
+- **auth:** proactive token refresh ([#14076](https://github.com/aws-amplify/amplify-js/issues/14076)) ([b818753](https://github.com/aws-amplify/amplify-js/commit/b8187536ab3633e6a390ea38b9e8434b23293380))
+
+# [6.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.3...@aws-amplify/core@6.8.0) (2024-12-19)
+
+### Features
+
+- **auth:** Enable resumable SignIn ([#13855](https://github.com/aws-amplify/amplify-js/issues/13855)) ([#14074](https://github.com/aws-amplify/amplify-js/issues/14074)) ([fe315be](https://github.com/aws-amplify/amplify-js/commit/fe315be4da6d814f2b802cf1acbb00513ca238ac))
+
+## [6.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.2...@aws-amplify/core@6.7.3) (2024-12-12)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.1...@aws-amplify/core@6.7.2) (2024-12-03)
+
+### Bug Fixes
+
+- bump package version ([c5ab404](https://github.com/aws-amplify/amplify-js/commit/c5ab40454c22b91fd54a293831e88c4bb9ae45ee))
+
+## [6.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.0...@aws-amplify/core@6.7.1) (2024-12-03)
+
+### Bug Fixes
+
+- amplify configure with auth userGroups ([#14046](https://github.com/aws-amplify/amplify-js/issues/14046)) ([4278be2](https://github.com/aws-amplify/amplify-js/commit/4278be2b07374a98724e4d787891a36a2bf55c05))
+
+# [6.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.6.0...@aws-amplify/core@6.7.0) (2024-11-25)
+
+### Features
+
+- **auth:** passwordless ([#14032](https://github.com/aws-amplify/amplify-js/issues/14032)) ([68c7f6f](https://github.com/aws-amplify/amplify-js/commit/68c7f6fbaa903ac8e45035bc25a71321a6240aec)), closes [#1](https://github.com/aws-amplify/amplify-js/issues/1) [#3](https://github.com/aws-amplify/amplify-js/issues/3) [#6](https://github.com/aws-amplify/amplify-js/issues/6) [#8](https://github.com/aws-amplify/amplify-js/issues/8) [#2](https://github.com/aws-amplify/amplify-js/issues/2) [#11](https://github.com/aws-amplify/amplify-js/issues/11) [#7](https://github.com/aws-amplify/amplify-js/issues/7) [#14](https://github.com/aws-amplify/amplify-js/issues/14) [#15](https://github.com/aws-amplify/amplify-js/issues/15) [#16](https://github.com/aws-amplify/amplify-js/issues/16) [#18](https://github.com/aws-amplify/amplify-js/issues/18) [#17](https://github.com/aws-amplify/amplify-js/issues/17) [#19](https://github.com/aws-amplify/amplify-js/issues/19) [#22](https://github.com/aws-amplify/amplify-js/issues/22)
+
+# [6.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.5.3...@aws-amplify/core@6.6.0) (2024-11-20)
+
+### Features
+
+- **storage:** Integrity changes for storage browser ([#13909](https://github.com/aws-amplify/amplify-js/issues/13909)) ([ec7bf6f](https://github.com/aws-amplify/amplify-js/commit/ec7bf6ff2fb4af84425eca4f2d68c2bef7f49d03)), closes [#13478](https://github.com/aws-amplify/amplify-js/issues/13478) [#13474](https://github.com/aws-amplify/amplify-js/issues/13474)
+
+## [6.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.5.2...@aws-amplify/core@6.5.3) (2024-11-13)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.5.1...@aws-amplify/core@6.5.2) (2024-11-12)
+
+### Bug Fixes
+
+- **core:** Check for storage initialization errors ([#13938](https://github.com/aws-amplify/amplify-js/issues/13938)) ([0f50917](https://github.com/aws-amplify/amplify-js/commit/0f5091780046b9556b98300c29fb970a0358bd70))
+
 ## [6.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.5.0...@aws-amplify/core@6.5.1) (2024-10-31)
 
 **Note:** Version bump only for package @aws-amplify/core

@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.3.1...@aws-amplify/adapter-nextjs@1.4.0) (2025-01-03)
+
+### Features
+
+- **api:** add custom endpoint support to API ([#14086](https://github.com/aws-amplify/amplify-js/issues/14086)) ([ca2e4b8](https://github.com/aws-amplify/amplify-js/commit/ca2e4b87a456dfe9a027e49bdcd912a2cba8e59d))
+
+## [1.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.3.0...@aws-amplify/adapter-nextjs@1.3.1) (2024-12-19)
+
+### Bug Fixes
+
+- **adapter-nextjs:** create jwt verifier once ([#13825](https://github.com/aws-amplify/amplify-js/issues/13825)) ([88f9eef](https://github.com/aws-amplify/amplify-js/commit/88f9eef11f143663da4a5abbff1098b3a1dd704a))
+
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.32...@aws-amplify/adapter-nextjs@1.3.0) (2024-12-12)
+
+### Features
+
+- **adapter-nextjs:** support next.js 15 ([#13947](https://github.com/aws-amplify/amplify-js/issues/13947)) ([341eee2](https://github.com/aws-amplify/amplify-js/commit/341eee293b772f0c71e667ccce4ebdca993513ff))
+
+## [1.2.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.30...@aws-amplify/adapter-nextjs@1.2.32) (2024-12-03)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.2.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.30...@aws-amplify/adapter-nextjs@1.2.31) (2024-12-03)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.2.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.29...@aws-amplify/adapter-nextjs@1.2.30) (2024-11-25)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.2.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.28...@aws-amplify/adapter-nextjs@1.2.29) (2024-11-20)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.2.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.27...@aws-amplify/adapter-nextjs@1.2.28) (2024-11-13)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.2.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.26...@aws-amplify/adapter-nextjs@1.2.27) (2024-11-12)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
 ## [1.2.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.25...@aws-amplify/adapter-nextjs@1.2.26) (2024-10-31)
 
 **Note:** Version bump only for package @aws-amplify/adapter-nextjs

@@ -75,7 +75,7 @@ export interface AuthSignInWithRedirectInput {
  * The parameters for constructing a Sign Up input.
  *
  * @param username - a standard username, potentially an email/phone number
- * @param password - the user's password
+ * @param password - the user's password, may be required depending on your Cognito User Pool configuration
  * @param options - optional parameters for the Sign Up process, including user attributes
  */
 export interface AuthSignUpInput<
@@ -83,7 +83,7 @@ export interface AuthSignUpInput<
 		AuthSignUpOptions<AuthUserAttributeKey> = AuthSignUpOptions<AuthUserAttributeKey>,
 > {
 	username: string;
-	password: string;
+	password?: string;
 	options?: ServiceOptions;
 }
 

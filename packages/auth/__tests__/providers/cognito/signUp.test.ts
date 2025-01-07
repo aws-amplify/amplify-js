@@ -244,6 +244,25 @@ describe('signUp', () => {
 			expect(mockSignUp).toHaveBeenCalledTimes(1);
 			(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 		});
+
+		it('should not throw an error when password is empty', async () => {
+			await signUp({ username: user1.username, password: '' });
+			expect(mockSignUp).toHaveBeenCalledWith(
+				{
+					region: 'us-west-2',
+					userAgentValue: expect.any(String),
+				},
+				{
+					ClientMetadata: undefined,
+					Password: undefined,
+					UserAttributes: undefined,
+					Username: user1.username,
+					ValidationData: undefined,
+					ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				},
+			);
+			expect(mockSignUp).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	describe('Error Path Cases:', () => {
@@ -262,16 +281,6 @@ describe('signUp', () => {
 			} catch (error: any) {
 				expect(error).toBeInstanceOf(AuthError);
 				expect(error.name).toBe(AuthValidationErrorCode.EmptySignUpUsername);
-			}
-		});
-
-		it('should throw an error when password is empty', async () => {
-			expect.assertions(2);
-			try {
-				await signUp({ username: user1.username, password: '' });
-			} catch (error: any) {
-				expect(error).toBeInstanceOf(AuthError);
-				expect(error.name).toBe(AuthValidationErrorCode.EmptySignUpPassword);
 			}
 		});
 

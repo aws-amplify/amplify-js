@@ -88,12 +88,14 @@ function parseAuth(
 		oauth,
 		username_attributes,
 		standard_required_attributes,
+		groups,
 	} = amplifyOutputsAuthProperties;
 
 	const authConfig = {
 		Cognito: {
 			userPoolId: user_pool_id,
 			userPoolClientId: user_pool_client_id,
+			groups,
 		},
 	} as AuthConfig;
 
@@ -373,18 +375,33 @@ function createBucketInfoMap(
 ): Record<string, BucketInfo> {
 	const mappedBuckets: Record<string, BucketInfo> = {};
 
-	buckets.forEach(({ name, bucket_name: bucketName, aws_region: region }) => {
-		if (name in mappedBuckets) {
-			throw new Error(
-				`Duplicate friendly name found: ${name}. Name must be unique.`,
-			);
-		}
+	buckets.forEach(
+		({ name, bucket_name: bucketName, aws_region: region, paths }) => {
+			if (name in mappedBuckets) {
+				throw new Error(
+					`Duplicate friendly name found: ${name}. Name must be unique.`,
+				);
+			}
 
-		mappedBuckets[name] = {
-			bucketName,
-			region,
-		};
-	});
+			const sanitizedPaths = paths
+				? Object.entries(paths).reduce<
+						Record<string, Record<string, string[] | undefined>>
+					>((acc, [key, value]) => {
+						if (value !== undefined) {
+							acc[key] = value;
+						}
+
+						return acc;
+					}, {})
+				: undefined;
+
+			mappedBuckets[name] = {
+				bucketName,
+				region,
+				paths: sanitizedPaths,
+			};
+		},
+	);
 
 	return mappedBuckets;
 }
