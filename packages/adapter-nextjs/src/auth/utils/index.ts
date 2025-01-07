@@ -36,7 +36,7 @@ export {
 } from './hasActiveUserSession';
 export { isSupportedAuthApiRoutePath } from './isSupportedAuthApiRoutePath';
 export { isValidOrigin, isSSLOrigin } from './origin';
-export { resolveCodeAndStateFromUrl } from './resolveCodeAndStateFromUrl';
+export { parseSignInCallbackUrl } from './parseSignInCallbackUrl';
 export { resolveIdentityProviderFromUrl } from './resolveIdentityProviderFromUrl';
 export {
 	resolveRedirectSignInUrl,

@@ -3,12 +3,16 @@
 
 import { getSearchParamValueFromUrl } from './getSearchParamValueFromUrl';
 
-export const resolveCodeAndStateFromUrl = (
+export const parseSignInCallbackUrl = (
 	urlStr: string,
 ): {
 	code: string | null;
 	state: string | null;
+	error: string | null;
+	errorDescription: string | null;
 } => ({
 	state: getSearchParamValueFromUrl(urlStr, 'state'),
 	code: getSearchParamValueFromUrl(urlStr, 'code'),
+	error: getSearchParamValueFromUrl(urlStr, 'error'),
+	errorDescription: getSearchParamValueFromUrl(urlStr, 'error_description'),
 });

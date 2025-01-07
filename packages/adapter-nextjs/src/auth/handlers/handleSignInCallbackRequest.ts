@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PKCE_COOKIE_NAME, STATE_COOKIE_NAME } from '../constant';
+import {
+	PKCE_COOKIE_NAME,
+	SIGN_IN_TIMEOUT_ERROR,
+	STATE_COOKIE_NAME,
+} from '../constant';
 import {
 	appendSetCookieHeaders,
 	createAuthFlowProofCookiesRemoveOptions,
@@ -12,7 +16,7 @@ import {
 	exchangeAuthNTokens,
 	getCookieValuesFromRequest,
 	getRedirectOrDefault,
-	resolveCodeAndStateFromUrl,
+	parseSignInCallbackUrl,
 	resolveRedirectSignInUrl,
 } from '../utils';
 
@@ -26,14 +30,38 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 	setCookieOptions,
 	origin,
 }) => {
-	const { code, state } = resolveCodeAndStateFromUrl(request.url);
+	const { code, state, error, errorDescription } = parseSignInCallbackUrl(
+		request.url,
+	);
+
+	if (errorDescription || error) {
+		return new Response(null, {
+			status: 302,
+			headers: new Headers({
+				location: `${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?error=${errorDescription || error}`,
+			}),
+		});
+	}
+
 	if (!code || !state) {
 		return new Response(null, { status: 400 });
 	}
 
 	const { [PKCE_COOKIE_NAME]: clientPkce, [STATE_COOKIE_NAME]: clientState } =
 		getCookieValuesFromRequest(request, [PKCE_COOKIE_NAME, STATE_COOKIE_NAME]);
-	if (!clientState || clientState !== state || !clientPkce) {
+
+	// The state and pkce cookies are removed from cookie store after 5 minutes
+	if (!clientState || !clientPkce) {
+		return new Response(null, {
+			status: 302,
+			headers: new Headers({
+				location: `${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?error=${SIGN_IN_TIMEOUT_ERROR}`,
+			}),
+		});
+	}
+
+	// Most likely the cookie has been tampered
+	if (clientState !== state) {
 		return new Response(null, { status: 400 });
 	}
 
