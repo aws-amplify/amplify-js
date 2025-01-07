@@ -145,6 +145,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				tokens.deviceMetadata.randomPassword,
 			);
 		}
+
 		if (tokens.signInDetails) {
 			await this.getKeyValueStorage().setItem(
 				authKeys.signInDetails,
