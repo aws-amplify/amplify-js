@@ -158,15 +158,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 			authKeys.clockDrift,
 			`${tokens.clockDrift}`,
 		);
-
-		if (authKeys.oauthMetadata) {
-			await this.getKeyValueStorage().setItem(
-				authKeys.oauthMetadata,
-				JSON.stringify(tokens.oauthMetadata),
-			)
-		} else {
-			await this.getKeyValueStorage().removeItem(authKeys.oauthMetadata);
-		}
 	}
 
 	async clearTokens(): Promise<void> {
