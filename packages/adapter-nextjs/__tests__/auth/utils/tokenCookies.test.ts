@@ -10,22 +10,17 @@ import {
 	createTokenCookiesRemoveOptions,
 	createTokenCookiesSetOptions,
 	createTokenRemoveCookies,
-	getAccessTokenUsernameAndClockDrift,
+	getAccessTokenUsername,
 } from '../../../src/auth/utils';
 
-jest.mock('../../../src/auth/utils/getAccessTokenUsernameAndClockDrift');
+jest.mock('../../../src/auth/utils/getAccessTokenUsername');
 
-const mockGetAccessTokenUsernameAndClockDrift = jest.mocked(
-	getAccessTokenUsernameAndClockDrift,
-);
+const mockGetAccessTokenUsername = jest.mocked(getAccessTokenUsername);
 
 describe('createTokenCookies', () => {
 	const mockUserName = 'a_user';
 	beforeAll(() => {
-		mockGetAccessTokenUsernameAndClockDrift.mockReturnValue({
-			username: mockUserName,
-			clockDrift: -42,
-		});
+		mockGetAccessTokenUsername.mockReturnValue(mockUserName);
 	});
 
 	it('returns a set of cookies with correct names and values derived from the input', () => {
@@ -56,10 +51,6 @@ describe('createTokenCookies', () => {
 			{
 				name: `${expectedCookieNamePrefix}.refreshToken`,
 				value: 'refresh_token',
-			},
-			{
-				name: `${expectedCookieNamePrefix}.clockDrift`,
-				value: '-42',
 			},
 			{
 				name: `${AUTH_KEY_PREFIX}.${mockUserPoolClientId}.LastAuthUser`,
