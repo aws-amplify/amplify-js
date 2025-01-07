@@ -1,6 +1,6 @@
 import { decodeJWT } from '@aws-amplify/core';
 
-import { getAccessTokenUsernameAndClockDrift } from '../../../src/auth/utils/getAccessTokenUsernameAndClockDrift';
+import { getAccessTokenUsername } from '../../../src/auth/utils/getAccessTokenUsername';
 
 jest.mock('@aws-amplify/core');
 
@@ -25,11 +25,6 @@ describe('getAccessTokenUsernameAndClockDrift', () => {
 			},
 		});
 
-		expect(getAccessTokenUsernameAndClockDrift('accessToken')).toEqual(
-			expect.objectContaining({
-				username: 'a_user',
-				clockDrift: 1000,
-			}),
-		);
+		expect(getAccessTokenUsername('accessToken')).toStrictEqual('a_user');
 	});
 });

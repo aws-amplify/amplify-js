@@ -20,7 +20,7 @@ export {
 	createTokenEndpoint,
 	createRevokeEndpoint,
 } from './cognitoHostedUIEndpoints';
-export { getAccessTokenUsernameAndClockDrift } from './getAccessTokenUsernameAndClockDrift';
+export { getAccessTokenUsername } from './getAccessTokenUsername';
 export { getCookieValuesFromNextApiRequest } from './getCookieValuesFromNextApiRequest';
 export { getCookieValuesFromRequest } from './getCookieValuesFromRequest';
 export { getRedirectOrDefault } from './getRedirectOrDefault';

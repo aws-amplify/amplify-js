@@ -11,7 +11,7 @@ import {
 import { OAuthTokenResponsePayload } from '../types';
 import { REMOVE_COOKIE_MAX_AGE } from '../constant';
 
-import { getAccessTokenUsernameAndClockDrift } from './getAccessTokenUsernameAndClockDrift';
+import { getAccessTokenUsername } from './getAccessTokenUsername';
 
 export const createTokenCookies = ({
 	tokensPayload,
@@ -21,8 +21,7 @@ export const createTokenCookies = ({
 	userPoolClientId: string;
 }) => {
 	const { access_token, id_token, refresh_token } = tokensPayload;
-	const { username, clockDrift } =
-		getAccessTokenUsernameAndClockDrift(access_token);
+	const username = getAccessTokenUsername(access_token);
 	const authCookiesKeys = createKeysForAuthStorage(
 		AUTH_KEY_PREFIX,
 		`${userPoolClientId}.${username}`,
@@ -40,10 +39,6 @@ export const createTokenCookies = ({
 		{
 			name: authCookiesKeys.refreshToken,
 			value: refresh_token,
-		},
-		{
-			name: authCookiesKeys.clockDrift,
-			value: String(clockDrift),
 		},
 		{
 			name: `${AUTH_KEY_PREFIX}.${userPoolClientId}.LastAuthUser`,
