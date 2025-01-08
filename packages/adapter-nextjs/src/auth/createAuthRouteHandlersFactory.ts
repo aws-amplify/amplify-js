@@ -7,7 +7,11 @@ import {
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { AmplifyServerContextError } from '@aws-amplify/core/internals/adapter-core';
+import {
+	AmplifyServerContextError,
+	CookieStorage,
+} from '@aws-amplify/core/internals/adapter-core';
+import { OAuthConfig } from '@aws-amplify/core';
 
 import {
 	AuthRoutesHandlerContext,
@@ -31,35 +35,23 @@ export const createAuthRouteHandlersFactory = ({
 	amplifyAppOrigin,
 	runWithAmplifyServerContext,
 }: CreateAuthRouteHandlersFactoryInput): InternalCreateAuthRouteHandlers => {
-	if (!amplifyAppOrigin) {
-		throw new AmplifyServerContextError({
-			message: 'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
-			recoverySuggestion:
-				'Add the AMPLIFY_APP_ORIGIN environment variable to the `.env` file of your Next.js project.',
-		});
-	}
-
-	if (!isValidOrigin(amplifyAppOrigin)) {
-		throw new AmplifyServerContextError({
-			message:
-				'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
-			recoverySuggestion:
-				'Ensure the AMPLIFY_APP_ORIGIN environment variable is a valid origin string.',
-		});
-	}
-
-	assertTokenProviderConfig(resourcesConfig.Auth?.Cognito);
-	assertOAuthConfig(resourcesConfig.Auth.Cognito);
-
-	const { userPoolClientId } = resourcesConfig.Auth.Cognito;
-	const { oauth: oAuthConfig } = resourcesConfig.Auth.Cognito.loginWith;
-	const { cookies: setCookieOptions = {} } = runtimeOptions;
-
-	const handleRequest = async (
-		request: NextRequest | NextApiRequest,
-		contextOrResponse: AuthRoutesHandlerContext | NextApiResponse,
-		handlerInput: CreateAuthRoutesHandlersInput,
-	): Promise<Response | undefined> => {
+	const handleRequest = async ({
+		request,
+		contextOrResponse,
+		handlerInput,
+		userPoolClientId,
+		oAuthConfig,
+		setCookieOptions,
+		origin,
+	}: {
+		request: NextRequest | NextApiRequest;
+		contextOrResponse: AuthRoutesHandlerContext | NextApiResponse;
+		handlerInput: CreateAuthRoutesHandlersInput;
+		userPoolClientId: string;
+		oAuthConfig: OAuthConfig;
+		setCookieOptions: CookieStorage.SetCookieOptions;
+		origin: string;
+	}): Promise<Response | undefined> => {
 		if (isNextApiRequest(request) && isNextApiResponse(contextOrResponse)) {
 			// In pages router the response is sent via calling `response.end()` or
 			// `response.send()`. The response is not returned from the handler.
@@ -72,7 +64,7 @@ export const createAuthRouteHandlersFactory = ({
 				userPoolClientId,
 				oAuthConfig,
 				setCookieOptions,
-				origin: amplifyAppOrigin,
+				origin,
 				runWithAmplifyServerContext,
 			});
 
@@ -92,7 +84,7 @@ export const createAuthRouteHandlersFactory = ({
 				userPoolClientId,
 				oAuthConfig,
 				setCookieOptions,
-				origin: amplifyAppOrigin,
+				origin,
 				runWithAmplifyServerContext,
 			});
 		}
@@ -103,8 +95,45 @@ export const createAuthRouteHandlersFactory = ({
 		);
 	};
 
-	return (createAuthRoutesHandlersInput = {}) =>
+	return (createAuthRoutesHandlersInput = {}) => {
+		// origin validation should happen when createAuthRouteHandlers is being called to create
+		// Auth API routes.
+		if (!amplifyAppOrigin) {
+			throw new AmplifyServerContextError({
+				message: 'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
+				recoverySuggestion:
+					'Add the AMPLIFY_APP_ORIGIN environment variable to the `.env` file of your Next.js project.',
+			});
+		}
+
+		if (!isValidOrigin(amplifyAppOrigin)) {
+			throw new AmplifyServerContextError({
+				message:
+					'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
+				recoverySuggestion:
+					'Ensure the AMPLIFY_APP_ORIGIN environment variable is a valid origin string.',
+			});
+		}
+
+		// OAuth config validation should happen when createAuthRouteHandlers is being called to create
+		// Auth API routes.
+		assertTokenProviderConfig(resourcesConfig.Auth?.Cognito);
+		assertOAuthConfig(resourcesConfig.Auth.Cognito);
+
+		const { userPoolClientId } = resourcesConfig.Auth.Cognito;
+		const { oauth: oAuthConfig } = resourcesConfig.Auth.Cognito.loginWith;
+		const { cookies: setCookieOptions = {} } = runtimeOptions;
+
 		// The call-site of this returned function is the Next.js API route file
-		(request, contextOrRequest) =>
-			handleRequest(request, contextOrRequest, createAuthRoutesHandlersInput);
+		return (request, contextOrResponse) =>
+			handleRequest({
+				request,
+				contextOrResponse,
+				handlerInput: createAuthRoutesHandlersInput,
+				userPoolClientId,
+				oAuthConfig,
+				setCookieOptions,
+				origin: amplifyAppOrigin,
+			});
+	};
 };
