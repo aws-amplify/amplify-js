@@ -75,45 +75,49 @@ describe('createAuthRoutesHandlersFactory', () => {
 		mockIsValidOrigin.mockReturnValue(true);
 	});
 
-	it('throws an error if the `amplifyAppOrigin` param has value of `undefined`', () => {
-		expect(() =>
-			createAuthRouteHandlersFactory({
+	describe('the created createAuthRouteHandlers function', () => {
+		it('throws an error if the AMPLIFY_APP_ORIGIN environment variable is not defined', () => {
+			const throwingFunc = createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
 				runtimeOptions: mockRuntimeOptions,
 				amplifyAppOrigin: undefined,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
-			}),
-		).toThrow('Could not find the AMPLIFY_APP_ORIGIN environment variable.');
-	});
+			});
+			expect(() => throwingFunc()).toThrow(
+				'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
+			);
+		});
 
-	it('throws an error if the AMPLIFY_APP_ORIGIN environment variable is invalid', () => {
-		mockIsValidOrigin.mockReturnValueOnce(false);
-		expect(() =>
-			createAuthRouteHandlersFactory({
+		it('throws an error if the AMPLIFY_APP_ORIGIN environment variable is invalid', () => {
+			mockIsValidOrigin.mockReturnValueOnce(false);
+			const throwingFunc = createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
 				runtimeOptions: mockRuntimeOptions,
 				amplifyAppOrigin: 'domain-without-protocol.com',
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
-			}),
-		).toThrow(
-			'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
-		);
-	});
-
-	it('calls config assertion functions to validate the Auth configuration', () => {
-		createAuthRouteHandlersFactory({
-			config: mockAmplifyConfig,
-			runtimeOptions: mockRuntimeOptions,
-			amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
-			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+			});
+			expect(() => throwingFunc()).toThrow(
+				'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
+			);
 		});
 
-		expect(mockAssertTokenProviderConfig).toHaveBeenCalledWith(
-			mockAmplifyConfig.Auth?.Cognito,
-		);
-		expect(mockAssertOAuthConfig).toHaveBeenCalledWith(
-			mockAmplifyConfig.Auth!.Cognito,
-		);
+		it('calls config assertion functions to validate the Auth configuration', () => {
+			const func = createAuthRouteHandlersFactory({
+				config: mockAmplifyConfig,
+				runtimeOptions: mockRuntimeOptions,
+				amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+			});
+
+			func();
+
+			expect(mockAssertTokenProviderConfig).toHaveBeenCalledWith(
+				mockAmplifyConfig.Auth?.Cognito,
+			);
+			expect(mockAssertOAuthConfig).toHaveBeenCalledWith(
+				mockAmplifyConfig.Auth!.Cognito,
+			);
+		});
 	});
 
 	describe('the created route handler function', () => {
