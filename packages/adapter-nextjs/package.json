@@ -8,6 +8,9 @@
 		"next": ">=13.5.0 <16.0.0"
 	},
 	"dependencies": {
+		"@aws-amplify/api": "6.2.0",
+		"@aws-amplify/api-graphql": "4.7.0",
+		"@aws-amplify/core": "6.9.0",
 		"aws-jwt-verify": "^4.0.1",
 		"cookie": "^0.7.0"
 	},

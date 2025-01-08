@@ -89,6 +89,7 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.9.0",
 		"@aws-amplify/react-native": "1.1.6",
+		"@aws-sdk/types": "3.387.0",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [

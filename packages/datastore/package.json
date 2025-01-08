@@ -45,6 +45,7 @@
 	],
 	"dependencies": {
 		"@aws-amplify/api": "6.2.0",
+		"@aws-amplify/api-graphql": "4.7.0",
 		"buffer": "4.9.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",

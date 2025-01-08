@@ -24,7 +24,7 @@ const compat = new FlatCompat({
 const customClientDtsFiles = customClientDtsBundlerConfig.entries
 	.map(clientBundlerConfig => clientBundlerConfig.outFile)
 	.filter(outFile => outFile?.length > 0)
-	.map(outFile => outFile.replace(__dirname + path.sep, '')) // Convert absolute path to relative path
+	.map(outFile => outFile.replace(__dirname + path.sep, '')); // Convert absolute path to relative path
 
 export default [
 	{
@@ -292,6 +292,15 @@ export default [
 			],
 
 			'jsdoc/no-undefined-types': 1,
+		},
+	},
+	{
+		ignores: [
+			'**/**.{native,android,ios}.**',
+			'**/packages/react-native/example/**',
+		],
+		rules: {
+			'import/no-extraneous-dependencies': 'error',
 		},
 	},
 ];

@@ -54,6 +54,7 @@
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/util-hex-encoding": "2.0.0",
 		"@types/uuid": "^9.0.0",
+		"cookie": "^0.7.0",
 		"js-cookie": "^3.0.5",
 		"rxjs": "^7.8.1",
 		"tslib": "^2.5.0",
