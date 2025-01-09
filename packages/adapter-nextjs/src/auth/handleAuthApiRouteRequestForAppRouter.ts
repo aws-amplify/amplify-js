@@ -29,7 +29,7 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 			return new Response(null, { status: 405 });
 		}
 
-		const { slug } = handlerContext.params;
+		const { slug } = await handlerContext.params;
 		// don't support [...slug] here
 		if (slug === undefined || Array.isArray(slug)) {
 			return new Response(null, { status: 400 });

@@ -4,7 +4,7 @@
 import { NextRequest } from 'next/server';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { AuthRouteHandlerParams, AuthRoutesHandlerContext } from '../types';
+import { AuthRoutesHandlerContext } from '../types';
 
 // NextRequest is the 1st parameter type for the API route handlers in the App Router
 export function isNextRequest(request: object): request is NextRequest {
@@ -20,15 +20,8 @@ export function isAuthRoutesHandlersContext(
 	return (
 		'params' in context &&
 		context.params !== undefined &&
-		context.params !== null &&
-		isAuthRouteHandlerParams(context.params)
+		context.params !== null
 	);
-}
-
-function isAuthRouteHandlerParams(
-	params: object,
-): params is AuthRouteHandlerParams {
-	return 'slug' in params && typeof params.slug === 'string';
 }
 
 // NextApiRequest is the 1st parameter type for the API route handlers in the Pages Router
