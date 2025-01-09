@@ -24,7 +24,7 @@ jobs:
       - id: output_preid
         run: echo "preid=$(echo $BRANCH |  tr -cd '[:alnum:]_\-/.' | cut -d \/ -f 2)" >> $GITHUB_OUTPUT
     outputs:
-      preid: ${{ steps.output_preid.outputs.preid }}
+      preid: 'fix/crypto-dep'
 
   preid-release:
     needs:
