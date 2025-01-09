@@ -24,7 +24,8 @@ export interface AuthRouteHandlerParams {
 }
 
 export interface AuthRoutesHandlerContext {
-	params: AuthRouteHandlerParams;
+	// In Next.js 15 params is an async API, so it can be a promise.
+	params: AuthRouteHandlerParams | Promise<AuthRouteHandlerParams>;
 }
 
 /**
