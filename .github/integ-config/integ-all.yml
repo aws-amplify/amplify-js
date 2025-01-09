@@ -425,6 +425,13 @@ tests:
     sample_name: [data-client-gen2]
     spec: data-client-gen2
     browser: [chrome] # Issues using Auth category / setting secure cookies in FF using Cypress with a Next.js app. Manual testing in FF works as expected
+  - test_name: integ_next_api_multi_endpoint_gen2
+    desc: Next.js Multi Endpoint Gen 2
+    framework: next
+    category: api
+    sample_name: [multi-endpoint-gen2]
+    spec: multi-endpoint-gen2
+    browser: [chrome]
   - test_name: integ_react_rest_api
     desc: 'Vite + React REST API'
     framework: vite
@@ -625,7 +632,7 @@ tests:
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: resum-signin
-      
+
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
 
