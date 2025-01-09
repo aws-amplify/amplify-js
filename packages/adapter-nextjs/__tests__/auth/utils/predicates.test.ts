@@ -13,8 +13,9 @@ import {
 describe('isAuthRoutesHandlersContext', () => {
 	test.each([
 		[{}, false],
-		[{ params: {} }, false],
+		[{ params: {} }, true],
 		[{ params: { slug: 'sign-in' } }, true],
+		[{ params: Promise.resolve({ slug: 'sign-in' }) }, true],
 	] as [object, boolean][])(
 		'when call with %o it returns %s',
 		(input, expectedResult) => {
