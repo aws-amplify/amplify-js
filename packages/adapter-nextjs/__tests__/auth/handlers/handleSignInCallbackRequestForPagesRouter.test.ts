@@ -9,6 +9,7 @@ import { handleSignInCallbackRequestForPagesRouter } from '../../../src/auth/han
 import {
 	appendSetCookieHeadersToNextApiResponse,
 	createAuthFlowProofCookiesRemoveOptions,
+	createErrorSearchParamsString,
 	createOnSignInCompleteRedirectIntermediate,
 	createSignInFlowProofCookies,
 	createTokenCookies,
@@ -16,15 +17,23 @@ import {
 	exchangeAuthNTokens,
 	getCookieValuesFromNextApiRequest,
 	getRedirectOrDefault,
-	resolveCodeAndStateFromUrl,
+	parseSignInCallbackUrl,
 	resolveRedirectSignInUrl,
 } from '../../../src/auth/utils';
 import { CreateAuthRoutesHandlersInput } from '../../../src/auth/types';
 import {
 	PKCE_COOKIE_NAME,
+	SIGN_IN_TIMEOUT_ERROR_CODE,
+	SIGN_IN_TIMEOUT_ERROR_MESSAGE,
 	STATE_COOKIE_NAME,
 } from '../../../src/auth/constant';
 import { createMockNextApiResponse } from '../testUtils';
+
+import {
+	ERROR_CLIENT_COOKIE_COMBINATIONS,
+	ERROR_URL_PARAMS_COMBINATIONS,
+} from './signInCallbackErrorCombinations';
+import { mockCreateErrorSearchParamsStringImplementation } from './mockImplementation';
 
 jest.mock('../../../src/auth/utils');
 
@@ -48,9 +57,12 @@ const mockExchangeAuthNTokens = jest.mocked(exchangeAuthNTokens);
 const mockGetCookieValuesFromNextApiRequest = jest.mocked(
 	getCookieValuesFromNextApiRequest,
 );
-const mockResolveCodeAndStateFromUrl = jest.mocked(resolveCodeAndStateFromUrl);
+const mockParseSignInCallbackUrl = jest.mocked(parseSignInCallbackUrl);
 const mockResolveRedirectSignInUrl = jest.mocked(resolveRedirectSignInUrl);
 const mockGetRedirectOrDefault = jest.mocked(getRedirectOrDefault);
+const mockCreateErrorSearchParamsString = jest.mocked(
+	createErrorSearchParamsString,
+);
 
 describe('handleSignInCallbackRequest', () => {
 	const mockHandlerInput: CreateAuthRoutesHandlersInput = {
@@ -66,12 +78,16 @@ describe('handleSignInCallbackRequest', () => {
 		mockResponseEnd,
 		mockResponseStatus,
 		mockResponseSend,
+		mockResponseRedirect,
 		mockResponse,
 	} = createMockNextApiResponse();
 
 	beforeAll(() => {
 		mockGetRedirectOrDefault.mockImplementation(
 			(redirect: string | undefined) => redirect || '/',
+		);
+		mockCreateErrorSearchParamsString.mockImplementation(
+			mockCreateErrorSearchParamsStringImplementation,
 		);
 	});
 
@@ -84,7 +100,7 @@ describe('handleSignInCallbackRequest', () => {
 		mockCreateTokenCookiesSetOptions.mockClear();
 		mockExchangeAuthNTokens.mockClear();
 		mockGetCookieValuesFromNextApiRequest.mockClear();
-		mockResolveCodeAndStateFromUrl.mockClear();
+		mockParseSignInCallbackUrl.mockClear();
 		mockResolveRedirectSignInUrl.mockClear();
 		mockGetRedirectOrDefault.mockClear();
 
@@ -92,17 +108,24 @@ describe('handleSignInCallbackRequest', () => {
 		mockResponseEnd.mockClear();
 		mockResponseStatus.mockClear();
 		mockResponseSend.mockClear();
+		mockResponseRedirect.mockClear();
 	});
 
-	test.each([
-		[null, 'state'],
-		['state', null],
-	])(
-		'returns a 400 response when request.url contains query params: code=%s, state=%s',
-		async (code, state) => {
-			mockResolveCodeAndStateFromUrl.mockReturnValueOnce({
+	test.each(ERROR_URL_PARAMS_COMBINATIONS)(
+		'returns a $expectedStatus response when request.url contains query params: code=$code, state=$state, error=$error, error_description=$errorDescription',
+		async ({
+			code,
+			state,
+			error,
+			errorDescription,
+			expectedStatus,
+			expectedRedirect,
+		}) => {
+			mockParseSignInCallbackUrl.mockReturnValueOnce({
 				code,
 				state,
+				error,
+				errorDescription,
 			});
 			const url = '/api/auth/sign-in-callback';
 			const mockRequest = {
@@ -120,36 +143,47 @@ describe('handleSignInCallbackRequest', () => {
 				origin: mockOrigin,
 			});
 
-			expect(mockResponseStatus).toHaveBeenCalledWith(400);
-			expect(mockResponseEnd).toHaveBeenCalled();
-			expect(mockResolveCodeAndStateFromUrl).toHaveBeenCalledWith(url);
+			if (expectedStatus === 400) {
+				expect(mockResponseStatus).toHaveBeenCalledWith(expectedStatus);
+				expect(mockResponseEnd).toHaveBeenCalled();
+			} else {
+				expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(
+					mockHandlerInput.redirectOnSignOutComplete,
+				);
+				expect(mockResponseRedirect).toHaveBeenCalledWith(
+					expectedStatus,
+					expectedRedirect,
+				);
+			}
+			expect(mockParseSignInCallbackUrl).toHaveBeenCalledWith(url);
+
+			if (error || errorDescription) {
+				expect(mockCreateErrorSearchParamsString).toHaveBeenCalledWith({
+					error,
+					errorDescription,
+				});
+			}
 		},
 	);
 
-	test.each([
-		['client state cookie is missing', undefined, 'state', 'pkce'],
-		[
-			'client cookie state a different value from the state query parameter',
-			'state_different',
-			'state',
-			'pkce',
-		],
-		['client pkce cookie is missing', 'state', 'state', undefined],
-	])(
-		`returns a 400 response when %s`,
-		async (_, clientState, state, clientPkce) => {
-			mockResolveCodeAndStateFromUrl.mockReturnValueOnce({
+	test.each(ERROR_CLIENT_COOKIE_COMBINATIONS)(
+		`returns a $expectedStatus response when client cookies are: state=$state, pkce=$pkce and expected state value is 'state_b'`,
+		async ({ state, pkce, expectedStatus, expectedRedirect }) => {
+			mockParseSignInCallbackUrl.mockReturnValueOnce({
 				code: 'not_important_for_this_test',
-				state,
+				state: 'not_important_for_this_test',
+				error: null,
+				errorDescription: null,
 			});
 			mockGetCookieValuesFromNextApiRequest.mockReturnValueOnce({
-				[STATE_COOKIE_NAME]: clientState,
-				[PKCE_COOKIE_NAME]: clientPkce,
+				[STATE_COOKIE_NAME]: state,
+				[PKCE_COOKIE_NAME]: pkce,
 			});
+			const expectedState = 'state_b';
 
-			const url = `/api/auth/sign-in-callback?state=${state}&code=not_important_for_this_test`;
+			const url = `/api/auth/sign-in-callback?state=${expectedState}&code=not_important_for_this_test`;
 			const mockRequest = {
-				query: { state },
+				query: { state: expectedState },
 				url,
 			} as unknown as NextApiRequest;
 
@@ -163,13 +197,30 @@ describe('handleSignInCallbackRequest', () => {
 				origin: mockOrigin,
 			});
 
-			expect(mockResponseStatus).toHaveBeenCalledWith(400);
-			expect(mockResponseEnd).toHaveBeenCalled();
-			expect(mockResolveCodeAndStateFromUrl).toHaveBeenCalledWith(url);
+			if (expectedStatus === 400) {
+				expect(mockResponseStatus).toHaveBeenCalledWith(expectedStatus);
+				expect(mockResponseEnd).toHaveBeenCalled();
+			} else {
+				expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(
+					mockHandlerInput.redirectOnSignOutComplete,
+				);
+				expect(mockResponseRedirect).toHaveBeenCalledWith(
+					expectedStatus,
+					expectedRedirect,
+				);
+			}
+			expect(mockParseSignInCallbackUrl).toHaveBeenCalledWith(url);
 			expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 				mockRequest,
 				[PKCE_COOKIE_NAME, STATE_COOKIE_NAME],
 			);
+
+			if (!state || !pkce) {
+				expect(mockCreateErrorSearchParamsString).toHaveBeenCalledWith({
+					error: SIGN_IN_TIMEOUT_ERROR_CODE,
+					errorDescription: SIGN_IN_TIMEOUT_ERROR_MESSAGE,
+				});
+			}
 		},
 	);
 
@@ -183,9 +234,11 @@ describe('handleSignInCallbackRequest', () => {
 			query: {},
 			url: '/api/auth/sign-in-callback',
 		} as unknown as NextApiRequest;
-		mockResolveCodeAndStateFromUrl.mockReturnValueOnce({
+		mockParseSignInCallbackUrl.mockReturnValueOnce({
 			code: mockCode,
 			state: 'not_important_for_this_test',
+			error: null,
+			errorDescription: null,
 		});
 		mockGetCookieValuesFromNextApiRequest.mockReturnValueOnce({
 			[STATE_COOKIE_NAME]: 'not_important_for_this_test',
@@ -277,9 +330,11 @@ describe('handleSignInCallbackRequest', () => {
 			mockCreateAuthFlowProofCookiesRemoveOptions.mockReturnValueOnce(
 				mockCreateAuthFlowProofCookiesRemoveOptionsResult,
 			);
-			mockResolveCodeAndStateFromUrl.mockReturnValueOnce({
+			mockParseSignInCallbackUrl.mockReturnValueOnce({
 				code: mockCode,
 				state: 'not_important_for_this_test',
+				error: null,
+				errorDescription: null,
 			});
 			mockGetCookieValuesFromNextApiRequest.mockReturnValueOnce({
 				[STATE_COOKIE_NAME]: 'not_important_for_this_test',
