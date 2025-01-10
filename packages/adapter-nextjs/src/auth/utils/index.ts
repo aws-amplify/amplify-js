@@ -11,6 +11,7 @@ export {
 	createAuthFlowProofCookiesRemoveOptions,
 } from './authFlowProofCookies';
 export { createAuthFlowProofs } from './createAuthFlowProofs';
+export { createErrorSearchParamsString } from './createErrorSearchParamsString';
 export { createOnSignInCompleteRedirectIntermediate } from './createOnSignInCompleteRedirectIntermediate';
 export { createUrlSearchParamsForSignInSignUp } from './createUrlSearchParams';
 export {
@@ -36,7 +37,7 @@ export {
 } from './hasActiveUserSession';
 export { isSupportedAuthApiRoutePath } from './isSupportedAuthApiRoutePath';
 export { isValidOrigin, isSSLOrigin } from './origin';
-export { resolveCodeAndStateFromUrl } from './resolveCodeAndStateFromUrl';
+export { parseSignInCallbackUrl } from './parseSignInCallbackUrl';
 export { resolveIdentityProviderFromUrl } from './resolveIdentityProviderFromUrl';
 export {
 	resolveRedirectSignInUrl,
