@@ -9,6 +9,12 @@ export const isValidOrigin = (origin: string): boolean => {
 	try {
 		const url = new URL(origin);
 
+		if (url.protocol === 'http:' && url.hostname !== 'localhost') {
+			console.warn(
+				'HTTP origin detected. This is insecure and should only be used for local development.',
+			);
+		}
+
 		return (
 			(url.protocol === 'http:' || url.protocol === 'https:') &&
 			originRegex.test(origin)
