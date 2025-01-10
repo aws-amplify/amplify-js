@@ -1,5 +1,3 @@
-import { SIGN_IN_TIMEOUT_ERROR } from '../../../src/auth/constant';
-
 export const ERROR_URL_PARAMS_COMBINATIONS = [
 	{
 		code: null,
@@ -21,7 +19,7 @@ export const ERROR_URL_PARAMS_COMBINATIONS = [
 		error: null,
 		errorDescription: 'errorDescription',
 		expectedStatus: 302,
-		expectedRedirect: '/sign-in?error=errorDescription',
+		expectedRedirect: '/sign-in?hasErrorDescription',
 	},
 	{
 		code: null,
@@ -29,7 +27,15 @@ export const ERROR_URL_PARAMS_COMBINATIONS = [
 		error: 'error',
 		errorDescription: null,
 		expectedStatus: 302,
-		expectedRedirect: '/sign-in?error=error',
+		expectedRedirect: '/sign-in?hasError',
+	},
+	{
+		code: null,
+		state: null,
+		error: 'error',
+		errorDescription: 'errorDescription',
+		expectedStatus: 302,
+		expectedRedirect: '/sign-in?hasErrorAndErrorDescription',
 	},
 ];
 
@@ -43,18 +49,18 @@ export const ERROR_CLIENT_COOKIE_COMBINATIONS = [
 		state: undefined,
 		pkce: undefined,
 		expectedStatus: 302,
-		expectedRedirect: `/sign-in?error=${SIGN_IN_TIMEOUT_ERROR}`,
+		expectedRedirect: '/sign-in?hasErrorAndErrorDescription',
 	},
 	{
 		state: undefined,
 		pkce: 'pkce',
 		expectedStatus: 302,
-		expectedRedirect: `/sign-in?error=${SIGN_IN_TIMEOUT_ERROR}`,
+		expectedRedirect: '/sign-in?hasErrorAndErrorDescription',
 	},
 	{
 		state: 'state',
 		pkce: undefined,
 		expectedStatus: 302,
-		expectedRedirect: `/sign-in?error=${SIGN_IN_TIMEOUT_ERROR}`,
+		expectedRedirect: '/sign-in?hasErrorAndErrorDescription',
 	},
 ];

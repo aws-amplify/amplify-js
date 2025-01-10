@@ -3,12 +3,14 @@
 
 import {
 	PKCE_COOKIE_NAME,
-	SIGN_IN_TIMEOUT_ERROR,
+	SIGN_IN_TIMEOUT_ERROR_CODE,
+	SIGN_IN_TIMEOUT_ERROR_MESSAGE,
 	STATE_COOKIE_NAME,
 } from '../constant';
 import {
 	appendSetCookieHeaders,
 	createAuthFlowProofCookiesRemoveOptions,
+	createErrorSearchParamsString,
 	createOnSignInCompleteRedirectIntermediate,
 	createSignInFlowProofCookies,
 	createTokenCookies,
@@ -35,10 +37,15 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 	);
 
 	if (errorDescription || error) {
+		const searchParamsString = createErrorSearchParamsString({
+			error,
+			errorDescription,
+		})!; // safe unwrap as errorDescription or error is not null
+
 		return new Response(null, {
 			status: 302,
 			headers: new Headers({
-				location: `${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?error=${errorDescription || error}`,
+				location: `${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?${searchParamsString}`,
 			}),
 		});
 	}
@@ -52,10 +59,15 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 
 	// The state and pkce cookies are removed from cookie store after 5 minutes
 	if (!clientState || !clientPkce) {
+		const searchParamsString = createErrorSearchParamsString({
+			error: SIGN_IN_TIMEOUT_ERROR_CODE,
+			errorDescription: SIGN_IN_TIMEOUT_ERROR_MESSAGE,
+		});
+
 		return new Response(null, {
 			status: 302,
 			headers: new Headers({
-				location: `${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?error=${SIGN_IN_TIMEOUT_ERROR}`,
+				location: `${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?${searchParamsString}`,
 			}),
 		});
 	}

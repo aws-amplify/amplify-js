@@ -33,5 +33,6 @@ export const REMOVE_COOKIE_MAX_AGE = -1;
 // With server-side auth flow, we don't support the less secure implicit flow
 export const OAUTH_GRANT_TYPE = 'authorization_code';
 
-export const SIGN_IN_TIMEOUT_ERROR =
+export const SIGN_IN_TIMEOUT_ERROR_CODE = 'timeout';
+export const SIGN_IN_TIMEOUT_ERROR_MESSAGE =
 	'Sign in has to be completed within 5 minutes.';

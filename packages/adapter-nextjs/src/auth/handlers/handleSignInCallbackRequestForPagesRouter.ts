@@ -3,12 +3,14 @@
 
 import {
 	PKCE_COOKIE_NAME,
-	SIGN_IN_TIMEOUT_ERROR,
+	SIGN_IN_TIMEOUT_ERROR_CODE,
+	SIGN_IN_TIMEOUT_ERROR_MESSAGE,
 	STATE_COOKIE_NAME,
 } from '../constant';
 import {
 	appendSetCookieHeadersToNextApiResponse,
 	createAuthFlowProofCookiesRemoveOptions,
+	createErrorSearchParamsString,
 	createOnSignInCompleteRedirectIntermediate,
 	createSignInFlowProofCookies,
 	createTokenCookies,
@@ -37,9 +39,13 @@ export const handleSignInCallbackRequestForPagesRouter: HandleSignInCallbackRequ
 		);
 
 		if (errorDescription || error) {
+			const searchParamsString = createErrorSearchParamsString({
+				error,
+				errorDescription,
+			})!; // safe unwrap as errorDescription or error is not null
 			response.redirect(
 				302,
-				`${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?error=${errorDescription || error}`,
+				`${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?${searchParamsString}`,
 			);
 
 			return;
@@ -59,9 +65,13 @@ export const handleSignInCallbackRequestForPagesRouter: HandleSignInCallbackRequ
 
 		// The state and pkce cookies are removed from cookie store after 5 minutes
 		if (!clientState || !clientPkce) {
+			const searchParamsString = createErrorSearchParamsString({
+				error: SIGN_IN_TIMEOUT_ERROR_CODE,
+				errorDescription: SIGN_IN_TIMEOUT_ERROR_MESSAGE,
+			});
 			response.redirect(
 				302,
-				`${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?error=${SIGN_IN_TIMEOUT_ERROR}`,
+				`${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?${searchParamsString}`,
 			);
 
 			return;

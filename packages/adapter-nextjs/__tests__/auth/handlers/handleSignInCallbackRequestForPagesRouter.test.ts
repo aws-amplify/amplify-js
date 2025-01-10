@@ -9,6 +9,7 @@ import { handleSignInCallbackRequestForPagesRouter } from '../../../src/auth/han
 import {
 	appendSetCookieHeadersToNextApiResponse,
 	createAuthFlowProofCookiesRemoveOptions,
+	createErrorSearchParamsString,
 	createOnSignInCompleteRedirectIntermediate,
 	createSignInFlowProofCookies,
 	createTokenCookies,
@@ -22,6 +23,8 @@ import {
 import { CreateAuthRoutesHandlersInput } from '../../../src/auth/types';
 import {
 	PKCE_COOKIE_NAME,
+	SIGN_IN_TIMEOUT_ERROR_CODE,
+	SIGN_IN_TIMEOUT_ERROR_MESSAGE,
 	STATE_COOKIE_NAME,
 } from '../../../src/auth/constant';
 import { createMockNextApiResponse } from '../testUtils';
@@ -30,6 +33,7 @@ import {
 	ERROR_CLIENT_COOKIE_COMBINATIONS,
 	ERROR_URL_PARAMS_COMBINATIONS,
 } from './signInCallbackErrorCombinations';
+import { mockCreateErrorSearchParamsStringImplementation } from './mockImplementation';
 
 jest.mock('../../../src/auth/utils');
 
@@ -56,6 +60,9 @@ const mockGetCookieValuesFromNextApiRequest = jest.mocked(
 const mockParseSignInCallbackUrl = jest.mocked(parseSignInCallbackUrl);
 const mockResolveRedirectSignInUrl = jest.mocked(resolveRedirectSignInUrl);
 const mockGetRedirectOrDefault = jest.mocked(getRedirectOrDefault);
+const mockCreateErrorSearchParamsString = jest.mocked(
+	createErrorSearchParamsString,
+);
 
 describe('handleSignInCallbackRequest', () => {
 	const mockHandlerInput: CreateAuthRoutesHandlersInput = {
@@ -78,6 +85,9 @@ describe('handleSignInCallbackRequest', () => {
 	beforeAll(() => {
 		mockGetRedirectOrDefault.mockImplementation(
 			(redirect: string | undefined) => redirect || '/',
+		);
+		mockCreateErrorSearchParamsString.mockImplementation(
+			mockCreateErrorSearchParamsStringImplementation,
 		);
 	});
 
@@ -146,6 +156,13 @@ describe('handleSignInCallbackRequest', () => {
 				);
 			}
 			expect(mockParseSignInCallbackUrl).toHaveBeenCalledWith(url);
+
+			if (error || errorDescription) {
+				expect(mockCreateErrorSearchParamsString).toHaveBeenCalledWith({
+					error,
+					errorDescription,
+				});
+			}
 		},
 	);
 
@@ -197,6 +214,13 @@ describe('handleSignInCallbackRequest', () => {
 				mockRequest,
 				[PKCE_COOKIE_NAME, STATE_COOKIE_NAME],
 			);
+
+			if (!state || !pkce) {
+				expect(mockCreateErrorSearchParamsString).toHaveBeenCalledWith({
+					error: SIGN_IN_TIMEOUT_ERROR_CODE,
+					errorDescription: SIGN_IN_TIMEOUT_ERROR_MESSAGE,
+				});
+			}
 		},
 	);
 

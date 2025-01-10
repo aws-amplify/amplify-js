@@ -11,6 +11,7 @@ export {
 	createAuthFlowProofCookiesRemoveOptions,
 } from './authFlowProofCookies';
 export { createAuthFlowProofs } from './createAuthFlowProofs';
+export { createErrorSearchParamsString } from './createErrorSearchParamsString';
 export { createOnSignInCompleteRedirectIntermediate } from './createOnSignInCompleteRedirectIntermediate';
 export { createUrlSearchParamsForSignInSignUp } from './createUrlSearchParams';
 export {
