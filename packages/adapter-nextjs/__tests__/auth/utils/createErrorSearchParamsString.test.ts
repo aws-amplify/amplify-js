@@ -5,7 +5,7 @@ describe('createErrorSearchParamsString', () => {
 		{
 			error: null,
 			errorDescription: null,
-			expected: undefined,
+			expected: '',
 		},
 		{
 			error: 'error',

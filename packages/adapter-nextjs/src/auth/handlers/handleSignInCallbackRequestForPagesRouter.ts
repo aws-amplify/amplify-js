@@ -42,7 +42,7 @@ export const handleSignInCallbackRequestForPagesRouter: HandleSignInCallbackRequ
 			const searchParamsString = createErrorSearchParamsString({
 				error,
 				errorDescription,
-			})!; // safe unwrap as errorDescription or error is not null
+			});
 			response.redirect(
 				302,
 				`${getRedirectOrDefault(handlerInput.redirectOnSignOutComplete)}?${searchParamsString}`,

@@ -40,7 +40,7 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 		const searchParamsString = createErrorSearchParamsString({
 			error,
 			errorDescription,
-		})!; // safe unwrap as errorDescription or error is not null
+		});
 
 		return new Response(null, {
 			status: 302,
