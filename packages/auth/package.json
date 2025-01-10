@@ -91,6 +91,8 @@
 		"enable-oauth-listener"
 	],
 	"dependencies": {
+		"@aws-crypto/sha256-js": "5.2.0",
+		"@smithy/types": "^3.3.0",
 		"tslib": "^2.5.0"
 	},
 	"peerDependencies": {
