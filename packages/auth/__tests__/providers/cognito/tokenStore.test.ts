@@ -58,7 +58,7 @@ const userPoolClientId = 'mockCognitoUserPoolsId';
 const userSub = 'tester0523';
 const authIDP = 'CognitoIdentityServiceProvider';
 
-describe('TokenStore', () => {
+describe('DefaultTokenStore', () => {
 	let tokenStore = new DefaultTokenStore();
 	let keyValStorage: KeyValueStorageInterface;
 
