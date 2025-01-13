@@ -297,6 +297,8 @@ export default [
 	{
 		ignores: [
 			'**/**.{native,android,ios}.**',
+			'**/__tests__/**',
+			'**/packages/adapter-nextjs/**',
 			'**/packages/react-native/example/**',
 		],
 		rules: {
