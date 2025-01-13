@@ -55,6 +55,12 @@ class AmplifyRTNCoreModule(reactContext: ReactApplicationContext) :
 		private const val ERROR_TAG = "Passkey"
 		private const val REGISTRATION_RESPONSE_KEY = "androidx.credentials.BUNDLE_KEY_REGISTRATION_RESPONSE_JSON"
     	private const val AUTHENTICATION_RESPONSE_KEY = "androidx.credentials.BUNDLE_KEY_AUTHENTICATION_RESPONSE_JSON"
+		private const val ERROR_USER_CANCELLED = "UserCancelled"
+    	private const val ERROR_NOT_SUPPORTED = "NotSupported"
+    	private const val ERROR_NOT_CONFIGURED = "NotConfigured"
+    	private const val ERROR_INTERRUPTED = "Interrupted"
+    	private const val ERROR_UNKNOWN = "UnknownError"
+    	private const val ERROR_NO_CREDENTIALS = "NoCredentials"
     }
 
 	private fun isValidJson(json: String): Boolean {
@@ -94,9 +100,7 @@ class AmplifyRTNCoreModule(reactContext: ReactApplicationContext) :
 					CreatePublicKeyCredentialRequest(requestJson)
 				)
 	
-				val response = result.data.getString(
-					"androidx.credentials.BUNDLE_KEY_REGISTRATION_RESPONSE_JSON"
-				)
+				val response = result.data.getString(REGISTRATION_RESPONSE_KEY)
 				
 				if (response == null) {
 					promise.reject(ERROR_TAG, "No response received from credential manager")
@@ -114,31 +118,17 @@ class AmplifyRTNCoreModule(reactContext: ReactApplicationContext) :
 	}
 
     private fun handlePasskeyRegistrationException(e: CreateCredentialException): String {
-        e.printStackTrace()
-        when (e) {
-            is CreatePublicKeyCredentialDomException -> {
-                return e.errorMessage.toString()
-            }
-            is CreateCredentialCancellationException -> {
-                return "UserCancelled"
-            }
-            is CreateCredentialInterruptedException -> {
-                return "Interrupted"
-            }
-            is CreateCredentialProviderConfigurationException -> {
-                return "NotConfigured"
-            }
-            is CreateCredentialUnknownException -> {
-                return "UnknownError"
-            }
-            is CreateCredentialUnsupportedException -> {
-                return "NotSupported"
-            }
-            else -> {
-                return e.errorMessage.toString()
-            }
-        }
-    }
+		e.printStackTrace()
+		return when (e) {
+			is CreatePublicKeyCredentialDomException -> e.errorMessage.toString()
+			is CreateCredentialCancellationException -> ERROR_USER_CANCELLED
+			is CreateCredentialInterruptedException -> ERROR_INTERRUPTED
+			is CreateCredentialProviderConfigurationException -> ERROR_NOT_CONFIGURED
+			is CreateCredentialUnknownException -> ERROR_UNKNOWN
+			is CreateCredentialUnsupportedException -> ERROR_NOT_SUPPORTED
+			else -> e.errorMessage.toString()
+		}
+	}
 
     @ReactMethod
     fun getPasskey(requestJson: String, promise: Promise) {
@@ -168,9 +158,7 @@ class AmplifyRTNCoreModule(reactContext: ReactApplicationContext) :
 					GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
 				)
 	
-				val response = result.credential.data.getString(
-					"androidx.credentials.BUNDLE_KEY_AUTHENTICATION_RESPONSE_JSON"
-				)
+				val response = result.credential.data.getString(AUTHENTICATION_RESPONSE_KEY)
 				
 				if (response == null) {
 					promise.reject(ERROR_TAG, "No response received from credential manager")
@@ -187,35 +175,19 @@ class AmplifyRTNCoreModule(reactContext: ReactApplicationContext) :
 		}
 	}
 
-    private fun handlePasskeyAuthenticationException(e: GetCredentialException): String {
-        e.printStackTrace()
-        when (e) {
-            is GetPublicKeyCredentialDomException -> {
-                return e.errorMessage.toString()
-            }
-            is GetCredentialCancellationException -> {
-                return "UserCancelled"
-            }
-            is GetCredentialInterruptedException -> {
-                return "Interrupted"
-            }
-            is GetCredentialProviderConfigurationException -> {
-                return "NotConfigured"
-            }
-            is GetCredentialUnknownException -> {
-                return "UnknownError"
-            }
-            is GetCredentialUnsupportedException -> {
-                return "NotSupported"
-            }
-            is NoCredentialException -> {
-                return "NoCredentials"
-            }
-            else -> {
-                return e.errorMessage.toString()
-            }
-        }
-    }
+	private fun handlePasskeyAuthenticationException(e: GetCredentialException): String {
+		e.printStackTrace()
+		return when (e) {
+			is GetPublicKeyCredentialDomException -> e.errorMessage.toString()
+			is GetCredentialCancellationException -> ERROR_USER_CANCELLED
+			is GetCredentialInterruptedException -> ERROR_INTERRUPTED
+			is GetCredentialProviderConfigurationException -> ERROR_NOT_CONFIGURED
+			is GetCredentialUnknownException -> ERROR_UNKNOWN
+			is GetCredentialUnsupportedException -> ERROR_NOT_SUPPORTED
+			is NoCredentialException -> ERROR_NO_CREDENTIALS
+			else -> e.errorMessage.toString()
+		}
+	}
 
     @ReactMethod
 	fun getIsPasskeySupported(promise: Promise) {
