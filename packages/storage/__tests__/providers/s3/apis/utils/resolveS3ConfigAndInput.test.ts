@@ -9,6 +9,11 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
+import {
+	CallbackPathStorageInput,
+	DeprecatedStorageInput,
+} from '../../../../../src/providers/s3/utils/resolveS3ConfigAndInput';
+import { INVALID_STORAGE_INPUT } from '../../../../../src/errors/constants';
 import { BucketInfo } from '../../../../../src/providers/s3/types/options';
 import { StorageError } from '../../../../../src/errors/StorageError';
 
@@ -79,13 +84,11 @@ describe('resolveS3ConfigAndInput', () => {
 		}
 	});
 
-	it('should throw if identityId is not available', async () => {
+	it('should not throw if identityId is not available', async () => {
 		mockFetchAuthSession.mockResolvedValueOnce({
 			credentials,
 		});
-		await expect(resolveS3ConfigAndInput(Amplify, {})).rejects.toMatchObject(
-			validationErrorMap[StorageValidationErrorCode.NoIdentityId],
-		);
+		expect(async () => resolveS3ConfigAndInput(Amplify, {})).not.toThrow();
 	});
 
 	it('should resolve bucket from S3 config', async () => {
@@ -182,7 +185,7 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should resolve prefix with given access level', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
 		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {
-			accessLevel: 'someLevel' as any,
+			options: { accessLevel: 'someLevel' as any },
 		});
 		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
 			accessLevel: 'someLevel',
@@ -218,6 +221,95 @@ describe('resolveS3ConfigAndInput', () => {
 		expect(keyPrefix).toEqual('prefix');
 	});
 
+	describe('with locationCredentialsProvider', () => {
+		const mockLocationCredentialsProvider = jest
+			.fn()
+			.mockReturnValue({ credentials });
+		it('should resolve credentials without Amplify singleton', async () => {
+			mockGetConfig.mockReturnValue({
+				Storage: {
+					S3: {
+						bucket,
+						region,
+					},
+				},
+			});
+			const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
+				options: {
+					locationCredentialsProvider: mockLocationCredentialsProvider,
+				},
+			});
+
+			if (typeof s3Config.credentials === 'function') {
+				const result = await s3Config.credentials({ forceRefresh: true });
+				expect(mockLocationCredentialsProvider).toHaveBeenCalledWith({
+					forceRefresh: true,
+				});
+				expect(result).toEqual(credentials);
+			} else {
+				throw new Error('Expect credentials to be a function');
+			}
+		});
+
+		it('should not throw when path is pass as a string', async () => {
+			const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
+				path: 'my-path',
+				options: {
+					locationCredentialsProvider: mockLocationCredentialsProvider,
+				},
+			});
+
+			if (typeof s3Config.credentials === 'function') {
+				const result = await s3Config.credentials();
+				expect(mockLocationCredentialsProvider).toHaveBeenCalled();
+				expect(result).toEqual(credentials);
+			} else {
+				throw new Error('Expect credentials to be a function');
+			}
+		});
+
+		describe('with deprecated or callback paths as inputs', () => {
+			const key = 'mock-value';
+			const prefix = 'mock-value';
+			const path = () => 'path';
+			const deprecatedInputs: DeprecatedStorageInput[] = [
+				{ prefix },
+				{ key },
+				{
+					source: { key },
+					destination: { key },
+				},
+			];
+			const callbackPathInputs: CallbackPathStorageInput[] = [
+				{ path },
+				{
+					destination: { path },
+					source: { path },
+				},
+			];
+
+			const testCases = [...deprecatedInputs, ...callbackPathInputs];
+
+			it.each(testCases)('should throw when input is %s', async input => {
+				const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
+					...input,
+					options: {
+						locationCredentialsProvider: mockLocationCredentialsProvider,
+					},
+				});
+				if (typeof s3Config.credentials === 'function') {
+					await expect(s3Config.credentials()).rejects.toThrow(
+						expect.objectContaining({
+							name: INVALID_STORAGE_INPUT,
+						}),
+					);
+				} else {
+					throw new Error('Expect credentials to be a function');
+				}
+			});
+		});
+	});
+
 	it('should resolve bucket and region with overrides when bucket API option is passed', async () => {
 		const bucketInfo: BucketInfo = {
 			bucketName: 'bucket-2',
@@ -228,7 +320,7 @@ describe('resolveS3ConfigAndInput', () => {
 			bucket: resolvedBucket,
 			s3Config: { region: resolvedRegion },
 		} = await resolveS3ConfigAndInput(Amplify, {
-			bucket: bucketInfo,
+			options: { bucket: bucketInfo },
 		});
 
 		expect(mockGetConfig).toHaveBeenCalled();
@@ -239,7 +331,7 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should throw when unable to lookup bucket from the config when bucket API option is passed', async () => {
 		try {
 			await resolveS3ConfigAndInput(Amplify, {
-				bucket: 'error-bucket',
+				options: { bucket: 'error-bucket' },
 			});
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(StorageError);

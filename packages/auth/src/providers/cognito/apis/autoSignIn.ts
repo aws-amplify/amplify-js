@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { autoSignInStore } from '../../../client/utils/store';
 import { AuthError } from '../../../errors/AuthError';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
 import { AutoSignInCallback } from '../../../types/models';
@@ -114,6 +115,9 @@ export function setAutoSignIn(callback: AutoSignInCallback) {
  *
  * @internal
  */
-export function resetAutoSignIn() {
-	autoSignIn = initialAutoSignIn;
+export function resetAutoSignIn(resetCallback = true) {
+	if (resetCallback) {
+		autoSignIn = initialAutoSignIn;
+	}
+	autoSignInStore.dispatch({ type: 'RESET' });
 }

@@ -42,7 +42,20 @@ jest.mock('@aws-amplify/core', () => {
 			getConfig: jest.fn(() => mockAuthConfigWithOAuth),
 			[ACTUAL_ADD_OAUTH_LISTENER]: jest.fn(),
 		},
-		ConsoleLogger: jest.fn(),
+		ConsoleLogger: jest.fn().mockImplementation(() => {
+			return { warn: jest.fn() };
+		}),
+		syncSessionStorage: {
+			setItem: jest.fn((key, value) => {
+				window.sessionStorage.setItem(key, value);
+			}),
+			getItem: jest.fn((key: string) => {
+				return window.sessionStorage.getItem(key);
+			}),
+			removeItem: jest.fn((key: string) => {
+				window.sessionStorage.removeItem(key);
+			}),
+		},
 	};
 });
 
@@ -282,6 +295,7 @@ describe('signInWithRedirect', () => {
 			);
 			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
 		});
+
 		it('should not set the Oauth flag on non-browser environments', async () => {
 			const mockOpenAuthSessionResult = {
 				type: 'success',
@@ -294,6 +308,28 @@ describe('signInWithRedirect', () => {
 			});
 
 			expect(oAuthStore.storeOAuthInFlight).toHaveBeenCalledTimes(0);
+		});
+
+		it('should send the login_hint, lang and nonce in the query string if provided', async () => {
+			await signInWithRedirect({
+				provider: 'Google',
+				options: {
+					loginHint: 'someone@gmail.com',
+					lang: 'en',
+					nonce: '88388838883',
+				},
+			});
+
+			const [oauthUrl, redirectSignIn, preferPrivateSession] =
+				mockOpenAuthSession.mock.calls[0];
+
+			expect(oauthUrl).toStrictEqual(
+				'https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=Google&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&login_hint=someone%40gmail.com&lang=en&nonce=88388838883&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256',
+			);
+			expect(redirectSignIn).toEqual(
+				mockAuthConfigWithOAuth.Auth.Cognito.loginWith.oauth.redirectSignIn,
+			);
+			expect(preferPrivateSession).toBeUndefined();
 		});
 	});
 

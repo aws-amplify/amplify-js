@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/auth",
-	"version": "6.5.3",
+	"version": "6.9.1",
 	"description": "Auth category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -91,13 +91,15 @@
 		"enable-oauth-listener"
 	],
 	"dependencies": {
+		"@aws-crypto/sha256-js": "5.2.0",
+		"@smithy/types": "^3.3.0",
 		"tslib": "^2.5.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.4.6",
+		"@aws-amplify/core": "6.9.0",
 		"@aws-amplify/react-native": "1.1.6",
 		"@jest/test-sequencer": "^29.7.0",
 		"typescript": "5.0.2"

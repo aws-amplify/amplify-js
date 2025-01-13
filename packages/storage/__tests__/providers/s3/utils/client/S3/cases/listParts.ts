@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { listParts } from '../../../../../../../src/providers/s3/utils/client';
+import { listParts } from '../../../../../../../src/providers/s3/utils/client/s3data';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -38,11 +38,13 @@ const listPartsHappyCase: ApiFunctionalTestCase<typeof listParts> = [
 			'<PartNumber>1</PartNumber>' +
 			'<ETag>etag1</ETag>' +
 			'<Size>5242880</Size>' +
+			'<ChecksumCRC32>checksum1</ChecksumCRC32>' +
 			'</Part>' +
 			'<Part>' +
 			'<PartNumber>2</PartNumber>' +
 			'<ETag>etag2</ETag>' +
 			'<Size>1024</Size>' +
+			'<ChecksumCRC32>checksum2</ChecksumCRC32>' +
 			'</Part>' +
 			'</ListPartsResult>',
 	},
@@ -53,15 +55,46 @@ const listPartsHappyCase: ApiFunctionalTestCase<typeof listParts> = [
 			{
 				PartNumber: 1,
 				ETag: 'etag1',
-				Size: 5242880,
+				ChecksumCRC32: 'checksum1',
 			},
 			{
 				PartNumber: 2,
 				ETag: 'etag2',
-				Size: 1024,
+				ChecksumCRC32: 'checksum2',
 			},
 		],
 	},
 ];
 
-export default [listPartsHappyCase];
+const listPartsHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof listParts
+> = [
+	'happy case',
+	'listParts with custom endpoint',
+	listParts,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+		UploadId: 'uploadId',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key?uploadId=uploadId',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
+export default [listPartsHappyCase, listPartsHappyCaseCustomEndpoint];

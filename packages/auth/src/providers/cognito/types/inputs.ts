@@ -93,6 +93,11 @@ export type SignInWithCustomSRPAuthInput = AuthSignInInput<SignInOptions>;
 export type SignInWithSRPInput = AuthSignInInput<SignInOptions>;
 
 /**
+ * Input type for Cognito signInWithUserAuth API.
+ */
+export type SignInWithUserAuthInput = AuthSignInInput<SignInOptions>;
+
+/**
  * Input type for Cognito signInWithUserPasswordInput API.
  */
 export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions>;
@@ -118,6 +123,7 @@ export type SignUpInput = AuthSignUpInput<SignUpOptions<UserAttributeKey>>;
 export interface UpdateMFAPreferenceInput {
 	sms?: MFAPreference;
 	totp?: MFAPreference;
+	email?: MFAPreference;
 }
 
 /**

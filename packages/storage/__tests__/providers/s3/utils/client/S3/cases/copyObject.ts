@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { copyObject } from '../../../../../../../src/providers/s3/utils/client';
+import { copyObject } from '../../../../../../../src/providers/s3/utils/client/s3data';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -23,6 +23,8 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 		CacheControl: 'cacheControl',
 		ContentType: 'contentType',
 		ACL: 'acl',
+		CopySourceIfMatch: 'eTag',
+		CopySourceIfUnmodifiedSince: new Date(0),
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
@@ -34,6 +36,8 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 			'cache-control': 'cacheControl',
 			'content-type': 'contentType',
 			'x-amz-acl': 'acl',
+			'x-amz-copy-source-if-match': 'eTag',
+			'x-amz-copy-source-if-unmodified-since': 'Thu, 01 Jan 1970 00:00:00 GMT',
 		}),
 	}),
 	{
@@ -54,4 +58,34 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 	},
 ];
 
-export default [copyObjectHappyCase];
+const copyObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof copyObject
+> = [
+	'happy case',
+	'getObject with custom endpoint',
+	copyObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+		CopySource: 'sourceBucket/sourceKey',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+export default [copyObjectHappyCase, copyObjectHappyCaseCustomEndpoint];

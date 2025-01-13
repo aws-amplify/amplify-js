@@ -11,9 +11,9 @@ import { NextServer } from '../types';
 
 export const DATE_IN_THE_PAST = new Date(0);
 
-export const createCookieStorageAdapterFromNextServerContext = (
+export const createCookieStorageAdapterFromNextServerContext = async (
 	context: NextServer.Context,
-): CookieStorage.Adapter => {
+): Promise<CookieStorage.Adapter> => {
 	const { request: req, response: res } =
 		context as Partial<NextServer.GetServerSidePropsContext>;
 
@@ -110,10 +110,10 @@ const createCookieStorageAdapterFromNextRequestAndHttpResponse = (
 	};
 };
 
-const createCookieStorageAdapterFromNextCookies = (
+const createCookieStorageAdapterFromNextCookies = async (
 	cookies: NextServer.ServerComponentContext['cookies'],
-): CookieStorage.Adapter => {
-	const cookieStore = cookies();
+): Promise<CookieStorage.Adapter> => {
+	const cookieStore = await cookies();
 
 	// When Next cookies() is called in a server component, it returns a readonly
 	// cookie store. Hence calling set and delete throws an error. However,

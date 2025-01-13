@@ -12,7 +12,6 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	CustomUserAgentDetails,
-	GraphQLAuthMode,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
 import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
@@ -30,17 +29,11 @@ import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvi
 import { GraphQLOperation, GraphQLOptions, GraphQLResult } from '../types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
 import { repackageUnauthorizedError } from '../utils/errors/repackageAuthError';
-import {
-	NO_API_KEY,
-	NO_AUTH_TOKEN_HEADER,
-	NO_ENDPOINT,
-	NO_SIGNED_IN_USER,
-	NO_VALID_AUTH_TOKEN,
-	NO_VALID_CREDENTIALS,
-} from '../utils/errors/constants';
+import { NO_ENDPOINT } from '../utils/errors/constants';
 import { GraphQLApiError, createGraphQLResultWithError } from '../utils/errors';
 
 import { isGraphQLResponseWithErrors } from './utils/runtimeTypeGuards/isGraphQLResponseWithErrors';
+import { headerBasedAuth } from './graphqlAuth';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -59,7 +52,7 @@ export class InternalGraphQLAPIClass {
 	/**
 	 * @private
 	 */
-	private appSyncRealTime = new AWSAppSyncRealTimeProvider();
+	private appSyncRealTime = new Map<string, AWSAppSyncRealTimeProvider>();
 
 	private _api = {
 		post,
@@ -70,80 +63,6 @@ export class InternalGraphQLAPIClass {
 
 	public getModuleName() {
 		return 'InternalGraphQLAPI';
-	}
-
-	private async _headerBasedAuth(
-		amplify: AmplifyClassV6,
-		authMode: GraphQLAuthMode,
-		additionalHeaders: Record<string, string> = {},
-	) {
-		const { apiKey } = resolveConfig(amplify);
-
-		let headers = {};
-
-		switch (authMode) {
-			case 'apiKey':
-				if (!apiKey) {
-					throw new GraphQLApiError(NO_API_KEY);
-				}
-				headers = {
-					'X-Api-Key': apiKey,
-				};
-				break;
-			case 'iam': {
-				const session = await amplify.Auth.fetchAuthSession();
-				if (session.credentials === undefined) {
-					throw new GraphQLApiError(NO_VALID_CREDENTIALS);
-				}
-				break;
-			}
-			case 'oidc':
-			case 'userPool': {
-				let token: string | undefined;
-
-				try {
-					token = (
-						await amplify.Auth.fetchAuthSession()
-					).tokens?.accessToken.toString();
-				} catch (e) {
-					// fetchAuthSession failed
-					throw new GraphQLApiError({
-						...NO_SIGNED_IN_USER,
-						underlyingError: e,
-					});
-				}
-
-				// `fetchAuthSession()` succeeded but didn't return `tokens`.
-				// This may happen when unauthenticated access is enabled and there is
-				// no user signed in.
-				if (!token) {
-					throw new GraphQLApiError(NO_VALID_AUTH_TOKEN);
-				}
-
-				headers = {
-					Authorization: token,
-				};
-				break;
-			}
-			case 'lambda':
-				if (
-					typeof additionalHeaders === 'object' &&
-					!additionalHeaders.Authorization
-				) {
-					throw new GraphQLApiError(NO_AUTH_TOKEN_HEADER);
-				}
-
-				headers = {
-					Authorization: additionalHeaders.Authorization,
-				};
-				break;
-			case 'none':
-				break;
-			default:
-				break;
-		}
-
-		return headers;
 	}
 
 	/**
@@ -169,7 +88,14 @@ export class InternalGraphQLAPIClass {
 		amplify:
 			| AmplifyClassV6
 			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
-		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+		{
+			query: paramQuery,
+			variables = {},
+			authMode,
+			authToken,
+			endpoint,
+			apiKey,
+		}: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
@@ -196,7 +122,7 @@ export class InternalGraphQLAPIClass {
 				if (isAmplifyInstance(amplify)) {
 					responsePromise = this._graphql<T>(
 						amplify,
-						{ query, variables, authMode },
+						{ query, variables, authMode, apiKey, endpoint },
 						headers,
 						abortController,
 						customUserAgentDetails,
@@ -208,7 +134,7 @@ export class InternalGraphQLAPIClass {
 					const wrapper = async (amplifyInstance: AmplifyClassV6) => {
 						const result = await this._graphql<T>(
 							amplifyInstance,
-							{ query, variables, authMode },
+							{ query, variables, authMode, apiKey, endpoint },
 							headers,
 							abortController,
 							customUserAgentDetails,
@@ -233,7 +159,7 @@ export class InternalGraphQLAPIClass {
 			case 'subscription':
 				return this._graphqlSubscribe(
 					amplify as AmplifyClassV6,
-					{ query, variables, authMode },
+					{ query, variables, authMode, apiKey, endpoint },
 					headers,
 					customUserAgentDetails,
 					authToken,
@@ -245,13 +171,20 @@ export class InternalGraphQLAPIClass {
 
 	private async _graphql<T = any>(
 		amplify: AmplifyClassV6,
-		{ query, variables, authMode: explicitAuthMode }: GraphQLOptions,
+		{
+			query,
+			variables,
+			authMode: authModeOverride,
+			endpoint: endpointOverride,
+			apiKey: apiKeyOverride,
+		}: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails,
 		authToken?: string,
 	): Promise<GraphQLResult<T>> {
 		const {
+			apiKey,
 			region,
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
@@ -259,7 +192,7 @@ export class InternalGraphQLAPIClass {
 			defaultAuthMode,
 		} = resolveConfig(amplify);
 
-		const initialAuthMode = explicitAuthMode || defaultAuthMode || 'iam';
+		const initialAuthMode = authModeOverride || defaultAuthMode || 'iam';
 		// identityPool is an alias for iam. TODO: remove 'iam' in v7
 		const authMode =
 			initialAuthMode === 'identityPool' ? 'iam' : initialAuthMode;
@@ -285,7 +218,7 @@ export class InternalGraphQLAPIClass {
 			const requestOptions: RequestOptions = {
 				method: 'POST',
 				url: new AmplifyUrl(
-					customEndpoint || appSyncGraphqlEndpoint || '',
+					endpointOverride || customEndpoint || appSyncGraphqlEndpoint || '',
 				).toString(),
 				queryString: print(query as DocumentNode),
 			};
@@ -303,29 +236,22 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
-		// TODO: Figure what we need to do to remove `!`'s.
+		const authHeaders = await headerBasedAuth(
+			amplify,
+			authMode,
+			apiKeyOverride ?? apiKey,
+			additionalCustomHeaders,
+		);
+
 		const headers = {
-			...(!customEndpoint &&
-				(await this._headerBasedAuth(
-					amplify,
-					authMode!,
-					additionalCustomHeaders,
-				))),
+			...(!customEndpoint && authHeaders),
 			/**
 			 * Custom endpoint headers.
 			 * If there is both a custom endpoint and custom region present, we get the headers.
 			 * If there is a custom endpoint but no region, we return an empty object.
 			 * If neither are present, we return an empty object.
 			 */
-			...((customEndpoint &&
-				(customEndpointRegion
-					? await this._headerBasedAuth(
-							amplify,
-							authMode!,
-							additionalCustomHeaders,
-						)
-					: {})) ||
-				{}),
+			...((customEndpoint && (customEndpointRegion ? authHeaders : {})) || {}),
 			// Custom headers included in Amplify configuration options:
 			...(customHeaders &&
 				(await customHeaders({
@@ -369,7 +295,8 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
-		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
+		const endpoint =
+			endpointOverride || customEndpoint || appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
 			throw createGraphQLResultWithError<T>(new GraphQLApiError(NO_ENDPOINT));
@@ -378,9 +305,9 @@ export class InternalGraphQLAPIClass {
 		let response: any;
 
 		try {
-			// See the inline doc of the REST `post()` API for possible errors to be thrown.
-			// As these errors are catastrophic they should be caught and handled by GraphQL
-			// API consumers.
+			// 	// // See the inline doc of the REST `post()` API for possible errors to be thrown.
+			// 	// // As these errors are catastrophic they should be caught and handled by GraphQL
+			// 	// // API consumers.
 			const { body: responseBody } = await this._api.post(amplify, {
 				url: new AmplifyUrl(endpoint),
 				options: {
@@ -428,7 +355,13 @@ export class InternalGraphQLAPIClass {
 
 	private _graphqlSubscribe(
 		amplify: AmplifyClassV6,
-		{ query, variables, authMode: explicitAuthMode }: GraphQLOptions,
+		{
+			query,
+			variables,
+			authMode: authModeOverride,
+			apiKey: apiKeyOverride,
+			endpoint,
+		}: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails,
 		authToken?: string,
@@ -436,7 +369,7 @@ export class InternalGraphQLAPIClass {
 		const config = resolveConfig(amplify);
 
 		const initialAuthMode =
-			explicitAuthMode || config?.defaultAuthMode || 'iam';
+			authModeOverride || config?.defaultAuthMode || 'iam';
 		// identityPool is an alias for iam. TODO: remove 'iam' in v7
 		const authMode =
 			initialAuthMode === 'identityPool' ? 'iam' : initialAuthMode;
@@ -451,15 +384,26 @@ export class InternalGraphQLAPIClass {
 		 */
 		const { headers: libraryConfigHeaders } = resolveLibraryOptions(amplify);
 
-		return this.appSyncRealTime
+		const appSyncGraphqlEndpoint = endpoint ?? config?.endpoint;
+
+		// TODO: This could probably be an exception. But, lots of tests rely on
+		// attempting to connect to nowhere. So, I'm treating as the opposite of
+		// a Chesterton's fence for now. (A fence I shouldn't build, because I don't
+		// know why somethings depends on its absence!)
+		const memoKey = appSyncGraphqlEndpoint ?? 'none';
+		const realtimeProvider =
+			this.appSyncRealTime.get(memoKey) ?? new AWSAppSyncRealTimeProvider();
+		this.appSyncRealTime.set(memoKey, realtimeProvider);
+
+		return realtimeProvider
 			.subscribe(
 				{
 					query: print(query as DocumentNode),
 					variables,
-					appSyncGraphqlEndpoint: config?.endpoint,
+					appSyncGraphqlEndpoint,
 					region: config?.region,
 					authenticationType: authMode,
-					apiKey: config?.apiKey,
+					apiKey: apiKeyOverride ?? config?.apiKey,
 					additionalHeaders,
 					authToken,
 					libraryConfigHeaders,
