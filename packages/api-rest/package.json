@@ -28,9 +28,9 @@
 	"exports": {
 		".": {
 			"types": "./dist/esm/index.d.ts",
+			"react-native": "./src/index.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
@@ -39,9 +39,9 @@
 		},
 		"./internals": {
 			"types": "./dist/esm/internals/index.d.ts",
+			"react-native": "./src/internals/index.ts",
 			"import": "./dist/esm/internals/index.mjs",
-			"require": "./dist/cjs/internals/index.js",
-			"react-native": "./src/internals/index.ts"
+			"require": "./dist/cjs/internals/index.js"
 		},
 		"./internals/server": {
 			"types": "./dist/esm/internals/server.d.ts",

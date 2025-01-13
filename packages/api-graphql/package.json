@@ -31,21 +31,21 @@
 	"exports": {
 		".": {
 			"types": "./dist/esm/index.d.ts",
+			"react-native": "./src/index.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./internals": {
 			"types": "./dist/esm/internals/index.d.ts",
+			"react-native": "./src/internals/index.ts",
 			"import": "./dist/esm/internals/index.mjs",
-			"require": "./dist/cjs/internals/index.js",
-			"react-native": "./src/internals/index.ts"
+			"require": "./dist/cjs/internals/index.js"
 		},
 		"./internals/server": {
 			"types": "./dist/esm/internals/server/index.d.ts",
+			"react-native": "./src/internals/server/index.ts",
 			"import": "./dist/esm/internals/server/index.mjs",
-			"require": "./dist/cjs/internals/server/index.js",
-			"react-native": "./src/internals/server/index.ts"
+			"require": "./dist/cjs/internals/server/index.js"
 		},
 		"./server": {
 			"types": "./dist/esm/server/index.d.ts",

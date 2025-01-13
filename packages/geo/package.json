@@ -31,15 +31,15 @@
 	"exports": {
 		".": {
 			"types": "./dist/esm/index.d.ts",
+			"react-native": "./src/index.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./location-service": {
 			"types": "./dist/esm/providers/location-service/AmazonLocationServiceProvider.d.ts",
+			"react-native": "./src/providers/location-service/AmazonLocationServiceProvider.ts",
 			"import": "./dist/esm/providers/location-service/AmazonLocationServiceProvider.mjs",
-			"require": "./dist/cjs/providers/location-service/AmazonLocationServiceProvider.js",
-			"react-native": "./src/providers/location-service/AmazonLocationServiceProvider.ts"
+			"require": "./dist/cjs/providers/location-service/AmazonLocationServiceProvider.js"
 		},
 		"./package.json": "./package.json"
 	},

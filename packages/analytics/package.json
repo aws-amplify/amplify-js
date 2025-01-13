@@ -43,33 +43,33 @@
 	"exports": {
 		".": {
 			"types": "./dist/esm/index.d.ts",
+			"react-native": "./src/index.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./pinpoint": {
 			"types": "./dist/esm/providers/pinpoint/index.d.ts",
+			"react-native": "./src/providers/pinpoint/index.ts",
 			"import": "./dist/esm/providers/pinpoint/index.mjs",
-			"require": "./dist/cjs/providers/pinpoint/index.js",
-			"react-native": "./src/providers/pinpoint/index.ts"
+			"require": "./dist/cjs/providers/pinpoint/index.js"
 		},
 		"./kinesis": {
 			"types": "./dist/esm/providers/kinesis/index.d.ts",
+			"react-native": "./src/providers/kinesis/index.ts",
 			"import": "./dist/esm/providers/kinesis/index.mjs",
-			"require": "./dist/cjs/providers/kinesis/index.js",
-			"react-native": "./src/providers/kinesis/index.ts"
+			"require": "./dist/cjs/providers/kinesis/index.js"
 		},
 		"./kinesis-firehose": {
 			"types": "./dist/esm/providers/kinesis-firehose/index.d.ts",
+			"react-native": "./src/providers/kinesis-firehose/index.ts",
 			"import": "./dist/esm/providers/kinesis-firehose/index.mjs",
-			"require": "./dist/cjs/providers/kinesis-firehose/index.js",
-			"react-native": "./src/providers/kinesis-firehose/index.ts"
+			"require": "./dist/cjs/providers/kinesis-firehose/index.js"
 		},
 		"./personalize": {
 			"types": "./dist/esm/providers/personalize/index.d.ts",
+			"react-native": "./src/providers/personalize/index.ts",
 			"import": "./dist/esm/providers/personalize/index.mjs",
-			"require": "./dist/cjs/providers/personalize/index.js",
-			"react-native": "./src/providers/personalize/index.ts"
+			"require": "./dist/cjs/providers/personalize/index.js"
 		},
 		"./package.json": "./package.json"
 	},

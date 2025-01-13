@@ -80,9 +80,9 @@
 	"exports": {
 		".": {
 			"types": "./dist/esm/index.d.ts",
+			"react-native": "./src/index.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./internals": {
 			"types": "./dist/esm/internals/index.d.ts",
@@ -96,9 +96,9 @@
 		},
 		"./s3": {
 			"types": "./dist/esm/providers/s3/index.d.ts",
+			"react-native": "./src/providers/s3/index.ts",
 			"import": "./dist/esm/providers/s3/index.mjs",
-			"require": "./dist/cjs/providers/s3/index.js",
-			"react-native": "./src/providers/s3/index.ts"
+			"require": "./dist/cjs/providers/s3/index.js"
 		},
 		"./s3/server": {
 			"types": "./dist/esm/providers/s3/server.d.ts",

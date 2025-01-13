@@ -38,21 +38,21 @@
 	"exports": {
 		".": {
 			"types": "./dist/esm/index.d.ts",
+			"react-native": "./src/index.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./iot": {
 			"types": "./dist/esm/clients/iot.d.ts",
+			"react-native": "./src/clients/iot.ts",
 			"import": "./dist/esm/clients/iot.mjs",
-			"require": "./dist/cjs/clients/iot.js",
-			"react-native": "./src/clients/iot.ts"
+			"require": "./dist/cjs/clients/iot.js"
 		},
 		"./mqtt": {
 			"types": "./dist/esm/clients/mqtt.d.ts",
+			"react-native": "./src/clients/mqtt.ts",
 			"import": "./dist/esm/clients/mqtt.mjs",
-			"require": "./dist/cjs/clients/mqtt.js",
-			"react-native": "./src/clients/mqtt.ts"
+			"require": "./dist/cjs/clients/mqtt.js"
 		}
 	},
 	"repository": {
