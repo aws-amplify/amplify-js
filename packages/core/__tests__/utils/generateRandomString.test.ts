@@ -4,7 +4,12 @@
 import { generateRandomString } from '../../src/libraryUtils';
 
 describe('generateRandomString', () => {
+	const mockRandomValues = new Uint8Array([
+		144, 247, 102, 114, 51, 221, 175, 4, 120, 255, 176, 200, 83, 164, 117, 73,
+		29, 118, 5, 58, 78, 227, 239, 199, 187, 43, 26, 73, 211, 38, 79, 208,
+	]);
 	const getRandomValuesSpy = jest.spyOn(crypto, 'getRandomValues');
+
 	beforeAll(() => {
 		// Mock crypto.getRandomValues
 		getRandomValuesSpy.mockImplementation(bufferView => {
@@ -13,7 +18,7 @@ describe('generateRandomString', () => {
 			}
 			const array = new Uint8Array(bufferView.buffer);
 			for (let i = 0; i < array.byteLength; i++) {
-				array[i] = Math.floor(Math.random() * 256);
+				array[i] = mockRandomValues[i];
 			}
 
 			return array;
@@ -25,9 +30,13 @@ describe('generateRandomString', () => {
 	});
 
 	it('generates a string of the specified length', () => {
-		const length = 10;
-		const result = generateRandomString(length);
-		expect(result).toHaveLength(length);
+		const expectedLength = 10;
+		expect(generateRandomString(expectedLength)).toHaveLength(expectedLength);
+	});
+
+	it('calls crypto.getRandomValues with Uint8Array', () => {
+		generateRandomString(5);
+		expect(crypto.getRandomValues).toHaveBeenCalledWith(expect.any(Uint8Array));
 	});
 
 	it('uses only characters from the charset', () => {
@@ -37,14 +46,9 @@ describe('generateRandomString', () => {
 		expect(result).toMatch(new RegExp(`^[${charset}]+$`));
 	});
 
-	it('calls crypto.getRandomValues with Uint8Array', () => {
-		generateRandomString(5);
-		expect(crypto.getRandomValues).toHaveBeenCalledWith(expect.any(Uint8Array));
-	});
-
-	it('generates different strings on subsequent calls', () => {
-		const result1 = generateRandomString(10);
-		const result2 = generateRandomString(10);
-		expect(result1).not.toEqual(result2);
+	it('generates random strings with calculated indexes (num % STATE_CHARSET.length)', () => {
+		expect(generateRandomString(32)).toStrictEqual(
+			'U9o0zjzE6H0OVo3Ld4F6Qp1NBraLZmRW',
+		);
 	});
 });
