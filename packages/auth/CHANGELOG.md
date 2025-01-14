@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.9.0...@aws-amplify/auth@6.9.1) (2025-01-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+# [6.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.8.3...@aws-amplify/auth@6.9.0) (2024-12-19)
+
+### Features
+
+- **auth:** Enable resumable SignIn ([#13855](https://github.com/aws-amplify/amplify-js/issues/13855)) ([#14074](https://github.com/aws-amplify/amplify-js/issues/14074)) ([fe315be](https://github.com/aws-amplify/amplify-js/commit/fe315be4da6d814f2b802cf1acbb00513ca238ac))
+
 ## [6.8.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.8.2...@aws-amplify/auth@6.8.3) (2024-12-12)
 
 **Note:** Version bump only for package @aws-amplify/auth

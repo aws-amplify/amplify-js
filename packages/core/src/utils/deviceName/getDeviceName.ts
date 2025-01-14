@@ -48,5 +48,5 @@ export const getDeviceName = async (): Promise<string> => {
 		.filter(value => value)
 		.join(' ');
 
-	return deviceName;
+	return deviceName || navigator.userAgent;
 };

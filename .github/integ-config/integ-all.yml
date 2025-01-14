@@ -425,6 +425,13 @@ tests:
     sample_name: [data-client-gen2]
     spec: data-client-gen2
     browser: [chrome] # Issues using Auth category / setting secure cookies in FF using Cypress with a Next.js app. Manual testing in FF works as expected
+  - test_name: integ_next_api_multi_endpoint_gen2
+    desc: Next.js Multi Endpoint Gen 2
+    framework: next
+    category: api
+    sample_name: [multi-endpoint-gen2]
+    spec: multi-endpoint-gen2
+    browser: [chrome]
   - test_name: integ_react_rest_api
     desc: 'Vite + React REST API'
     framework: vite
@@ -609,6 +616,22 @@ tests:
     sample_name: [subdomains]
     spec: subdomains
     browser: [chrome]
+  - test_name: integ_next_custom_auth
+    desc: 'Sign-in with Custom Auth flow'
+    framework: next
+    category: auth
+    sample_name: [custom-auth]
+    spec: custom-auth
+    browser: *minimal_browser_list
+  - test_name: integ_next_auth_sign_in_with_sms_mfa
+    desc: 'Resumable sign in with SMS MFA flow'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: sign-in-resumable-mfa
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: resum-signin
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
@@ -995,3 +1018,12 @@ tests:
     browser: [chrome]
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-webauthn
+  - test_name: integ_next_refresh_token_auth
+    desc: 'refresh token auth'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: refresh-token-auth
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: misc-tokenref

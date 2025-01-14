@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.3.1...@aws-amplify/adapter-nextjs@1.4.0) (2025-01-03)
+
+### Features
+
+- **api:** add custom endpoint support to API ([#14086](https://github.com/aws-amplify/amplify-js/issues/14086)) ([ca2e4b8](https://github.com/aws-amplify/amplify-js/commit/ca2e4b87a456dfe9a027e49bdcd912a2cba8e59d))
+
+## [1.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.3.0...@aws-amplify/adapter-nextjs@1.3.1) (2024-12-19)
+
+### Bug Fixes
+
+- **adapter-nextjs:** create jwt verifier once ([#13825](https://github.com/aws-amplify/amplify-js/issues/13825)) ([88f9eef](https://github.com/aws-amplify/amplify-js/commit/88f9eef11f143663da4a5abbff1098b3a1dd704a))
+
 # [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.32...@aws-amplify/adapter-nextjs@1.3.0) (2024-12-12)
 
 ### Features

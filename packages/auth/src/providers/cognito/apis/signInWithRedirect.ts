@@ -57,6 +57,11 @@ export async function signInWithRedirect(
 		provider,
 		customState: input?.customState,
 		preferPrivateSession: input?.options?.preferPrivateSession,
+		options: {
+			loginHint: input?.options?.loginHint,
+			lang: input?.options?.lang,
+			nonce: input?.options?.nonce,
+		},
 	});
 }
 
@@ -66,14 +71,17 @@ const oauthSignIn = async ({
 	clientId,
 	customState,
 	preferPrivateSession,
+	options,
 }: {
 	oauthConfig: OAuthConfig;
 	provider: string;
 	clientId: string;
 	customState?: string;
 	preferPrivateSession?: boolean;
+	options?: SignInWithRedirectInput['options'];
 }) => {
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
+	const { loginHint, lang, nonce } = options ?? {};
 	const randomState = generateState();
 
 	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito
@@ -99,6 +107,10 @@ const oauthSignIn = async ({
 		client_id: clientId,
 		identity_provider: provider,
 		scope: scopes.join(' '),
+		// eslint-disable-next-line camelcase
+		...(loginHint && { login_hint: loginHint }),
+		...(lang && { lang }),
+		...(nonce && { nonce }),
 		state,
 		...(responseType === 'code' && {
 			code_challenge: toCodeChallenge(),

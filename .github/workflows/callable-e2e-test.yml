@@ -144,7 +144,7 @@ jobs:
             yarn "$E2E_YARN_SCRIPT" "$E2E_YARN_SCRIPT_ARGS"
           fi
       - name: Upload artifact
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         if: failure()
         with:
           name: ${{ inputs.test_name }}
@@ -153,3 +153,4 @@ jobs:
             amplify-js-samples-staging/cypress/videos
             amplify-js-samples-staging/cypress/screenshots
           retention-days: 14
+          overwrite: true

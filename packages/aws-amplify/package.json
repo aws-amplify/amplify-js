@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.10.3",
+	"version": "6.12.0",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.63",
-		"@aws-amplify/api": "6.1.8",
-		"@aws-amplify/auth": "6.8.3",
-		"@aws-amplify/core": "6.7.3",
-		"@aws-amplify/datastore": "5.0.65",
-		"@aws-amplify/notifications": "2.0.63",
-		"@aws-amplify/storage": "6.7.4",
+		"@aws-amplify/analytics": "7.0.65",
+		"@aws-amplify/api": "6.2.0",
+		"@aws-amplify/auth": "6.9.1",
+		"@aws-amplify/core": "6.9.0",
+		"@aws-amplify/datastore": "5.0.67",
+		"@aws-amplify/notifications": "2.0.65",
+		"@aws-amplify/storage": "6.7.6",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.60 kB"
+			"limit": "17.63 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "16.10 kB"
+			"limit": "16.14 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "44.23 kB"
+			"limit": "45.47 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -353,13 +353,13 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "12.68 kB"
+			"limit": "12.71 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmResetPassword }",
-			"limit": "12.63 kB"
+			"limit": "12.66 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
@@ -371,7 +371,7 @@
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resendSignUpCode }",
-			"limit": "12.64 kB"
+			"limit": "12.68 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
@@ -383,31 +383,31 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "28.46 kB"
+			"limit": "28.62 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "12.11 kB"
+			"limit": "12.15 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchMFAPreference }",
-			"limit": "12.14 kB"
+			"limit": "12.18 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "12.99 kB"
+			"limit": "13.02 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "12.99 kB"
+			"limit": "13.03 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -419,7 +419,7 @@
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "12.21 kB"
+			"limit": "12.24 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
@@ -431,7 +431,7 @@
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmUserAttribute }",
-			"limit": "12.98 kB"
+			"limit": "13.02 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
@@ -443,13 +443,13 @@
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "12.03 kB"
+			"limit": "12.07 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.56 kB"
+			"limit": "30.89 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
@@ -461,19 +461,19 @@
 			"name": "[Auth] Associate WebAuthN Credential (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ associateWebAuthnCredential }",
-			"limit": "13.55 kB"
+			"limit": "13.59 kB"
 		},
 		{
 			"name": "[Auth] List WebAuthN Credentials (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ listWebAuthnCredentials }",
-			"limit": "12.14 kB"
+			"limit": "12.18 kB"
 		},
 		{
 			"name": "[Auth] Delete WebAuthN Credential (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ deleteWebAuthnCredential }",
-			"limit": "12.01 kB"
+			"limit": "12.04 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
@@ -503,7 +503,7 @@
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "16.74 kB"
+			"limit": "16.77 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
@@ -515,7 +515,7 @@
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "22.81 kB"
+			"limit": "22.87 kB"
 		}
 	]
 }

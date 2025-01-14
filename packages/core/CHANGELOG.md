@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.8.0...@aws-amplify/core@6.9.0) (2025-01-03)
+
+### Bug Fixes
+
+- **auth:** fall back to user agent if deviceName resolves to empty st… ([#14102](https://github.com/aws-amplify/amplify-js/issues/14102)) ([9a73470](https://github.com/aws-amplify/amplify-js/commit/9a73470be85b6056939631d86cf87d502728fb5c))
+- **core:** amplify configure with storage path type issue ([#14088](https://github.com/aws-amplify/amplify-js/issues/14088)) ([0ecded1](https://github.com/aws-amplify/amplify-js/commit/0ecded15a4d1318fe10b16dbe534a111a12bdc21))
+
+### Features
+
+- **auth:** proactive token refresh ([#14076](https://github.com/aws-amplify/amplify-js/issues/14076)) ([b818753](https://github.com/aws-amplify/amplify-js/commit/b8187536ab3633e6a390ea38b9e8434b23293380))
+
+# [6.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.3...@aws-amplify/core@6.8.0) (2024-12-19)
+
+### Features
+
+- **auth:** Enable resumable SignIn ([#13855](https://github.com/aws-amplify/amplify-js/issues/13855)) ([#14074](https://github.com/aws-amplify/amplify-js/issues/14074)) ([fe315be](https://github.com/aws-amplify/amplify-js/commit/fe315be4da6d814f2b802cf1acbb00513ca238ac))
+
 ## [6.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.7.2...@aws-amplify/core@6.7.3) (2024-12-12)
 
 **Note:** Version bump only for package @aws-amplify/core
