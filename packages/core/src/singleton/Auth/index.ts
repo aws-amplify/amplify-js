@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { isSecureServiceEndpoint } from '../../utils';
+
 import {
 	AuthConfig,
 	AuthSession,
@@ -27,6 +29,23 @@ export class AuthClass {
 		authResourcesConfig: AuthConfig,
 		authOptions?: LibraryAuthOptions,
 	): void {
+		const userPoolEndpoint = authResourcesConfig?.Cognito?.userPoolEndpoint;
+		const identityPoolEndpoint =
+			authResourcesConfig?.Cognito?.identityPoolEndpoint;
+
+		if (userPoolEndpoint && !isSecureServiceEndpoint(userPoolEndpoint)) {
+			throw new Error(getNonHttpsEndpointErrorMessage('`userPoolEndpoint`'));
+		}
+
+		if (
+			identityPoolEndpoint &&
+			!isSecureServiceEndpoint(identityPoolEndpoint)
+		) {
+			throw new Error(
+				getNonHttpsEndpointErrorMessage('`identityPoolEndpoint`'),
+			);
+		}
+
 		this.authConfig = authResourcesConfig;
 		this.authOptions = authOptions;
 	}
@@ -94,3 +113,6 @@ export class AuthClass {
 		);
 	}
 }
+
+const getNonHttpsEndpointErrorMessage = (target: string): string =>
+	`${target} must use HTTPS protocol.`;

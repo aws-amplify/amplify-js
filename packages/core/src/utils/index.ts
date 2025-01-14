@@ -17,3 +17,4 @@ export { urlSafeEncode } from './urlSafeEncode';
 export { deepFreeze } from './deepFreeze';
 export { deDupeAsyncFunction } from './deDupeAsyncFunction';
 export { isTokenExpired } from './isTokenExpired';
+export { isSecureServiceEndpoint } from './isSecureServiceEndpoint';
