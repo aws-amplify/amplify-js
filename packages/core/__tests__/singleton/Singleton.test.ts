@@ -288,7 +288,14 @@ describe('Session tests', () => {
 			secretAccessKey: 'secretAccessKeyValue',
 		};
 		Amplify.configure(
-			{},
+			{
+				Auth: {
+					Cognito: {
+						userPoolId: 'userPoolId',
+						userPoolClientId: 'userPoolClientId',
+					},
+				},
+			},
 			{
 				Auth: {
 					credentialsProvider: {

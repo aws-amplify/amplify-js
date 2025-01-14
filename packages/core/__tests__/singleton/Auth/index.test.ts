@@ -1,51 +1,59 @@
-import { ConsoleLogger } from '../../../src/Logger';
 import { AuthClass } from '../../../src/singleton/Auth';
+import { isSecureServiceEndpoint } from '../../../src/utils';
 
-jest.mock('../../../src/Logger', () => {
-	const warn = jest.fn();
+jest.mock('../../../src/utils');
 
-	return {
-		ConsoleLogger: jest.fn(() => ({
-			warn,
-		})),
-	};
-});
+const mockIsSecureServiceEndpoint = jest.mocked(isSecureServiceEndpoint);
 
 describe('Auth', () => {
 	const auth = new AuthClass();
-	const logger = new ConsoleLogger('Auth');
-	const mockedWarn = logger.warn as jest.Mock;
+
+	const mockConfig = {
+		userPoolClientId: 'userPoolClientId',
+		userPoolId: 'userPoolId',
+		identityPoolId: 'identityPoolId',
+	};
+
+	const expectedErrorMatcher = /must use HTTPS protocol\.$/;
+
+	afterEach(() => {
+		mockIsSecureServiceEndpoint.mockClear();
+	});
 
 	describe('configure', () => {
-		const mockConfig = {
-			userPoolClientId: 'userPoolClientId',
-			userPoolId: 'userPoolId',
-		};
+		it('throws when custom user pool endpoint is not secure', () => {
+			const nonSecureUserPoolEndpoint = 'http://example.com';
+			mockIsSecureServiceEndpoint.mockReturnValueOnce(false);
 
-		it('prints warning when use custom endpoint for Cognito User Pool', () => {
-			auth.configure({
-				Cognito: {
-					...mockConfig,
-					userPoolEndpoint: 'https://custom-endpoint.com',
-				},
-			});
-
-			expect(mockedWarn).toHaveBeenCalledWith(
-				expect.stringContaining('Amazon Cognito User Pool'),
+			expect(() => {
+				auth.configure({
+					Cognito: {
+						...mockConfig,
+						userPoolEndpoint: nonSecureUserPoolEndpoint,
+					},
+				});
+			}).toThrow(expectedErrorMatcher);
+			expect(mockIsSecureServiceEndpoint).toHaveBeenCalledWith(
+				nonSecureUserPoolEndpoint,
 			);
 		});
 
-		it('prints warning when use custom endpoint for Cognito Identity Pool', () => {
-			auth.configure({
-				Cognito: {
-					...mockConfig,
-					identityPoolId: 'identityPoolId',
-					identityPoolEndpoint: 'https://custom-endpoint.com',
-				},
-			});
+		it('throws when custom identity pool endpoint is not secure', () => {
+			const nonSecureIdentityPoolEndpoint = 'http://example.com';
+			mockIsSecureServiceEndpoint.mockReturnValueOnce(true); // good user pool endpoint
+			mockIsSecureServiceEndpoint.mockReturnValueOnce(false); // bad identity pool endpoint
 
-			expect(mockedWarn).toHaveBeenCalledWith(
-				expect.stringContaining('Amazon Cognito Identity Pool'),
+			expect(() => {
+				auth.configure({
+					Cognito: {
+						...mockConfig,
+						userPoolEndpoint: 'https://example.com',
+						identityPoolEndpoint: nonSecureIdentityPoolEndpoint,
+					},
+				});
+			}).toThrow(expectedErrorMatcher);
+			expect(mockIsSecureServiceEndpoint).toHaveBeenCalledWith(
+				nonSecureIdentityPoolEndpoint,
 			);
 		});
 	});
