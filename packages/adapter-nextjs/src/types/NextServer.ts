@@ -8,8 +8,8 @@ import { AmplifyOutputs, LegacyConfig } from 'aws-amplify/adapter-core';
 import {
 	AmplifyServer,
 	CookieStorage,
-} from '@aws-amplify/core/internals/adapter-core';
-import { ResourcesConfig } from '@aws-amplify/core';
+} from 'aws-amplify/adapter-core/internals';
+import { ResourcesConfig } from 'aws-amplify';
 
 import { CreateAuthRouteHandlers } from '../auth/types';
 

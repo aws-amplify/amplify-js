@@ -1,21 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { generateClientWithAmplifyInstance } from '@aws-amplify/api/internals';
+import {
+	CommonPublicClientOptions,
+	DefaultCommonClientOptions,
+	V6ClientSSRCookies,
+	V6ClientSSRRequest,
+	generateClientWithAmplifyInstance,
+} from 'aws-amplify/api/internals';
 import { generateClient } from 'aws-amplify/api/server';
 import {
 	AmplifyServerContextError,
 	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
-import {
-	V6ClientSSRCookies,
-	V6ClientSSRRequest,
-} from '@aws-amplify/api-graphql';
-import {
-	CommonPublicClientOptions,
-	DefaultCommonClientOptions,
-} from '@aws-amplify/api-graphql/internals';
-import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
+} from 'aws-amplify/adapter-core/internals';
+import { parseAmplifyConfig } from 'aws-amplify/utils';
 
 import { NextServer } from '../types';
 

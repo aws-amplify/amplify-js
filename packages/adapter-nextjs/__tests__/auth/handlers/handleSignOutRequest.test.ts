@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import { OAuthConfig } from '@aws-amplify/core';
+import { OAuthConfig } from 'aws-amplify/adapter-core/internals';
 
 import { handleSignOutRequest } from '../../../src/auth/handlers/handleSignOutRequest';
 import {

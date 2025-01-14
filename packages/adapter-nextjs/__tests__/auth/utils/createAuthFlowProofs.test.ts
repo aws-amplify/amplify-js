@@ -1,9 +1,9 @@
-import { urlSafeEncode } from '@aws-amplify/core/internals/utils';
+import { urlSafeEncode } from 'aws-amplify/adapter-core/internals';
 import { generateCodeVerifier, generateState } from 'aws-amplify/adapter-core';
 
 import { createAuthFlowProofs } from '../../../src/auth/utils';
 
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('aws-amplify/adapter-core/internals');
 jest.mock('aws-amplify/adapter-core');
 
 const mockUrlSafeEncode = jest.mocked(urlSafeEncode);

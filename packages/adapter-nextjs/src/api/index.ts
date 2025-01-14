@@ -4,7 +4,7 @@
 import {
 	V6ClientSSRCookies,
 	V6ClientSSRRequest,
-} from '@aws-amplify/api-graphql';
+} from 'aws-amplify/api/internals';
 
 export {
 	generateServerClientUsingReqRes,

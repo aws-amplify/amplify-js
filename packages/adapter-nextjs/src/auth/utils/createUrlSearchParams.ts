@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { OAuthConfig } from '@aws-amplify/core';
+import { OAuthConfig } from 'aws-amplify/adapter-core/internals';
 import { generateCodeVerifier } from 'aws-amplify/adapter-core';
 
 import { resolveIdentityProviderFromUrl } from './resolveIdentityProviderFromUrl';

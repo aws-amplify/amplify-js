@@ -1,8 +1,8 @@
-import { decodeJWT } from '@aws-amplify/core';
+import { decodeJWT } from 'aws-amplify/adapter-core/internals';
 
 import { getAccessTokenUsername } from '../../../src/auth/utils/getAccessTokenUsername';
 
-jest.mock('@aws-amplify/core');
+jest.mock('aws-amplify/adapter-core/internals');
 
 const mockDecodeJWT = jest.mocked(decodeJWT);
 
