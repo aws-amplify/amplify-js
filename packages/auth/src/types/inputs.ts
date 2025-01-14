@@ -68,6 +68,33 @@ export interface AuthSignInWithRedirectInput {
 		 * On all other platforms, this flag is ignored.
 		 */
 		preferPrivateSession?: boolean;
+		/**
+		 * A username prompt that you want to pass to the authorization server. You can collect a username, email address or phone number from your user and allow the destination provider to pre-populate the user's sign-in name. When you submit a `login_hint` parameter and no `idp_identifier` or `identity_provider` parameters to the `/oauth2/authorize` endpoint, managed login fills the username field with your hint value. You can also pass this parameter to the Login endpoint and automatically fill the username value.
+		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
+		 */
+		loginHint?: string;
+		/**
+		 * The language that you want to display user-interactive pages in. Managed login pages can be localized, but hosted UI (classic) pages can not
+		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
+		 */
+		lang?:
+			| 'de'
+			| 'en'
+			| 'es'
+			| 'fr'
+			| 'id'
+			| 'it'
+			| 'ja'
+			| 'ko'
+			| 'pt-BR'
+			| 'zh-CN'
+			| 'zh-TW'
+			| (string & NonNullable<unknown>);
+		/**
+		 * A random value that you can add to the request. The nonce value that you provide is included in the ID token that Amazon Cognito issues. To guard against replay attacks, your app can inspect the `nonce` claim in the ID token and compare it to the one you generated.
+		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
+		 */
+		nonce?: string;
 	};
 }
 
