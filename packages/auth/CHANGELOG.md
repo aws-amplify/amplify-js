@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.9.1...@aws-amplify/auth@6.10.0) (2025-01-14)
+
+### Bug Fixes
+
+- **deps:** avoid using implicit dependencies for auth ([#14122](https://github.com/aws-amplify/amplify-js/issues/14122)) ([f2a0b74](https://github.com/aws-amplify/amplify-js/commit/f2a0b74bfac5f10014e644c509d5cff5d5da9e59))
+
+### Features
+
+- **Auth:** Allow sending login_hint, lang and nonce on signInWithRedirects ([#14089](https://github.com/aws-amplify/amplify-js/issues/14089)) ([a4063a1](https://github.com/aws-amplify/amplify-js/commit/a4063a177a802c86624faf0c4b605c75164b8641)), closes [#8951](https://github.com/aws-amplify/amplify-js/issues/8951)
+
 ## [6.9.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.9.0...@aws-amplify/auth@6.9.1) (2025-01-03)
 
 **Note:** Version bump only for package @aws-amplify/auth
