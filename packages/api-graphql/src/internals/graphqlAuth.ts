@@ -56,13 +56,12 @@ export async function headerBasedAuth(
 			// `fetchAuthSession()` succeeded but didn't return `tokens`.
 			// This may happen when unauthenticated access is enabled and there is
 			// no user signed in.
-			if (!token) {
-				throw new GraphQLApiError(NO_VALID_AUTH_TOKEN);
+			if (token) {
+				headers = {
+					Authorization: token,
+				};
 			}
-
-			headers = {
-				Authorization: token,
-			};
+			
 			break;
 		}
 		case 'lambda':
