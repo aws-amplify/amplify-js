@@ -30,14 +30,14 @@ export interface NativeCredentialAttestationResponse {
 
 // Helper function to validate native response format
 export function isValidNativeResponse(response: any): boolean {
-	return (
+	return Boolean(
 		response &&
-		typeof response === 'object' &&
-		typeof response.clientDataJSON === 'string' &&
-		// For attestation response
-		(typeof response.attestationObject === 'string' ||
-			// For assertion response
-			(typeof response.authenticatorData === 'string' &&
-				typeof response.signature === 'string'))
+			typeof response === 'object' &&
+			typeof response.clientDataJSON === 'string' &&
+			// For attestation response
+			(typeof response.attestationObject === 'string' ||
+				// For assertion response
+				(typeof response.authenticatorData === 'string' &&
+					typeof response.signature === 'string')),
 	);
 }
