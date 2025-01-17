@@ -3,15 +3,13 @@
 
 import { NextRequest } from 'next/server';
 import {
-	assertOAuthConfig,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core/internals/utils';
-import { NextApiRequest, NextApiResponse } from 'next';
-import {
 	AmplifyServerContextError,
 	CookieStorage,
-} from '@aws-amplify/core/internals/adapter-core';
-import { OAuthConfig } from '@aws-amplify/core';
+	OAuthConfig,
+	assertOAuthConfig,
+	assertTokenProviderConfig,
+} from 'aws-amplify/adapter-core/internals';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 import {
 	AuthRoutesHandlerContext,

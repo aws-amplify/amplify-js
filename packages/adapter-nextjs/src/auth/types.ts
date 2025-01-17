@@ -4,7 +4,7 @@
 import { ResourcesConfig } from 'aws-amplify';
 import { NextRequest } from 'next/server';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { OAuthConfig } from '@aws-amplify/core';
+import { OAuthConfig } from 'aws-amplify/adapter-core/internals';
 import { CookieStorage } from 'aws-amplify/adapter-core';
 
 import { NextServer } from '../types';

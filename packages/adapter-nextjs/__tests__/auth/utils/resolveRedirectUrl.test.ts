@@ -1,4 +1,4 @@
-import { OAuthConfig } from '@aws-amplify/core';
+import { OAuthConfig } from 'aws-amplify/adapter-core/internals';
 
 import {
 	resolveRedirectSignInUrl,

@@ -1,8 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { OAuthConfig } from '@aws-amplify/core';
-import { AmplifyServerContextError } from '@aws-amplify/core/internals/adapter-core';
+import {
+	AmplifyServerContextError,
+	OAuthConfig,
+} from 'aws-amplify/adapter-core/internals';
 
 export const resolveRedirectSignInUrl = (
 	origin: string,

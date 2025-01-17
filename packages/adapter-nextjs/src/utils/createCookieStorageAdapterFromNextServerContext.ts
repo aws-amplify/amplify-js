@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server.js';
 import {
 	AmplifyServerContextError,
 	CookieStorage,
-} from '@aws-amplify/core/internals/adapter-core';
+} from 'aws-amplify/adapter-core/internals';
 
 import { NextServer } from '../types';
 

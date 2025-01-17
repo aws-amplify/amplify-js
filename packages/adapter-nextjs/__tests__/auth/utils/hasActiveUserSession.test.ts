@@ -3,7 +3,7 @@
  */
 import { getCurrentUser } from 'aws-amplify/auth/server';
 import { NextRequest } from 'next/server';
-import { AuthUser } from '@aws-amplify/auth/cognito';
+import { AuthUser } from 'aws-amplify/auth';
 import { NextApiRequest } from 'next';
 
 import {
