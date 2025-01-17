@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig } from 'aws-amplify';
-import { KeyValueStorageMethodValidator } from '@aws-amplify/core/internals/adapter-core';
-import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
+import { KeyValueStorageMethodValidator } from 'aws-amplify/adapter-core/internals';
+import { parseAmplifyConfig } from 'aws-amplify/utils';
 
 import { createRunWithAmplifyServerContext } from './utils';
 import { NextServer } from './types';

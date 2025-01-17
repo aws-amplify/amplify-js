@@ -31,6 +31,12 @@
 			"require": "./dist/cjs/api/index.js",
 			"react-native": "./src/api/index.ts"
 		},
+		"./api/internals": {
+			"types": "./dist/esm/api/internals.d.ts",
+			"import": "./dist/esm/api/internals.mjs",
+			"require": "./dist/cjs/api/internals.js",
+			"react-native": "./src/api/internals.ts"
+		},
 		"./api/server": {
 			"types": "./dist/esm/api/server.d.ts",
 			"import": "./dist/esm/api/server.mjs",
@@ -155,6 +161,11 @@
 			"import": "./dist/esm/adapter-core/index.mjs",
 			"require": "./dist/cjs/adapter-core/index.js"
 		},
+		"./adapter-core/internals": {
+			"types": "./dist/esm/adapter-core/internals.d.ts",
+			"import": "./dist/esm/adapter-core/internals.mjs",
+			"require": "./dist/cjs/adapter-core/internals.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -167,6 +178,9 @@
 			],
 			"api/server": [
 				"./dist/esm/api/server.d.ts"
+			],
+			"api/server/internals": [
+				"./dist/esm/api/internals.d.ts"
 			],
 			"utils": [
 				"./dist/esm/utils/index.d.ts"
@@ -227,6 +241,9 @@
 			],
 			"adapter-core": [
 				"./dist/esm/adapter-core/index.d.ts"
+			],
+			"adapter-core/internals": [
+				"./dist/esm/adapter-core/internals.d.ts"
 			]
 		}
 	},

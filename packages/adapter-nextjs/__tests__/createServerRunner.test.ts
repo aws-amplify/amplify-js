@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig, sharedInMemoryStorage } from '@aws-amplify/core';
+import { ResourcesConfig } from 'aws-amplify';
+import { sharedInMemoryStorage } from 'aws-amplify/utils';
 
 import { NextServer } from '../src/types';
 
@@ -68,7 +69,8 @@ describe('createServerRunner', () => {
 			createUserPoolsTokenProvider: mockCreateUserPoolsTokenProvider,
 			runWithAmplifyServerContext: mockRunWithAmplifyServerContextCore,
 		}));
-		jest.doMock('@aws-amplify/core/internals/utils', () => ({
+		jest.doMock('aws-amplify/utils', () => ({
+			...jest.requireActual('aws-amplify/utils'),
 			parseAmplifyConfig: mockParseAmplifyConfig,
 		}));
 		createRunWithAmplifyServerContextSpy = jest.spyOn(

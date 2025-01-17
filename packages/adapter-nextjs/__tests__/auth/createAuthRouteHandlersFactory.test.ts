@@ -2,7 +2,7 @@ import { ResourcesConfig } from 'aws-amplify';
 import {
 	assertOAuthConfig,
 	assertTokenProviderConfig,
-} from '@aws-amplify/core/internals/utils';
+} from 'aws-amplify/adapter-core/internals';
 
 import { createAuthRouteHandlersFactory } from '../../src/auth/createAuthRouteHandlersFactory';
 import { handleAuthApiRouteRequestForAppRouter } from '../../src/auth/handleAuthApiRouteRequestForAppRouter';
@@ -21,7 +21,11 @@ import {
 	isValidOrigin,
 } from '../../src/auth/utils';
 
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('aws-amplify/adapter-core/internals', () => ({
+	...jest.requireActual('aws-amplify/adapter-core/internals'),
+	assertOAuthConfig: jest.fn(),
+	assertTokenProviderConfig: jest.fn(),
+}));
 jest.mock('../../src/auth/handleAuthApiRouteRequestForAppRouter');
 jest.mock('../../src/auth/handleAuthApiRouteRequestForPagesRouter');
 jest.mock('../../src/auth/utils');

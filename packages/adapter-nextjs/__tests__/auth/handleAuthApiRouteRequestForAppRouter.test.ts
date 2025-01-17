@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { NextRequest } from 'next/server';
-import { OAuthConfig } from '@aws-amplify/core';
+import { OAuthConfig } from 'aws-amplify/adapter-core/internals';
 
 import { handleAuthApiRouteRequestForAppRouter } from '../../src/auth/handleAuthApiRouteRequestForAppRouter';
 import { CreateAuthRoutesHandlersInput } from '../../src/auth/types';
