@@ -45,9 +45,9 @@ const region = 'region';
 const defaultKey = 'key';
 const defaultContentType = 'application/octet-stream';
 const defaultCacheKey =
-	'Jz3O2w==_8388608_application/octet-stream_bucket_public_key';
+	'o6a/Qw==_8388608_application/octet-stream_bucket_public_key';
 const testPath = 'testPath/object';
-const testPathCacheKey = `Jz3O2w==_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
+const testPathCacheKey = `o6a/Qw==_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
 
 const mockCreateMultipartUpload = jest.mocked(createMultipartUpload);
 const mockUploadPart = jest.mocked(uploadPart);
@@ -545,14 +545,14 @@ describe('getMultipartUploadHandlers with key', () => {
 		describe('cache validation', () => {
 			it.each([
 				{
-					name: 'wrong part count',
+					name: 'mismatch part count between cached upload and actual upload',
 					parts: [{ PartNumber: 1 }, { PartNumber: 2 }, { PartNumber: 3 }],
 				},
 				{
-					name: 'wrong part numbers',
+					name: 'mismatched part numbers between cached upload and actual upload',
 					parts: [{ PartNumber: 1 }, { PartNumber: 1 }],
 				},
-			])('should throw with $name', async ({ parts }) => {
+			])('should throw integrity error with $name', async ({ parts }) => {
 				mockMultipartUploadSuccess();
 
 				const mockDefaultStorage = defaultStorage as jest.Mocked<
@@ -693,7 +693,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					// \d{13} is the file lastModified property of a file
-					/someName_\d{13}_Jz3O2w==_8388608_application\/octet-stream_bucket_public_key/,
+					/someName_\d{13}_o6a\/Qw==_8388608_application\/octet-stream_bucket_public_key/,
 				),
 			]);
 		});
