@@ -1,35 +1,43 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	KeyValueStorageInterface,
-	decodeJWT,
-	defaultStorage,
-} from '@aws-amplify/core';
+import { KeyValueStorageInterface } from '@aws-amplify/core';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
-import { DefaultTokenStore } from '../../../src/providers/cognito/tokenProvider';
+import { DefaultTokenStore } from '../../../../src/providers/cognito/tokenProvider';
 
-jest.mock('../../../src/providers/cognito/utils/oauth/oAuthStore');
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	decodeJWT: jest.fn().mockImplementation(() => {
-		return {
-			payload: {
-				exp: Math.floor(Date.now() / 1000) + 3600,
-				iss: 'https://authprovider.region.amazonaws.com/',
-				sub: 'tester0523',
-				iat: Math.floor(Date.now() / 1000),
-			},
-			toString: decodeJWT.toString,
-		};
+const userPoolId = 'us-west-1:0000523';
+const userPoolClientId = 'mockCognitoUserPoolsId';
+const userSub = 'tester0523';
+const userSub2 = 'tester1123';
+const authIDP = 'CognitoIdentityServiceProvider';
+const authProviderISS = 'https://authprovider.region.amazonaws.com/';
+
+jest.mock('@aws-amplify/core/internals/utils');
+jest.mock(
+	'../../../../src/providers/cognito/tokenProvider/errorHelpers',
+	() => ({
+		assert: jest.fn(),
+		TokenProviderErrorCode: 'mockErrorCode',
 	}),
-}));
+);
+
+const mockedDecodeJWT = jest.mocked(decodeJWT);
+mockedDecodeJWT.mockReturnValue({
+	payload: {
+		exp: Math.floor(Date.now() / 1000) + 3600,
+		iss: authProviderISS,
+		sub: userSub,
+		iat: Math.floor(Date.now() / 1000),
+	},
+	toString: decodeJWT.toString,
+});
 
 const mockAccessToken = {
 	payload: {
 		exp: Math.floor(Date.now() / 1000) + 3600,
-		iss: 'https://authprovider.region.amazonaws.com/',
-		sub: 'tester0523',
+		iss: authProviderISS,
+		sub: userSub,
 		iat: Math.floor(Date.now() / 1000),
 	},
 	toString: () => `${authIDP}.${userPoolClientId}.${userSub}.accessToken`,
@@ -38,8 +46,8 @@ const mockAccessToken = {
 const mockIdToken = {
 	payload: {
 		exp: Math.floor(Date.now() / 1000) + 3600,
-		iss: 'https://authprovider.region.amazonaws.com/',
-		sub: 'tester0523',
+		iss: authProviderISS,
+		sub: userSub,
 		iat: Math.floor(Date.now() / 1000),
 	},
 	toString: () => `${authIDP}.${userPoolClientId}.${userSub}.idToken`,
@@ -50,21 +58,54 @@ const mockAuthToken = {
 	accessToken: mockAccessToken,
 	refreshToken: 'testRefreshToken',
 	clockDrift: 1000,
-	username: 'tester0523',
+	username: userSub,
 };
 
-const userPoolId = 'us-west-1:0000523';
-const userPoolClientId = 'mockCognitoUserPoolsId';
-const userSub = 'tester0523';
-const authIDP = 'CognitoIdentityServiceProvider';
+const mockAuthNonOptionalToken = {
+	username: userSub2,
+	accessToken: mockAccessToken,
+	clockDrift: 5555,
+};
 
-describe('DefaultTokenStore', () => {
-	let tokenStore = new DefaultTokenStore();
+const mockKeyValueStorage: jest.Mocked<KeyValueStorageInterface> = {
+	setItem: jest.fn(),
+	getItem: jest.fn(),
+	removeItem: jest.fn(),
+	clear: jest.fn(),
+};
+
+describe('TokenStore', () => {
+	let tokenStore: DefaultTokenStore;
 	let keyValStorage: KeyValueStorageInterface;
+	let mockStorage: Record<string, string>;
 
 	beforeEach(() => {
+		mockStorage = {};
+		mockKeyValueStorage.setItem.mockImplementation(
+			(key: string, value: string) => {
+				mockStorage[key] = value;
+
+				return Promise.resolve();
+			},
+		);
+		mockKeyValueStorage.getItem.mockImplementation(key => {
+			switch (key) {
+				case `${authIDP}.${userPoolClientId}.${userSub}.accessToken`:
+					return Promise.resolve(mockAuthToken.accessToken.toString());
+				case `${authIDP}.${userPoolClientId}.${userSub}.idToken`:
+					return Promise.resolve(mockAuthToken.idToken.toString());
+				case `${authIDP}.${userPoolClientId}.${userSub}.refreshToken`:
+					return Promise.resolve(mockAuthToken.refreshToken);
+				case `${authIDP}.${userPoolClientId}.${userSub}.clockDrift`:
+					return Promise.resolve(mockAuthToken.clockDrift.toString());
+				case `${authIDP}.${userPoolClientId}.LastAuthUser`:
+					return Promise.resolve(mockAuthToken.username);
+				default:
+					return Promise.resolve(null);
+			}
+		});
 		tokenStore = new DefaultTokenStore();
-		tokenStore.setKeyValueStorage(defaultStorage);
+		tokenStore.setKeyValueStorage(mockKeyValueStorage);
 		tokenStore.setAuthConfig({
 			Cognito: {
 				userPoolId,
@@ -80,14 +121,14 @@ describe('DefaultTokenStore', () => {
 	describe('getLastAuthUser', () => {
 		it('should return the last authenticated user', async () => {
 			const mockUser = 'mockUser';
-			jest.spyOn(keyValStorage, 'getItem').mockResolvedValueOnce(mockUser);
+			mockKeyValueStorage.getItem.mockResolvedValueOnce(mockUser);
 
 			const result = await tokenStore.getLastAuthUser();
 			expect(result).toBe(mockUser);
 		});
 
 		it('should return string username when no last auth user exists', async () => {
-			jest.spyOn(keyValStorage, 'getItem').mockResolvedValueOnce(null);
+			mockKeyValueStorage.getItem.mockResolvedValueOnce(null);
 
 			const result = await tokenStore.getLastAuthUser();
 			expect(result).toBe('username');
@@ -97,23 +138,6 @@ describe('DefaultTokenStore', () => {
 	describe('loadTokens', () => {
 		it('should load and return stored tokens', async () => {
 			await tokenStore.storeTokens(mockAuthToken);
-
-			jest.spyOn(keyValStorage, 'getItem').mockImplementation(key => {
-				switch (key) {
-					case `${authIDP}.${userPoolClientId}.${userSub}.accessToken`:
-						return Promise.resolve(mockAuthToken.accessToken.toString());
-					case `${authIDP}.${userPoolClientId}.${userSub}.idToken`:
-						return Promise.resolve(mockAuthToken.idToken.toString());
-					case `${authIDP}.${userPoolClientId}.${userSub}.refreshToken`:
-						return Promise.resolve(mockAuthToken.refreshToken);
-					case `${authIDP}.${userPoolClientId}.${userSub}.clockDrift`:
-						return Promise.resolve(mockAuthToken.clockDrift.toString());
-					case `${authIDP}.${userPoolClientId}.LastAuthUser`:
-						return Promise.resolve(mockAuthToken.username);
-					default:
-						return Promise.resolve(null);
-				}
-			});
 			const result = await tokenStore.loadTokens();
 
 			expect(result).toEqual({
@@ -121,16 +145,16 @@ describe('DefaultTokenStore', () => {
 					payload: {
 						exp: expect.any(Number),
 						iat: expect.any(Number),
-						iss: 'https://authprovider.region.amazonaws.com/',
-						sub: 'tester0523',
+						iss: authProviderISS,
+						sub: userSub,
 					},
 				}),
 				idToken: expect.objectContaining({
 					payload: {
 						exp: expect.any(Number),
 						iat: expect.any(Number),
-						iss: 'https://authprovider.region.amazonaws.com/',
-						sub: 'tester0523',
+						iss: authProviderISS,
+						sub: userSub,
 					},
 				}),
 				refreshToken: mockAuthToken.refreshToken,
@@ -142,60 +166,75 @@ describe('DefaultTokenStore', () => {
 	});
 
 	describe('storeTokens', () => {
-		it('should store tokens successfully', async () => {
-			const setItemSpy = jest
-				.spyOn(keyValStorage, 'setItem')
-				.mockResolvedValue(undefined);
-
-			await tokenStore.storeTokens(mockAuthToken);
-
-			expect(setItemSpy).toHaveBeenCalledTimes(5);
-			expect(setItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub}.accessToken`,
-				mockAuthToken.accessToken.toString(),
-			);
-			expect(setItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub}.idToken`,
-				mockAuthToken.idToken.toString(),
-			);
-			expect(setItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub}.refreshToken`,
-				mockAuthToken.refreshToken,
-			);
-			expect(setItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub}.clockDrift`,
-				mockAuthToken.clockDrift.toString(),
-			);
-			expect(setItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.LastAuthUser`,
-				mockAuthToken.username,
-			);
+		beforeEach(() => {
+			mockKeyValueStorage.getItem.mockImplementation(key => {
+				switch (key) {
+					case `${authIDP}.${userPoolClientId}.${userSub2}.accessToken`:
+						return Promise.resolve(
+							mockAuthNonOptionalToken.accessToken.toString(),
+						);
+					case `${authIDP}.${userPoolClientId}.${userSub2}.clockDrift`:
+						return Promise.resolve(
+							mockAuthNonOptionalToken.clockDrift.toString(),
+						);
+					case `${authIDP}.${userPoolClientId}.LastAuthUser`:
+						return Promise.resolve(mockAuthNonOptionalToken.username);
+					default:
+						return Promise.resolve(null);
+				}
+			});
 		});
-	});
 
-	describe('clearTokens', () => {
-		it('should clear all stored tokens', async () => {
-			const removeItemSpy = jest
-				.spyOn(keyValStorage, 'removeItem')
-				.mockResolvedValue(undefined);
+		it('should store tokens successfully', async () => {
+			await tokenStore.storeTokens(mockAuthNonOptionalToken);
 
-			await tokenStore.clearTokens();
+			const result = await tokenStore.loadTokens();
 
-			expect(removeItemSpy).toHaveBeenCalledTimes(7);
-			expect(removeItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub}.accessToken`,
+			expect(result).toEqual({
+				accessToken: expect.objectContaining({
+					payload: {
+						exp: expect.any(Number),
+						iat: expect.any(Number),
+						iss: authProviderISS,
+						sub: userSub,
+					},
+				}),
+				idToken: undefined,
+				username: userSub2,
+				clockDrift: 5555,
+				deviceMetadata: undefined,
+				refreshToken: undefined,
+			});
+		});
+
+		it('should only remove items for omitted token keys', async () => {
+			const partialTokens = {
+				accessToken: mockAccessToken,
+				username: userSub2,
+				clockDrift: 999,
+				refreshToken: 'mockToken',
+			};
+
+			await tokenStore.storeTokens(partialTokens);
+
+			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+				`${authIDP}.${userPoolClientId}.${userSub2}.idToken`,
 			);
-			expect(removeItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub}.idToken`,
+			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+				`${authIDP}.${userPoolClientId}.${userSub2}.clockDrift`,
 			);
-			expect(removeItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub}.refreshToken`,
+			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+				`${authIDP}.${userPoolClientId}.${userSub2}.accessToken`,
 			);
-			expect(removeItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub}.clockDrift`,
+
+			// Optional key missing from token
+			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+				`${authIDP}.${userPoolClientId}.${userSub2}.signInDetails`,
 			);
-			expect(removeItemSpy).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.LastAuthUser`,
+
+			// Optional key included in token
+			expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
+				`${authIDP}.${userPoolClientId}.${userSub2}.refreshToken`,
 			);
 		});
 	});
@@ -333,7 +372,6 @@ describe('DefaultTokenStore', () => {
 				expect(loadedTokens?.refreshToken).toBe(newMockAuthToken.refreshToken);
 			}
 
-			console.debug(operations);
 			const setOps = operations.filter(op => op.startsWith(`setItem:`)).length;
 			const getOps = operations.filter(op => op.startsWith(`getItem:`)).length;
 			expect(setOps).toBeGreaterThan(0);
