@@ -11,7 +11,7 @@ type AttestationConveyancePreference =
 	| 'indirect'
 	| 'none';
 
-interface PkcDescriptor<T> {
+export interface PkcDescriptor<T> {
 	type: 'public-key';
 	id: T;
 	transports?: PasskeyTransport[];
