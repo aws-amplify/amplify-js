@@ -53,7 +53,7 @@ export interface AmplifyOutputsStorageBucketProperties {
 	/** Region for the bucket */
 	aws_region: string;
 	/** Paths to object with access permissions */
-	paths?: Partial<Record<string, Record<string, string[] | undefined>>>;
+	paths?: Record<string, Record<string, string[] | undefined>>;
 }
 export interface AmplifyOutputsStorageProperties {
 	/** Default region for Storage */
@@ -117,11 +117,11 @@ export interface AmplifyOutputsNotificationsProperties {
 
 export interface AmplifyOutputs {
 	version?: string;
-	storage?: AmplifyOutputsStorageProperties;
-	auth?: AmplifyOutputsAuthProperties;
-	analytics?: AmplifyOutputsAnalyticsProperties;
-	geo?: AmplifyOutputsGeoProperties;
-	data?: AmplifyOutputsDataProperties;
-	custom?: AmplifyOutputsCustomProperties;
-	notifications?: AmplifyOutputsNotificationsProperties;
+	storage?: unknown;
+	auth?: unknown;
+	analytics?: unknown;
+	geo?: unknown;
+	data?: unknown;
+	custom?: unknown;
+	notifications?: unknown;
 }

@@ -296,27 +296,39 @@ export function parseAmplifyOutputs(
 	const resourcesConfig: ResourcesConfig = {};
 
 	if (amplifyOutputs.storage) {
-		resourcesConfig.Storage = parseStorage(amplifyOutputs.storage);
+		resourcesConfig.Storage = parseStorage(
+			amplifyOutputs.storage as AmplifyOutputsStorageProperties,
+		);
 	}
 
 	if (amplifyOutputs.auth) {
-		resourcesConfig.Auth = parseAuth(amplifyOutputs.auth);
+		resourcesConfig.Auth = parseAuth(
+			amplifyOutputs.auth as AmplifyOutputsAuthProperties,
+		);
 	}
 
 	if (amplifyOutputs.analytics) {
-		resourcesConfig.Analytics = parseAnalytics(amplifyOutputs.analytics);
+		resourcesConfig.Analytics = parseAnalytics(
+			amplifyOutputs.analytics as AmplifyOutputsAnalyticsProperties,
+		);
 	}
 
 	if (amplifyOutputs.geo) {
-		resourcesConfig.Geo = parseGeo(amplifyOutputs.geo);
+		resourcesConfig.Geo = parseGeo(
+			amplifyOutputs.geo as AmplifyOutputsGeoProperties,
+		);
 	}
 
 	if (amplifyOutputs.data) {
-		resourcesConfig.API = parseData(amplifyOutputs.data);
+		resourcesConfig.API = parseData(
+			amplifyOutputs.data as AmplifyOutputsDataProperties,
+		);
 	}
 
 	if (amplifyOutputs.custom) {
-		const customConfig = parseCustom(amplifyOutputs.custom);
+		const customConfig = parseCustom(
+			amplifyOutputs.custom as AmplifyOutputsCustomProperties,
+		);
 
 		if (customConfig && 'Events' in customConfig) {
 			resourcesConfig.API = { ...resourcesConfig.API, ...customConfig };
@@ -325,7 +337,7 @@ export function parseAmplifyOutputs(
 
 	if (amplifyOutputs.notifications) {
 		resourcesConfig.Notifications = parseNotifications(
-			amplifyOutputs.notifications,
+			amplifyOutputs.notifications as AmplifyOutputsNotificationsProperties,
 		);
 	}
 
