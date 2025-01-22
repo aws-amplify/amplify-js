@@ -395,22 +395,10 @@ function createBucketInfoMap(
 				);
 			}
 
-			const sanitizedPaths = paths
-				? Object.entries(paths).reduce<
-						Record<string, Record<string, string[] | undefined>>
-					>((acc, [key, value]) => {
-						if (value !== undefined) {
-							acc[key] = value;
-						}
-
-						return acc;
-					}, {})
-				: undefined;
-
 			mappedBuckets[name] = {
 				bucketName,
 				region,
-				paths: sanitizedPaths,
+				paths,
 			};
 		},
 	);
