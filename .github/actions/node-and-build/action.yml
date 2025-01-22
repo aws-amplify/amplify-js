@@ -7,10 +7,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Setup Node.js 16
+    - name: Setup Node.js 18
       uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0 https://github.com/actions/setup-node/commit/64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c
       with:
-        node-version: 16
+        node-version: 18
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
     - uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
