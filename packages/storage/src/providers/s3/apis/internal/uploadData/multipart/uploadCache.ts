@@ -99,22 +99,42 @@ const listCachedUploadTasks = async (
 };
 
 /**
- * Serialize the uploadData API options to string so it can be hashed.
+ * Serialize the uploadData API options to string so it can be hashed. The following options will be OMITTED from the
+ * result. It only checks the top-level options assuming we do not use unserializable types in nested properties by
+ * design.
+ * * undefined
+ * * bigint
+ * * function
+ * * symbol
+ * * class instances except for Array.
  */
 export const serializeUploadOptions = (
 	options: UploadDataWithPathInputWithAdvancedOptions['options'] & {
 		resumableUploadsCache?: KeyValueStorageInterface;
 	} = {},
 ): string => {
-	const unserializableOptionProperties: string[] = [
-		'onProgress',
-		'resumableUploadsCache', // Internally injected implementation not set by customers
-		'locationCredentialsProvider', // Internally injected implementation not set by customers
-	] satisfies (keyof typeof options)[];
+	const isSerializable = (value: any): boolean => {
+		const valueType = typeof value;
+		if (['bigint', 'function', 'symbol', 'undefined'].includes(valueType)) {
+			return false;
+		}
+		if (valueType === 'object') {
+			if (
+				value === null ||
+				Object.getPrototypeOf(value) === Object.prototype ||
+				Object.getPrototypeOf(value) === Array.prototype
+			) {
+				return true; // null/array/plain objects
+			}
+
+			return false;
+		}
+
+		return true; // string/number/boolean
+	};
+
 	const serializableOptions = Object.fromEntries(
-		Object.entries(options).filter(
-			([key]) => !unserializableOptionProperties.includes(key),
-		),
+		Object.entries(options).filter(([_, value]) => isSerializable(value)),
 	);
 
 	return JSON.stringify(serializableOptions);
