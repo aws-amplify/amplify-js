@@ -46,7 +46,8 @@
     "generate-version": "genversion src/Platform/version.ts --es6 --semi",
     "test": "jest --config ./jest.config.js",
     "format": "echo \"Not implemented\"",
-    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json"
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json",
+    "postpublish": "npm dist-tag add $npm_package_name@$npm_package_version latest"
   },
   "main": "lib/index.js",
   "react-native": {
