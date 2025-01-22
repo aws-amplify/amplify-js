@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/api-rest",
 	"private": false,
-	"version": "4.0.65",
+	"version": "4.0.66",
 	"description": "Api-rest category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -87,7 +87,7 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.9.0",
+		"@aws-amplify/core": "6.9.1",
 		"@aws-amplify/react-native": "1.1.6",
 		"@aws-sdk/types": "3.387.0",
 		"typescript": "5.0.2"
