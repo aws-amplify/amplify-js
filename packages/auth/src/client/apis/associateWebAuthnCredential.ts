@@ -38,6 +38,7 @@ import { assertValidCredentialCreationOptions } from '../utils/passkey/types';
  * - Thrown due to a service error when verifying WebAuthn registration result
  */
 export async function associateWebAuthnCredential(): Promise<void> {
+	console.log('HEREEEEEEEEEEEE');
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 
 	assertTokenProviderConfig(authConfig);
@@ -47,12 +48,14 @@ export async function associateWebAuthnCredential(): Promise<void> {
 	const { tokens } = await fetchAuthSession();
 
 	assertAuthTokens(tokens);
+	console.log('HEREEEEEEEEEEEE 2');
 
 	const startWebAuthnRegistration = createStartWebAuthnRegistrationClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({
 			endpointOverride: userPoolEndpoint,
 		}),
 	});
+	console.log('HEREEEEEEEEEEEE 3');
 
 	const { CredentialCreationOptions: credentialCreationOptions } =
 		await startWebAuthnRegistration(
@@ -68,8 +71,10 @@ export async function associateWebAuthnCredential(): Promise<void> {
 		);
 
 	assertValidCredentialCreationOptions(credentialCreationOptions);
+	console.log('HEREEEEEEEEEEEE 4');
 
 	const cred = await registerPasskey(credentialCreationOptions);
+	console.log('HEREEEEEEEEEEEE 5');
 
 	const completeWebAuthnRegistration = createCompleteWebAuthnRegistrationClient(
 		{
@@ -78,6 +83,7 @@ export async function associateWebAuthnCredential(): Promise<void> {
 			}),
 		},
 	);
+	console.log('HEREEEEEEEEEEEE 6');
 
 	await completeWebAuthnRegistration(
 		{
@@ -91,4 +97,5 @@ export async function associateWebAuthnCredential(): Promise<void> {
 			Credential: cred,
 		},
 	);
+	console.log('HEREEEEEEEEEEEE 7');
 }
