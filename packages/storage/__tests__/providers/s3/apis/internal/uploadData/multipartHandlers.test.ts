@@ -57,12 +57,6 @@ const mockListParts = jest.mocked(listParts);
 const mockHeadObject = jest.mocked(headObject);
 const mockCalculateContentCRC32 = jest.mocked(calculateContentCRC32);
 
-// Hack to make sure jest mocked defaultStorage is not serializable. So it will not change the options hash.
-Object.setPrototypeOf(
-	defaultStorage,
-	Object.getPrototypeOf(jest.requireActual('@aws-amplify/core').defaultStorage),
-);
-
 const disableAssertionFlag = true;
 
 const MB = 1024 * 1024;
