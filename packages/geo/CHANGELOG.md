@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.66](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@3.0.65...@aws-amplify/geo@3.0.66) (2025-01-14)
+
+### Bug Fixes
+
+- **geo:** Added missing interpolated property to Geo Place ([#10889](https://github.com/aws-amplify/amplify-js/issues/10889)) ([1515cab](https://github.com/aws-amplify/amplify-js/commit/1515cabf1d1dd643cece2bcccf971f2a771ab36c))
+
 ## [3.0.65](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@3.0.64...@aws-amplify/geo@3.0.65) (2025-01-03)
 
 **Note:** Version bump only for package @aws-amplify/geo
