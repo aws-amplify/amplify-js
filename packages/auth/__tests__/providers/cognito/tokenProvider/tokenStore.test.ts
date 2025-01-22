@@ -61,7 +61,7 @@ const mockAuthToken = {
 	username: userSub,
 };
 
-const mockAuthNonOptionalToken = {
+const mockAuthRequiredToken = {
 	username: userSub2,
 	accessToken: mockAccessToken,
 	clockDrift: 5555,
@@ -114,6 +114,7 @@ describe('TokenStore', () => {
 		});
 		keyValStorage = tokenStore.getKeyValueStorage();
 	});
+
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
@@ -166,19 +167,35 @@ describe('TokenStore', () => {
 	});
 
 	describe('storeTokens', () => {
+		const optionalTokenKeys = [
+			[
+				'idToken',
+				`${authIDP}.${userPoolClientId}.${userSub2}.idToken`,
+				mockIdToken.toString(),
+			],
+			[
+				'refreshToken',
+				`${authIDP}.${userPoolClientId}.${userSub2}.refreshToken`,
+				'mockRefreshToken',
+			],
+			[
+				'signInDetails',
+				`${authIDP}.${userPoolClientId}.${userSub2}.signInDetails`,
+				'mockSignInDetails',
+			],
+		];
+
 		beforeEach(() => {
 			mockKeyValueStorage.getItem.mockImplementation(key => {
 				switch (key) {
 					case `${authIDP}.${userPoolClientId}.${userSub2}.accessToken`:
 						return Promise.resolve(
-							mockAuthNonOptionalToken.accessToken.toString(),
+							mockAuthRequiredToken.accessToken.toString(),
 						);
 					case `${authIDP}.${userPoolClientId}.${userSub2}.clockDrift`:
-						return Promise.resolve(
-							mockAuthNonOptionalToken.clockDrift.toString(),
-						);
+						return Promise.resolve(mockAuthRequiredToken.clockDrift.toString());
 					case `${authIDP}.${userPoolClientId}.LastAuthUser`:
-						return Promise.resolve(mockAuthNonOptionalToken.username);
+						return Promise.resolve(mockAuthRequiredToken.username);
 					default:
 						return Promise.resolve(null);
 				}
@@ -186,7 +203,7 @@ describe('TokenStore', () => {
 		});
 
 		it('should store tokens successfully', async () => {
-			await tokenStore.storeTokens(mockAuthNonOptionalToken);
+			await tokenStore.storeTokens(mockAuthRequiredToken);
 
 			const result = await tokenStore.loadTokens();
 
@@ -207,36 +224,41 @@ describe('TokenStore', () => {
 			});
 		});
 
-		it('should only remove items for omitted token keys', async () => {
-			const partialTokens = {
-				accessToken: mockAccessToken,
-				username: userSub2,
-				clockDrift: 999,
-				refreshToken: 'mockToken',
-			};
+		it.each(optionalTokenKeys)(
+			`should clear other keys only when only optional key provided is %s`,
+			async (tokenKey, _, tokenValue) => {
+				const partialTokens = {
+					...mockAuthRequiredToken,
+					[tokenKey]: tokenValue,
+				};
 
-			await tokenStore.storeTokens(partialTokens);
+				await tokenStore.storeTokens(partialTokens);
 
-			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub2}.idToken`,
-			);
-			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub2}.clockDrift`,
-			);
-			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub2}.accessToken`,
-			);
+				// Required Keys are not called with removeItem event
+				expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
+					`${authIDP}.${userPoolClientId}.${userSub2}.accessToken`,
+				);
+				expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
+					`${authIDP}.${userPoolClientId}.LastAuthUser`,
+				);
+				expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
+					`${authIDP}.${userPoolClientId}.${userSub2}.clockDrift`,
+				);
 
-			// Optional key missing from token
-			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub2}.signInDetails`,
-			);
-
-			// Optional key included in token
-			expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
-				`${authIDP}.${userPoolClientId}.${userSub2}.refreshToken`,
-			);
-		});
+				// Optional Keys that is absent from partialTokens should be called with removeItem event
+				optionalTokenKeys.forEach(([key, keyStoragePath]) => {
+					if (key !== tokenKey) {
+						expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+							keyStoragePath,
+						);
+					} else {
+						expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
+							keyStoragePath,
+						);
+					}
+				});
+			},
+		);
 	});
 
 	describe('getDeviceMetadata', () => {
