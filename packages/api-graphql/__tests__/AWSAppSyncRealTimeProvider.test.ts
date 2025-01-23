@@ -764,20 +764,25 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					observer.subscribe({ error: () => {} });
 					// Resolve the message delivery actions
 					await replaceConstant(
-						'DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT',
+						'DEFAULT_KEEP_ALIVE_HEARTBEAT_TIMEOUT',
 						5,
 						async () => {
-							await fakeWebSocketInterface?.readyForUse;
-							await fakeWebSocketInterface?.triggerOpen();
-							await fakeWebSocketInterface?.handShakeMessage({
-								connectionTimeoutMs: 100,
-							});
+							await replaceConstant(
+								'DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT',
+								10,
+								async () => {
+									await fakeWebSocketInterface?.readyForUse;
+									await fakeWebSocketInterface?.triggerOpen();
+									await fakeWebSocketInterface?.handShakeMessage({
+										connectionTimeoutMs: 100,
+									});
 
-							await fakeWebSocketInterface?.startAckMessage();
+									await fakeWebSocketInterface?.startAckMessage();
 
-							await fakeWebSocketInterface?.keepAlive();
-						},
-					);
+									await fakeWebSocketInterface?.keepAlive();
+								},
+							);
+						});
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
 						CS.Connected,

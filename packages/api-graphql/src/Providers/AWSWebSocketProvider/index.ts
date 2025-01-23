@@ -23,7 +23,7 @@ import {
 	CONNECTION_INIT_TIMEOUT,
 	CONNECTION_STATE_CHANGE,
 	DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT,
-	DEFAULT_KEEP_ALIVE_TIMEOUT,
+	DEFAULT_KEEP_ALIVE_HEARTBEAT_TIMEOUT,
 	MAX_DELAY_MS,
 	MESSAGE_TYPES,
 	NON_RETRYABLE_CODES,
@@ -83,9 +83,8 @@ export abstract class AWSWebSocketProvider {
 
 	protected awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
-	private keepAliveTimeoutId?: ReturnType<typeof setTimeout>;
-	private keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
-	private keepAliveAlertTimeoutId?: ReturnType<typeof setTimeout>;
+	private kaTimestamp?: number;
+	private keepAliveHeartbeatIntervalId?: ReturnType<typeof setTimeout>;
 	private promiseArray: { res(): void; rej(reason?: any): void }[] = [];
 	private connectionState: ConnectionState | undefined;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
@@ -544,11 +543,8 @@ export abstract class AWSWebSocketProvider {
 			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 		} else {
 			this.logger.debug('closing WebSocket...');
-			if (this.keepAliveTimeoutId) {
-				clearTimeout(this.keepAliveTimeoutId);
-			}
-			if (this.keepAliveAlertTimeoutId) {
-				clearTimeout(this.keepAliveAlertTimeoutId);
+			if (this.keepAliveHeartbeatIntervalId) {
+				clearInterval(this.keepAliveHeartbeatIntervalId);
 			}
 			const tempSocket = this.awsRealTimeSocket;
 			// Cleaning callbacks to avoid race condition, socket still exists
@@ -578,16 +574,31 @@ export abstract class AWSWebSocketProvider {
 	};
 
 	private maintainKeepAlive() {
-		if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
-		if (this.keepAliveAlertTimeoutId)
-			clearTimeout(this.keepAliveAlertTimeoutId);
-		this.keepAliveTimeoutId = setTimeout(() => {
-			this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
-		}, this.keepAliveTimeout);
-		this.keepAliveAlertTimeoutId = setTimeout(() => {
+		this.kaTimestamp = Date.now();
+	}
+
+	private keepAliveHeartbeat(connectionTimeoutMs: number) {
+		const currentTime = Date.now();
+
+		// Check for missed KA message
+		if (
+			this.kaTimestamp &&
+			currentTime - this.kaTimestamp > DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT
+		) {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
-		}, DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT);
-		this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+		} else {
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+		}
+
+		// Recognize we are disconnected if we haven't seen messages in the keep alive timeout period
+		if (
+			this.kaTimestamp &&
+			currentTime - this.kaTimestamp > connectionTimeoutMs
+		) {
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
+		} else {
+			this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
+		}
 	}
 
 	private _handleIncomingSubscriptionMessage(message: MessageEvent) {
@@ -920,7 +931,15 @@ export abstract class AWSWebSocketProvider {
 			return;
 		}
 
-		this.keepAliveTimeout = connectionTimeoutMs;
+		// Clear keep alive heartbeat if it exists
+		if (this.keepAliveHeartbeatIntervalId) {
+			clearInterval(this.keepAliveHeartbeatIntervalId);
+		}
+		// Setup a keep alive heartbeat for this connection
+		this.keepAliveHeartbeatIntervalId = setInterval(() => {
+			this.keepAliveHeartbeat(connectionTimeoutMs);
+		}, DEFAULT_KEEP_ALIVE_HEARTBEAT_TIMEOUT);
+
 		this.awsRealTimeSocket.onmessage =
 			this._handleIncomingSubscriptionMessage.bind(this);
 
