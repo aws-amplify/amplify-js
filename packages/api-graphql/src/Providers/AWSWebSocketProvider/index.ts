@@ -118,6 +118,7 @@ export abstract class AWSWebSocketProvider {
 		return new Promise<void>((resolve, reject) => {
 			if (this.awsRealTimeSocket) {
 				this.awsRealTimeSocket.onclose = (_: CloseEvent) => {
+					this._closeSocket();
 					this.subscriptionObserverMap = new Map();
 					this.awsRealTimeSocket = undefined;
 					resolve();
@@ -170,7 +171,7 @@ export abstract class AWSWebSocketProvider {
 							this.logger.debug(
 								`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`,
 							);
-							this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+							this._closeSocket();
 						})
 						.finally(() => {
 							subscriptionStartInProgress = false;
@@ -434,7 +435,7 @@ export abstract class AWSWebSocketProvider {
 		this.logger.debug({ err });
 		const message = String(err.message ?? '');
 		// Resolving to give the state observer time to propogate the update
-		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+		this._closeSocket();
 
 		// Capture the error only when the network didn't cause disruption
 		if (
@@ -543,9 +544,7 @@ export abstract class AWSWebSocketProvider {
 			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 		} else {
 			this.logger.debug('closing WebSocket...');
-			if (this.keepAliveHeartbeatIntervalId) {
-				clearInterval(this.keepAliveHeartbeatIntervalId);
-			}
+
 			const tempSocket = this.awsRealTimeSocket;
 			// Cleaning callbacks to avoid race condition, socket still exists
 			tempSocket.onclose = null;
@@ -553,7 +552,7 @@ export abstract class AWSWebSocketProvider {
 			tempSocket.close(1000);
 			this.awsRealTimeSocket = undefined;
 			this.socketStatus = SOCKET_STATUS.CLOSED;
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+			this._closeSocket();
 		}
 	}
 
@@ -595,8 +594,6 @@ export abstract class AWSWebSocketProvider {
 			this.kaTimestamp &&
 			currentTime - this.kaTimestamp > connectionTimeoutMs
 		) {
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
-		} else {
 			this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
 		}
 	}
@@ -705,11 +702,19 @@ export abstract class AWSWebSocketProvider {
 		this.logger.debug(`Disconnect error: ${msg}`);
 
 		if (this.awsRealTimeSocket) {
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+			this._closeSocket();
 			this.awsRealTimeSocket.close();
 		}
 
 		this.socketStatus = SOCKET_STATUS.CLOSED;
+	}
+
+	private _closeSocket() {
+		if (this.keepAliveHeartbeatIntervalId) {
+			clearInterval(this.keepAliveHeartbeatIntervalId);
+			this.keepAliveHeartbeatIntervalId = undefined;
+		}
+		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 	}
 
 	private _timeoutStartSubscriptionAck(subscriptionId: string) {
@@ -727,7 +732,7 @@ export abstract class AWSWebSocketProvider {
 				subscriptionState: SUBSCRIPTION_STATUS.FAILED,
 			});
 
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+			this._closeSocket();
 			this.logger.debug(
 				'timeoutStartSubscription',
 				JSON.stringify({ query, variables }),
@@ -839,6 +844,7 @@ export abstract class AWSWebSocketProvider {
 				this.logger.debug(`WebSocket connection error`);
 			};
 			newSocket.onclose = () => {
+				this._closeSocket();
 				reject(new Error('Connection handshake error'));
 			};
 			newSocket.onopen = () => {
@@ -868,6 +874,7 @@ export abstract class AWSWebSocketProvider {
 
 			this.awsRealTimeSocket.onclose = event => {
 				this.logger.debug(`WebSocket closed ${event.reason}`);
+				this._closeSocket();
 				reject(new Error(JSON.stringify(event)));
 			};
 
@@ -931,10 +938,6 @@ export abstract class AWSWebSocketProvider {
 			return;
 		}
 
-		// Clear keep alive heartbeat if it exists
-		if (this.keepAliveHeartbeatIntervalId) {
-			clearInterval(this.keepAliveHeartbeatIntervalId);
-		}
 		// Setup a keep alive heartbeat for this connection
 		this.keepAliveHeartbeatIntervalId = setInterval(() => {
 			this.keepAliveHeartbeat(connectionTimeoutMs);
@@ -950,6 +953,7 @@ export abstract class AWSWebSocketProvider {
 
 		this.awsRealTimeSocket.onclose = event => {
 			this.logger.debug(`WebSocket closed ${event.reason}`);
+			this._closeSocket();
 			this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
 		};
 	}
