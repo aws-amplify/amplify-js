@@ -95,13 +95,12 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
 		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
-		await this.clearTokens();
-
 		const lastAuthUser = tokens.username;
 		await this.getKeyValueStorage().setItem(
 			this.getLastAuthUserKey(),
 			lastAuthUser,
 		);
+
 		const authKeys = await this.getAuthKeys();
 		await this.getKeyValueStorage().setItem(
 			authKeys.accessToken,
@@ -113,6 +112,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 				authKeys.idToken,
 				tokens.idToken.toString(),
 			);
+		} else {
+			await this.getKeyValueStorage().removeItem(authKeys.idToken);
 		}
 
 		if (tokens.refreshToken) {
@@ -120,6 +121,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 				authKeys.refreshToken,
 				tokens.refreshToken,
 			);
+		} else {
+			await this.getKeyValueStorage().removeItem(authKeys.refreshToken);
 		}
 
 		if (tokens.deviceMetadata) {
@@ -141,11 +144,14 @@ export class DefaultTokenStore implements AuthTokenStore {
 				tokens.deviceMetadata.randomPassword,
 			);
 		}
+
 		if (tokens.signInDetails) {
 			await this.getKeyValueStorage().setItem(
 				authKeys.signInDetails,
 				JSON.stringify(tokens.signInDetails),
 			);
+		} else {
+			await this.getKeyValueStorage().removeItem(authKeys.signInDetails);
 		}
 
 		await this.getKeyValueStorage().setItem(
