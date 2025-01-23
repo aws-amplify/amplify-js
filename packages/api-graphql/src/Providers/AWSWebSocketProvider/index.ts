@@ -577,13 +577,30 @@ export abstract class AWSWebSocketProvider {
 		errorType: string;
 	};
 
+	private maintainKeepAlive() {
+		if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
+		if (this.keepAliveAlertTimeoutId)
+			clearTimeout(this.keepAliveAlertTimeoutId);
+		this.keepAliveTimeoutId = setTimeout(() => {
+			this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
+		}, this.keepAliveTimeout);
+		this.keepAliveAlertTimeoutId = setTimeout(() => {
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
+		}, DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT);
+		this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+	}
+
 	private _handleIncomingSubscriptionMessage(message: MessageEvent) {
 		if (typeof message.data !== 'string') {
 			return;
 		}
 
 		const [isData, data] = this._handleSubscriptionData(message);
-		if (isData) return;
+		if (isData) {
+			this.maintainKeepAlive();
+
+			return;
+		}
 
 		const { type, id, payload } = data;
 
@@ -632,16 +649,7 @@ export abstract class AWSWebSocketProvider {
 		}
 
 		if (type === MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE) {
-			if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
-			if (this.keepAliveAlertTimeoutId)
-				clearTimeout(this.keepAliveAlertTimeoutId);
-			this.keepAliveTimeoutId = setTimeout(() => {
-				this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
-			}, this.keepAliveTimeout);
-			this.keepAliveAlertTimeoutId = setTimeout(() => {
-				this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
-			}, DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT);
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+			this.maintainKeepAlive();
 
 			return;
 		}
