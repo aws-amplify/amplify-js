@@ -10,6 +10,8 @@ import { UPLOADS_STORAGE_KEY } from '../../../../utils/constants';
 import { ResolvedS3Config } from '../../../../types/options';
 import { Part, listParts } from '../../../../utils/client/s3data';
 import { logger } from '../../../../../../utils';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { UploadDataInput as UploadDataWithPathInputWithAdvancedOptions } from '../../../../../../internals/types/inputs';
 
 const ONE_HOUR = 1000 * 60 * 60;
 
@@ -94,6 +96,28 @@ const listCachedUploadTasks = async (
 
 		return {};
 	}
+};
+
+/**
+ * Serialize the uploadData API options to string so it can be hashed.
+ */
+export const serializeUploadOptions = (
+	options: UploadDataWithPathInputWithAdvancedOptions['options'] & {
+		resumableUploadsCache?: KeyValueStorageInterface;
+	} = {},
+): string => {
+	const unserializableOptionProperties: string[] = [
+		'onProgress',
+		'resumableUploadsCache', // Internally injected implementation not set by customers
+		'locationCredentialsProvider', // Internally injected implementation not set by customers
+	] satisfies (keyof typeof options)[];
+	const serializableOptions = Object.fromEntries(
+		Object.entries(options).filter(
+			([key]) => !unserializableOptionProperties.includes(key),
+		),
+	);
+
+	return JSON.stringify(serializableOptions);
 };
 
 interface UploadsCacheKeyOptions {
