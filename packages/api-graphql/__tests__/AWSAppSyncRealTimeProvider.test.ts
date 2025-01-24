@@ -3,8 +3,6 @@ import { Reachability } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
 import { MESSAGE_TYPES } from '../src/Providers/constants';
 import * as constants from '../src/Providers/constants';
-import { log, error } from "console";
-
 
 import {
 	delay,
@@ -805,7 +803,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				});
 
 				test('subscription observer ka is cleared if data is received', async () => {
-					const consoleLogger = new ConsoleLogger("");
 					expect.assertions(1);
 
 					const observer = provider.subscribe({

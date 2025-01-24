@@ -84,7 +84,7 @@ export abstract class AWSWebSocketProvider {
 	protected awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
 	private kaTimestamp?: number;
-	private keepAliveHeartbeatIntervalId?: ReturnType<typeof setTimeout>;
+	private keepAliveHeartbeatIntervalId?: ReturnType<typeof setInterval>;
 	private promiseArray: { res(): void; rej(reason?: any): void }[] = [];
 	private connectionState: ConnectionState | undefined;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
