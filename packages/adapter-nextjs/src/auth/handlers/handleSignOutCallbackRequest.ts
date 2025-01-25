@@ -81,7 +81,9 @@ export const handleSignOutCallbackRequest: HandleSignOutCallbackRequest =
 			headers,
 			[
 				...createTokenRemoveCookies([
-					...Object.values(authCookiesKeys),
+					authCookiesKeys.accessToken,
+					authCookiesKeys.idToken,
+					authCookiesKeys.refreshToken,
 					lastAuthUserCookieName,
 					IS_SIGNING_OUT_COOKIE_NAME,
 				]),

@@ -245,7 +245,10 @@ describe('handleSignOutCallbackRequest', () => {
 					mock_refresh_token_cookie_name: 'mock_refresh_token',
 				});
 			const mockCreateKeysForAuthStorageResult = {
+				accessToken: 'mock_access_token_cookie_name',
+				idToken: 'mock_id_token_cookie_name',
 				refreshToken: 'mock_refresh_token_cookie_name',
+				deviceKey: 'shouldNotIncludeMe',
 			} as any;
 			mockCreateKeysForAuthStorage.mockReturnValueOnce(
 				mockCreateKeysForAuthStorageResult,
@@ -330,7 +333,9 @@ describe('handleSignOutCallbackRequest', () => {
 				endpointDomain: mockOAuthConfig.domain,
 			});
 			expect(mockCreateTokenRemoveCookies).toHaveBeenCalledWith([
-				...Object.values(mockCreateKeysForAuthStorageResult),
+				mockCreateKeysForAuthStorageResult.accessToken,
+				mockCreateKeysForAuthStorageResult.idToken,
+				mockCreateKeysForAuthStorageResult.refreshToken,
 				`${AUTH_KEY_PREFIX}.${mockUserPoolClientId}.LastAuthUser`,
 				IS_SIGNING_OUT_COOKIE_NAME,
 			]);
