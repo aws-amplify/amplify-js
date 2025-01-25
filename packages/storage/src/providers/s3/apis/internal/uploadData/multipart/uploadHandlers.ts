@@ -40,7 +40,11 @@ import { StorageOperationOptionsInput } from '../../../../../../types/inputs';
 import { IntegrityError } from '../../../../../../errors/IntegrityError';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
-import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
+import {
+	getUploadsCacheKey,
+	removeCachedUpload,
+	serializeUploadOptions,
+} from './uploadCache';
 import { getConcurrentUploadsProgressTracker } from './progressTracker';
 import { loadOrCreateMultipartUpload } from './initialUpload';
 import { getDataChunker } from './getDataChunker';
@@ -151,9 +155,9 @@ export const getMultipartUploadHandlers = (
 			resolvedAccessLevel = resolveAccessLevel(accessLevel);
 		}
 
-		const optionsHash = (
-			await calculateContentCRC32(JSON.stringify(uploadDataOptions))
-		).checksum;
+		const { checksum: optionsHash } = await calculateContentCRC32(
+			serializeUploadOptions(uploadDataOptions),
+		);
 
 		if (!inProgressUpload) {
 			const { uploadId, cachedParts, finalCrc32 } =
