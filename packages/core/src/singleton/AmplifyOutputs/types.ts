@@ -115,7 +115,19 @@ export interface AmplifyOutputsNotificationsProperties {
 	channels: string[];
 }
 
+/** @deprecated Use {@link AmplifyOutputsUnknown} instead. */
 export interface AmplifyOutputs {
+	version?: string;
+	storage?: AmplifyOutputsStorageProperties;
+	auth?: AmplifyOutputsAuthProperties;
+	analytics?: AmplifyOutputsAnalyticsProperties;
+	geo?: AmplifyOutputsGeoProperties;
+	data?: AmplifyOutputsDataProperties;
+	custom?: AmplifyOutputsCustomProperties;
+	notifications?: AmplifyOutputsNotificationsProperties;
+}
+
+export interface AmplifyOutputsUnknown {
 	version?: string;
 	storage?: unknown;
 	auth?: unknown;

@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/adapter-core/internals",
+	"types": "../../dist/esm/adapter-core/internals.d.ts",
+	"main": "../../dist/cjs/adapter-core/internals.js",
+	"module": "../../dist/esm/adapter-core/internals.mjs",
+	"sideEffects": false
+}

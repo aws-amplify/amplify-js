@@ -19,7 +19,6 @@ import {
 } from './singleton/Auth/types';
 import { NotificationsConfig } from './singleton/Notifications/types';
 import {
-	AmplifyOutputs,
 	AmplifyOutputsAnalyticsProperties,
 	AmplifyOutputsAuthProperties,
 	AmplifyOutputsCustomProperties,
@@ -28,6 +27,7 @@ import {
 	AmplifyOutputsNotificationsProperties,
 	AmplifyOutputsStorageBucketProperties,
 	AmplifyOutputsStorageProperties,
+	AmplifyOutputsUnknown,
 } from './singleton/AmplifyOutputs/types';
 import {
 	AnalyticsConfig,
@@ -40,10 +40,10 @@ import {
 } from './singleton/types';
 
 export function isAmplifyOutputs(
-	config: ResourcesConfig | LegacyConfig | AmplifyOutputs,
-): config is AmplifyOutputs {
+	config: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
+): config is AmplifyOutputsUnknown {
 	// version format initially will be '1' but is expected to be something like x.y where x is major and y minor version
-	const { version } = config as AmplifyOutputs;
+	const { version } = config as AmplifyOutputsUnknown;
 
 	if (!version) {
 		return false;
@@ -291,7 +291,7 @@ function parseNotifications(
 }
 
 export function parseAmplifyOutputs(
-	amplifyOutputs: AmplifyOutputs,
+	amplifyOutputs: AmplifyOutputsUnknown,
 ): ResourcesConfig {
 	const resourcesConfig: ResourcesConfig = {};
 

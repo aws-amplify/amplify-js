@@ -8,7 +8,9 @@ export {
 	createUserPoolsTokenProvider,
 } from './authProvidersFactories/cognito';
 export {
+	/** @deprecated This type is deprecated and will be removed in future versions. */
 	LegacyConfig,
+	/** @deprecated This type is deprecated and will be removed in future versions. */
 	AmplifyOutputs,
 } from '@aws-amplify/core/internals/utils';
 export {

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig } from '../index';
-import { AmplifyOutputs } from '../singleton/AmplifyOutputs/types';
+import { AmplifyOutputsUnknown } from '../singleton/AmplifyOutputs/types';
 import { LegacyConfig } from '../singleton/types';
 import { parseAWSExports } from '../parseAWSExports';
 import { isAmplifyOutputs, parseAmplifyOutputs } from '../parseAmplifyOutputs';
@@ -14,7 +14,7 @@ import { isAmplifyOutputs, parseAmplifyOutputs } from '../parseAmplifyOutputs';
  * @return A ResourcesConfig for the provided configuration object.
  */
 export const parseAmplifyConfig = (
-	amplifyConfig: ResourcesConfig | LegacyConfig | AmplifyOutputs,
+	amplifyConfig: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
 ): ResourcesConfig => {
 	if (Object.keys(amplifyConfig).some(key => key.startsWith('aws_'))) {
 		return parseAWSExports(amplifyConfig);
