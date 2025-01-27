@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.12.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.12.1...aws-amplify@6.12.2) (2025-01-24)
+
+### Bug Fixes
+
+- **auth:** Setting Store Tokens should only clear tokens that no longer have a value ([#13584](https://github.com/aws-amplify/amplify-js/issues/13584)) ([3606482](https://github.com/aws-amplify/amplify-js/commit/3606482c980766466f2c3f27bd4887c550897c26))
+
 ## [6.12.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.12.0...aws-amplify@6.12.1) (2025-01-14)
 
 **Note:** Version bump only for package aws-amplify
