@@ -36,7 +36,7 @@ import type {
 } from './types';
 
 const INVALID_PARAMETER_ERROR_MSG =
-	'Invalid parameter for ComplteMultipartUpload API';
+	'Invalid parameter for CompleteMultipartUpload API';
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,

@@ -47,6 +47,7 @@ const listPartsSerializer = async (
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
 	url.search = new AmplifyUrlSearchParams({
+		'x-id': 'ListParts',
 		uploadId: input.UploadId,
 	}).toString();
 
