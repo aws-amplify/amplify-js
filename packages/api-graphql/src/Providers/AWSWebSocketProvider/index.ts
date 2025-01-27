@@ -83,7 +83,7 @@ export abstract class AWSWebSocketProvider {
 
 	protected awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
-	private keepAliveTimestamp?: number;
+	private keepAliveTimestamp: number = Date.now();
 	private keepAliveHeartbeatIntervalId?: ReturnType<typeof setInterval>;
 	private promiseArray: { res(): void; rej(reason?: any): void }[] = [];
 	private connectionState: ConnectionState | undefined;
@@ -581,8 +581,8 @@ export abstract class AWSWebSocketProvider {
 
 		// Check for missed KA message
 		if (
-			this.keepAliveTimestamp &&
-			currentTime - this.keepAliveTimestamp > DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT
+			currentTime - this.keepAliveTimestamp >
+			DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT
 		) {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
 		} else {
@@ -590,10 +590,7 @@ export abstract class AWSWebSocketProvider {
 		}
 
 		// Recognize we are disconnected if we haven't seen messages in the keep alive timeout period
-		if (
-			this.keepAliveTimestamp &&
-			currentTime - this.keepAliveTimestamp > connectionTimeoutMs
-		) {
+		if (currentTime - this.keepAliveTimestamp > connectionTimeoutMs) {
 			this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
 		}
 	}
