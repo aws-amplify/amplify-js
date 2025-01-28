@@ -36,3 +36,9 @@ export const OAUTH_GRANT_TYPE = 'authorization_code';
 export const SIGN_IN_TIMEOUT_ERROR_CODE = 'timeout';
 export const SIGN_IN_TIMEOUT_ERROR_MESSAGE =
 	'Sign in has to be completed within 5 minutes.';
+export const DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS = {
+	sameSite: 'strict' as const,
+};
+export const ENFORCED_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS = {
+	httpOnly: true,
+};

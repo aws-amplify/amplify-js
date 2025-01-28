@@ -20,6 +20,7 @@ import {
 	isNextRequest,
 	isValidOrigin,
 } from '../../src/auth/utils';
+import { globalRuntimeContext } from '../../src/utils';
 
 jest.mock('aws-amplify/adapter-core/internals', () => ({
 	...jest.requireActual('aws-amplify/adapter-core/internals'),
@@ -29,6 +30,20 @@ jest.mock('aws-amplify/adapter-core/internals', () => ({
 jest.mock('../../src/auth/handleAuthApiRouteRequestForAppRouter');
 jest.mock('../../src/auth/handleAuthApiRouteRequestForPagesRouter');
 jest.mock('../../src/auth/utils');
+jest.mock('../../src/utils', () => ({
+	globalRuntimeContext: {
+		isServerSideAuthEnabled: jest.fn(() => true),
+		enableServerSideAuth: jest.fn(),
+		setRuntimeOptions: jest.fn(),
+		getRuntimeOptions: jest.fn(() => ({
+			cookies: {
+				sameSite: 'strict',
+			},
+		})),
+		isSSLOrigin: jest.fn(() => true),
+		setIsSSLOrigin: jest.fn(),
+	},
+}));
 
 const mockAmplifyConfig: ResourcesConfig = {
 	Auth: {
@@ -49,11 +64,6 @@ const mockAmplifyConfig: ResourcesConfig = {
 	},
 };
 
-const mockRuntimeOptions: NextServer.CreateServerRunnerRuntimeOptions = {
-	cookies: {
-		sameSite: 'strict',
-	},
-};
 const mockAssertTokenProviderConfig = jest.mocked(assertTokenProviderConfig);
 const mockAssertOAuthConfig = jest.mocked(assertOAuthConfig);
 const mockHandleAuthApiRouteRequestForAppRouter = jest.mocked(
@@ -83,9 +93,9 @@ describe('createAuthRoutesHandlersFactory', () => {
 		it('throws an error if the AMPLIFY_APP_ORIGIN environment variable is not defined', () => {
 			const throwingFunc = createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
-				runtimeOptions: mockRuntimeOptions,
 				amplifyAppOrigin: undefined,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+				globalRuntimeContext,
 			});
 			expect(() => throwingFunc()).toThrow(
 				'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
@@ -96,9 +106,9 @@ describe('createAuthRoutesHandlersFactory', () => {
 			mockIsValidOrigin.mockReturnValueOnce(false);
 			const throwingFunc = createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
-				runtimeOptions: mockRuntimeOptions,
 				amplifyAppOrigin: 'domain-without-protocol.com',
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+				globalRuntimeContext,
 			});
 			expect(() => throwingFunc()).toThrow(
 				'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
@@ -108,9 +118,9 @@ describe('createAuthRoutesHandlersFactory', () => {
 		it('calls config assertion functions to validate the Auth configuration', () => {
 			const func = createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
-				runtimeOptions: mockRuntimeOptions,
 				amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+				globalRuntimeContext,
 			});
 
 			func();
@@ -128,9 +138,9 @@ describe('createAuthRoutesHandlersFactory', () => {
 		const testCreateAuthRoutesHandlersFactoryInput: CreateAuthRouteHandlersFactoryInput =
 			{
 				config: mockAmplifyConfig,
-				runtimeOptions: mockRuntimeOptions,
 				amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+				globalRuntimeContext,
 			};
 		const testCreateAuthRoutesHandlersInput: CreateAuthRoutesHandlersInput = {
 			customState: 'random-state',
@@ -168,7 +178,9 @@ describe('createAuthRoutesHandlersFactory', () => {
 				response: param2,
 				handlerInput: testCreateAuthRoutesHandlersInput,
 				oAuthConfig: mockAmplifyConfig.Auth!.Cognito!.loginWith!.oauth,
-				setCookieOptions: mockRuntimeOptions.cookies,
+				setCookieOptions: {
+					sameSite: 'strict',
+				},
 				origin: 'https://example.com',
 				userPoolClientId: 'def',
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
@@ -190,7 +202,9 @@ describe('createAuthRoutesHandlersFactory', () => {
 				handlerContext: context,
 				handlerInput: testCreateAuthRoutesHandlersInput,
 				oAuthConfig: mockAmplifyConfig.Auth!.Cognito!.loginWith!.oauth,
-				setCookieOptions: mockRuntimeOptions.cookies,
+				setCookieOptions: {
+					sameSite: 'strict',
+				},
 				origin: 'https://example.com',
 				userPoolClientId: 'def',
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
@@ -211,11 +225,14 @@ describe('createAuthRoutesHandlersFactory', () => {
 		});
 
 		it('uses default values for parameters that have values as undefined', async () => {
+			(globalRuntimeContext.getRuntimeOptions as jest.Mock).mockReturnValueOnce(
+				{},
+			);
 			const createAuthRoutesHandlers = createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
-				runtimeOptions: undefined,
 				amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+				globalRuntimeContext,
 			});
 			const handlerWithDefaultParamValues =
 				createAuthRoutesHandlers(/* undefined */);

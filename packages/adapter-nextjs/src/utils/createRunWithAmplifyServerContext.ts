@@ -12,21 +12,39 @@ import {
 } from 'aws-amplify/adapter-core';
 
 import { NextServer } from '../types';
+import {
+	DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+	ENFORCED_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+} from '../auth/constant';
 
 import { createCookieStorageAdapterFromNextServerContext } from './createCookieStorageAdapterFromNextServerContext';
 
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
 	tokenValidator,
-	runtimeOptions = {},
+	globalRuntimeContext,
 }: {
 	config: ResourcesConfig;
 	tokenValidator?: KeyValueStorageMethodValidator;
-	runtimeOptions?: NextServer.CreateServerRunnerRuntimeOptions;
+	globalRuntimeContext: NextServer.GlobalRuntimeContext;
 }) => {
-	const setCookieOptions = {
-		...runtimeOptions.cookies,
+	const setCookieOptions =
+		globalRuntimeContext.getRuntimeOptions().cookies ?? {};
+
+	const mergedSetCookieOptions = {
+		// default options when not specified
+		...DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+		// user-specified options
+		...setCookieOptions,
+		// enforced options when server-side auth is enabled
+		...(globalRuntimeContext.isServerSideAuthEnabled() && {
+			...ENFORCED_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+			secure: globalRuntimeContext.isSSLOrigin(),
+		}),
+		// only support root path
+		path: '/',
 	};
+
 	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 		async ({ nextServerContext, operation }) => {
 			// When the Auth config is presented, attempt to create a Amplify server
@@ -44,7 +62,7 @@ export const createRunWithAmplifyServerContext = ({
 									nextServerContext,
 								),
 								tokenValidator,
-								setCookieOptions,
+								mergedSetCookieOptions,
 							);
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,

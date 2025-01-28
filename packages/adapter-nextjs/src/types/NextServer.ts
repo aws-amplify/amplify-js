@@ -98,4 +98,19 @@ export declare namespace NextServer {
 	export type CreateServerRunner = (
 		input: CreateServerRunnerInput,
 	) => CreateServerRunnerOutput;
+
+	export interface GlobalRuntimeContextStore {
+		isServerSideAuthEnabled: boolean;
+		runtimeOptions: CreateServerRunnerRuntimeOptions;
+		isSSLOrigin: boolean;
+	}
+
+	export interface GlobalRuntimeContext {
+		isServerSideAuthEnabled(): boolean;
+		enableServerSideAuth(): void;
+		setRuntimeOptions(runtimeOptions: CreateServerRunnerRuntimeOptions): void;
+		getRuntimeOptions(): CreateServerRunnerRuntimeOptions;
+		setIsSSLOrigin(isSSLOrigin: boolean): void;
+		isSSLOrigin(): boolean;
+	}
 }
