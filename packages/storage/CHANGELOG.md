@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.7.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.7.7...@aws-amplify/storage@6.7.8) (2025-01-24)
+
+### Bug Fixes
+
+- **storage:** omit unserializable properties when hash uploadDataOptions ([ba3d3b2](https://github.com/aws-amplify/amplify-js/commit/ba3d3b2618c1866454db4ad3bb96159c827a63e2))
+
 ## [6.7.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.7.6...@aws-amplify/storage@6.7.7) (2025-01-14)
 
 **Note:** Version bump only for package @aws-amplify/storage
