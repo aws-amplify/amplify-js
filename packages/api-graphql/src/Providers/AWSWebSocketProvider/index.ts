@@ -23,7 +23,7 @@ import {
 	CONNECTION_INIT_TIMEOUT,
 	CONNECTION_STATE_CHANGE,
 	DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT,
-	DEFAULT_KEEP_ALIVE_TIMEOUT,
+	DEFAULT_KEEP_ALIVE_HEARTBEAT_TIMEOUT,
 	MAX_DELAY_MS,
 	MESSAGE_TYPES,
 	NON_RETRYABLE_CODES,
@@ -83,9 +83,8 @@ export abstract class AWSWebSocketProvider {
 
 	protected awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
-	private keepAliveTimeoutId?: ReturnType<typeof setTimeout>;
-	private keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
-	private keepAliveAlertTimeoutId?: ReturnType<typeof setTimeout>;
+	private keepAliveTimestamp: number = Date.now();
+	private keepAliveHeartbeatIntervalId?: ReturnType<typeof setInterval>;
 	private promiseArray: { res(): void; rej(reason?: any): void }[] = [];
 	private connectionState: ConnectionState | undefined;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
@@ -119,6 +118,7 @@ export abstract class AWSWebSocketProvider {
 		return new Promise<void>((resolve, reject) => {
 			if (this.awsRealTimeSocket) {
 				this.awsRealTimeSocket.onclose = (_: CloseEvent) => {
+					this._closeSocket();
 					this.subscriptionObserverMap = new Map();
 					this.awsRealTimeSocket = undefined;
 					resolve();
@@ -171,7 +171,7 @@ export abstract class AWSWebSocketProvider {
 							this.logger.debug(
 								`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`,
 							);
-							this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+							this._closeSocket();
 						})
 						.finally(() => {
 							subscriptionStartInProgress = false;
@@ -435,7 +435,7 @@ export abstract class AWSWebSocketProvider {
 		this.logger.debug({ err });
 		const message = String(err.message ?? '');
 		// Resolving to give the state observer time to propogate the update
-		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+		this._closeSocket();
 
 		// Capture the error only when the network didn't cause disruption
 		if (
@@ -544,12 +544,7 @@ export abstract class AWSWebSocketProvider {
 			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 		} else {
 			this.logger.debug('closing WebSocket...');
-			if (this.keepAliveTimeoutId) {
-				clearTimeout(this.keepAliveTimeoutId);
-			}
-			if (this.keepAliveAlertTimeoutId) {
-				clearTimeout(this.keepAliveAlertTimeoutId);
-			}
+
 			const tempSocket = this.awsRealTimeSocket;
 			// Cleaning callbacks to avoid race condition, socket still exists
 			tempSocket.onclose = null;
@@ -557,7 +552,7 @@ export abstract class AWSWebSocketProvider {
 			tempSocket.close(1000);
 			this.awsRealTimeSocket = undefined;
 			this.socketStatus = SOCKET_STATUS.CLOSED;
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+			this._closeSocket();
 		}
 	}
 
@@ -577,13 +572,40 @@ export abstract class AWSWebSocketProvider {
 		errorType: string;
 	};
 
+	private maintainKeepAlive() {
+		this.keepAliveTimestamp = Date.now();
+	}
+
+	private keepAliveHeartbeat(connectionTimeoutMs: number) {
+		const currentTime = Date.now();
+
+		// Check for missed KA message
+		if (
+			currentTime - this.keepAliveTimestamp >
+			DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT
+		) {
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
+		} else {
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+		}
+
+		// Recognize we are disconnected if we haven't seen messages in the keep alive timeout period
+		if (currentTime - this.keepAliveTimestamp > connectionTimeoutMs) {
+			this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
+		}
+	}
+
 	private _handleIncomingSubscriptionMessage(message: MessageEvent) {
 		if (typeof message.data !== 'string') {
 			return;
 		}
 
 		const [isData, data] = this._handleSubscriptionData(message);
-		if (isData) return;
+		if (isData) {
+			this.maintainKeepAlive();
+
+			return;
+		}
 
 		const { type, id, payload } = data;
 
@@ -632,16 +654,7 @@ export abstract class AWSWebSocketProvider {
 		}
 
 		if (type === MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE) {
-			if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
-			if (this.keepAliveAlertTimeoutId)
-				clearTimeout(this.keepAliveAlertTimeoutId);
-			this.keepAliveTimeoutId = setTimeout(() => {
-				this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
-			}, this.keepAliveTimeout);
-			this.keepAliveAlertTimeoutId = setTimeout(() => {
-				this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
-			}, DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT);
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+			this.maintainKeepAlive();
 
 			return;
 		}
@@ -686,11 +699,19 @@ export abstract class AWSWebSocketProvider {
 		this.logger.debug(`Disconnect error: ${msg}`);
 
 		if (this.awsRealTimeSocket) {
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+			this._closeSocket();
 			this.awsRealTimeSocket.close();
 		}
 
 		this.socketStatus = SOCKET_STATUS.CLOSED;
+	}
+
+	private _closeSocket() {
+		if (this.keepAliveHeartbeatIntervalId) {
+			clearInterval(this.keepAliveHeartbeatIntervalId);
+			this.keepAliveHeartbeatIntervalId = undefined;
+		}
+		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 	}
 
 	private _timeoutStartSubscriptionAck(subscriptionId: string) {
@@ -708,7 +729,7 @@ export abstract class AWSWebSocketProvider {
 				subscriptionState: SUBSCRIPTION_STATUS.FAILED,
 			});
 
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+			this._closeSocket();
 			this.logger.debug(
 				'timeoutStartSubscription',
 				JSON.stringify({ query, variables }),
@@ -820,6 +841,7 @@ export abstract class AWSWebSocketProvider {
 				this.logger.debug(`WebSocket connection error`);
 			};
 			newSocket.onclose = () => {
+				this._closeSocket();
 				reject(new Error('Connection handshake error'));
 			};
 			newSocket.onopen = () => {
@@ -849,6 +871,7 @@ export abstract class AWSWebSocketProvider {
 
 			this.awsRealTimeSocket.onclose = event => {
 				this.logger.debug(`WebSocket closed ${event.reason}`);
+				this._closeSocket();
 				reject(new Error(JSON.stringify(event)));
 			};
 
@@ -912,7 +935,11 @@ export abstract class AWSWebSocketProvider {
 			return;
 		}
 
-		this.keepAliveTimeout = connectionTimeoutMs;
+		// Set up a keep alive heartbeat for this connection
+		this.keepAliveHeartbeatIntervalId = setInterval(() => {
+			this.keepAliveHeartbeat(connectionTimeoutMs);
+		}, DEFAULT_KEEP_ALIVE_HEARTBEAT_TIMEOUT);
+
 		this.awsRealTimeSocket.onmessage =
 			this._handleIncomingSubscriptionMessage.bind(this);
 
@@ -923,6 +950,7 @@ export abstract class AWSWebSocketProvider {
 
 		this.awsRealTimeSocket.onclose = event => {
 			this.logger.debug(`WebSocket closed ${event.reason}`);
+			this._closeSocket();
 			this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
 		};
 	}
