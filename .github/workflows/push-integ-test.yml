@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - feat/passkey-detox
 
 jobs:
   e2e:
