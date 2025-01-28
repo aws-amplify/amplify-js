@@ -6,7 +6,10 @@
 	"module": "./dist/esm/index.mjs",
 	"react-native": {
 		"./dist/cjs/index": "./src/index.ts",
-		"fast-xml-parser": "fast-xml-parser",
+		"./dist/esm/providers/s3/utils/client/runtime/base64/index.native.mjs": "./dist/esm/providers/s3/utils/client/runtime/base64/index.browser.mjs",
+		"./dist/esm/providers/s3/utils/client/runtime/s3TransferHandler/fetch.mjs": "./dist/esm/providers/s3/utils/client/runtime/s3TransferHandler/xhr.mjs",
+		"./dist/esm/providers/s3/utils/client/runtime/xmlParser/pureJs.mjs": "./dist/esm/providers/s3/utils/client/runtime/xmlParser/dom.mjs",
+		"fast-xml-parser": false,
 		"buffer": "buffer"
 	},
 	"typings": "./dist/esm/index.d.ts",
