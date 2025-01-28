@@ -83,7 +83,6 @@ describe('completeMultipartUploadSerializer', () => {
 				],
 			},
 		});
-		console.log(output);
 		expect(output).toEqual({
 			$metadata: expect.objectContaining(expectedMetadata),
 		});
@@ -139,5 +138,19 @@ describe('completeMultipartUploadSerializer', () => {
 				},
 			}),
 		).rejects.toThrow(integrityError);
+	});
+
+	it('should fail with specific error messaging when ETag is missing from response', () => {
+		mockS3TransferHandler.mockResolvedValue(
+			mockBinaryResponse(completeMultipartUploadSuccessResponse),
+		);
+		expect(
+			completeMultipartUpload(defaultConfig, {
+				Bucket: 'bucket',
+				Key: 'key',
+				UploadId: 'uploadId',
+				MultipartUpload: { Parts: [{ PartNumber: 1 }] },
+			}),
+		).rejects.toThrow('ETag missing');
 	});
 });
