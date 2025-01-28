@@ -42,3 +42,10 @@ export const DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS = {
 export const ENFORCED_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS = {
 	httpOnly: true,
 };
+
+export const SERVER_AUTH_ALLOWED_AMPLIFY_AUTH_KEY_SUFFIX = [
+	'.accessToken',
+	'.idToken',
+	'.refreshToken',
+	'.LastAuthUser',
+];

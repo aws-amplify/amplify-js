@@ -49,4 +49,5 @@ export {
 	createTokenRemoveCookies,
 	createTokenCookiesSetOptions,
 	createTokenCookiesRemoveOptions,
+	isServerSideAuthIgnoredCookie,
 } from './tokenCookies';

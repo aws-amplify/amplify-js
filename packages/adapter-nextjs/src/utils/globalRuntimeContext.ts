@@ -14,7 +14,6 @@ export const globalRuntimeContext: NextServer.GlobalRuntimeContext = {
 		return globalRuntimeContextStore.isServerSideAuthEnabled;
 	},
 	enableServerSideAuth() {
-		console.log('enableServerSideAuth', 'Enabling server side auth');
 		globalRuntimeContextStore.isServerSideAuthEnabled = true;
 	},
 	setRuntimeOptions(options: NextServer.CreateServerRunnerRuntimeOptions) {

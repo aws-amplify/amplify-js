@@ -28,6 +28,9 @@ export const createRunWithAmplifyServerContext = ({
 	tokenValidator?: KeyValueStorageMethodValidator;
 	globalRuntimeContext: NextServer.GlobalRuntimeContext;
 }) => {
+	const isServerSideAuthEnabled =
+		globalRuntimeContext.isServerSideAuthEnabled();
+	const isSSLOrigin = globalRuntimeContext.isSSLOrigin();
 	const setCookieOptions =
 		globalRuntimeContext.getRuntimeOptions().cookies ?? {};
 
@@ -37,9 +40,9 @@ export const createRunWithAmplifyServerContext = ({
 		// user-specified options
 		...setCookieOptions,
 		// enforced options when server-side auth is enabled
-		...(globalRuntimeContext.isServerSideAuthEnabled() && {
+		...(isServerSideAuthEnabled && {
 			...ENFORCED_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
-			secure: globalRuntimeContext.isSSLOrigin(),
+			secure: isSSLOrigin,
 		}),
 		// only support root path
 		path: '/',
@@ -60,6 +63,7 @@ export const createRunWithAmplifyServerContext = ({
 						: createKeyValueStorageFromCookieStorageAdapter(
 								await createCookieStorageAdapterFromNextServerContext(
 									nextServerContext,
+									isServerSideAuthEnabled,
 								),
 								tokenValidator,
 								mergedSetCookieOptions,

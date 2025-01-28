@@ -11,6 +11,7 @@ import {
 	createTokenCookiesSetOptions,
 	createTokenRemoveCookies,
 	getAccessTokenUsername,
+	isServerSideAuthIgnoredCookie,
 } from '../../../src/auth/utils';
 
 jest.mock('../../../src/auth/utils/getAccessTokenUsername');
@@ -147,5 +148,22 @@ describe('createTokenCookiesRemoveOptions', () => {
 			path: '/',
 			maxAge: -1,
 		});
+	});
+});
+
+describe('isServerSideAuthIgnoredCookie', () => {
+	test.each([
+		['CognitoIdentityServiceProvider.1234.aaaa.clockDrift', true],
+		['CognitoIdentityServiceProvider.1234.aaaa.deviceKey', true],
+		['CognitoIdentityServiceProvider.1234.aaaa.clientMetadata', true],
+		['CognitoIdentityServiceProvider.1234.aaaa.oAuthMetadata', true],
+		['CognitoIdentityServiceProvider.1234.aaaa', true],
+		['CognitoIdentityServiceProvider.1234', true],
+		['CognitoIdentityServiceProvider.1234.aaaa.refreshToken', false],
+		['CognitoIdentityServiceProvider.1234.aaaa.accessToken', false],
+		['CognitoIdentityServiceProvider.1234.aaaa.idToken', false],
+		['CognitoIdentityServiceProvider.1234.aaaa.LastAuthUser', false],
+	])('returns %s for %s', (cookieName, expected) => {
+		expect(isServerSideAuthIgnoredCookie(cookieName)).toBe(expected);
 	});
 });
