@@ -461,7 +461,7 @@
 			"name": "[Auth] Associate WebAuthN Credential (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ associateWebAuthnCredential }",
-			"limit": "13.55 kB"
+			"limit": "13.60 kB"
 		},
 		{
 			"name": "[Auth] List WebAuthN Credentials (Cognito)",
