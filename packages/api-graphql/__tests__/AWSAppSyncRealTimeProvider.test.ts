@@ -147,6 +147,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					Object.defineProperty(constants, 'RECONNECT_DELAY', {
 						value: 100,
 					});
+					// Reduce the keep alive heartbeat to 10ms
+					Object.defineProperty(constants, 'DEFAULT_KEEP_ALIVE_HEARTBEAT_TIMEOUT', {
+						value: 10,
+					});
 				});
 
 				afterEach(async () => {
@@ -765,6 +769,50 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// Resolve the message delivery actions
 					await replaceConstant(
 						'DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT',
+						10,
+						async () => {
+							await fakeWebSocketInterface?.readyForUse;
+							await fakeWebSocketInterface?.triggerOpen();
+							await fakeWebSocketInterface?.handShakeMessage({
+								connectionTimeoutMs: 100,
+							});
+
+							await fakeWebSocketInterface?.startAckMessage();
+
+							await fakeWebSocketInterface?.keepAlive();
+
+							await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+								CS.Connected,
+							]);
+
+							// Wait until the socket is automatically disconnected
+							await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+								CS.ConnectionDisrupted,
+							]);
+						},
+					);
+
+					expect(fakeWebSocketInterface?.observedConnectionStates).toContain(
+						CS.ConnectedPendingKeepAlive,
+					);
+
+					expect(loggerSpy).toHaveBeenCalledWith(
+						'DEBUG',
+						'Disconnect error: Timeout disconnect',
+					);
+				});
+
+				test('subscription observer ka is cleared if data is received', async () => {
+					expect.assertions(1);
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					observer.subscribe({ error: () => {} });
+					// Resolve the message delivery actions
+					await replaceConstant(
+						'DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT',
 						5,
 						async () => {
 							await fakeWebSocketInterface?.readyForUse;
@@ -776,26 +824,30 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							await fakeWebSocketInterface?.startAckMessage();
 
 							await fakeWebSocketInterface?.keepAlive();
+
+							await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+								CS.ConnectedPendingKeepAlive,
+							]);
 						},
 					);
+
+					// Send message
+					await fakeWebSocketInterface?.sendDataMessage({
+						type: MESSAGE_TYPES.DATA,
+						payload: { data: {} },
+					});
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
 						CS.Connected,
 					]);
 
-					// Wait until the socket is automatically disconnected
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisrupted,
-					]);
-
-					expect(fakeWebSocketInterface?.observedConnectionStates).toContain(
+					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
+						CS.Disconnected,
+						CS.Connecting,
+						CS.Connected,
 						CS.ConnectedPendingKeepAlive,
-					);
-
-					expect(loggerSpy).toHaveBeenCalledWith(
-						'DEBUG',
-						'Disconnect error: Timeout disconnect',
-					);
+						CS.Connected,
+					]);
 				});
 
 				test('subscription connection disruption triggers automatic reconnection', async () => {
