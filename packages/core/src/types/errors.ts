@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ResponseMetadata } from '@aws-sdk/types';
+
 export enum AmplifyErrorCode {
 	NoEndpointId = 'NoEndpointId',
 	PlatformNotSupported = 'PlatformNotSupported',
@@ -13,6 +15,7 @@ export interface AmplifyErrorParams<ErrorCode extends string = string> {
 	name: ErrorCode;
 	recoverySuggestion?: string;
 	underlyingError?: Error | unknown;
+	responseMetadata?: ResponseMetadata;
 }
 
 export type AmplifyErrorMap<ErrorCode extends string = string> = {

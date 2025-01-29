@@ -1,16 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { HttpRequest, HttpResponse } from '../../types';
 import {
 	MiddlewareContext,
 	MiddlewareHandler,
-	Request,
 	Response,
 } from '../../types/core';
+import { amplifyUuid } from '../../../utils/amplifyUuid';
 
 import { RetryDeciderOutput } from './types';
 
 const DEFAULT_RETRY_ATTEMPTS = 3;
+const SDK_INVOCATION_ID_HEADER = 'amz-sdk-invocation-id';
+const SDK_REQUEST_HEADER = 'amz-sdk-request';
 
 /**
  * Configuration of the retry middleware
@@ -49,7 +52,10 @@ export interface RetryOptions<TResponse = Response> {
 /**
  * Retry middleware
  */
-export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
+export const retryMiddlewareFactory = <
+	TInput extends HttpRequest = HttpRequest,
+	TOutput extends HttpResponse = HttpResponse,
+>({
 	maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 	retryDecider,
 	computeDelay,
@@ -68,6 +74,9 @@ export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
 			let attemptsCount: number = context.attemptsCount ?? 0;
 			let response: TOutput | undefined;
 
+			if (!request.headers[SDK_INVOCATION_ID_HEADER]) {
+				request.headers[SDK_INVOCATION_ID_HEADER] = amplifyUuid();
+			}
 			// When retry is not needed or max attempts is reached, either error or response will be set. This function handles either cases.
 			const handleTerminalErrorOrResponse = () => {
 				if (response) {
@@ -82,6 +91,8 @@ export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
 
 			while (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 				try {
+					request.headers[SDK_REQUEST_HEADER] =
+						`attempt=${attemptsCount + 1}; max=${maxAttempts}`;
 					response = await next(request);
 					error = undefined;
 				} catch (e) {
