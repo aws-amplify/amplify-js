@@ -3,6 +3,7 @@
 
 import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
 import { ServiceError } from '@aws-amplify/core/internals/utils';
+import { MetadataBearer } from '@aws-sdk/types';
 
 import { StorageError } from '../../../../../errors/StorageError';
 import { CompletedPart } from '../s3data';
@@ -189,12 +190,13 @@ export const deserializeMetadata = (
  * @internal
  */
 export const buildStorageServiceError = (
-	error: Error,
+	error: Error & MetadataBearer,
 	statusCode: number,
 ): ServiceError => {
 	const storageError = new StorageError({
 		name: error.name,
 		message: error.message,
+		responseMetadata: error.$metadata,
 	});
 	if (statusCode === 404) {
 		storageError.recoverySuggestion =
