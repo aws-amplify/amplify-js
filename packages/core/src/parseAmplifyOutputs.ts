@@ -308,9 +308,7 @@ export function parseAmplifyOutputs(
 	}
 
 	if (amplifyOutputs.analytics) {
-		resourcesConfig.Analytics = parseAnalytics(
-			amplifyOutputs.analytics as AmplifyOutputsAnalyticsProperties,
-		);
+		resourcesConfig.Analytics = parseAnalytics(amplifyOutputs.analytics);
 	}
 
 	if (amplifyOutputs.geo) {
@@ -326,9 +324,7 @@ export function parseAmplifyOutputs(
 	}
 
 	if (amplifyOutputs.custom) {
-		const customConfig = parseCustom(
-			amplifyOutputs.custom as AmplifyOutputsCustomProperties,
-		);
+		const customConfig = parseCustom(amplifyOutputs.custom);
 
 		if (customConfig && 'Events' in customConfig) {
 			resourcesConfig.API = { ...resourcesConfig.API, ...customConfig };
