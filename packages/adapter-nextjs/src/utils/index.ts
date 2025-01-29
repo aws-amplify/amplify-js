@@ -3,4 +3,4 @@
 
 export { createRunWithAmplifyServerContext } from './createRunWithAmplifyServerContext';
 export { isValidCognitoToken } from './isValidCognitoToken';
-export { globalRuntimeContext } from './globalRuntimeContext';
+export { globalSettings } from './globalSettings';

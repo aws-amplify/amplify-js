@@ -99,13 +99,7 @@ export declare namespace NextServer {
 		input: CreateServerRunnerInput,
 	) => CreateServerRunnerOutput;
 
-	export interface GlobalRuntimeContextStore {
-		isServerSideAuthEnabled: boolean;
-		runtimeOptions: CreateServerRunnerRuntimeOptions;
-		isSSLOrigin: boolean;
-	}
-
-	export interface GlobalRuntimeContext {
+	export interface GlobalSettings {
 		isServerSideAuthEnabled(): boolean;
 		enableServerSideAuth(): void;
 		setRuntimeOptions(runtimeOptions: CreateServerRunnerRuntimeOptions): void;

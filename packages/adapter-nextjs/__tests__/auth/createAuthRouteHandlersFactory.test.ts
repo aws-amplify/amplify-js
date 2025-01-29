@@ -20,7 +20,7 @@ import {
 	isNextRequest,
 	isValidOrigin,
 } from '../../src/auth/utils';
-import { globalRuntimeContext } from '../../src/utils';
+import { globalSettings } from '../../src/utils';
 
 jest.mock('aws-amplify/adapter-core/internals', () => ({
 	...jest.requireActual('aws-amplify/adapter-core/internals'),
@@ -31,7 +31,7 @@ jest.mock('../../src/auth/handleAuthApiRouteRequestForAppRouter');
 jest.mock('../../src/auth/handleAuthApiRouteRequestForPagesRouter');
 jest.mock('../../src/auth/utils');
 jest.mock('../../src/utils', () => ({
-	globalRuntimeContext: {
+	globalSettings: {
 		isServerSideAuthEnabled: jest.fn(() => true),
 		enableServerSideAuth: jest.fn(),
 		setRuntimeOptions: jest.fn(),
@@ -95,7 +95,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				config: mockAmplifyConfig,
 				amplifyAppOrigin: undefined,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
-				globalRuntimeContext,
+				globalSettings,
 			});
 			expect(() => throwingFunc()).toThrow(
 				'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
@@ -108,7 +108,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				config: mockAmplifyConfig,
 				amplifyAppOrigin: 'domain-without-protocol.com',
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
-				globalRuntimeContext,
+				globalSettings,
 			});
 			expect(() => throwingFunc()).toThrow(
 				'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
@@ -120,7 +120,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				config: mockAmplifyConfig,
 				amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
-				globalRuntimeContext,
+				globalSettings,
 			});
 
 			func();
@@ -140,7 +140,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				config: mockAmplifyConfig,
 				amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
-				globalRuntimeContext,
+				globalSettings,
 			};
 		const testCreateAuthRoutesHandlersInput: CreateAuthRoutesHandlersInput = {
 			customState: 'random-state',
@@ -225,14 +225,12 @@ describe('createAuthRoutesHandlersFactory', () => {
 		});
 
 		it('uses default values for parameters that have values as undefined', async () => {
-			(globalRuntimeContext.getRuntimeOptions as jest.Mock).mockReturnValueOnce(
-				{},
-			);
+			(globalSettings.getRuntimeOptions as jest.Mock).mockReturnValueOnce({});
 			const createAuthRoutesHandlers = createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
 				amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
-				globalRuntimeContext,
+				globalSettings,
 			});
 			const handlerWithDefaultParamValues =
 				createAuthRoutesHandlers(/* undefined */);

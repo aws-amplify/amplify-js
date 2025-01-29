@@ -41,13 +41,13 @@ jest.mock('../src/utils/createTokenValidator', () => ({
 
 const mockGetRuntimeOptions = jest.fn(() => ({}));
 const mockIsServerSideAuthEnabled = jest.fn(() => false);
-const mockGlobalRuntimeContextIsSSLOrigin = jest.fn(() => false);
-const mockGlobalRuntimeContext: NextServer.GlobalRuntimeContext = {
+const mockGlobalSettingsIsSSLOrigin = jest.fn(() => false);
+const mockGlobalSettings: NextServer.GlobalSettings = {
 	isServerSideAuthEnabled: mockIsServerSideAuthEnabled,
 	enableServerSideAuth: jest.fn(),
 	setRuntimeOptions: jest.fn(),
 	getRuntimeOptions: mockGetRuntimeOptions,
-	isSSLOrigin: mockGlobalRuntimeContextIsSSLOrigin,
+	isSSLOrigin: mockGlobalSettingsIsSSLOrigin,
 	setIsSSLOrigin: jest.fn(),
 };
 
@@ -72,8 +72,8 @@ describe('createServerRunner', () => {
 	const mockIsValidOrigin = jest.fn(() => true);
 
 	beforeAll(() => {
-		jest.doMock('../src/utils/globalRuntimeContext', () => ({
-			globalRuntimeContext: mockGlobalRuntimeContext,
+		jest.doMock('../src/utils/globalSettings', () => ({
+			globalSettings: mockGlobalSettings,
 		}));
 	});
 
@@ -137,7 +137,7 @@ describe('createServerRunner', () => {
 			config: mockAmplifyConfig,
 			amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
 			runWithAmplifyServerContext: expect.any(Function),
-			globalRuntimeContext: mockGlobalRuntimeContext,
+			globalSettings: mockGlobalSettings,
 		});
 		expect(result).toMatchObject({
 			createAuthRouteHandlers: expect.any(Function),
@@ -145,23 +145,21 @@ describe('createServerRunner', () => {
 	});
 
 	describe('when AMPLIFY_APP_ORIGIN is not set', () => {
-		it('it does NOT call globalRuntimeContext.setIsSSLOrigin() and isValidOrigin()', () => {
+		it('it does NOT call globalSettings.setIsSSLOrigin() and isValidOrigin()', () => {
 			delete process.env.AMPLIFY_APP_ORIGIN;
 			createServerRunner({ config: mockAmplifyConfig });
-			expect(mockGlobalRuntimeContext.setIsSSLOrigin).not.toHaveBeenCalled();
+			expect(mockGlobalSettings.setIsSSLOrigin).not.toHaveBeenCalled();
 			expect(mockIsValidOrigin).not.toHaveBeenCalled();
 			process.env.AMPLIFY_APP_ORIGIN = AMPLIFY_APP_ORIGIN;
 		});
 	});
 
 	describe('when AMPLIFY_APP_ORIGIN is set with a https origin', () => {
-		it('it calls globalRuntimeContext.setIsSSLOrigin(), isValidOrigin() and globalRuntimeContext.enableServerSideAuth', () => {
+		it('it calls globalSettings.setIsSSLOrigin(), isValidOrigin() and globalSettings.enableServerSideAuth', () => {
 			createServerRunner({ config: mockAmplifyConfig });
 			expect(mockIsValidOrigin).toHaveBeenCalledWith(AMPLIFY_APP_ORIGIN);
-			expect(mockGlobalRuntimeContext.setIsSSLOrigin).toHaveBeenCalledWith(
-				true,
-			);
-			expect(mockGlobalRuntimeContext.enableServerSideAuth).toHaveBeenCalled();
+			expect(mockGlobalSettings.setIsSSLOrigin).toHaveBeenCalledWith(true);
+			expect(mockGlobalSettings.enableServerSideAuth).toHaveBeenCalled();
 		});
 	});
 
@@ -192,7 +190,7 @@ describe('createServerRunner', () => {
 				expect(createRunWithAmplifyServerContextSpy).toHaveBeenCalledWith({
 					config: mockAmplifyConfigWithoutAuth,
 					tokenValidator: undefined,
-					globalRuntimeContext: mockGlobalRuntimeContext,
+					globalSettings: mockGlobalSettings,
 				});
 			});
 		});
@@ -221,7 +219,7 @@ describe('createServerRunner', () => {
 						tokenValidator: expect.objectContaining({
 							getItem: expect.any(Function),
 						}),
-						globalRuntimeContext: mockGlobalRuntimeContext,
+						globalSettings: mockGlobalSettings,
 					});
 				});
 			});
@@ -272,7 +270,7 @@ describe('createServerRunner', () => {
 						tokenValidator: expect.objectContaining({
 							getItem: expect.any(Function),
 						}),
-						globalRuntimeContext: mockGlobalRuntimeContext,
+						globalSettings: mockGlobalSettings,
 					});
 				});
 
@@ -322,7 +320,7 @@ describe('createServerRunner', () => {
 						cookies: testCookiesOptions,
 					});
 					mockIsServerSideAuthEnabled.mockReturnValueOnce(true);
-					mockGlobalRuntimeContextIsSSLOrigin.mockReturnValueOnce(true);
+					mockGlobalSettingsIsSSLOrigin.mockReturnValueOnce(true);
 					mockCreateKeyValueStorageFromCookieStorageAdapter.mockReturnValueOnce(
 						mockCookieStorageAdapter,
 					);

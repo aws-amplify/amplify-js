@@ -5,10 +5,7 @@ import { ResourcesConfig } from 'aws-amplify';
 import { KeyValueStorageMethodValidator } from 'aws-amplify/adapter-core/internals';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
 
-import {
-	createRunWithAmplifyServerContext,
-	globalRuntimeContext,
-} from './utils';
+import { createRunWithAmplifyServerContext, globalSettings } from './utils';
 import { NextServer } from './types';
 import { createTokenValidator } from './utils/createTokenValidator';
 import { createAuthRouteHandlersFactory } from './auth';
@@ -39,13 +36,13 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 	const amplifyConfig = parseAmplifyConfig(config);
 	const amplifyAppOrigin = process.env.AMPLIFY_APP_ORIGIN;
 
-	globalRuntimeContext.setRuntimeOptions(runtimeOptions || {});
+	globalSettings.setRuntimeOptions(runtimeOptions || {});
 
 	if (amplifyAppOrigin !== undefined && isValidOrigin(amplifyAppOrigin)) {
-		globalRuntimeContext.setIsSSLOrigin(isSSLOrigin(amplifyAppOrigin));
+		globalSettings.setIsSSLOrigin(isSSLOrigin(amplifyAppOrigin));
 
 		// update the serverSideAuthEnabled flag that exists in the closure of createServerRunner() to true
-		globalRuntimeContext.enableServerSideAuth();
+		globalSettings.enableServerSideAuth();
 	}
 
 	let tokenValidator: KeyValueStorageMethodValidator | undefined;
@@ -60,7 +57,7 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 	const runWithAmplifyServerContext = createRunWithAmplifyServerContext({
 		config: amplifyConfig,
 		tokenValidator,
-		globalRuntimeContext,
+		globalSettings,
 	});
 
 	return {
@@ -68,7 +65,7 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 		createAuthRouteHandlers: createAuthRouteHandlersFactory({
 			config: amplifyConfig,
 			amplifyAppOrigin,
-			globalRuntimeContext,
+			globalSettings,
 			runWithAmplifyServerContext,
 		}),
 	};

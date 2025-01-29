@@ -31,7 +31,7 @@ export const createAuthRouteHandlersFactory = ({
 	config: resourcesConfig,
 	amplifyAppOrigin,
 	runWithAmplifyServerContext,
-	globalRuntimeContext,
+	globalSettings,
 }: CreateAuthRouteHandlersFactoryInput): InternalCreateAuthRouteHandlers => {
 	const handleRequest = async ({
 		request,
@@ -120,8 +120,7 @@ export const createAuthRouteHandlersFactory = ({
 
 		const { userPoolClientId } = resourcesConfig.Auth.Cognito;
 		const { oauth: oAuthConfig } = resourcesConfig.Auth.Cognito.loginWith;
-		const setCookieOptions =
-			globalRuntimeContext.getRuntimeOptions().cookies ?? {};
+		const setCookieOptions = globalSettings.getRuntimeOptions().cookies ?? {};
 
 		// The call-site of this returned function is the Next.js API route file
 		return (request, contextOrResponse) =>

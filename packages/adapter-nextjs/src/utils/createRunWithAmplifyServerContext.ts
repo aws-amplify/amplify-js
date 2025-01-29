@@ -22,17 +22,15 @@ import { createCookieStorageAdapterFromNextServerContext } from './createCookieS
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
 	tokenValidator,
-	globalRuntimeContext,
+	globalSettings,
 }: {
 	config: ResourcesConfig;
 	tokenValidator?: KeyValueStorageMethodValidator;
-	globalRuntimeContext: NextServer.GlobalRuntimeContext;
+	globalSettings: NextServer.GlobalSettings;
 }) => {
-	const isServerSideAuthEnabled =
-		globalRuntimeContext.isServerSideAuthEnabled();
-	const isSSLOrigin = globalRuntimeContext.isSSLOrigin();
-	const setCookieOptions =
-		globalRuntimeContext.getRuntimeOptions().cookies ?? {};
+	const isServerSideAuthEnabled = globalSettings.isServerSideAuthEnabled();
+	const isSSLOrigin = globalSettings.isSSLOrigin();
+	const setCookieOptions = globalSettings.getRuntimeOptions().cookies ?? {};
 
 	const mergedSetCookieOptions = {
 		// default options when not specified
