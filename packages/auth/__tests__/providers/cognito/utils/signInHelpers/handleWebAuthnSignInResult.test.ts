@@ -19,6 +19,11 @@ import {
 	assertCredentialIsPkcWithAuthenticatorAssertionResponse,
 	assertCredentialIsPkcWithAuthenticatorAttestationResponse,
 } from '../../../../../src/client/utils/passkey/types';
+import { AuthSignInOutput } from '../../../../../src/types';
+import {
+	ChallengeName,
+	ChallengeParameters,
+} from '../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -101,6 +106,7 @@ describe('handleWebAuthnSignInResult', () => {
 			expect(error.name).toBe(AuthErrorCodes.SignInException);
 		}
 	});
+
 	it('should throw an error when CREDENTIAL_REQUEST_OPTIONS is empty', async () => {
 		expect.assertions(2);
 		try {
@@ -166,9 +172,51 @@ describe('handleWebAuthnSignInResult', () => {
 		mockCacheCognitoTokens.mockResolvedValue(undefined);
 		mockDispatchSignedInHubEvent.mockResolvedValue(undefined);
 
-		const result = await handleWebAuthnSignInResult(challengeParameters);
+		const result = (await handleWebAuthnSignInResult(
+			challengeParameters,
+		)) as AuthSignInOutput;
 
 		expect(result.isSignedIn).toBe(true);
 		expect(result.nextStep.signInStep).toBe('DONE');
+	});
+
+	it('should return the next challenge', async () => {
+		mockStoreGetState.mockReturnValue({
+			username,
+			challengeName,
+			signInSession,
+		});
+		mockRespondToAuthChallenge.mockResolvedValue(
+			authAPITestParams.CustomChallengeResponse,
+		);
+		mockCacheCognitoTokens.mockResolvedValue(undefined);
+		mockDispatchSignedInHubEvent.mockResolvedValue(undefined);
+
+		const result = (await handleWebAuthnSignInResult(challengeParameters)) as {
+			challengeName: ChallengeName;
+			challengeParameters: ChallengeParameters;
+		};
+
+		expect(result.challengeName).toBe(
+			authAPITestParams.CustomChallengeResponse.ChallengeName,
+		);
+	});
+
+	it('should throw an error if next challenge is WEB_AUTHN', async () => {
+		mockStoreGetState.mockReturnValue({
+			username,
+			challengeName,
+			signInSession,
+		});
+		mockRespondToAuthChallenge.mockResolvedValue({
+			ChallengeName: 'WEB_AUTHN',
+			Session: 'Session',
+		});
+		mockCacheCognitoTokens.mockResolvedValue(undefined);
+		mockDispatchSignedInHubEvent.mockResolvedValue(undefined);
+
+		await expect(
+			handleWebAuthnSignInResult(challengeParameters),
+		).rejects.toThrow('Sequential WEB_AUTHN challenges returned');
 	});
 });
