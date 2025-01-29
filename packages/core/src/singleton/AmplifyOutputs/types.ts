@@ -115,7 +115,7 @@ export interface AmplifyOutputsNotificationsProperties {
 	channels: string[];
 }
 
-/** @deprecated Use {@link AmplifyOutputsUnknown} instead. */
+/** @deprecated This type is deprecated and will be removed in future versions. */
 export interface AmplifyOutputs {
 	version?: string;
 	storage?: AmplifyOutputsStorageProperties;
