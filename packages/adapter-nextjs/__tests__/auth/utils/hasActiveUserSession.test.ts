@@ -1,6 +1,3 @@
-/**
- * @jest-environment node
- */
 import { getCurrentUser } from 'aws-amplify/auth/server';
 import { NextRequest } from 'next/server';
 import { AuthUser } from 'aws-amplify/auth';

@@ -29,9 +29,9 @@ import { handleAuthApiRouteRequestForPagesRouter } from './handleAuthApiRouteReq
 
 export const createAuthRouteHandlersFactory = ({
 	config: resourcesConfig,
-	runtimeOptions = {},
 	amplifyAppOrigin,
 	runWithAmplifyServerContext,
+	globalSettings,
 }: CreateAuthRouteHandlersFactoryInput): InternalCreateAuthRouteHandlers => {
 	const handleRequest = async ({
 		request,
@@ -120,7 +120,7 @@ export const createAuthRouteHandlersFactory = ({
 
 		const { userPoolClientId } = resourcesConfig.Auth.Cognito;
 		const { oauth: oAuthConfig } = resourcesConfig.Auth.Cognito.loginWith;
-		const { cookies: setCookieOptions = {} } = runtimeOptions;
+		const setCookieOptions = globalSettings.getRuntimeOptions().cookies ?? {};
 
 		// The call-site of this returned function is the Next.js API route file
 		return (request, contextOrResponse) =>

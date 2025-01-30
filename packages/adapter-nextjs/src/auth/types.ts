@@ -83,8 +83,8 @@ export type CreateAuthRouteHandlers = (
 
 export interface CreateAuthRouteHandlersFactoryInput {
 	config: ResourcesConfig;
-	runtimeOptions: NextServer.CreateServerRunnerRuntimeOptions | undefined;
 	amplifyAppOrigin?: string;
+	globalSettings: NextServer.GlobalSettings;
 	runWithAmplifyServerContext: NextServer.RunOperationWithContext;
 }
 

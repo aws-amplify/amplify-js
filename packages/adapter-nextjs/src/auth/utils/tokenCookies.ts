@@ -9,7 +9,10 @@ import {
 } from 'aws-amplify/adapter-core';
 
 import { OAuthTokenResponsePayload } from '../types';
-import { REMOVE_COOKIE_MAX_AGE } from '../constant';
+import {
+	REMOVE_COOKIE_MAX_AGE,
+	SERVER_AUTH_ALLOWED_AMPLIFY_AUTH_KEY_SUFFIX,
+} from '../constant';
 
 import { getAccessTokenUsername } from './getAccessTokenUsername';
 
@@ -79,3 +82,8 @@ export const createTokenCookiesRemoveOptions = (
 	path: '/',
 	maxAge: REMOVE_COOKIE_MAX_AGE, // Expire immediately (remove the cookie)
 });
+
+export const isServerSideAuthAllowedCookie = (cookieName: string) =>
+	SERVER_AUTH_ALLOWED_AMPLIFY_AUTH_KEY_SUFFIX.some(suffix =>
+		cookieName.endsWith(suffix),
+	);

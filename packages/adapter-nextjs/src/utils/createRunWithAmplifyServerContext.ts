@@ -12,21 +12,40 @@ import {
 } from 'aws-amplify/adapter-core';
 
 import { NextServer } from '../types';
+import {
+	DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+	ENFORCED_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+} from '../auth/constant';
 
 import { createCookieStorageAdapterFromNextServerContext } from './createCookieStorageAdapterFromNextServerContext';
 
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
 	tokenValidator,
-	runtimeOptions = {},
+	globalSettings,
 }: {
 	config: ResourcesConfig;
 	tokenValidator?: KeyValueStorageMethodValidator;
-	runtimeOptions?: NextServer.CreateServerRunnerRuntimeOptions;
+	globalSettings: NextServer.GlobalSettings;
 }) => {
-	const setCookieOptions = {
-		...runtimeOptions.cookies,
+	const isServerSideAuthEnabled = globalSettings.isServerSideAuthEnabled();
+	const isSSLOrigin = globalSettings.isSSLOrigin();
+	const setCookieOptions = globalSettings.getRuntimeOptions().cookies ?? {};
+
+	const mergedSetCookieOptions = {
+		// default options when not specified
+		...(isServerSideAuthEnabled && DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS),
+		// user-specified options
+		...setCookieOptions,
+		// enforced options when server-side auth is enabled
+		...(isServerSideAuthEnabled && {
+			...ENFORCED_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+			secure: isSSLOrigin,
+		}),
+		// only support root path
+		path: '/',
 	};
+
 	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 		async ({ nextServerContext, operation }) => {
 			// When the Auth config is presented, attempt to create a Amplify server
@@ -42,9 +61,10 @@ export const createRunWithAmplifyServerContext = ({
 						: createKeyValueStorageFromCookieStorageAdapter(
 								await createCookieStorageAdapterFromNextServerContext(
 									nextServerContext,
+									isServerSideAuthEnabled,
 								),
 								tokenValidator,
-								setCookieOptions,
+								mergedSetCookieOptions,
 							);
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,

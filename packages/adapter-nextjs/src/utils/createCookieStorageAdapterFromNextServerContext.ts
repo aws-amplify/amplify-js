@@ -8,6 +8,7 @@ import {
 } from 'aws-amplify/adapter-core/internals';
 
 import { NextServer } from '../types';
+import { isServerSideAuthAllowedCookie } from '../auth/utils';
 
 import { ensureEncodedForJSCookie, serializeCookie } from './cookie';
 
@@ -15,6 +16,7 @@ export const DATE_IN_THE_PAST = new Date(0);
 
 export const createCookieStorageAdapterFromNextServerContext = async (
 	context: NextServer.Context,
+	ignoreNonServerSideCookies = false,
 ): Promise<CookieStorage.Adapter> => {
 	const { request: req, response: res } =
 		context as Partial<NextServer.GetServerSidePropsContext>;
@@ -30,7 +32,11 @@ export const createCookieStorageAdapterFromNextServerContext = async (
 		Object.prototype.toString.call(req.cookies) === '[object Object]' &&
 		typeof res.setHeader === 'function'
 	) {
-		return createCookieStorageAdapterFromGetServerSidePropsContext(req, res);
+		return createCookieStorageAdapterFromGetServerSidePropsContext(
+			req,
+			res,
+			ignoreNonServerSideCookies,
+		);
 	}
 
 	const { request, response } = context as Partial<
@@ -49,11 +55,13 @@ export const createCookieStorageAdapterFromNextServerContext = async (
 			return createCookieStorageAdapterFromNextRequestAndNextResponse(
 				request,
 				response,
+				ignoreNonServerSideCookies,
 			);
 		} else {
 			return createCookieStorageAdapterFromNextRequestAndHttpResponse(
 				request,
 				response,
+				ignoreNonServerSideCookies,
 			);
 		}
 	}
@@ -63,7 +71,10 @@ export const createCookieStorageAdapterFromNextServerContext = async (
 	>;
 
 	if (typeof cookies === 'function') {
-		return createCookieStorageAdapterFromNextCookies(cookies);
+		return createCookieStorageAdapterFromNextCookies(
+			cookies,
+			ignoreNonServerSideCookies,
+		);
 	}
 
 	// This should not happen normally.
@@ -76,6 +87,7 @@ export const createCookieStorageAdapterFromNextServerContext = async (
 const createCookieStorageAdapterFromNextRequestAndNextResponse = (
 	request: NextRequest,
 	response: NextResponse,
+	ignoreNonServerSideCookies: boolean,
 ): CookieStorage.Adapter => {
 	const readonlyCookieStore = request.cookies;
 	const mutableCookieStore = response.cookies;
@@ -86,9 +98,15 @@ const createCookieStorageAdapterFromNextRequestAndNextResponse = (
 		},
 		getAll: readonlyCookieStore.getAll.bind(readonlyCookieStore),
 		set(name, value, options) {
+			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+				return;
+			}
 			mutableCookieStore.set(ensureEncodedForJSCookie(name), value, options);
 		},
 		delete(name) {
+			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+				return;
+			}
 			mutableCookieStore.delete(ensureEncodedForJSCookie(name));
 		},
 	};
@@ -97,10 +115,12 @@ const createCookieStorageAdapterFromNextRequestAndNextResponse = (
 const createCookieStorageAdapterFromNextRequestAndHttpResponse = (
 	request: NextRequest,
 	response: Response,
+	ignoreNonServerSideCookies: boolean,
 ): CookieStorage.Adapter => {
 	const readonlyCookieStore = request.cookies;
 	const mutableCookieStore = createMutableCookieStoreFromHeaders(
 		response.headers,
+		ignoreNonServerSideCookies,
 	);
 
 	return {
@@ -114,6 +134,7 @@ const createCookieStorageAdapterFromNextRequestAndHttpResponse = (
 
 const createCookieStorageAdapterFromNextCookies = async (
 	cookies: NextServer.ServerComponentContext['cookies'],
+	ignoreNonServerSideCookies: boolean,
 ): Promise<CookieStorage.Adapter> => {
 	const cookieStore = await cookies();
 
@@ -123,6 +144,10 @@ const createCookieStorageAdapterFromNextCookies = async (
 	// We have no way to detect which one is returned, so we try to call set and delete
 	// and safely ignore the error if it is thrown.
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
+		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+			return;
+		}
+
 		try {
 			cookieStore.set(ensureEncodedForJSCookie(name), value, options);
 		} catch {
@@ -131,6 +156,10 @@ const createCookieStorageAdapterFromNextCookies = async (
 	};
 
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
+		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+			return;
+		}
+
 		try {
 			cookieStore.delete(ensureEncodedForJSCookie(name));
 		} catch {
@@ -151,6 +180,7 @@ const createCookieStorageAdapterFromNextCookies = async (
 const createCookieStorageAdapterFromGetServerSidePropsContext = (
 	request: NextServer.GetServerSidePropsContext['request'],
 	response: NextServer.GetServerSidePropsContext['response'],
+	ignoreNonServerSideCookies: boolean,
 ): CookieStorage.Adapter => {
 	const cookiesMap = { ...request.cookies };
 	const allCookies = Object.entries(cookiesMap).map(([name, value]) => ({
@@ -173,6 +203,9 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 			return allCookies;
 		},
 		set(name, value, options) {
+			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+				return;
+			}
 			const encodedName = ensureEncodedForJSCookie(name);
 
 			const existingValues = getExistingSetCookieValues(
@@ -196,6 +229,10 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 			);
 		},
 		delete(name) {
+			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+				return;
+			}
+
 			const encodedName = ensureEncodedForJSCookie(name);
 			const setCookieValue = `${encodedName}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`;
 			const existingValues = getExistingSetCookieValues(
@@ -215,14 +252,23 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 
 const createMutableCookieStoreFromHeaders = (
 	headers: Headers,
+	ignoreNonServerSideCookies: boolean,
 ): Pick<CookieStorage.Adapter, 'set' | 'delete'> => {
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
+		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+			return;
+		}
+
 		headers.append(
 			'Set-Cookie',
 			serializeCookie(ensureEncodedForJSCookie(name), value, options),
 		);
 	};
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
+		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+			return;
+		}
+
 		headers.append(
 			'Set-Cookie',
 			`${ensureEncodedForJSCookie(
@@ -241,3 +287,9 @@ const getExistingSetCookieValues = (
 	values: number | string | string[] | undefined,
 ): string[] =>
 	values === undefined ? [] : Array.isArray(values) ? values : [String(values)];
+
+const shouldIgnoreCookie = (
+	ignoreNonServerSideCookies: boolean,
+	cookieName: string,
+): boolean =>
+	ignoreNonServerSideCookies && !isServerSideAuthAllowedCookie(cookieName);

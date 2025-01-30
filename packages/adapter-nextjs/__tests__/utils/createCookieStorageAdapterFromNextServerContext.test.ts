@@ -13,6 +13,7 @@ import {
 	DATE_IN_THE_PAST,
 	createCookieStorageAdapterFromNextServerContext,
 } from '../../src/utils/createCookieStorageAdapterFromNextServerContext';
+import { isServerSideAuthAllowedCookie } from '../../src/auth/utils';
 
 // Make global Request available during test
 enableFetchMocks();
@@ -20,8 +21,12 @@ enableFetchMocks();
 jest.mock('next/headers', () => ({
 	cookies: jest.fn(),
 }));
+jest.mock('../../src/auth/utils');
 
 const mockNextCookiesFunc = cookies as jest.Mock;
+const mockIsServerSideAuthAllowedCookie = jest.mocked(
+	isServerSideAuthAllowedCookie,
+);
 
 describe('createCookieStorageAdapterFromNextServerContext', () => {
 	const mockGetFunc = jest.fn();
@@ -40,8 +45,8 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 	const mockKeyWithEncoding = 'test%40email.com';
 	const mockValue = 'fabCookie';
 
-	beforeEach(() => {
-		jest.resetAllMocks();
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('cookieStorageAdapter created from NextRequest and NextResponse', () => {
@@ -54,6 +59,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		let result: CookieStorage.Adapter;
 
 		beforeAll(async () => {
+			mockIsServerSideAuthAllowedCookie.mockReturnValue(true);
 			jest.spyOn(request, 'cookies', 'get').mockImplementation(
 				() =>
 					({
@@ -120,6 +126,30 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
+
+		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			const testCookieName =
+				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
+			const adapterWithIgnore =
+				await createCookieStorageAdapterFromNextServerContext(
+					mockContext,
+					true,
+				);
+
+			adapterWithIgnore.set(testCookieName, 'value');
+			expect(mockSetFunc).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.delete(testCookieName);
+			expect(mockDeleteFunc).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+		});
 	});
 
 	describe('cookieStorageAdapter created from NextRequest and Response', () => {
@@ -130,7 +160,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			response,
 		} as any;
 
-		let result: CookieStorage.Adapter;
+		let adapter: CookieStorage.Adapter;
 
 		beforeAll(async () => {
 			jest.spyOn(request, 'cookies', 'get').mockImplementation(
@@ -147,7 +177,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 					}) as any,
 			);
 
-			result =
+			adapter =
 				await createCookieStorageAdapterFromNextServerContext(mockContext);
 		});
 
@@ -162,24 +192,24 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		};
 
 		it('gets cookie by calling `get` method of the underlying cookie store', () => {
-			result.get(mockKey);
+			adapter.get(mockKey);
 			expect(mockGetFunc).toHaveBeenCalledWith(mockKey);
 		});
 
 		it('gets cookie by calling `get` method of the underlying cookie store with a encoded cookie name', () => {
-			result.get(mockKeyWithEncoding);
+			adapter.get(mockKeyWithEncoding);
 			expect(mockGetFunc).toHaveBeenCalledWith(
 				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
 
 		it('gets all cookies by calling `getAll` method of the underlying cookie store', () => {
-			result.getAll();
+			adapter.getAll();
 			expect(mockGetAllFunc).toHaveBeenCalled();
 		});
 
 		it('sets cookie by calling the `set` method of the underlying cookie store with options', () => {
-			result.set(mockKey, mockValue, mockSerializeOptions);
+			adapter.set(mockKey, mockValue, mockSerializeOptions);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${mockKey}=${mockValue};Domain=${
@@ -191,7 +221,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		it('sets cookie by calling the `set` method of the underlying cookie store with options and a encoded cookie name', () => {
-			result.set(mockKeyWithEncoding, mockValue, mockSerializeOptions);
+			adapter.set(mockKeyWithEncoding, mockValue, mockSerializeOptions);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${encodeURIComponent(mockKeyWithEncoding)}=${mockValue};Domain=${
@@ -203,7 +233,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		it('sets cookie by calling the `set` method of the underlying cookie store without options', () => {
-			result.set(mockKey, mockValue, undefined);
+			adapter.set(mockKey, mockValue, undefined);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${mockKey}=${mockValue};`,
@@ -211,7 +241,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		it('sets cookie by calling the `set` method of the underlying cookie store with options that do not need to be serialized', () => {
-			result.set(mockKey, mockValue, {
+			adapter.set(mockKey, mockValue, {
 				httpOnly: false,
 				sameSite: false,
 				secure: false,
@@ -223,7 +253,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store', () => {
-			result.delete(mockKey);
+			adapter.delete(mockKey);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${mockKey}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
@@ -231,12 +261,36 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store with a encoded cookie name', () => {
-			result.delete(mockKeyWithEncoding);
+			adapter.delete(mockKeyWithEncoding);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${encodeURIComponent(
 					mockKeyWithEncoding,
 				)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
+			);
+		});
+
+		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			const testCookieName =
+				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
+			const adapterWithIgnore =
+				await createCookieStorageAdapterFromNextServerContext(
+					mockContext,
+					true,
+				);
+
+			adapterWithIgnore.set(testCookieName, 'value');
+			expect(mockAppend).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.delete(testCookieName);
+			expect(mockAppend).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
 			);
 		});
 	});
@@ -245,7 +299,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		let result: CookieStorage.Adapter;
 
 		beforeAll(async () => {
-			mockNextCookiesFunc.mockReturnValueOnce(mockNextCookiesFuncReturn);
+			mockNextCookiesFunc.mockReturnValue(mockNextCookiesFuncReturn);
 
 			result = await createCookieStorageAdapterFromNextServerContext({
 				cookies,
@@ -296,6 +350,30 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			result.delete(mockKeyWithEncoding);
 			expect(mockNextCookiesFuncReturn.delete).toHaveBeenCalledWith(
 				encodeURIComponent(mockKeyWithEncoding),
+			);
+		});
+
+		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			const testCookieName =
+				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
+			const adapterWithIgnore =
+				await createCookieStorageAdapterFromNextServerContext(
+					{ cookies },
+					true,
+				);
+
+			adapterWithIgnore.set(testCookieName, 'value');
+			expect(mockNextCookiesFuncReturn.set).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.delete(testCookieName);
+			expect(mockNextCookiesFuncReturn.delete).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
 			);
 		});
 	});
@@ -460,6 +538,40 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			expect(appendHeaderSpy).not.toHaveBeenCalled();
 
 			result.delete('CognitoIdentityServiceProvider.1234.identityId');
+			expect(appendHeaderSpy).not.toHaveBeenCalled();
+		});
+
+		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
+			const testCookieName =
+				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
+
+			const request = new IncomingMessage(new Socket());
+			const response = new ServerResponse(request);
+			const appendHeaderSpy = jest.spyOn(response, 'appendHeader');
+
+			Object.defineProperty(request, 'cookies', {
+				get() {
+					return {
+						[testCookieName]: 'value',
+					};
+				},
+			});
+
+			const adapterWithIgnore =
+				await createCookieStorageAdapterFromNextServerContext(
+					{
+						request: request as any,
+						response,
+					},
+					true,
+				);
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.set(testCookieName, 'value');
+			expect(appendHeaderSpy).not.toHaveBeenCalled();
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.delete(testCookieName);
 			expect(appendHeaderSpy).not.toHaveBeenCalled();
 		});
 	});

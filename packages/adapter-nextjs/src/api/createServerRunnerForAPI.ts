@@ -4,7 +4,7 @@
 import { ResourcesConfig } from 'aws-amplify';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
 
-import { createRunWithAmplifyServerContext } from '../utils';
+import { createRunWithAmplifyServerContext, globalSettings } from '../utils';
 import { NextServer } from '../types';
 
 export const createServerRunnerForAPI = ({
@@ -20,6 +20,7 @@ export const createServerRunnerForAPI = ({
 	return {
 		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
 			config: amplifyConfig,
+			globalSettings,
 		}),
 		resourcesConfig: amplifyConfig,
 	};
