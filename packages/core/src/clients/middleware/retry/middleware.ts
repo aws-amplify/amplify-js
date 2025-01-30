@@ -7,7 +7,7 @@ import {
 	MiddlewareHandler,
 	Response,
 } from '../../types/core';
-import { amplifyUuid } from '../../../utils/amplifyUuid';
+import { getCrypto } from '../../../libraryUtils';
 
 import { RetryDeciderOutput } from './types';
 
@@ -75,7 +75,7 @@ export const retryMiddlewareFactory = <
 			let response: TOutput | undefined;
 
 			if (!request.headers[SDK_INVOCATION_ID_HEADER]) {
-				request.headers[SDK_INVOCATION_ID_HEADER] = amplifyUuid();
+				request.headers[SDK_INVOCATION_ID_HEADER] = getCrypto().randomUUID();
 			}
 			// When retry is not needed or max attempts is reached, either error or response will be set. This function handles either cases.
 			const handleTerminalErrorOrResponse = () => {
