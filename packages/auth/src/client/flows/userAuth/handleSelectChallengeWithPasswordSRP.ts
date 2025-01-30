@@ -16,11 +16,9 @@ import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getAuthenticationHelper } from '../../../providers/cognito/utils/srp';
 import { getUserContextData } from '../../../providers/cognito/utils/userContextData';
-import {
-	handlePasswordVerifierChallenge,
-	retryOnResourceNotFoundException,
-	setActiveSignInUsername,
-} from '../../../providers/cognito/utils/signInHelpers';
+import { setActiveSignInUsername } from '../../../providers/cognito/utils/setActiveSignInUsername';
+import { retryOnResourceNotFoundException } from '../../../providers/cognito/utils/retryOnResourceNotFoundException';
+import { handlePasswordVerifierChallenge } from '../../../providers/cognito/utils/handlePasswordVerifierChallenge';
 
 /**
  * Handles the SELECT_CHALLENGE response specifically for Password SRP authentication.

@@ -5,7 +5,7 @@ import { createRespondToAuthChallengeClient } from '../../../../src/foundation/f
 import { createCognitoUserPoolEndpointResolver } from '../../../../src/providers/cognito/factories';
 import { getUserContextData } from '../../../../src/providers/cognito/utils/userContextData';
 import { handleSelectChallengeWithPassword } from '../../../../src/client/flows/userAuth/handleSelectChallengeWithPassword';
-import * as signInHelpers from '../../../../src/providers/cognito/utils/signInHelpers';
+import { setActiveSignInUsername } from '../../../../src/providers/cognito/utils/setActiveSignInUsername';
 
 // Mock dependencies
 jest.mock(
@@ -13,12 +13,7 @@ jest.mock(
 );
 jest.mock('../../../../src/providers/cognito/factories');
 jest.mock('../../../../src/providers/cognito/utils/userContextData');
-jest.mock('../../../../src/providers/cognito/utils/signInHelpers', () => ({
-	...jest.requireActual(
-		'../../../../src/providers/cognito/utils/signInHelpers',
-	),
-	setActiveSignInUsername: jest.fn(),
-}));
+jest.mock('../../../../src/providers/cognito/utils/setActiveSignInUsername');
 
 describe('handlePasswordChallenge', () => {
 	const mockConfig = {
@@ -27,6 +22,7 @@ describe('handlePasswordChallenge', () => {
 		userPoolEndpoint: 'test-endpoint',
 	};
 
+	const mockSetActiveSignInUsername = jest.mocked(setActiveSignInUsername);
 	const mockRespondToAuthChallenge = jest.fn();
 	const mockCreateEndpointResolver = jest.fn();
 
@@ -124,9 +120,7 @@ describe('handlePasswordChallenge', () => {
 			session,
 		);
 
-		expect(signInHelpers.setActiveSignInUsername).toHaveBeenCalledWith(
-			challengeUsername,
-		);
+		expect(mockSetActiveSignInUsername).toHaveBeenCalledWith(challengeUsername);
 	});
 
 	test('should set active username as original username when challenge parameters are missing', async () => {
@@ -148,9 +142,7 @@ describe('handlePasswordChallenge', () => {
 			session,
 		);
 
-		expect(signInHelpers.setActiveSignInUsername).toHaveBeenCalledWith(
-			username,
-		);
+		expect(mockSetActiveSignInUsername).toHaveBeenCalledWith(username);
 	});
 
 	test('should throw error when respondToAuthChallenge fails', async () => {

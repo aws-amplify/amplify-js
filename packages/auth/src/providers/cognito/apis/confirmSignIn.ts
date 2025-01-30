@@ -17,7 +17,6 @@ import {
 } from '../../../client/utils/store';
 import { AuthError } from '../../../errors/AuthError';
 import {
-	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleChallengeName,
@@ -33,6 +32,7 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.

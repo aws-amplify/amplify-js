@@ -17,12 +17,7 @@ import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { createCognitoUserPoolEndpointResolver } from '../../../providers/cognito/factories';
 import { cacheCognitoTokens } from '../../../providers/cognito/tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../../../providers/cognito/utils/dispatchSignedInHubEvent';
-import {
-	getNewDeviceMetadata,
-	getSignInResult,
-} from '../../../providers/cognito/utils/signInHelpers';
 import { setActiveSignInState, signInStore } from '../../../client/utils/store';
-import { AuthSignInOutput } from '../../../types';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getPasskey } from '../../utils/passkey';
 import {
@@ -30,10 +25,13 @@ import {
 	assertPasskeyError,
 } from '../../utils/passkey/errors';
 import { AuthError } from '../../../errors/AuthError';
+import { getNewDeviceMetadata } from '../../../providers/cognito/utils/getNewDeviceMetadata';
+
+import { WebAuthnSignInResult } from './types';
 
 export async function handleWebAuthnSignInResult(
 	challengeParameters: ChallengeParameters,
-): Promise<AuthSignInOutput> {
+): Promise<WebAuthnSignInResult> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { username, signInSession, signInDetails, challengeName } =
@@ -119,8 +117,8 @@ export async function handleWebAuthnSignInResult(
 		});
 	}
 
-	return getSignInResult({
+	return {
 		challengeName: nextChallengeName as ChallengeName,
 		challengeParameters: nextChallengeParameters as ChallengeParameters,
-	});
+	};
 }

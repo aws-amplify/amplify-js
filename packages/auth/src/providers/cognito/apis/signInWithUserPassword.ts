@@ -13,11 +13,9 @@ import {
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
-	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { InitiateAuthException } from '../types/errors';
 import {
@@ -32,6 +30,8 @@ import {
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+import { retryOnResourceNotFoundException } from '../utils/retryOnResourceNotFoundException';
+import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
 import { resetAutoSignIn } from './autoSignIn';
 
