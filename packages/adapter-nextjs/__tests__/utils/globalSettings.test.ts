@@ -29,6 +29,13 @@ describe('globalSettings', () => {
 		const runtimeOptions = { cookies: { domain: 'example.com' } };
 		globalSettings.setRuntimeOptions(runtimeOptions);
 
+		expect(globalSettings.getRuntimeOptions()).toEqual(runtimeOptions);
+	});
+
+	test('setRuntimeOptions should set runtimeOptions by copying the object rather than set the object reference', () => {
+		const runtimeOptions = { cookies: { domain: 'example.com' } };
+		globalSettings.setRuntimeOptions(runtimeOptions);
+
 		// change a property of runtimeOptions.cookies
 		runtimeOptions.cookies.domain = 'example2.com';
 
