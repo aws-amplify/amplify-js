@@ -23,9 +23,16 @@
 		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 99"
 	},
+	"dependencies": {
+		"lodash": "^4.17.21"
+	},
 	"devDependencies": {
 		"@types/react-native": "0.70.0",
+		"react-native": "0.71.0",
 		"typescript": "5.0.2"
+	},
+	"peerDependencies": {
+		"react-native": ">=0.70"
 	},
 	"repository": {
 		"type": "git",
