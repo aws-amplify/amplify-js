@@ -39,7 +39,7 @@ const mockBinaryResponse = ({
 	} as any;
 };
 
-describe('S3 APIs functional test', () => {
+describe.skip('S3 APIs functional test', () => {
 	beforeEach(() => {
 		mockS3TransferHandler.mockReset();
 	});

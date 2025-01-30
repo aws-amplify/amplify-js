@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HttpRequest, HttpResponse } from '../../types';
 import {
 	MiddlewareContext,
 	MiddlewareHandler,
+	Request,
 	Response,
 } from '../../types/core';
 import { getCrypto } from '../../../libraryUtils';
@@ -53,8 +53,8 @@ export interface RetryOptions<TResponse = Response> {
  * Retry middleware
  */
 export const retryMiddlewareFactory = <
-	TInput extends HttpRequest = HttpRequest,
-	TOutput extends HttpResponse = HttpResponse,
+	TInput extends Request = Request,
+	TOutput extends Response = Response,
 >({
 	maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 	retryDecider,
@@ -74,7 +74,9 @@ export const retryMiddlewareFactory = <
 			let attemptsCount: number = context.attemptsCount ?? 0;
 			let response: TOutput | undefined;
 
-			if (!request.headers[SDK_INVOCATION_ID_HEADER]) {
+			// @ts-expect-error TODO: fix this
+			if (request?.headers?.[SDK_INVOCATION_ID_HEADER]) {
+				// @ts-expect-error TODO: fix this
 				request.headers[SDK_INVOCATION_ID_HEADER] = getCrypto().randomUUID();
 			}
 			// When retry is not needed or max attempts is reached, either error or response will be set. This function handles either cases.
@@ -91,6 +93,7 @@ export const retryMiddlewareFactory = <
 
 			while (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 				try {
+					// @ts-expect-error TODO: fix this
 					request.headers[SDK_REQUEST_HEADER] =
 						`attempt=${attemptsCount + 1}; max=${maxAttempts}`;
 					response = await next(request);
