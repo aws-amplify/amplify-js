@@ -69,13 +69,7 @@ describe('createServerRunner', () => {
 	const mockRunWithAmplifyServerContextCore = jest.fn();
 	const mockCreateAuthRouteHandlersFactory = jest.fn(() => jest.fn());
 	const mockIsSSLOriginUtil = jest.fn(() => true);
-	const mockIsValidOrigin = jest.fn(origin => {
-		if (!origin) {
-			return false;
-		}
-
-		return true;
-	});
+	const mockIsValidOrigin = jest.fn(origin => !!origin);
 
 	beforeAll(() => {
 		jest.doMock('../src/utils/globalSettings', () => ({

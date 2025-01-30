@@ -21,9 +21,7 @@ enableFetchMocks();
 jest.mock('next/headers', () => ({
 	cookies: jest.fn(),
 }));
-jest.mock('../../src/auth/utils', () => ({
-	isServerSideAuthAllowedCookie: jest.fn(),
-}));
+jest.mock('../../src/auth/utils');
 
 const mockNextCookiesFunc = cookies as jest.Mock;
 const mockIsServerSideAuthAllowedCookie = jest.mocked(

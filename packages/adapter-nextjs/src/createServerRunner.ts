@@ -41,7 +41,7 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 	if (isValidOrigin(amplifyAppOrigin)) {
 		globalSettings.setIsSSLOrigin(isSSLOrigin(amplifyAppOrigin));
 
-		// update the serverSideAuthEnabled flag of the globalSettings to true
+		// update the isServerSideAuthEnabled flag of the globalSettings to true
 		globalSettings.enableServerSideAuth();
 	}
 
