@@ -34,7 +34,7 @@ export const createRunWithAmplifyServerContext = ({
 
 	const mergedSetCookieOptions = {
 		// default options when not specified
-		...DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+		...(isServerSideAuthEnabled && DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS),
 		// user-specified options
 		...setCookieOptions,
 		// enforced options when server-side auth is enabled

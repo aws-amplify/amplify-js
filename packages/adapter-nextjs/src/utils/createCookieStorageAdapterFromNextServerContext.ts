@@ -8,7 +8,7 @@ import {
 } from 'aws-amplify/adapter-core/internals';
 
 import { NextServer } from '../types';
-import { isServerSideAuthIgnoredCookie } from '../auth/utils';
+import { isServerSideAuthAllowedCookie } from '../auth/utils';
 
 import { ensureEncodedForJSCookie, serializeCookie } from './cookie';
 
@@ -98,13 +98,13 @@ const createCookieStorageAdapterFromNextRequestAndNextResponse = (
 		},
 		getAll: readonlyCookieStore.getAll.bind(readonlyCookieStore),
 		set(name, value, options) {
-			if (ignoreNonServerSideCookies && isServerSideAuthIgnoredCookie(name)) {
+			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 				return;
 			}
 			mutableCookieStore.set(ensureEncodedForJSCookie(name), value, options);
 		},
 		delete(name) {
-			if (ignoreNonServerSideCookies && isServerSideAuthIgnoredCookie(name)) {
+			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 				return;
 			}
 			mutableCookieStore.delete(ensureEncodedForJSCookie(name));
@@ -144,10 +144,11 @@ const createCookieStorageAdapterFromNextCookies = async (
 	// We have no way to detect which one is returned, so we try to call set and delete
 	// and safely ignore the error if it is thrown.
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
+		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+			return;
+		}
+
 		try {
-			if (ignoreNonServerSideCookies && isServerSideAuthIgnoredCookie(name)) {
-				return;
-			}
 			cookieStore.set(ensureEncodedForJSCookie(name), value, options);
 		} catch {
 			// no-op
@@ -155,10 +156,11 @@ const createCookieStorageAdapterFromNextCookies = async (
 	};
 
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
+		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
+			return;
+		}
+
 		try {
-			if (ignoreNonServerSideCookies && isServerSideAuthIgnoredCookie(name)) {
-				return;
-			}
 			cookieStore.delete(ensureEncodedForJSCookie(name));
 		} catch {
 			// no-op
@@ -201,7 +203,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 			return allCookies;
 		},
 		set(name, value, options) {
-			if (ignoreNonServerSideCookies && isServerSideAuthIgnoredCookie(name)) {
+			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 				return;
 			}
 			const encodedName = ensureEncodedForJSCookie(name);
@@ -227,7 +229,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 			);
 		},
 		delete(name) {
-			if (ignoreNonServerSideCookies && isServerSideAuthIgnoredCookie(name)) {
+			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 				return;
 			}
 
@@ -253,7 +255,7 @@ const createMutableCookieStoreFromHeaders = (
 	ignoreNonServerSideCookies: boolean,
 ): Pick<CookieStorage.Adapter, 'set' | 'delete'> => {
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
-		if (ignoreNonServerSideCookies && isServerSideAuthIgnoredCookie(name)) {
+		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 			return;
 		}
 
@@ -263,7 +265,7 @@ const createMutableCookieStoreFromHeaders = (
 		);
 	};
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
-		if (ignoreNonServerSideCookies && isServerSideAuthIgnoredCookie(name)) {
+		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 			return;
 		}
 
@@ -285,3 +287,9 @@ const getExistingSetCookieValues = (
 	values: number | string | string[] | undefined,
 ): string[] =>
 	values === undefined ? [] : Array.isArray(values) ? values : [String(values)];
+
+const shouldIgnoreCookie = (
+	ignoreNonServerSideCookies: boolean,
+	cookieName: string,
+): boolean =>
+	ignoreNonServerSideCookies && !isServerSideAuthAllowedCookie(cookieName);

@@ -36,12 +36,12 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 	const amplifyConfig = parseAmplifyConfig(config);
 	const amplifyAppOrigin = process.env.AMPLIFY_APP_ORIGIN;
 
-	globalSettings.setRuntimeOptions(runtimeOptions || {});
+	globalSettings.setRuntimeOptions(runtimeOptions ?? {});
 
-	if (amplifyAppOrigin !== undefined && isValidOrigin(amplifyAppOrigin)) {
+	if (isValidOrigin(amplifyAppOrigin)) {
 		globalSettings.setIsSSLOrigin(isSSLOrigin(amplifyAppOrigin));
 
-		// update the serverSideAuthEnabled flag that exists in the closure of createServerRunner() to true
+		// update the serverSideAuthEnabled flag of the globalSettings to true
 		globalSettings.enableServerSideAuth();
 	}
 

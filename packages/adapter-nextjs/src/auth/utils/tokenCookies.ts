@@ -83,7 +83,7 @@ export const createTokenCookiesRemoveOptions = (
 	maxAge: REMOVE_COOKIE_MAX_AGE, // Expire immediately (remove the cookie)
 });
 
-export const isServerSideAuthIgnoredCookie = (cookieName: string) =>
-	!SERVER_AUTH_ALLOWED_AMPLIFY_AUTH_KEY_SUFFIX.some(suffix =>
+export const isServerSideAuthAllowedCookie = (cookieName: string) =>
+	SERVER_AUTH_ALLOWED_AMPLIFY_AUTH_KEY_SUFFIX.some(suffix =>
 		cookieName.endsWith(suffix),
 	);

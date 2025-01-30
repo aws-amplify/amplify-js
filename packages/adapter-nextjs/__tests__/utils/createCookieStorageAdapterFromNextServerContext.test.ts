@@ -13,7 +13,7 @@ import {
 	DATE_IN_THE_PAST,
 	createCookieStorageAdapterFromNextServerContext,
 } from '../../src/utils/createCookieStorageAdapterFromNextServerContext';
-import { isServerSideAuthIgnoredCookie } from '../../src/auth/utils';
+import { isServerSideAuthAllowedCookie } from '../../src/auth/utils';
 
 // Make global Request available during test
 enableFetchMocks();
@@ -22,12 +22,12 @@ jest.mock('next/headers', () => ({
 	cookies: jest.fn(),
 }));
 jest.mock('../../src/auth/utils', () => ({
-	isServerSideAuthIgnoredCookie: jest.fn(),
+	isServerSideAuthAllowedCookie: jest.fn(),
 }));
 
 const mockNextCookiesFunc = cookies as jest.Mock;
-const mockIsServerSideAuthIgnoredCookie = jest.mocked(
-	isServerSideAuthIgnoredCookie,
+const mockIsServerSideAuthAllowedCookie = jest.mocked(
+	isServerSideAuthAllowedCookie,
 );
 
 describe('createCookieStorageAdapterFromNextServerContext', () => {
@@ -61,7 +61,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		let result: CookieStorage.Adapter;
 
 		beforeAll(async () => {
-			mockIsServerSideAuthIgnoredCookie.mockReturnValue(false);
+			mockIsServerSideAuthAllowedCookie.mockReturnValue(true);
 			jest.spyOn(request, 'cookies', 'get').mockImplementation(
 				() =>
 					({
@@ -130,7 +130,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
-			mockIsServerSideAuthIgnoredCookie.mockReturnValueOnce(true);
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
 			const testCookieName =
 				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
 			const adapterWithIgnore =
@@ -141,14 +141,14 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 
 			adapterWithIgnore.set(testCookieName, 'value');
 			expect(mockSetFunc).not.toHaveBeenCalled();
-			expect(mockIsServerSideAuthIgnoredCookie).toHaveBeenCalledWith(
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
 				testCookieName,
 			);
 
-			mockIsServerSideAuthIgnoredCookie.mockReturnValueOnce(true);
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
 			adapterWithIgnore.delete(testCookieName);
 			expect(mockDeleteFunc).not.toHaveBeenCalled();
-			expect(mockIsServerSideAuthIgnoredCookie).toHaveBeenCalledWith(
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
 				testCookieName,
 			);
 		});
@@ -273,7 +273,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
-			mockIsServerSideAuthIgnoredCookie.mockReturnValueOnce(true);
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
 			const testCookieName =
 				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
 			const adapterWithIgnore =
@@ -284,14 +284,14 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 
 			adapterWithIgnore.set(testCookieName, 'value');
 			expect(mockAppend).not.toHaveBeenCalled();
-			expect(mockIsServerSideAuthIgnoredCookie).toHaveBeenCalledWith(
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
 				testCookieName,
 			);
 
-			mockIsServerSideAuthIgnoredCookie.mockReturnValueOnce(true);
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
 			adapterWithIgnore.delete(testCookieName);
 			expect(mockAppend).not.toHaveBeenCalled();
-			expect(mockIsServerSideAuthIgnoredCookie).toHaveBeenCalledWith(
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
 				testCookieName,
 			);
 		});
@@ -356,7 +356,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
-			mockIsServerSideAuthIgnoredCookie.mockReturnValueOnce(true);
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
 			const testCookieName =
 				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
 			const adapterWithIgnore =
@@ -367,14 +367,14 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 
 			adapterWithIgnore.set(testCookieName, 'value');
 			expect(mockNextCookiesFuncReturn.set).not.toHaveBeenCalled();
-			expect(mockIsServerSideAuthIgnoredCookie).toHaveBeenCalledWith(
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
 				testCookieName,
 			);
 
-			mockIsServerSideAuthIgnoredCookie.mockReturnValueOnce(true);
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
 			adapterWithIgnore.delete(testCookieName);
 			expect(mockNextCookiesFuncReturn.delete).not.toHaveBeenCalled();
-			expect(mockIsServerSideAuthIgnoredCookie).toHaveBeenCalledWith(
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
 				testCookieName,
 			);
 		});
@@ -568,11 +568,11 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 					true,
 				);
 
-			mockIsServerSideAuthIgnoredCookie.mockReturnValueOnce(true);
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
 			adapterWithIgnore.set(testCookieName, 'value');
 			expect(appendHeaderSpy).not.toHaveBeenCalled();
 
-			mockIsServerSideAuthIgnoredCookie.mockReturnValueOnce(true);
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
 			adapterWithIgnore.delete(testCookieName);
 			expect(appendHeaderSpy).not.toHaveBeenCalled();
 		});

@@ -69,7 +69,13 @@ describe('createServerRunner', () => {
 	const mockRunWithAmplifyServerContextCore = jest.fn();
 	const mockCreateAuthRouteHandlersFactory = jest.fn(() => jest.fn());
 	const mockIsSSLOriginUtil = jest.fn(() => true);
-	const mockIsValidOrigin = jest.fn(() => true);
+	const mockIsValidOrigin = jest.fn(origin => {
+		if (!origin) {
+			return false;
+		}
+
+		return true;
+	});
 
 	beforeAll(() => {
 		jest.doMock('../src/utils/globalSettings', () => ({
@@ -148,8 +154,8 @@ describe('createServerRunner', () => {
 		it('it does NOT call globalSettings.setIsSSLOrigin() and isValidOrigin()', () => {
 			delete process.env.AMPLIFY_APP_ORIGIN;
 			createServerRunner({ config: mockAmplifyConfig });
+			expect(mockIsValidOrigin).toHaveBeenCalledWith(undefined);
 			expect(mockGlobalSettings.setIsSSLOrigin).not.toHaveBeenCalled();
-			expect(mockIsValidOrigin).not.toHaveBeenCalled();
 			process.env.AMPLIFY_APP_ORIGIN = AMPLIFY_APP_ORIGIN;
 		});
 	});
@@ -306,6 +312,33 @@ describe('createServerRunner', () => {
 					).toHaveBeenCalledWith(expect.any(Object), expect.any(Object), {
 						...testCookiesOptions,
 						path: '/',
+					});
+				});
+
+				it('should call createKeyValueStorageFromCookieStorageAdapter with enforced and default server auth cookie attributes', async () => {
+					mockIsServerSideAuthEnabled.mockReturnValueOnce(true);
+					mockGlobalSettingsIsSSLOrigin.mockReturnValueOnce(true);
+					mockCreateKeyValueStorageFromCookieStorageAdapter.mockReturnValueOnce(
+						mockCookieStorageAdapter,
+					);
+
+					const { runWithAmplifyServerContext } = createServerRunner({
+						config: mockAmplifyConfig,
+					});
+
+					await runWithAmplifyServerContext({
+						nextServerContext:
+							mockNextServerContext as unknown as NextServer.Context,
+						operation: jest.fn(),
+					});
+
+					expect(
+						mockCreateKeyValueStorageFromCookieStorageAdapter,
+					).toHaveBeenCalledWith(expect.any(Object), expect.any(Object), {
+						httpOnly: true,
+						path: '/',
+						sameSite: 'strict',
+						secure: true,
 					});
 				});
 

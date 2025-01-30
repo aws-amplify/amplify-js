@@ -8,11 +8,11 @@ let runtimeOptions: NextServer.CreateServerRunnerRuntimeOptions = {};
 let isSSLOrigin = false;
 
 export const globalSettings: NextServer.GlobalSettings = {
-	isServerSideAuthEnabled() {
-		return isServerSideAuthEnabled;
-	},
 	enableServerSideAuth() {
 		isServerSideAuthEnabled = true;
+	},
+	isServerSideAuthEnabled() {
+		return isServerSideAuthEnabled;
 	},
 	setRuntimeOptions(options: NextServer.CreateServerRunnerRuntimeOptions) {
 		runtimeOptions = options;
@@ -20,10 +20,10 @@ export const globalSettings: NextServer.GlobalSettings = {
 	getRuntimeOptions() {
 		return runtimeOptions;
 	},
-	isSSLOrigin() {
-		return isSSLOrigin;
-	},
 	setIsSSLOrigin(value: boolean) {
 		isSSLOrigin = value;
+	},
+	isSSLOrigin() {
+		return isSSLOrigin;
 	},
 };

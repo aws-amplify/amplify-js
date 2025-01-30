@@ -11,7 +11,7 @@ import {
 	createTokenCookiesSetOptions,
 	createTokenRemoveCookies,
 	getAccessTokenUsername,
-	isServerSideAuthIgnoredCookie,
+	isServerSideAuthAllowedCookie,
 } from '../../../src/auth/utils';
 
 jest.mock('../../../src/auth/utils/getAccessTokenUsername');
@@ -153,17 +153,17 @@ describe('createTokenCookiesRemoveOptions', () => {
 
 describe('isServerSideAuthIgnoredCookie', () => {
 	test.each([
-		['CognitoIdentityServiceProvider.1234.aaaa.clockDrift', true],
-		['CognitoIdentityServiceProvider.1234.aaaa.deviceKey', true],
-		['CognitoIdentityServiceProvider.1234.aaaa.clientMetadata', true],
-		['CognitoIdentityServiceProvider.1234.aaaa.oAuthMetadata', true],
-		['CognitoIdentityServiceProvider.1234.aaaa', true],
-		['CognitoIdentityServiceProvider.1234', true],
-		['CognitoIdentityServiceProvider.1234.aaaa.refreshToken', false],
-		['CognitoIdentityServiceProvider.1234.aaaa.accessToken', false],
-		['CognitoIdentityServiceProvider.1234.aaaa.idToken', false],
-		['CognitoIdentityServiceProvider.1234.aaaa.LastAuthUser', false],
+		['CognitoIdentityServiceProvider.1234.aaaa.clockDrift', false],
+		['CognitoIdentityServiceProvider.1234.aaaa.deviceKey', false],
+		['CognitoIdentityServiceProvider.1234.aaaa.clientMetadata', false],
+		['CognitoIdentityServiceProvider.1234.aaaa.oAuthMetadata', false],
+		['CognitoIdentityServiceProvider.1234.aaaa', false],
+		['CognitoIdentityServiceProvider.1234', false],
+		['CognitoIdentityServiceProvider.1234.aaaa.refreshToken', true],
+		['CognitoIdentityServiceProvider.1234.aaaa.accessToken', true],
+		['CognitoIdentityServiceProvider.1234.aaaa.idToken', true],
+		['CognitoIdentityServiceProvider.1234.aaaa.LastAuthUser', true],
 	])('returns %s for %s', (cookieName, expected) => {
-		expect(isServerSideAuthIgnoredCookie(cookieName)).toBe(expected);
+		expect(isServerSideAuthAllowedCookie(cookieName)).toBe(expected);
 	});
 });

@@ -42,6 +42,9 @@ describe('isValidOrigin', () => {
 		['https://exam_ple.com', false],
 		['https://example.com?query=param', false],
 		['https://example.com:80/path#fragment', false],
+		['yea, I am not a origin, so?', false],
+		[undefined, false],
+		['', false],
 	] as [string, boolean][])('validates origin %s as %s', (origin, expected) => {
 		expect(isValidOrigin(origin)).toBe(expected);
 	});
@@ -53,6 +56,9 @@ describe('isSSLOrigin', () => {
 		['http://localhost', false],
 		['http://localhost:3000', false],
 		['https:// some-app.com', false],
+		['https://some-app.com:', false],
+		[undefined, false],
+		['', false],
 	])('check origin SSL %s status as %s', (origin, expected) => {
 		expect(isSSLOrigin(origin)).toBe(expected);
 	});
