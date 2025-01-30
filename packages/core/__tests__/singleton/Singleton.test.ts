@@ -172,12 +172,12 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 			? { [K in keyof T]-?: DeepRequired<NonNullable<T[K]>> }
 			: T;
 
-		const recreateObject = <T>(obj: T): DeepRequired<T> =>
+		const recreateObjectWithDeepRequired = <T>(obj: T): DeepRequired<T> =>
 			obj as DeepRequired<T>;
 
 		// Ensures that all optional properties in mockAmplifyOutputs are defined
 		const _amplifyOutputs: DeepRequired<AmplifyOutputs> =
-			recreateObject(mockAmplifyOutputs);
+			recreateObjectWithDeepRequired(mockAmplifyOutputs);
 
 		// Configures Amplify with mockAmplifyOutputs, relying on its inferred type
 		Amplify.configure(mockAmplifyOutputs);
