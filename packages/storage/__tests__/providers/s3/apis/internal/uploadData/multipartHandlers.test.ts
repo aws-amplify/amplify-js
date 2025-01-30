@@ -44,10 +44,10 @@ const bucket = 'bucket';
 const region = 'region';
 const defaultKey = 'key';
 const defaultContentType = 'application/octet-stream';
-const defaultCacheKey =
-	'Jz3O2w==_8388608_application/octet-stream_bucket_public_key';
+const emptyOptionHash = 'o6a/Qw=='; // crc32 for '{}'
+const defaultCacheKey = `${emptyOptionHash}_8388608_application/octet-stream_bucket_public_key`;
 const testPath = 'testPath/object';
-const testPathCacheKey = `Jz3O2w==_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
+const testPathCacheKey = `${emptyOptionHash}_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
 
 const mockCreateMultipartUpload = jest.mocked(createMultipartUpload);
 const mockUploadPart = jest.mocked(uploadPart);
@@ -545,14 +545,14 @@ describe('getMultipartUploadHandlers with key', () => {
 		describe('cache validation', () => {
 			it.each([
 				{
-					name: 'wrong part count',
+					name: 'mismatched part count between cached upload and actual upload',
 					parts: [{ PartNumber: 1 }, { PartNumber: 2 }, { PartNumber: 3 }],
 				},
 				{
-					name: 'wrong part numbers',
+					name: 'mismatched part numbers between cached upload and actual upload',
 					parts: [{ PartNumber: 1 }, { PartNumber: 1 }],
 				},
-			])('should throw with $name', async ({ parts }) => {
+			])('should throw integrity error with $name', async ({ parts }) => {
 				mockMultipartUploadSuccess();
 
 				const mockDefaultStorage = defaultStorage as jest.Mocked<
@@ -617,6 +617,42 @@ describe('getMultipartUploadHandlers with key', () => {
 			expect(mockDefaultStorage.setItem).not.toHaveBeenCalled();
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockListParts).not.toHaveBeenCalled();
+		});
+
+		it('should omit unserializable option properties when calculating the hash key', async () => {
+			mockMultipartUploadSuccess();
+			const serializableOptions = {
+				useAccelerateEndpoint: true,
+				bucket: { bucketName: 'bucket', region: 'us-west-2' },
+				expectedBucketOwner: '123',
+				contentDisposition: 'attachment',
+				contentEncoding: 'deflate',
+				contentType: 'text/html',
+				customEndpoint: 'abc',
+				metadata: {},
+				preventOverwrite: true,
+				checksumAlgorithm: 'crc-32' as const,
+			};
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+					options: {
+						...serializableOptions,
+						// The following options will be omitted
+						locationCredentialsProvider: jest.fn(),
+						onProgress: jest.fn(),
+						resumableUploadsCache: mockDefaultStorage,
+					},
+				},
+				size,
+			);
+			await multipartUploadJob();
+			expect(mockCalculateContentCRC32).toHaveBeenNthCalledWith(
+				1,
+				JSON.stringify(serializableOptions),
+			);
 		});
 
 		it('should send createMultipartUpload request if the upload task is not cached', async () => {
@@ -693,7 +729,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					// \d{13} is the file lastModified property of a file
-					/someName_\d{13}_Jz3O2w==_8388608_application\/octet-stream_bucket_public_key/,
+					new RegExp(`someName_\\d{13}_${defaultCacheKey}`),
 				),
 			]);
 		});
@@ -1449,6 +1485,42 @@ describe('getMultipartUploadHandlers with path', () => {
 			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(2);
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockListParts).not.toHaveBeenCalled();
+		});
+
+		it('should omit unserializable option properties when calculating the hash key', async () => {
+			mockMultipartUploadSuccess();
+			const serializableOptions = {
+				useAccelerateEndpoint: true,
+				bucket: { bucketName: 'bucket', region: 'us-west-2' },
+				expectedBucketOwner: '123',
+				contentDisposition: 'attachment',
+				contentEncoding: 'deflate',
+				contentType: 'text/html',
+				customEndpoint: 'abc',
+				metadata: {},
+				preventOverwrite: true,
+				checksumAlgorithm: 'crc-32' as const,
+			};
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: new ArrayBuffer(size),
+					options: {
+						...serializableOptions,
+						// The following options will be omitted
+						locationCredentialsProvider: jest.fn(),
+						onProgress: jest.fn(),
+						resumableUploadsCache: mockDefaultStorage,
+					},
+				},
+				size,
+			);
+			await multipartUploadJob();
+			expect(mockCalculateContentCRC32).toHaveBeenNthCalledWith(
+				1,
+				JSON.stringify(serializableOptions),
+			);
 		});
 
 		it('should send createMultipartUpload request if the upload task is cached but outdated', async () => {

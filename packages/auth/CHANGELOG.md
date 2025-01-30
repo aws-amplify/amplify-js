@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.10.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.10.0...@aws-amplify/auth@6.10.1) (2025-01-24)
+
+### Bug Fixes
+
+- **auth:** Setting Store Tokens should only clear tokens that no longer have a value ([#13584](https://github.com/aws-amplify/amplify-js/issues/13584)) ([3606482](https://github.com/aws-amplify/amplify-js/commit/3606482c980766466f2c3f27bd4887c550897c26))
+
+# [6.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.9.1...@aws-amplify/auth@6.10.0) (2025-01-14)
+
+### Bug Fixes
+
+- **deps:** avoid using implicit dependencies for auth ([#14122](https://github.com/aws-amplify/amplify-js/issues/14122)) ([f2a0b74](https://github.com/aws-amplify/amplify-js/commit/f2a0b74bfac5f10014e644c509d5cff5d5da9e59))
+
+### Features
+
+- **Auth:** Allow sending login_hint, lang and nonce on signInWithRedirects ([#14089](https://github.com/aws-amplify/amplify-js/issues/14089)) ([a4063a1](https://github.com/aws-amplify/amplify-js/commit/a4063a177a802c86624faf0c4b605c75164b8641)), closes [#8951](https://github.com/aws-amplify/amplify-js/issues/8951)
+
+## [6.9.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.9.0...@aws-amplify/auth@6.9.1) (2025-01-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 # [6.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.8.3...@aws-amplify/auth@6.9.0) (2024-12-19)
 
 ### Features

@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "3.0.64",
+	"version": "3.0.67",
 	"description": "Geo category for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -69,6 +69,7 @@
 	"dependencies": {
 		"@aws-sdk/client-location": "3.621.0",
 		"@turf/boolean-clockwise": "6.5.0",
+		"@aws-sdk/types": "3.398.0",
 		"camelcase-keys": "6.2.2",
 		"tslib": "^2.5.0"
 	},
@@ -76,7 +77,7 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.8.0",
+		"@aws-amplify/core": "6.9.2",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [
