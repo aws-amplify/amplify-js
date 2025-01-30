@@ -11,7 +11,7 @@ import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getUserContextData } from '../../../providers/cognito/utils/userContextData';
 import { RespondToAuthChallengeCommandOutput } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
-import { setActiveSignInUsername } from '../../../providers/cognito/utils/signInHelpers';
+import { setActiveSignInUsername } from '../../../providers/cognito/utils/setActiveSignInUsername';
 
 /**
  * Handles the SELECT_CHALLENGE response specifically for Password authentication.

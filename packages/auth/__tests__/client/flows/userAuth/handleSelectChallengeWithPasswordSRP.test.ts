@@ -5,7 +5,9 @@ import { createRespondToAuthChallengeClient } from '../../../../src/foundation/f
 import { getAuthenticationHelper } from '../../../../src/providers/cognito/utils/srp';
 import { getUserContextData } from '../../../../src/providers/cognito/utils/userContextData';
 import { handleSelectChallengeWithPasswordSRP } from '../../../../src/client/flows/userAuth/handleSelectChallengeWithPasswordSRP';
-import * as signInHelpers from '../../../../src/providers/cognito/utils/signInHelpers';
+import { handlePasswordVerifierChallenge } from '../../../../src/providers/cognito/utils/handlePasswordVerifierChallenge';
+import { retryOnResourceNotFoundException } from '../../../../src/providers/cognito/utils/retryOnResourceNotFoundException';
+import { setActiveSignInUsername } from '../../../../src/providers/cognito/utils/setActiveSignInUsername';
 
 // Mock dependencies
 jest.mock(
@@ -14,14 +16,13 @@ jest.mock(
 jest.mock('../../../../src/providers/cognito/factories');
 jest.mock('../../../../src/providers/cognito/utils/srp');
 jest.mock('../../../../src/providers/cognito/utils/userContextData');
-jest.mock('../../../../src/providers/cognito/utils/signInHelpers', () => ({
-	...jest.requireActual(
-		'../../../../src/providers/cognito/utils/signInHelpers',
-	),
-	setActiveSignInUsername: jest.fn(),
-	handlePasswordVerifierChallenge: jest.fn(),
-	retryOnResourceNotFoundException: jest.fn(),
-}));
+jest.mock(
+	'../../../../src/providers/cognito/utils/handlePasswordVerifierChallenge',
+);
+jest.mock(
+	'../../../../src/providers/cognito/utils/retryOnResourceNotFoundException',
+);
+jest.mock('../../../../src/providers/cognito/utils/setActiveSignInUsername');
 
 describe('handleSelectChallengeWithPasswordSRP', () => {
 	const mockConfig = {
@@ -35,6 +36,13 @@ describe('handleSelectChallengeWithPasswordSRP', () => {
 		clearDeviceMetadata: jest.fn(),
 	} as any;
 
+	const mockHandlePasswordVerifierChallenge = jest.mocked(
+		handlePasswordVerifierChallenge,
+	);
+	const mockRetryOnResourceNotFoundException = jest.mocked(
+		retryOnResourceNotFoundException,
+	);
+	const mockSetActiveSignInUsername = jest.mocked(setActiveSignInUsername);
 	const mockRespondToAuthChallenge = jest.fn();
 	const mockAuthenticationHelper = {
 		A: { toString: () => '123456' },
@@ -108,13 +116,12 @@ describe('handleSelectChallengeWithPasswordSRP', () => {
 		};
 
 		mockRespondToAuthChallenge.mockResolvedValueOnce(verifierResponse);
-		(
-			signInHelpers.retryOnResourceNotFoundException as jest.Mock
-		).mockImplementation((fn, args) => fn(...args));
-		(
-			signInHelpers.handlePasswordVerifierChallenge as jest.Mock
-		).mockResolvedValue({
+		mockRetryOnResourceNotFoundException.mockImplementation((fn, args) =>
+			fn(...args),
+		);
+		mockHandlePasswordVerifierChallenge.mockResolvedValue({
 			AuthenticationResult: { AccessToken: 'token' },
+			$metadata: {},
 		});
 
 		await handleSelectChallengeWithPasswordSRP(
@@ -126,8 +133,8 @@ describe('handleSelectChallengeWithPasswordSRP', () => {
 			mockTokenOrchestrator,
 		);
 
-		expect(signInHelpers.retryOnResourceNotFoundException).toHaveBeenCalledWith(
-			signInHelpers.handlePasswordVerifierChallenge,
+		expect(mockRetryOnResourceNotFoundException).toHaveBeenCalledWith(
+			mockHandlePasswordVerifierChallenge,
 			[
 				password,
 				verifierResponse.ChallengeParameters,
@@ -188,9 +195,7 @@ describe('handleSelectChallengeWithPasswordSRP', () => {
 			mockTokenOrchestrator,
 		);
 
-		expect(signInHelpers.setActiveSignInUsername).toHaveBeenCalledWith(
-			challengeUsername,
-		);
+		expect(mockSetActiveSignInUsername).toHaveBeenCalledWith(challengeUsername);
 	});
 
 	test('should use original username when ChallengeParameters is undefined', async () => {
@@ -215,9 +220,7 @@ describe('handleSelectChallengeWithPasswordSRP', () => {
 		);
 
 		// Verify it falls back to the original username
-		expect(signInHelpers.setActiveSignInUsername).toHaveBeenCalledWith(
-			username,
-		);
+		expect(mockSetActiveSignInUsername).toHaveBeenCalledWith(username);
 	});
 
 	test('should handle userPoolId without second part after underscore', async () => {

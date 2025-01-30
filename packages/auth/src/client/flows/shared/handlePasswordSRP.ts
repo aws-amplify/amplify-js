@@ -13,16 +13,14 @@ import {
 	RespondToAuthChallengeCommandOutput,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { getAuthenticationHelper } from '../../../providers/cognito/utils/srp';
-import {
-	handlePasswordVerifierChallenge,
-	retryOnResourceNotFoundException,
-	setActiveSignInUsername,
-} from '../../../providers/cognito/utils/signInHelpers';
 import { createInitiateAuthClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../providers/cognito/factories';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { getAuthUserAgentValue } from '../../../utils';
 import { AuthFactorType } from '../../../providers/cognito/types/models';
+import { handlePasswordVerifierChallenge } from '../../../providers/cognito/utils/handlePasswordVerifierChallenge';
+import { retryOnResourceNotFoundException } from '../../../providers/cognito/utils/retryOnResourceNotFoundException';
+import { setActiveSignInUsername } from '../../../providers/cognito/utils/setActiveSignInUsername';
 
 interface HandlePasswordSRPInput {
 	username: string;
