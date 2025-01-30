@@ -15,7 +15,8 @@ export const globalSettings: NextServer.GlobalSettings = {
 		return isServerSideAuthEnabled;
 	},
 	setRuntimeOptions(options: NextServer.CreateServerRunnerRuntimeOptions) {
-		runtimeOptions = options;
+		// make a copy instead of set the reference
+		runtimeOptions = JSON.parse(JSON.stringify(options));
 	},
 	getRuntimeOptions() {
 		return runtimeOptions;

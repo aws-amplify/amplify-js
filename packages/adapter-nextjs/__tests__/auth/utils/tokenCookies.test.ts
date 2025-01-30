@@ -151,7 +151,7 @@ describe('createTokenCookiesRemoveOptions', () => {
 	});
 });
 
-describe('isServerSideAuthIgnoredCookie', () => {
+describe('isServerSideAuthAllowedCookie', () => {
 	test.each([
 		['CognitoIdentityServiceProvider.1234.aaaa.clockDrift', false],
 		['CognitoIdentityServiceProvider.1234.aaaa.deviceKey', false],
