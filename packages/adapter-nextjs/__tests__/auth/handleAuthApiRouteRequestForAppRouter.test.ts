@@ -1,6 +1,3 @@
-/**
- * @jest-environment node
- */
 import { NextRequest } from 'next/server';
 import { OAuthConfig } from 'aws-amplify/adapter-core/internals';
 

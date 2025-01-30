@@ -1,6 +1,3 @@
-/**
- * @jest-environment node
- */
 import { OAuthConfig } from 'aws-amplify/adapter-core/internals';
 
 import { handleSignOutRequestForPagesRouter } from '../../../src/auth/handlers/handleSignOutRequestForPagesRouter';

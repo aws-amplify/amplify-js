@@ -16,7 +16,7 @@ export const globalSettings: NextServer.GlobalSettings = {
 	},
 	setRuntimeOptions(options: NextServer.CreateServerRunnerRuntimeOptions) {
 		// make a copy instead of set the reference
-		runtimeOptions = JSON.parse(JSON.stringify(options));
+		runtimeOptions = structuredClone(options);
 	},
 	getRuntimeOptions() {
 		return runtimeOptions;
