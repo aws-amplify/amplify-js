@@ -48,7 +48,12 @@ async function connect(
 		providerOptions.authenticationType,
 	);
 
-	await eventProvider.connect(providerOptions);
+	const connectOptions = {
+		...providerOptions, 
+		authToken: options?.authToken
+	};
+
+	await eventProvider.connect(connectOptions);
 
 	let _subscription: Subscription;
 
