@@ -132,6 +132,17 @@ describe('Events client', () => {
 							expect.objectContaining({ authenticationType: authMode }),
 						);
 					});
+
+					test(`auth token override: ${authMode}`, async () => {
+						await events.connect('/', { authMode, authToken: 'TOKEN' });
+
+						expect(mockProvider.connect).toHaveBeenCalledWith(
+							expect.objectContaining({
+								authenticationType: authMode,
+								authToken: 'TOKEN',
+							}),
+						);
+					});
 				}
 			});
 		});
@@ -167,6 +178,63 @@ describe('Events client', () => {
 
 						expect(mockSubscribeObservable).toHaveBeenCalledWith(
 							expect.objectContaining({ authenticationType: authMode }),
+						);
+					});
+
+					test(`auth token override from connect: ${authMode}`, async () => {
+						const channel = await events.connect('/', { authToken: 'TOKEN' });
+
+						channel.subscribe(
+							{
+								next: data => void data,
+								error: error => void error,
+							},
+							{ authMode },
+						);
+
+						expect(mockSubscribeObservable).toHaveBeenCalledWith(
+							expect.objectContaining({
+								authenticationType: authMode,
+								authToken: 'TOKEN',
+							}),
+						);
+					});
+
+					test(`auth token override: ${authMode}`, async () => {
+						const channel = await events.connect('/');
+
+						channel.subscribe(
+							{
+								next: data => void data,
+								error: error => void error,
+							},
+							{ authMode, authToken: 'TOKEN' },
+						);
+
+						expect(mockSubscribeObservable).toHaveBeenCalledWith(
+							expect.objectContaining({
+								authenticationType: authMode,
+								authToken: 'TOKEN',
+							}),
+						);
+					});
+
+					test(`auth token override subscribe has precedence: ${authMode}`, async () => {
+						const channel = await events.connect('/', { authToken: 'TOKEN1' });
+
+						channel.subscribe(
+							{
+								next: data => void data,
+								error: error => void error,
+							},
+							{ authMode, authToken: 'TOKEN2' },
+						);
+
+						expect(mockSubscribeObservable).toHaveBeenCalledWith(
+							expect.objectContaining({
+								authenticationType: authMode,
+								authToken: 'TOKEN2',
+							}),
 						);
 					});
 				}
