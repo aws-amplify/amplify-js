@@ -41,19 +41,19 @@ async function connect(
 	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel> {
-	const providerOptions = configure();
+	const configureOptions = configure();
 
-	providerOptions.authenticationType = normalizeAuth(
+	configureOptions.authenticationType = normalizeAuth(
 		options?.authMode,
-		providerOptions.authenticationType,
+		configureOptions.authenticationType,
 	);
 
-	const connectOptions = {
-		...providerOptions, 
-		authToken: options?.authToken
+	const providerOptions = {
+		...configureOptions,
+		authToken: options?.authToken,
 	};
 
-	await eventProvider.connect(connectOptions);
+	await eventProvider.connect(providerOptions);
 
 	let _subscription: Subscription;
 
@@ -66,6 +66,9 @@ async function connect(
 			subOptions?.authMode,
 			subscribeOptions.authenticationType,
 		);
+		if (subOptions?.authToken) {
+			subscribeOptions.authToken = subOptions.authToken;
+		}
 
 		_subscription = eventProvider
 			.subscribe(subscribeOptions)
