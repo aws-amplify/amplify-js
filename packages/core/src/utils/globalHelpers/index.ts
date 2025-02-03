@@ -22,7 +22,7 @@ export const getCrypto = () => {
 export const getBtoa = () => {
 	// browser
 	if (typeof window !== 'undefined' && typeof window.btoa === 'function') {
-		return window.btoa;
+		return window.btoa.bind(window);
 	}
 
 	// Next.js global polyfill
@@ -39,7 +39,7 @@ export const getBtoa = () => {
 export const getAtob = () => {
 	// browser
 	if (typeof window !== 'undefined' && typeof window.atob === 'function') {
-		return window.atob;
+		return window.atob.bind(window);
 	}
 
 	// Next.js global polyfill
