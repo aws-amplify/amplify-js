@@ -91,5 +91,5 @@ jobs:
           name: ${{ inputs.test_name }}
           if-no-files-found: ignore
           path: |
-            amplify-js-samples-staging/samples/react-native/auth/Passwordless/artifacts
+            amplify-js-samples-staging/samples/react-native/auth/Passwordless/artifacts/
           retention-days: 14

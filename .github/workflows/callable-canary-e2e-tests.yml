@@ -138,7 +138,7 @@ jobs:
         working-directory: amplify-js-samples-staging
         shell: bash
       - name: Upload artifact
-        uses: actions/upload-artifact@4  
+        uses: actions/upload-artifact@v4  
         if: failure()
         with:
           name: ${{ inputs.test_name }}
