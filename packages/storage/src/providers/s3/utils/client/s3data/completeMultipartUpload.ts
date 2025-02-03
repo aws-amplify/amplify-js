@@ -36,7 +36,11 @@ import type {
 } from './types';
 
 const INVALID_PARAMETER_ERROR_MSG =
-	'Invalid parameter for ComplteMultipartUpload API';
+	'Invalid parameter for CompleteMultipartUpload API';
+
+const MISSING_ETAG_ERROR_MSG = 'ETag missing from multipart upload';
+const MISSING_ETAG_ERROR_SUGGESTION =
+	'Please ensure S3 bucket CORS configuration includes ETag as part of its `ExposeHeaders` element';
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,
@@ -95,7 +99,7 @@ const serializeCompletedMultipartUpload = (
 	input: CompletedMultipartUpload,
 ): string => {
 	if (!input.Parts?.length) {
-		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
+		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${JSON.stringify(input)}`);
 	}
 
 	return `<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${input.Parts.map(
@@ -104,8 +108,13 @@ const serializeCompletedMultipartUpload = (
 };
 
 const serializeCompletedPartList = (input: CompletedPart): string => {
-	if (!input.ETag || input.PartNumber == null) {
-		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
+	if (input.PartNumber == null) {
+		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${JSON.stringify(input)}`);
+	}
+	if (!input.ETag) {
+		throw new Error(
+			`${MISSING_ETAG_ERROR_MSG}: ${JSON.stringify(input)}. ${MISSING_ETAG_ERROR_SUGGESTION}`,
+		);
 	}
 
 	const eTag = `<ETag>${input.ETag}</ETag>`;
