@@ -9,7 +9,6 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleCustomSRPAuthFlow,
@@ -34,6 +33,7 @@ import {
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
 /**
  * Signs a user in using a custom authentication flow with SRP

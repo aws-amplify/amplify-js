@@ -18,7 +18,7 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { handlePasswordSRP } from '../shared/handlePasswordSRP';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { setActiveSignInUsername } from '../../../providers/cognito/utils/signInHelpers';
+import { setActiveSignInUsername } from '../../../providers/cognito/utils/setActiveSignInUsername';
 
 export interface HandleUserAuthFlowInput {
 	username: string;
