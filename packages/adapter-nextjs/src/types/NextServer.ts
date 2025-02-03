@@ -91,7 +91,20 @@ export declare namespace NextServer {
 	}
 
 	export interface CreateServerRunnerOutput {
+		/**
+		 * The function to run an operation with the Amplify server context. The operation is a callback function that
+		 * takes a context spec parameter which is used to call the Amplify-side server APIs. The result of the operation
+		 * is returned as a promise.
+		 */
 		runWithAmplifyServerContext: RunOperationWithContext;
+		/**
+		 * The factory function to create the route handlers for the Amplify server-side authentication. You can call this
+		 * function and export the result as the route handlers in the Next.js API routes, to authenticate your end users
+		 * on the server side.
+		 *
+		 * Note: when enabling server-side authentication, Amplify APIs can no longer be used in the client-side.
+		 * @experimental
+		 */
 		createAuthRouteHandlers: CreateAuthRouteHandlers;
 	}
 
