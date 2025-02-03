@@ -148,7 +148,7 @@ jobs:
             yarn "$E2E_YARN_SCRIPT" "$E2E_YARN_SCRIPT_ARGS"
           fi
       - name: Upload artifact
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        uses: actions/upload-artifact@4  
         if: failure()
         with:
           name: ${{ inputs.test_name }}
