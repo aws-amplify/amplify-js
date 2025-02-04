@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.70](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.69...@aws-amplify/datastore@5.0.70) (2025-02-04)
+
+### Bug Fixes
+
+- **deps:** fix more implicit deps and add linting ([#14137](https://github.com/aws-amplify/amplify-js/issues/14137)) ([22ca811](https://github.com/aws-amplify/amplify-js/commit/22ca811743f6729d3a00dd71726ff6b5afb44b53))
+
 ## [5.0.69](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.68...@aws-amplify/datastore@5.0.69) (2025-01-24)
 
 **Note:** Version bump only for package @aws-amplify/datastore
