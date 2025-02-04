@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.9.2...@aws-amplify/core@6.9.3) (2025-02-04)
+
+### Bug Fixes
+
+- **deps:** fix more implicit deps and add linting ([#14137](https://github.com/aws-amplify/amplify-js/issues/14137)) ([22ca811](https://github.com/aws-amplify/amplify-js/commit/22ca811743f6729d3a00dd71726ff6b5afb44b53))
+
 ## [6.9.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.9.1...@aws-amplify/core@6.9.2) (2025-01-24)
 
 **Note:** Version bump only for package @aws-amplify/core
