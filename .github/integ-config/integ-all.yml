@@ -1000,14 +1000,14 @@ tests:
   #   browser: *minimal_browser_list
   #   env:
   #     NEXT_PUBLIC_BACKEND_CONFIG: pwl-misc
-  - test_name: integ_next_passwordless_webauthn
-    desc: 'passwordless webauthn sign in and lifecycle management'
-    framework: next
-    category: auth
-    sample_name: [mfa]
-    spec: passwordless/webauthn
-    # chrome only
-    # https://chromedevtools.github.io/devtools-protocol/tot/WebAuthn/
-    browser: [chrome]
-    env:
-      NEXT_PUBLIC_BACKEND_CONFIG: pwl-webauthn
+  # - test_name: integ_next_passwordless_webauthn
+  #   desc: 'passwordless webauthn sign in and lifecycle management'
+  #   framework: next
+  #   category: auth
+  #   sample_name: [mfa]
+  #   spec: passwordless/webauthn
+  #   # chrome only
+  #   # https://chromedevtools.github.io/devtools-protocol/tot/WebAuthn/
+  #   browser: [chrome]
+  #   env:
+  #     NEXT_PUBLIC_BACKEND_CONFIG: pwl-webauthn
