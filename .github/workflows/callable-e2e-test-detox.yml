@@ -23,8 +23,12 @@ jobs:
     name: E2E-Detox ${{ inputs.test_name }}
     runs-on: macos-latest-large
     timeout-minutes: ${{ inputs.timeout_minutes }}
-
+    
     steps:
+      - name: Change to xcode verison 16.2
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 16.2
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
