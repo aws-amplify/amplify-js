@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.5.14...@aws-amplify/api-rest@3.5.15) (2025-02-05)
+
+### Bug Fixes
+
+- **v5:** using node 18 in GH actions ([#14158](https://github.com/aws-amplify/amplify-js/issues/14158)) ([4084e5c](https://github.com/aws-amplify/amplify-js/commit/4084e5cb137d45cd6aa2caef4912ed27c8f83b2f))
+
 ## [3.5.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.5.13...@aws-amplify/api-rest@3.5.14) (2024-10-30)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

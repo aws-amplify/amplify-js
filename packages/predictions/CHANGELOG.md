@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.5.17...@aws-amplify/predictions@5.5.18) (2025-02-05)
+
+### Bug Fixes
+
+- **v5:** using node 18 in GH actions ([#14158](https://github.com/aws-amplify/amplify-js/issues/14158)) ([4084e5c](https://github.com/aws-amplify/amplify-js/commit/4084e5cb137d45cd6aa2caef4912ed27c8f83b2f))
+
 ## [5.5.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.5.16...@aws-amplify/predictions@5.5.17) (2024-10-30)
 
 **Note:** Version bump only for package @aws-amplify/predictions

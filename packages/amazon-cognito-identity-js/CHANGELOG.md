@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.15](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.3.14...amazon-cognito-identity-js@6.3.15) (2025-02-05)
+
+### Bug Fixes
+
+- **amazon-cognito-identity-js:** not using latest tag ([#14156](https://github.com/aws-amplify/amplify-js/issues/14156)) ([7f259d6](https://github.com/aws-amplify/amplify-js/commit/7f259d65ebe020469350b0b7f67e0bf9125defee))
+
 ## [6.3.14](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.3.13...amazon-cognito-identity-js@6.3.14) (2024-10-15)
 
 ### Bug Fixes

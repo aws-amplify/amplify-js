@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.21...@aws-amplify/interactions@5.2.22) (2025-02-05)
+
+### Bug Fixes
+
+- **v5:** using node 18 in GH actions ([#14158](https://github.com/aws-amplify/amplify-js/issues/14158)) ([4084e5c](https://github.com/aws-amplify/amplify-js/commit/4084e5cb137d45cd6aa2caef4912ed27c8f83b2f))
+
 ## [5.2.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.20...@aws-amplify/interactions@5.2.21) (2024-10-30)
 
 **Note:** Version bump only for package @aws-amplify/interactions
