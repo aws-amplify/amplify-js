@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - feat/example-integ-test-branch/main
+      - ashwin-ci-test
 
 jobs:
   e2e:
