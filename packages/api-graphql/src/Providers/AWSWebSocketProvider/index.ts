@@ -255,6 +255,11 @@ export abstract class AWSWebSocketProvider {
 
 		return new Promise((resolve, reject) => {
 			if (this.awsRealTimeSocket) {
+				const timeoutId = setTimeout(() => {
+					cleanup();
+					reject(new Error('Publish operation timed out'));
+				}, 30000); // 30 seconds timeout
+
 				const publishListener = (event: MessageEvent) => {
 					const data = JSON.parse(event.data);
 					if (data.id === subscriptionId && data.type === 'publish_success') {
@@ -263,22 +268,47 @@ export abstract class AWSWebSocketProvider {
 								'message',
 								publishListener,
 							);
-
+						cleanup();
 						resolve();
 					}
 
 					if (data.erroredEvents && data.erroredEvents.length > 0) {
 						// TODO: handle errors
+						const errors = data.erroredEvents.map(
+							(errorEvent: any) => errorEvent.error,
+						);
+						cleanup();
+						reject(new Error(`Publish errors: ${errors.join(', ')}`));
 					}
 				};
-				this.awsRealTimeSocket.addEventListener('message', publishListener);
-				this.awsRealTimeSocket.addEventListener('close', () => {
+
+				const errorListener = (error: Event) => {
+					cleanup();
+					reject(new Error(`WebSocket error: ${error}`));
+				};
+
+				const closeListener = () => {
+					cleanup();
 					reject(new Error('WebSocket is closed'));
-				});
-				//
-				// this.awsRealTimeSocket.addEventListener('error', publishListener);
+				};
+
+				const cleanup = () => {
+					clearTimeout(timeoutId);
+					this.awsRealTimeSocket?.removeEventListener(
+						'message',
+						publishListener,
+					);
+					this.awsRealTimeSocket?.removeEventListener('error', errorListener);
+					this.awsRealTimeSocket?.removeEventListener('close', closeListener);
+				};
+
+				this.awsRealTimeSocket.addEventListener('message', publishListener);
+				this.awsRealTimeSocket.addEventListener('error', errorListener);
+				this.awsRealTimeSocket.addEventListener('close', closeListener);
 
 				this.awsRealTimeSocket.send(serializedSubscriptionMessage);
+			} else {
+				reject(new Error('WebSocket is not connected'));
 			}
 		});
 	}
