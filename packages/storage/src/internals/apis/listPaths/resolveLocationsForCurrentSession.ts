@@ -1,33 +1,33 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { PathAccess } from '../../types/credentials';
+import { PathAccess, PathPermissions } from '../../types/credentials';
 import { BucketInfo } from '../../../providers/s3/types/options';
 import { ENTITY_IDENTITY_URL } from '../../utils/constants';
-import { StorageAccess } from '../../types/common';
+
+const isPathPermissions = (value: unknown): value is PathPermissions =>
+	Array.isArray(value);
 
 const resolvePermissions = (
-	accessRule: Record<string, string[] | undefined>,
+	accessRules: Record<string, string[] | undefined>,
 	isAuthenticated: boolean,
-	groups?: string,
-) => {
-	if (!isAuthenticated) {
-		return {
-			permission: accessRule.guest,
-		};
+	includeEntityIdPath: boolean,
+	userGroup?: string,
+): string[] | undefined => {
+	if (includeEntityIdPath) {
+		return accessRules.entityidentity;
 	}
-	if (groups) {
-		const selectedKey = Object.keys(accessRule).find(access =>
-			access.includes(groups),
+	if (!isAuthenticated) {
+		return accessRules.guest;
+	}
+	if (userGroup) {
+		const selectedKey = Object.keys(accessRules).find(access =>
+			access.includes(userGroup),
 		);
 
-		return {
-			permission: selectedKey ? accessRule[selectedKey] : undefined,
-		};
+		return selectedKey ? accessRules[selectedKey] : undefined;
 	}
 
-	return {
-		permission: accessRule.authenticated,
-	};
+	return accessRules.authenticated;
 };
 
 export const resolveLocationsForCurrentSession = ({
@@ -43,36 +43,32 @@ export const resolveLocationsForCurrentSession = ({
 }): PathAccess[] => {
 	const locations: PathAccess[] = [];
 
-	for (const [, bucketInfo] of Object.entries(buckets)) {
-		const { bucketName, paths } = bucketInfo;
+	for (const { bucketName: bucket, paths } of Object.values(buckets)) {
 		if (!paths) {
 			continue;
 		}
 
 		for (const [path, accessRules] of Object.entries(paths)) {
-			const shouldIncludeEntityIdPath =
+			const includeEntityIdPath =
 				!userGroup &&
 				path.includes(ENTITY_IDENTITY_URL) &&
 				isAuthenticated &&
-				identityId;
+				!!identityId;
 
-			if (shouldIncludeEntityIdPath) {
-				locations.push({
-					type: 'PREFIX',
-					permission: accessRules.entityidentity as StorageAccess[],
-					bucket: bucketName,
-					prefix: path.replace(ENTITY_IDENTITY_URL, identityId),
-				});
+			const permissions = resolvePermissions(
+				accessRules,
+				isAuthenticated,
+				includeEntityIdPath,
+				userGroup,
+			);
+
+			if (isPathPermissions(permissions)) {
+				const prefix = !includeEntityIdPath
+					? path
+					: path.replace(ENTITY_IDENTITY_URL, identityId);
+
+				locations.push({ bucket, permissions, prefix, type: 'PREFIX' });
 			}
-
-			const location = {
-				type: 'PREFIX',
-				...resolvePermissions(accessRules, isAuthenticated, userGroup),
-				bucket: bucketName,
-				prefix: path,
-			};
-
-			if (location.permission) locations.push(location as PathAccess);
 		}
 	}
 

@@ -1,4 +1,5 @@
 import { resolveLocationsForCurrentSession } from '../../../../src/internals/apis/listPaths/resolveLocationsForCurrentSession';
+import { PathAccess } from '../../../../src/internals/types/credentials';
 import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 describe('resolveLocationsForCurrentSession', () => {
@@ -39,20 +40,22 @@ describe('resolveLocationsForCurrentSession', () => {
 			identityId: '12345',
 		});
 
-		expect(result).toEqual([
+		const expected: PathAccess[] = [
 			{
 				type: 'PREFIX',
-				permission: ['get', 'list', 'write'],
+				permissions: ['get', 'list', 'write'],
 				bucket: 'bucket1',
 				prefix: 'path1/*',
 			},
 			{
 				type: 'PREFIX',
-				permission: ['get', 'list', 'write', 'delete'],
+				permissions: ['get', 'list', 'write', 'delete'],
 				bucket: 'bucket1',
 				prefix: 'profile-pictures/12345/*',
 			},
-		]);
+		];
+
+		expect(result).toEqual(expected);
 	});
 
 	it('should generate locations correctly when tokens are true & userGroup', () => {
@@ -63,14 +66,16 @@ describe('resolveLocationsForCurrentSession', () => {
 			userGroup: 'admin',
 		});
 
-		expect(result).toEqual([
+		const expected: PathAccess[] = [
 			{
 				type: 'PREFIX',
-				permission: ['get', 'list', 'write', 'delete'],
+				permissions: ['get', 'list', 'write', 'delete'],
 				bucket: 'bucket1',
 				prefix: 'path2/*',
 			},
-		]);
+		];
+
+		expect(result).toEqual(expected);
 	});
 
 	it('should return empty locations when tokens are true & bad userGroup', () => {
@@ -107,14 +112,16 @@ describe('resolveLocationsForCurrentSession', () => {
 			identityId: '12345',
 		});
 
-		expect(result).toEqual([
+		const expected: PathAccess[] = [
 			{
 				type: 'PREFIX',
-				permission: ['get', 'list', 'write'],
+				permissions: ['get', 'list', 'write'],
 				bucket: 'bucket1',
 				prefix: 'path1/*',
 			},
-		]);
+		];
+
+		expect(result).toEqual(expected);
 	});
 
 	it('should generate locations correctly when tokens are false', () => {
@@ -123,19 +130,21 @@ describe('resolveLocationsForCurrentSession', () => {
 			isAuthenticated: false,
 		});
 
-		expect(result).toEqual([
+		const expected: PathAccess[] = [
 			{
 				type: 'PREFIX',
-				permission: ['get', 'list'],
+				permissions: ['get', 'list'],
 				bucket: 'bucket1',
 				prefix: 'path1/*',
 			},
 			{
 				type: 'PREFIX',
-				permission: ['read'],
+				permissions: ['read'],
 				bucket: 'bucket2',
 				prefix: 'path3/*',
 			},
-		]);
+		];
+
+		expect(result).toEqual(expected);
 	});
 });

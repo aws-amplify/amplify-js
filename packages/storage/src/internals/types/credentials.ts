@@ -82,6 +82,8 @@ export interface LocationAccess extends CredentialsLocation {
 	readonly type: LocationType;
 }
 
+export type PathPermissions = StorageAccess[];
+
 /**
  * @internal
  */
@@ -89,7 +91,7 @@ export interface PathAccess {
 	/** The Amplify backend mandates that all paths conclude with '/*',
 	 * which means the only applicable type in this context is 'PREFIX'. */
 	type: 'PREFIX';
-	permission: StorageAccess[];
+	permissions: PathPermissions;
 	bucket: string;
 	prefix: string;
 }
