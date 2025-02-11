@@ -97,14 +97,16 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 			query,
 			apiKey,
 			region,
+			variables,
 		} = options;
 
 		// This will be needed for WS publish
-		// const data = {
-		// 	events: [variables],
-		// };
+		const data = {
+			channel: query,
+			events: [variables],
+		};
 
-		const serializedData = JSON.stringify({ channel: query });
+		const serializedData = JSON.stringify(data);
 
 		const headers = {
 			...(await awsRealTimeHeaderBasedAuth({
@@ -125,18 +127,18 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		const subscriptionMessage = {
 			id: subscriptionId,
 			channel: query,
-			// events: [JSON.stringify(variables)],
+			events: [JSON.stringify(variables)],
 			authorization: {
 				...headers,
 			},
-			// payload: {
-			// 	events: serializedData,
-			// 	extensions: {
-			// 		authorization: {
-			// 			...headers,
-			// 		},
-			// 	},
-			// },
+			payload: {
+				events: serializedData,
+				extensions: {
+					authorization: {
+						...headers,
+					},
+				},
+			},
 			type: publish
 				? MESSAGE_TYPES.EVENT_PUBLISH
 				: MESSAGE_TYPES.EVENT_SUBSCRIBE,

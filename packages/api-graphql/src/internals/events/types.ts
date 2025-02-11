@@ -3,6 +3,7 @@
 
 import { Subscription } from 'rxjs';
 import type { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { DocumentType } from '@aws-amplify/core/internals/utils';
 
 export interface SubscriptionObserver<T> {
 	next(value: T): void;
@@ -51,6 +52,15 @@ export interface EventsChannel {
 	 *
 	 */
 	close(): void;
+	/**
+	 *
+	 * @param event
+	 * @param pubOptions
+	 *
+	 * @example
+	 * await channel.publish({ some: "data" });
+	 */
+	publish(event: DocumentType, pubOptions?: EventsOptions): Promise<any>;
 }
 
 export type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
