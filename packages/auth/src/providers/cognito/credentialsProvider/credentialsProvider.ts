@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	Amplify,
 	AuthTokens,
 	ConsoleLogger,
 	CredentialsAndIdentityId,
@@ -42,8 +43,11 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 	async clearCredentialsAndIdentityId(): Promise<void> {
 		logger.debug('Clearing out credentials and identityId');
+		// fixed: when tab/app is refereshed, we need to recreate the authKeys formed using identityPoolId to delete from local storage
+		const authConfig = Amplify.getConfig().Auth?.Cognito;
 		this._credentialsAndIdentityId = undefined;
-		await this._identityIdStore.clearIdentityId();
+		if (authConfig?.identityPoolId)
+			await this._identityIdStore.clearIdentityId(authConfig.identityPoolId);
 	}
 
 	async clearCredentials(): Promise<void> {
@@ -141,10 +145,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				res.identityId = identityIdRes;
-				this._identityIdStore.storeIdentityId({
-					id: identityIdRes,
-					type: 'guest',
-				});
+				this._identityIdStore.storeIdentityId(identityIdRes);
 			}
 			this._credentialsAndIdentityId = {
 				...res,
@@ -206,7 +207,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					sessionToken: clientResult.Credentials.SessionToken,
 					expiration: clientResult.Credentials.Expiration,
 				},
-				identityId,
+				identityId: clientResult.IdentityId,
 			};
 			// Store the credentials in-memory along with the expiration
 			this._credentialsAndIdentityId = {
@@ -216,13 +217,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			};
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 
-			const identityIdRes = clientResult.IdentityId;
-			if (identityIdRes) {
-				res.identityId = identityIdRes;
-				this._identityIdStore.storeIdentityId({
-					id: identityIdRes,
-					type: 'primary',
-				});
+			if (res.identityId) {
+				this._identityIdStore.storeIdentityId(res.identityId);
 			}
 
 			return res;

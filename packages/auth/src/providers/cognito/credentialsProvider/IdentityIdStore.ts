@@ -4,7 +4,6 @@
 import {
 	AuthConfig,
 	ConsoleLogger,
-	Identity,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
 import { assertIdentityPoolIdConfig } from '@aws-amplify/core/internals/utils';
@@ -20,10 +19,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	keyValueStorage: KeyValueStorageInterface;
 	authConfig?: AuthConfig;
 
-	// Used as in-memory storage
-	_primaryIdentityId: string | undefined;
 	_authKeys: AuthKeys<string> = {};
-	_hasGuestIdentityId = false;
 
 	setAuthConfig(authConfigParam: AuthConfig) {
 		assertIdentityPoolIdConfig(authConfigParam.Cognito);
@@ -38,30 +34,17 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		this.keyValueStorage = keyValueStorage;
 	}
 
-	async loadIdentityId(): Promise<Identity | null> {
+	async loadIdentityId(): Promise<string | null> {
 		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
 		try {
-			if (this._primaryIdentityId) {
-				return {
-					id: this._primaryIdentityId,
-					type: 'primary',
-				};
-			} else {
-				const storedIdentityId = await this.keyValueStorage.getItem(
-					this._authKeys.identityId,
-				);
-
-				if (storedIdentityId) {
-					this._hasGuestIdentityId = true;
-
-					return {
-						id: storedIdentityId,
-						type: 'guest',
-					};
-				}
-
-				return null;
+			const storedIdentityId = await this.keyValueStorage.getItem(
+				this._authKeys.identityId,
+			);
+			if (storedIdentityId) {
+				return storedIdentityId;
 			}
+
+			return null;
 		} catch (err) {
 			logger.log('Error getting stored IdentityId.', err);
 
@@ -69,26 +52,17 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		}
 	}
 
-	async storeIdentityId(identity: Identity): Promise<void> {
+	async storeIdentityId(identity: string): Promise<void> {
 		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
-
-		if (identity.type === 'guest') {
-			this.keyValueStorage.setItem(this._authKeys.identityId, identity.id);
-			// Clear in-memory storage of primary identityId
-			this._primaryIdentityId = undefined;
-			this._hasGuestIdentityId = true;
-		} else {
-			this._primaryIdentityId = identity.id;
-			// Clear locally stored guest id
-			if (this._hasGuestIdentityId) {
-				this.keyValueStorage.removeItem(this._authKeys.identityId);
-				this._hasGuestIdentityId = false;
-			}
-		}
+		this.keyValueStorage.setItem(this._authKeys.identityId, identity);
 	}
 
-	async clearIdentityId(): Promise<void> {
-		this._primaryIdentityId = undefined;
+	async clearIdentityId(identityPoolId: string): Promise<void> {
+		// fixed: we need to generate the authKeys in the case of tab/app refresh before calling this method.
+		if (!this._authKeys.identityId) {
+			logger.debug('No auth keys present, so generating it.');
+			this._authKeys = createKeysForAuthStorage('Cognito', identityPoolId);
+		}
 		await this.keyValueStorage.removeItem(this._authKeys.identityId);
 	}
 }
