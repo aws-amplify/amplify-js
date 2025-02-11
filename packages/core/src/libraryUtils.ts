@@ -59,6 +59,8 @@ export {
 	ModelAttribute,
 	SecondaryIndexAttribute,
 	GraphQLProviderConfig,
+	RetryDecider,
+	RetryStrategy,
 } from './singleton/API/types';
 export { Signer } from './Signer';
 export {

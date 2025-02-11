@@ -5,7 +5,6 @@ import {
 	Headers,
 	HttpRequest,
 	authenticatedHandler,
-	getRetryDecider,
 	jitteredBackoff,
 	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
@@ -14,13 +13,11 @@ import {
 	DocumentType,
 } from '@aws-amplify/core/internals/utils';
 
-import {
-	logger,
-	parseRestApiServiceError,
-	parseSigningInfo,
-} from '../../utils';
+import { logger, parseSigningInfo } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
 import { RestApiResponse, SigningServiceInfo } from '../../types';
+
+import { getRetryDeciderForStrategy } from './getRetryDeciderForStrategy';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
@@ -62,7 +59,9 @@ export const transferHandler = async (
 		body: resolvedBody,
 	};
 	const baseOptions = {
-		retryDecider: getRetryDecider(parseRestApiServiceError),
+		retryDecider: getRetryDeciderForStrategy(
+			amplify.libraryOptions.API?.retryStrategy,
+		),
 		computeDelay: jitteredBackoff,
 		withCrossDomainCredentials: withCredentials,
 		abortSignal,

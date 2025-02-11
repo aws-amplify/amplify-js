@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Headers } from '../../clients';
+import { Headers, HttpResponse } from '../../clients';
 import { AtLeastOne } from '../types';
 
 export interface LibraryAPIOptions {
@@ -16,7 +16,34 @@ export interface LibraryAPIOptions {
 		// custom headers for given REST service. Will be applied to all operations.
 		headers?(options: { apiName: string }): Promise<Headers>;
 	};
+	retryStrategy?: RetryStrategy;
 }
+
+export type RetryDecider = (
+	response?: HttpResponse,
+	error?: unknown,
+) => Promise<{ retryable: boolean }>;
+
+export type RetryStrategy =
+	| {
+			/**
+			 * Default strategy. Jittered retry on server errors.
+			 */
+			strategy: 'default';
+	  }
+	| {
+			/**
+			 * Disables retries for API category network requests.
+			 */
+			strategy: 'no-retry';
+	  }
+	| {
+			/**
+			 * Custom retry strategy. Must provide retry decider.
+			 */
+			strategy: 'custom';
+			retryDecider: RetryDecider;
+	  };
 
 export interface APIGraphQLConfig {
 	/**
