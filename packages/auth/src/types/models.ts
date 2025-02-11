@@ -332,4 +332,5 @@ export interface AWSAuthUser {
  */
 export interface AuthDevice {
 	id: string;
+	name?: string;
 }
