@@ -1,5 +1,6 @@
 module.exports = {
 	...require('../../jest.config'),
+	testEnvironment: 'node',
 	coverageThreshold: {
 		global: {
 			branches: 88,

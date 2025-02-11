@@ -1,5 +1,5 @@
-import { ResourcesConfig } from '@aws-amplify/core';
-import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
+import { ResourcesConfig } from 'aws-amplify';
+import { parseAmplifyConfig } from 'aws-amplify/utils';
 
 import {
 	generateServerClientUsingCookies,
@@ -34,8 +34,8 @@ jest.mock('../../src/utils', () => ({
 	createRunWithAmplifyServerContext: jest.fn(() => jest.fn()),
 	createCookieStorageAdapterFromNextServerContext: jest.fn(),
 }));
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
+jest.mock('aws-amplify/utils', () => ({
+	...jest.requireActual('aws-amplify/utils'),
 	parseAmplifyConfig: jest.fn(() => mockAmplifyConfig),
 }));
 
@@ -95,7 +95,7 @@ describe('generateServerClient', () => {
 			graphql: mockGraphql,
 		}));
 
-		jest.mock('@aws-amplify/core/internals/adapter-core', () => ({
+		jest.mock('aws-amplify/adapter-core/internals', () => ({
 			getAmplifyServerContext: jest.fn(),
 		}));
 
