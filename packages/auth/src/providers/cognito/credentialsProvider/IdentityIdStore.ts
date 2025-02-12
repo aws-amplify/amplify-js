@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	Amplify,
 	AuthConfig,
 	ConsoleLogger,
 	Identity,
@@ -90,17 +89,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 
 	async clearIdentityId(): Promise<void> {
 		this._primaryIdentityId = undefined;
-		// Re-generate the authKeys in case of tab/app is refreshed.
-		const authConfig =
-			this.authConfig?.Cognito ?? Amplify.getConfig().Auth?.Cognito;
-		if (authConfig?.identityPoolId) {
-			logger.debug('No auth keys present, so generating it.');
-			this._authKeys = createKeysForAuthStorage(
-				'Cognito',
-				authConfig.identityPoolId,
-			);
-			await this.keyValueStorage.removeItem(this._authKeys.identityId);
-		}
+		await this.keyValueStorage.removeItem(this._authKeys.identityId);
 	}
 }
 
