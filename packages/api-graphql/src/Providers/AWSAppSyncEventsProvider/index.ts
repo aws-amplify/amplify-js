@@ -12,6 +12,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 import { DEFAULT_KEEP_ALIVE_TIMEOUT, MESSAGE_TYPES } from '../constants';
 import { AWSWebSocketProvider } from '../AWSWebSocketProvider';
 import { awsRealTimeHeaderBasedAuth } from '../AWSWebSocketProvider/authHeaders';
+import { serializeEvents } from '../../internals/events/utils';
 
 // resolved/actual AuthMode values. identityPool gets resolves to IAM upstream in InternalGraphQLAPI._graphqlSubscribe
 type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
@@ -103,7 +104,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		// This will be needed for WS publish
 		const data = {
 			channel: query,
-			events: [variables],
+			events: variables,
 		};
 
 		const serializedData = JSON.stringify(data);
@@ -127,7 +128,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		const subscriptionMessage = {
 			id: subscriptionId,
 			channel: query,
-			events: [JSON.stringify(variables)],
+			events: variables !== undefined ? serializeEvents(variables) : undefined,
 			authorization: {
 				...headers,
 			},
