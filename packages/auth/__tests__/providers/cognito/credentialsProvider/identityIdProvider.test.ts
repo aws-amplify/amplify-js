@@ -17,7 +17,9 @@ jest.mock('@aws-amplify/core', () => ({
 	getId: jest.fn(),
 }));
 jest.mock('@aws-amplify/core/internals/aws-clients/cognitoIdentity');
-jest.mock('../../../src/providers/cognito/credentialsProvider/IdentityIdStore');
+jest.mock(
+	'../../../../src/providers/cognito/credentialsProvider/IdentityIdStore',
+);
 
 const ampConfig: ResourcesConfig = {
 	Auth: {

@@ -136,11 +136,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					sessionToken: clientResult.Credentials.SessionToken,
 					expiration: clientResult.Credentials.Expiration,
 				},
-				identityId: clientResult.IdentityId,
+				identityId,
 			};
-			if (res.identityId) {
+			if (clientResult.IdentityId) {
+				res.identityId = clientResult.IdentityId;
 				this._identityIdStore.storeIdentityId({
-					id: res.identityId,
+					id: clientResult.IdentityId,
 					type: 'guest',
 				});
 			}
@@ -204,7 +205,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					sessionToken: clientResult.Credentials.SessionToken,
 					expiration: clientResult.Credentials.Expiration,
 				},
-				identityId: clientResult.IdentityId,
+				identityId,
 			};
 			// Store the credentials in-memory along with the expiration
 			this._credentialsAndIdentityId = {
@@ -214,9 +215,10 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			};
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 
-			if (res.identityId) {
+			if (clientResult.IdentityId) {
+				res.identityId = clientResult.IdentityId;
 				this._identityIdStore.storeIdentityId({
-					id: res.identityId,
+					id: clientResult.IdentityId,
 					type: 'primary',
 				});
 			}

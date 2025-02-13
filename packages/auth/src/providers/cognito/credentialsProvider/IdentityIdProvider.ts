@@ -41,27 +41,15 @@ export async function cognitoIdentityIdProvider({
 		return identityId.id;
 	} else {
 		logger.debug('Generating a new identityId as it was not found in cache.');
-
-		let generatedIdentityId;
-		if (tokens) {
-			const logins = tokens.idToken
-				? formLoginsMap(tokens.idToken.toString())
-				: {};
-
-			generatedIdentityId = await generateIdentityId(logins, authConfig);
-			// Store generated identityId
-			identityIdStore.storeIdentityId({
-				id: generatedIdentityId,
-				type: 'primary',
-			});
-		} else {
-			generatedIdentityId = await generateIdentityId({}, authConfig);
-			// Store generated identityId
-			identityIdStore.storeIdentityId({
-				id: generatedIdentityId,
-				type: 'guest',
-			});
-		}
+		const logins = tokens?.idToken
+			? formLoginsMap(tokens.idToken.toString())
+			: {};
+		const generatedIdentityId = await generateIdentityId(logins, authConfig);
+		// Store generated identityId
+		identityIdStore.storeIdentityId({
+			id: generatedIdentityId,
+			type: tokens ? 'primary' : 'guest',
+		});
 
 		return generatedIdentityId;
 	}
