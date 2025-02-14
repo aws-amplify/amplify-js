@@ -15,24 +15,24 @@
 
 # The following paths involve server-side use cases, token/user session management.
 # Changes made to these paths requires additional reviews and approvals.
-/packages/auth @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/aws-amplify/src/adapter-core @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/adapterCore @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/singleton @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/utils/convert @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/utils/WordArray.ts @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/storage @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/utils/generateRandomString.ts @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/utils/globalHelpers @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/utils/urlSafeDecode.ts @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/awsClients/cognitoIdentity @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/clients/internal @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/core/src/Hub @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/adapter-nextjs @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/rtn-web-browser @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/storage/src/providers/s3/apis/internal @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/storage/src/providers/s3/apis/server @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/api-rest/src/apis/server.ts @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/api-rest/src/apis/common/internalPost.ts @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/api-graphql/src/server @sktimalsina @cshfang @HuiSF @pranavosu
-/packages/api-graphql/src/internals/server @sktimalsina @cshfang @HuiSF @pranavosu
+/packages/auth @cshfang @HuiSF @akasivis
+/packages/aws-amplify/src/adapter-core @cshfang @HuiSF @akasivis
+/packages/core/src/adapterCore @cshfang @HuiSF @akasivis
+/packages/core/src/singleton @cshfang @HuiSF @akasivis
+/packages/core/src/utils/convert @cshfang @HuiSF @akasivis
+/packages/core/src/utils/WordArray.ts @cshfang @HuiSF @akasivis
+/packages/core/src/storage @cshfang @HuiSF @akasivis
+/packages/core/src/utils/generateRandomString.ts @cshfang @HuiSF @akasivis
+/packages/core/src/utils/globalHelpers @cshfang @HuiSF @akasivis
+/packages/core/src/utils/urlSafeDecode.ts @cshfang @HuiSF @akasivis
+/packages/core/src/awsClients/cognitoIdentity @cshfang @HuiSF @akasivis
+/packages/core/src/clients/internal @cshfang @HuiSF @akasivis
+/packages/core/src/Hub @cshfang @HuiSF @akasivis
+/packages/adapter-nextjs @cshfang @HuiSF @akasivis
+/packages/rtn-web-browser @cshfang @HuiSF @akasivis
+/packages/storage/src/providers/s3/apis/internal @cshfang @HuiSF @akasivis
+/packages/storage/src/providers/s3/apis/server @cshfang @HuiSF @akasivis
+/packages/api-rest/src/apis/server.ts @cshfang @HuiSF @akasivis
+/packages/api-rest/src/apis/common/internalPost.ts @cshfang @HuiSF @akasivis
+/packages/api-graphql/src/server @cshfang @HuiSF @akasivis
+/packages/api-graphql/src/internals/server @cshfang @HuiSF @akasivis
