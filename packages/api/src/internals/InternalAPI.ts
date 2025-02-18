@@ -82,6 +82,7 @@ export class InternalAPIClass {
 		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails,
 	): Promise<GraphQLResult<any>> | Observable<object> {
+		Amplify.assertConfigured();
 		const apiUserAgentDetails: CustomUserAgentDetails = {
 			category: Category.API,
 			action: ApiAction.GraphQl,

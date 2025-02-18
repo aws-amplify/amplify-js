@@ -29,6 +29,7 @@ const MAX_DEVICES = 60;
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function fetchDevices(): Promise<FetchDevicesOutput> {
+	Amplify.assertConfigured();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

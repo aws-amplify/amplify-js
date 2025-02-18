@@ -9,6 +9,7 @@ import { PushNotificationValidationErrorCode, assert } from '../../../errors';
  * @internal
  */
 export const resolveConfig = () => {
+	Amplify.assertConfigured();
 	const { appId, region } =
 		Amplify.getConfig().Notifications?.PushNotification?.Pinpoint ?? {};
 	assert(!!appId, PushNotificationValidationErrorCode.NoAppId);

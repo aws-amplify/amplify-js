@@ -41,6 +41,7 @@ export async function appsyncRequest<T = any>(
 	abortController: AbortController,
 	customUserAgentDetails?: CustomUserAgentDetails,
 ): Promise<T> {
+	amplify.assertConfigured();
 	const {
 		region,
 		appSyncGraphqlEndpoint: endpoint,

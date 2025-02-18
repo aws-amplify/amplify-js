@@ -17,5 +17,7 @@ import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentU
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const getCurrentUser = async (): Promise<GetCurrentUserOutput> => {
+	Amplify.assertConfigured();
+
 	return getCurrentUserInternal(Amplify);
 };

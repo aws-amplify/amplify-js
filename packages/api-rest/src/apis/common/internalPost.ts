@@ -57,6 +57,7 @@ export const post = (
 	amplify: AmplifyClassV6,
 	{ url, options, abortController }: InternalPostInput,
 ): Promise<RestApiResponse> => {
+	amplify.assertConfigured();
 	const controller = abortController ?? new AbortController();
 	const responsePromise = createCancellableOperation(async () => {
 		const response = transferHandler(

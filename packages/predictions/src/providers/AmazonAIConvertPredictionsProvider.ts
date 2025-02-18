@@ -81,6 +81,7 @@ export class AmazonAIConvertPredictionsProvider {
 	protected async translateText(
 		input: TranslateTextInput,
 	): Promise<TranslateTextOutput> {
+		Amplify.assertConfigured();
 		logger.debug('Starting translation');
 
 		const { translateText = {} } =
@@ -135,6 +136,7 @@ export class AmazonAIConvertPredictionsProvider {
 	protected async convertTextToSpeech(
 		input: TextToSpeechInput,
 	): Promise<TextToSpeechOutput> {
+		Amplify.assertConfigured();
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
@@ -190,6 +192,7 @@ export class AmazonAIConvertPredictionsProvider {
 	protected async convertSpeechToText(
 		input: SpeechToTextInput,
 	): Promise<SpeechToTextOutput> {
+		Amplify.assertConfigured();
 		logger.debug('starting transcription..');
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(

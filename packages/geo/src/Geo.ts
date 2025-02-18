@@ -38,7 +38,7 @@ export class GeoClass {
 	constructor() {
 		this._config = undefined;
 		this._pluggables = [];
-
+		Amplify.assertConfigured();
 		const amplifyConfig = Amplify.getConfig() ?? {};
 		this._config = Object.assign({}, this._config, amplifyConfig.Geo);
 

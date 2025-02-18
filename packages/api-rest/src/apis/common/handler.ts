@@ -48,6 +48,7 @@ export const transferHandler = async (
 	) => boolean,
 	signingServiceInfo?: SigningServiceInfo,
 ): Promise<RestApiResponse> => {
+	amplify.assertConfigured();
 	const { url, method, headers, body, withCredentials, abortSignal } = options;
 	const resolvedBody = body
 		? body instanceof FormData
@@ -101,6 +102,7 @@ export const transferHandler = async (
 const resolveCredentials = async (
 	amplify: AmplifyClassV6,
 ): Promise<AWSCredentials | null> => {
+	amplify.assertConfigured();
 	try {
 		const { credentials } = await amplify.Auth.fetchAuthSession();
 		if (credentials) {

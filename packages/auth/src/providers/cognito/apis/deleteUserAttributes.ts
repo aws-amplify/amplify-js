@@ -25,6 +25,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 export async function deleteUserAttributes(
 	input: DeleteUserAttributesInput,
 ): Promise<void> {
+	Amplify.assertConfigured();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userAttributeKeys } = input;

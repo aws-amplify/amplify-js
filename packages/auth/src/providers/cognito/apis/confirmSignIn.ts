@@ -52,6 +52,7 @@ import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 export async function confirmSignIn(
 	input: ConfirmSignInInput,
 ): Promise<ConfirmSignInOutput> {
+	Amplify.assertConfigured();
 	const { challengeResponse, options } = input;
 	const { username, challengeName, signInSession, signInDetails } =
 		signInStore.getState();

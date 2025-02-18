@@ -25,6 +25,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function forgetDevice(input?: ForgetDeviceInput): Promise<void> {
+	Amplify.assertConfigured();
 	const { device: { id: externalDeviceKey } = { id: undefined } } = input ?? {};
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);

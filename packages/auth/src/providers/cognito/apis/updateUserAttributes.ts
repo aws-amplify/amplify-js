@@ -36,6 +36,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 export const updateUserAttributes = async (
 	input: UpdateUserAttributesInput,
 ): Promise<UpdateUserAttributesOutput> => {
+	Amplify.assertConfigured();
 	const { userAttributes, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const clientMetadata = options?.clientMetadata;

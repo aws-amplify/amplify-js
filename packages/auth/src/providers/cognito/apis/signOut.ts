@@ -44,6 +44,7 @@ const logger = new ConsoleLogger('Auth');
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signOut(input?: SignOutInput): Promise<void> {
+	Amplify.assertConfigured();
 	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 

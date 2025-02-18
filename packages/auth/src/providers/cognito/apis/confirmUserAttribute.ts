@@ -29,6 +29,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 export async function confirmUserAttribute(
 	input: ConfirmUserAttributeInput,
 ): Promise<void> {
+	Amplify.assertConfigured();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

@@ -33,6 +33,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 export async function resetPassword(
 	input: ResetPasswordInput,
 ): Promise<ResetPasswordOutput> {
+	Amplify.assertConfigured();
 	const { username } = input;
 	assertValidationError(
 		!!username,

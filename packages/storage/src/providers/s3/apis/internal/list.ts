@@ -54,6 +54,7 @@ export const list = async (
 	| ListAllWithPathOutput
 	| ListPaginateWithPathOutput
 > => {
+	amplify.assertConfigured();
 	const { options = {} } = input;
 	const {
 		s3Config,

@@ -730,6 +730,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	}
 
 	private _refreshConfig() {
+		Amplify.assertConfigured();
 		this._config = Amplify.getConfig().Geo?.LocationService;
 		if (!this._config) {
 			const errorString =

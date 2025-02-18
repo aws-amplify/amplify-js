@@ -41,6 +41,7 @@ async function connect(
 	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel> {
+	Amplify.assertConfigured();
 	const providerOptions = configure();
 
 	providerOptions.authenticationType = normalizeAuth(
@@ -124,6 +125,7 @@ async function post(
 	event: DocumentType | DocumentType[],
 	options?: EventsOptions,
 ): Promise<void | PublishedEvent[]> {
+	Amplify.assertConfigured();
 	const providerOptions = configure();
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,

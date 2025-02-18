@@ -21,6 +21,7 @@ export const remove = async (
 	amplify: AmplifyClassV6,
 	input: RemoveInput | RemoveWithPathInputWithAdvancedOptions,
 ): Promise<RemoveOutput | RemoveWithPathOutput> => {
+	amplify.assertConfigured();
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify, input);
 

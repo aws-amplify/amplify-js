@@ -37,6 +37,7 @@ import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput,
 ): Promise<void> {
+	Amplify.assertConfigured();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);

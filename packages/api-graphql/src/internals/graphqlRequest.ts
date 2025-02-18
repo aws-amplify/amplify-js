@@ -16,6 +16,7 @@ export async function graphqlRequest(
 	abortController: AbortController,
 	_post?: typeof post,
 ) {
+	amplify.assertConfigured();
 	const p = _post ?? post;
 
 	const { body: responseBody } = await p(amplify, {

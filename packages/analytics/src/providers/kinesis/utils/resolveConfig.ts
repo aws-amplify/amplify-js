@@ -11,6 +11,7 @@ import {
 import { DEFAULT_KINESIS_CONFIG } from './constants';
 
 export const resolveConfig = () => {
+	Amplify.assertConfigured();
 	const config = Amplify.getConfig().Analytics?.Kinesis;
 	const {
 		region,

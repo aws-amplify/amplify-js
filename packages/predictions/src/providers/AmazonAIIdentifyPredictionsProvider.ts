@@ -166,6 +166,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyText(
 		input: IdentifyTextInput,
 	): Promise<IdentifyTextOutput> {
+		Amplify.assertConfigured();
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
@@ -258,6 +259,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyLabels(
 		input: IdentifyLabelsInput,
 	): Promise<IdentifyLabelsOutput> {
+		Amplify.assertConfigured();
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
@@ -360,6 +362,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyEntities(
 		input: IdentifyEntitiesInput,
 	): Promise<IdentifyEntitiesOutput> {
+		Amplify.assertConfigured();
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,

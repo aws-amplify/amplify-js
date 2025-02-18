@@ -31,6 +31,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 export const sendUserAttributeVerificationCode = async (
 	input: SendUserAttributeVerificationCodeInput,
 ): Promise<SendUserAttributeVerificationCodeOutput> => {
+	Amplify.assertConfigured();
 	const { userAttributeKey, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const clientMetadata = options?.clientMetadata;

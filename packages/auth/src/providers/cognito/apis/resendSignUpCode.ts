@@ -31,6 +31,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 export async function resendSignUpCode(
 	input: ResendSignUpCodeInput,
 ): Promise<ResendSignUpCodeOutput> {
+	Amplify.assertConfigured();
 	const { username } = input;
 	assertValidationError(
 		!!username,

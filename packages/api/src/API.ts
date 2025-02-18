@@ -18,6 +18,8 @@ export function generateClient<
 	T extends Record<any, any> = never,
 	Options extends CommonPublicClientOptions = DefaultCommonClientOptions,
 >(options?: Options): V6Client<T, Options> {
+	Amplify.assertConfigured();
+
 	return internalGenerateClient({
 		...(options || ({} as any)),
 		amplify: Amplify,

@@ -55,6 +55,7 @@ import { resetAutoSignIn } from './autoSignIn';
 export async function signInWithUserAuth(
 	input: SignInWithUserAuthInput,
 ): Promise<SignInWithUserAuthOutput> {
+	Amplify.assertConfigured();
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signInDetails: CognitoAuthSignInDetails = {

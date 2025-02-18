@@ -49,6 +49,7 @@ import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 export async function signInWithCustomSRPAuth(
 	input: SignInWithCustomSRPAuthInput,
 ): Promise<SignInWithCustomSRPAuthOutput> {
+	Amplify.assertConfigured();
 	const { username, password, options } = input;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,

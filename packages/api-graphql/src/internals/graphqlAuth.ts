@@ -19,6 +19,7 @@ export async function headerBasedAuth(
 	apiKey: string | undefined,
 	additionalHeaders: Record<string, string> = {},
 ) {
+	amplify.assertConfigured();
 	let headers = {};
 
 	switch (authMode) {
