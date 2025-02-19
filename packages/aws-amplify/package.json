@@ -370,7 +370,7 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "12.71 kB"
+			"limit": "12.81 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
@@ -442,7 +442,7 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "8.09 kB"
+			"limit": "8.19 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
