@@ -17,7 +17,7 @@ import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
+	Amplify: { getConfig: jest.fn(() => ({})), assertConfigured: jest.fn() },
 }));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -35,6 +35,7 @@ describe('signIn API error path cases:', () => {
 	const mockInitiateAuth = jest.fn();
 
 	const mockedGetCurrentUser = getCurrentUser as jest.Mock;
+	const mockAssertConfigured = Amplify.assertConfigured as jest.Mock;
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -129,6 +130,26 @@ describe('signIn API error path cases:', () => {
 				name: AuthErrorCodes.SignInException,
 				message: 'Cannot initiate MFA setup from available types: SMS',
 			}),
+		);
+	});
+
+	it('throws if Amplify is not configured', async () => {
+		mockAssertConfigured.mockImplementationOnce(() => {
+			throw new Error(
+				'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+			);
+		});
+
+		const signInResultPromise = signIn({
+			username: authAPITestParams.user1.username,
+			password: authAPITestParams.user1.password,
+			options: {
+				authFlowType: 'USER_PASSWORD_AUTH',
+			},
+		});
+
+		expect(signInResultPromise).rejects.toThrow(
+			'Amplify has not been configured. Please call Amplify.configure() before using this service.',
 		);
 	});
 });

@@ -18,12 +18,27 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 	};
 
 	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
+	const assertConfiguredSpy = jest.spyOn(Amplify, 'assertConfigured');
 
 	beforeEach(() => {
 		getConfigSpy.mockReset();
+		assertConfiguredSpy.mockReset();
+	});
+
+	it('throws if Amplify is not configured', () => {
+		assertConfiguredSpy.mockImplementation(() => {
+			throw new Error(
+				'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+			);
+		});
+
+		expect(resolveConfig).toThrow(
+			'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+		);
 	});
 
 	it('returns required config', () => {
+		assertConfiguredSpy.mockImplementation(jest.fn());
 		getConfigSpy.mockReturnValue({
 			Analytics: { Personalize: providedConfig },
 		});
@@ -35,6 +50,7 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 	});
 
 	it('use default config for optional fields', () => {
+		assertConfiguredSpy.mockImplementation(jest.fn());
 		const requiredFields = {
 			region: 'us-east-1',
 			trackingId: 'trackingId1',

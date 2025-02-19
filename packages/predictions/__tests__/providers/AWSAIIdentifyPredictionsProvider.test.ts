@@ -48,6 +48,7 @@ jest.mock('@aws-amplify/core', () => ({
 	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
+		assertConfigured: jest.fn(),
 	},
 	ConsoleLogger: jest.fn(() => ({
 		debug: jest.fn(),

@@ -41,6 +41,7 @@ jest.mock('@aws-amplify/core', () => {
 		Amplify: {
 			getConfig: jest.fn(() => mockAuthConfigWithOAuth),
 			[ACTUAL_ADD_OAUTH_LISTENER]: jest.fn(),
+			assertConfigured: jest.fn(),
 		},
 		ConsoleLogger: jest.fn().mockImplementation(() => {
 			return { warn: jest.fn() };

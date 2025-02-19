@@ -23,6 +23,7 @@ jest.mock('@aws-amplify/core', () => ({
 	}),
 	Amplify: {
 		getConfig: jest.fn(),
+		assertConfigured: jest.fn(),
 		Auth: {
 			fetchAuthSession: jest.fn(),
 		},
@@ -186,6 +187,19 @@ describe('getUrl test with key', () => {
 	describe('Error cases :  With key', () => {
 		afterAll(() => {
 			jest.clearAllMocks();
+		});
+		it('throws if Amplify is not configured', async () => {
+			// Mock assertConfigured to throw an error just for this test
+			(Amplify.assertConfigured as jest.Mock).mockImplementationOnce(() => {
+				throw new Error(
+					'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+				);
+			});
+
+			// Use expect to assert that the remove function throws the expected error
+			await expect(getUrl(Amplify, { path: 'testPath' })).rejects.toThrow(
+				'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+			);
 		});
 		it('should return not found error when the object is not found', async () => {
 			(headObject as jest.Mock).mockImplementation(() => {

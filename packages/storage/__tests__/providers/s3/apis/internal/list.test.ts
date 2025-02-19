@@ -25,6 +25,7 @@ jest.mock('@aws-amplify/core', () => ({
 	}),
 	Amplify: {
 		getConfig: jest.fn(),
+		assertConfigured: jest.fn(),
 		Auth: {
 			fetchAuthSession: jest.fn(),
 		},
@@ -650,6 +651,21 @@ describe('list API', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
+
+		it('throws if Amplify is not configured', async () => {
+			// Mock assertConfigured to throw an error just for this test
+			(Amplify.assertConfigured as jest.Mock).mockImplementationOnce(() => {
+				throw new Error(
+					'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+				);
+			});
+
+			// Use expect to assert that the remove function throws the expected error
+			await expect(list(Amplify, {})).rejects.toThrow(
+				'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+			);
+		});
+
 		it('should return a not found error', async () => {
 			mockListObject.mockRejectedValueOnce(
 				Object.assign(new Error(), {

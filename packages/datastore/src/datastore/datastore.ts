@@ -1514,8 +1514,6 @@ class DataStore {
 	 * attaches a sync engine, starts it, and subscribes.
 	 */
 	start = async (): Promise<void> => {
-		Amplify.assertConfigured();
-
 		return this.runningProcesses
 			.add(async () => {
 				this.state = DataStoreState.Starting;
@@ -2221,8 +2219,6 @@ class DataStore {
 		criteria?: RecursiveModelPredicateExtender<T> | typeof PredicateAll,
 		options?: ObserveQueryOptions<T>,
 	): Observable<DataStoreSnapshot<T>> => {
-		Amplify.assertConfigured();
-
 		return new Observable<DataStoreSnapshot<T>>(observer => {
 			const items = new Map<string, T>();
 			const itemsChanged = new Map<string, T>();

@@ -9,12 +9,27 @@ import { pinpointConfig } from '../../testUtils/data';
 describe('resolveConfig', () => {
 	// create spies
 	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
+	const assertConfiguredSpy = jest.spyOn(Amplify, 'assertConfigured');
 
-	afterEach(() => {
+	beforeEach(() => {
 		getConfigSpy.mockReset();
+		assertConfiguredSpy.mockReset();
+	});
+
+	it('throws if Amplify is not configured', () => {
+		assertConfiguredSpy.mockImplementation(() => {
+			throw new Error(
+				'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+			);
+		});
+
+		expect(resolveConfig).toThrow(
+			'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+		);
 	});
 
 	it('returns required config', () => {
+		assertConfiguredSpy.mockImplementation(jest.fn());
 		getConfigSpy.mockReturnValue({
 			Notifications: {
 				PushNotification: { Pinpoint: pinpointConfig },
@@ -24,6 +39,7 @@ describe('resolveConfig', () => {
 	});
 
 	it('throws if appId is missing', () => {
+		assertConfiguredSpy.mockImplementation(jest.fn());
 		getConfigSpy.mockReturnValue({
 			Notifications: {
 				PushNotification: {

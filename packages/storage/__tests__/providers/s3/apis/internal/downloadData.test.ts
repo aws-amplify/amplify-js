@@ -34,6 +34,7 @@ jest.mock('@aws-amplify/core', () => ({
 	}),
 	Amplify: {
 		getConfig: jest.fn(),
+		assertConfigured: jest.fn(),
 		Auth: {
 			fetchAuthSession: jest.fn(),
 		},
@@ -541,6 +542,28 @@ describe('downloadData with path', () => {
 				expect.objectContaining({
 					ExpectedBucketOwner: validBucketOwner,
 				}),
+			);
+		});
+	});
+
+	describe('Error cases', () => {
+		it('throws if Amplify is not configured', async () => {
+			// Set up the error
+			(Amplify.assertConfigured as jest.Mock).mockImplementationOnce(() => {
+				throw new Error(
+					'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+				);
+			});
+
+			// Get the task creation arguments
+			downloadData({ key: 'testKey' });
+
+			// Get the job function that was passed to createDownloadTask
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+
+			// Test that the job throws when executed
+			await expect(job()).rejects.toThrow(
+				'Amplify has not been configured. Please call Amplify.configure() before using this service.',
 			);
 		});
 	});

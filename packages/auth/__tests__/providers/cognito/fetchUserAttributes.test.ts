@@ -15,7 +15,7 @@ import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
+	Amplify: { getConfig: jest.fn(() => ({})), assertConfigured: jest.fn() },
 }));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -34,6 +34,7 @@ describe('fetchUserAttributes', () => {
 	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
 		createCognitoUserPoolEndpointResolver,
 	);
+	const mockAssertConfigured = Amplify.assertConfigured as jest.Mock;
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -43,6 +44,7 @@ describe('fetchUserAttributes', () => {
 	});
 
 	beforeEach(() => {
+		mockAssertConfigured.mockReturnValue(undefined);
 		mockGetUser.mockResolvedValue({
 			UserAttributes: [
 				{ Name: 'email', Value: 'XXXXXXXXXXXXX' },
@@ -60,6 +62,7 @@ describe('fetchUserAttributes', () => {
 		mockGetUser.mockReset();
 		mockFetchAuthSession.mockClear();
 		mockCreateGetUserClient.mockClear();
+		mockAssertConfigured.mockReset();
 	});
 
 	it('should return the current user attributes into a map format', async () => {

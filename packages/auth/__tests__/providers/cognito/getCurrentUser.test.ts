@@ -13,7 +13,11 @@ import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { Auth: { getTokens: jest.fn() }, getConfig: jest.fn(() => ({})) },
+	Amplify: {
+		Auth: { getTokens: jest.fn() },
+		getConfig: jest.fn(() => ({})),
+		assertConfigured: jest.fn(),
+	},
 }));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -25,12 +29,14 @@ describe('getCurrentUser', () => {
 	const mockedUsername = 'XXXXXXXXXXXXXX';
 	// assert mocks
 	const mockGetTokensFunction = Amplify.Auth.getTokens as jest.Mock;
+	const mockAssertConfigured = Amplify.assertConfigured as jest.Mock;
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
 	});
 
 	beforeEach(() => {
+		mockAssertConfigured.mockReturnValue(undefined);
 		mockGetTokensFunction.mockResolvedValue({
 			accessToken: decodeJWT(mockAccessToken),
 			idToken: {
@@ -48,6 +54,7 @@ describe('getCurrentUser', () => {
 
 	afterEach(() => {
 		mockGetTokensFunction.mockReset();
+		mockAssertConfigured.mockReset();
 	});
 
 	it('should get current user', async () => {
@@ -70,5 +77,17 @@ describe('getCurrentUser', () => {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(USER_UNAUTHENTICATED_EXCEPTION);
 		}
+	});
+
+	it('throws if Amplify is not configured', async () => {
+		mockAssertConfigured.mockImplementationOnce(() => {
+			throw new Error(
+				'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+			);
+		});
+
+		expect(getCurrentUser()).rejects.toThrow(
+			'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+		);
 	});
 });
