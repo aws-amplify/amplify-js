@@ -20,13 +20,8 @@ import {
 	pause,
 	addCommonQueryTests,
 } from '../../datastore/__tests__/commonAdapterTests';
-import { Amplify } from '@aws-amplify/core';
 
 let innerSQLiteDatabase;
-
-jest.spyOn(Amplify, 'assertConfigured').mockImplementation(jest.fn());
-jest.spyOn(Amplify, 'configure').mockImplementation(jest.fn());
-jest.spyOn(Amplify, 'getConfig').mockReturnValue({});
 
 jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
 	return {
