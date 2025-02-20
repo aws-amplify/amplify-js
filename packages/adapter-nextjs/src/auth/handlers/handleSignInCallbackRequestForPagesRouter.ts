@@ -104,7 +104,7 @@ export const handleSignInCallbackRequestForPagesRouter: HandleSignInCallbackRequ
 				tokensPayload,
 				userPoolClientId,
 			}),
-			createTokenCookiesSetOptions(setCookieOptions),
+			createTokenCookiesSetOptions(setCookieOptions, origin),
 		);
 		appendSetCookieHeadersToNextApiResponse(
 			response,
