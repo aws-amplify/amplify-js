@@ -43,7 +43,10 @@ describe('createAuthFlowProofCookiesSetOptions', () => {
 			sameSite: 'strict',
 		};
 
-		const options = createAuthFlowProofCookiesSetOptions(setCookieOptions);
+		const options = createAuthFlowProofCookiesSetOptions(
+			setCookieOptions,
+			'https://example.com',
+		);
 
 		expect(options).toEqual({
 			domain: setCookieOptions?.domain,
@@ -61,9 +64,10 @@ describe('createAuthFlowProofCookiesSetOptions', () => {
 			sameSite: 'strict',
 		};
 
-		const options = createAuthFlowProofCookiesSetOptions(setCookieOptions, {
-			secure: false,
-		});
+		const options = createAuthFlowProofCookiesSetOptions(
+			setCookieOptions,
+			'http://example.com',
+		);
 
 		expect(options).toEqual({
 			domain: setCookieOptions?.domain,

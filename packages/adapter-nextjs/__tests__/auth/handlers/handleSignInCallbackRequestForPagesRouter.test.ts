@@ -386,6 +386,7 @@ describe('handleSignInCallbackRequest', () => {
 			});
 			expect(mockCreateTokenCookiesSetOptions).toHaveBeenCalledWith(
 				mockSetCookieOptions,
+				mockOrigin,
 			);
 			expect(mockCreateSignInFlowProofCookies).toHaveBeenCalledWith({
 				state: '',
