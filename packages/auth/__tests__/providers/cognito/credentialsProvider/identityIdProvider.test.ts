@@ -141,4 +141,59 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		).toBe(authAPITestParams.PrimaryIdentityId.id);
 		expect(mockGetId).toHaveBeenCalledTimes(1);
 	});
+	test('Should return the identityId irresspective of the type if present', async () => {
+		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
+			async () => {
+				return authAPITestParams.PrimaryIdentityId as Identity;
+			},
+		);
+		expect(
+			await cognitoIdentityIdProvider({
+				tokens: authAPITestParams.ValidAuthTokens,
+				authConfig: {
+					identityPoolId: 'XXXXXXXXXXXXXXXXX',
+				},
+				identityIdStore: mockDefaultIdentityIdStoreInstance,
+			}),
+		).toBe(authAPITestParams.PrimaryIdentityId.id);
+
+		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
+			async () => {
+				return authAPITestParams.GuestIdentityId as Identity;
+			},
+		);
+		expect(
+			await cognitoIdentityIdProvider({
+				tokens: authAPITestParams.ValidAuthTokens,
+				authConfig: {
+					identityPoolId: 'XXXXXXXXXXXXXXXXX',
+				},
+				identityIdStore: mockDefaultIdentityIdStoreInstance,
+			}),
+		).toBe(authAPITestParams.GuestIdentityId.id);
+		expect(mockGetId).toHaveBeenCalledTimes(0);
+	});
+	test('Should fetch from Cognito when there is no identityId cached', async () => {
+		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
+			async () => {
+				return undefined;
+			},
+		);
+		mockDefaultIdentityIdStoreInstance.storeIdentityId.mockImplementationOnce(
+			async (identity: Identity) => {
+				expect(identity.id).toBe(authAPITestParams.PrimaryIdentityId.id);
+				expect(identity.type).toBe(authAPITestParams.PrimaryIdentityId.type);
+			},
+		);
+		expect(
+			await cognitoIdentityIdProvider({
+				tokens: authAPITestParams.ValidAuthTokens,
+				authConfig: {
+					identityPoolId: 'us-east-1:test-id',
+				},
+				identityIdStore: mockDefaultIdentityIdStoreInstance,
+			}),
+		).toBe(authAPITestParams.PrimaryIdentityId.id);
+		expect(mockGetId).toHaveBeenCalledTimes(1);
+	});
 });

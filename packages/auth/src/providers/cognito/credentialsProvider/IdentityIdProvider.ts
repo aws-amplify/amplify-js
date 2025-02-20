@@ -40,7 +40,7 @@ export async function cognitoIdentityIdProvider({
 
 		return identityId.id;
 	} else {
-		logger.debug('Generating a new identityId as it was not found in cache.');
+		logger.debug('IdentityId not found in cache, fetching it from Cognito.');
 		const logins = tokens?.idToken
 			? formLoginsMap(tokens.idToken.toString())
 			: {};
