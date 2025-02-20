@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ResponseMetadata } from '../clients';
-import { AmplifyErrorParams } from '../types/errors';
+import { AmplifyErrorParams, ResponseMetadata } from '../types/errors';
 
 export class AmplifyError extends Error {
 	readonly underlyingError?: Error | unknown;
@@ -28,9 +27,23 @@ export class AmplifyError extends Error {
 		super(message);
 
 		this.name = name;
-		this.underlyingError = underlyingError;
-		this.recoverySuggestion = recoverySuggestion;
-		this.metadata = metadata;
+		if (underlyingError) {
+			this.underlyingError = underlyingError;
+		}
+		if (recoverySuggestion) {
+			this.recoverySuggestion = recoverySuggestion;
+		}
+		if (metadata) {
+			this.metadata = {
+				...(metadata.extendedRequestId
+					? { extendedRequestId: metadata.extendedRequestId }
+					: {}),
+				...(metadata.httpStatusCode
+					? { httpStatusCode: metadata.httpStatusCode }
+					: {}),
+				...(metadata.requestId ? { requestId: metadata.requestId } : {}),
+			};
+		}
 
 		// Hack for making the custom error class work when transpiled to es5
 		// TODO: Delete the following 2 lines after we change the build target to >= es2015

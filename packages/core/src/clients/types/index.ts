@@ -23,5 +23,4 @@ export {
 	EndpointResolverOptions,
 	ErrorParser,
 	ServiceClientOptions,
-	ResponseMetadata,
 } from './aws';

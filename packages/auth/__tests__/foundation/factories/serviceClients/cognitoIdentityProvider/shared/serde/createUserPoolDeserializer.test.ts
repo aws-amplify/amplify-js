@@ -42,7 +42,7 @@ describe('buildUserPoolDeserializer created response deserializer', () => {
 			new Error(expectedErrorMessage),
 			{
 				name: expectedErrorName,
-				metadata: {
+				$metadata: {
 					httpStatusCode: 400,
 				},
 			},

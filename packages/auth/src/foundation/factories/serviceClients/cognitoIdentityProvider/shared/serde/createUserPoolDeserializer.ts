@@ -19,7 +19,7 @@ export const createUserPoolDeserializer =
 			throw new AuthError({
 				name: error.name,
 				message: error.message,
-				metadata: error.metadata,
+				metadata: error.$metadata,
 			});
 		}
 

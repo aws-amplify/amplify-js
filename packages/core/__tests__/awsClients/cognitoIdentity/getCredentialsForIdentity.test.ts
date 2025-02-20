@@ -86,7 +86,7 @@ describe('CognitoIdentity - getCredentialsForIdentity', () => {
 		const expectedError = {
 			name: 'NotAuthorizedException',
 			message: failureResponse.body.message,
-			metadata: expect.objectContaining({
+			$metadata: expect.objectContaining({
 				requestId: mockRequestId,
 				httpStatusCode: failureResponse.status,
 			}),

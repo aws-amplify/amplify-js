@@ -80,7 +80,7 @@ describe('CognitoIdentity - getId', () => {
 		const expectedError = {
 			name: 'NotAuthorizedException',
 			message: failureResponse.body.message,
-			metadata: expect.objectContaining({
+			$metadata: expect.objectContaining({
 				httpStatusCode: 400,
 				requestId: mockRequestId,
 			}),
