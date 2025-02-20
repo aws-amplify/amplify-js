@@ -14,6 +14,7 @@ import {
 } from './constants';
 
 export const resolveConfig = () => {
+	Amplify.assertConfigured();
 	const config = Amplify.getConfig().Analytics?.Personalize;
 	const {
 		region,

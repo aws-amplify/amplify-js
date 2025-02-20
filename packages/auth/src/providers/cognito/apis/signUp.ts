@@ -40,6 +40,7 @@ import { setAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
+	Amplify.assertConfigured();
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =

@@ -53,6 +53,7 @@ export class AmazonAIInterpretPredictionsProvider {
 	}
 
 	async interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
+		Amplify.assertConfigured();
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
