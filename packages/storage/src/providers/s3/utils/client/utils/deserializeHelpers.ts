@@ -191,18 +191,17 @@ export const deserializeMetadata = (
 export const buildStorageServiceError = (
 	error: Error,
 	statusCode: number,
-): ServiceError => {
-	const storageError = new StorageError({
+): ServiceError =>
+	new StorageError({
 		name: error.name,
 		message: error.message,
+		...(statusCode === 404
+			? {
+					recoverySuggestion:
+						'Please add the object with this key to the bucket as the key is not found.',
+				}
+			: {}),
 	});
-	if (statusCode === 404) {
-		storageError.recoverySuggestion =
-			'Please add the object with this key to the bucket as the key is not found.';
-	}
-
-	return storageError;
-};
 
 /**
  * Internal-only method used for deserializing the parts of a multipart upload.
