@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.11.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.10.2...@aws-amplify/auth@6.11.0) (2025-02-12)
+
+### Bug Fixes
+
+- **auth:** update FetchDevicesOutput output type to include name attribute ([#14186](https://github.com/aws-amplify/amplify-js/issues/14186)) ([289f3e8](https://github.com/aws-amplify/amplify-js/commit/289f3e8d1bbf8c95abffb553b612699f43cdccb5))
+
+### Features
+
+- support server-side auth flows with Cognito managed login ([#14168](https://github.com/aws-amplify/amplify-js/issues/14168)) ([825d338](https://github.com/aws-amplify/amplify-js/commit/825d338021964a48ffab07d7b5961c5afa63a50e)), closes [#13788](https://github.com/aws-amplify/amplify-js/issues/13788) [#13801](https://github.com/aws-amplify/amplify-js/issues/13801) [#13827](https://github.com/aws-amplify/amplify-js/issues/13827) [#13839](https://github.com/aws-amplify/amplify-js/issues/13839) [#13840](https://github.com/aws-amplify/amplify-js/issues/13840) [#13841](https://github.com/aws-amplify/amplify-js/issues/13841) [#14103](https://github.com/aws-amplify/amplify-js/issues/14103) [#14112](https://github.com/aws-amplify/amplify-js/issues/14112) [#14114](https://github.com/aws-amplify/amplify-js/issues/14114) [#14115](https://github.com/aws-amplify/amplify-js/issues/14115) [#14119](https://github.com/aws-amplify/amplify-js/issues/14119) [#14125](https://github.com/aws-amplify/amplify-js/issues/14125) [#14116](https://github.com/aws-amplify/amplify-js/issues/14116) [#14134](https://github.com/aws-amplify/amplify-js/issues/14134) [#14132](https://github.com/aws-amplify/amplify-js/issues/14132) [#14141](https://github.com/aws-amplify/amplify-js/issues/14141) [#14152](https://github.com/aws-amplify/amplify-js/issues/14152) [#14169](https://github.com/aws-amplify/amplify-js/issues/14169)
+
+## [6.10.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.10.1...@aws-amplify/auth@6.10.2) (2025-02-04)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 ## [6.10.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.10.0...@aws-amplify/auth@6.10.1) (2025-01-24)
 
 ### Bug Fixes

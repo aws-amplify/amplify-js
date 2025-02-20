@@ -81,4 +81,12 @@ export {
 	DefaultTokenStore,
 	refreshAuthTokens,
 	refreshAuthTokensWithoutDedupe,
+	createKeysForAuthStorage,
+	AUTH_KEY_PREFIX,
 } from './tokenProvider';
+export {
+	generateState,
+	getRedirectUrl,
+	generateCodeVerifier,
+	validateState,
+} from './utils/oauth';

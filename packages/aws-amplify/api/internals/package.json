@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/api/internals",
+	"main": "../../dist/cjs/api/internals.js",
+	"browser": "../../dist/esm/api/internals.mjs",
+	"module": "../../dist/esm/api/internals.mjs",
+	"typings": "../../dist/esm/api/internals.d.ts"
+}

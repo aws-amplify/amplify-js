@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.12.2",
+	"version": "6.13.0",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -30,6 +30,12 @@
 			"import": "./dist/esm/api/index.mjs",
 			"require": "./dist/cjs/api/index.js",
 			"react-native": "./src/api/index.ts"
+		},
+		"./api/internals": {
+			"types": "./dist/esm/api/internals.d.ts",
+			"import": "./dist/esm/api/internals.mjs",
+			"require": "./dist/cjs/api/internals.js",
+			"react-native": "./src/api/internals.ts"
 		},
 		"./api/server": {
 			"types": "./dist/esm/api/server.d.ts",
@@ -155,6 +161,11 @@
 			"import": "./dist/esm/adapter-core/index.mjs",
 			"require": "./dist/cjs/adapter-core/index.js"
 		},
+		"./adapter-core/internals": {
+			"types": "./dist/esm/adapter-core/internals.d.ts",
+			"import": "./dist/esm/adapter-core/internals.mjs",
+			"require": "./dist/cjs/adapter-core/internals.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -167,6 +178,9 @@
 			],
 			"api/server": [
 				"./dist/esm/api/server.d.ts"
+			],
+			"api/server/internals": [
+				"./dist/esm/api/internals.d.ts"
 			],
 			"utils": [
 				"./dist/esm/utils/index.d.ts"
@@ -227,6 +241,9 @@
 			],
 			"adapter-core": [
 				"./dist/esm/adapter-core/index.d.ts"
+			],
+			"adapter-core/internals": [
+				"./dist/esm/adapter-core/internals.d.ts"
 			]
 		}
 	},
@@ -276,13 +293,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.67",
-		"@aws-amplify/api": "6.2.2",
-		"@aws-amplify/auth": "6.10.1",
-		"@aws-amplify/core": "6.9.2",
-		"@aws-amplify/datastore": "5.0.69",
-		"@aws-amplify/notifications": "2.0.67",
-		"@aws-amplify/storage": "6.7.8",
+		"@aws-amplify/analytics": "7.0.69",
+		"@aws-amplify/api": "6.3.0",
+		"@aws-amplify/auth": "6.11.0",
+		"@aws-amplify/core": "6.10.0",
+		"@aws-amplify/datastore": "5.0.71",
+		"@aws-amplify/notifications": "2.0.69",
+		"@aws-amplify/storage": "6.7.10",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
