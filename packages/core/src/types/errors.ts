@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { ResponseMetadata } from '../clients';
 
 export enum AmplifyErrorCode {
 	NoEndpointId = 'NoEndpointId',
@@ -13,6 +14,7 @@ export interface AmplifyErrorParams<ErrorCode extends string = string> {
 	name: ErrorCode;
 	recoverySuggestion?: string;
 	underlyingError?: Error | unknown;
+	metadata?: ResponseMetadata;
 }
 
 export type AmplifyErrorMap<ErrorCode extends string = string> = {
