@@ -67,7 +67,10 @@ describe('getGlobal', () => {
 				btoa: mockBtoa,
 			}));
 
-			expect(getBtoa()).toEqual(mockBtoa);
+			const btoaFunc = getBtoa();
+			btoaFunc('test');
+
+			expect(mockBtoa).toHaveBeenCalledWith('test');
 		});
 
 		it('returns the global btoa when it is available', () => {
@@ -103,7 +106,10 @@ describe('getGlobal', () => {
 				atob: mockAtoB,
 			}));
 
-			expect(getAtob()).toEqual(mockAtoB);
+			const atobFunc = getAtob();
+			atobFunc('test');
+
+			expect(mockAtoB).toHaveBeenCalledWith('test');
 		});
 
 		it('returns the global atob when it is available', () => {
