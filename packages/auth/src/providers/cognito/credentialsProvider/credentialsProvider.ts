@@ -138,11 +138,10 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 				},
 				identityId,
 			};
-			const identityIdRes = clientResult.IdentityId;
-			if (identityIdRes) {
-				res.identityId = identityIdRes;
+			if (clientResult.IdentityId) {
+				res.identityId = clientResult.IdentityId;
 				this._identityIdStore.storeIdentityId({
-					id: identityIdRes,
+					id: clientResult.IdentityId,
 					type: 'guest',
 				});
 			}
@@ -216,11 +215,10 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			};
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 
-			const identityIdRes = clientResult.IdentityId;
-			if (identityIdRes) {
-				res.identityId = identityIdRes;
+			if (clientResult.IdentityId) {
+				res.identityId = clientResult.IdentityId;
 				this._identityIdStore.storeIdentityId({
-					id: identityIdRes,
+					id: clientResult.IdentityId,
 					type: 'primary',
 				});
 			}
