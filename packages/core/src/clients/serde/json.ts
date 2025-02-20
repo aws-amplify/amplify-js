@@ -36,7 +36,7 @@ export const parseJsonError: ErrorParser = async (response?: HttpResponse) => {
 
 	return Object.assign(error, {
 		name: code,
-		$metadata: parseMetadata(response),
+		metadata: parseMetadata(response),
 	});
 };
 
