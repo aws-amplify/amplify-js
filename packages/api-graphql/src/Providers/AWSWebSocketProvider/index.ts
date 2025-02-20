@@ -171,6 +171,7 @@ export abstract class AWSWebSocketProvider {
 							this.logger.debug(
 								`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`,
 							);
+							observer.error(err);
 							this._closeSocket();
 						})
 						.finally(() => {
@@ -255,10 +256,10 @@ export abstract class AWSWebSocketProvider {
 
 		return new Promise((resolve, reject) => {
 			if (this.awsRealTimeSocket) {
-				const timeoutId = setTimeout(() => {
-					cleanup();
-					reject(new Error('Publish operation timed out'));
-				}, 30000); // 30 seconds timeout
+				// const timeoutId = setTimeout(() => {
+				// 	cleanup();
+				// 	reject(new Error('Publish operation timed out'));
+				// }, 30000); // 30 seconds timeout
 
 				const publishListener = (event: MessageEvent) => {
 					const data = JSON.parse(event.data);
@@ -272,13 +273,10 @@ export abstract class AWSWebSocketProvider {
 						resolve();
 					}
 
-					if (data.erroredEvents && data.erroredEvents.length > 0) {
-						// TODO: handle errors
-						const errors = data.erroredEvents.map(
-							(errorEvent: any) => errorEvent.error,
-						);
+					if (data.errors && data.errors.length > 0) {
+						const errorTypes = data.errors.map((error: any) => error.errorType);
 						cleanup();
-						reject(new Error(`Publish errors: ${errors.join(', ')}`));
+						reject(new Error(`Publish errors: ${errorTypes.join(', ')}`));
 					}
 				};
 
@@ -293,7 +291,7 @@ export abstract class AWSWebSocketProvider {
 				};
 
 				const cleanup = () => {
-					clearTimeout(timeoutId);
+					// clearTimeout(timeoutId);
 					this.awsRealTimeSocket?.removeEventListener(
 						'message',
 						publishListener,
