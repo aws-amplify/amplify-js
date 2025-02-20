@@ -37,7 +37,8 @@ describe('buildUserPoolDeserializer created response deserializer', () => {
 		expect.assertions(2);
 		const expectedErrorName = 'TestError';
 		const expectedErrorMessage = 'TestErrorMessage';
-		const expectedError: Awaited<ReturnType<ErrorParser>> = Object.assign(
+		type ParsedError = Awaited<ReturnType<ErrorParser>>;
+		const expectedError: ParsedError = Object.assign(
 			new Error(expectedErrorMessage),
 			{
 				name: expectedErrorName,

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyErrorParams } from '../types/errors';
 import { ResponseMetadata } from '../clients';
+import { AmplifyErrorParams } from '../types/errors';
 
 export class AmplifyError extends Error {
 	readonly underlyingError?: Error | unknown;
