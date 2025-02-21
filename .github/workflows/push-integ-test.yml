@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - feat/pm/use-shared
+      - yuhengsh-ci-test
 
 jobs:
   e2e:
