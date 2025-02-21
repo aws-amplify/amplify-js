@@ -33,46 +33,26 @@ export async function cognitoIdentityIdProvider({
 	identityIdStore.setAuthConfig({ Cognito: authConfig });
 
 	// will return null only if there is no identityId cached or if there is an error retrieving it
-	let identityId: Identity | null = await identityIdStore.loadIdentityId();
+	const identityId: Identity | null = await identityIdStore.loadIdentityId();
 
-	// Tokens are available so return primary identityId
-	if (tokens) {
-		// If there is existing primary identityId in-memory return that
-		if (identityId && identityId.type === 'primary') {
-			return identityId.id;
-		} else {
-			const logins = tokens.idToken
-				? formLoginsMap(tokens.idToken.toString())
-				: {};
+	if (identityId) {
+		logger.debug('Cached identityId found.');
 
-			const generatedIdentityId = await generateIdentityId(logins, authConfig);
-
-			if (identityId && identityId.id === generatedIdentityId) {
-				logger.debug(
-					`The guest identity ${identityId.id} has become the primary identity.`,
-				);
-			}
-			identityId = {
-				id: generatedIdentityId,
-				type: 'primary',
-			};
-		}
+		return identityId.id;
 	} else {
-		// If there is existing guest identityId cached return that
-		if (identityId && identityId.type === 'guest') {
-			return identityId.id;
-		} else {
-			identityId = {
-				id: await generateIdentityId({}, authConfig),
-				type: 'guest',
-			};
-		}
+		logger.debug('IdentityId not found in cache, fetching it from Cognito.');
+		const logins = tokens?.idToken
+			? formLoginsMap(tokens.idToken.toString())
+			: {};
+		const generatedIdentityId = await generateIdentityId(logins, authConfig);
+		// Store generated identityId
+		identityIdStore.storeIdentityId({
+			id: generatedIdentityId,
+			type: tokens ? 'primary' : 'guest',
+		});
+
+		return generatedIdentityId;
 	}
-
-	// Store in-memory or local storage depending on guest or primary identityId
-	identityIdStore.storeIdentityId(identityId);
-
-	return identityId.id;
 }
 
 async function generateIdentityId(
