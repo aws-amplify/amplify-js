@@ -27,22 +27,12 @@ export class AmplifyError extends Error {
 		super(message);
 
 		this.name = name;
-		if (underlyingError) {
-			this.underlyingError = underlyingError;
-		}
-		if (recoverySuggestion) {
-			this.recoverySuggestion = recoverySuggestion;
-		}
+		this.underlyingError = underlyingError;
+		this.recoverySuggestion = recoverySuggestion;
 		if (metadata) {
-			this.metadata = {
-				...(metadata.extendedRequestId
-					? { extendedRequestId: metadata.extendedRequestId }
-					: {}),
-				...(metadata.httpStatusCode
-					? { httpStatusCode: metadata.httpStatusCode }
-					: {}),
-				...(metadata.requestId ? { requestId: metadata.requestId } : {}),
-			};
+			// If metadata exists, explicitly only record the following properties.
+			const { extendedRequestId, httpStatusCode, requestId } = metadata;
+			this.metadata = { extendedRequestId, httpStatusCode, requestId };
 		}
 
 		// Hack for making the custom error class work when transpiled to es5
