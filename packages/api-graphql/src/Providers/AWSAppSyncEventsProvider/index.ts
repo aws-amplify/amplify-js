@@ -103,6 +103,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 
 		const data = {
 			channel: query,
+			// events: publish && !Array.isArray(variables) ? [variables] : variables,
 			events: variables,
 		};
 
