@@ -84,8 +84,8 @@ const uploadPartDeserializer = async (
 	response: HttpResponse,
 ): Promise<UploadPartOutput> => {
 	if (response.statusCode >= 300) {
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		const error = await parseXmlError(response);
+		throw buildStorageServiceError(error!, error?.$metadata);
 	} else {
 		return {
 			...map(response.headers, {

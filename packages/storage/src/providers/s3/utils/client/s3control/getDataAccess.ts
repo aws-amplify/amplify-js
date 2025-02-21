@@ -64,8 +64,8 @@ const getDataAccessDeserializer = async (
 ): Promise<GetDataAccessCommandOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		const error = await parseXmlError(response);
+		throw buildStorageServiceError(error!, error?.$metadata);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {

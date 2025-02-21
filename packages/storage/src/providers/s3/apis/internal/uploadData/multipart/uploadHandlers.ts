@@ -264,7 +264,7 @@ export const getMultipartUploadHandlers = (
 		);
 
 		if (size) {
-			const { ContentLength: uploadedObjectSize } = await headObject(
+			const { ContentLength: uploadedObjectSize, $metadata } = await headObject(
 				resolvedS3Config,
 				{
 					Bucket: resolvedBucket,
@@ -276,6 +276,7 @@ export const getMultipartUploadHandlers = (
 				throw new StorageError({
 					name: 'Error',
 					message: `Upload failed. Expected object size ${size}, but got ${uploadedObjectSize}.`,
+					metadata: $metadata,
 				});
 			}
 		}

@@ -3,6 +3,7 @@
 
 import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
 import { ServiceError } from '@aws-amplify/core/internals/utils';
+import { ResponseMetadata } from '@aws-amplify/core/dist/esm/types';
 
 import { StorageError } from '../../../../../errors/StorageError';
 import { CompletedPart } from '../s3data';
@@ -190,17 +191,12 @@ export const deserializeMetadata = (
  */
 export const buildStorageServiceError = (
 	error: Error,
-	statusCode: number,
+	responseMetadata?: ResponseMetadata,
 ): ServiceError =>
 	new StorageError({
 		name: error.name,
 		message: error.message,
-		...(statusCode === 404
-			? {
-					recoverySuggestion:
-						'Please add the object with this key to the bucket as the key is not found.',
-				}
-			: {}),
+		metadata: responseMetadata,
 	});
 
 /**

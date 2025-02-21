@@ -66,8 +66,8 @@ const abortMultipartUploadDeserializer = async (
 	response: HttpResponse,
 ): Promise<AbortMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		const error = await parseXmlError(response);
+		throw buildStorageServiceError(error!, error?.$metadata);
 	} else {
 		return {
 			$metadata: parseMetadata(response),
