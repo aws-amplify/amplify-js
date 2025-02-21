@@ -878,7 +878,7 @@ tests:
     sample_name: next-use-cases-14
     spec: next-use-cases
     yarn_script: ci:next-use-cases-test
-    yarn_script_args: 14
+    yarn_script_args: '14'
     browser: [chrome]
   - test_name: integ_next-use-cases-15
     desc: 'Next.js use cases tests with v15'
@@ -887,7 +887,25 @@ tests:
     sample_name: next-use-cases-15
     spec: next-use-cases
     yarn_script: ci:next-use-cases-test
-    yarn_script_args: 15
+    yarn_script_args: '15'
+    browser: [chrome]
+  - test_name: integ_next-use-cases-server-auth-14
+    desc: 'Next.js server-side auth use cases tests with v14'
+    framework: next
+    category: ssr-adapter
+    sample_name: next-use-cases-server-auth-14
+    spec: next-use-cases-server-auth
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: server-auth-14
+    browser: [chrome]
+  - test_name: integ_next-use-cases-server-auth-15
+    desc: 'Next.js server-side auth use cases tests with v15'
+    framework: next
+    category: ssr-adapter
+    sample_name: next-use-cases-server-auth-15
+    spec: next-use-cases-server-auth
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: server-auth-15
     browser: [chrome]
   - test_name: integ_next_mfa_req_email
     desc: 'mfa required with email sign in attribute'

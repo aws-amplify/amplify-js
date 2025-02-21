@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig, sharedInMemoryStorage } from '@aws-amplify/core';
-import { KeyValueStorageMethodValidator } from '@aws-amplify/core/internals/adapter-core';
+import { ResourcesConfig } from 'aws-amplify';
+import { sharedInMemoryStorage } from 'aws-amplify/utils';
+import { KeyValueStorageMethodValidator } from 'aws-amplify/adapter-core/internals';
 import {
 	createAWSCredentialsAndIdentityIdProvider,
 	createKeyValueStorageFromCookieStorageAdapter,
@@ -11,16 +12,40 @@ import {
 } from 'aws-amplify/adapter-core';
 
 import { NextServer } from '../types';
+import {
+	DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+	ENFORCED_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+} from '../auth/constant';
 
 import { createCookieStorageAdapterFromNextServerContext } from './createCookieStorageAdapterFromNextServerContext';
 
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
 	tokenValidator,
+	globalSettings,
 }: {
 	config: ResourcesConfig;
 	tokenValidator?: KeyValueStorageMethodValidator;
+	globalSettings: NextServer.GlobalSettings;
 }) => {
+	const isServerSideAuthEnabled = globalSettings.isServerSideAuthEnabled();
+	const isSSLOrigin = globalSettings.isSSLOrigin();
+	const setCookieOptions = globalSettings.getRuntimeOptions().cookies ?? {};
+
+	const mergedSetCookieOptions = {
+		// default options when not specified
+		...(isServerSideAuthEnabled && DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS),
+		// user-specified options
+		...setCookieOptions,
+		// enforced options when server-side auth is enabled
+		...(isServerSideAuthEnabled && {
+			...ENFORCED_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS,
+			secure: isSSLOrigin,
+		}),
+		// only support root path
+		path: '/',
+	};
+
 	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 		async ({ nextServerContext, operation }) => {
 			// When the Auth config is presented, attempt to create a Amplify server
@@ -36,8 +61,10 @@ export const createRunWithAmplifyServerContext = ({
 						: createKeyValueStorageFromCookieStorageAdapter(
 								await createCookieStorageAdapterFromNextServerContext(
 									nextServerContext,
+									isServerSideAuthEnabled,
 								),
 								tokenValidator,
+								mergedSetCookieOptions,
 							);
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,
