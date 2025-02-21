@@ -224,6 +224,10 @@ const listObjectsV2ErrorCase403: ApiFunctionalTestCase<typeof listObjectsV2> = [
 	{
 		message: 'The resource you requested does not exist',
 		name: 'NoSuchKey',
+		metadata: expect.objectContaining({
+			...expectedMetadata,
+			httpStatusCode: 403,
+		}),
 	},
 ];
 
@@ -586,6 +590,7 @@ const listObjectsV2ErrorCaseNoEncoding: ApiFunctionalTestCase<
 	{
 		message: 'An unknown error has occurred.',
 		name: 'Unknown',
+		metadata: expect.objectContaining(expectedMetadata),
 	},
 ];
 

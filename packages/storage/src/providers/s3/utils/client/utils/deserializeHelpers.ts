@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
+import {
+	ErrorParser,
+	Headers,
+} from '@aws-amplify/core/internals/aws-client-utils';
 import { ServiceError } from '@aws-amplify/core/internals/utils';
 
 import { StorageError } from '../../../../../errors/StorageError';
@@ -183,24 +186,20 @@ export const deserializeMetadata = (
 	return Object.keys(deserialized).length > 0 ? deserialized : undefined;
 };
 
+export type ParsedError = Awaited<ReturnType<ErrorParser>> & {};
+
 /**
- * Internal-only method to create a new StorageError from a service error.
+ * Internal-only method to create a new StorageError from a service error with AWS SDK-compatible interfaces
+ * @param error - The output of a service error parser, with AWS SDK-compatible interface(e.g. $metadata)
+ * @returns A new StorageError.
  *
  * @internal
  */
-export const buildStorageServiceError = (
-	error: Error,
-	statusCode: number,
-): ServiceError =>
+export const buildStorageServiceError = (error: ParsedError): ServiceError =>
 	new StorageError({
 		name: error.name,
 		message: error.message,
-		...(statusCode === 404
-			? {
-					recoverySuggestion:
-						'Please add the object with this key to the bucket as the key is not found.',
-				}
-			: {}),
+		metadata: error.$metadata,
 	});
 
 /**

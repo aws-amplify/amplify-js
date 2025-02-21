@@ -128,6 +128,10 @@ const getDataAccessErrorCase: ApiFunctionalTestCase<typeof getDataAccess> = [
 	{
 		message: 'Access Denied',
 		name: 'AccessDenied',
+		metadata: expect.objectContaining({
+			...expectedMetadata,
+			httpStatusCode: 403,
+		}),
 	},
 ];
 
