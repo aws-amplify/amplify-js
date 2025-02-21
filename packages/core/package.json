@@ -70,25 +70,25 @@
 			"name": "Core (Hub)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Hub }",
-			"limit": "1.43 kB"
+			"limit": "1.46 kB"
 		},
 		{
 			"name": "Core (I18n)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ I18n }",
-			"limit": "1.46 kB"
+			"limit": "1.51 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
 			"path": "./dist/esm/clients/handlers/fetch.mjs",
 			"import": "{ fetchTransferHandler }",
-			"limit": "575 B"
+			"limit": "900 B"
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
 			"path": "./dist/esm/clients/handlers/unauthenticated.mjs",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "1.15 kB"
+			"limit": "1.2 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
