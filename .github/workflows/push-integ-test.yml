@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - ashwin-ci-test
 
 jobs:
   e2e:
