@@ -15,5 +15,7 @@ import { fetchUserAttributes as fetchUserAttributesInternal } from './internal/f
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const fetchUserAttributes = (): Promise<FetchUserAttributesOutput> => {
+	Amplify.assertConfigured();
+
 	return fetchUserAttributesInternal(Amplify);
 };

@@ -51,6 +51,7 @@ import { resetAutoSignIn } from './autoSignIn';
 export async function signInWithSRP(
 	input: SignInWithSRPInput,
 ): Promise<SignInWithSRPOutput> {
+	Amplify.assertConfigured();
 	const { username, password } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signInDetails: CognitoAuthSignInDetails = {
