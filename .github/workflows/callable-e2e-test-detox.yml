@@ -25,6 +25,10 @@ jobs:
     timeout-minutes: ${{ inputs.timeout_minutes }}
 
     steps:
+      - name: Start iOS simulator (background)
+        run: |
+          xcrun simctl boot "iPhone 15" &
+        shell: bash
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
@@ -37,21 +41,38 @@ jobs:
           GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
       - name: Load Verdaccio with AmplifyJs
         uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
+
+      - name: Cache node_modules
+        id: modules-cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ./node_modules
+          key: ${{ inputs.test_name }}-detox-modules-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ inputs.test_name }}-detox-modules-
       - name: Yarn Install
+        if: steps.modules-cache.outputs.cache-hit != 'true'
         working-directory: ${{ inputs.working_directory }}
         run: |
           echo "Current NPM registry: " $(yarn config get registry)
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
         shell: bash
+
+    #   - name: Cache Pods
+    #     id: pods-cache
+    #     uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+    #     with:
+    #       path: ios/Pods
+    #       key: ${{ inputs.test_name }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+    #       restore-keys: |
+    #         ${{ inputs.test_name }}-pods-
       - name: Install CocoaPods
+        # if: steps.pods-cache.outputs.cache-hit != 'true'
         run: |
           cd ios && pod install
         working-directory: ${{ inputs.working_directory }}
         shell: bash
-      - name: Start iOS simulator (background)
-        run: |
-          xcrun simctl boot "iPhone 15" &
-        shell: bash
+
       - name: Start Metro Packager (background)
         run: |
           yarn start &
@@ -66,7 +87,17 @@ jobs:
           yarn global add detox-cli
         working-directory: ${{ inputs.working_directory }}
         shell: bash
+
+    #   - name: Cache Detox build
+    #     id: detox-build-cache
+    #     uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+    #     with:
+    #       path: ios/build
+    #       key: ${{ inputs.test_name }}-detox-build-${{ hashFiles('yarn.lock', 'ios/Podfile.lock', 'node_modules/.yarn-integrity', 'ios/Pods/Manifest.lock') }}
+    #       restore-keys: |
+    #         ${{ inputs.test_name }}-detox-build-
       - name: Detox Build
+        # if: steps.detox-build-cache.outputs.cache-hit != 'true' || steps.modules-cache.outputs.cache-hit != 'true' || steps.pods-cache.outputs.cache-hit != 'true'
         run: |
           detox build -c ios.sim.debug
         env:
@@ -74,6 +105,7 @@ jobs:
           JEST_JUNIT_OUTPUT_NAME: detox-test-results.xml
         working-directory: ${{ inputs.working_directory }}
         shell: bash
+
       - name: Start the http-server and host the oidc signout page locally (background).
         if: ${{ inputs.host_signout_page }}
         run: yarn host:signout
