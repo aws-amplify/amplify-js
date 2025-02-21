@@ -70,8 +70,7 @@ const headObjectDeserializer = async (
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
-		const error = await parseXmlError(response);
-		throw buildStorageServiceError(error!, error?.$metadata);
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		const contents = {
 			...map(response.headers, {

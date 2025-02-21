@@ -71,8 +71,7 @@ const listCallerAccessGrantsDeserializer = async (
 ): Promise<ListCallerAccessGrantsOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
-		const error = await parseXmlError(response);
-		throw buildStorageServiceError(error!, error?.$metadata);
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {

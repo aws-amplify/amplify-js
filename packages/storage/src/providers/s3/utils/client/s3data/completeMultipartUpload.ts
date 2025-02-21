@@ -139,7 +139,8 @@ const parseXmlBodyOrThrow = async (response: HttpResponse): Promise<any> => {
 			...response,
 			statusCode: 500, // To workaround the >=300 status code check common to other APIs.
 		});
-		throw buildStorageServiceError(error!, error?.$metadata);
+		error!.$metadata.httpStatusCode = response.statusCode;
+		throw buildStorageServiceError(error!);
 	}
 
 	return parsed;
@@ -149,8 +150,8 @@ const completeMultipartUploadDeserializer = async (
 	response: HttpResponse,
 ): Promise<CompleteMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw buildStorageServiceError(error!, error?.$metadata);
+		// error is always set when statusCode >= 300
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		const parsed = await parseXmlBodyOrThrow(response);
 		const contents = map(parsed, {
