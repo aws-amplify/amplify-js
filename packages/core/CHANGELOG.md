@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.10.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.10.0...@aws-amplify/core@6.10.1) (2025-02-20)
+
+### Bug Fixes
+
+- **core:** build in CookieSerializeOptions def ([#14213](https://github.com/aws-amplify/amplify-js/issues/14213)) ([406157d](https://github.com/aws-amplify/amplify-js/commit/406157df09ea25a8b3d4d42ee65104cde8886fe9))
+
 # [6.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.9.3...@aws-amplify/core@6.10.0) (2025-02-12)
 
 ### Features

@@ -96,7 +96,7 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 			tokensPayload,
 			userPoolClientId,
 		}),
-		createTokenCookiesSetOptions(setCookieOptions),
+		createTokenCookiesSetOptions(setCookieOptions, origin),
 	);
 	appendSetCookieHeaders(
 		headers,
