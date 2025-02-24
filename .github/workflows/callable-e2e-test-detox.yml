@@ -47,30 +47,30 @@ jobs:
         run: |
           echo "YARN_LOCK_PATH=${{ inputs.working_directory }}/yarn.lock"
           echo "YARN_LOCK_PATH=${{ inputs.working_directory }}/yarn.lock" >> $GITHUB_OUTPUT
-          echo "YARN_LOCK_HASH=$(sha256sum '${{ inputs.working_directory }}/yarn.lock' | awk '{print $1}')" >> $GITHUB_OUTPUT
           echo "POD_LOCK_PATH=${{ inputs.working_directory }}/ios/Podfile.lock" >> $GITHUB_OUTPUT
           echo "DETOX_BUILD_PATH=${{ inputs.working_directory }}/ios/build" >> $GITHUB_OUTPUT
-
+        #   echo "YARN_LOCK_HASH=$(sha256sum '${{ inputs.working_directory }}/yarn.lock' | awk '{print $1}')" >> $GITHUB_OUTPUT
       - name: test cache
         run: |
           echo "yarn lock path: ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}"
           echo "pods lock path: ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}"
-          echo "yarn lock hash: ${{ steps.cache_paths.outputs.YARN_LOCK_HASH }}"
+        #   echo "yarn lock hash: ${{ steps.cache_paths.outputs.YARN_LOCK_HASH }}"
 
-    #   - name: Cache node_modules
-    #     id: modules-cache
-    #     uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-    #     with:
-    #       path: ${{ inputs.working_directory }}/node_modules
-    #       key: |
-    #         ${{ inputs.test_name }}-detox-modules-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}
-    #       restore-keys: |
-    #         ${{ inputs.test_name }}-detox-modules-
+      - name: Cache node_modules
+        id: modules-cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ${{ inputs.working_directory }}/node_modules
+          key: |
+            ${{ inputs.test_name }}-detox-modules-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}
+          restore-keys: |
+            ${{ inputs.test_name }}-detox-modules-
+
       - name: Yarn Install
         # if: steps.modules-cache.outputs.cache-hit != 'true'
         working-directory: ${{ inputs.working_directory }}
         run: |
-          rm -rf yarn.lock
+          rm -rf node_modules yarn.lock
           echo "Current NPM registry: " $(yarn config get registry)
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
         shell: bash
