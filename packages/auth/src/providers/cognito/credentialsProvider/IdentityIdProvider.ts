@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthTokens, ConsoleLogger, Identity, getId } from '@aws-amplify/core';
+import { AuthTokens, Identity, getId } from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
@@ -11,7 +11,6 @@ import { GetIdException } from '../types/errors';
 import { IdentityIdStore } from './types';
 import { formLoginsMap } from './utils';
 
-const logger = new ConsoleLogger('CognitoIdentityIdProvider');
 /**
  * Provides a Cognito identityId
  *
@@ -36,23 +35,19 @@ export async function cognitoIdentityIdProvider({
 	const identityId: Identity | null = await identityIdStore.loadIdentityId();
 
 	if (identityId) {
-		logger.debug('Cached identityId found.');
-
 		return identityId.id;
-	} else {
-		logger.debug('IdentityId not found in cache, fetching it from Cognito.');
-		const logins = tokens?.idToken
-			? formLoginsMap(tokens.idToken.toString())
-			: {};
-		const generatedIdentityId = await generateIdentityId(logins, authConfig);
-		// Store generated identityId
-		identityIdStore.storeIdentityId({
-			id: generatedIdentityId,
-			type: tokens ? 'primary' : 'guest',
-		});
-
-		return generatedIdentityId;
 	}
+	const logins = tokens?.idToken
+		? formLoginsMap(tokens.idToken.toString())
+		: {};
+	const generatedIdentityId = await generateIdentityId(logins, authConfig);
+	// Store generated identityId
+	identityIdStore.storeIdentityId({
+		id: generatedIdentityId,
+		type: tokens ? 'primary' : 'guest',
+	});
+
+	return generatedIdentityId;
 }
 
 async function generateIdentityId(
