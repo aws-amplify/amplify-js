@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - yuhengsh-ci-test
+      - yuhengsh-ci-test-auth
 
 jobs:
   e2e:
