@@ -15,6 +15,7 @@ import {
 } from '../constant';
 
 import { getAccessTokenUsername } from './getAccessTokenUsername';
+import { isSSLOrigin } from './origin';
 
 export const createTokenCookies = ({
 	tokensPayload,
@@ -55,13 +56,13 @@ export const createTokenRemoveCookies = (keys: string[]) =>
 
 export const createTokenCookiesSetOptions = (
 	{ domain, sameSite, expires, maxAge }: CookieStorage.SetCookieOptions,
-	overrides?: Pick<CookieStorage.SetCookieOptions, 'secure'>,
+	origin: string,
 ) => {
 	const result = {
 		domain,
 		path: '/',
 		httpOnly: true,
-		secure: overrides?.secure ?? true,
+		secure: isSSLOrigin(origin),
 		sameSite: sameSite ?? 'strict',
 		expires,
 		maxAge,
