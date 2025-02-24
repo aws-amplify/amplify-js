@@ -83,7 +83,10 @@ describe('createTokenCookiesSetOptions', () => {
 			expires: new Date('2024-09-17'),
 		};
 
-		const result = createTokenCookiesSetOptions(mockSetCookieOptions);
+		const result = createTokenCookiesSetOptions(
+			mockSetCookieOptions,
+			'https://example.com',
+		);
 
 		expect(result).toEqual({
 			domain: mockSetCookieOptions.domain,
@@ -97,7 +100,7 @@ describe('createTokenCookiesSetOptions', () => {
 
 	it('returns an object with the default expiry and sameSite properties', () => {
 		const dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(0);
-		const result = createTokenCookiesSetOptions({});
+		const result = createTokenCookiesSetOptions({}, 'https://example.com');
 
 		expect(result).toEqual({
 			domain: undefined,
@@ -118,9 +121,10 @@ describe('createTokenCookiesSetOptions', () => {
 			expires: new Date('2024-09-17'),
 		};
 
-		const result = createTokenCookiesSetOptions(mockSetCookieOptions, {
-			secure: false,
-		});
+		const result = createTokenCookiesSetOptions(
+			mockSetCookieOptions,
+			'http://example.com',
+		);
 
 		expect(result).toEqual({
 			domain: mockSetCookieOptions.domain,
