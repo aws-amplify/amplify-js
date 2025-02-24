@@ -263,22 +263,43 @@ export abstract class AWSWebSocketProvider {
 								'message',
 								publishListener,
 							);
-
+						cleanup();
 						resolve();
 					}
 
-					if (data.erroredEvents && data.erroredEvents.length > 0) {
-						// TODO: handle errors
+					if (data.errors && data.errors.length > 0) {
+						const errorTypes = data.errors.map((error: any) => error.errorType);
+						cleanup();
+						reject(new Error(`Publish errors: ${errorTypes.join(', ')}`));
 					}
 				};
-				this.awsRealTimeSocket.addEventListener('message', publishListener);
-				this.awsRealTimeSocket.addEventListener('close', () => {
+
+				const errorListener = (error: Event) => {
+					cleanup();
+					reject(new Error(`WebSocket error: ${error}`));
+				};
+
+				const closeListener = () => {
+					cleanup();
 					reject(new Error('WebSocket is closed'));
-				});
-				//
-				// this.awsRealTimeSocket.addEventListener('error', publishListener);
+				};
+
+				const cleanup = () => {
+					this.awsRealTimeSocket?.removeEventListener(
+						'message',
+						publishListener,
+					);
+					this.awsRealTimeSocket?.removeEventListener('error', errorListener);
+					this.awsRealTimeSocket?.removeEventListener('close', closeListener);
+				};
+
+				this.awsRealTimeSocket.addEventListener('message', publishListener);
+				this.awsRealTimeSocket.addEventListener('error', errorListener);
+				this.awsRealTimeSocket.addEventListener('close', closeListener);
 
 				this.awsRealTimeSocket.send(serializedSubscriptionMessage);
+			} else {
+				reject(new Error('WebSocket is not connected'));
 			}
 		});
 	}
