@@ -48,13 +48,19 @@ jobs:
           echo "YARN_LOCK_PATH=${{ inputs.working_directory }}/yarn.lock"
           echo "YARN_LOCK_PATH=${{ inputs.working_directory }}/yarn.lock" >> $GITHUB_OUTPUT
           echo "POD_LOCK_PATH=${{ inputs.working_directory }}/ios/Podfile.lock" >> $GITHUB_OUTPUT
-          echo "DETOX_BUILD_PATH=${{ inputs.working_directory }}/ios/build" >> $GITHUB_OUTPUT
-        #   echo "YARN_LOCK_HASH=$(sha256sum '${{ inputs.working_directory }}/yarn.lock' | awk '{print $1}')" >> $GITHUB_OUTPUT
+          echo "LERNA_VERSIONS_PATH=${{ inputs.working_directory }}/lerna_versions.json" >> $GITHUB_OUTPUT
+
+          npx lerna version --conventional-commits --no-git-tag-version --no-push --json --yes | \
+          jq -c '[ .[] | select(.name | IN("@aws-amplify/react-native", "@aws-amplify/rtn-push-notification", "@aws-amplify/rtn-web-browser")) | {name, newVersion} ]' \
+          > ${{ inputs.working_directory }}/lerna_versions.json
+          
+          cat ${{ inputs.working_directory }}/lerna_versions.json
+
       - name: test cache
         run: |
           echo "yarn lock path: ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}"
           echo "pods lock path: ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}"
-        #   echo "yarn lock hash: ${{ steps.cache_paths.outputs.YARN_LOCK_HASH }}"
+          echo "lerna versions path: ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}"
 
       - name: Cache node_modules
         id: modules-cache
@@ -90,46 +96,46 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         shell: bash
 
-    #   - name: Start Metro Packager (background)
-    #     run: |
-    #       yarn start &
-    #     working-directory: ${{ inputs.working_directory }}
-    #     shell: bash
-    #   - name: Configure Detox
-    #     env:
-    #       HOMEBREW_NO_AUTO_UPDATE: '1'
-    #     run: |
-    #       brew tap wix/brew
-    #       brew install applesimutils
-    #       yarn global add detox-cli
-    #     working-directory: ${{ inputs.working_directory }}
-    #     shell: bash
+      - name: Start Metro Packager (background)
+        run: |
+          yarn start &
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
+      - name: Configure Detox
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
+          yarn global add detox-cli
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
 
-    # #   - name: Cache Detox build
-    # #     id: detox-build-cache
-    # #     uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-    # #     with:
-    # #       path: ${{ inputs.working_directory }}/ios/build
-    # #       key: ${{ inputs.test_name }}-detox-build-${{ hashFiles('yarn.lock', 'ios/Podfile.lock', 'node_modules/.yarn-integrity', 'ios/Pods/Manifest.lock') }}
-    # #       restore-keys: |
-    # #         ${{ inputs.test_name }}-detox-build-
-    #   - name: Detox Build
-    #     # if: steps.detox-build-cache.outputs.cache-hit != 'true' || steps.modules-cache.outputs.cache-hit != 'true' || steps.pods-cache.outputs.cache-hit != 'true'
-    #     run: |
-    #       detox build -c ios.sim.debug
-    #     env:
-    #       JEST_JUNIT_OUTPUT_DIR: reports/junit
-    #       JEST_JUNIT_OUTPUT_NAME: detox-test-results.xml
-    #     working-directory: ${{ inputs.working_directory }}
-    #     shell: bash
+      - name: Cache Detox build
+        id: detox-build-cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ${{ inputs.working_directory }}/ios/build
+          key: ${{ inputs.test_name }}-detox-build-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH, steps.cache_paths.outputs.POD_LOCK_PATH, steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}
+          restore-keys: |
+            ${{ inputs.test_name }}-detox-build-
+      - name: Detox Build
+        if: steps.detox-build-cache.outputs.cache-hit != 'true' || steps.modules-cache.outputs.cache-hit != 'true' || steps.pods-cache.outputs.cache-hit != 'true'
+        run: |
+          detox build -c ios.sim.debug
+        env:
+          JEST_JUNIT_OUTPUT_DIR: reports/junit
+          JEST_JUNIT_OUTPUT_NAME: detox-test-results.xml
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
 
-    #   - name: Start the http-server and host the oidc signout page locally (background).
-    #     if: ${{ inputs.host_signout_page }}
-    #     run: yarn host:signout
-    #     working-directory: ${{ inputs.working_directory }}
-    #     shell: bash
-    #   - name: Detox run
-    #     run: |
-    #       $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
-    #     working-directory: ${{ inputs.working_directory }}
-    #     shell: bash
+      - name: Start the http-server and host the oidc signout page locally (background).
+        if: ${{ inputs.host_signout_page }}
+        run: yarn host:signout
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
+      - name: Detox run
+        run: |
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
