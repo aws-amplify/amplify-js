@@ -103,19 +103,19 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 
 		const data = {
 			channel: query,
-			// events: publish && !Array.isArray(variables) ? [variables] : variables,
-			events: variables,
+			events: variables !== undefined ? serializeEvents(variables) : undefined,
+			// events: variables,
 		};
 
-		// const serializedData = JSON.stringify(data);
-		const serializedEventData = JSON.stringify({ events: data });
+		const serializedData = JSON.stringify(data);
+		// const serializedEventData = JSON.stringify({ events: data });
 
 		const headers = {
 			...(await awsRealTimeHeaderBasedAuth({
 				apiKey,
 				appSyncGraphqlEndpoint,
 				authenticationType,
-				payload: serializedEventData,
+				payload: serializedData,
 				canonicalUri: '',
 				region,
 				additionalCustomHeaders,
@@ -134,7 +134,9 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 				...headers,
 			},
 			payload: {
-				events: data,
+				events:
+					variables !== undefined ? serializeEvents(variables) : undefined,
+				channel: query,
 				extensions: {
 					authorization: {
 						...headers,
