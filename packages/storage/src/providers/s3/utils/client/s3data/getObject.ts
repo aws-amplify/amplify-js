@@ -83,8 +83,8 @@ const getObjectDeserializer = async (
 	response: HttpResponse,
 ): Promise<GetObjectOutput> => {
 	if (response.statusCode >= 300) {
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		// error is always set when statusCode >= 300
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		return {
 			...map(response.headers, {

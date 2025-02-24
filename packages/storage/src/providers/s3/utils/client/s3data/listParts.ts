@@ -61,8 +61,8 @@ const listPartsDeserializer = async (
 	response: HttpResponse,
 ): Promise<ListPartsOutput> => {
 	if (response.statusCode >= 300) {
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		// error is always set when statusCode >= 300
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {

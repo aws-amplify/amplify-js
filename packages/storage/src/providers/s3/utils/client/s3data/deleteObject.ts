@@ -62,8 +62,7 @@ const deleteObjectDeserializer = async (
 ): Promise<DeleteObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		const content = map(response.headers, {
 			DeleteMarker: ['x-amz-delete-marker', deserializeBoolean],
