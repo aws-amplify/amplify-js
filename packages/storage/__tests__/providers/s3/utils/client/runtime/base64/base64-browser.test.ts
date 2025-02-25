@@ -3,7 +3,7 @@
 
 import { TextDecoder, TextEncoder } from 'util';
 
-import { toBase64 } from '../../../../../../src/providers/s3/utils/client/runtime/base64/index.browser';
+import { toBase64 } from '../../../../../../../src/providers/s3/utils/client/runtime/base64/index.browser';
 
 import { toBase64TestCases } from './cases';
 

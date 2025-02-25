@@ -27,7 +27,7 @@ import {
 } from '../../utils';
 import { isIamAuthApplicableForRest } from '../../utils/isIamAuthApplicable';
 
-import { transferHandler } from './handler';
+import { transferHandler } from './transferHandler';
 
 const publicHandler = (
 	amplify: AmplifyClassV6,

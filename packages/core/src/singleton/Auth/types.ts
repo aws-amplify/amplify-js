@@ -61,11 +61,7 @@ export interface CredentialsAndIdentityIdProvider {
 }
 
 export interface TokenProvider {
-	getTokens({
-		forceRefresh,
-	}?: {
-		forceRefresh?: boolean;
-	}): Promise<AuthTokens | null>;
+	getTokens(options?: { forceRefresh?: boolean }): Promise<AuthTokens | null>;
 }
 
 export interface FetchAuthSessionOptions {

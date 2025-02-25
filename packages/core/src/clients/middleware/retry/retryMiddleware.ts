@@ -1,21 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
 import {
+	HttpRequest,
+	HttpResponse,
 	MiddlewareContext,
 	MiddlewareHandler,
-	Request,
-	Response,
-} from '../../types/core';
+} from '../../types';
 
+import { DEFAULT_RETRY_ATTEMPTS } from './constants';
 import { RetryDeciderOutput } from './types';
-
-const DEFAULT_RETRY_ATTEMPTS = 3;
 
 /**
  * Configuration of the retry middleware
  */
-export interface RetryOptions<TResponse = Response> {
+export interface RetryOptions<TResponse extends HttpResponse = HttpResponse> {
 	/**
 	 * Function to decide if the request should be retried.
 	 *
@@ -47,9 +45,12 @@ export interface RetryOptions<TResponse = Response> {
 }
 
 /**
- * Retry middleware
+ * Middleware that executes the retry logic.
  */
-export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
+export const retryMiddlewareFactory = <
+	TInput extends HttpRequest = HttpRequest,
+	TOutput extends HttpResponse = HttpResponse,
+>({
 	maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 	retryDecider,
 	computeDelay,
