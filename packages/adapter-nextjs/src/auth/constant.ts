@@ -22,6 +22,8 @@ export const PKCE_COOKIE_NAME = 'com.amplify.server_auth.pkce';
 export const STATE_COOKIE_NAME = 'com.amplify.server_auth.state';
 export const IS_SIGNING_OUT_COOKIE_NAME =
 	'com.amplify.server_auth.isSigningOut';
+export const IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME =
+	'com.amplify.server_auth.isSigningOutRedirecting';
 
 // The 5 minutes is from the Cognito Social Identity Provider settings, see:
 // https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-social-idp.html

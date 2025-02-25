@@ -6,15 +6,21 @@ import {
 } from 'aws-amplify/adapter-core';
 import { NextApiRequest } from 'next';
 
-import { IS_SIGNING_OUT_COOKIE_NAME } from '../../../src/auth/constant';
+import {
+	IS_SIGNING_OUT_COOKIE_NAME,
+	IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME,
+} from '../../../src/auth/constant';
 import { handleSignOutCallbackRequestForPagesRouter } from '../../../src/auth/handlers/handleSignOutCallbackRequestForPagesRouter';
 import { CreateAuthRoutesHandlersInput } from '../../../src/auth/types';
 import {
 	appendSetCookieHeadersToNextApiResponse,
+	createAuthFlowProofCookiesRemoveOptions,
+	createOnSignInCompleteRedirectIntermediate,
 	createTokenCookiesRemoveOptions,
 	createTokenRemoveCookies,
 	getCookieValuesFromNextApiRequest,
 	getRedirectOrDefault,
+	resolveRedirectSignOutUrl,
 	revokeAuthNTokens,
 } from '../../../src/auth/utils';
 import { createMockNextApiResponse } from '../testUtils';
@@ -38,6 +44,13 @@ const mockGetCookieValuesFromNextApiRequest = jest.mocked(
 const mockRevokeAuthNTokens = jest.mocked(revokeAuthNTokens);
 const mockCreateKeysForAuthStorage = jest.mocked(createKeysForAuthStorage);
 const mockGetRedirectOrDefault = jest.mocked(getRedirectOrDefault);
+const mockCreateAuthFlowProofCookiesRemoveOptions = jest.mocked(
+	createAuthFlowProofCookiesRemoveOptions,
+);
+const mockCreateOnSignInCompleteRedirectIntermediate = jest.mocked(
+	createOnSignInCompleteRedirectIntermediate,
+);
+const mockResolveRedirectSignOutUrl = jest.mocked(resolveRedirectSignOutUrl);
 
 describe('handleSignOutCallbackRequest', () => {
 	const mockRequest = {
@@ -71,6 +84,9 @@ describe('handleSignOutCallbackRequest', () => {
 		mockGetCookieValuesFromNextApiRequest.mockClear();
 		mockRevokeAuthNTokens.mockClear();
 		mockGetRedirectOrDefault.mockClear();
+		mockCreateAuthFlowProofCookiesRemoveOptions.mockClear();
+		mockCreateOnSignInCompleteRedirectIntermediate.mockClear();
+		mockResolveRedirectSignOutUrl.mockClear();
 
 		mockResponseAppendHeader.mockClear();
 		mockResponseEnd.mockClear();
@@ -89,6 +105,7 @@ describe('handleSignOutCallbackRequest', () => {
 			userPoolClientId: mockUserPoolClientId,
 			oAuthConfig: mockOAuthConfig,
 			setCookieOptions: mockSetCookieOptions,
+			origin: 'https://example.com',
 		});
 
 		// verify the response
@@ -98,7 +115,90 @@ describe('handleSignOutCallbackRequest', () => {
 		// verify the calls to dependencies
 		expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 			mockRequest,
-			[IS_SIGNING_OUT_COOKIE_NAME],
+			[IS_SIGNING_OUT_COOKIE_NAME, IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME],
+		);
+	});
+
+	it(`returns a 200 response with the intermediate redirect HTML when the request has the "${IS_SIGNING_OUT_COOKIE_NAME}" and "${IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME}" cookies`, async () => {
+		mockGetCookieValuesFromNextApiRequest.mockReturnValueOnce({
+			[IS_SIGNING_OUT_COOKIE_NAME]: 'true',
+			[IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME]: 'true',
+		});
+		const mockCreateTokenRemoveCookiesResult = [
+			{
+				name: IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME,
+				value: '',
+			},
+		];
+		mockCreateTokenRemoveCookies.mockReturnValueOnce(
+			mockCreateTokenRemoveCookiesResult,
+		);
+		const mockCreateTokenCookiesRemoveOptionsResult = {
+			path: '/',
+			maxAge: -1,
+			domain: mockSetCookieOptions.domain,
+		};
+		mockCreateAuthFlowProofCookiesRemoveOptions.mockReturnValueOnce(
+			mockCreateTokenCookiesRemoveOptionsResult,
+		);
+		const mockResolveRedirectSignOutUrlResult =
+			'https://example.com/sign-out-callback';
+		mockResolveRedirectSignOutUrl.mockReturnValueOnce(
+			mockResolveRedirectSignOutUrlResult,
+		);
+		const mockCreateOnSignInCompleteRedirectIntermediateResult =
+			'<html><head><meta http-equiv="refresh" content="0;url=/"></head></html>';
+		mockCreateOnSignInCompleteRedirectIntermediate.mockReturnValueOnce(
+			mockCreateOnSignInCompleteRedirectIntermediateResult,
+		);
+		mockAppendSetCookieHeadersToNextApiResponse.mockImplementationOnce(
+			response => {
+				response.appendHeader(
+					'Set-Cookie',
+					'mock_cookie1=; Domain=.example.com; Path=/',
+				);
+				response.appendHeader(
+					'Set-Cookie',
+					'mock_cookie2=; Domain=.example.com; Path=/',
+				);
+			},
+		);
+
+		await handleSignOutCallbackRequestForPagesRouter({
+			request: mockRequest,
+			response: mockResponse,
+			handlerInput: mockHandlerInput,
+			userPoolClientId: mockUserPoolClientId,
+			oAuthConfig: mockOAuthConfig,
+			setCookieOptions: mockSetCookieOptions,
+			origin: 'https://example.com',
+		});
+
+		// verify the response
+		expect(mockResponseStatus).toHaveBeenCalledWith(200);
+		expect(mockResponseAppendHeader).toHaveBeenCalledWith(
+			'Content-Type',
+			'text/html',
+		);
+		expect(mockResponseSend).toHaveBeenCalledWith(
+			mockCreateOnSignInCompleteRedirectIntermediateResult,
+		);
+
+		// verify the calls to dependencies
+		expect(mockCreateTokenRemoveCookies).toHaveBeenCalledWith([
+			IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME,
+		]);
+		expect(mockCreateAuthFlowProofCookiesRemoveOptions).toHaveBeenCalledWith(
+			mockSetCookieOptions,
+		);
+		expect(mockResolveRedirectSignOutUrl).toHaveBeenCalledWith(
+			'https://example.com',
+			mockOAuthConfig,
+		);
+		expect(mockCreateOnSignInCompleteRedirectIntermediate).toHaveBeenCalledWith(
+			{
+				redirectOnSignInComplete: mockResolveRedirectSignOutUrlResult,
+			},
 		);
 	});
 
@@ -116,6 +216,7 @@ describe('handleSignOutCallbackRequest', () => {
 			userPoolClientId: mockUserPoolClientId,
 			oAuthConfig: mockOAuthConfig,
 			setCookieOptions: mockSetCookieOptions,
+			origin: 'https://example.com',
 		});
 
 		// verify the response
@@ -125,7 +226,7 @@ describe('handleSignOutCallbackRequest', () => {
 		// verify the calls to dependencies
 		expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 			mockRequest,
-			[IS_SIGNING_OUT_COOKIE_NAME],
+			[IS_SIGNING_OUT_COOKIE_NAME, IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME],
 		);
 		expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 			mockRequest,
@@ -153,6 +254,7 @@ describe('handleSignOutCallbackRequest', () => {
 			userPoolClientId: mockUserPoolClientId,
 			oAuthConfig: mockOAuthConfig,
 			setCookieOptions: mockSetCookieOptions,
+			origin: 'https://example.com',
 		});
 
 		// verify the response
@@ -161,7 +263,7 @@ describe('handleSignOutCallbackRequest', () => {
 		// verify the calls to dependencies
 		expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 			mockRequest,
-			[IS_SIGNING_OUT_COOKIE_NAME],
+			[IS_SIGNING_OUT_COOKIE_NAME, IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME],
 		);
 		expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 			mockRequest,
@@ -196,6 +298,7 @@ describe('handleSignOutCallbackRequest', () => {
 			userPoolClientId: mockUserPoolClientId,
 			oAuthConfig: mockOAuthConfig,
 			setCookieOptions: mockSetCookieOptions,
+			origin: 'https://example.com',
 		});
 
 		// verify the response
@@ -205,7 +308,7 @@ describe('handleSignOutCallbackRequest', () => {
 		// verify the calls to dependencies
 		expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 			mockRequest,
-			[IS_SIGNING_OUT_COOKIE_NAME],
+			[IS_SIGNING_OUT_COOKIE_NAME, IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME],
 		);
 		expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 			mockRequest,
@@ -292,6 +395,7 @@ describe('handleSignOutCallbackRequest', () => {
 				userPoolClientId: mockUserPoolClientId,
 				oAuthConfig: mockOAuthConfig,
 				setCookieOptions: mockSetCookieOptions,
+				origin: 'https://example.com',
 			});
 
 			// verify the response
@@ -314,7 +418,7 @@ describe('handleSignOutCallbackRequest', () => {
 			// verify the calls to dependencies
 			expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 				mockRequest,
-				[IS_SIGNING_OUT_COOKIE_NAME],
+				[IS_SIGNING_OUT_COOKIE_NAME, IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME],
 			);
 			expect(mockGetCookieValuesFromNextApiRequest).toHaveBeenCalledWith(
 				mockRequest,

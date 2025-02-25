@@ -117,6 +117,7 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 					oAuthConfig,
 					userPoolClientId,
 					setCookieOptions,
+					origin,
 				});
 			// default:
 			// is unreachable by the guard of isSupportedAuthApiRoutePath()

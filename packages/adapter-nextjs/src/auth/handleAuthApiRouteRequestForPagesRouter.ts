@@ -138,6 +138,7 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 					oAuthConfig,
 					userPoolClientId,
 					setCookieOptions,
+					origin,
 				});
 				break;
 			// default:

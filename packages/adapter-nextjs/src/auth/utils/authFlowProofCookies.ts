@@ -6,6 +6,7 @@ import { CookieStorage } from 'aws-amplify/adapter-core';
 import {
 	AUTH_FLOW_PROOF_MAX_AGE,
 	IS_SIGNING_OUT_COOKIE_NAME,
+	IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME,
 	PKCE_COOKIE_NAME,
 	REMOVE_COOKIE_MAX_AGE,
 	STATE_COOKIE_NAME,
@@ -33,6 +34,10 @@ export const createSignInFlowProofCookies = ({
 export const createSignOutFlowProofCookies = () => [
 	{
 		name: IS_SIGNING_OUT_COOKIE_NAME,
+		value: 'true',
+	},
+	{
+		name: IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME,
 		value: 'true',
 	},
 ];
