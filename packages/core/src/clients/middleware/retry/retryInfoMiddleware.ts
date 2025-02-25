@@ -28,11 +28,7 @@ export const retryInfoMiddlewareFactory: Middleware<
 	({ maxAttempts = DEFAULT_RETRY_ATTEMPTS }) =>
 	(next, context) => {
 		return async function userAgentMiddleware(request) {
-			let attemptsCount: number = context.attemptsCount ?? 0;
-			attemptsCount =
-				(context.attemptsCount ?? 0) > attemptsCount
-					? (context.attemptsCount ?? 0)
-					: attemptsCount + 1;
+			const attemptsCount: number = context.attemptsCount ?? 0;
 			request.headers[SDK_REQUEST_HEADER] =
 				`attempt=${attemptsCount + 1}; max=${maxAttempts}`;
 

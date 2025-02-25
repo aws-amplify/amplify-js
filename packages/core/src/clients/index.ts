@@ -26,6 +26,9 @@ export {
 	jitteredBackoff,
 	retryMiddlewareFactory,
 	RetryOptions,
+	invocationIdMiddlewareFactory,
+	retryInfoMiddlewareFactory,
+	RetryInfoMiddlewareOption,
 } from './middleware/retry';
 export {
 	userAgentMiddlewareFactory,

@@ -22,7 +22,7 @@ export const invocationIdMiddlewareFactory: Middleware<
 	object
 > = () => next => {
 	return async function userAgentMiddleware(request) {
-		if (request?.headers?.[SDK_INVOCATION_ID_HEADER]) {
+		if (!request?.headers?.[SDK_INVOCATION_ID_HEADER]) {
 			request.headers[SDK_INVOCATION_ID_HEADER] = amplifyUuid();
 		}
 

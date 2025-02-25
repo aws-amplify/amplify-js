@@ -4,6 +4,7 @@
 import {
 	HttpRequest,
 	HttpResponse,
+	MiddlewareContext,
 	MiddlewareHandler,
 } from '../../../../src/clients/types';
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
@@ -151,6 +152,40 @@ describe(`retry middleware`, () => {
 			expect.anything(),
 			expect.objectContaining({ isCredentialsExpired: true }),
 		);
+	});
+
+	test('should set retry attempts in middleware context', async () => {
+		expect.assertions(1);
+		const coreHandler = jest
+			.fn()
+			.mockRejectedValue(new Error('InvalidSignature'));
+
+		const contextValues: MiddlewareContext[] = [];
+		const nextMiddleware = jest.fn(
+			(next: MiddlewareHandler<any, any>, context: MiddlewareContext) =>
+				(request: any) => {
+					contextValues.push({ ...context });
+
+					return next(request);
+				},
+		);
+		const retryableHandler = composeTransferHandler<
+			[RetryOptions, any],
+			HttpRequest,
+			HttpResponse
+		>(coreHandler, [retryMiddlewareFactory, () => nextMiddleware]);
+		try {
+			await retryableHandler(defaultRequest, {
+				...defaultRetryOptions,
+				retryDecider: () => ({ retryable: true }),
+			});
+		} catch (e) {
+			expect(contextValues).toEqual([
+				expect.objectContaining({}),
+				expect.objectContaining({ attemptsCount: 1 }),
+				expect.objectContaining({ attemptsCount: 2 }),
+			]);
+		}
 	});
 
 	test('should call computeDelay for intervals', async () => {
