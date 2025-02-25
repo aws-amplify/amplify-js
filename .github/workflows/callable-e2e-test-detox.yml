@@ -82,7 +82,7 @@ jobs:
         run: |
           rm -rf node_modules yarn.lock
           echo "Current NPM registry: " $(yarn config get registry)
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --non-interactive' -n 3
         shell: bash
 
       - name: test cache 2
