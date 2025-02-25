@@ -17,7 +17,6 @@ import {
 } from '../types/errors';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
@@ -34,6 +33,7 @@ import {
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
 import { resetAutoSignIn } from './autoSignIn';
 

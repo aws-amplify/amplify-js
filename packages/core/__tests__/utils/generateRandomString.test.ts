@@ -3,28 +3,52 @@
 
 import { generateRandomString } from '../../src/libraryUtils';
 
-describe('generateRandomString()', () => {
-	it('generates a string with the specified length', () => {
-		let counter = 0;
-		while (counter++ < 50) {
-			expect(generateRandomString(20).length).toEqual(20);
-		}
+describe('generateRandomString', () => {
+	const mockRandomValues = new Uint8Array([
+		144, 247, 102, 114, 51, 221, 175, 4, 120, 255, 176, 200, 83, 164, 117, 73,
+		29, 118, 5, 58, 78, 227, 239, 199, 187, 43, 26, 73, 211, 38, 79, 208,
+	]);
+	const getRandomValuesSpy = jest.spyOn(crypto, 'getRandomValues');
+
+	beforeAll(() => {
+		// Mock crypto.getRandomValues
+		getRandomValuesSpy.mockImplementation(bufferView => {
+			if (!bufferView) {
+				return null;
+			}
+			const array = new Uint8Array(bufferView.buffer);
+			for (let i = 0; i < array.byteLength; i++) {
+				array[i] = mockRandomValues[i];
+			}
+
+			return array;
+		});
 	});
 
-	it('generates correct string', () => {
-		const mathRandomSpy = jest.spyOn(Math, 'random');
-		let counter = 1;
-		mathRandomSpy.mockImplementation(() => {
-			const returnValue = counter;
-			counter += 5;
+	afterEach(() => {
+		getRandomValuesSpy.mockClear();
+	});
 
-			return parseFloat(`0.${returnValue}`);
-		});
+	it('generates a string of the specified length', () => {
+		const expectedLength = 10;
+		expect(generateRandomString(expectedLength)).toHaveLength(expectedLength);
+	});
 
-		const result1 = generateRandomString(10);
-		counter = 1;
-		const result2 = generateRandomString(20);
+	it('calls crypto.getRandomValues with Uint8Array', () => {
+		generateRandomString(5);
+		expect(crypto.getRandomValues).toHaveBeenCalledWith(expect.any(Uint8Array));
+	});
 
-		expect(result2.substring(0, 10)).toEqual(result1);
+	it('uses only characters from the charset', () => {
+		const result = generateRandomString(20);
+		const charset =
+			'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		expect(result).toMatch(new RegExp(`^[${charset}]+$`));
+	});
+
+	it('generates random strings with calculated indexes (num % STATE_CHARSET.length)', () => {
+		expect(generateRandomString(32)).toStrictEqual(
+			'U9o0zjzE6H0OVo3Ld4F6Qp1NBraLZmRW',
+		);
 	});
 });

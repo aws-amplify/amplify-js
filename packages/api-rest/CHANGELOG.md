@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.70](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.69...@aws-amplify/api-rest@4.0.70) (2025-02-20)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.0.69](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.68...@aws-amplify/api-rest@4.0.69) (2025-02-12)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.0.68](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.67...@aws-amplify/api-rest@4.0.68) (2025-02-04)
+
+### Bug Fixes
+
+- **deps:** fix more implicit deps and add linting ([#14137](https://github.com/aws-amplify/amplify-js/issues/14137)) ([22ca811](https://github.com/aws-amplify/amplify-js/commit/22ca811743f6729d3a00dd71726ff6b5afb44b53))
+
 ## [4.0.67](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.66...@aws-amplify/api-rest@4.0.67) (2025-01-24)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

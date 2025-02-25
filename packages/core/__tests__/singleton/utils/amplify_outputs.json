@@ -1,0 +1,198 @@
+{
+	"version": "1",
+	"auth": {
+		"aws_region": "us-west-2",
+		"user_pool_id": "mock-cup-id",
+		"user_pool_client_id": "mock-cup-client-id",
+		"identity_pool_id": "mock-idp-id",
+		"authentication_flow_type": "CUSTOM_AUTH",
+		"oauth": {
+			"identity_providers": [
+				"FACEBOOK",
+				"SIGN_IN_WITH_APPLE",
+				"GOOGLE",
+				"Auth0"
+			],
+			"domain": "mock-oauth-domain",
+			"scopes": ["phone"],
+			"redirect_sign_in_uri": ["mock-sign-in-uri"],
+			"redirect_sign_out_uri": ["mock-sign-out-uri"],
+			"response_type": "token"
+		},
+		"standard_required_attributes": ["address", "locale", "email"],
+		"username_attributes": ["phone_number", "email"],
+		"user_verification_types": ["email"],
+		"unauthenticated_identities_enabled": true,
+		"mfa_configuration": "OPTIONAL",
+		"mfa_methods": ["TOTP", "SMS"],
+		"password_policy": {
+			"require_lowercase": true,
+			"require_numbers": true,
+			"require_uppercase": true,
+			"require_symbols": true,
+			"min_length": 6
+		},
+		"groups": [
+			{ "ADMIN": { "precedence": 0 } },
+			{ "USER": { "precedence": 1 } },
+			{ "TEST": { "precedence": 2 } }
+		]
+	},
+	"data": {
+		"aws_region": "us-west-2",
+		"url": "mock-data-url",
+		"api_key": "mock-data-api-key",
+		"default_authorization_type": "API_KEY",
+		"authorization_types": [],
+		"conflict_resolution_mode": "AUTOMERGE",
+		"model_introspection": {
+			"version": 1,
+			"models": {
+				"Todo": {
+					"name": "Todo",
+					"fields": {
+						"id": {
+							"name": "id",
+							"isArray": false,
+							"type": "ID",
+							"isRequired": true,
+							"attributes": []
+						},
+						"content": {
+							"name": "content",
+							"isArray": false,
+							"type": "String",
+							"isRequired": false,
+							"attributes": []
+						},
+						"createdAt": {
+							"name": "createdAt",
+							"isArray": false,
+							"type": "AWSDateTime",
+							"isRequired": false,
+							"attributes": [],
+							"isReadOnly": true
+						},
+						"updatedAt": {
+							"name": "updatedAt",
+							"isArray": false,
+							"type": "AWSDateTime",
+							"isRequired": false,
+							"attributes": [],
+							"isReadOnly": true
+						}
+					},
+					"syncable": true,
+					"pluralName": "Todos",
+					"attributes": [
+						{
+							"type": "model",
+							"properties": {}
+						},
+						{
+							"type": "auth",
+							"properties": {
+								"rules": [
+									{
+										"provider": "userPools",
+										"ownerField": "owner",
+										"allow": "owner",
+										"identityClaim": "cognito:username",
+										"operations": ["create", "update", "delete", "read"]
+									},
+									{
+										"allow": "private",
+										"provider": "iam",
+										"operations": ["create", "update", "delete", "read"]
+									}
+								]
+							}
+						}
+					],
+					"primaryKeyInfo": {
+						"isCustomPrimaryKey": false,
+						"primaryKeyFieldName": "id",
+						"sortKeyFieldNames": []
+					}
+				}
+			},
+			"enums": {},
+			"nonModels": {}
+		}
+	},
+	"geo": {
+		"aws_region": "us-west-2",
+		"search_indices": {
+			"items": ["mock-geo-search-item", "mock-geo-search-item-alt"],
+			"default": "mock-geo-search-item"
+		},
+		"geofence_collections": {
+			"items": ["mock-geo-fence-item", "mock-geo-fence-item-alt"],
+			"default": "mock-geo-fence-item"
+		},
+
+		"maps": {
+			"items": {
+				"map51addb38-dev": {
+					"style": "VectorEsriStreets"
+				},
+				"map30grxcw31-prod": {
+					"style": "VectorEsriStreets"
+				}
+			},
+			"default": "map51addb38-dev"
+		}
+	},
+	"custom": {
+		"custom-prop": -51806024,
+		"custom-prop-alt": 87599986,
+		"events": {
+			"url": "mock-events-url",
+			"aws_region": "us-west-2",
+			"default_authorization_type": "API_KEY",
+			"api_key": "mock-events-api-key"
+		}
+	},
+	"notifications": {
+		"aws_region": "us-west-2",
+		"amazon_pinpoint_app_id": "mock-pinpoint-app-id",
+		"channels": ["IN_APP_MESSAGING", "APNS"]
+	},
+	"analytics": {
+		"amazon_pinpoint": {
+			"app_id": "mock-pinpoint-app-id",
+			"aws_region": "us-west-2"
+		}
+	},
+	"storage": {
+		"aws_region": "us-west-2",
+		"bucket_name": "mock-bucket-1",
+		"buckets": [
+			{
+				"name": "mock-bucket-1",
+				"bucket_name": "bucket1",
+				"aws_region": "us-west-2",
+				"paths": {
+					"sub/*": {
+						"authenticated": ["get", "list"]
+					},
+					"public/*": {
+						"guest": ["get", "list", "write", "delete"],
+						"authenticated": ["write", "get", "list", "delete"]
+					}
+				}
+			},
+			{
+				"name": "mock-bucket-2",
+				"bucket_name": "bucket2",
+				"aws_region": "us-west-2",
+				"paths": {
+					"public/*": {
+						"guest": ["get", "list", "write", "delete"],
+						"authenticated": ["write", "get", "list", "delete"]
+					}
+				}
+			}
+		]
+	}
+}

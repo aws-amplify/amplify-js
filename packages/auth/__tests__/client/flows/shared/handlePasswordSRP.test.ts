@@ -6,7 +6,9 @@ import { createCognitoUserPoolEndpointResolver } from '../../../../src/providers
 import { getAuthenticationHelper } from '../../../../src/providers/cognito/utils/srp';
 import { getUserContextData } from '../../../../src/providers/cognito/utils/userContextData';
 import { handlePasswordSRP } from '../../../../src/client/flows/shared/handlePasswordSRP';
-import * as signInHelpers from '../../../../src/providers/cognito/utils/signInHelpers';
+import { handlePasswordVerifierChallenge } from '../../../../src/providers/cognito/utils/handlePasswordVerifierChallenge';
+import { retryOnResourceNotFoundException } from '../../../../src/providers/cognito/utils/retryOnResourceNotFoundException';
+import { setActiveSignInUsername } from '../../../../src/providers/cognito/utils/setActiveSignInUsername';
 
 // Mock dependencies
 jest.mock(
@@ -15,14 +17,13 @@ jest.mock(
 jest.mock('../../../../src/providers/cognito/factories');
 jest.mock('../../../../src/providers/cognito/utils/srp');
 jest.mock('../../../../src/providers/cognito/utils/userContextData');
-jest.mock('../../../../src/providers/cognito/utils/signInHelpers', () => ({
-	...jest.requireActual(
-		'../../../../src/providers/cognito/utils/signInHelpers',
-	),
-	setActiveSignInUsername: jest.fn(),
-	handlePasswordVerifierChallenge: jest.fn(),
-	retryOnResourceNotFoundException: jest.fn(),
-}));
+jest.mock(
+	'../../../../src/providers/cognito/utils/handlePasswordVerifierChallenge',
+);
+jest.mock(
+	'../../../../src/providers/cognito/utils/retryOnResourceNotFoundException',
+);
+jest.mock('../../../../src/providers/cognito/utils/setActiveSignInUsername');
 
 describe('handlePasswordSRP', () => {
 	const mockConfig = {
@@ -31,6 +32,13 @@ describe('handlePasswordSRP', () => {
 		userPoolEndpoint: 'test-endpoint',
 	};
 
+	const mockHandlePasswordVerifierChallenge = jest.mocked(
+		handlePasswordVerifierChallenge,
+	);
+	const mockRetryOnResourceNotFoundException = jest.mocked(
+		retryOnResourceNotFoundException,
+	);
+	const mockSetActiveSignInUsername = jest.mocked(setActiveSignInUsername);
 	const mockInitiateAuth = jest.fn();
 	const mockCreateEndpointResolver = jest.fn();
 	const mockAuthenticationHelper = {
@@ -53,9 +61,9 @@ describe('handlePasswordSRP', () => {
 		(getUserContextData as jest.Mock).mockReturnValue({
 			UserContextData: 'test',
 		});
-		(
-			signInHelpers.retryOnResourceNotFoundException as jest.Mock
-		).mockImplementation((fn, args) => fn(...args));
+		mockRetryOnResourceNotFoundException.mockImplementation((fn, args) =>
+			fn(...args),
+		);
 		mockInitiateAuth.mockResolvedValue({
 			ChallengeParameters: { USERNAME: 'testuser' },
 			Session: 'test-session',
@@ -173,8 +181,8 @@ describe('handlePasswordSRP', () => {
 			authFlow: 'USER_AUTH',
 		});
 
-		expect(signInHelpers.retryOnResourceNotFoundException).toHaveBeenCalledWith(
-			signInHelpers.handlePasswordVerifierChallenge,
+		expect(mockRetryOnResourceNotFoundException).toHaveBeenCalledWith(
+			mockHandlePasswordVerifierChallenge,
 			[
 				password,
 				challengeParameters,
@@ -208,9 +216,7 @@ describe('handlePasswordSRP', () => {
 		});
 
 		expect(result).toEqual(mockResponse);
-		expect(
-			signInHelpers.retryOnResourceNotFoundException,
-		).not.toHaveBeenCalled();
+		expect(mockRetryOnResourceNotFoundException).not.toHaveBeenCalled();
 	});
 
 	test('should handle client metadata when provided', async () => {
@@ -254,9 +260,7 @@ describe('handlePasswordSRP', () => {
 			authFlow: 'USER_SRP_AUTH',
 		});
 
-		expect(signInHelpers.setActiveSignInUsername).toHaveBeenCalledWith(
-			challengeUsername,
-		);
+		expect(mockSetActiveSignInUsername).toHaveBeenCalledWith(challengeUsername);
 	});
 
 	test('should call handlePasswordVerifierChallenge with correct parameters', async () => {
@@ -285,8 +289,8 @@ describe('handlePasswordSRP', () => {
 			authFlow: 'USER_SRP_AUTH',
 		});
 
-		expect(signInHelpers.retryOnResourceNotFoundException).toHaveBeenCalledWith(
-			signInHelpers.handlePasswordVerifierChallenge,
+		expect(mockRetryOnResourceNotFoundException).toHaveBeenCalledWith(
+			mockHandlePasswordVerifierChallenge,
 			[
 				password,
 				challengeParameters,
@@ -341,9 +345,7 @@ describe('handlePasswordSRP', () => {
 			authFlow: 'USER_AUTH',
 		});
 
-		expect(signInHelpers.setActiveSignInUsername).toHaveBeenCalledWith(
-			username,
-		);
+		expect(mockSetActiveSignInUsername).toHaveBeenCalledWith(username);
 	});
 
 	test('should not add PREFERRED_CHALLENGE for USER_AUTH when preferredChallenge is undefined', async () => {
