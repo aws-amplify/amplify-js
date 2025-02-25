@@ -53,11 +53,18 @@ jobs:
           jq -c '[ .[] | select(.name | IN("@aws-amplify/react-native", "@aws-amplify/rtn-push-notification", "@aws-amplify/rtn-web-browser")) | {name, newVersion} ]' \
           > ~/lerna_versions.json
 
-      - name: test cache
+      - name: test cache 1
         run: |
-          echo "yarn lock path: ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}"
-          echo "pods lock path: ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}"
+          ls ${{ inputs.working_directory }}
+
+          cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
+          echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
+
+          cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
+          echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
+
           cat ~/lerna_versions.json
+          echo "hash lerna_versions.json: ${{ hashFiles('~/lerna_versions.json') }}"
 
       - name: Cache node_modules
         id: modules-cache
@@ -76,6 +83,19 @@ jobs:
           echo "Current NPM registry: " $(yarn config get registry)
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
         shell: bash
+
+      - name: test cache 2
+        run: |
+          ls ${{ inputs.working_directory }}
+
+          cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
+          echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
+
+          cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
+          echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
+
+          cat ~/lerna_versions.json
+          echo "hash lerna_versions.json: ${{ hashFiles('~/lerna_versions.json') }}"
 
       - name: Cache Pods
         id: pods-cache
@@ -116,8 +136,9 @@ jobs:
         #   restore-keys: |
         #     ${{ inputs.test_name }}-detox-build-
 
-      - name: test cache 2
+      - name: test cache 3
         run: |
+          ls ${{ inputs.working_directory }}
           echo "steps.modules-cache.outputs.cache-hit: ${{ steps.modules-cache.outputs.cache-hit }}"
           echo "steps.pods-cache.outputs.cache-hit: ${{ steps.pods-cache.outputs.cache-hit }}"
           echo "steps.detox-build-cache.outputs.cache-hit: ${{ steps.detox-build-cache.outputs.cache-hit }}"
