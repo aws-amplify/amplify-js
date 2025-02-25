@@ -69,7 +69,6 @@ async function connect(
 		return _subscription;
 	};
 
-	// WS publish is not enabled in the service yet. It will be a follow up feature
 	const pub = async (
 		event: DocumentType,
 		pubOptions?: EventsOptions,
