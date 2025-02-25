@@ -4,7 +4,7 @@
 import { HttpRequest, HttpResponse, Middleware } from '../../types';
 import { amplifyUuid } from '../../../libraryUtils';
 
-const SDK_INVOCATION_ID_HEADER = 'amz-sdk-invocation-id';
+import { SDK_INVOCATION_ID_HEADER } from './constants';
 
 /**
  * Middleware injects a UUID string to `amz-sdk-invocation-id` header.

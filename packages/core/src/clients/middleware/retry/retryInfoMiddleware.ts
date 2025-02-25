@@ -4,9 +4,7 @@
 import { HttpRequest, HttpResponse, Middleware } from '../../types';
 
 import { RetryOptions } from './retryMiddleware';
-import { DEFAULT_RETRY_ATTEMPTS } from './constants';
-
-const SDK_REQUEST_HEADER = 'amz-sdk-request';
+import { DEFAULT_RETRY_ATTEMPTS, SDK_REQUEST_HEADER } from './constants';
 
 export type RetryInfoMiddlewareOption = Pick<RetryOptions, 'maxAttempts'>;
 
