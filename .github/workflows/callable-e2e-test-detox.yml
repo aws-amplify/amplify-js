@@ -95,7 +95,7 @@ jobs:
           cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
           echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
 
-          cat ~/lerna_versions.json
+          cat ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}
           echo "hash lerna_versions.json: ${{ hashFiles(steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
 
       - name: Cache Pods
@@ -139,20 +139,19 @@ jobs:
 
       - name: test cache 3
         run: |
-          ls ${{ inputs.working_directory }}
-          echo "steps.modules-cache.outputs.cache-hit: ${{ steps.modules-cache.outputs.cache-hit }}"
-          echo "steps.pods-cache.outputs.cache-hit: ${{ steps.pods-cache.outputs.cache-hit }}"
-          echo "steps.detox-build-cache.outputs.cache-hit: ${{ steps.detox-build-cache.outputs.cache-hit }}"
           echo "${{ inputs.test_name }}-detox-build-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH, steps.cache_paths.outputs.POD_LOCK_PATH, steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
 
           cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
           echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
+          echo "steps.modules-cache.outputs.cache-hit: ${{ steps.modules-cache.outputs.cache-hit}}"
 
           cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
           echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
+          echo "steps.pods-cache.outputs.cache-hit: ${{ steps.pods-cache.outputs.cache-hit}}"
 
-          cat ~/lerna_versions.json
+          cat ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}
           echo "hash lerna_versions.json: ${{ hashFiles(steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
+          echo "steps.detox-build-cache.outputs.cache-hit: ${{ steps.detox-build-cache.outputs.cache-hit}}"
 
       - name: Detox Build
         if: steps.detox-build-cache.outputs.cache-hit != 'true' || steps.modules-cache.outputs.cache-hit != 'true' || steps.pods-cache.outputs.cache-hit != 'true'
