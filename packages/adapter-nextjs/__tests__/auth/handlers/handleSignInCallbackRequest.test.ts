@@ -301,7 +301,7 @@ describe('handleSignInCallbackRequest', () => {
 				headers.append('Set-cookie', 'mock-cookie-2');
 			});
 			mockCreateRedirectionIntermediary.mockImplementationOnce(
-				({ redirectOnSignInComplete }) =>
+				({ redirectTo: redirectOnSignInComplete }) =>
 					`<html>redirect to ${redirectOnSignInComplete}</html>`,
 			);
 
@@ -353,7 +353,7 @@ describe('handleSignInCallbackRequest', () => {
 				mockCreateAuthFlowProofCookiesRemoveOptionsResult,
 			);
 			expect(mockCreateRedirectionIntermediary).toHaveBeenCalledWith({
-				redirectOnSignInComplete: expectedFinalRedirect,
+				redirectTo: expectedFinalRedirect,
 			});
 			expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(
 				handlerInput.redirectOnSignInComplete,

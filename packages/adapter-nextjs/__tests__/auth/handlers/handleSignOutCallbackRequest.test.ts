@@ -171,7 +171,7 @@ describe('handleSignOutCallbackRequest', () => {
 			mockOAuthConfig,
 		);
 		expect(mockCreateRedirectionIntermediary).toHaveBeenCalledWith({
-			redirectOnSignInComplete: mockResolveRedirectSignOutUrlResult,
+			redirectTo: mockResolveRedirectSignOutUrlResult,
 		});
 	});
 

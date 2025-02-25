@@ -62,10 +62,7 @@ export const handleSignOutCallbackRequest: HandleSignOutCallbackRequest =
 
 			return new Response(
 				createRedirectionIntermediary({
-					redirectOnSignInComplete: resolveRedirectSignOutUrl(
-						origin,
-						oAuthConfig,
-					),
+					redirectTo: resolveRedirectSignOutUrl(origin, oAuthConfig),
 				}),
 				{
 					status: 200,

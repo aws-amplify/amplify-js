@@ -346,7 +346,7 @@ describe('handleSignInCallbackRequest', () => {
 				},
 			);
 			mockCreateRedirectionIntermediary.mockImplementationOnce(
-				({ redirectOnSignInComplete }) =>
+				({ redirectTo: redirectOnSignInComplete }) =>
 					`<html>redirect to ${redirectOnSignInComplete}</html>`,
 			);
 
@@ -397,7 +397,7 @@ describe('handleSignInCallbackRequest', () => {
 			);
 
 			expect(mockCreateRedirectionIntermediary).toHaveBeenCalledWith({
-				redirectOnSignInComplete: expectedFinalRedirect,
+				redirectTo: expectedFinalRedirect,
 			});
 			expect(getRedirectOrDefault).toHaveBeenCalledWith(
 				handlerInput.redirectOnSignInComplete,

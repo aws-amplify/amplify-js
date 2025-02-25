@@ -66,10 +66,7 @@ export const handleSignOutCallbackRequestForPagesRouter: HandleSignOutCallbackRe
 				.status(200)
 				.send(
 					createRedirectionIntermediary({
-						redirectOnSignInComplete: resolveRedirectSignOutUrl(
-							origin,
-							oAuthConfig,
-						),
+						redirectTo: resolveRedirectSignOutUrl(origin, oAuthConfig),
 					}),
 				);
 

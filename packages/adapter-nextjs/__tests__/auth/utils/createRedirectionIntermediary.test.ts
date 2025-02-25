@@ -4,7 +4,7 @@ describe('createOnSignInCompletedRedirectIntermediate', () => {
 	it('returns html with script that redirects to the redirectUrl', () => {
 		const redirectUrl = 'https://example.com';
 		const result = createRedirectionIntermediary({
-			redirectOnSignInComplete: redirectUrl,
+			redirectTo: redirectUrl,
 		});
 
 		expect(result).toMatchSnapshot();

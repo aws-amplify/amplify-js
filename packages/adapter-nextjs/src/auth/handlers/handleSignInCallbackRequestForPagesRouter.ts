@@ -124,7 +124,7 @@ export const handleSignInCallbackRequestForPagesRouter: HandleSignInCallbackRequ
 			.status(200)
 			.send(
 				createRedirectionIntermediary({
-					redirectOnSignInComplete: getRedirectOrDefault(
+					redirectTo: getRedirectOrDefault(
 						handlerInput.redirectOnSignInComplete,
 					),
 				}),

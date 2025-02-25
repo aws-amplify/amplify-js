@@ -115,9 +115,7 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 
 	return new Response(
 		createRedirectionIntermediary({
-			redirectOnSignInComplete: getRedirectOrDefault(
-				handlerInput.redirectOnSignInComplete,
-			),
+			redirectTo: getRedirectOrDefault(handlerInput.redirectOnSignInComplete),
 		}),
 		{
 			status: 200,
