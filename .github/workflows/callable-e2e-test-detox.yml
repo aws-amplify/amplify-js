@@ -48,11 +48,11 @@ jobs:
         run: |
           echo "YARN_LOCK_PATH=${{ inputs.working_directory }}/yarn.lock" >> $GITHUB_OUTPUT
           echo "POD_LOCK_PATH=${{ inputs.working_directory }}/ios/Podfile.lock" >> $GITHUB_OUTPUT
-          echo "LERNA_VERSIONS_PATH=${{ inputs.working_directory }}/lerna_versions.json" >> $GITHUB_OUTPUT
+          echo "LERNA_VERSIONS_PATH=${{ github.workspace }}/amplify_native_pkg_versions.json" >> $GITHUB_OUTPUT
 
           npx lerna version --conventional-commits --no-git-tag-version --no-push --json --yes | \
           jq -c '[ .[] | select(.name | IN("@aws-amplify/react-native", "@aws-amplify/rtn-push-notification", "@aws-amplify/rtn-web-browser")) | {name, newVersion} ]' \
-          > ${{ inputs.working_directory }}/lerna_versions.json
+          > ${{ github.workspace }}/amplify_native_pkg_versions.json
 
       - name: test cache 1
         run: |
@@ -64,7 +64,7 @@ jobs:
           cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
           echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
 
-          cat ~/lerna_versions.json
+          cat ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}
           echo "hash lerna_versions.json: ${{ hashFiles(steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
 
       - name: Cache node_modules
