@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HttpResponse, MiddlewareHandler } from '../../../../src/clients/types';
+import {
+	HttpRequest,
+	HttpResponse,
+	MiddlewareHandler,
+} from '../../../../src/clients/types';
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
 import {
 	RetryOptions,
@@ -20,16 +24,23 @@ describe(`retry middleware`, () => {
 		retryDecider: async () => ({ retryable: true }),
 		computeDelay: () => 1,
 	};
-	const defaultRequest = { url: new URL('https://a.b') };
+	const defaultRequest = {
+		url: new URL('https://a.b'),
+		method: 'GET',
+		headers: {},
+	};
 	const defaultResponse: HttpResponse = {
 		body: 'foo' as any,
 		statusCode: 200,
 		headers: {},
 	};
-	const getRetryableHandler = (nextHandler: MiddlewareHandler<any, any>) =>
-		composeTransferHandler<[RetryOptions]>(nextHandler, [
-			retryMiddlewareFactory,
-		]);
+	const getRetryableHandler = (
+		nextHandler: MiddlewareHandler<HttpRequest, HttpResponse>,
+	) =>
+		composeTransferHandler<[RetryOptions], HttpRequest, HttpResponse>(
+			nextHandler,
+			[retryMiddlewareFactory],
+		);
 
 	test('should retry specified times', async () => {
 		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
@@ -120,10 +131,11 @@ describe(`retry middleware`, () => {
 		const nextMiddleware = jest.fn(
 			(next: MiddlewareHandler<any, any>) => (request: any) => next(request),
 		);
-		const retryableHandler = composeTransferHandler<[RetryOptions, any]>(
-			coreHandler,
-			[retryMiddlewareFactory, () => nextMiddleware],
-		);
+		const retryableHandler = composeTransferHandler<
+			[RetryOptions, any],
+			HttpRequest,
+			HttpResponse
+		>(coreHandler, [retryMiddlewareFactory, () => nextMiddleware]);
 		const retryDecider = jest.fn().mockImplementation((resp, error) => ({
 			retryable: error?.message === 'InvalidSignature',
 			isCredentialsExpiredError: error?.message === 'InvalidSignature',
@@ -227,7 +239,9 @@ describe(`retry middleware`, () => {
 			};
 
 		const doubleRetryableHandler = composeTransferHandler<
-			[RetryOptions, Record<string, unknown>, RetryOptions]
+			[RetryOptions, Record<string, unknown>, RetryOptions],
+			HttpRequest,
+			HttpResponse
 		>(coreHandler, [
 			retryMiddlewareFactory,
 			betweenRetryMiddleware,
