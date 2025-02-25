@@ -4,9 +4,12 @@
 import {
 	HttpRequest,
 	HttpResponse,
+	RetryInfoMiddlewareOption,
 	RetryOptions,
 	SigningOptions,
 	UserAgentOptions,
+	invocationIdMiddlewareFactory,
+	retryInfoMiddlewareFactory,
 	retryMiddlewareFactory,
 	signingMiddlewareFactory,
 	userAgentMiddlewareFactory,
@@ -23,13 +26,22 @@ import { xhrTransferHandler } from '../xhrTransferHandler';
  * @internal
  */
 export const s3TransferHandler = composeTransferHandler<
-	[object, UserAgentOptions, RetryOptions<HttpResponse>, SigningOptions],
+	[
+		object,
+		UserAgentOptions,
+		object,
+		RetryOptions<HttpResponse>,
+		RetryInfoMiddlewareOption,
+		SigningOptions,
+	],
 	HttpRequest,
 	HttpResponse,
 	typeof xhrTransferHandler
 >(xhrTransferHandler, [
 	contentSha256MiddlewareFactory,
 	userAgentMiddlewareFactory,
+	invocationIdMiddlewareFactory,
 	retryMiddlewareFactory,
+	retryInfoMiddlewareFactory,
 	signingMiddlewareFactory,
 ]);
