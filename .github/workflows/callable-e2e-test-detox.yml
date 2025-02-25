@@ -123,8 +123,13 @@ jobs:
           echo "steps.detox-build-cache.outputs.cache-hit: ${{ steps.detox-build-cache.outputs.cache-hit }}"
           echo "${{ inputs.test_name }}-detox-build-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH, steps.cache_paths.outputs.POD_LOCK_PATH, '~/lerna_versions.json') }}"
 
+          cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
           echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
+
+          cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
           echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
+
+          cat ~/lerna_versions.json
           echo "hash lerna_versions.json: ${{ hashFiles('~/lerna_versions.json') }}"
 
       - name: Detox Build
