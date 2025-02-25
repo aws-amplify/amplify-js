@@ -11,7 +11,7 @@ import {
 	appendSetCookieHeaders,
 	createAuthFlowProofCookiesRemoveOptions,
 	createErrorSearchParamsString,
-	createOnSignInCompleteRedirectIntermediate,
+	createRedirectionIntermediary,
 	createSignInFlowProofCookies,
 	createTokenCookies,
 	createTokenCookiesSetOptions,
@@ -114,7 +114,7 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 	headers.set('Content-Type', 'text/html');
 
 	return new Response(
-		createOnSignInCompleteRedirectIntermediate({
+		createRedirectionIntermediary({
 			redirectOnSignInComplete: getRedirectOrDefault(
 				handlerInput.redirectOnSignInComplete,
 			),

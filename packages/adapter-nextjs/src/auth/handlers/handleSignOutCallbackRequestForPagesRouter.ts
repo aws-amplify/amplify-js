@@ -13,7 +13,7 @@ import {
 import {
 	appendSetCookieHeadersToNextApiResponse,
 	createAuthFlowProofCookiesRemoveOptions,
-	createOnSignInCompleteRedirectIntermediate,
+	createRedirectionIntermediary,
 	createTokenCookiesRemoveOptions,
 	createTokenRemoveCookies,
 	getCookieValuesFromNextApiRequest,
@@ -65,7 +65,7 @@ export const handleSignOutCallbackRequestForPagesRouter: HandleSignOutCallbackRe
 				.appendHeader('Content-Type', 'text/html')
 				.status(200)
 				.send(
-					createOnSignInCompleteRedirectIntermediate({
+					createRedirectionIntermediary({
 						redirectOnSignInComplete: resolveRedirectSignOutUrl(
 							origin,
 							oAuthConfig,

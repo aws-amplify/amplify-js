@@ -7,7 +7,7 @@ import {
 	appendSetCookieHeaders,
 	createAuthFlowProofCookiesRemoveOptions,
 	createErrorSearchParamsString,
-	createOnSignInCompleteRedirectIntermediate,
+	createRedirectionIntermediary,
 	createSignInFlowProofCookies,
 	createTokenCookies,
 	createTokenCookiesSetOptions,
@@ -37,8 +37,8 @@ const mockAppendSetCookieHeaders = jest.mocked(appendSetCookieHeaders);
 const mockCreateAuthFlowProofCookiesRemoveOptions = jest.mocked(
 	createAuthFlowProofCookiesRemoveOptions,
 );
-const mockCreateOnSignInCompleteRedirectIntermediate = jest.mocked(
-	createOnSignInCompleteRedirectIntermediate,
+const mockCreateRedirectionIntermediary = jest.mocked(
+	createRedirectionIntermediary,
 );
 const mockCreateSignInFlowProofCookies = jest.mocked(
 	createSignInFlowProofCookies,
@@ -78,7 +78,7 @@ describe('handleSignInCallbackRequest', () => {
 	afterEach(() => {
 		mockAppendSetCookieHeaders.mockClear();
 		mockCreateAuthFlowProofCookiesRemoveOptions.mockClear();
-		mockCreateOnSignInCompleteRedirectIntermediate.mockClear();
+		mockCreateRedirectionIntermediary.mockClear();
 		mockCreateSignInFlowProofCookies.mockClear();
 		mockCreateTokenCookies.mockClear();
 		mockCreateTokenCookiesSetOptions.mockClear();
@@ -300,7 +300,7 @@ describe('handleSignInCallbackRequest', () => {
 				headers.append('Set-cookie', 'mock-cookie-1');
 				headers.append('Set-cookie', 'mock-cookie-2');
 			});
-			mockCreateOnSignInCompleteRedirectIntermediate.mockImplementationOnce(
+			mockCreateRedirectionIntermediary.mockImplementationOnce(
 				({ redirectOnSignInComplete }) =>
 					`<html>redirect to ${redirectOnSignInComplete}</html>`,
 			);
@@ -352,9 +352,7 @@ describe('handleSignInCallbackRequest', () => {
 				mockCreateSignInFlowProofCookiesResult,
 				mockCreateAuthFlowProofCookiesRemoveOptionsResult,
 			);
-			expect(
-				mockCreateOnSignInCompleteRedirectIntermediate,
-			).toHaveBeenCalledWith({
+			expect(mockCreateRedirectionIntermediary).toHaveBeenCalledWith({
 				redirectOnSignInComplete: expectedFinalRedirect,
 			});
 			expect(mockGetRedirectOrDefault).toHaveBeenCalledWith(

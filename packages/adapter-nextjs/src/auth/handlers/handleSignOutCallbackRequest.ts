@@ -13,7 +13,7 @@ import {
 import {
 	appendSetCookieHeaders,
 	createAuthFlowProofCookiesRemoveOptions,
-	createOnSignInCompleteRedirectIntermediate,
+	createRedirectionIntermediary,
 	createTokenCookiesRemoveOptions,
 	createTokenRemoveCookies,
 	getCookieValuesFromRequest,
@@ -61,7 +61,7 @@ export const handleSignOutCallbackRequest: HandleSignOutCallbackRequest =
 			);
 
 			return new Response(
-				createOnSignInCompleteRedirectIntermediate({
+				createRedirectionIntermediary({
 					redirectOnSignInComplete: resolveRedirectSignOutUrl(
 						origin,
 						oAuthConfig,

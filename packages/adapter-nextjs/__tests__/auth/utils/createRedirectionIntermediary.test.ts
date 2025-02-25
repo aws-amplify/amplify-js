@@ -1,9 +1,9 @@
-import { createOnSignInCompleteRedirectIntermediate } from '../../../src/auth/utils/createOnSignInCompleteRedirectIntermediate';
+import { createRedirectionIntermediary } from '../../../src/auth/utils/createRedirectionIntermediary';
 
 describe('createOnSignInCompletedRedirectIntermediate', () => {
 	it('returns html with script that redirects to the redirectUrl', () => {
 		const redirectUrl = 'https://example.com';
-		const result = createOnSignInCompleteRedirectIntermediate({
+		const result = createRedirectionIntermediary({
 			redirectOnSignInComplete: redirectUrl,
 		});
 

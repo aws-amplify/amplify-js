@@ -15,7 +15,7 @@ import { CreateAuthRoutesHandlersInput } from '../../../src/auth/types';
 import {
 	appendSetCookieHeadersToNextApiResponse,
 	createAuthFlowProofCookiesRemoveOptions,
-	createOnSignInCompleteRedirectIntermediate,
+	createRedirectionIntermediary,
 	createTokenCookiesRemoveOptions,
 	createTokenRemoveCookies,
 	getCookieValuesFromNextApiRequest,
@@ -47,8 +47,8 @@ const mockGetRedirectOrDefault = jest.mocked(getRedirectOrDefault);
 const mockCreateAuthFlowProofCookiesRemoveOptions = jest.mocked(
 	createAuthFlowProofCookiesRemoveOptions,
 );
-const mockCreateOnSignInCompleteRedirectIntermediate = jest.mocked(
-	createOnSignInCompleteRedirectIntermediate,
+const mockCreateRedirectionIntermediary = jest.mocked(
+	createRedirectionIntermediary,
 );
 const mockResolveRedirectSignOutUrl = jest.mocked(resolveRedirectSignOutUrl);
 
@@ -85,7 +85,7 @@ describe('handleSignOutCallbackRequest', () => {
 		mockRevokeAuthNTokens.mockClear();
 		mockGetRedirectOrDefault.mockClear();
 		mockCreateAuthFlowProofCookiesRemoveOptions.mockClear();
-		mockCreateOnSignInCompleteRedirectIntermediate.mockClear();
+		mockCreateRedirectionIntermediary.mockClear();
 		mockResolveRedirectSignOutUrl.mockClear();
 
 		mockResponseAppendHeader.mockClear();
@@ -148,7 +148,7 @@ describe('handleSignOutCallbackRequest', () => {
 		);
 		const mockCreateOnSignInCompleteRedirectIntermediateResult =
 			'<html><head><meta http-equiv="refresh" content="0;url=/"></head></html>';
-		mockCreateOnSignInCompleteRedirectIntermediate.mockReturnValueOnce(
+		mockCreateRedirectionIntermediary.mockReturnValueOnce(
 			mockCreateOnSignInCompleteRedirectIntermediateResult,
 		);
 		mockAppendSetCookieHeadersToNextApiResponse.mockImplementationOnce(
@@ -195,11 +195,9 @@ describe('handleSignOutCallbackRequest', () => {
 			'https://example.com',
 			mockOAuthConfig,
 		);
-		expect(mockCreateOnSignInCompleteRedirectIntermediate).toHaveBeenCalledWith(
-			{
-				redirectOnSignInComplete: mockResolveRedirectSignOutUrlResult,
-			},
-		);
+		expect(mockCreateRedirectionIntermediary).toHaveBeenCalledWith({
+			redirectOnSignInComplete: mockResolveRedirectSignOutUrlResult,
+		});
 	});
 
 	it('returns a 302 response to redirect to handlerInput.redirectOnSignOutComplete when the request cookies do not have a username', async () => {
