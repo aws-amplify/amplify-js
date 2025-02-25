@@ -115,6 +115,13 @@ jobs:
           key: ${{ inputs.test_name }}-detox-build-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH, steps.cache_paths.outputs.POD_LOCK_PATH, '~/lerna_versions.json') }}
           restore-keys: |
             ${{ inputs.test_name }}-detox-build-
+
+      - name: test cache
+        run: |
+          echo "steps.modules-cache.outputs.cache-hit: ${{ steps.modules-cache.outputs.cache-hit }}"
+          echo "steps.pods-cache.outputs.cache-hit: ${{ steps.pods-cache.outputs.cache-hit }}"
+          echo "steps.detox-build-cache.outputs.cache-hit: ${{ steps.detox-build-cache.outputs.cache-hit }}"
+
       - name: Detox Build
         if: steps.detox-build-cache.outputs.cache-hit != 'true' || steps.modules-cache.outputs.cache-hit != 'true' || steps.pods-cache.outputs.cache-hit != 'true'
         run: |
