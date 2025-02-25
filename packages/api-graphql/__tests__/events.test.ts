@@ -191,7 +191,7 @@ describe('Events client', () => {
 					test(`auth override: ${authMode}`, async () => {
 						const channel = await events.connect('/');
 
-						channel.publish({ some: 'data' });
+						channel.publish({ some: 'data' }, { authMode });
 
 						expect(mockProvider.publish).toHaveBeenCalledWith(
 							expect.objectContaining({ authenticationType: authMode }),
