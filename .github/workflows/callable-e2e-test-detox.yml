@@ -66,8 +66,8 @@ jobs:
           path: ${{ inputs.working_directory }}/node_modules
           key: |
             ${{ inputs.test_name }}-detox-modules-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}
-          restore-keys: |
-            ${{ inputs.test_name }}-detox-modules-
+        #   restore-keys: |
+        #     ${{ inputs.test_name }}-detox-modules-
 
       - name: Yarn Install
         working-directory: ${{ inputs.working_directory }}
@@ -83,8 +83,8 @@ jobs:
         with:
           path: ${{ inputs.working_directory }}/ios/Pods
           key: ${{ inputs.test_name }}-pods-${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}
-          restore-keys: |
-            ${{ inputs.test_name }}-pods-
+        #   restore-keys: |
+        #     ${{ inputs.test_name }}-pods-
       - name: Install CocoaPods
         if: steps.pods-cache.outputs.cache-hit != 'true'
         run: |
@@ -113,8 +113,8 @@ jobs:
         with:
           path: ${{ inputs.working_directory }}/ios/build
           key: ${{ inputs.test_name }}-detox-build-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH, steps.cache_paths.outputs.POD_LOCK_PATH, '~/lerna_versions.json') }}
-          restore-keys: |
-            ${{ inputs.test_name }}-detox-build-
+        #   restore-keys: |
+        #     ${{ inputs.test_name }}-detox-build-
 
       - name: test cache
         run: |
