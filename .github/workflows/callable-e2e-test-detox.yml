@@ -57,10 +57,10 @@ jobs:
 
           npx lerna version --conventional-commits --no-git-tag-version --no-push --json --yes | \
           jq -c '[ .[] | select(.name | IN("@aws-amplify/react-native", "@aws-amplify/rtn-push-notification", "@aws-amplify/rtn-web-browser")) | {name, newVersion} ]' \
-          > ${{ inputs.working_directory }}/lerna_versions.json
+          > ~/lerna_versions.json
 
           echo "After running lerna version"
-          cat ${{ inputs.working_directory }}/lerna_versions.json
+          cat ~/lerna_versions.json
 
       - name: test cache
         run: |
