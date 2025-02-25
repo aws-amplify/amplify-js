@@ -503,15 +503,15 @@ tests:
   - test_name: integ_next_auth_authenticator_and_ssr_page
     desc: 'Authenticator and SSR page'
     framework: next
-    category: auth
+    category: consolidated
     sample_name: [next-sample]
     spec: auth-ssr
     browser: [chrome]
   - test_name: integ_next_auth_authenticator_and_rsc_page
     desc: 'Authenticator and RSC page'
     framework: next
-    category: auth
-    sample_name: [auth-rsc]
+    category: consolidated
+    sample_name: [next-sample]
     spec: auth-rsc
     browser: [chrome]
   # - test_name: integ_next_sign_in_with_oauth
@@ -589,7 +589,7 @@ tests:
   - test_name: integ_next_auth_authenticator_and_rsc_page_gen2
     desc: 'Authenticator and RSC page'
     framework: next
-    category: auth
+    category: consolidated
     sample_name: [next-sample]
     spec: auth-rsc
     browser: [chrome]
