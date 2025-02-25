@@ -15,5 +15,5 @@ export {
 	urlSafeEncode,
 	decodeJWT,
 	LegacyConfig,
-	AmplifyOutputsUnknown,  
+	AmplifyOutputsUnknown,
 } from '@aws-amplify/core/internals/utils';
