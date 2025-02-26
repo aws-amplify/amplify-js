@@ -151,6 +151,8 @@ describe('completeOAuthFlow', () => {
 				token_type: 'token_type',
 				expires_in: 'expires_in',
 			};
+			const executionOrder: string[] = [];
+
 			mockValidateState.mockReturnValueOnce('myState-valid_state');
 			(oAuthStore.loadPKCE as jest.Mock).mockResolvedValueOnce('pkce23234a');
 			const mockJsonMethod = jest.fn(() => Promise.resolve(expectedTokens));
@@ -162,6 +164,12 @@ describe('completeOAuthFlow', () => {
 			mockFetch.mockResolvedValueOnce({
 				json: mockJsonMethod,
 			});
+			mockReplaceState.mockImplementation((..._args) =>
+				executionOrder.push('replaceState'),
+			);
+			mockHubDispatch.mockImplementation(() =>
+				executionOrder.push('hubDispatch'),
+			);
 
 			await completeOAuthFlow(testInput);
 
@@ -180,17 +188,27 @@ describe('completeOAuthFlow', () => {
 				TokenType: expectedTokens.token_type,
 				ExpiresIn: expectedTokens.expires_in,
 			});
+
+			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
+			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
+
+			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
+
 			expect(mockReplaceState).toHaveBeenCalledWith(
 				'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 				'',
 				testInput.redirectUri,
 			);
 
-			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
-			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
-
 			expect(mockHubDispatch).toHaveBeenCalledTimes(3);
-			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
+
+			// Verify we replace browser tab location before dispatching hub events
+			expect(executionOrder).toEqual([
+				'replaceState',
+				'hubDispatch',
+				'hubDispatch',
+				'hubDispatch',
+			]);
 		});
 
 		it('throws when `fetch` call resolves error', async () => {
