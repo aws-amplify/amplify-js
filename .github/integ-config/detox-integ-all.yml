@@ -5,4 +5,4 @@
 - test_name: 'integ_rn_ios_device_tracking'
   working_directory: amplify-js-samples-staging/samples/react-native/auth/deviceTracking
 - test_name: 'integ_rn_ios_datastore_sqlite_adapter'
-  working_directory: ~/amplify-js-samples-staging/samples/react-native/datastore/SQLiteAdapter
+  working_directory: amplify-js-samples-staging/samples/react-native/datastore/SQLiteAdapter
