@@ -7,7 +7,10 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyUrl,
+	AmplifyUrlSearchParams,
+} from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import {
@@ -68,6 +71,9 @@ const copyObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	url.search = new AmplifyUrlSearchParams({
+		'x-id': 'CopyObject',
+	}).toString();
 	validateObjectUrl({
 		bucketName: input.Bucket,
 		key: input.Key,
