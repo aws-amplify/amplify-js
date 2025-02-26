@@ -76,6 +76,15 @@ jobs:
           GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
       - name: Load Verdaccio with AmplifyJs
         uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
+
+      - name: Testing pkg registry
+        working-directory: amplify-js-samples-staging
+        run: |
+          cd samples/${{ inputs.framework }}/${{ inputs.category }}/${{ matrix.sample_name }}
+          pwd
+          yarn
+          yarn why aws-amplify
+
       - name: Run cypress tests for ${{ inputs.test_name }} dev
         shell: bash
         working-directory: amplify-js-samples-staging

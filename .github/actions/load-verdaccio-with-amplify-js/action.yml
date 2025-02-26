@@ -15,7 +15,8 @@ runs:
         # Run your commands after verdaccio is up and running
         echo "Verdaccio is up and running, proceeding with the script..."
       shell: bash
-    - name: Install and run npm-cli-login
+
+    - name: Authenticate with Verdaccio
       shell: bash
       env:
         NPM_REGISTRY: http://localhost:4873/
@@ -23,9 +24,19 @@ runs:
         NPM_PASS: verdaccio
         NPM_EMAIL: verdaccio@amplify.js
       run: |
-        npm i -g npm-cli-adduser
-        npm-cli-adduser
-        sleep 1
+        npm set registry $NPM_REGISTRY
+        npm set //${NPM_REGISTRY#http://}:_auth=$(echo -n "$NPM_USER:$NPM_PASS" | base64)
+    # - name: Install and run npm-cli-login
+    #   shell: bash
+    #   env:
+    #     NPM_REGISTRY: http://localhost:4873/
+    #     NPM_USER: verdaccio
+    #     NPM_PASS: verdaccio
+    #     NPM_EMAIL: verdaccio@amplify.js
+    #   run: |
+    #     npm i -g npm-cli-adduser
+    #     npm-cli-adduser
+    #     sleep 1
     - name: Configure registry and git
       shell: bash
       working-directory: ./amplify-js
