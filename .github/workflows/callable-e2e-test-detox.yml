@@ -54,6 +54,10 @@ jobs:
           jq -c '[ .[] | select(.name | IN("@aws-amplify/react-native", "@aws-amplify/rtn-push-notification", "@aws-amplify/rtn-web-browser")) | {name, newVersion} ]' \
           > ${{ github.workspace }}/amplify_native_pkg_versions.json
 
+          echo "YARN_LOCK_CACHE_KEY=${{ inputs.test_name }}-detox-modules-${{ hashFiles(format('{0}/yarn.lock', inputs.working_directory)) }}" >> $GITHUB_ENV
+          echo "POD_LOCK_CACHE_KEY=${{ inputs.test_name }}-pods-${{ hashFiles(format('{0}/ios/Podfile.lock', inputs.working_directory)) }}" >> $GITHUB_ENV
+          echo "DETOX_BUILD_CACHE_KEY=${{ inputs.test_name }}-detox-build-${{ hashFiles(format('{0}/yarn.lock', inputs.working_directory), format('{0}/ios/Podfile.lock', inputs.working_directory), format('{0}/amplify_native_pkg_versions.json', inputs.working_directory)) }}" >> $GITHUB_OUTPUT
+
       - name: test cache 1
         run: |
           ls ${{ inputs.working_directory }}
@@ -72,10 +76,7 @@ jobs:
         uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ${{ inputs.working_directory }}/node_modules
-          key: |
-            ${{ inputs.test_name }}-detox-modules-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}
-        #   restore-keys: |
-        #     ${{ inputs.test_name }}-detox-modules-
+          key: ${{ steps.cache_paths.outputs.YARN_LOCK_CACHE_KEY }}
 
       - name: Yarn Install
         working-directory: ${{ inputs.working_directory }}
@@ -103,9 +104,7 @@ jobs:
         uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ${{ inputs.working_directory }}/ios/Pods
-          key: ${{ inputs.test_name }}-pods-${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}
-        #   restore-keys: |
-        #     ${{ inputs.test_name }}-pods-
+          key: ${{ steps.cache_paths.outputs.POD_LOCK_CACHE_KEY }}
       - name: Install CocoaPods
         if: steps.pods-cache.outputs.cache-hit != 'true'
         run: |
@@ -133,9 +132,7 @@ jobs:
         uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ${{ inputs.working_directory }}/ios/build
-          key: ${{ inputs.test_name }}-detox-build-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH, steps.cache_paths.outputs.POD_LOCK_PATH, steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}
-        #   restore-keys: |
-        #     ${{ inputs.test_name }}-detox-build-
+          key: ${{ steps.cache_paths.outputs.DETOX_BUILD_CACHE_KEY }}
 
       - name: test cache 3
         run: |
