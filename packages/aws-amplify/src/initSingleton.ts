@@ -8,7 +8,7 @@ import {
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
-	AmplifyOutputs,
+	AmplifyOutputsUnknown,
 	LegacyConfig,
 	parseAmplifyConfig,
 } from '@aws-amplify/core/internals/utils';
@@ -32,7 +32,7 @@ export const DefaultAmplify = {
 	 * Amplify.configure(config);
 	 */
 	configure(
-		resourceConfig: ResourcesConfig | LegacyConfig | AmplifyOutputs,
+		resourceConfig: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
 		libraryOptions?: LibraryOptions,
 	): void {
 		const resolvedResourceConfig = parseAmplifyConfig(resourceConfig);

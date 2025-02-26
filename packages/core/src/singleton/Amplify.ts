@@ -5,7 +5,7 @@ import { deepFreeze } from '../utils';
 import { parseAmplifyConfig } from '../libraryUtils';
 
 import {
-	AmplifyOutputs,
+	AmplifyOutputsUnknown,
 	AuthConfig,
 	LegacyConfig,
 	LibraryOptions,
@@ -49,7 +49,7 @@ export class AmplifyClass {
 	 * @param libraryOptions - Additional options for customizing the behavior of the library.
 	 */
 	configure(
-		resourcesConfig: ResourcesConfig | LegacyConfig | AmplifyOutputs,
+		resourcesConfig: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
 		libraryOptions?: LibraryOptions,
 	): void {
 		const resolvedResourceConfig = parseAmplifyConfig(resourcesConfig);
