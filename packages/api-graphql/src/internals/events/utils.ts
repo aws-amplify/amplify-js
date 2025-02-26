@@ -47,7 +47,7 @@ export const configure = () => {
 };
 
 /**
- * Event API expects and array of JSON strings
+ * Event API expects an array of JSON strings
  *
  * @param events - JSON-serializable value or an array of values
  * @returns array of JSON strings
