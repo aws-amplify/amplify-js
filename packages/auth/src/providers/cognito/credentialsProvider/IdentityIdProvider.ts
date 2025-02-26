@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthTokens, ConsoleLogger, Identity, getId } from '@aws-amplify/core';
+import { AuthTokens, Identity, getId } from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
@@ -11,7 +11,6 @@ import { GetIdException } from '../types/errors';
 import { IdentityIdStore } from './types';
 import { formLoginsMap } from './utils';
 
-const logger = new ConsoleLogger('CognitoIdentityIdProvider');
 /**
  * Provides a Cognito identityId
  *
@@ -33,46 +32,22 @@ export async function cognitoIdentityIdProvider({
 	identityIdStore.setAuthConfig({ Cognito: authConfig });
 
 	// will return null only if there is no identityId cached or if there is an error retrieving it
-	let identityId: Identity | null = await identityIdStore.loadIdentityId();
+	const identityId: Identity | null = await identityIdStore.loadIdentityId();
 
-	// Tokens are available so return primary identityId
-	if (tokens) {
-		// If there is existing primary identityId in-memory return that
-		if (identityId && identityId.type === 'primary') {
-			return identityId.id;
-		} else {
-			const logins = tokens.idToken
-				? formLoginsMap(tokens.idToken.toString())
-				: {};
-
-			const generatedIdentityId = await generateIdentityId(logins, authConfig);
-
-			if (identityId && identityId.id === generatedIdentityId) {
-				logger.debug(
-					`The guest identity ${identityId.id} has become the primary identity.`,
-				);
-			}
-			identityId = {
-				id: generatedIdentityId,
-				type: 'primary',
-			};
-		}
-	} else {
-		// If there is existing guest identityId cached return that
-		if (identityId && identityId.type === 'guest') {
-			return identityId.id;
-		} else {
-			identityId = {
-				id: await generateIdentityId({}, authConfig),
-				type: 'guest',
-			};
-		}
+	if (identityId) {
+		return identityId.id;
 	}
+	const logins = tokens?.idToken
+		? formLoginsMap(tokens.idToken.toString())
+		: {};
+	const generatedIdentityId = await generateIdentityId(logins, authConfig);
+	// Store generated identityId
+	identityIdStore.storeIdentityId({
+		id: generatedIdentityId,
+		type: tokens ? 'primary' : 'guest',
+	});
 
-	// Store in-memory or local storage depending on guest or primary identityId
-	identityIdStore.storeIdentityId(identityId);
-
-	return identityId.id;
+	return generatedIdentityId;
 }
 
 async function generateIdentityId(
