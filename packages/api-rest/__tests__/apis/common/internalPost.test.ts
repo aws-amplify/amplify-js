@@ -22,10 +22,13 @@ const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
 const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;
 const mockParseJsonError = parseJsonError as jest.Mock;
 const mockFetchAuthSession = jest.fn();
+const mockAssertConfigured = jest.fn();
 const mockAmplifyInstance = {
 	Auth: {
 		fetchAuthSession: mockFetchAuthSession,
 	},
+	isConfigured: true,
+	assertConfigured: mockAssertConfigured,
 } as any as AmplifyClassV6;
 
 const successResponse = {
@@ -52,6 +55,7 @@ describe('internal post', () => {
 		mockFetchAuthSession.mockResolvedValue({ credentials });
 		mockAuthenticatedHandler.mockResolvedValue(successResponse);
 		mockUnauthenticatedHandler.mockResolvedValue(successResponse);
+		mockAssertConfigured.mockReturnValue(true);
 	});
 
 	it('should call authenticatedHandler with specified region from signingServiceInfo', async () => {
