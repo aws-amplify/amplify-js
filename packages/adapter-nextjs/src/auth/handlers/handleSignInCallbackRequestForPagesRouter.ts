@@ -11,7 +11,7 @@ import {
 	appendSetCookieHeadersToNextApiResponse,
 	createAuthFlowProofCookiesRemoveOptions,
 	createErrorSearchParamsString,
-	createOnSignInCompleteRedirectIntermediate,
+	createRedirectionIntermediary,
 	createSignInFlowProofCookies,
 	createTokenCookies,
 	createTokenCookiesSetOptions,
@@ -104,7 +104,7 @@ export const handleSignInCallbackRequestForPagesRouter: HandleSignInCallbackRequ
 				tokensPayload,
 				userPoolClientId,
 			}),
-			createTokenCookiesSetOptions(setCookieOptions),
+			createTokenCookiesSetOptions(setCookieOptions, origin),
 		);
 		appendSetCookieHeadersToNextApiResponse(
 			response,
@@ -123,8 +123,8 @@ export const handleSignInCallbackRequestForPagesRouter: HandleSignInCallbackRequ
 			.appendHeader('Content-Type', 'text/html')
 			.status(200)
 			.send(
-				createOnSignInCompleteRedirectIntermediate({
-					redirectOnSignInComplete: getRedirectOrDefault(
+				createRedirectionIntermediary({
+					redirectTo: getRedirectOrDefault(
 						handlerInput.redirectOnSignInComplete,
 					),
 				}),

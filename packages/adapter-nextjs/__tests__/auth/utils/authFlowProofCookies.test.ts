@@ -3,6 +3,7 @@ import { CookieStorage } from 'aws-amplify/adapter-core';
 import {
 	AUTH_FLOW_PROOF_MAX_AGE,
 	IS_SIGNING_OUT_COOKIE_NAME,
+	IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME,
 	PKCE_COOKIE_NAME,
 	STATE_COOKIE_NAME,
 } from '../../../src/auth/constant';
@@ -32,6 +33,7 @@ describe('createSignOutFlowProofCookies', () => {
 		const cookies = createSignOutFlowProofCookies();
 		expect(cookies).toEqual([
 			{ name: IS_SIGNING_OUT_COOKIE_NAME, value: 'true' },
+			{ name: IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME, value: 'true' },
 		]);
 	});
 });
@@ -43,7 +45,10 @@ describe('createAuthFlowProofCookiesSetOptions', () => {
 			sameSite: 'strict',
 		};
 
-		const options = createAuthFlowProofCookiesSetOptions(setCookieOptions);
+		const options = createAuthFlowProofCookiesSetOptions(
+			setCookieOptions,
+			'https://example.com',
+		);
 
 		expect(options).toEqual({
 			domain: setCookieOptions?.domain,
@@ -61,9 +66,10 @@ describe('createAuthFlowProofCookiesSetOptions', () => {
 			sameSite: 'strict',
 		};
 
-		const options = createAuthFlowProofCookiesSetOptions(setCookieOptions, {
-			secure: false,
-		});
+		const options = createAuthFlowProofCookiesSetOptions(
+			setCookieOptions,
+			'http://example.com',
+		);
 
 		expect(options).toEqual({
 			domain: setCookieOptions?.domain,

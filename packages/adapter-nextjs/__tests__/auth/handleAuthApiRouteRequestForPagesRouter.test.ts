@@ -289,6 +289,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 				oAuthConfig: testOAuthConfig,
 				setCookieOptions: {},
 				userPoolClientId: 'userPoolClientId',
+				origin: testOrigin,
 			},
 		);
 	});

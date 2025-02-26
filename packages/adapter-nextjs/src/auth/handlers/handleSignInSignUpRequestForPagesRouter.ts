@@ -9,7 +9,6 @@ import {
 	createSignInFlowProofCookies,
 	createSignUpEndpoint,
 	createUrlSearchParamsForSignInSignUp,
-	isSSLOrigin,
 } from '../utils';
 
 import { HandleSignInSignUpRequestForPagesRouter } from './types';
@@ -38,9 +37,7 @@ export const handleSignInSignUpRequestForPagesRouter: HandleSignInSignUpRequestF
 		appendSetCookieHeadersToNextApiResponse(
 			response,
 			createSignInFlowProofCookies({ state, pkce: codeVerifier.value }),
-			createAuthFlowProofCookiesSetOptions(setCookieOptions, {
-				secure: isSSLOrigin(origin),
-			}),
+			createAuthFlowProofCookiesSetOptions(setCookieOptions, origin),
 		);
 
 		const redirectUrl =
