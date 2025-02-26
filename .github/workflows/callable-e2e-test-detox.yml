@@ -43,7 +43,7 @@ jobs:
         uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
 
       - name: Get repo cache paths
-        id: cache_paths
+        id: cache_paths_test
         working-directory: ./amplify-js/
         run: |
           echo "YARN_LOCK_PATH=${{ inputs.working_directory }}/yarn.lock" >> $GITHUB_OUTPUT
@@ -58,55 +58,85 @@ jobs:
           echo "POD_LOCK_CACHE_KEY=${{ inputs.test_name }}-pods-${{ hashFiles(format('{0}/ios/Podfile.lock', inputs.working_directory)) }}" >> $GITHUB_OUTPUT
           echo "DETOX_BUILD_CACHE_KEY=${{ inputs.test_name }}-detox-build-${{ hashFiles(format('{0}/yarn.lock', inputs.working_directory), format('{0}/ios/Podfile.lock', inputs.working_directory), format('{0}/amplify_native_pkg_versions.json', inputs.working_directory)) }}" >> $GITHUB_OUTPUT
 
-      - name: test cache 1
-        run: |
-          ls ${{ inputs.working_directory }}
+      ######################## individual modules caches ######################## 
+    #   - name: Cache node_modules
+    #     id: modules-cache
+    #     uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+    #     with:
+    #       path: ${{ inputs.working_directory }}/node_modules
+    #       key: ${{ steps.cache_paths.outputs.YARN_LOCK_CACHE_KEY }}
+    #   - name: Cache Pods
+    #     id: pods-cache
+    #     uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+    #     with:
+    #       path: ${{ inputs.working_directory }}/ios/Pods
+    #       key: ${{ steps.cache_paths.outputs.POD_LOCK_CACHE_KEY }}
+    #   - name: Cache Detox build
+    #     id: detox-build-cache
+    #     uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+    #     with:
+    #       path: ${{ inputs.working_directory }}/ios/build
+    #       key: ${{ steps.cache_paths.outputs.DETOX_BUILD_CACHE_KEY }}
 
-          cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
-          echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
+    ############### Testing Formatting ###############
+    #   - name: Compute Cache Keys
+    #     id: cache_paths_2
+    #     run: |
+    #       echo "COMBINED_CACHE_KEY=${{ inputs.test_name }}-combined-cache-${{ 
+    #         hashFiles(
+    #           format('{0}/yarn.lock', inputs.working_directory),
+    #           format('{0}/ios/Podfile.lock', inputs.working_directory),
+    #           format('{0}/amplify_native_pkg_versions.json', inputs.working_directory)
+    #         ) 
+    #       }}" >> $GITHUB_OUTPUT
 
-          cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
-          echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
 
-          cat ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}
-          echo "hash lerna_versions.json: ${{ hashFiles(steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
-
-      - name: Cache node_modules
-        id: modules-cache
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      - name: Cache All Dependencies
+        id: cache_paths
+        uses: actions/cache@v4
         with:
-          path: ${{ inputs.working_directory }}/node_modules
-          key: ${{ steps.cache_paths.outputs.YARN_LOCK_CACHE_KEY }}
+          path: |
+            ${{ inputs.working_directory }}/ios/Pods
+            ${{ inputs.working_directory }}/ios/build
+          key: ${{ inputs.test_name }}-detox-cache-${{ hashFiles(format('{0}/yarn.lock', inputs.working_directory), format('{0}/ios/Podfile.lock', inputs.working_directory), format('{0}/amplify_native_pkg_versions.json', inputs.working_directory)) }}
+
+    #   - name: test cache 1
+    #     run: |
+    #       ls ${{ inputs.working_directory }}
+
+    #       cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
+    #       echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
+
+    #       cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
+    #       echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
+
+    #       cat ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}
+    #       echo "hash lerna_versions.json: ${{ hashFiles(steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
+
 
       - name: Yarn Install
         working-directory: ${{ inputs.working_directory }}
         run: |
-          rm -rf node_modules yarn.lock
+          rm -rf yarn.lock
           echo "Current NPM registry: " $(yarn config get registry)
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --non-interactive' -n 3
         shell: bash
 
-      - name: test cache 2
-        run: |
-          ls ${{ inputs.working_directory }}
+    #   - name: test cache 2
+    #     run: |
+    #       ls ${{ inputs.working_directory }}
 
-          cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
-          echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
+    #       cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
+    #       echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
 
-          cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
-          echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
+    #       cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
+    #       echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
 
-          cat ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}
-          echo "hash lerna_versions.json: ${{ hashFiles(steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
+    #       cat ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}
+    #       echo "hash lerna_versions.json: ${{ hashFiles(steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
 
-      - name: Cache Pods
-        id: pods-cache
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-        with:
-          path: ${{ inputs.working_directory }}/ios/Pods
-          key: ${{ steps.cache_paths.outputs.POD_LOCK_CACHE_KEY }}
       - name: Install CocoaPods
-        if: steps.pods-cache.outputs.cache-hit != 'true'
+        if: steps.cache_paths.outputs.cache-hit != 'true'
         run: |
           cd ios && pod install
         working-directory: ${{ inputs.working_directory }}
@@ -127,31 +157,24 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         shell: bash
 
-      - name: Cache Detox build
-        id: detox-build-cache
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-        with:
-          path: ${{ inputs.working_directory }}/ios/build
-          key: ${{ steps.cache_paths.outputs.DETOX_BUILD_CACHE_KEY }}
+    #   - name: test cache 3
+    #     run: |
+    #       echo "${{ inputs.test_name }}-detox-build-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH, steps.cache_paths.outputs.POD_LOCK_PATH, steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
 
-      - name: test cache 3
-        run: |
-          echo "${{ inputs.test_name }}-detox-build-${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH, steps.cache_paths.outputs.POD_LOCK_PATH, steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
+    #       cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
+    #       echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
+    #       echo "steps.modules-cache.outputs.cache-hit: ${{ steps.modules-cache.outputs.cache-hit}}"
 
-          cat ${{ steps.cache_paths.outputs.YARN_LOCK_PATH }}
-          echo "hash YARN_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.YARN_LOCK_PATH) }}"
-          echo "steps.modules-cache.outputs.cache-hit: ${{ steps.modules-cache.outputs.cache-hit}}"
+    #       cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
+    #       echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
+    #       echo "steps.pods-cache.outputs.cache-hit: ${{ steps.pods-cache.outputs.cache-hit}}"
 
-          cat ${{ steps.cache_paths.outputs.POD_LOCK_PATH }}
-          echo "hash POD_LOCK_PATH: ${{ hashFiles(steps.cache_paths.outputs.POD_LOCK_PATH) }}"
-          echo "steps.pods-cache.outputs.cache-hit: ${{ steps.pods-cache.outputs.cache-hit}}"
-
-          cat ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}
-          echo "hash lerna_versions.json: ${{ hashFiles(steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
-          echo "steps.detox-build-cache.outputs.cache-hit: ${{ steps.detox-build-cache.outputs.cache-hit}}"
+    #       cat ${{ steps.cache_paths.outputs.LERNA_VERSIONS_PATH }}
+    #       echo "hash lerna_versions.json: ${{ hashFiles(steps.cache_paths.outputs.LERNA_VERSIONS_PATH) }}"
+    #       echo "steps.detox-build-cache.outputs.cache-hit: ${{ steps.detox-build-cache.outputs.cache-hit}}"
 
       - name: Detox Build
-        if: steps.detox-build-cache.outputs.cache-hit != 'true' || steps.modules-cache.outputs.cache-hit != 'true' || steps.pods-cache.outputs.cache-hit != 'true'
+        if: steps.cache_paths.outputs.cache-hit != 'true'
         run: |
           detox build -c ios.sim.debug
         env:
