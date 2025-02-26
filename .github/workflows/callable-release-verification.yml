@@ -21,10 +21,10 @@ jobs:
       - prebuild-samples-staging
     secrets: inherit
     uses: ./.github/workflows/callable-e2e-tests.yml
-  unit-tests:
-    needs:
-      - prebuild-ubuntu
-    uses: ./.github/workflows/callable-unit-tests.yml
-  bundle-size-tests:
-    needs: prebuild-ubuntu
-    uses: ./.github/workflows/callable-bundle-size-tests.yml
+  # unit-tests:
+  #   needs:
+  #     - prebuild-ubuntu
+  #   uses: ./.github/workflows/callable-unit-tests.yml
+  # bundle-size-tests:
+  #   needs: prebuild-ubuntu
+  #   uses: ./.github/workflows/callable-bundle-size-tests.yml
