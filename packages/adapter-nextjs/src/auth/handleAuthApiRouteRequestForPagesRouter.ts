@@ -63,14 +63,14 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 				}
 
 				handleSignInSignUpRequestForPagesRouter({
+					customState: handlerInput.customState,
+					oAuthConfig,
+					origin,
 					request,
 					response,
-					userPoolClientId,
-					oAuthConfig,
-					customState: handlerInput.customState,
-					origin,
 					setCookieOptions,
 					type: 'signUp',
+					userPoolClientId,
 				});
 				break;
 			}
@@ -91,24 +91,24 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 				}
 
 				handleSignInSignUpRequestForPagesRouter({
+					customState: handlerInput.customState,
+					oAuthConfig,
+					origin,
 					request,
 					response,
-					userPoolClientId,
-					oAuthConfig,
-					customState: handlerInput.customState,
-					origin,
 					setCookieOptions,
 					type: 'signIn',
+					userPoolClientId,
 				});
 				break;
 			}
 			case 'sign-out':
 				handleSignOutRequestForPagesRouter({
-					response,
-					userPoolClientId,
 					oAuthConfig,
 					origin,
+					response,
 					setCookieOptions,
+					userPoolClientId,
 				});
 				break;
 			case 'sign-in-callback':
@@ -117,13 +117,13 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 				// To ensure these two methods are called before the handler returns,
 				// we use `await` here.
 				await handleSignInCallbackRequestForPagesRouter({
-					request,
-					response,
 					handlerInput,
-					userPoolClientId,
 					oAuthConfig,
 					origin,
+					request,
+					response,
 					setCookieOptions,
+					userPoolClientId,
 				});
 				break;
 			case 'sign-out-callback':
@@ -132,12 +132,13 @@ export const handleAuthApiRouteRequestForPagesRouter: HandleAuthApiRouteRequestF
 				// To ensure these two methods are called before the handler returns,
 				// we use `await` here.
 				await handleSignOutCallbackRequestForPagesRouter({
-					request,
-					response,
 					handlerInput,
 					oAuthConfig,
-					userPoolClientId,
+					origin,
+					request,
+					response,
 					setCookieOptions,
+					userPoolClientId,
 				});
 				break;
 			// default:
