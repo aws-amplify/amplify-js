@@ -54,8 +54,8 @@ jobs:
           jq -c '[ .[] | select(.name | IN("@aws-amplify/react-native", "@aws-amplify/rtn-push-notification", "@aws-amplify/rtn-web-browser")) | {name, newVersion} ]' \
           > ${{ github.workspace }}/amplify_native_pkg_versions.json
 
-          echo "YARN_LOCK_CACHE_KEY=${{ inputs.test_name }}-detox-modules-${{ hashFiles(format('{0}/yarn.lock', inputs.working_directory)) }}" >> $GITHUB_ENV
-          echo "POD_LOCK_CACHE_KEY=${{ inputs.test_name }}-pods-${{ hashFiles(format('{0}/ios/Podfile.lock', inputs.working_directory)) }}" >> $GITHUB_ENV
+          echo "YARN_LOCK_CACHE_KEY=${{ inputs.test_name }}-detox-modules-${{ hashFiles(format('{0}/yarn.lock', inputs.working_directory)) }}" >> $GITHUB_OUTPUT
+          echo "POD_LOCK_CACHE_KEY=${{ inputs.test_name }}-pods-${{ hashFiles(format('{0}/ios/Podfile.lock', inputs.working_directory)) }}" >> $GITHUB_OUTPUT
           echo "DETOX_BUILD_CACHE_KEY=${{ inputs.test_name }}-detox-build-${{ hashFiles(format('{0}/yarn.lock', inputs.working_directory), format('{0}/ios/Podfile.lock', inputs.working_directory), format('{0}/amplify_native_pkg_versions.json', inputs.working_directory)) }}" >> $GITHUB_OUTPUT
 
       - name: test cache 1
