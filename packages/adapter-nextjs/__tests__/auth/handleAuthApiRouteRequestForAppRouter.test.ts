@@ -295,6 +295,7 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			userPoolClientId: 'userPoolClientId',
+			origin: testOrigin,
 		});
 	});
 });
