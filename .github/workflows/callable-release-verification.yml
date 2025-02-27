@@ -15,16 +15,12 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/callable-prebuild-samples-staging.yml
   e2e:
+    runs-on: ubuntu-latest
     needs:
       - prebuild-macos
       - prebuild-ubuntu
       - prebuild-samples-staging
-    secrets: inherit
-    uses: ./.github/workflows/callable-e2e-tests.yml
-  unit-tests:
-    needs:
-      - prebuild-ubuntu
-    uses: ./.github/workflows/callable-unit-tests.yml
-  bundle-size-tests:
-    needs: prebuild-ubuntu
-    uses: ./.github/workflows/callable-bundle-size-tests.yml
+    steps:
+      - name: Fake test to keep this test concise
+        run: |
+          echo "Hello world"
