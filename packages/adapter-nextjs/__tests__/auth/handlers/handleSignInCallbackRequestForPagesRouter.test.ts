@@ -7,7 +7,7 @@ import {
 	appendSetCookieHeadersToNextApiResponse,
 	createAuthFlowProofCookiesRemoveOptions,
 	createErrorSearchParamsString,
-	createOnSignInCompleteRedirectIntermediate,
+	createRedirectionIntermediary,
 	createSignInFlowProofCookies,
 	createTokenCookies,
 	createTokenCookiesSetOptions,
@@ -40,8 +40,8 @@ const mockAppendSetCookieHeadersToNextApiResponse = jest.mocked(
 const mockCreateAuthFlowProofCookiesRemoveOptions = jest.mocked(
 	createAuthFlowProofCookiesRemoveOptions,
 );
-const mockCreateOnSignInCompleteRedirectIntermediate = jest.mocked(
-	createOnSignInCompleteRedirectIntermediate,
+const mockCreateRedirectionIntermediary = jest.mocked(
+	createRedirectionIntermediary,
 );
 const mockCreateSignInFlowProofCookies = jest.mocked(
 	createSignInFlowProofCookies,
@@ -91,7 +91,7 @@ describe('handleSignInCallbackRequest', () => {
 	afterEach(() => {
 		mockAppendSetCookieHeadersToNextApiResponse.mockClear();
 		mockCreateAuthFlowProofCookiesRemoveOptions.mockClear();
-		mockCreateOnSignInCompleteRedirectIntermediate.mockClear();
+		mockCreateRedirectionIntermediary.mockClear();
 		mockCreateSignInFlowProofCookies.mockClear();
 		mockCreateTokenCookies.mockClear();
 		mockCreateTokenCookiesSetOptions.mockClear();
@@ -345,8 +345,8 @@ describe('handleSignInCallbackRequest', () => {
 					response.appendHeader('Set-cookie', 'mock-cookie-2');
 				},
 			);
-			mockCreateOnSignInCompleteRedirectIntermediate.mockImplementationOnce(
-				({ redirectOnSignInComplete }) =>
+			mockCreateRedirectionIntermediary.mockImplementationOnce(
+				({ redirectTo: redirectOnSignInComplete }) =>
 					`<html>redirect to ${redirectOnSignInComplete}</html>`,
 			);
 
@@ -396,10 +396,8 @@ describe('handleSignInCallbackRequest', () => {
 				mockSetCookieOptions,
 			);
 
-			expect(
-				mockCreateOnSignInCompleteRedirectIntermediate,
-			).toHaveBeenCalledWith({
-				redirectOnSignInComplete: expectedFinalRedirect,
+			expect(mockCreateRedirectionIntermediary).toHaveBeenCalledWith({
+				redirectTo: expectedFinalRedirect,
 			});
 			expect(getRedirectOrDefault).toHaveBeenCalledWith(
 				handlerInput.redirectOnSignInComplete,
