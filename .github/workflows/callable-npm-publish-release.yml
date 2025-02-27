@@ -30,14 +30,6 @@ jobs:
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
 
-      - name: Run npm publish
-        uses: ./amplify-js/.github/actions/npm-publish
-        with:
-          target: release
-          npm_token: ${{ secrets.NPM_TOKEN }}
-          github_user: ${{ vars.GH_USER}}
-          github_email: ${{ vars.GH_EMAIL}}
-
       - name: Set github commit user
         env:
           GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
@@ -45,14 +37,6 @@ jobs:
         run: |
           git config --global user.email $GITHUB_EMAIL
           git config --global user.name $GITHUB_USER
-
-      - name: Update roll-back infrastructure
-        working-directory: ./amplify-js
-        run: |
-          git pull origin release
-          PUBLISH_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
-          RELEASE_COMMIT_MESSAGE=$(git log -n 1 --skip 1 --pretty=oneline)
-          if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git tag -f required-release $PUBLISH_COMMIT_HASH; fi
 
       - name: Update API documentation
         working-directory: ./amplify-js
