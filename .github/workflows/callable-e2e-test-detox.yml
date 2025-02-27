@@ -38,11 +38,13 @@ jobs:
       - name: Load Verdaccio with AmplifyJs
         uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
       - name: Get AmplifyJS native modules package bump
+        env:
+          GH_WORKSPACE: ${{ github.workspace }}
         working-directory: ./amplify-js/
         run: |
           npx lerna version --conventional-commits --no-git-tag-version --no-push --json --yes | \
           jq -c '[ .[] | select(.name | IN("@aws-amplify/react-native", "@aws-amplify/rtn-push-notification", "@aws-amplify/rtn-web-browser")) | {name, newVersion} ]' \
-          > ${{ github.workspace }}/amplify_native_pkg_versions.json
+          > $GH_WORKSPACE/amplify_native_pkg_versions.json
       - name: Cache All Dependencies
         id: cache_paths
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
