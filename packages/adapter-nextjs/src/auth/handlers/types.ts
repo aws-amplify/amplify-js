@@ -70,12 +70,12 @@ export type HandleSignOutRequestForPagesRouter = (
 
 // handleSignOutCallbackRequest
 interface HandleSignOutCallbackRequestInput
-	extends Omit<AuthApiRequestHandlerInputBase, 'origin'> {
+	extends AuthApiRequestHandlerInputBase {
 	request: Request;
 	handlerInput: CreateAuthRoutesHandlersInput;
 }
 interface HandleSignOutCallbackRequestForPagesHandlerInput
-	extends Omit<AuthApiRequestHandlerInputBase, 'origin'> {
+	extends AuthApiRequestHandlerInputBase {
 	request: NextApiRequest;
 	response: NextApiResponse;
 	handlerInput: CreateAuthRoutesHandlersInput;

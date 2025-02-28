@@ -12,7 +12,7 @@ export {
 } from './authFlowProofCookies';
 export { createAuthFlowProofs } from './createAuthFlowProofs';
 export { createErrorSearchParamsString } from './createErrorSearchParamsString';
-export { createOnSignInCompleteRedirectIntermediate } from './createOnSignInCompleteRedirectIntermediate';
+export { createRedirectionIntermediary } from './createRedirectionIntermediary';
 export { createUrlSearchParamsForSignInSignUp } from './createUrlSearchParams';
 export {
 	createAuthorizeEndpoint,

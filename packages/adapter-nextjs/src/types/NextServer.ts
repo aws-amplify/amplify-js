@@ -4,10 +4,11 @@
 import { GetServerSidePropsContext as NextGetServerSidePropsContext } from 'next';
 import { NextRequest, NextResponse } from 'next/server.js';
 import { cookies } from 'next/headers.js';
-import { AmplifyOutputs, LegacyConfig } from 'aws-amplify/adapter-core';
 import {
+	AmplifyOutputsUnknown,
 	AmplifyServer,
 	CookieStorage,
+	LegacyConfig,
 } from 'aws-amplify/adapter-core/internals';
 import { ResourcesConfig } from 'aws-amplify';
 
@@ -86,7 +87,7 @@ export declare namespace NextServer {
 	}
 
 	export interface CreateServerRunnerInput {
-		config: ResourcesConfig | LegacyConfig | AmplifyOutputs;
+		config: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown;
 		runtimeOptions?: CreateServerRunnerRuntimeOptions;
 	}
 
