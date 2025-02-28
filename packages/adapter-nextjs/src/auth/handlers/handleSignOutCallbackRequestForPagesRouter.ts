@@ -6,13 +6,19 @@ import {
 	createKeysForAuthStorage,
 } from 'aws-amplify/adapter-core';
 
-import { IS_SIGNING_OUT_COOKIE_NAME } from '../constant';
+import {
+	IS_SIGNING_OUT_COOKIE_NAME,
+	IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME,
+} from '../constant';
 import {
 	appendSetCookieHeadersToNextApiResponse,
+	createAuthFlowProofCookiesRemoveOptions,
+	createRedirectionIntermediary,
 	createTokenCookiesRemoveOptions,
 	createTokenRemoveCookies,
 	getCookieValuesFromNextApiRequest,
 	getRedirectOrDefault,
+	resolveRedirectSignOutUrl,
 	revokeAuthNTokens,
 } from '../utils';
 
@@ -26,12 +32,43 @@ export const handleSignOutCallbackRequestForPagesRouter: HandleSignOutCallbackRe
 		userPoolClientId,
 		oAuthConfig,
 		setCookieOptions,
+		origin,
 	}) => {
-		const { [IS_SIGNING_OUT_COOKIE_NAME]: isSigningOut } =
-			getCookieValuesFromNextApiRequest(request, [IS_SIGNING_OUT_COOKIE_NAME]);
+		const {
+			[IS_SIGNING_OUT_COOKIE_NAME]: isSigningOut,
+			[IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME]: isSigningOutRedirecting,
+		} = getCookieValuesFromNextApiRequest(request, [
+			IS_SIGNING_OUT_COOKIE_NAME,
+			IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME,
+		]);
 
 		if (!isSigningOut) {
 			response.status(400).end();
+
+			return;
+		}
+
+		// When Cognito /logout endpoint redirects back, response has code 302, the browsers (Safari and Firefox)
+		// assume the incoming request is a cross-site request and block the cookies.
+		// To workaround this issue, we send an intermediate page with 200 response. This page will redirect
+		// to the /sign-out-callback (this handler) again, since it's the same-site request, the cookies will be
+		// sent back to the server.
+		if (isSigningOutRedirecting) {
+			appendSetCookieHeadersToNextApiResponse(
+				response,
+				// remove the IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME cookie to the next request to this
+				// handler can proceed.
+				createTokenRemoveCookies([IS_SIGNING_OUT_REDIRECTING_COOKIE_NAME]),
+				createAuthFlowProofCookiesRemoveOptions(setCookieOptions),
+			);
+			response
+				.appendHeader('Content-Type', 'text/html')
+				.status(200)
+				.send(
+					createRedirectionIntermediary({
+						redirectTo: resolveRedirectSignOutUrl(origin, oAuthConfig),
+					}),
+				);
 
 			return;
 		}
