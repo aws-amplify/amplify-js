@@ -1,4 +1,4 @@
-name: Build the API References an open a docs PR
+name: Build the API References and open a docs PR
 
 on: workflow_call
 
@@ -14,7 +14,7 @@ jobs:
     outputs:
       branch_name: ${{ steps.generate-branch-name.outputs.BRANCH_NAME }}
 
-  deploy:
+  docs-update:
     name: Publish to amplify-js docs updates
     runs-on: ubuntu-latest
     needs: docs-update-prep
@@ -63,4 +63,4 @@ jobs:
         run: |
           git checkout -b $TEMP_BRANCH_NAME
           git push origin $TEMP_BRANCH_NAME
-          gh pr create -B main -H $TEMP_BRANCH_NAME --title 'chore: amplify-js api references update' --body 'Merge the api references changes from the most recent release.'          
+          gh pr create -B main -H $TEMP_BRANCH_NAME --title 'chore: amplify-js api references update' --body 'Merge the api references changes from the most recent release.'
