@@ -42,7 +42,7 @@ export interface AmplifyOutputsAuthProperties {
 	unauthenticated_identities_enabled?: boolean;
 	mfa_configuration?: string;
 	mfa_methods?: string[];
-	groups?: Partial<Record<UserGroupName, UserGroupPrecedence>>[];
+	groups?: Record<UserGroupName, UserGroupPrecedence>[];
 }
 
 export interface AmplifyOutputsStorageBucketProperties {
@@ -53,7 +53,7 @@ export interface AmplifyOutputsStorageBucketProperties {
 	/** Region for the bucket */
 	aws_region: string;
 	/** Paths to object with access permissions */
-	paths?: Partial<Record<string, Record<string, string[] | undefined>>>;
+	paths?: Record<string, Record<string, string[] | undefined>>;
 }
 export interface AmplifyOutputsStorageProperties {
 	/** Default region for Storage */
@@ -115,6 +115,7 @@ export interface AmplifyOutputsNotificationsProperties {
 	channels: string[];
 }
 
+/** @deprecated This type is deprecated and will be removed in future versions. */
 export interface AmplifyOutputs {
 	version?: string;
 	storage?: AmplifyOutputsStorageProperties;
@@ -124,4 +125,15 @@ export interface AmplifyOutputs {
 	data?: AmplifyOutputsDataProperties;
 	custom?: AmplifyOutputsCustomProperties;
 	notifications?: AmplifyOutputsNotificationsProperties;
+}
+
+export interface AmplifyOutputsUnknown {
+	version?: string;
+	storage?: unknown;
+	auth?: unknown;
+	analytics?: unknown;
+	geo?: unknown;
+	data?: unknown;
+	custom?: unknown;
+	notifications?: unknown;
 }
