@@ -74,7 +74,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		options: AWSAppSyncEventProviderOptions,
 		customUserAgentDetails?: CustomUserAgentDetails,
 	) {
-		super.publish(options, customUserAgentDetails);
+		return super.publish(options, customUserAgentDetails);
 	}
 
 	protected async _prepareSubscriptionPayload({
