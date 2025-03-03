@@ -519,10 +519,11 @@ tests:
   - test_name: integ_next_sign_in_with_oauth
     desc: 'Sign-in with the OAuth flow'
     framework: next
-    category: auth
-    sample_name: [sign-in-with-oauth]
+    category: consolidated
+    sample_name: [next-sample]
     spec: sign-in-with-oauth
     browser: [chrome]
+    backend_name: oauth
   - test_name: integ_vue_sign_out_of_oidc_provider
     desc: 'Sign-out of OIDC provider'
     framework: vue
@@ -601,11 +602,12 @@ tests:
   - test_name: integ_next_sign_in_with_oauth_gen2
     desc: 'Sign-in with the OAuth flow'
     framework: next
-    category: auth
-    sample_name: [sign-in-with-oauth]
+    category: consolidated
+    sample_name: [next-sample]
     spec: sign-in-with-oauth
     browser: [chrome]
     backend: gen2
+    backend_name: oauth
   - test_name: integ_vue_sign_in_with_oauth_gen2
     desc: 'Sign-in with the OAuth flow'
     framework: vue
