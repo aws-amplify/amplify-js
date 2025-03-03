@@ -28,7 +28,7 @@ export {
 	RetryOptions,
 	invocationIdMiddlewareFactory,
 	retryInfoMiddlewareFactory,
-	RetryInfoMiddlewareOption,
+	RetryInfoMiddlewareOptions,
 } from './middleware/retry';
 export {
 	userAgentMiddlewareFactory,

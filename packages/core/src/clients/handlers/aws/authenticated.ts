@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	RetryInfoMiddlewareOption,
+	RetryInfoMiddlewareOptions,
 	RetryOptions,
 	invocationIdMiddlewareFactory,
 	retryInfoMiddlewareFactory,
@@ -24,7 +24,7 @@ export const authenticatedHandler = composeTransferHandler<
 		UserAgentOptions,
 		object,
 		RetryOptions<HttpResponse>,
-		RetryInfoMiddlewareOption,
+		RetryInfoMiddlewareOptions,
 		SigningOptions,
 	],
 	HttpRequest,

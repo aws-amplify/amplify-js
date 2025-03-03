@@ -8,5 +8,5 @@ export { RetryDeciderOutput } from './types';
 export { invocationIdMiddlewareFactory } from './invocationIdMiddleware';
 export {
 	retryInfoMiddlewareFactory,
-	RetryInfoMiddlewareOption,
+	RetryInfoMiddlewareOptions,
 } from './retryInfoMiddleware';

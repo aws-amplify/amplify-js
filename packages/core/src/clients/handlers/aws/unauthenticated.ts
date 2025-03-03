@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	RetryInfoMiddlewareOption,
+	RetryInfoMiddlewareOptions,
 	RetryOptions,
 	invocationIdMiddlewareFactory,
 	retryInfoMiddlewareFactory,
@@ -21,7 +21,7 @@ export const unauthenticatedHandler = composeTransferHandler<
 		UserAgentOptions,
 		object,
 		RetryOptions<HttpResponse>,
-		RetryInfoMiddlewareOption,
+		RetryInfoMiddlewareOptions,
 	],
 	HttpRequest,
 	HttpResponse,

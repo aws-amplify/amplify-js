@@ -4,7 +4,7 @@
 import {
 	HttpRequest,
 	HttpResponse,
-	RetryInfoMiddlewareOption,
+	RetryInfoMiddlewareOptions,
 	RetryOptions,
 	SigningOptions,
 	UserAgentOptions,
@@ -31,7 +31,7 @@ export const s3TransferHandler = composeTransferHandler<
 		UserAgentOptions,
 		object,
 		RetryOptions<HttpResponse>,
-		RetryInfoMiddlewareOption,
+		RetryInfoMiddlewareOptions,
 		SigningOptions,
 	],
 	HttpRequest,
