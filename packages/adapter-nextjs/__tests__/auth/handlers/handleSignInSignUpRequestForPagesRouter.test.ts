@@ -11,7 +11,6 @@ import {
 	createSignInFlowProofCookies,
 	createSignUpEndpoint,
 	createUrlSearchParamsForSignInSignUp,
-	isSSLOrigin,
 } from '../../../src/auth/utils';
 import { createMockNextApiResponse } from '../testUtils';
 
@@ -32,7 +31,6 @@ const mockCreateSignUpEndpoint = jest.mocked(createSignUpEndpoint);
 const mockCreateUrlSearchParamsForSignInSignUp = jest.mocked(
 	createUrlSearchParamsForSignInSignUp,
 );
-const mockIsSSLOrigin = jest.mocked(isSSLOrigin);
 
 describe('handleSignInSignUpRequest', () => {
 	const mockCustomState = 'mockCustomState';
@@ -53,10 +51,6 @@ describe('handleSignInSignUpRequest', () => {
 		mockResponse,
 	} = createMockNextApiResponse();
 
-	beforeAll(() => {
-		mockIsSSLOrigin.mockReturnValue(true);
-	});
-
 	afterEach(() => {
 		mockAppendSetCookieHeadersToNextApiResponse.mockClear();
 		mockCreateAuthFlowProofCookiesSetOptions.mockClear();
@@ -66,7 +60,6 @@ describe('handleSignInSignUpRequest', () => {
 		mockCreateSignUpEndpoint.mockClear();
 		mockCreateUrlSearchParamsForSignInSignUp.mockClear();
 		mockToCodeChallenge.mockClear();
-		mockIsSSLOrigin.mockClear();
 
 		mockResponseAppendHeader.mockClear();
 		mockResponseEnd.mockClear();
@@ -177,9 +170,7 @@ describe('handleSignInSignUpRequest', () => {
 
 			expect(mockCreateAuthFlowProofCookiesSetOptions).toHaveBeenCalledWith(
 				mockSetCookieOptions,
-				{
-					secure: true,
-				},
+				mockOrigin,
 			);
 
 			expect(mockAppendSetCookieHeadersToNextApiResponse).toHaveBeenCalledWith(
@@ -187,7 +178,6 @@ describe('handleSignInSignUpRequest', () => {
 				mockCreateSignInFlowProofCookiesResult,
 				mockCreateAuthFlowProofCookiesSetOptionsResult,
 			);
-			expect(isSSLOrigin).toHaveBeenCalledWith(mockOrigin);
 		},
 	);
 });
