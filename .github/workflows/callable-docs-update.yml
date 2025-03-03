@@ -53,7 +53,7 @@ jobs:
         run: |
           yarn clean-references -- -p amplify-js
           git add .
-          git commit -m "chore: Update amplify-js API references"
+          git commit --allow-empty -m "chore: Update amplify-js API references"
 
       - name: Create a docs PR to merge api references back into the docs site
         working-directory: ./docs
