@@ -42,6 +42,7 @@ const abortMultipartUploadSerializer = (
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
 	url.search = new AmplifyUrlSearchParams({
+		'x-id': 'AbortMultipartUpload',
 		uploadId: input.UploadId,
 	}).toString();
 	validateObjectUrl({

@@ -23,7 +23,7 @@ const listPartsHappyCase: ApiFunctionalTestCase<typeof listParts> = [
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?uploadId=uploadId',
+			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?x-id=ListParts&uploadId=uploadId',
 		}),
 		method: 'GET',
 	}),
@@ -84,7 +84,7 @@ const listPartsHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key?uploadId=uploadId',
+			href: 'https://custom.endpoint.com/bucket/key?x-id=ListParts&uploadId=uploadId',
 		}),
 	}),
 	{
