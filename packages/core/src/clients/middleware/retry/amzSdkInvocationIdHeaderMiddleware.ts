@@ -4,7 +4,7 @@
 import { HttpRequest, HttpResponse, Middleware } from '../../types';
 import { amplifyUuid } from '../../../libraryUtils';
 
-import { SDK_INVOCATION_ID_HEADER } from './constants';
+import { AMZ_SDK_INVOCATION_ID_HEADER } from './constants';
 
 /**
  * Middleware injects a UUID string to `amz-sdk-invocation-id` header.
@@ -16,14 +16,14 @@ import { SDK_INVOCATION_ID_HEADER } from './constants';
  *
  * Ref: https://sdk.amazonaws.com/kotlin/api/smithy-kotlin/api/1.0.9/http-client/aws.smithy.kotlin.runtime.http.operation/-http-operation-context/-sdk-invocation-id.html
  */
-export const invocationIdMiddlewareFactory: Middleware<
+export const amzSdkInvocationIdHeaderMiddlewareFactory: Middleware<
 	HttpRequest,
 	HttpResponse,
 	object
 > = () => next => {
-	return async function userAgentMiddleware(request) {
-		if (!request?.headers?.[SDK_INVOCATION_ID_HEADER]) {
-			request.headers[SDK_INVOCATION_ID_HEADER] = amplifyUuid();
+	return async function amzSdkInvocationIdHeaderMiddleware(request) {
+		if (!request?.headers?.[AMZ_SDK_INVOCATION_ID_HEADER]) {
+			request.headers[AMZ_SDK_INVOCATION_ID_HEADER] = amplifyUuid();
 		}
 
 		return next(request);

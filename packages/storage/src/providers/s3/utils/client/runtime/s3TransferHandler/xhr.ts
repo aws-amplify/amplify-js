@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	AmzSdkRequestHeaderMiddlewareOptions,
 	HttpRequest,
 	HttpResponse,
-	RetryInfoMiddlewareOptions,
 	RetryOptions,
 	SigningOptions,
 	UserAgentOptions,
-	invocationIdMiddlewareFactory,
-	retryInfoMiddlewareFactory,
+	amzSdkInvocationIdHeaderMiddlewareFactory,
+	amzSdkRequestHeaderMiddlewareFactory,
 	retryMiddlewareFactory,
 	signingMiddlewareFactory,
 	userAgentMiddlewareFactory,
@@ -31,7 +31,7 @@ export const s3TransferHandler = composeTransferHandler<
 		UserAgentOptions,
 		object,
 		RetryOptions<HttpResponse>,
-		RetryInfoMiddlewareOptions,
+		AmzSdkRequestHeaderMiddlewareOptions,
 		SigningOptions,
 	],
 	HttpRequest,
@@ -40,8 +40,8 @@ export const s3TransferHandler = composeTransferHandler<
 >(xhrTransferHandler, [
 	contentSha256MiddlewareFactory,
 	userAgentMiddlewareFactory,
-	invocationIdMiddlewareFactory,
+	amzSdkInvocationIdHeaderMiddlewareFactory,
 	retryMiddlewareFactory,
-	retryInfoMiddlewareFactory,
+	amzSdkRequestHeaderMiddlewareFactory,
 	signingMiddlewareFactory,
 ]);

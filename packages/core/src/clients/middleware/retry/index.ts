@@ -5,8 +5,8 @@ export { RetryOptions, retryMiddlewareFactory } from './retryMiddleware';
 export { jitteredBackoff } from './jitteredBackoff';
 export { getRetryDecider } from './defaultRetryDecider';
 export { RetryDeciderOutput } from './types';
-export { invocationIdMiddlewareFactory } from './invocationIdMiddleware';
+export { amzSdkInvocationIdHeaderMiddlewareFactory } from './amzSdkInvocationIdHeaderMiddleware';
 export {
-	retryInfoMiddlewareFactory,
-	RetryInfoMiddlewareOptions,
-} from './retryInfoMiddleware';
+	amzSdkRequestHeaderMiddlewareFactory,
+	AmzSdkRequestHeaderMiddlewareOptions,
+} from './amzSdkRequestHeaderMiddleware';

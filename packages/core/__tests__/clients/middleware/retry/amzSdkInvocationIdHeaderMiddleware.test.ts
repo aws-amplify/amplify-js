@@ -6,14 +6,14 @@ import {
 	MiddlewareHandler,
 } from '../../../../src/clients/types';
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
-import { invocationIdMiddlewareFactory } from '../../../../src/clients/middleware/retry/invocationIdMiddleware';
+import { amzSdkInvocationIdHeaderMiddlewareFactory } from '../../../../src/clients/middleware/retry/amzSdkInvocationIdHeaderMiddleware';
 
 describe('invocation id middleware', () => {
 	const getInvocationIdHandler = (
 		nextHandler: MiddlewareHandler<HttpRequest, HttpResponse>,
 	) =>
 		composeTransferHandler<[object], HttpRequest, HttpResponse>(nextHandler, [
-			invocationIdMiddlewareFactory,
+			amzSdkInvocationIdHeaderMiddlewareFactory,
 		]);
 
 	it('should add invocation id to request headers', async () => {

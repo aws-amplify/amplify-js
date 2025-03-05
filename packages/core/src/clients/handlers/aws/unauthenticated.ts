@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	RetryInfoMiddlewareOptions,
+	AmzSdkRequestHeaderMiddlewareOptions,
 	RetryOptions,
-	invocationIdMiddlewareFactory,
-	retryInfoMiddlewareFactory,
+	amzSdkInvocationIdHeaderMiddlewareFactory,
+	amzSdkRequestHeaderMiddlewareFactory,
 	retryMiddlewareFactory,
 } from '../../middleware/retry';
 import {
@@ -21,14 +21,14 @@ export const unauthenticatedHandler = composeTransferHandler<
 		UserAgentOptions,
 		object,
 		RetryOptions<HttpResponse>,
-		RetryInfoMiddlewareOptions,
+		AmzSdkRequestHeaderMiddlewareOptions,
 	],
 	HttpRequest,
 	HttpResponse,
 	typeof fetchTransferHandler
 >(fetchTransferHandler, [
 	userAgentMiddlewareFactory,
-	invocationIdMiddlewareFactory,
+	amzSdkInvocationIdHeaderMiddlewareFactory,
 	retryMiddlewareFactory,
-	retryInfoMiddlewareFactory,
+	amzSdkRequestHeaderMiddlewareFactory,
 ]);

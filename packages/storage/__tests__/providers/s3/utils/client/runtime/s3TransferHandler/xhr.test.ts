@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import {
-	invocationIdMiddlewareFactory,
-	retryInfoMiddlewareFactory,
+	amzSdkInvocationIdHeaderMiddlewareFactory,
+	amzSdkRequestHeaderMiddlewareFactory,
 	retryMiddlewareFactory,
 	signingMiddlewareFactory,
 	userAgentMiddlewareFactory,
@@ -32,9 +32,9 @@ describe('s3 transfer handler', () => {
 		expect(composeTransferHandler).toHaveBeenCalledWith(xhrTransferHandler, [
 			contentSha256MiddlewareFactory,
 			userAgentMiddlewareFactory,
-			invocationIdMiddlewareFactory,
+			amzSdkInvocationIdHeaderMiddlewareFactory,
 			retryMiddlewareFactory,
-			retryInfoMiddlewareFactory,
+			amzSdkRequestHeaderMiddlewareFactory,
 			signingMiddlewareFactory,
 		]);
 	});

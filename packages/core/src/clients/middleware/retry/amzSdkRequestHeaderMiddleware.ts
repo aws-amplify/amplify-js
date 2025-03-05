@@ -4,9 +4,12 @@
 import { HttpRequest, HttpResponse, Middleware } from '../../types';
 
 import { RetryOptions } from './retryMiddleware';
-import { DEFAULT_RETRY_ATTEMPTS, SDK_REQUEST_HEADER } from './constants';
+import { AMZ_SDK_REQUEST_HEADER, DEFAULT_RETRY_ATTEMPTS } from './constants';
 
-export type RetryInfoMiddlewareOptions = Pick<RetryOptions, 'maxAttempts'>;
+export type AmzSdkRequestHeaderMiddlewareOptions = Pick<
+	RetryOptions,
+	'maxAttempts'
+>;
 
 /**
  * Middleware injects `amz-sdk-request` header to indicate the retry state at the time an HTTP request is made.
@@ -18,16 +21,16 @@ export type RetryInfoMiddlewareOptions = Pick<RetryOptions, 'maxAttempts'>;
  * This middleware is standalone because of extra headers may conflict with custom endpoint settings(e.g. CORS), we will
  * NOT use this middleware for API categories.
  */
-export const retryInfoMiddlewareFactory: Middleware<
+export const amzSdkRequestHeaderMiddlewareFactory: Middleware<
 	HttpRequest,
 	HttpResponse,
-	RetryInfoMiddlewareOptions
+	AmzSdkRequestHeaderMiddlewareOptions
 > =
 	({ maxAttempts = DEFAULT_RETRY_ATTEMPTS }) =>
 	(next, context) => {
-		return async function userAgentMiddleware(request) {
+		return async function amzSdkRequestHeaderMiddleware(request) {
 			const attemptsCount: number = context.attemptsCount ?? 0;
-			request.headers[SDK_REQUEST_HEADER] =
+			request.headers[AMZ_SDK_REQUEST_HEADER] =
 				`attempt=${attemptsCount + 1}; max=${maxAttempts}`;
 
 			return next(request);

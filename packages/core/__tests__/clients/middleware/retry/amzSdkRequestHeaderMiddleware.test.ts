@@ -7,7 +7,7 @@ import {
 	MiddlewareHandler,
 } from '../../../../src/clients/types';
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
-import { retryInfoMiddlewareFactory } from '../../../../src/clients/middleware/retry/retryInfoMiddleware';
+import { amzSdkRequestHeaderMiddlewareFactory } from '../../../../src/clients/middleware/retry/amzSdkRequestHeaderMiddleware';
 
 describe('retry info middleware', () => {
 	const getRetryInfoHandler = (
@@ -16,7 +16,7 @@ describe('retry info middleware', () => {
 	) =>
 		composeTransferHandler<[any, any], HttpRequest, HttpResponse>(coreHandler, [
 			prevMiddleware,
-			retryInfoMiddlewareFactory,
+			amzSdkRequestHeaderMiddlewareFactory,
 		]);
 
 	it('should add current attempt and max attempt to request headers', async () => {

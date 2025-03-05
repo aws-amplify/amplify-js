@@ -26,9 +26,9 @@ export {
 	jitteredBackoff,
 	retryMiddlewareFactory,
 	RetryOptions,
-	invocationIdMiddlewareFactory,
-	retryInfoMiddlewareFactory,
-	RetryInfoMiddlewareOptions,
+	amzSdkInvocationIdHeaderMiddlewareFactory,
+	amzSdkRequestHeaderMiddlewareFactory,
+	AmzSdkRequestHeaderMiddlewareOptions,
 } from './middleware/retry';
 export {
 	userAgentMiddlewareFactory,
