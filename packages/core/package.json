@@ -86,9 +86,9 @@
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
-			"path": "./dist/esm/clients/handlers/unauthenticated.mjs",
+			"path": "./dist/esm/clients/handlers/aws/unauthenticated.mjs",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "1.2 kB"
+			"limit": "4.09 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",

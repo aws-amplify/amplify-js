@@ -4,8 +4,8 @@
 export { getDnsSuffix } from './endpoints';
 
 export { fetchTransferHandler } from './handlers/fetch';
-export { unauthenticatedHandler } from './handlers/unauthenticated';
-export { authenticatedHandler } from './handlers/authenticated';
+export { unauthenticatedHandler } from './handlers/aws/unauthenticated';
+export { authenticatedHandler } from './handlers/aws/authenticated';
 export {
 	getHashedPayload,
 	presignUrl,
@@ -26,6 +26,9 @@ export {
 	jitteredBackoff,
 	retryMiddlewareFactory,
 	RetryOptions,
+	amzSdkInvocationIdHeaderMiddlewareFactory,
+	amzSdkRequestHeaderMiddlewareFactory,
+	AmzSdkRequestHeaderMiddlewareOptions,
 } from './middleware/retry';
 export {
 	userAgentMiddlewareFactory,
