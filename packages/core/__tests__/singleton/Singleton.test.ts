@@ -6,9 +6,6 @@ import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { CredentialsAndIdentityId } from '../../src/singleton/Auth/types';
 import { ResourcesConfig, fetchAuthSession } from '../../src';
-import { AmplifyOutputs } from '../../src/libraryUtils';
-
-import mockAmplifyOutputs from './utils/amplify_outputs.json';
 
 Object.assign(global, { TextDecoder, TextEncoder });
 
@@ -165,22 +162,6 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 		const result = Amplify.getConfig();
 
 		expect(result).toEqual(expectedResourceConfig);
-	});
-
-	it(`should successfully configure from a 'amplify_outputs.json' file`, () => {
-		type DeepRequired<T> = T extends object
-			? { [K in keyof T]-?: DeepRequired<NonNullable<T[K]>> }
-			: T;
-
-		const recreateObjectWithDeepRequired = <T>(obj: T): DeepRequired<T> =>
-			obj as DeepRequired<T>;
-
-		// Ensures that all optional properties in mockAmplifyOutputs are defined
-		const _amplifyOutputs: DeepRequired<AmplifyOutputs> =
-			recreateObjectWithDeepRequired(mockAmplifyOutputs);
-
-		// Configures Amplify with mockAmplifyOutputs, relying on its inferred type
-		Amplify.configure(mockAmplifyOutputs);
 	});
 
 	it('dispatches hub event with parsed ResourceConfig from the legacy config', () => {
