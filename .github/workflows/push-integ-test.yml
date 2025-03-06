@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - joonwonc/react8-e2e-test
+      - joonwonc/lernav8-e2e-test
 
 jobs:
   e2e:
