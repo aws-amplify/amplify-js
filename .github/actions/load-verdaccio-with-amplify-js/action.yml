@@ -6,7 +6,7 @@ runs:
   steps:
     - name: Start verdaccio
       run: |
-        npx verdaccio@5.25.0 &
+        npx verdaccio@6.0.5 &
         while ! nc -z localhost 4873; do
           echo "Verdaccio not running yet"
           sleep 1
