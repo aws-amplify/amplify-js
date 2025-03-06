@@ -27,7 +27,7 @@
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
 		"publish:preid": "lerna publish --canary --force-publish --dist-tag=TESTER --preid=TESTER-0523123",
-		"publish:main": "lerna publish --canary --force-publish --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX}",
+		"publish:main": "lerna publish --canary --force-publish --dist-tag=TESTER --preid=TESTER-0523123",
 		"publish:release": "yarn generate-metadata && lerna publish --conventional-commits --message 'chore(release): Publish [skip release]'",
 		"publish:v5-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-5 --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=TESTER0523 --preid=TESTER0523",
