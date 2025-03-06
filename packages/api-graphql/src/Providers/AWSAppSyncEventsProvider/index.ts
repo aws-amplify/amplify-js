@@ -53,6 +53,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 			wsProtocolName: WS_PROTOCOL_NAME,
 			connectUri: CONNECT_URI,
 		});
+		this.allowNoSubscriptions = true;
 	}
 
 	getProviderName() {
@@ -75,6 +76,10 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		customUserAgentDetails?: CustomUserAgentDetails,
 	) {
 		return super.publish(options, customUserAgentDetails);
+	}
+
+	public closeIfNoSubscriptions() {
+		setTimeout(this._closeSocketIfRequired, 1000);
 	}
 
 	protected async _prepareSubscriptionPayload({

@@ -80,6 +80,7 @@ interface AWSWebSocketProviderArgs {
 export abstract class AWSWebSocketProvider {
 	protected logger: ConsoleLogger;
 	protected subscriptionObserverMap = new Map<string, ObserverQuery>();
+	protected allowNoSubscriptions = false;
 
 	protected awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
@@ -543,11 +544,14 @@ export abstract class AWSWebSocketProvider {
 		this.subscriptionObserverMap.delete(subscriptionId);
 
 		// Verifying 1000ms after removing subscription in case there are new subscription unmount/mount
-		setTimeout(this._closeSocketIfRequired.bind(this), 1000);
+		if (!this.allowNoSubscriptions) {
+			// Keep connection open, even when there are no subscription active
+			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
+		}
 	}
 
-	private _closeSocketIfRequired() {
-		if (this.subscriptionObserverMap.size > 0) {
+	protected _closeSocketIfRequired() {
+		if ((this.subscriptionObserverMap?.size || 0) > 0) {
 			// Active subscriptions on the WebSocket
 			return;
 		}

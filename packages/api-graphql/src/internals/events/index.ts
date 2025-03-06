@@ -3,7 +3,7 @@
 
 import { Subscription } from 'rxjs';
 import { Amplify } from '@aws-amplify/core';
-import { DocumentType } from '@aws-amplify/core/internals/utils';
+import { DocumentType, amplifyUuid } from '@aws-amplify/core/internals/utils';
 
 import { AppSyncEventProvider as eventProvider } from '../../Providers/AWSAppSyncEventsProvider';
 
@@ -16,6 +16,8 @@ import type {
 	PublishedEvent,
 	SubscriptionObserver,
 } from './types';
+
+const openChannels = new Set<string>();
 
 /**
  * @experimental API may change in future versions
@@ -50,6 +52,9 @@ async function connect(
 
 	await eventProvider.connect(providerOptions);
 
+	const channelUuid = amplifyUuid();
+	openChannels.add(channelUuid);
+
 	let _subscription: Subscription;
 
 	const sub = (
@@ -73,6 +78,9 @@ async function connect(
 		event: DocumentType,
 		pubOptions?: EventsOptions,
 	): Promise<any> => {
+		if (!openChannels.has(channelUuid)) {
+			return; // TODO something different from this?
+		}
 		const publishOptions = {
 			...providerOptions,
 			query: channel,
@@ -88,6 +96,11 @@ async function connect(
 
 	const close = () => {
 		_subscription && _subscription.unsubscribe();
+		openChannels.delete(channelUuid);
+		console.log('Here');
+		if (openChannels.size === 0) {
+			eventProvider.closeIfNoSubscriptions();
+		}
 	};
 
 	return {
