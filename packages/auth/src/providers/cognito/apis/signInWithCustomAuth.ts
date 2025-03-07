@@ -46,6 +46,7 @@ import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 export async function signInWithCustomAuth(
 	input: SignInWithCustomAuthInput,
 ): Promise<SignInWithCustomAuthOutput> {
+	Amplify.assertConfigured();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { username, password, options } = input;

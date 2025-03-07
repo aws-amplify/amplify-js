@@ -58,6 +58,7 @@ const copyWithPath = async (
 	amplify: AmplifyClassV6,
 	input: CopyWithPathInputWithAdvancedOptions,
 ): Promise<CopyWithPathOutput> => {
+	amplify.assertConfigured();
 	const { source, destination } = input;
 
 	storageBucketAssertion(source.bucket, destination.bucket);
@@ -124,6 +125,7 @@ export const copyWithKey = async (
 	amplify: AmplifyClassV6,
 	input: CopyInput,
 ): Promise<CopyOutput> => {
+	amplify.assertConfigured();
 	const { source, destination } = input;
 
 	storageBucketAssertion(source.bucket, destination.bucket);

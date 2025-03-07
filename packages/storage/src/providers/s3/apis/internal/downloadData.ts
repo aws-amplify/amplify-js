@@ -45,6 +45,7 @@ const downloadDataJob =
 	async (): Promise<
 		StorageDownloadDataOutput<StorageItemWithKey | StorageItemWithPath>
 	> => {
+		Amplify.assertConfigured();
 		const { options: downloadDataOptions } = downloadDataInput;
 		const { bucket, keyPrefix, s3Config, identityId } =
 			await resolveS3ConfigAndInput(Amplify, downloadDataInput);
