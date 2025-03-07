@@ -6,7 +6,7 @@ runs:
   steps:
     - name: Start verdaccio
       run: |
-        npx verdaccio@5.25.0 &
+        npx verdaccio@6.0.5 &
         while ! nc -z localhost 4873; do
           echo "Verdaccio not running yet"
           sleep 1
@@ -15,7 +15,7 @@ runs:
         # Run your commands after verdaccio is up and running
         echo "Verdaccio is up and running, proceeding with the script..."
       shell: bash
-    - name: Install and run npm-cli-login
+    - name: Authenticate with Verdaccio
       shell: bash
       env:
         NPM_REGISTRY: http://localhost:4873/
@@ -23,9 +23,14 @@ runs:
         NPM_PASS: verdaccio
         NPM_EMAIL: verdaccio@amplify.js
       run: |
-        npm i -g npm-cli-adduser
-        npm-cli-adduser
-        sleep 1
+        TOKEN=$(curl -X PUT \
+        -H "Content-Type: application/json" \
+        -d "{\"name\": \"$NPM_USER\", \"password\": \"$NPM_PASS\"}" \
+        $NPM_REGISTRY-/user/org.couchdb.user:$NPM_USER | jq -r '.token')
+
+        echo "registry=$NPM_REGISTRY
+        //localhost:4873/:_authToken=$TOKEN" > ~/.npmrc
+
     - name: Configure registry and git
       shell: bash
       working-directory: ./amplify-js
