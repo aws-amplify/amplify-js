@@ -126,10 +126,16 @@ describe('Events client', () => {
 
 				for (const authMode of authModes) {
 					test(`auth override: ${authMode}`, async () => {
-						await events.connect('/', { authMode });
+						const channel = await events.connect('/', {
+							authMode,
+							authToken: `token-${authMode}`,
+						});
 
 						expect(mockProvider.connect).toHaveBeenCalledWith(
-							expect.objectContaining({ authenticationType: authMode }),
+							expect.objectContaining({
+								authenticationType: authMode,
+								authToken: `token-${authMode}`,
+							}),
 						);
 					});
 				}
@@ -162,11 +168,14 @@ describe('Events client', () => {
 								next: data => void data,
 								error: error => void error,
 							},
-							{ authMode },
+							{ authMode, authToken: `token-${authMode}` },
 						);
 
 						expect(mockSubscribeObservable).toHaveBeenCalledWith(
-							expect.objectContaining({ authenticationType: authMode }),
+							expect.objectContaining({
+								authenticationType: authMode,
+								authToken: `token-${authMode}`,
+							}),
 						);
 					});
 				}
