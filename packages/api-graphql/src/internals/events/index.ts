@@ -41,7 +41,10 @@ async function connect(
 	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel> {
-	const providerOptions = configure();
+	const providerOptions = {
+		...configure(),
+		...options,
+	};
 
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
@@ -56,7 +59,11 @@ async function connect(
 		observer: SubscriptionObserver<any>,
 		subOptions?: EventsOptions,
 	): Subscription => {
-		const subscribeOptions = { ...providerOptions, query: channel };
+		const subscribeOptions = {
+			...providerOptions,
+			...subOptions,
+			query: channel,
+		};
 		subscribeOptions.authenticationType = normalizeAuth(
 			subOptions?.authMode,
 			subscribeOptions.authenticationType,
