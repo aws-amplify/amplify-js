@@ -79,7 +79,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	}
 
 	public closeIfNoActiveChannel() {
-		setTimeout(this._closeSocketIfRequired.bind(this), 1000);
+		this._closeSocketIfRequired();
 	}
 
 	protected async _prepareSubscriptionPayload({

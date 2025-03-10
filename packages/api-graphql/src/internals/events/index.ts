@@ -101,9 +101,11 @@ async function connect(
 	const close = async () => {
 		_subscription && _subscription.unsubscribe();
 		openChannels.delete(channelId);
-		if (openChannels.size === 0) {
-			eventProvider.closeIfNoActiveChannel();
-		}
+		setTimeout(() => {
+			if (openChannels.size === 0) {
+				eventProvider.closeIfNoActiveChannel();
+			}
+		}, 1000);
 	};
 
 	return {
