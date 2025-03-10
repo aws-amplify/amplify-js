@@ -49,6 +49,7 @@ xcuserdata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
+*.xcode.env.local
 
 ### Coverage ###
 coverage/
@@ -67,3 +68,6 @@ coverage-ts/
 # rollup
 **/.rollup.cache
 **/buildMeta
+
+# ruby
+vendor/
