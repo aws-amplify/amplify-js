@@ -3,3 +3,10 @@
 
 export { registerPasskey } from './registerPasskey';
 export { getPasskey } from './getPasskey';
+
+export type {
+	PasskeyCreateOptionsJson,
+	PasskeyCreateResultJson,
+	PasskeyGetOptionsJson,
+	PasskeyGetResultJson,
+} from './types';

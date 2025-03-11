@@ -32,11 +32,158 @@
 
 
 NS_ASSUME_NONNULL_BEGIN
+namespace JS {
+  namespace NativeAmplifyRtnPasskeys {
+    struct PasskeyCreateOptionsJsonRp {
+      NSString *id_() const;
+      NSString *name() const;
 
+      PasskeyCreateOptionsJsonRp(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonRp)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonRp:(id)json;
+@end
+namespace JS {
+  namespace NativeAmplifyRtnPasskeys {
+    struct PasskeyCreateOptionsJsonUser {
+      NSString *id_() const;
+      NSString *name() const;
+      NSString *displayName() const;
+
+      PasskeyCreateOptionsJsonUser(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonUser)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonUser:(id)json;
+@end
+namespace JS {
+  namespace NativeAmplifyRtnPasskeys {
+    struct PubKeyCredParam {
+      double alg() const;
+      NSString *type() const;
+
+      PubKeyCredParam(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAmplifyRtnPasskeys_PubKeyCredParam)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PubKeyCredParam:(id)json;
+@end
+namespace JS {
+  namespace NativeAmplifyRtnPasskeys {
+    struct PkcDescriptor {
+      NSString *type() const;
+      NSString *id_() const;
+      std::optional<facebook::react::LazyVector<NSString *>> transports() const;
+
+      PkcDescriptor(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAmplifyRtnPasskeys_PkcDescriptor)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PkcDescriptor:(id)json;
+@end
+namespace JS {
+  namespace NativeAmplifyRtnPasskeys {
+    struct PasskeyCreateOptionsJsonAuthenticatorSelection {
+      bool requireResidentKey() const;
+      NSString *residentKey() const;
+      NSString *userVerification() const;
+
+      PasskeyCreateOptionsJsonAuthenticatorSelection(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonAuthenticatorSelection)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonAuthenticatorSelection:(id)json;
+@end
+namespace JS {
+  namespace NativeAmplifyRtnPasskeys {
+    struct PasskeyCreateOptionsJsonExtensions {
+      NSString *appid() const;
+      NSString *appidExclude() const;
+      std::optional<bool> credProps() const;
+
+      PasskeyCreateOptionsJsonExtensions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonExtensions)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonExtensions:(id)json;
+@end
+namespace JS {
+  namespace NativeAmplifyRtnPasskeys {
+    struct PasskeyCreateOptionsJson {
+      NSString *challenge() const;
+      JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonRp rp() const;
+      JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonUser user() const;
+      facebook::react::LazyVector<JS::NativeAmplifyRtnPasskeys::PubKeyCredParam> pubKeyCredParams() const;
+      std::optional<double> timeout() const;
+      std::optional<facebook::react::LazyVector<JS::NativeAmplifyRtnPasskeys::PkcDescriptor>> excludeCredentials() const;
+      std::optional<JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonAuthenticatorSelection> authenticatorSelection() const;
+      NSString *attestation() const;
+      std::optional<JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonExtensions> extensions() const;
+
+      PasskeyCreateOptionsJson(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJson)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJson:(id)json;
+@end
+namespace JS {
+  namespace NativeAmplifyRtnPasskeys {
+    struct PasskeyGetOptionsJson {
+      NSString *challenge() const;
+      NSString *rpId() const;
+      double timeout() const;
+      facebook::react::LazyVector<JS::NativeAmplifyRtnPasskeys::PkcDescriptor> allowCredentials() const;
+      NSString *userVerification() const;
+
+      PasskeyGetOptionsJson(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyGetOptionsJson)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyGetOptionsJson:(id)json;
+@end
 @protocol NativeAmplifyRtnPasskeysSpec <RCTBridgeModule, RCTTurboModule>
 
 - (NSNumber *)multiply:(double)a
                      b:(double)b;
+- (void)createPasskey:(JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson &)input
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject;
+- (void)getPasskey:(JS::NativeAmplifyRtnPasskeys::PasskeyGetOptionsJson &)input
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
 
 @end
 
@@ -58,6 +205,155 @@ namespace facebook::react {
     NativeAmplifyRtnPasskeysSpecJSI(const ObjCTurboModule::InitParams &params);
   };
 } // namespace facebook::react
-
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonRp::id_() const
+{
+  id const p = _v[@"id"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonRp::name() const
+{
+  id const p = _v[@"name"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonUser::id_() const
+{
+  id const p = _v[@"id"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonUser::name() const
+{
+  id const p = _v[@"name"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonUser::displayName() const
+{
+  id const p = _v[@"displayName"];
+  return RCTBridgingToString(p);
+}
+inline double JS::NativeAmplifyRtnPasskeys::PubKeyCredParam::alg() const
+{
+  id const p = _v[@"alg"];
+  return RCTBridgingToDouble(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PubKeyCredParam::type() const
+{
+  id const p = _v[@"type"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PkcDescriptor::type() const
+{
+  id const p = _v[@"type"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PkcDescriptor::id_() const
+{
+  id const p = _v[@"id"];
+  return RCTBridgingToString(p);
+}
+inline std::optional<facebook::react::LazyVector<NSString *>> JS::NativeAmplifyRtnPasskeys::PkcDescriptor::transports() const
+{
+  id const p = _v[@"transports"];
+  return RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
+}
+inline bool JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonAuthenticatorSelection::requireResidentKey() const
+{
+  id const p = _v[@"requireResidentKey"];
+  return RCTBridgingToBool(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonAuthenticatorSelection::residentKey() const
+{
+  id const p = _v[@"residentKey"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonAuthenticatorSelection::userVerification() const
+{
+  id const p = _v[@"userVerification"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonExtensions::appid() const
+{
+  id const p = _v[@"appid"];
+  return RCTBridgingToOptionalString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonExtensions::appidExclude() const
+{
+  id const p = _v[@"appidExclude"];
+  return RCTBridgingToOptionalString(p);
+}
+inline std::optional<bool> JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonExtensions::credProps() const
+{
+  id const p = _v[@"credProps"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson::challenge() const
+{
+  id const p = _v[@"challenge"];
+  return RCTBridgingToString(p);
+}
+inline JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonRp JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson::rp() const
+{
+  id const p = _v[@"rp"];
+  return JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonRp(p);
+}
+inline JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonUser JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson::user() const
+{
+  id const p = _v[@"user"];
+  return JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonUser(p);
+}
+inline facebook::react::LazyVector<JS::NativeAmplifyRtnPasskeys::PubKeyCredParam> JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson::pubKeyCredParams() const
+{
+  id const p = _v[@"pubKeyCredParams"];
+  return RCTBridgingToVec(p, ^JS::NativeAmplifyRtnPasskeys::PubKeyCredParam(id itemValue_0) { return JS::NativeAmplifyRtnPasskeys::PubKeyCredParam(itemValue_0); });
+}
+inline std::optional<double> JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson::timeout() const
+{
+  id const p = _v[@"timeout"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline std::optional<facebook::react::LazyVector<JS::NativeAmplifyRtnPasskeys::PkcDescriptor>> JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson::excludeCredentials() const
+{
+  id const p = _v[@"excludeCredentials"];
+  return RCTBridgingToOptionalVec(p, ^JS::NativeAmplifyRtnPasskeys::PkcDescriptor(id itemValue_0) { return JS::NativeAmplifyRtnPasskeys::PkcDescriptor(itemValue_0); });
+}
+inline std::optional<JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonAuthenticatorSelection> JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson::authenticatorSelection() const
+{
+  id const p = _v[@"authenticatorSelection"];
+  return (p == nil ? std::nullopt : std::make_optional(JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonAuthenticatorSelection(p)));
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson::attestation() const
+{
+  id const p = _v[@"attestation"];
+  return RCTBridgingToOptionalString(p);
+}
+inline std::optional<JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonExtensions> JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson::extensions() const
+{
+  id const p = _v[@"extensions"];
+  return (p == nil ? std::nullopt : std::make_optional(JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonExtensions(p)));
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyGetOptionsJson::challenge() const
+{
+  id const p = _v[@"challenge"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyGetOptionsJson::rpId() const
+{
+  id const p = _v[@"rpId"];
+  return RCTBridgingToString(p);
+}
+inline double JS::NativeAmplifyRtnPasskeys::PasskeyGetOptionsJson::timeout() const
+{
+  id const p = _v[@"timeout"];
+  return RCTBridgingToDouble(p);
+}
+inline facebook::react::LazyVector<JS::NativeAmplifyRtnPasskeys::PkcDescriptor> JS::NativeAmplifyRtnPasskeys::PasskeyGetOptionsJson::allowCredentials() const
+{
+  id const p = _v[@"allowCredentials"];
+  return RCTBridgingToVec(p, ^JS::NativeAmplifyRtnPasskeys::PkcDescriptor(id itemValue_0) { return JS::NativeAmplifyRtnPasskeys::PkcDescriptor(itemValue_0); });
+}
+inline NSString *JS::NativeAmplifyRtnPasskeys::PasskeyGetOptionsJson::userVerification() const
+{
+  id const p = _v[@"userVerification"];
+  return RCTBridgingToString(p);
+}
 NS_ASSUME_NONNULL_END
 #endif // AmplifyRtnPasskeysSpec_H

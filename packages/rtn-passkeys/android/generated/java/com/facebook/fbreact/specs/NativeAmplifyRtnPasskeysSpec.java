@@ -13,9 +13,11 @@
 package com.facebook.fbreact.specs;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
@@ -34,4 +36,12 @@ public abstract class NativeAmplifyRtnPasskeysSpec extends ReactContextBaseJavaM
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
   public abstract double multiply(double a, double b);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void createPasskey(ReadableMap input, Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void getPasskey(ReadableMap input, Promise promise);
 }

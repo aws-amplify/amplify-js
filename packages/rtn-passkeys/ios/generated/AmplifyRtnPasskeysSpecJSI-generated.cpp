@@ -18,10 +18,24 @@ static jsi::Value __hostFunction_NativeAmplifyRtnPasskeysCxxSpecJSI_multiply(jsi
     count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asNumber()
   );
 }
+static jsi::Value __hostFunction_NativeAmplifyRtnPasskeysCxxSpecJSI_createPasskey(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeAmplifyRtnPasskeysCxxSpecJSI *>(&turboModule)->createPasskey(
+    rt,
+    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
+  );
+}
+static jsi::Value __hostFunction_NativeAmplifyRtnPasskeysCxxSpecJSI_getPasskey(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeAmplifyRtnPasskeysCxxSpecJSI *>(&turboModule)->getPasskey(
+    rt,
+    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
+  );
+}
 
 NativeAmplifyRtnPasskeysCxxSpecJSI::NativeAmplifyRtnPasskeysCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule("AmplifyRtnPasskeys", jsInvoker) {
   methodMap_["multiply"] = MethodMetadata {2, __hostFunction_NativeAmplifyRtnPasskeysCxxSpecJSI_multiply};
+  methodMap_["createPasskey"] = MethodMetadata {1, __hostFunction_NativeAmplifyRtnPasskeysCxxSpecJSI_createPasskey};
+  methodMap_["getPasskey"] = MethodMetadata {1, __hostFunction_NativeAmplifyRtnPasskeysCxxSpecJSI_getPasskey};
 }
 
 

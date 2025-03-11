@@ -15,12 +15,592 @@
 namespace facebook::react {
 
 
-  class JSI_EXPORT NativeAmplifyRtnPasskeysCxxSpecJSI : public TurboModule {
+  
+#pragma mark - NativeAmplifyRtnPasskeysPasskeyCreateOptionsJson
+
+template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
+struct NativeAmplifyRtnPasskeysPasskeyCreateOptionsJson {
+  P0 challenge;
+  P1 rp;
+  P2 user;
+  P3 pubKeyCredParams;
+  P4 timeout;
+  P5 excludeCredentials;
+  P6 authenticatorSelection;
+  P7 attestation;
+  P8 extensions;
+  bool operator==(const NativeAmplifyRtnPasskeysPasskeyCreateOptionsJson &other) const {
+    return challenge == other.challenge && rp == other.rp && user == other.user && pubKeyCredParams == other.pubKeyCredParams && timeout == other.timeout && excludeCredentials == other.excludeCredentials && authenticatorSelection == other.authenticatorSelection && attestation == other.attestation && extensions == other.extensions;
+  }
+};
+
+template <typename T>
+struct NativeAmplifyRtnPasskeysPasskeyCreateOptionsJsonBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.challenge)>(rt, value.getProperty(rt, "challenge"), jsInvoker),
+      bridging::fromJs<decltype(types.rp)>(rt, value.getProperty(rt, "rp"), jsInvoker),
+      bridging::fromJs<decltype(types.user)>(rt, value.getProperty(rt, "user"), jsInvoker),
+      bridging::fromJs<decltype(types.pubKeyCredParams)>(rt, value.getProperty(rt, "pubKeyCredParams"), jsInvoker),
+      bridging::fromJs<decltype(types.timeout)>(rt, value.getProperty(rt, "timeout"), jsInvoker),
+      bridging::fromJs<decltype(types.excludeCredentials)>(rt, value.getProperty(rt, "excludeCredentials"), jsInvoker),
+      bridging::fromJs<decltype(types.authenticatorSelection)>(rt, value.getProperty(rt, "authenticatorSelection"), jsInvoker),
+      bridging::fromJs<decltype(types.attestation)>(rt, value.getProperty(rt, "attestation"), jsInvoker),
+      bridging::fromJs<decltype(types.extensions)>(rt, value.getProperty(rt, "extensions"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String challengeToJs(jsi::Runtime &rt, decltype(types.challenge) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Object rpToJs(jsi::Runtime &rt, decltype(types.rp) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Object userToJs(jsi::Runtime &rt, decltype(types.user) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Array pubKeyCredParamsToJs(jsi::Runtime &rt, decltype(types.pubKeyCredParams) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static double timeoutToJs(jsi::Runtime &rt, decltype(types.timeout) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Array excludeCredentialsToJs(jsi::Runtime &rt, decltype(types.excludeCredentials) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Object authenticatorSelectionToJs(jsi::Runtime &rt, decltype(types.authenticatorSelection) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String attestationToJs(jsi::Runtime &rt, decltype(types.attestation) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Object extensionsToJs(jsi::Runtime &rt, decltype(types.extensions) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, "challenge", bridging::toJs(rt, value.challenge, jsInvoker));
+    result.setProperty(rt, "rp", bridging::toJs(rt, value.rp, jsInvoker));
+    result.setProperty(rt, "user", bridging::toJs(rt, value.user, jsInvoker));
+    result.setProperty(rt, "pubKeyCredParams", bridging::toJs(rt, value.pubKeyCredParams, jsInvoker));
+    if (value.timeout) {
+      result.setProperty(rt, "timeout", bridging::toJs(rt, value.timeout.value(), jsInvoker));
+    }
+    if (value.excludeCredentials) {
+      result.setProperty(rt, "excludeCredentials", bridging::toJs(rt, value.excludeCredentials.value(), jsInvoker));
+    }
+    if (value.authenticatorSelection) {
+      result.setProperty(rt, "authenticatorSelection", bridging::toJs(rt, value.authenticatorSelection.value(), jsInvoker));
+    }
+    if (value.attestation) {
+      result.setProperty(rt, "attestation", bridging::toJs(rt, value.attestation.value(), jsInvoker));
+    }
+    if (value.extensions) {
+      result.setProperty(rt, "extensions", bridging::toJs(rt, value.extensions.value(), jsInvoker));
+    }
+    return result;
+  }
+};
+
+
+
+#pragma mark - NativeAmplifyRtnPasskeysPasskeyCreateResultJson
+
+template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
+struct NativeAmplifyRtnPasskeysPasskeyCreateResultJson {
+  P0 id;
+  P1 rawId;
+  P2 type;
+  P3 clientExtensionResults;
+  P4 authenticatorAttachment;
+  P5 response;
+  bool operator==(const NativeAmplifyRtnPasskeysPasskeyCreateResultJson &other) const {
+    return id == other.id && rawId == other.rawId && type == other.type && clientExtensionResults == other.clientExtensionResults && authenticatorAttachment == other.authenticatorAttachment && response == other.response;
+  }
+};
+
+template <typename T>
+struct NativeAmplifyRtnPasskeysPasskeyCreateResultJsonBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.id)>(rt, value.getProperty(rt, "id"), jsInvoker),
+      bridging::fromJs<decltype(types.rawId)>(rt, value.getProperty(rt, "rawId"), jsInvoker),
+      bridging::fromJs<decltype(types.type)>(rt, value.getProperty(rt, "type"), jsInvoker),
+      bridging::fromJs<decltype(types.clientExtensionResults)>(rt, value.getProperty(rt, "clientExtensionResults"), jsInvoker),
+      bridging::fromJs<decltype(types.authenticatorAttachment)>(rt, value.getProperty(rt, "authenticatorAttachment"), jsInvoker),
+      bridging::fromJs<decltype(types.response)>(rt, value.getProperty(rt, "response"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String idToJs(jsi::Runtime &rt, decltype(types.id) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String rawIdToJs(jsi::Runtime &rt, decltype(types.rawId) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String typeToJs(jsi::Runtime &rt, decltype(types.type) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Object clientExtensionResultsToJs(jsi::Runtime &rt, decltype(types.clientExtensionResults) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String authenticatorAttachmentToJs(jsi::Runtime &rt, decltype(types.authenticatorAttachment) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Object responseToJs(jsi::Runtime &rt, decltype(types.response) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, "id", bridging::toJs(rt, value.id, jsInvoker));
+    result.setProperty(rt, "rawId", bridging::toJs(rt, value.rawId, jsInvoker));
+    result.setProperty(rt, "type", bridging::toJs(rt, value.type, jsInvoker));
+    result.setProperty(rt, "clientExtensionResults", bridging::toJs(rt, value.clientExtensionResults, jsInvoker));
+    if (value.authenticatorAttachment) {
+      result.setProperty(rt, "authenticatorAttachment", bridging::toJs(rt, value.authenticatorAttachment.value(), jsInvoker));
+    }
+    result.setProperty(rt, "response", bridging::toJs(rt, value.response, jsInvoker));
+    return result;
+  }
+};
+
+
+
+#pragma mark - NativeAmplifyRtnPasskeysPasskeyGetOptionsJson
+
+template <typename P0, typename P1, typename P2, typename P3, typename P4>
+struct NativeAmplifyRtnPasskeysPasskeyGetOptionsJson {
+  P0 challenge;
+  P1 rpId;
+  P2 timeout;
+  P3 allowCredentials;
+  P4 userVerification;
+  bool operator==(const NativeAmplifyRtnPasskeysPasskeyGetOptionsJson &other) const {
+    return challenge == other.challenge && rpId == other.rpId && timeout == other.timeout && allowCredentials == other.allowCredentials && userVerification == other.userVerification;
+  }
+};
+
+template <typename T>
+struct NativeAmplifyRtnPasskeysPasskeyGetOptionsJsonBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.challenge)>(rt, value.getProperty(rt, "challenge"), jsInvoker),
+      bridging::fromJs<decltype(types.rpId)>(rt, value.getProperty(rt, "rpId"), jsInvoker),
+      bridging::fromJs<decltype(types.timeout)>(rt, value.getProperty(rt, "timeout"), jsInvoker),
+      bridging::fromJs<decltype(types.allowCredentials)>(rt, value.getProperty(rt, "allowCredentials"), jsInvoker),
+      bridging::fromJs<decltype(types.userVerification)>(rt, value.getProperty(rt, "userVerification"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String challengeToJs(jsi::Runtime &rt, decltype(types.challenge) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String rpIdToJs(jsi::Runtime &rt, decltype(types.rpId) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static double timeoutToJs(jsi::Runtime &rt, decltype(types.timeout) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Array allowCredentialsToJs(jsi::Runtime &rt, decltype(types.allowCredentials) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String userVerificationToJs(jsi::Runtime &rt, decltype(types.userVerification) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, "challenge", bridging::toJs(rt, value.challenge, jsInvoker));
+    result.setProperty(rt, "rpId", bridging::toJs(rt, value.rpId, jsInvoker));
+    result.setProperty(rt, "timeout", bridging::toJs(rt, value.timeout, jsInvoker));
+    result.setProperty(rt, "allowCredentials", bridging::toJs(rt, value.allowCredentials, jsInvoker));
+    result.setProperty(rt, "userVerification", bridging::toJs(rt, value.userVerification, jsInvoker));
+    return result;
+  }
+};
+
+
+
+#pragma mark - NativeAmplifyRtnPasskeysPasskeyGetResultJson
+
+template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
+struct NativeAmplifyRtnPasskeysPasskeyGetResultJson {
+  P0 id;
+  P1 rawId;
+  P2 type;
+  P3 clientExtensionResults;
+  P4 authenticatorAttachment;
+  P5 response;
+  bool operator==(const NativeAmplifyRtnPasskeysPasskeyGetResultJson &other) const {
+    return id == other.id && rawId == other.rawId && type == other.type && clientExtensionResults == other.clientExtensionResults && authenticatorAttachment == other.authenticatorAttachment && response == other.response;
+  }
+};
+
+template <typename T>
+struct NativeAmplifyRtnPasskeysPasskeyGetResultJsonBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.id)>(rt, value.getProperty(rt, "id"), jsInvoker),
+      bridging::fromJs<decltype(types.rawId)>(rt, value.getProperty(rt, "rawId"), jsInvoker),
+      bridging::fromJs<decltype(types.type)>(rt, value.getProperty(rt, "type"), jsInvoker),
+      bridging::fromJs<decltype(types.clientExtensionResults)>(rt, value.getProperty(rt, "clientExtensionResults"), jsInvoker),
+      bridging::fromJs<decltype(types.authenticatorAttachment)>(rt, value.getProperty(rt, "authenticatorAttachment"), jsInvoker),
+      bridging::fromJs<decltype(types.response)>(rt, value.getProperty(rt, "response"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String idToJs(jsi::Runtime &rt, decltype(types.id) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String rawIdToJs(jsi::Runtime &rt, decltype(types.rawId) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String typeToJs(jsi::Runtime &rt, decltype(types.type) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Object clientExtensionResultsToJs(jsi::Runtime &rt, decltype(types.clientExtensionResults) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String authenticatorAttachmentToJs(jsi::Runtime &rt, decltype(types.authenticatorAttachment) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Object responseToJs(jsi::Runtime &rt, decltype(types.response) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, "id", bridging::toJs(rt, value.id, jsInvoker));
+    result.setProperty(rt, "rawId", bridging::toJs(rt, value.rawId, jsInvoker));
+    result.setProperty(rt, "type", bridging::toJs(rt, value.type, jsInvoker));
+    result.setProperty(rt, "clientExtensionResults", bridging::toJs(rt, value.clientExtensionResults, jsInvoker));
+    if (value.authenticatorAttachment) {
+      result.setProperty(rt, "authenticatorAttachment", bridging::toJs(rt, value.authenticatorAttachment.value(), jsInvoker));
+    }
+    result.setProperty(rt, "response", bridging::toJs(rt, value.response, jsInvoker));
+    return result;
+  }
+};
+
+
+
+#pragma mark - NativeAmplifyRtnPasskeysPkcAssertionResponseJson
+
+template <typename P0, typename P1, typename P2, typename P3>
+struct NativeAmplifyRtnPasskeysPkcAssertionResponseJson {
+  P0 authenticatorData;
+  P1 clientDataJSON;
+  P2 signature;
+  P3 userHandle;
+  bool operator==(const NativeAmplifyRtnPasskeysPkcAssertionResponseJson &other) const {
+    return authenticatorData == other.authenticatorData && clientDataJSON == other.clientDataJSON && signature == other.signature && userHandle == other.userHandle;
+  }
+};
+
+template <typename T>
+struct NativeAmplifyRtnPasskeysPkcAssertionResponseJsonBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.authenticatorData)>(rt, value.getProperty(rt, "authenticatorData"), jsInvoker),
+      bridging::fromJs<decltype(types.clientDataJSON)>(rt, value.getProperty(rt, "clientDataJSON"), jsInvoker),
+      bridging::fromJs<decltype(types.signature)>(rt, value.getProperty(rt, "signature"), jsInvoker),
+      bridging::fromJs<decltype(types.userHandle)>(rt, value.getProperty(rt, "userHandle"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String authenticatorDataToJs(jsi::Runtime &rt, decltype(types.authenticatorData) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String clientDataJSONToJs(jsi::Runtime &rt, decltype(types.clientDataJSON) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String signatureToJs(jsi::Runtime &rt, decltype(types.signature) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String userHandleToJs(jsi::Runtime &rt, decltype(types.userHandle) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, "authenticatorData", bridging::toJs(rt, value.authenticatorData, jsInvoker));
+    result.setProperty(rt, "clientDataJSON", bridging::toJs(rt, value.clientDataJSON, jsInvoker));
+    result.setProperty(rt, "signature", bridging::toJs(rt, value.signature, jsInvoker));
+    if (value.userHandle) {
+      result.setProperty(rt, "userHandle", bridging::toJs(rt, value.userHandle.value(), jsInvoker));
+    }
+    return result;
+  }
+};
+
+
+
+#pragma mark - NativeAmplifyRtnPasskeysPkcAttestationResponseJson
+
+template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
+struct NativeAmplifyRtnPasskeysPkcAttestationResponseJson {
+  P0 clientDataJSON;
+  P1 attestationObject;
+  P2 transports;
+  P3 publicKey;
+  P4 publicKeyAlgorithm;
+  P5 authenticatorData;
+  bool operator==(const NativeAmplifyRtnPasskeysPkcAttestationResponseJson &other) const {
+    return clientDataJSON == other.clientDataJSON && attestationObject == other.attestationObject && transports == other.transports && publicKey == other.publicKey && publicKeyAlgorithm == other.publicKeyAlgorithm && authenticatorData == other.authenticatorData;
+  }
+};
+
+template <typename T>
+struct NativeAmplifyRtnPasskeysPkcAttestationResponseJsonBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.clientDataJSON)>(rt, value.getProperty(rt, "clientDataJSON"), jsInvoker),
+      bridging::fromJs<decltype(types.attestationObject)>(rt, value.getProperty(rt, "attestationObject"), jsInvoker),
+      bridging::fromJs<decltype(types.transports)>(rt, value.getProperty(rt, "transports"), jsInvoker),
+      bridging::fromJs<decltype(types.publicKey)>(rt, value.getProperty(rt, "publicKey"), jsInvoker),
+      bridging::fromJs<decltype(types.publicKeyAlgorithm)>(rt, value.getProperty(rt, "publicKeyAlgorithm"), jsInvoker),
+      bridging::fromJs<decltype(types.authenticatorData)>(rt, value.getProperty(rt, "authenticatorData"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String clientDataJSONToJs(jsi::Runtime &rt, decltype(types.clientDataJSON) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String attestationObjectToJs(jsi::Runtime &rt, decltype(types.attestationObject) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Array transportsToJs(jsi::Runtime &rt, decltype(types.transports) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String publicKeyToJs(jsi::Runtime &rt, decltype(types.publicKey) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static double publicKeyAlgorithmToJs(jsi::Runtime &rt, decltype(types.publicKeyAlgorithm) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String authenticatorDataToJs(jsi::Runtime &rt, decltype(types.authenticatorData) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, "clientDataJSON", bridging::toJs(rt, value.clientDataJSON, jsInvoker));
+    result.setProperty(rt, "attestationObject", bridging::toJs(rt, value.attestationObject, jsInvoker));
+    result.setProperty(rt, "transports", bridging::toJs(rt, value.transports, jsInvoker));
+    if (value.publicKey) {
+      result.setProperty(rt, "publicKey", bridging::toJs(rt, value.publicKey.value(), jsInvoker));
+    }
+    result.setProperty(rt, "publicKeyAlgorithm", bridging::toJs(rt, value.publicKeyAlgorithm, jsInvoker));
+    result.setProperty(rt, "authenticatorData", bridging::toJs(rt, value.authenticatorData, jsInvoker));
+    return result;
+  }
+};
+
+
+
+#pragma mark - NativeAmplifyRtnPasskeysPkcDescriptor
+
+template <typename P0, typename P1, typename P2>
+struct NativeAmplifyRtnPasskeysPkcDescriptor {
+  P0 type;
+  P1 id;
+  P2 transports;
+  bool operator==(const NativeAmplifyRtnPasskeysPkcDescriptor &other) const {
+    return type == other.type && id == other.id && transports == other.transports;
+  }
+};
+
+template <typename T>
+struct NativeAmplifyRtnPasskeysPkcDescriptorBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.type)>(rt, value.getProperty(rt, "type"), jsInvoker),
+      bridging::fromJs<decltype(types.id)>(rt, value.getProperty(rt, "id"), jsInvoker),
+      bridging::fromJs<decltype(types.transports)>(rt, value.getProperty(rt, "transports"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String typeToJs(jsi::Runtime &rt, decltype(types.type) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String idToJs(jsi::Runtime &rt, decltype(types.id) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Array transportsToJs(jsi::Runtime &rt, decltype(types.transports) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, "type", bridging::toJs(rt, value.type, jsInvoker));
+    result.setProperty(rt, "id", bridging::toJs(rt, value.id, jsInvoker));
+    if (value.transports) {
+      result.setProperty(rt, "transports", bridging::toJs(rt, value.transports.value(), jsInvoker));
+    }
+    return result;
+  }
+};
+
+
+
+#pragma mark - NativeAmplifyRtnPasskeysPubKeyCredParam
+
+template <typename P0, typename P1>
+struct NativeAmplifyRtnPasskeysPubKeyCredParam {
+  P0 alg;
+  P1 type;
+  bool operator==(const NativeAmplifyRtnPasskeysPubKeyCredParam &other) const {
+    return alg == other.alg && type == other.type;
+  }
+};
+
+template <typename T>
+struct NativeAmplifyRtnPasskeysPubKeyCredParamBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.alg)>(rt, value.getProperty(rt, "alg"), jsInvoker),
+      bridging::fromJs<decltype(types.type)>(rt, value.getProperty(rt, "type"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static double algToJs(jsi::Runtime &rt, decltype(types.alg) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String typeToJs(jsi::Runtime &rt, decltype(types.type) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, "alg", bridging::toJs(rt, value.alg, jsInvoker));
+    result.setProperty(rt, "type", bridging::toJs(rt, value.type, jsInvoker));
+    return result;
+  }
+};
+
+class JSI_EXPORT NativeAmplifyRtnPasskeysCxxSpecJSI : public TurboModule {
 protected:
   NativeAmplifyRtnPasskeysCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
   virtual double multiply(jsi::Runtime &rt, double a, double b) = 0;
+  virtual jsi::Value createPasskey(jsi::Runtime &rt, jsi::Object input) = 0;
+  virtual jsi::Value getPasskey(jsi::Runtime &rt, jsi::Object input) = 0;
 
 };
 
@@ -58,6 +638,22 @@ private:
 
       return bridging::callFromJs<double>(
           rt, &T::multiply, jsInvoker_, instance_, std::move(a), std::move(b));
+    }
+    jsi::Value createPasskey(jsi::Runtime &rt, jsi::Object input) override {
+      static_assert(
+          bridging::getParameterCount(&T::createPasskey) == 2,
+          "Expected createPasskey(...) to have 2 parameters");
+
+      return bridging::callFromJs<jsi::Value>(
+          rt, &T::createPasskey, jsInvoker_, instance_, std::move(input));
+    }
+    jsi::Value getPasskey(jsi::Runtime &rt, jsi::Object input) override {
+      static_assert(
+          bridging::getParameterCount(&T::getPasskey) == 2,
+          "Expected getPasskey(...) to have 2 parameters");
+
+      return bridging::callFromJs<jsi::Value>(
+          rt, &T::getPasskey, jsInvoker_, instance_, std::move(input));
     }
 
   private:

@@ -39,7 +39,7 @@
 		"codegen:ios": "react-native codegen --platform ios --outputPath ios/generated --source library",
 		"codegen:android": "react-native codegen --platform android --outputPath android/generated --source library",
 		"codegen": "yarn codegen:ios && yarn codegen:android",
-		"clean": "rimraf android/build example/android/build example/android/app/build example/ios/build example/ios/Pods example/ios/Podfile.lock lib"
+		"clean": "rimraf android/build example/android/build example/android/app/build example/ios/build example/ios/Pods example/ios/Podfile.lock dist"
 	},
 	"repository": {
 		"type": "git",

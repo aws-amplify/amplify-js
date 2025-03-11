@@ -1,6 +1,20 @@
 
 #import "generated/AmplifyRtnPasskeysSpec/AmplifyRtnPasskeysSpec.h"
+#import <AuthenticationServices/AuthenticationServices.h>
 
-@interface AmplifyRtnPasskeys : NSObject <NativeAmplifyRtnPasskeysSpec>
+@interface AmplifyRtnPasskeysHandler : NSObject
+
+@property (nonatomic, copy) RCTPromiseResolveBlock resolve;
+@property (nonatomic, copy) RCTPromiseRejectBlock reject;
+
+- (instancetype) initWithResolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface AmplifyRtnPasskeys : NSObject <NativeAmplifyRtnPasskeysSpec, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
+
+@property (nonatomic, strong) AmplifyRtnPasskeysHandler *handler;
+
+@end
+
+

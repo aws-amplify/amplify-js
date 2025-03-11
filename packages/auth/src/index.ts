@@ -88,9 +88,8 @@ export {
 	JWT,
 } from '@aws-amplify/core';
 
-export { associateWebAuthnCredential } from './client/apis';
-
 export {
+	associateWebAuthnCredential,
 	listWebAuthnCredentials,
 	deleteWebAuthnCredential,
 } from './client/apis';
@@ -101,3 +100,10 @@ export {
 	ListWebAuthnCredentialsInput,
 	ListWebAuthnCredentialsOutput,
 } from './foundation/types';
+
+export {
+	PasskeyCreateOptionsJson,
+	PasskeyCreateResultJson,
+	PasskeyGetOptionsJson,
+	PasskeyGetResultJson,
+} from './client/utils/passkey';
