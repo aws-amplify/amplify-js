@@ -78,7 +78,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		return super.publish(options, customUserAgentDetails);
 	}
 
-	public closeIfNoActiveChannel() {
+	public closeIfNoActiveSubscription() {
 		this._closeSocketIfRequired();
 	}
 

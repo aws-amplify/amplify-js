@@ -103,7 +103,7 @@ async function connect(
 		openChannels.delete(channelId);
 		setTimeout(() => {
 			if (openChannels.size === 0) {
-				eventProvider.closeIfNoActiveChannel();
+				eventProvider.closeIfNoActiveSubscription();
 			}
 		}, 1000);
 	};
