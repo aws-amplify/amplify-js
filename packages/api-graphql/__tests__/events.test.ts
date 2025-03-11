@@ -180,6 +180,14 @@ describe('Events client', () => {
 				channel.publish({ some: 'data' });
 			});
 
+			test('publish() becomes invalid after .close() is called', async () => {
+				const channel = await events.connect('/');
+				channel.close();
+				await expect(channel.publish({ some: 'data' })).rejects.toThrow(
+					'Channel is closed',
+				);
+			});
+
 			describe('auth modes', () => {
 				let mockProvider: typeof AppSyncEventProvider;
 
