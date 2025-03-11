@@ -12,7 +12,7 @@ import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
+	Amplify: { getConfig: jest.fn(() => ({})), assertConfigured: jest.fn() },
 }));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),

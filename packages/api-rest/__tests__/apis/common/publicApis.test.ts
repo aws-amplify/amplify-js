@@ -46,11 +46,13 @@ const mockConfig = {
 const mockParseJsonError = parseJsonError as jest.Mock;
 const mockRestHeaders = jest.fn();
 const mockGetConfig = jest.fn();
+const mockAssertConfigured = jest.fn();
 const mockAmplifyInstance = {
 	Auth: {
 		fetchAuthSession: mockFetchAuthSession,
 	},
 	getConfig: mockGetConfig,
+	assertConfigured: mockAssertConfigured,
 	libraryOptions: {
 		API: {
 			REST: {
@@ -86,6 +88,7 @@ describe('public APIs', () => {
 		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 		mockUnauthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 		mockGetConfig.mockReturnValue(mockConfig);
+		mockAssertConfigured.mockReturnValue(true);
 	});
 	const APIs = [
 		{ name: 'get', fn: get, method: 'GET' },

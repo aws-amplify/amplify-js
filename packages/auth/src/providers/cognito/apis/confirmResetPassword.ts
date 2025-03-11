@@ -29,6 +29,7 @@ import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 export async function confirmResetPassword(
 	input: ConfirmResetPasswordInput,
 ): Promise<void> {
+	Amplify.assertConfigured();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolClientId, userPoolId, userPoolEndpoint } = authConfig;

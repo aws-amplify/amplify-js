@@ -36,6 +36,7 @@ import { resetAutoSignIn } from './autoSignIn';
 export async function confirmSignUp(
 	input: ConfirmSignUpInput,
 ): Promise<ConfirmSignUpOutput> {
+	Amplify.assertConfigured();
 	const { username, confirmationCode, options } = input;
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;

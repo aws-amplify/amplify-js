@@ -27,6 +27,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 export async function updateMFAPreference(
 	input: UpdateMFAPreferenceInput,
 ): Promise<void> {
+	Amplify.assertConfigured();
 	const { sms, totp, email } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);

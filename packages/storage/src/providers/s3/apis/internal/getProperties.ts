@@ -26,6 +26,7 @@ export const getProperties = async (
 	input: GetPropertiesInput | GetPropertiesWithPathInputWithAdvancedOptions,
 	action?: StorageAction,
 ): Promise<GetPropertiesOutput | GetPropertiesWithPathOutput> => {
+	amplify.assertConfigured();
 	const { s3Config, bucket, keyPrefix, identityId } =
 		await resolveS3ConfigAndInput(amplify, input);
 	const { inputType, objectKey } = validateStorageOperationInput(

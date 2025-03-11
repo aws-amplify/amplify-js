@@ -87,6 +87,21 @@ export class AmplifyClass {
 		return this.resourcesConfig;
 	}
 
+	/**
+	 * Internal method to check if Amplify is configured
+	 * Throws an error if Amplify hasn't been configured
+	 *
+	 * @internal
+	 * @throws {Error} If Amplify.configure hasn't been called
+	 */
+	assertConfigured(): void {
+		if (Object.keys(this.resourcesConfig).length === 0) {
+			throw new Error(
+				'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+			);
+		}
+	}
+
 	/** @internal */
 	[ADD_OAUTH_LISTENER](listener: (authConfig: AuthConfig['Cognito']) => void) {
 		if (this.resourcesConfig.Auth?.Cognito.loginWith?.oauth) {

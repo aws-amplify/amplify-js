@@ -46,6 +46,7 @@ export const putObjectJob =
 		totalLength: number,
 	) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
+		Amplify.assertConfigured();
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
 			await resolveS3ConfigAndInput(Amplify, uploadDataInput);
