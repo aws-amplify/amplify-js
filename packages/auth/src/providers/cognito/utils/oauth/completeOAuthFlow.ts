@@ -239,6 +239,9 @@ const completeFlow = async ({
 	//  `fetchAuthSession` can be resolved
 	resolveAndClearInflightPromises();
 
+	// clear history before sending out final Hub events
+	clearHistory(redirectUri);
+
 	if (isCustomState(state)) {
 		Hub.dispatch(
 			'auth',
@@ -252,7 +255,6 @@ const completeFlow = async ({
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
 	await dispatchSignedInHubEvent();
-	clearHistory(redirectUri);
 };
 
 const isCustomState = (state: string): boolean => {

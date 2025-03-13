@@ -12,6 +12,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 import { DEFAULT_KEEP_ALIVE_TIMEOUT, MESSAGE_TYPES } from '../constants';
 import { AWSWebSocketProvider } from '../AWSWebSocketProvider';
 import { awsRealTimeHeaderBasedAuth } from '../AWSWebSocketProvider/authHeaders';
+import { serializeEvents } from '../../internals/events/utils';
 
 // resolved/actual AuthMode values. identityPool gets resolves to IAM upstream in InternalGraphQLAPI._graphqlSubscribe
 type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
@@ -52,6 +53,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 			wsProtocolName: WS_PROTOCOL_NAME,
 			connectUri: CONNECT_URI,
 		});
+		this.allowNoSubscriptions = true;
 	}
 
 	getProviderName() {
@@ -73,7 +75,11 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		options: AWSAppSyncEventProviderOptions,
 		customUserAgentDetails?: CustomUserAgentDetails,
 	) {
-		super.publish(options, customUserAgentDetails);
+		return super.publish(options, customUserAgentDetails);
+	}
+
+	public closeIfNoActiveSubscription() {
+		this._closeSocketIfRequired();
 	}
 
 	protected async _prepareSubscriptionPayload({
@@ -97,14 +103,14 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 			query,
 			apiKey,
 			region,
+			variables,
 		} = options;
 
-		// This will be needed for WS publish
-		// const data = {
-		// 	events: [variables],
-		// };
-
-		const serializedData = JSON.stringify({ channel: query });
+		const data = {
+			channel: query,
+			events: variables !== undefined ? serializeEvents(variables) : undefined,
+		};
+		const serializedData = JSON.stringify(data);
 
 		const headers = {
 			...(await awsRealTimeHeaderBasedAuth({
@@ -121,22 +127,23 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
 
-		// Commented out code will be needed for WS publish
 		const subscriptionMessage = {
 			id: subscriptionId,
 			channel: query,
-			// events: [JSON.stringify(variables)],
+			events: variables !== undefined ? serializeEvents(variables) : undefined,
 			authorization: {
 				...headers,
 			},
-			// payload: {
-			// 	events: serializedData,
-			// 	extensions: {
-			// 		authorization: {
-			// 			...headers,
-			// 		},
-			// 	},
-			// },
+			payload: {
+				events:
+					variables !== undefined ? serializeEvents(variables) : undefined,
+				channel: query,
+				extensions: {
+					authorization: {
+						...headers,
+					},
+				},
+			},
 			type: publish
 				? MESSAGE_TYPES.EVENT_PUBLISH
 				: MESSAGE_TYPES.EVENT_SUBSCRIBE,

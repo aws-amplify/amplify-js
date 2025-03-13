@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.3...@aws-amplify/adapter-nextjs@1.5.4) (2025-03-07)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.2...@aws-amplify/adapter-nextjs@1.5.3) (2025-03-05)
+
+### Bug Fixes
+
+- **core:** make AmplifyOutputs category types as unknown ([#14153](https://github.com/aws-amplify/amplify-js/issues/14153)) ([5dbfbf3](https://github.com/aws-amplify/amplify-js/commit/5dbfbf3f83799b7691fa4d51a61726326a22f1e5))
+
+## [1.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.1...@aws-amplify/adapter-nextjs@1.5.2) (2025-02-27)
+
+### Bug Fixes
+
+- **adapter-nextjs:** secure: false is not set for localhost on sign-in ([#14231](https://github.com/aws-amplify/amplify-js/issues/14231)) ([677f466](https://github.com/aws-amplify/amplify-js/commit/677f466716c2467f441642c357a7bbe33f5a1dbe))
+- **adapter-nextjs:** server-side sign out not working with Firefox and Safari ([#14246](https://github.com/aws-amplify/amplify-js/issues/14246)) ([b940a23](https://github.com/aws-amplify/amplify-js/commit/b940a23d111138cc19000c0fee5280b1c1fe0851))
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.0...@aws-amplify/adapter-nextjs@1.5.1) (2025-02-20)
 
 ### Bug Fixes
