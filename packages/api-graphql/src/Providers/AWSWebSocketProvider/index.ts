@@ -158,6 +158,16 @@ export abstract class AWSWebSocketProvider {
 
 			let subscriptionStartInProgress = false;
 			const subscriptionId = amplifyUuid();
+
+			const { query, variables } = options;
+			this.subscriptionObserverMap.set(subscriptionId, {
+				observer,
+				query: query ?? '',
+				variables: variables ?? {},
+				subscriptionState: SUBSCRIPTION_STATUS.PENDING,
+				startAckTimeoutId: undefined,
+			});
+
 			const startSubscription = () => {
 				if (!subscriptionStartInProgress) {
 					subscriptionStartInProgress = true;
@@ -398,14 +408,6 @@ export abstract class AWSWebSocketProvider {
 
 		const { additionalCustomHeaders, libraryConfigHeaders } =
 			await additionalHeadersFromOptions(options);
-
-		this.subscriptionObserverMap.set(subscriptionId, {
-			observer,
-			query: query ?? '',
-			variables: variables ?? {},
-			subscriptionState: SUBSCRIPTION_STATUS.PENDING,
-			startAckTimeoutId: undefined,
-		});
 
 		const serializedSubscriptionMessage =
 			await this._prepareSubscriptionPayload({
