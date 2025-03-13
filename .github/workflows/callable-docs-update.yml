@@ -46,7 +46,7 @@ jobs:
       - name: Build docs references
         working-directory: ./amplify-js
         run: |
-          yarn run docs
+          yarn run docs:references
 
       - name: Update API references in the docs site
         working-directory: ./docs
