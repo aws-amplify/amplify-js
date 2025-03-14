@@ -1,0 +1,46 @@
+{
+	"name": "Amplify JS API Documentation",
+	"entryPointStrategy": "packages",
+    "entryPoints": [
+		"packages/adapter-nextjs",
+		"packages/adapter-nextjs/data",
+		"packages/aws-amplify",
+		"packages/aws-amplify/analytics",
+		"packages/aws-amplify/analytics/kinesis",
+		"packages/aws-amplify/analytics/kinesis-firehose",
+		"packages/aws-amplify/analytics/personalize",
+		"packages/aws-amplify/api",
+		"packages/aws-amplify/api/server",
+		"packages/aws-amplify/auth",
+		"packages/aws-amplify/auth/cognito",
+		"packages/aws-amplify/auth/server",
+		"packages/aws-amplify/data",
+		"packages/aws-amplify/data/server",
+		"packages/aws-amplify/in-app-messaging",
+		"packages/aws-amplify/storage",
+		"packages/aws-amplify/storage/server",
+		"packages/aws-amplify/utils",
+		"packages/geo",
+		"packages/interactions",
+		"packages/predictions",
+		"packages/pubsub",
+		"packages/datastore-storage-adapter"
+    ],
+    "out": "docs/api",
+	"json": "docs/reference.json",
+	"readme": "docs/README.md",
+	"sortEntryPoints": false,
+	"includeVersion": false,
+	"hideGenerator": true,
+	"navigationLinks": {
+		"Library Documentation": "https://docs.amplify.aws/",
+		"NPM": "https://www.npmjs.com/package/aws-amplify",
+		"GitHub": "https://github.com/aws-amplify/amplify-js"
+	},
+	"customCss": "./docs/theme/styles.css",
+	"favicon": "./docs/theme/favicon.ico",
+	"plugin": [
+		"typedoc-plugin-missing-exports",
+		"typedoc-plugin-extras"
+	]
+}
