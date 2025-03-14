@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.79](https://github.com/aws-amplify/amplify-js/compare/tsc-compliance-test@0.1.78...tsc-compliance-test@0.1.79) (2025-03-14)
+
+### Bug Fixes
+
+- **tsc-compliance:** Set skipLibCheck flag true for tsc compliance skipLibCheck test ([#14257](https://github.com/aws-amplify/amplify-js/issues/14257)) ([a7df116](https://github.com/aws-amplify/amplify-js/commit/a7df1165e5df4dbaf3fae9091483056323463c3e))
+
 ## [0.1.78](https://github.com/aws-amplify/amplify-js/compare/tsc-compliance-test@0.1.77...tsc-compliance-test@0.1.78) (2025-03-07)
 
 **Note:** Version bump only for package tsc-compliance-test
