@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.11.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.11.4...@aws-amplify/auth@6.11.5) (2025-03-14)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.11.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.11.3...@aws-amplify/auth@6.11.4) (2025-03-07)
+
+### Bug Fixes
+
+- **auth:** associate unAuth identityId to newly authenticated user's identityId ([#14207](https://github.com/aws-amplify/amplify-js/issues/14207)) ([1cd12bf](https://github.com/aws-amplify/amplify-js/commit/1cd12bf0aa68167ec31235c8f0333aba558cd72b))
+- **auth:** clear browser tab location before sending final success hub events during OAuth signIn ([#14188](https://github.com/aws-amplify/amplify-js/issues/14188)) ([e924f12](https://github.com/aws-amplify/amplify-js/commit/e924f1298d8ce0fc9ec9e9a21ad41e7f2cb9173a))
+- **auth:** update service returned identity id to the in-memory store ([#14268](https://github.com/aws-amplify/amplify-js/issues/14268)) ([d7ada2b](https://github.com/aws-amplify/amplify-js/commit/d7ada2ba738bc6a482612096466ad916440e0247))
+
+## [6.11.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.11.2...@aws-amplify/auth@6.11.3) (2025-03-05)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 ## [6.11.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.11.1...@aws-amplify/auth@6.11.2) (2025-02-27)
 
 **Note:** Version bump only for package @aws-amplify/auth

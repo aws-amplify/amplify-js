@@ -15,9 +15,6 @@ module.exports = {
 					noImplicitAny: false,
 					types: ['jest', 'jsdom'],
 				},
-				diagnostics: {
-					warnOnly: false,
-				},
 			},
 		],
 	},

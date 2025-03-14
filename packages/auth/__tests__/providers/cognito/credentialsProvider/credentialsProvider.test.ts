@@ -7,15 +7,13 @@ import {
 	getCredentialsForIdentity,
 	sharedInMemoryStorage,
 } from '@aws-amplify/core';
-import { AmplifyError } from '@aws-amplify/core/internals/utils';
 
-import { AuthError } from '../../../src';
+import { AuthError } from '../../../../src/Errors';
 import {
 	CognitoAWSCredentialsAndIdentityIdProvider,
 	DefaultIdentityIdStore,
-} from '../../../src/providers/cognito';
-
-import { authAPITestParams } from './testUtils/authApiTestParams';
+} from '../../../../src/providers/cognito';
+import { authAPITestParams } from '../testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
@@ -23,7 +21,7 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 
 jest.mock(
-	'./../../../src/providers/cognito/credentialsProvider/IdentityIdProvider',
+	'./../../../../src/providers/cognito/credentialsProvider/IdentityIdProvider',
 	() => ({
 		cognitoIdentityIdProvider: jest
 			.fn()
@@ -89,7 +87,7 @@ describe('credentialsProvider', () => {
 				authConfig: validAuthConfig.Auth!,
 			});
 		} catch (e) {
-			expect(e).toBeInstanceOf(AmplifyError);
+			expect(e).toBeInstanceOf(AuthError);
 			expect(e).toMatchObject(mockServiceErrorParams);
 		}
 	});
@@ -99,14 +97,20 @@ describe('credentialsProvider', () => {
 
 		describe('Happy Path Cases:', () => {
 			beforeEach(() => {
+				const identityIdStore = new DefaultIdentityIdStore(
+					sharedInMemoryStorage,
+				);
+				identityIdStore.setAuthConfig(validAuthConfig.Auth!);
 				cognitoCredentialsProvider =
-					new CognitoAWSCredentialsAndIdentityIdProvider(
-						new DefaultIdentityIdStore(sharedInMemoryStorage),
-					);
-				credentialsForIdentityIdSpy?.mockReset();
+					new CognitoAWSCredentialsAndIdentityIdProvider(identityIdStore);
 				credentialsForIdentityIdSpy.mockImplementationOnce(async () => {
 					return authAPITestParams.CredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
 				});
+			});
+
+			afterEach(() => {
+				cognitoCredentialsProvider.clearCredentials();
+				credentialsForIdentityIdSpy?.mockReset();
 			});
 
 			test('Should call identityIdClient with no logins to obtain guest creds', async () => {

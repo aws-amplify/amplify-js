@@ -11,18 +11,19 @@ import {
 	CognitoIdentityPoolConfig,
 } from '@aws-amplify/core/internals/utils';
 
-import { AuthError } from '../../../src';
-import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
-import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
-
-import { authAPITestParams } from './testUtils/authApiTestParams';
+import { AuthError } from '../../../../src/Errors';
+import { DefaultIdentityIdStore } from '../../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
+import { cognitoIdentityIdProvider } from '../../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
+import { authAPITestParams } from '../testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
 	getId: jest.fn(),
 }));
 jest.mock('@aws-amplify/core/internals/aws-clients/cognitoIdentity');
-jest.mock('../../../src/providers/cognito/credentialsProvider/IdentityIdStore');
+jest.mock(
+	'../../../../src/providers/cognito/credentialsProvider/IdentityIdStore',
+);
 
 const ampConfig: ResourcesConfig = {
 	Auth: {
@@ -176,5 +177,60 @@ describe('Cognito IdentityId Provider', () => {
 				expect(e).toMatchObject(mockServiceErrorParams);
 			}
 		});
+	});
+	test('Should return the identityId irresspective of the type if present', async () => {
+		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
+			async () => {
+				return authAPITestParams.PrimaryIdentityId as Identity;
+			},
+		);
+		expect(
+			await cognitoIdentityIdProvider({
+				tokens: authAPITestParams.ValidAuthTokens,
+				authConfig: {
+					identityPoolId: 'XXXXXXXXXXXXXXXXX',
+				},
+				identityIdStore: mockDefaultIdentityIdStoreInstance,
+			}),
+		).toBe(authAPITestParams.PrimaryIdentityId.id);
+
+		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
+			async () => {
+				return authAPITestParams.GuestIdentityId as Identity;
+			},
+		);
+		expect(
+			await cognitoIdentityIdProvider({
+				tokens: authAPITestParams.ValidAuthTokens,
+				authConfig: {
+					identityPoolId: 'XXXXXXXXXXXXXXXXX',
+				},
+				identityIdStore: mockDefaultIdentityIdStoreInstance,
+			}),
+		).toBe(authAPITestParams.GuestIdentityId.id);
+		expect(mockGetId).toHaveBeenCalledTimes(0);
+	});
+	test('Should fetch from Cognito when there is no identityId cached', async () => {
+		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
+			async () => {
+				return undefined;
+			},
+		);
+		mockDefaultIdentityIdStoreInstance.storeIdentityId.mockImplementationOnce(
+			async (identity: Identity) => {
+				expect(identity.id).toBe(authAPITestParams.PrimaryIdentityId.id);
+				expect(identity.type).toBe(authAPITestParams.PrimaryIdentityId.type);
+			},
+		);
+		expect(
+			await cognitoIdentityIdProvider({
+				tokens: authAPITestParams.ValidAuthTokens,
+				authConfig: {
+					identityPoolId: 'us-east-1:test-id',
+				},
+				identityIdStore: mockDefaultIdentityIdStoreInstance,
+			}),
+		).toBe(authAPITestParams.PrimaryIdentityId.id);
+		expect(mockGetId).toHaveBeenCalledTimes(1);
 	});
 });
