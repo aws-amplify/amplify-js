@@ -992,6 +992,28 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					expect(fakeWebSocketInterface.hasClosed).resolves.toBeUndefined();
 				});
 
+				test('unsubscription message should be sent even if unsubscribe immediately', async () => {
+					expect.assertions(1);
+
+					const sendUnsubscriptionMessageSpy = jest
+						.spyOn(provider as any, '_sendUnsubscriptionMessage');
+
+					provider
+						.subscribe({
+							appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						})
+						.subscribe({ error: () => {} })
+						.unsubscribe();
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage();
+
+					expect(sendUnsubscriptionMessageSpy).toHaveBeenNthCalledWith(
+						1,
+						fakeWebSocketInterface?.webSocket.subscriptionId,
+					);
+				});
+
 				test('failure to ack before timeout', async () => {
 					expect.assertions(1);
 
