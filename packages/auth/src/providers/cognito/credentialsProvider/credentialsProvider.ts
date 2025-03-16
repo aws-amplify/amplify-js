@@ -196,15 +196,24 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
 
-		const clientResult = await getCredentialsForIdentity(
-			{ region },
-			{
-				IdentityId: identityId,
-				Logins: logins,
-			},
-		);
+		let clientResult:
+			| Awaited<ReturnType<typeof getCredentialsForIdentity>>
+			| undefined;
+		try {
+			clientResult = await getCredentialsForIdentity(
+				{ region },
+				{
+					IdentityId: identityId,
+					Logins: logins,
+				},
+			);
+		} catch (e) {
+			assertServiceError(e);
+			throw new AuthError(e);
+		}
 
 		if (
+			clientResult &&
 			clientResult.Credentials &&
 			clientResult.Credentials.AccessKeyId &&
 			clientResult.Credentials.SecretKey

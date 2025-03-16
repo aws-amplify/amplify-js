@@ -39,6 +39,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	}
 
 	async loadIdentityId(): Promise<Identity | null> {
+		console.log('loadIdentityId', this.authConfig?.Cognito);
 		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
 		try {
 			if (this._primaryIdentityId) {

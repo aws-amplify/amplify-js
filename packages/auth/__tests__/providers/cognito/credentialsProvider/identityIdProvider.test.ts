@@ -11,7 +11,7 @@ import {
 	CognitoIdentityPoolConfig,
 } from '@aws-amplify/core/internals/utils';
 
-import { AuthError } from '../../../../src/Errors';
+import { AuthError } from '../../../../src/errors/AuthError';
 import { DefaultIdentityIdStore } from '../../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
 import { cognitoIdentityIdProvider } from '../../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
 import { authAPITestParams } from '../testUtils/authApiTestParams';
@@ -147,37 +147,6 @@ describe('Cognito IdentityId Provider', () => {
 		});
 	});
 
-	describe('Error Path Cases', () => {
-		const mockServiceErrorParams = {
-			name: 'ServiceError',
-			message: '',
-			metadata: {
-				httpStatusCode: 500,
-				requestId: '123',
-			},
-		};
-		beforeEach(() => {
-			mockGetId.mockRejectedValue(new AmplifyError(mockServiceErrorParams));
-		});
-
-		test('Should throw AuthError when there is a service error', async () => {
-			expect.assertions(2);
-			mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
-				async () => {
-					return undefined;
-				},
-			);
-			try {
-				await cognitoIdentityIdProvider({
-					authConfig: ampConfig.Auth!.Cognito as CognitoIdentityPoolConfig,
-					identityIdStore: mockDefaultIdentityIdStoreInstance,
-				});
-			} catch (e) {
-				expect(e).toBeInstanceOf(AuthError);
-				expect(e).toMatchObject(mockServiceErrorParams);
-			}
-		});
-	});
 	test('Should return the identityId irresspective of the type if present', async () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
 			async () => {
@@ -210,6 +179,7 @@ describe('Cognito IdentityId Provider', () => {
 		).toBe(authAPITestParams.GuestIdentityId.id);
 		expect(mockGetId).toHaveBeenCalledTimes(0);
 	});
+
 	test('Should fetch from Cognito when there is no identityId cached', async () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
 			async () => {
@@ -232,5 +202,37 @@ describe('Cognito IdentityId Provider', () => {
 			}),
 		).toBe(authAPITestParams.PrimaryIdentityId.id);
 		expect(mockGetId).toHaveBeenCalledTimes(1);
+	});
+
+	describe('Error Path Cases', () => {
+		const mockServiceErrorParams = {
+			name: 'ServiceError',
+			message: '',
+			metadata: {
+				httpStatusCode: 500,
+				requestId: '123',
+			},
+		};
+		beforeEach(() => {
+			mockGetId.mockRejectedValue(new AmplifyError(mockServiceErrorParams));
+		});
+
+		test('Should throw AuthError when there is a service error', async () => {
+			expect.assertions(2);
+			mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
+				async () => {
+					return undefined;
+				},
+			);
+			try {
+				await cognitoIdentityIdProvider({
+					authConfig: ampConfig.Auth!.Cognito as CognitoIdentityPoolConfig,
+					identityIdStore: mockDefaultIdentityIdStoreInstance,
+				});
+			} catch (e) {
+				expect(e).toBeInstanceOf(AuthError);
+				expect(e).toMatchObject(mockServiceErrorParams);
+			}
+		});
 	});
 });
