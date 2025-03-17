@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.10.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.10.4...@aws-amplify/core@6.10.5) (2025-03-14)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.10.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.10.3...@aws-amplify/core@6.10.4) (2025-03-07)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.10.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.10.2...@aws-amplify/core@6.10.3) (2025-03-05)
+
+### Bug Fixes
+
+- **core:** add Partial back to AmplifyOutputs groups and paths ([#14265](https://github.com/aws-amplify/amplify-js/issues/14265)) ([0580740](https://github.com/aws-amplify/amplify-js/commit/0580740b0f19fd20fe03a6c8ee8f5a8c6cd91a37)), closes [#14101](https://github.com/aws-amplify/amplify-js/issues/14101)
+- **core:** make AmplifyOutputs category types as unknown ([#14153](https://github.com/aws-amplify/amplify-js/issues/14153)) ([5dbfbf3](https://github.com/aws-amplify/amplify-js/commit/5dbfbf3f83799b7691fa4d51a61726326a22f1e5))
+
 ## [6.10.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.10.1...@aws-amplify/core@6.10.2) (2025-02-27)
 
 **Note:** Version bump only for package @aws-amplify/core

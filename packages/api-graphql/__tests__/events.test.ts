@@ -173,6 +173,42 @@ describe('Events client', () => {
 			});
 		});
 
+		describe('publish', () => {
+			test('happy publish', async () => {
+				const channel = await events.connect('/');
+
+				channel.publish({ some: 'data' });
+			});
+
+			test('publish() becomes invalid after .close() is called', async () => {
+				const channel = await events.connect('/');
+				channel.close();
+				await expect(channel.publish({ some: 'data' })).rejects.toThrow(
+					'Channel is closed',
+				);
+			});
+
+			describe('auth modes', () => {
+				let mockProvider: typeof AppSyncEventProvider;
+
+				beforeEach(() => {
+					mockProvider = AppSyncEventProvider;
+				});
+
+				for (const authMode of authModes) {
+					test(`auth override: ${authMode}`, async () => {
+						const channel = await events.connect('/');
+
+						channel.publish({ some: 'data' }, { authMode });
+
+						expect(mockProvider.publish).toHaveBeenCalledWith(
+							expect.objectContaining({ authenticationType: authMode }),
+						);
+					});
+				}
+			});
+		});
+
 		describe('post', () => {
 			let mockReq: typeof appsyncRequest;
 
