@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - feat/monitoring-instrument/dev
 
 jobs:
   e2e:
