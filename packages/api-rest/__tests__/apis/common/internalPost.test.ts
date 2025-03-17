@@ -5,6 +5,7 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 import {
 	authenticatedHandler,
+	getRetryDecider,
 	parseJsonError,
 	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
@@ -15,6 +16,7 @@ import {
 	updateRequestToBeCancellable,
 } from '../../../src/apis/common/internalPost';
 import { RestApiError, isCancelError } from '../../../src/errors';
+import { parseRestApiServiceError } from '../../../src/utils';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
@@ -395,5 +397,44 @@ describe('internal post', () => {
 				body: errorResponseStr,
 			});
 		}
+	});
+
+	it('should use jittered-exponential-backoff retry strategy', async () => {
+		const mockRetryDecider = jest.fn();
+		(getRetryDecider as jest.Mock).mockReturnValue(mockRetryDecider);
+		await post(mockAmplifyInstance, {
+			url: apiGatewayUrl,
+			options: {
+				signingServiceInfo: {},
+			},
+		});
+
+		expect(getRetryDecider).toHaveBeenCalledWith(parseRestApiServiceError);
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({ retryDecider: mockRetryDecider }),
+		);
+	});
+	it('should use jittered-exponential-backoff retry strategy, even when configuring using library options', async () => {
+		const mockRetryDecider = jest.fn();
+		(getRetryDecider as jest.Mock).mockReturnValue(mockRetryDecider);
+		const mockAmplifyInstanceWithNoRetry = {
+			...mockAmplifyInstance,
+			retryStrategy: {
+				strategy: 'no-retry',
+			},
+		} as any as AmplifyClassV6;
+		await post(mockAmplifyInstanceWithNoRetry, {
+			url: apiGatewayUrl,
+			options: {
+				signingServiceInfo: {},
+			},
+		});
+
+		expect(getRetryDecider).toHaveBeenCalledWith(parseRestApiServiceError);
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({ retryDecider: mockRetryDecider }),
+		);
 	});
 });

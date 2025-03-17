@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { DocumentType } from '@aws-amplify/core/internals/utils';
+import { DocumentType, RetryStrategy } from '@aws-amplify/core/internals/utils';
 
 export type GetInput = ApiInput<RestApiOptionsBase>;
 export type PostInput = ApiInput<RestApiOptionsBase>;
@@ -82,6 +82,7 @@ export interface ApiInput<Options> {
 	 * Options to overwrite the REST API call behavior.
 	 */
 	options?: Options;
+	retryStrategy?: RetryStrategy;
 }
 
 /**

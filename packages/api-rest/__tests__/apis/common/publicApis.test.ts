@@ -4,6 +4,7 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	authenticatedHandler,
+	getRetryDecider,
 	parseJsonError,
 	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
@@ -24,11 +25,14 @@ import {
 	validationErrorMap,
 } from '../../../src/errors';
 import { RestApiResponse } from '../../../src/types';
+import { parseRestApiServiceError } from '../../../src/utils';
+// import { resolveRetryStrategy } from '../../../src/apis/common/handler';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
 const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
 const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;
+const mockGetRetryDecider = getRetryDecider as jest.Mock;
 const mockFetchAuthSession = jest.fn();
 const mockConfig = {
 	API: {
@@ -46,6 +50,7 @@ const mockConfig = {
 const mockParseJsonError = parseJsonError as jest.Mock;
 const mockRestHeaders = jest.fn();
 const mockGetConfig = jest.fn();
+const retryDecider = jest.fn();
 const mockAmplifyInstance = {
 	Auth: {
 		fetchAuthSession: mockFetchAuthSession,
@@ -85,6 +90,7 @@ describe('public APIs', () => {
 		mockSuccessResponse.body.json.mockResolvedValue({ foo: 'bar' });
 		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 		mockUnauthenticatedHandler.mockResolvedValue(mockSuccessResponse);
+		mockGetRetryDecider.mockReturnValue(retryDecider);
 		mockGetConfig.mockReturnValue(mockConfig);
 	});
 	const APIs = [
@@ -414,6 +420,85 @@ describe('public APIs', () => {
 					expect(isCancelError(error)).toBe(true);
 					expect(error.message).toBe(cancelMessage);
 				}
+			});
+			describe('retry strategy', () => {
+				beforeEach(() => {
+					mockGetRetryDecider.mockReset();
+					mockAuthenticatedHandler.mockReset();
+					mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
+					mockGetRetryDecider.mockReturnValue(retryDecider);
+				});
+				it('should not retry when retry is set to "no-retry"', async () => {
+					await fn(mockAmplifyInstance, {
+						apiName: 'restApi1',
+						path: '/items',
+						retryStrategy: {
+							strategy: 'no-retry',
+						},
+					}).response;
+					expect(mockGetRetryDecider).not.toHaveBeenCalled();
+				});
+				it('should retry when retry is set to "jittered-exponential-backoff"', async () => {
+					await fn(mockAmplifyInstance, {
+						apiName: 'restApi1',
+						path: '/items',
+						retryStrategy: {
+							strategy: 'jittered-exponential-backoff',
+						},
+					}).response;
+					expect(mockGetRetryDecider).toHaveBeenCalled();
+				});
+				it('should retry when retry strategy is not provided', async () => {
+					expect.assertions(2);
+					// mockGetRetryDecider.mockReturnValue(retryDecider);
+					await fn(mockAmplifyInstance, {
+						apiName: 'restApi1',
+						path: '/items',
+					}).response;
+					expect(mockGetRetryDecider).toHaveBeenCalledWith(
+						parseRestApiServiceError,
+					);
+					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({ retryDecider }),
+					);
+				});
+				it('should retry and prefer the individual retry strategy over the library options', async () => {
+					const mockAmplifyInstanceWithNoRetry = {
+						...mockAmplifyInstance,
+						retryStrategy: {
+							strategy: 'no-retry',
+						},
+					} as any as AmplifyClassV6;
+					await fn(mockAmplifyInstanceWithNoRetry, {
+						apiName: 'restApi1',
+						path: 'items',
+						retryStrategy: {
+							strategy: 'jittered-exponential-backoff',
+						},
+					}).response;
+
+					expect(mockGetRetryDecider).toHaveBeenCalledWith(
+						parseRestApiServiceError,
+					);
+				});
+				it('should not retry and prefer the individual retry strategy over the library options', async () => {
+					const mockAmplifyInstanceWithRetry = {
+						...mockAmplifyInstance,
+						retryStrategy: {
+							strategy: 'jittered-exponential-backoff',
+						},
+					} as any as AmplifyClassV6;
+					await fn(mockAmplifyInstanceWithRetry, {
+						apiName: 'restApi1',
+						path: 'items',
+						retryStrategy: {
+							strategy: 'no-retry',
+						},
+					}).response;
+
+					expect(mockGetRetryDecider).not.toHaveBeenCalled();
+				});
 			});
 		});
 	});

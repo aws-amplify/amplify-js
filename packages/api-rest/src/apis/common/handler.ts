@@ -12,6 +12,7 @@ import {
 import {
 	AWSCredentials,
 	DocumentType,
+	RetryStrategy,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -26,6 +27,10 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
 	headers?: Headers;
 	withCredentials?: boolean;
+	retryStrategy?: RetryStrategy;
+};
+const DEFAULT_RETRY_STRATEGY: RetryStrategy = {
+	strategy: 'jittered-exponential-backoff',
 };
 
 /**
@@ -61,8 +66,12 @@ export const transferHandler = async (
 		method,
 		body: resolvedBody,
 	};
+	const retryStrategy: RetryStrategy =
+		options.retryStrategy ??
+		amplify.libraryOptions?.API?.retryStrategy ??
+		DEFAULT_RETRY_STRATEGY;
 	const baseOptions = {
-		retryDecider: getRetryDecider(parseRestApiServiceError),
+		retryDecider: resolveRetryStrategy(retryStrategy),
 		computeDelay: jitteredBackoff,
 		withCrossDomainCredentials: withCredentials,
 		abortSignal,
@@ -96,6 +105,15 @@ export const transferHandler = async (
 		headers: response.headers,
 		body: response.body,
 	};
+};
+
+const resolveRetryStrategy = (retryStrategy: RetryStrategy) => {
+	switch (retryStrategy.strategy) {
+		case 'no-retry':
+			return () => Promise.resolve({ retryable: false });
+		default:
+			return getRetryDecider(parseRestApiServiceError);
+	}
 };
 
 const resolveCredentials = async (

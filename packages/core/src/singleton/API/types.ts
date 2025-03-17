@@ -15,8 +15,17 @@ export interface LibraryAPIOptions {
 	REST?: {
 		// custom headers for given REST service. Will be applied to all operations.
 		headers?(options: { apiName: string }): Promise<Headers>;
+		retryStrategy: RetryStrategy;
 	};
 }
+
+export type RetryStrategy =
+	| {
+			strategy: 'jittered-exponential-backoff';
+	  }
+	| {
+			strategy: 'no-retry';
+	  };
 
 export interface APIGraphQLConfig {
 	/**
