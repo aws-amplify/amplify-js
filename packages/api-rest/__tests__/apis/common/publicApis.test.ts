@@ -26,7 +26,6 @@ import {
 } from '../../../src/errors';
 import { RestApiResponse } from '../../../src/types';
 import { parseRestApiServiceError } from '../../../src/utils';
-// import { resolveRetryStrategy } from '../../../src/apis/common/handler';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
