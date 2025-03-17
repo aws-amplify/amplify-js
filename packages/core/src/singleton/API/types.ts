@@ -15,8 +15,8 @@ export interface LibraryAPIOptions {
 	REST?: {
 		// custom headers for given REST service. Will be applied to all operations.
 		headers?(options: { apiName: string }): Promise<Headers>;
-		retryStrategy: RetryStrategy;
 	};
+	retryStrategy: RetryStrategy;
 }
 
 export type RetryStrategy =
