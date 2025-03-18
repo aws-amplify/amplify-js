@@ -840,14 +840,10 @@ export async function getModelAuthModes({
 	defaultAuthMode: GraphQLAuthMode;
 	modelName: string;
 	schema: InternalSchema;
-}): Promise<{
-	[key in ModelOperation]: GraphQLAuthMode[];
-}> {
+}): Promise<Record<ModelOperation, GraphQLAuthMode[]>> {
 	const operations = Object.values(ModelOperation);
 
-	const modelAuthModes: {
-		[key in ModelOperation]: GraphQLAuthMode[];
-	} = {
+	const modelAuthModes: Record<ModelOperation, GraphQLAuthMode[]> = {
 		CREATE: [],
 		READ: [],
 		UPDATE: [],

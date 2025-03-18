@@ -4,9 +4,7 @@
 export const getCookieValuesFromRequest = <CookieNames extends string[]>(
 	request: Request,
 	cookieNames: CookieNames,
-): {
-	[key in CookieNames[number]]?: string | undefined;
-} => {
+): Partial<Record<CookieNames[number], string | undefined>> => {
 	const cookieHeader = request.headers.get('Cookie');
 
 	if (!cookieHeader) {
@@ -27,7 +25,5 @@ export const getCookieValuesFromRequest = <CookieNames extends string[]>(
 		result[cookieName] = cookieValues[cookieName];
 	}
 
-	return result as {
-		[key in CookieNames[number]]?: string | undefined;
-	};
+	return result as Partial<Record<CookieNames[number], string | undefined>>;
 };

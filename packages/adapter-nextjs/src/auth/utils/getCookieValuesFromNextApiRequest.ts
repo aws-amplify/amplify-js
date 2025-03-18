@@ -5,9 +5,7 @@ import { NextApiRequest } from 'next';
 
 export const getCookieValuesFromNextApiRequest = <
 	CookieNames extends string[],
-	R = {
-		[key in CookieNames[number]]?: string | undefined;
-	},
+	R = Partial<Record<CookieNames[number], string | undefined>>,
 >(
 	request: NextApiRequest,
 	cookieNames: CookieNames,
