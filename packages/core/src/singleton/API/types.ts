@@ -5,7 +5,9 @@ import { AtLeastOne } from '../types';
 
 export interface LibraryAPIOptions {
 	GraphQL?: {
-		// custom headers for given GraphQL service. Will be applied to all operations.
+		/**
+		 * custom headers for given GraphQL service. Will be applied to all operations.
+		 */
 		headers?(options?: {
 			query?: string;
 			variables?: Record<string, DocumentType>;
@@ -13,10 +15,15 @@ export interface LibraryAPIOptions {
 		withCredentials?: boolean;
 	};
 	REST?: {
-		// custom headers for given REST service. Will be applied to all operations.
+		/**
+		 * custom headers for given REST service. Will be applied to all operations.
+		 */
 		headers?(options: { apiName: string }): Promise<Headers>;
 	};
-	retryStrategy: RetryStrategy;
+	/**
+	 * Retry strategy for the Rest API calls. Will be 'jittered-exponential-backoff' by default.
+	 */
+	retryStrategy?: RetryStrategy;
 }
 
 export type RetryStrategy =

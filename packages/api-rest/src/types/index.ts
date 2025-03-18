@@ -82,6 +82,11 @@ export interface ApiInput<Options> {
 	 * Options to overwrite the REST API call behavior.
 	 */
 	options?: Options;
+	/**
+	 * Retry strategy for the Rest API calls.
+	 * * Will take precedence over libraryOptions if provided.
+	 * * Will be 'jittered-exponential-backoff' by default(if not provided in both libraryOptions and API calls).
+	 */
 	retryStrategy?: RetryStrategy;
 }
 

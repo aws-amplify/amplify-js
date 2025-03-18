@@ -29,9 +29,6 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	withCredentials?: boolean;
 	retryStrategy?: RetryStrategy;
 };
-const DEFAULT_RETRY_STRATEGY: RetryStrategy = {
-	strategy: 'jittered-exponential-backoff',
-};
 
 /**
  * Make REST API call with best-effort IAM auth.
@@ -53,7 +50,15 @@ export const transferHandler = async (
 	) => boolean,
 	signingServiceInfo?: SigningServiceInfo,
 ): Promise<RestApiResponse> => {
-	const { url, method, headers, body, withCredentials, abortSignal } = options;
+	const {
+		url,
+		method,
+		headers,
+		body,
+		withCredentials,
+		abortSignal,
+		retryStrategy,
+	} = options;
 	const resolvedBody = body
 		? body instanceof FormData
 			? body
@@ -66,12 +71,8 @@ export const transferHandler = async (
 		method,
 		body: resolvedBody,
 	};
-	const retryStrategy: RetryStrategy =
-		options.retryStrategy ??
-		amplify.libraryOptions?.API?.retryStrategy ??
-		DEFAULT_RETRY_STRATEGY;
 	const baseOptions = {
-		retryDecider: resolveRetryStrategy(retryStrategy),
+		retryDecider: getRetryDeciderFromStrategy(retryStrategy),
 		computeDelay: jitteredBackoff,
 		withCrossDomainCredentials: withCredentials,
 		abortSignal,
@@ -107,10 +108,14 @@ export const transferHandler = async (
 	};
 };
 
-const resolveRetryStrategy = (retryStrategy: RetryStrategy) => {
-	switch (retryStrategy.strategy) {
+const getRetryDeciderFromStrategy = (
+	retryStrategy: RetryStrategy | undefined,
+) => {
+	switch (retryStrategy?.strategy) {
 		case 'no-retry':
 			return () => Promise.resolve({ retryable: false });
+		case 'jittered-exponential-backoff':
+		case undefined:
 		default:
 			return getRetryDecider(parseRestApiServiceError);
 	}

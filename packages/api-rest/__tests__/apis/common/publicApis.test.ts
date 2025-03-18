@@ -25,13 +25,11 @@ import {
 	validationErrorMap,
 } from '../../../src/errors';
 import { RestApiResponse } from '../../../src/types';
-import { parseRestApiServiceError } from '../../../src/utils';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
 const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
 const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;
-const mockGetRetryDecider = getRetryDecider as jest.Mock;
 const mockFetchAuthSession = jest.fn();
 const mockConfig = {
 	API: {
@@ -49,7 +47,6 @@ const mockConfig = {
 const mockParseJsonError = parseJsonError as jest.Mock;
 const mockRestHeaders = jest.fn();
 const mockGetConfig = jest.fn();
-const retryDecider = jest.fn();
 const mockAmplifyInstance = {
 	Auth: {
 		fetchAuthSession: mockFetchAuthSession,
@@ -79,6 +76,10 @@ const mockSuccessResponse = {
 		text: jest.fn(),
 	},
 };
+const mockGetRetryDecider = getRetryDecider as jest.Mock;
+const mockRetryResponse = { retryable: true };
+const mockNoRetryResponse = { retryable: false };
+const mockRetryDeciderResponse = () => Promise.resolve(mockRetryResponse);
 
 describe('public APIs', () => {
 	beforeEach(() => {
@@ -89,8 +90,8 @@ describe('public APIs', () => {
 		mockSuccessResponse.body.json.mockResolvedValue({ foo: 'bar' });
 		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 		mockUnauthenticatedHandler.mockResolvedValue(mockSuccessResponse);
-		mockGetRetryDecider.mockReturnValue(retryDecider);
 		mockGetConfig.mockReturnValue(mockConfig);
+		mockGetRetryDecider.mockReturnValue(mockRetryDeciderResponse);
 	});
 	const APIs = [
 		{ name: 'get', fn: get, method: 'GET' },
@@ -420,14 +421,15 @@ describe('public APIs', () => {
 					expect(error.message).toBe(cancelMessage);
 				}
 			});
+
 			describe('retry strategy', () => {
 				beforeEach(() => {
-					mockGetRetryDecider.mockReset();
 					mockAuthenticatedHandler.mockReset();
 					mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
-					mockGetRetryDecider.mockReturnValue(retryDecider);
 				});
+
 				it('should not retry when retry is set to "no-retry"', async () => {
+					expect.assertions(2);
 					await fn(mockAmplifyInstance, {
 						apiName: 'restApi1',
 						path: '/items',
@@ -435,9 +437,18 @@ describe('public APIs', () => {
 							strategy: 'no-retry',
 						},
 					}).response;
-					expect(mockGetRetryDecider).not.toHaveBeenCalled();
+					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+						expect.any(Object),
+						expect.objectContaining({ retryDecider: expect.any(Function) }),
+					);
+					const callArgs = mockAuthenticatedHandler.mock.calls[0];
+					const { retryDecider } = callArgs[1];
+					const result = await retryDecider();
+					expect(result).toEqual(mockNoRetryResponse);
 				});
+
 				it('should retry when retry is set to "jittered-exponential-backoff"', async () => {
+					expect.assertions(2);
 					await fn(mockAmplifyInstance, {
 						apiName: 'restApi1',
 						path: '/items',
@@ -445,24 +456,34 @@ describe('public APIs', () => {
 							strategy: 'jittered-exponential-backoff',
 						},
 					}).response;
-					expect(mockGetRetryDecider).toHaveBeenCalled();
+					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+						expect.any(Object),
+						expect.objectContaining({ retryDecider: expect.any(Function) }),
+					);
+					const callArgs = mockAuthenticatedHandler.mock.calls[0];
+					const { retryDecider } = callArgs[1];
+					const result = await retryDecider();
+					expect(result).toEqual(mockRetryResponse);
 				});
+
 				it('should retry when retry strategy is not provided', async () => {
 					expect.assertions(2);
-					// mockGetRetryDecider.mockReturnValue(retryDecider);
 					await fn(mockAmplifyInstance, {
 						apiName: 'restApi1',
 						path: '/items',
 					}).response;
-					expect(mockGetRetryDecider).toHaveBeenCalledWith(
-						parseRestApiServiceError,
-					);
 					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-						expect.anything(),
-						expect.objectContaining({ retryDecider }),
+						expect.any(Object),
+						expect.objectContaining({ retryDecider: expect.any(Function) }),
 					);
+					const callArgs = mockAuthenticatedHandler.mock.calls[0];
+					const { retryDecider } = callArgs[1];
+					const result = await retryDecider();
+					expect(result).toEqual(mockRetryResponse);
 				});
+
 				it('should retry and prefer the individual retry strategy over the library options', async () => {
+					expect.assertions(2);
 					const mockAmplifyInstanceWithNoRetry = {
 						...mockAmplifyInstance,
 						retryStrategy: {
@@ -477,11 +498,18 @@ describe('public APIs', () => {
 						},
 					}).response;
 
-					expect(mockGetRetryDecider).toHaveBeenCalledWith(
-						parseRestApiServiceError,
+					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+						expect.any(Object),
+						expect.objectContaining({ retryDecider: expect.any(Function) }),
 					);
+					const callArgs = mockAuthenticatedHandler.mock.calls[0];
+					const { retryDecider } = callArgs[1];
+					const result = await retryDecider();
+					expect(result).toEqual(mockRetryResponse);
 				});
+
 				it('should not retry and prefer the individual retry strategy over the library options', async () => {
+					expect.assertions(2);
 					const mockAmplifyInstanceWithRetry = {
 						...mockAmplifyInstance,
 						retryStrategy: {
@@ -496,7 +524,14 @@ describe('public APIs', () => {
 						},
 					}).response;
 
-					expect(mockGetRetryDecider).not.toHaveBeenCalled();
+					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+						expect.any(Object),
+						expect.objectContaining({ retryDecider: expect.any(Function) }),
+					);
+					const callArgs = mockAuthenticatedHandler.mock.calls[0];
+					const { retryDecider } = callArgs[1];
+					const result = await retryDecider();
+					expect(result).toEqual(mockNoRetryResponse);
 				});
 			});
 		});
