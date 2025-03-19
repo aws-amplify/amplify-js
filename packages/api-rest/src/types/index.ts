@@ -83,9 +83,10 @@ export interface ApiInput<Options> {
 	 */
 	options?: Options;
 	/**
-	 * Retry strategy for the Rest API calls.
-	 * * Will take precedence over libraryOptions if provided.
-	 * * Will be 'jittered-exponential-backoff' by default(if not provided in both libraryOptions and API calls).
+	 * Retry strategy for the REST API calls. It will take precedence over REST `retryStrategy` in Amplify configuration libraryOptions.
+	 *
+	 * @default
+	 * { strategy: 'jittered-exponential-backoff' }
 	 */
 	retryStrategy?: RetryStrategy;
 }

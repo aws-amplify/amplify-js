@@ -21,7 +21,9 @@ export interface LibraryAPIOptions {
 		headers?(options: { apiName: string }): Promise<Headers>;
 	};
 	/**
-	 * Retry strategy for the Rest API calls. Will be 'jittered-exponential-backoff' by default.
+	 * Retry strategy for the REST API calls.
+	 *
+	 * @default ` { strategy: 'jittered-exponential-backoff' } `
 	 */
 	retryStrategy?: RetryStrategy;
 }
