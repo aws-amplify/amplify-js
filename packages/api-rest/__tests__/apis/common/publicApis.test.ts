@@ -486,8 +486,12 @@ describe('public APIs', () => {
 					expect.assertions(2);
 					const mockAmplifyInstanceWithNoRetry = {
 						...mockAmplifyInstance,
-						retryStrategy: {
-							strategy: 'no-retry',
+						libraryOptions: {
+							API: {
+								retryStrategy: {
+									strategy: 'no-retry',
+								},
+							},
 						},
 					} as any as AmplifyClassV6;
 					await fn(mockAmplifyInstanceWithNoRetry, {
@@ -512,8 +516,12 @@ describe('public APIs', () => {
 					expect.assertions(2);
 					const mockAmplifyInstanceWithRetry = {
 						...mockAmplifyInstance,
-						retryStrategy: {
-							strategy: 'jittered-exponential-backoff',
+						libraryOptions: {
+							API: {
+								retryStrategy: {
+									strategy: 'jittered-exponential-backoff',
+								},
+							},
 						},
 					} as any as AmplifyClassV6;
 					await fn(mockAmplifyInstanceWithRetry, {

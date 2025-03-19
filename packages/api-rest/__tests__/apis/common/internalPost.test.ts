@@ -411,7 +411,6 @@ describe('internal post', () => {
 				signingServiceInfo: {},
 			},
 		});
-
 		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 			expect.anything(),
 			expect.objectContaining({ retryDecider: expect.any(Function) }),
@@ -426,8 +425,12 @@ describe('internal post', () => {
 		expect.assertions(2);
 		const mockAmplifyInstanceWithNoRetry = {
 			...mockAmplifyInstance,
-			retryStrategy: {
-				strategy: 'no-retry',
+			libraryOptions: {
+				API: {
+					retryStrategy: {
+						strategy: 'no-retry',
+					},
+				},
 			},
 		} as any as AmplifyClassV6;
 		await post(mockAmplifyInstanceWithNoRetry, {
