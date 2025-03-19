@@ -15,12 +15,13 @@ export interface AmplifyErrorParams<ErrorCode extends string = string> {
 	underlyingError?: Error | unknown;
 }
 
-export type AmplifyErrorMap<ErrorCode extends string = string> = {
-	[name in ErrorCode]: {
+export type AmplifyErrorMap<ErrorCode extends string = string> = Record<
+	ErrorCode,
+	{
 		message: string;
 		recoverySuggestion?: string;
-	};
-};
+	}
+>;
 
 export interface ServiceError {
 	name: string;

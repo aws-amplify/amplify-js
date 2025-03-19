@@ -20,9 +20,7 @@ export type TokenRefresher = ({
 	username: string;
 }) => Promise<CognitoAuthTokens>;
 
-export type AuthKeys<AuthKey extends string> = {
-	[Key in AuthKey]: string;
-};
+export type AuthKeys<AuthKey extends string> = Record<AuthKey, string>;
 
 export const AuthTokenStorageKeys = {
 	accessToken: 'accessToken',
