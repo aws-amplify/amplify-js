@@ -19,13 +19,13 @@ export interface LibraryAPIOptions {
 		 * custom headers for given REST service. Will be applied to all operations.
 		 */
 		headers?(options: { apiName: string }): Promise<Headers>;
+		/**
+		 * Retry strategy for the REST API calls.
+		 *
+		 * @default ` { strategy: 'jittered-exponential-backoff' } `
+		 */
+		retryStrategy?: RetryStrategy;
 	};
-	/**
-	 * Retry strategy for the REST API calls.
-	 *
-	 * @default ` { strategy: 'jittered-exponential-backoff' } `
-	 */
-	retryStrategy?: RetryStrategy;
 }
 
 export type RetryStrategy =

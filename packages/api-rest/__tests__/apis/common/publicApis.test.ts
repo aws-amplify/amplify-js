@@ -488,8 +488,10 @@ describe('public APIs', () => {
 						...mockAmplifyInstance,
 						libraryOptions: {
 							API: {
-								retryStrategy: {
-									strategy: 'no-retry',
+								REST: {
+									retryStrategy: {
+										strategy: 'no-retry',
+									},
 								},
 							},
 						},
@@ -518,8 +520,10 @@ describe('public APIs', () => {
 						...mockAmplifyInstance,
 						libraryOptions: {
 							API: {
-								retryStrategy: {
-									strategy: 'jittered-exponential-backoff',
+								REST: {
+									retryStrategy: {
+										strategy: 'jittered-exponential-backoff',
+									},
 								},
 							},
 						},
@@ -530,6 +534,35 @@ describe('public APIs', () => {
 						retryStrategy: {
 							strategy: 'no-retry',
 						},
+					}).response;
+
+					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+						expect.any(Object),
+						expect.objectContaining({ retryDecider: expect.any(Function) }),
+					);
+					const callArgs = mockAuthenticatedHandler.mock.calls[0];
+					const { retryDecider } = callArgs[1];
+					const result = await retryDecider();
+					expect(result).toEqual(mockNoRetryResponse);
+				});
+
+				it('should not retry when configured through library options', async () => {
+					expect.assertions(2);
+					const mockAmplifyInstanceWithRetry = {
+						...mockAmplifyInstance,
+						libraryOptions: {
+							API: {
+								REST: {
+									retryStrategy: {
+										strategy: 'no-retry',
+									},
+								},
+							},
+						},
+					} as any as AmplifyClassV6;
+					await fn(mockAmplifyInstanceWithRetry, {
+						apiName: 'restApi1',
+						path: 'items',
 					}).response;
 
 					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(

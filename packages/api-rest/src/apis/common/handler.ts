@@ -72,7 +72,9 @@ export const transferHandler = async (
 		body: resolvedBody,
 	};
 	const baseOptions = {
-		retryDecider: getRetryDeciderFromStrategy(retryStrategy),
+		retryDecider: getRetryDeciderFromStrategy(
+			retryStrategy ?? amplify?.libraryOptions?.API?.REST?.retryStrategy,
+		),
 		computeDelay: jitteredBackoff,
 		withCrossDomainCredentials: withCredentials,
 		abortSignal,

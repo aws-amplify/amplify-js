@@ -427,8 +427,10 @@ describe('internal post', () => {
 			...mockAmplifyInstance,
 			libraryOptions: {
 				API: {
-					retryStrategy: {
-						strategy: 'no-retry',
+					REST: {
+						retryStrategy: {
+							strategy: 'no-retry',
+						},
 					},
 				},
 			},
