@@ -25,7 +25,7 @@ jobs:
           path: amplify-js
           # Minimal depth 0 so we can fetch all git tags.
           fetch-depth: 0
-      - name: Checkout staging repo
+      - name: Checkout docs repo
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: ${{ github.repository_owner }}/docs
