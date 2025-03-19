@@ -19,7 +19,6 @@ export function getRegionFromUserPoolId(userPoolId?: string): string {
 }
 
 export function getRegionFromIdentityPoolId(identityPoolId?: string): string {
-	console.log('getRegionFromIdentityPoolId', identityPoolId);
 	if (!identityPoolId || !identityPoolId.includes(':')) {
 		throw new AuthError({
 			name: 'InvalidIdentityPoolIdException',
