@@ -18,6 +18,7 @@ packages/**/cypress/videos/
 package-lock.json
 packages/*/.watchmanconfig
 dual-publish-tmp
+docs/reference.json
 
 ### Version file - core build artifact
 packages/core/src/Platform/version.ts
