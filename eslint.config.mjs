@@ -166,6 +166,7 @@ export default [
 			'n/no-callback-literal': 'off',
 			'object-shorthand': 'error',
 			'prefer-destructuring': 'off',
+			'no-console': 'error',
 
 			'promise/catch-or-return': [
 				'error',

@@ -373,6 +373,7 @@ export class BackgroundProcessManager {
 					// Due to potential races with a job's natural completion, it's
 					// reasonable to expect the termination call to fail. Hence,
 					// not logging as an error.
+					// eslint-disable-next-line no-console
 					console.warn(
 						`Failed to send termination signal to job. Error: ${
 							(error as Error).message

@@ -58,7 +58,6 @@ describe('CookieStorage', () => {
 				const testKey = encodeURIComponent('test@email.com');
 				const testValue = '123';
 				await cookieStore.setItem(testKey, testValue);
-				console.log(document.cookie);
 				expect(await cookieStore.getItem(testKey)).toEqual(testValue);
 			});
 

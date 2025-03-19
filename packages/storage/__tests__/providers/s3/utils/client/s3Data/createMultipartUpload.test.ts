@@ -67,7 +67,7 @@ describe('createMultipartUploadSerializer', () => {
 			Bucket: 'bucket',
 			Key: 'key',
 		});
-		console.log(output);
+
 		expect(output).toEqual({
 			$metadata: expect.objectContaining(expectedMetadata),
 		});
