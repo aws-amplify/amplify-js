@@ -364,7 +364,6 @@ describe('credentialsProvider', () => {
 						tokens: authAPITestParams.ValidAuthTokens,
 					});
 				} catch (e) {
-					console.log(e);
 					expect(e).toBeInstanceOf(AuthError);
 					expect(e).toMatchObject(mockServiceErrorParams);
 				}
