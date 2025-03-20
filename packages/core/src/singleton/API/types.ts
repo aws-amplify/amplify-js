@@ -28,13 +28,9 @@ export interface LibraryAPIOptions {
 	};
 }
 
-export type RetryStrategy =
-	| {
-			strategy: 'jittered-exponential-backoff';
-	  }
-	| {
-			strategy: 'no-retry';
-	  };
+export interface RetryStrategy {
+	strategy: 'jittered-exponential-backoff' | 'no-retry';
+}
 
 export interface APIGraphQLConfig {
 	/**
