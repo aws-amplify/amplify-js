@@ -22,7 +22,7 @@ export const amzSdkInvocationIdHeaderMiddlewareFactory: Middleware<
 	object
 > = () => next => {
 	return async function amzSdkInvocationIdHeaderMiddleware(request) {
-		if (!request?.headers[AMZ_SDK_INVOCATION_ID_HEADER]) {
+		if (!request.headers[AMZ_SDK_INVOCATION_ID_HEADER]) {
 			request.headers[AMZ_SDK_INVOCATION_ID_HEADER] = amplifyUuid();
 		}
 
