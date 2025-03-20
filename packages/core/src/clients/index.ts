@@ -21,14 +21,14 @@ export {
 	CredentialsProviderOptions,
 } from './middleware/signing';
 export {
-	getRetryDecider,
 	RetryDeciderOutput,
+	RetryOptions,
+	AmzSdkRequestHeaderMiddlewareOptions,
+	getRetryDecider,
 	jitteredBackoff,
 	retryMiddlewareFactory,
-	RetryOptions,
 	amzSdkInvocationIdHeaderMiddlewareFactory,
 	amzSdkRequestHeaderMiddlewareFactory,
-	AmzSdkRequestHeaderMiddlewareOptions,
 } from './middleware/retry';
 export {
 	userAgentMiddlewareFactory,
