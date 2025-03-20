@@ -133,10 +133,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		}
 
 		if (
-			clientResult &&
-			clientResult.Credentials &&
-			clientResult.Credentials.AccessKeyId &&
-			clientResult.Credentials.SecretKey
+			clientResult?.Credentials?.AccessKeyId &&
+			clientResult?.Credentials?.SecretKey
 		) {
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 
@@ -213,10 +211,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		}
 
 		if (
-			clientResult &&
-			clientResult.Credentials &&
-			clientResult.Credentials.AccessKeyId &&
-			clientResult.Credentials.SecretKey
+			clientResult?.Credentials?.AccessKeyId &&
+			clientResult?.Credentials?.SecretKey
 		) {
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 
