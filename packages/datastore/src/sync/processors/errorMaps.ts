@@ -3,9 +3,7 @@
 import { ErrorType } from '../../types';
 import { resolveServiceErrorStatusCode } from '../utils';
 
-export type ErrorMap = Partial<{
-	[key in ErrorType]: (error: Error) => boolean;
-}>;
+export type ErrorMap = Partial<Record<ErrorType, (error: Error) => boolean>>;
 
 const connectionTimeout = error =>
 	/^Connection failed: Connection Timeout/.test(error.message);

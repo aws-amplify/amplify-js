@@ -14,6 +14,7 @@ allow-licenses:
   - 'CC0-1.0'
   - 'curl'
   - 'ISC'
+  - 'ISC AND MIT'
   - 'JSON'
   - 'MIT'
   - 'OpenSSL'

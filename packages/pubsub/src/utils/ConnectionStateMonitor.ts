@@ -17,18 +17,18 @@ interface LinkedConnectionStates {
 	keepAliveState: LinkedHealthState;
 }
 
-export const CONNECTION_CHANGE: {
-	[key in
-		| 'KEEP_ALIVE_MISSED'
-		| 'KEEP_ALIVE'
-		| 'CONNECTION_ESTABLISHED'
-		| 'CONNECTION_FAILED'
-		| 'CLOSING_CONNECTION'
-		| 'OPENING_CONNECTION'
-		| 'CLOSED'
-		| 'ONLINE'
-		| 'OFFLINE']: Partial<LinkedConnectionStates>;
-} = {
+export const CONNECTION_CHANGE: Record<
+	| 'KEEP_ALIVE_MISSED'
+	| 'KEEP_ALIVE'
+	| 'CONNECTION_ESTABLISHED'
+	| 'CONNECTION_FAILED'
+	| 'CLOSING_CONNECTION'
+	| 'OPENING_CONNECTION'
+	| 'CLOSED'
+	| 'ONLINE'
+	| 'OFFLINE',
+	Partial<LinkedConnectionStates>
+> = {
 	KEEP_ALIVE_MISSED: { keepAliveState: 'unhealthy' },
 	KEEP_ALIVE: { keepAliveState: 'healthy' },
 	CONNECTION_ESTABLISHED: { connectionState: 'connected' },
