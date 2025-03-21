@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export const deepFreeze = (object: any) => {
-	const propNames = Reflect.ownKeys(object);
+	const propNames = Object.getOwnPropertyNames(object);
 
 	for (const name of propNames) {
 		const value = object[name];
