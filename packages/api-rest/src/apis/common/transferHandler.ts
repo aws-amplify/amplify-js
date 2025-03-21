@@ -5,10 +5,8 @@ import {
 	Headers,
 	HttpRequest,
 	RetryOptions,
-	authenticatedHandler,
 	getRetryDecider,
 	jitteredBackoff,
-	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	AWSCredentials,
@@ -23,6 +21,9 @@ import {
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
 import { RestApiResponse, SigningServiceInfo } from '../../types';
+
+import { authenticatedHandler } from './baseHandlers/authenticatedHandler';
+import { unauthenticatedHandler } from './baseHandlers/unauthenticatedHandler';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;

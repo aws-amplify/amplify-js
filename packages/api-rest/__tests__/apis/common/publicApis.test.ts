@@ -3,13 +3,13 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
-	authenticatedHandler,
 	getRetryDecider,
 	parseJsonError,
-	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 
+import { authenticatedHandler } from '../../../src/apis/common/baseHandlers/authenticatedHandler';
+import { unauthenticatedHandler } from '../../../src/apis/common/baseHandlers/unauthenticatedHandler';
 import {
 	del,
 	get,
@@ -27,6 +27,8 @@ import {
 import { RestApiResponse } from '../../../src/types';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
+jest.mock('../../../src/apis/common/baseHandlers/authenticatedHandler');
+jest.mock('../../../src/apis/common/baseHandlers/unauthenticatedHandler');
 
 const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
 const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;

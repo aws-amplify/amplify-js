@@ -86,6 +86,10 @@ describe('CognitoIdentity - getCredentialsForIdentity', () => {
 		const expectedError = {
 			name: 'NotAuthorizedException',
 			message: failureResponse.body.message,
+			$metadata: expect.objectContaining({
+				requestId: mockRequestId,
+				httpStatusCode: failureResponse.status,
+			}),
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(failureResponse),

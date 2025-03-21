@@ -15,6 +15,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { getRegionFromIdentityPoolId } from '../../../foundation/parsers';
 import { assertIdTokenInAuthTokens } from '../utils/types';
 
@@ -116,17 +117,24 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// save credentials in-memory
 		// No logins params should be passed for guest creds:
 		// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html
-		const clientResult = await getCredentialsForIdentity(
-			{ region },
-			{
-				IdentityId: identityId,
-			},
-		);
+		let clientResult:
+			| Awaited<ReturnType<typeof getCredentialsForIdentity>>
+			| undefined;
+		try {
+			clientResult = await getCredentialsForIdentity(
+				{ region },
+				{
+					IdentityId: identityId,
+				},
+			);
+		} catch (e) {
+			assertServiceError(e);
+			throw new AuthError(e);
+		}
 
 		if (
-			clientResult.Credentials &&
-			clientResult.Credentials.AccessKeyId &&
-			clientResult.Credentials.SecretKey
+			clientResult?.Credentials?.AccessKeyId &&
+			clientResult?.Credentials?.SecretKey
 		) {
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 
@@ -186,18 +194,25 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
 
-		const clientResult = await getCredentialsForIdentity(
-			{ region },
-			{
-				IdentityId: identityId,
-				Logins: logins,
-			},
-		);
+		let clientResult:
+			| Awaited<ReturnType<typeof getCredentialsForIdentity>>
+			| undefined;
+		try {
+			clientResult = await getCredentialsForIdentity(
+				{ region },
+				{
+					IdentityId: identityId,
+					Logins: logins,
+				},
+			);
+		} catch (e) {
+			assertServiceError(e);
+			throw new AuthError(e);
+		}
 
 		if (
-			clientResult.Credentials &&
-			clientResult.Credentials.AccessKeyId &&
-			clientResult.Credentials.SecretKey
+			clientResult?.Credentials?.AccessKeyId &&
+			clientResult?.Credentials?.SecretKey
 		) {
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 

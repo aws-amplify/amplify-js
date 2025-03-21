@@ -4,10 +4,8 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 import {
-	authenticatedHandler,
 	getRetryDecider,
 	parseJsonError,
-	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
 import {
@@ -15,14 +13,18 @@ import {
 	post,
 	updateRequestToBeCancellable,
 } from '../../../src/apis/common/internalPost';
+import { authenticatedHandler } from '../../../src/apis/common/baseHandlers/authenticatedHandler';
+import { unauthenticatedHandler } from '../../../src/apis/common/baseHandlers/unauthenticatedHandler';
 import { RestApiError, isCancelError } from '../../../src/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
+jest.mock('../../../src/apis/common/baseHandlers/authenticatedHandler');
+jest.mock('../../../src/apis/common/baseHandlers/unauthenticatedHandler');
 
-const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
-const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;
-const mockGetRetryDecider = getRetryDecider as jest.Mock;
-const mockParseJsonError = parseJsonError as jest.Mock;
+const mockAuthenticatedHandler = jest.mocked(authenticatedHandler);
+const mockUnauthenticatedHandler = jest.mocked(unauthenticatedHandler);
+const mockParseJsonError = jest.mocked(parseJsonError);
+const mockGetRetryDecider = jest.mocked(getRetryDecider);
 const mockFetchAuthSession = jest.fn();
 const mockAmplifyInstance = {
 	Auth: {
@@ -326,11 +328,12 @@ describe('internal post', () => {
 			},
 		};
 		mockParseJsonError.mockImplementationOnce(async response => {
-			const errorResponsePayload = await response.body?.json();
+			const errorResponsePayload = await response?.body?.json();
 			const error = new Error(errorResponsePayload.message);
 
 			return Object.assign(error, {
 				name: errorResponsePayload.name,
+				$metadata: {},
 			});
 		});
 		mockUnauthenticatedHandler.mockResolvedValueOnce(errorResponse);
@@ -371,11 +374,12 @@ describe('internal post', () => {
 			},
 		};
 		mockParseJsonError.mockImplementationOnce(async response => {
-			const errorResponsePayload = await response.body?.json();
+			const errorResponsePayload = await response?.body?.json();
 			const error = new Error(errorResponsePayload.message);
 
 			return Object.assign(error, {
 				name: errorResponsePayload.name,
+				$metadata: {},
 			});
 		});
 		mockUnauthenticatedHandler.mockResolvedValueOnce(errorResponse);

@@ -8,7 +8,7 @@ import { createCancellableOperation } from '../../utils';
 import { CanceledError } from '../../errors';
 import { isIamAuthApplicableForGraphQL } from '../../utils/isIamAuthApplicable';
 
-import { transferHandler } from './handler';
+import { transferHandler } from './transferHandler';
 
 /**
  * This weak map provides functionality to cancel a request given the promise containing the `post` request.
