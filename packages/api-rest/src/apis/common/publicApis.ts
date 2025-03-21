@@ -35,7 +35,12 @@ const publicHandler = (
 	method: string,
 ) =>
 	createCancellableOperation(async abortSignal => {
-		const { apiName, options: apiOptions = {}, path: apiPath } = options;
+		const {
+			apiName,
+			options: apiOptions = {},
+			path: apiPath,
+			retryStrategy,
+		} = options;
 		const url = resolveApiUrl(
 			amplify,
 			apiName,
@@ -71,6 +76,7 @@ const publicHandler = (
 				method,
 				headers,
 				abortSignal,
+				retryStrategy,
 			},
 			isIamAuthApplicableForRest,
 			signingServiceInfo,
