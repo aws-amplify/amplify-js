@@ -3,6 +3,7 @@ import {
 	parseJsonBody,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { ErrorParser } from '@aws-amplify/core/src/clients';
 
 import { createUserPoolDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serde/createUserPoolDeserializer';
 import { AuthError } from '../../../../../../../src/errors/AuthError';
@@ -33,10 +34,19 @@ describe('buildUserPoolDeserializer created response deserializer', () => {
 	});
 
 	it('throws AuthError for 4xx status code', async () => {
+		expect.assertions(2);
 		const expectedErrorName = 'TestError';
 		const expectedErrorMessage = 'TestErrorMessage';
-		const expectedError = new Error(expectedErrorMessage);
-		expectedError.name = expectedErrorName;
+		type ParsedError = Awaited<ReturnType<ErrorParser>>;
+		const expectedError: ParsedError = Object.assign(
+			new Error(expectedErrorMessage),
+			{
+				name: expectedErrorName,
+				$metadata: {
+					httpStatusCode: 400,
+				},
+			},
+		);
 
 		mockParseJsonError.mockReturnValueOnce(expectedError as any);
 		const response: HttpResponse = {
@@ -49,11 +59,17 @@ describe('buildUserPoolDeserializer created response deserializer', () => {
 			headers: {},
 		};
 
-		expect(deserializer(response as any)).rejects.toThrow(
-			new AuthError({
+		try {
+			await deserializer(response as any);
+		} catch (e) {
+			expect(e).toBeInstanceOf(AuthError);
+			expect(e).toMatchObject({
 				name: expectedErrorName,
 				message: expectedErrorMessage,
-			}),
-		);
+				metadata: expect.objectContaining({
+					httpStatusCode: 400,
+				}),
+			});
+		}
 	});
 });

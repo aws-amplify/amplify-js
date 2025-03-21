@@ -91,13 +91,5 @@
 		"@aws-amplify/react-native": "1.1.7",
 		"@aws-sdk/types": "3.387.0",
 		"typescript": "5.0.2"
-	},
-	"size-limit": [
-		{
-			"name": "API (rest client)",
-			"path": "./dist/esm/index.mjs",
-			"import": "{ Amplify, RestAPI }",
-			"limit": "31.5 kB"
-		}
-	]
+	}
 }

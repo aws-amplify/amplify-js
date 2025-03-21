@@ -54,7 +54,7 @@ const getObjectResponseHeaders = {
 } as const;
 
 export const expectedGetObjectUrl =
-	'https://bucket.s3.us-east-1.amazonaws.com/key';
+	'https://bucket.s3.us-east-1.amazonaws.com/key?x-id=GetObject';
 
 // API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
 const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
@@ -159,7 +159,7 @@ const getObjectHappyCaseAccelerateEndpoint: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3-accelerate.amazonaws.com/key',
+			href: 'https://bucket.s3-accelerate.amazonaws.com/key?x-id=GetObject',
 		}),
 	}),
 	{
@@ -189,7 +189,7 @@ const getObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key',
+			href: 'https://custom.endpoint.com/bucket/key?x-id=GetObject',
 		}),
 	}),
 	{
@@ -219,7 +219,7 @@ const getObjectErrorCaseAccelerateEndpoint: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3-accelerate.amazonaws.com/key',
+			href: 'https://bucket.s3-accelerate.amazonaws.com/key?x-id=GetObject',
 		}),
 	}),
 	{
@@ -250,7 +250,7 @@ const getObjectErrorCaseInvalidCustomEndpoint: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key',
+			href: 'https://custom.endpoint.com/bucket/key?x-id=GetObject',
 		}),
 	}),
 	{

@@ -4,13 +4,13 @@
 export { getDnsSuffix } from './endpoints';
 
 export { fetchTransferHandler } from './handlers/fetch';
-export { unauthenticatedHandler } from './handlers/unauthenticated';
-export { authenticatedHandler } from './handlers/authenticated';
+export { unauthenticatedHandler } from './handlers/aws/unauthenticated';
+export { authenticatedHandler } from './handlers/aws/authenticated';
 export {
 	getHashedPayload,
 	presignUrl,
-	PresignUrlOptions,
 	signRequest,
+	PresignUrlOptions,
 	SignRequestOptions,
 } from './middleware/signing/signer/signatureV4';
 export { EMPTY_HASH as EMPTY_SHA256_HASH } from './middleware/signing/signer/signatureV4/constants';
@@ -22,10 +22,13 @@ export {
 } from './middleware/signing';
 export {
 	getRetryDecider,
-	RetryDeciderOutput,
 	jitteredBackoff,
 	retryMiddlewareFactory,
+	amzSdkInvocationIdHeaderMiddlewareFactory,
+	amzSdkRequestHeaderMiddlewareFactory,
+	RetryDeciderOutput,
 	RetryOptions,
+	AmzSdkRequestHeaderMiddlewareOptions,
 } from './middleware/retry';
 export {
 	userAgentMiddlewareFactory,
