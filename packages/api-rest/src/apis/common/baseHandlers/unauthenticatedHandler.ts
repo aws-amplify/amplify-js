@@ -1,16 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
-import { RetryOptions, retryMiddlewareFactory } from '../middleware/retry';
 import {
+	HttpRequest,
+	HttpResponse,
+	RetryOptions,
 	UserAgentOptions,
+	fetchTransferHandler,
+	retryMiddlewareFactory,
 	userAgentMiddlewareFactory,
-} from '../middleware/userAgent';
-import { composeTransferHandler } from '../internal/composeTransferHandler';
-import { HttpRequest, HttpResponse } from '../types';
+} from '@aws-amplify/core/internals/aws-client-utils';
+import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { fetchTransferHandler } from './fetch';
-
+/**
+ * @internal
+ */
 export const unauthenticatedHandler = composeTransferHandler<
 	[UserAgentOptions, RetryOptions<HttpResponse>],
 	HttpRequest,
