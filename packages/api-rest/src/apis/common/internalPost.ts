@@ -66,6 +66,9 @@ export const post = (
 				method: 'POST',
 				...options,
 				abortSignal: controller.signal,
+				retryStrategy: {
+					strategy: 'jittered-exponential-backoff',
+				},
 			},
 			isIamAuthApplicableForGraphQL,
 			options?.signingServiceInfo,
