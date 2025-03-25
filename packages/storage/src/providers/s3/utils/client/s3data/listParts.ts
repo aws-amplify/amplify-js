@@ -47,6 +47,7 @@ const listPartsSerializer = async (
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
 	url.search = new AmplifyUrlSearchParams({
+		'x-id': 'ListParts',
 		uploadId: input.UploadId,
 	}).toString();
 
@@ -61,8 +62,8 @@ const listPartsDeserializer = async (
 	response: HttpResponse,
 ): Promise<ListPartsOutput> => {
 	if (response.statusCode >= 300) {
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		// error is always set when statusCode >= 300
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {
