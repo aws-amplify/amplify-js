@@ -63,4 +63,4 @@ jobs:
         run: |
           git checkout -b $TEMP_BRANCH_NAME
           git push origin $TEMP_BRANCH_NAME
-          gh pr create -B main -H $TEMP_BRANCH_NAME --title 'chore: amplify-js api references update' --body 'Merge the api references changes from the most recent release.'
+          gh pr create -B pre-prod/main -H $TEMP_BRANCH_NAME --title 'chore: amplify-js api references update' --body 'Merge the api references changes from the most recent release.'
