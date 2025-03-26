@@ -12,7 +12,10 @@ import {
 	presignUrl,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyUrl,
+	AmplifyUrlSearchParams,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	CONTENT_SHA256_HEADER,
@@ -61,6 +64,9 @@ const getObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	url.search = new AmplifyUrlSearchParams({
+		'x-id': 'GetObject',
+	}).toString();
 	validateObjectUrl({
 		bucketName: input.Bucket,
 		key: input.Key,
@@ -83,8 +89,8 @@ const getObjectDeserializer = async (
 	response: HttpResponse,
 ): Promise<GetObjectOutput> => {
 	if (response.statusCode >= 300) {
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		// error is always set when statusCode >= 300
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		return {
 			...map(response.headers, {

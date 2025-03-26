@@ -7,7 +7,10 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyUrl,
+	AmplifyUrlSearchParams,
+} from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import {
@@ -41,6 +44,9 @@ const deleteObjectSerializer = (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	url.search = new AmplifyUrlSearchParams({
+		'x-id': 'DeleteObject',
+	}).toString();
 	validateObjectUrl({
 		bucketName: input.Bucket,
 		key: input.Key,
@@ -62,8 +68,7 @@ const deleteObjectDeserializer = async (
 ): Promise<DeleteObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		const content = map(response.headers, {
 			DeleteMarker: ['x-amz-delete-marker', deserializeBoolean],

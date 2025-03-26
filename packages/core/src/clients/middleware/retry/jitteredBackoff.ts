@@ -3,10 +3,9 @@
 
 import { jitteredBackoff as jitteredBackoffUtil } from '../../../utils';
 
-import type { RetryOptions } from './middleware';
+import type { RetryOptions } from './retryMiddleware';
+import { DEFAULT_MAX_DELAY_MS } from './constants';
 // TODO: [v6] The separate retry utility is used by Data packages now and will replaced by retry middleware.
-
-const DEFAULT_MAX_DELAY_MS = 5 * 60 * 1000;
 
 export const jitteredBackoff: RetryOptions['computeDelay'] = attempt => {
 	const delayFunction = jitteredBackoffUtil(DEFAULT_MAX_DELAY_MS);

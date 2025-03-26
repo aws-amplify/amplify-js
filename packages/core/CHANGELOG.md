@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.11.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.10.6...@aws-amplify/core@6.11.0) (2025-03-25)
+
+### Features
+
+- **api-rest:** configurable retry behavior ([#14303](https://github.com/aws-amplify/amplify-js/issues/14303)) ([65207a6](https://github.com/aws-amplify/amplify-js/commit/65207a668cf66f07932b7f89f38651cbb84b8187))
+- library observability improvements ([#14309](https://github.com/aws-amplify/amplify-js/issues/14309)) ([b383885](https://github.com/aws-amplify/amplify-js/commit/b3838851da3c5620d6c1ea7950d16d81b21e073f)), closes [#14230](https://github.com/aws-amplify/amplify-js/issues/14230) [#14237](https://github.com/aws-amplify/amplify-js/issues/14237) [#14259](https://github.com/aws-amplify/amplify-js/issues/14259) [#14251](https://github.com/aws-amplify/amplify-js/issues/14251) [#14296](https://github.com/aws-amplify/amplify-js/issues/14296)
+
+## [6.10.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.10.5...@aws-amplify/core@6.10.6) (2025-03-21)
+
+**Note:** Version bump only for package @aws-amplify/core
+
 ## [6.10.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.10.4...@aws-amplify/core@6.10.5) (2025-03-14)
 
 **Note:** Version bump only for package @aws-amplify/core

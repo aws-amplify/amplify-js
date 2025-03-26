@@ -298,7 +298,7 @@ const validateEchoedElements = (
 		listInput.ContinuationToken === listOutput.ContinuationToken;
 
 	if (!validEchoedParameters) {
-		throw new IntegrityError();
+		throw new IntegrityError({ metadata: listOutput.$metadata });
 	}
 };
 

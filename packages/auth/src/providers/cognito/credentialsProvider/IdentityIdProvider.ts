@@ -5,6 +5,7 @@ import { AuthTokens, Identity, getId } from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { getRegionFromIdentityPoolId } from '../../../foundation/parsers';
 import { GetIdException } from '../types/errors';
 
@@ -58,10 +59,11 @@ async function generateIdentityId(
 	const region = getRegionFromIdentityPoolId(identityPoolId);
 
 	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
-	const idResult =
-		// for a first-time user, this will return a brand new identity
-		// for a returning user, this will retrieve the previous identity assocaited with the logins
-		(
+	let idResult: string | undefined;
+	// for a first-time user, this will return a brand new identity
+	// for a returning user, this will retrieve the previous identity assocaited with the logins
+	try {
+		idResult = (
 			await getId(
 				{
 					region,
@@ -72,6 +74,10 @@ async function generateIdentityId(
 				},
 			)
 		).IdentityId;
+	} catch (e) {
+		assertServiceError(e);
+		throw new AuthError(e);
+	}
 	if (!idResult) {
 		throw new AuthError({
 			name: 'GetIdResponseException',

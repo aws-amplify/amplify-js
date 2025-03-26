@@ -25,7 +25,7 @@ const abortMultipartUploadHappyCase: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?uploadId=uploadId',
+			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?x-id=AbortMultipartUpload&uploadId=uploadId',
 		}),
 		method: 'DELETE',
 	}),
@@ -60,7 +60,7 @@ const abortMultipartUploadHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key?uploadId=uploadId',
+			href: 'https://custom.endpoint.com/bucket/key?x-id=AbortMultipartUpload&uploadId=uploadId',
 		}),
 	}),
 	{

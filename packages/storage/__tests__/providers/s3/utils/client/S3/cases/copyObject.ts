@@ -28,7 +28,7 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key',
+			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?x-id=CopyObject',
 		}),
 		method: 'PUT',
 		headers: expect.objectContaining({
@@ -76,7 +76,7 @@ const copyObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key',
+			href: 'https://custom.endpoint.com/bucket/key?x-id=CopyObject',
 		}),
 	}),
 	{

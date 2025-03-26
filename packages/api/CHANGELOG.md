@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.3.6...@aws-amplify/api@6.3.7) (2025-03-25)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.3.5...@aws-amplify/api@6.3.6) (2025-03-21)
+
+**Note:** Version bump only for package @aws-amplify/api
+
 ## [6.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.3.4...@aws-amplify/api@6.3.5) (2025-03-14)
 
 **Note:** Version bump only for package @aws-amplify/api

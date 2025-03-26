@@ -195,6 +195,10 @@ const listCallerAccessGrantsErrorCase: ApiFunctionalTestCase<
 	{
 		message: 'Access Denied',
 		name: 'AccessDenied',
+		metadata: expect.objectContaining({
+			...expectedMetadata,
+			httpStatusCode: 403,
+		}),
 	},
 ];
 

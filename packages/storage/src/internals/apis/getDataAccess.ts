@@ -59,6 +59,7 @@ export const getDataAccess = async (
 		throw new StorageError({
 			name: AmplifyErrorCode.Unknown,
 			message: 'Service did not return valid temporary credentials.',
+			metadata: result.$metadata,
 		});
 	} else {
 		logger.debug(`Retrieved credentials for: ${result.MatchedGrantTarget}`);

@@ -8,15 +8,14 @@ import {
 import { StorageError } from './StorageError';
 
 export class IntegrityError extends StorageError {
-	constructor(
-		params: AmplifyErrorParams = {
+	constructor(params?: Pick<AmplifyErrorParams, 'metadata'>) {
+		super({
 			name: AmplifyErrorCode.Unknown,
 			message: 'An unknown error has occurred.',
 			recoverySuggestion:
 				'This may be a bug. Please reach out to library authors.',
-		},
-	) {
-		super(params);
+			metadata: params?.metadata,
+		});
 
 		// TODO: Delete the following 2 lines after we change the build target to >= es2015
 		this.constructor = IntegrityError;

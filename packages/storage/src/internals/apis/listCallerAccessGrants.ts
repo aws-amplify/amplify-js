@@ -3,6 +3,7 @@
 
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
+import { ResponseMetadata } from '@aws-amplify/core/dist/esm/types';
 
 import { logger } from '../../utils';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../providers/s3/utils/client/s3control';
@@ -43,7 +44,7 @@ export const listCallerAccessGrants = async (
 		return credentials;
 	};
 
-	const { CallerAccessGrantsList, NextToken } =
+	const { CallerAccessGrantsList, NextToken, $metadata } =
 		await listCallerAccessGrantsClient(
 			{
 				credentials: clientCredentialsProvider,
@@ -63,7 +64,7 @@ export const listCallerAccessGrants = async (
 
 	const accessGrants: LocationAccess[] =
 		CallerAccessGrantsList?.map(grant => {
-			assertGrantScope(grant.GrantScope);
+			assertGrantScope(grant.GrantScope, $metadata);
 
 			return {
 				scope: grant.GrantScope,
@@ -94,11 +95,15 @@ const parseGrantType = (grantScope: string): LocationType => {
 	}
 };
 
-function assertGrantScope(value: unknown): asserts value is string {
+function assertGrantScope(
+	value: unknown,
+	responseMetadata: ResponseMetadata,
+): asserts value is string {
 	if (typeof value !== 'string' || !value.startsWith('s3://')) {
 		throw new StorageError({
 			name: 'InvalidGrantScope',
 			message: `Expected a valid grant scope, got ${value}`,
+			metadata: responseMetadata,
 		});
 	}
 }

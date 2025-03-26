@@ -55,7 +55,7 @@ const putObjectHappyCase: ApiFunctionalTestCase<typeof putObject> = [
 	putObjectRequest,
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key',
+			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?x-id=PutObject',
 		}),
 		headers: expect.objectContaining(expectedPutObjectRequestHeaders),
 		body: 'body',
@@ -82,7 +82,7 @@ const putObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	putObjectRequest,
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key',
+			href: 'https://custom.endpoint.com/bucket/key?x-id=PutObject',
 		}),
 	}),
 	putObjectSuccessResponse,

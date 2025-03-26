@@ -42,6 +42,7 @@ const abortMultipartUploadSerializer = (
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
 	url.search = new AmplifyUrlSearchParams({
+		'x-id': 'AbortMultipartUpload',
 		uploadId: input.UploadId,
 	}).toString();
 	validateObjectUrl({
@@ -66,8 +67,8 @@ const abortMultipartUploadDeserializer = async (
 	response: HttpResponse,
 ): Promise<AbortMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		// error is always set when statusCode >= 300
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		return {
 			$metadata: parseMetadata(response),
