@@ -97,7 +97,7 @@ export interface ApiInput<Options> {
 export interface InternalPostInput {
 	// Resolved GraphQl endpoint url
 	url: URL;
-	options?: RestApiOptionsBase & {
+	options?: Omit<RestApiOptionsBase, 'retryStrategy'> & {
 		/**
 		 * Internal-only option for GraphQL client to provide the IAM signing service and region.
 		 * * If auth mode is 'iam', you MUST set this value.
