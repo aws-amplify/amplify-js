@@ -435,8 +435,10 @@ describe('public APIs', () => {
 					await fn(mockAmplifyInstance, {
 						apiName: 'restApi1',
 						path: '/items',
-						retryStrategy: {
-							strategy: 'no-retry',
+						options: {
+							retryStrategy: {
+								strategy: 'no-retry',
+							},
 						},
 					}).response;
 					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
@@ -454,8 +456,10 @@ describe('public APIs', () => {
 					await fn(mockAmplifyInstance, {
 						apiName: 'restApi1',
 						path: '/items',
-						retryStrategy: {
-							strategy: 'jittered-exponential-backoff',
+						options: {
+							retryStrategy: {
+								strategy: 'jittered-exponential-backoff',
+							},
 						},
 					}).response;
 					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
@@ -501,8 +505,10 @@ describe('public APIs', () => {
 					await fn(mockAmplifyInstanceWithNoRetry, {
 						apiName: 'restApi1',
 						path: 'items',
-						retryStrategy: {
-							strategy: 'jittered-exponential-backoff',
+						options: {
+							retryStrategy: {
+								strategy: 'jittered-exponential-backoff',
+							},
 						},
 					}).response;
 
@@ -533,8 +539,10 @@ describe('public APIs', () => {
 					await fn(mockAmplifyInstanceWithRetry, {
 						apiName: 'restApi1',
 						path: 'items',
-						retryStrategy: {
-							strategy: 'no-retry',
+						options: {
+							retryStrategy: {
+								strategy: 'no-retry',
+							},
 						},
 					}).response;
 
