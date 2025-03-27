@@ -79,8 +79,7 @@ const mockSuccessResponse = {
 	},
 };
 const mockGetRetryDecider = getRetryDecider as jest.Mock;
-const mockRetryResponse = { retryable: true };
-const mockRetryDeciderResponse = () => Promise.resolve(mockRetryResponse);
+const mockRetryDeciderResponse = () => Promise.resolve({ retryable: true });
 
 describe('public APIs', () => {
 	beforeEach(() => {
@@ -470,7 +469,7 @@ describe('public APIs', () => {
 					expect(getRetryDecider).toHaveBeenCalled();
 					const { retryDecider } = callArgs[1];
 					const result = await retryDecider();
-					expect(result).toEqual(mockRetryResponse);
+					expect(result).toEqual({ retryable: true });
 				});
 
 				it('should retry when retry strategy is not provided', async () => {
@@ -487,7 +486,7 @@ describe('public APIs', () => {
 					expect(getRetryDecider).toHaveBeenCalled();
 					const { retryDecider } = callArgs[1];
 					const result = await retryDecider();
-					expect(result).toEqual(mockRetryResponse);
+					expect(result).toEqual({ retryable: true });
 				});
 
 				it('should retry and prefer the individual retry strategy over the library options', async () => {
@@ -522,7 +521,7 @@ describe('public APIs', () => {
 					expect(getRetryDecider).toHaveBeenCalled();
 					const { retryDecider } = callArgs[1];
 					const result = await retryDecider();
-					expect(result).toEqual(mockRetryResponse);
+					expect(result).toEqual({ retryable: true });
 				});
 
 				it('should not retry and prefer the individual retry strategy over the library options', async () => {
