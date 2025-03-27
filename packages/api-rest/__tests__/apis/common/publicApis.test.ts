@@ -78,7 +78,7 @@ const mockSuccessResponse = {
 		text: jest.fn(),
 	},
 };
-const mockGetRetryDecider = getRetryDecider as jest.Mock;
+const mockGetRetryDecider = jest.mocked(getRetryDecider);
 const mockRetryDeciderResponse = () => Promise.resolve({ retryable: true });
 
 describe('public APIs', () => {
@@ -444,7 +444,7 @@ describe('public APIs', () => {
 						expect.objectContaining({ retryDecider: expect.any(Function) }),
 					);
 					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(getRetryDecider).not.toHaveBeenCalled();
+					expect(mockGetRetryDecider).not.toHaveBeenCalled();
 					const { retryDecider } = callArgs[1];
 					const result = await retryDecider();
 					expect(result).toEqual({ retryable: false });
@@ -466,7 +466,7 @@ describe('public APIs', () => {
 						expect.objectContaining({ retryDecider: expect.any(Function) }),
 					);
 					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(getRetryDecider).toHaveBeenCalled();
+					expect(mockGetRetryDecider).toHaveBeenCalled();
 					const { retryDecider } = callArgs[1];
 					const result = await retryDecider();
 					expect(result).toEqual({ retryable: true });
@@ -483,7 +483,7 @@ describe('public APIs', () => {
 						expect.objectContaining({ retryDecider: expect.any(Function) }),
 					);
 					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(getRetryDecider).toHaveBeenCalled();
+					expect(mockGetRetryDecider).toHaveBeenCalled();
 					const { retryDecider } = callArgs[1];
 					const result = await retryDecider();
 					expect(result).toEqual({ retryable: true });
@@ -518,7 +518,7 @@ describe('public APIs', () => {
 						expect.objectContaining({ retryDecider: expect.any(Function) }),
 					);
 					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(getRetryDecider).toHaveBeenCalled();
+					expect(mockGetRetryDecider).toHaveBeenCalled();
 					const { retryDecider } = callArgs[1];
 					const result = await retryDecider();
 					expect(result).toEqual({ retryable: true });
@@ -553,7 +553,7 @@ describe('public APIs', () => {
 						expect.objectContaining({ retryDecider: expect.any(Function) }),
 					);
 					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(getRetryDecider).not.toHaveBeenCalled();
+					expect(mockGetRetryDecider).not.toHaveBeenCalled();
 					const { retryDecider } = callArgs[1];
 					const result = await retryDecider();
 					expect(result).toEqual({ retryable: false });
@@ -583,7 +583,7 @@ describe('public APIs', () => {
 						expect.objectContaining({ retryDecider: expect.any(Function) }),
 					);
 					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(getRetryDecider).not.toHaveBeenCalled();
+					expect(mockGetRetryDecider).not.toHaveBeenCalled();
 					const { retryDecider } = callArgs[1];
 					const result = await retryDecider();
 					expect(result).toEqual({ retryable: false });
