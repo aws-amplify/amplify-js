@@ -4,14 +4,12 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	Headers,
 	HttpRequest,
-	RetryOptions,
 	getRetryDecider,
 	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	AWSCredentials,
 	DocumentType,
-	RetryStrategy,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -29,10 +27,7 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
 	headers?: Headers;
 	withCredentials?: boolean;
-	retryStrategy?: RetryStrategy;
 };
-
-type RetryDecider = RetryOptions['retryDecider'];
 
 /**
  * Make REST API call with best-effort IAM auth.
@@ -54,15 +49,7 @@ export const transferHandler = async (
 	) => boolean,
 	signingServiceInfo?: SigningServiceInfo,
 ): Promise<RestApiResponse> => {
-	const {
-		url,
-		method,
-		headers,
-		body,
-		withCredentials,
-		abortSignal,
-		retryStrategy,
-	} = options;
+	const { url, method, headers, body, withCredentials, abortSignal } = options;
 	const resolvedBody = body
 		? body instanceof FormData
 			? body
@@ -76,9 +63,7 @@ export const transferHandler = async (
 		body: resolvedBody,
 	};
 	const baseOptions = {
-		retryDecider: getRetryDeciderFromStrategy(
-			retryStrategy ?? amplify?.libraryOptions?.API?.REST?.retryStrategy,
-		),
+		retryDecider: getRetryDecider(parseRestApiServiceError),
 		computeDelay: jitteredBackoff,
 		withCrossDomainCredentials: withCredentials,
 		abortSignal,
@@ -112,17 +97,6 @@ export const transferHandler = async (
 		headers: response.headers,
 		body: response.body,
 	};
-};
-
-const getRetryDeciderFromStrategy = (
-	retryStrategy: RetryStrategy | undefined,
-): RetryDecider => {
-	const strategy = retryStrategy?.strategy;
-	if (strategy === 'no-retry') {
-		return () => Promise.resolve({ retryable: false });
-	}
-
-	return getRetryDecider(parseRestApiServiceError);
 };
 
 const resolveCredentials = async (
