@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@e2a5a1afd5d7305b13671410c52a31819ab9fad9 # v4.0.0 https://github.com/actions/checkout/commit/e2a5a1afd5d7305b13671410c52a31819ab9fad9
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@7bbfa034e752445ea40215fff1c3bf9597993d3f # v3.1.3 https://github.com/actions/dependency-review-action/commit/7bbfa034e752445ea40215fff1c3bf9597993d3f
-        with:
-          base_ref: ${{ github.event.inputs.base_ref }}
-          head_ref: ${{ github.event.inputs.head_ref }}          
+        with: # Warning: Unexpected input(s) 'base_ref', 'head_ref', valid inputs are ['repo-token', 'fail-on-severity', 'fail-on-scopes', 'base-ref', 'head-ref', 'config-file', 'allow-licenses', 'deny-licenses', 'allow-dependencies-licenses', 'allow-ghsas', 'external-repo-token', 'license-check', 'vulnerability-check', 'comment-summary-in-pr', 'deny-packages', 'deny-groups', 'retry-on-snapshot-warnings', 'retry-on-snapshot-warnings-timeout']
+          base-ref: ${{ github.event.inputs.base_ref }}
+          head-ref: ${{ github.event.inputs.head_ref }}          
           config-file: '.github/dependency-review/dependency-review-config2.yml'
