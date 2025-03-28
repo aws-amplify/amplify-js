@@ -35,5 +35,5 @@ jobs:
     needs: prebuild
     uses: ./.github/workflows/callable-dependency-review.yml
     with:
-      base-fef: ${{ github.event.inputs.base_ref }}
+      base-ref: ${{ github.event.inputs.base_ref }}
       head-ref: ${{ github.event.inputs.head_ref }}
