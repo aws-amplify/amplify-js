@@ -12,13 +12,12 @@ on:
   workflow_dispatch:
     inputs:
       base_ref:
-        description: joonwonc/license-removal-test-must-fail
+        description: ''
         required: true
         default: 'main'
       head_ref:
-        description: joonwonc/license-removal-test-must-fail
-        required: true      
-
+        description: ''
+        required: true
 jobs:
   prebuild:
     runs-on: ubuntu-latest
@@ -35,5 +34,5 @@ jobs:
     needs: prebuild
     uses: ./.github/workflows/callable-dependency-review.yml
     with:
-      base-ref: ${{ github.event.inputs.base_ref }}
-      head-ref: ${{ github.event.inputs.head_ref }}
+      base_ref: ${{ github.event.inputs.base_ref }}
+      head_ref: ${{ github.event.inputs.head_ref }}
