@@ -9,6 +9,15 @@ on:
   push:
     branches:
       - joonwonc/license-removal-test-must-fail
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: joonwonc/license-removal-test-must-fail
+        required: true
+        default: 'main'
+      head_ref:
+        description: joonwonc/license-removal-test-must-fail
+        required: true      
 
 jobs:
   prebuild:
@@ -22,9 +31,9 @@ jobs:
         uses: ./amplify-js/.github/actions/node-and-build
         with:
           is-prebuild: true  
-  # e2e:
-  #   secrets: inherit
-  #   uses: ./.github/workflows/callable-release-verification.yml
   dependency-review:
     needs: prebuild
     uses: ./.github/workflows/callable-dependency-review.yml
+    with:
+      base-fef: ${{ github.event.inputs.base_ref }}
+      head-ref: ${{ github.event.inputs.head_ref }}
