@@ -11,6 +11,20 @@ on:
       - joonwonc/license-removal-test-must-fail
 
 jobs:
+  prebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+        with:
+          is-prebuild: true  
   e2e:
     secrets: inherit
     uses: ./.github/workflows/callable-release-verification.yml
+  dependency-review:
+    needs: prebuild
+    uses: ./.github/workflows/callable-dependency-review.yml
