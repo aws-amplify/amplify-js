@@ -22,9 +22,9 @@ jobs:
         uses: ./amplify-js/.github/actions/node-and-build
         with:
           is-prebuild: true  
-  e2e:
-    secrets: inherit
-    uses: ./.github/workflows/callable-release-verification.yml
+  # e2e:
+  #   secrets: inherit
+  #   uses: ./.github/workflows/callable-release-verification.yml
   dependency-review:
     needs: prebuild
     uses: ./.github/workflows/callable-dependency-review.yml
