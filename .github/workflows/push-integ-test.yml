@@ -30,9 +30,16 @@ jobs:
         uses: ./amplify-js/.github/actions/node-and-build
         with:
           is-prebuild: true  
-  dependency-review:
+  dependency_review:
     needs: prebuild
-    uses: ./.github/workflows/callable-dependency-review.yml
-    with:
-      base_ref: ${{ github.event.inputs.base_ref }}
-      head_ref: ${{ github.event.inputs.head_ref }}
+    name: Dependency Review Modified ver.DepRev 
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@e2a5a1afd5d7305b13671410c52a31819ab9fad9 # v4.0.0 https://github.com/actions/checkout/commit/e2a5a1afd5d7305b13671410c52a31819ab9fad9
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@7bbfa034e752445ea40215fff1c3bf9597993d3f # v3.1.3 https://github.com/actions/dependency-review-action/commit/7bbfa034e752445ea40215fff1c3bf9597993d3f
+        with:
+          base_ref: ${{ github.event.inputs.base_ref }}
+          head_ref: ${{ github.event.inputs.head_ref }}          
+          config-file: '.github/dependency-review/dependency-review-config2.yml'
