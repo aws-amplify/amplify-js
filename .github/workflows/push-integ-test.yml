@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - test/unauth-id-ssr/main
 
 jobs:
   e2e:
