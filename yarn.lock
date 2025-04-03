@@ -5123,20 +5123,6 @@
   resolved "https://registry.yarnpkg.com/@types/react-native-sqlite-storage/-/react-native-sqlite-storage-5.0.1.tgz#20a0862eaa52de83c9698bdd597f2114349b563a"
   integrity sha512-M4KDSFeHVVh0qiV9WvNr5e5VonRDzYpDqBQCFPtmDAVHRoUBNWxeSQETZ+BNF8jGavxN0u/FMbOQWGo+7UwRaA==
 
-"@types/react-native@0.70.0":
-  version "0.70.0"
-  resolved "https://registry.npmjs.org/@types/react-native/-/react-native-0.70.0.tgz#f8cdcdd542d36467d7591585b93d27e0563676e0"
-  integrity sha512-yBN7qJDfs0Vwr34NyfW1SWzalHQoYtpUWf0t4UJY9C5ft58BRr46+r92I0v+l3QX4VNsSRMHVAAWqLLCbIkM+g==
-  dependencies:
-    "@types/react" "*"
-
-"@types/react@*":
-  version "19.1.0"
-  resolved "https://registry.npmjs.org/@types/react/-/react-19.1.0.tgz#73c43ad9bc43496ca8184332b111e2aef63fc9da"
-  integrity sha512-UaicktuQI+9UKyA4njtDOGBD/67t8YEBt2xdfqu8+gP9hqPUPsiXlNPcpS2gVdjmis5GKPG3fCxbQLVgxsQZ8w==
-  dependencies:
-    csstype "^3.0.2"
-
 "@types/react@^18.2.13":
   version "18.3.18"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.18.tgz#9b382c4cd32e13e463f97df07c2ee3bbcd26904b"
