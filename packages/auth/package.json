@@ -45,15 +45,15 @@
 	"exports": {
 		".": {
 			"types": "./dist/esm/index.d.ts",
+			"react-native": "./src/index.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./cognito": {
 			"types": "./dist/esm/providers/cognito/index.d.ts",
+			"react-native": "./src/providers/cognito/index.ts",
 			"import": "./dist/esm/providers/cognito/index.mjs",
-			"require": "./dist/cjs/providers/cognito/index.js",
-			"react-native": "./src/providers/cognito/index.ts"
+			"require": "./dist/cjs/providers/cognito/index.js"
 		},
 		"./cognito/server": {
 			"types": "./dist/esm/providers/cognito/apis/server/index.d.ts",
