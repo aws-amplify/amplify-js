@@ -39,10 +39,16 @@ export const DefaultAmplify = {
 	): void {
 		const resolvedResourceConfig = parseAmplifyConfig(resourceConfig);
 		const cookieBasedKeyValueStorage = new CookieStorage({ sameSite: 'lax' });
+		const resolvedKeyValueStorage = libraryOptions?.ssr
+			? cookieBasedKeyValueStorage
+			: defaultStorage;
 		const cookieBasedCredentialsAndIdentityIdProvider =
 			new CognitoAWSCredentialsAndIdentityIdProvider(
 				new DefaultIdentityIdStore(cookieBasedKeyValueStorage),
 			);
+		const resolvedCredentialsProvider = libraryOptions?.ssr
+			? cookieBasedCredentialsAndIdentityIdProvider
+			: cognitoCredentialsProvider;
 
 		// If no Auth config is provided, no special handling will be required, configure as is.
 		// Otherwise, we can assume an Auth config is provided from here on.
@@ -65,16 +71,14 @@ export const DefaultAmplify = {
 			cognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
 			cognitoUserPoolsTokenProvider.setKeyValueStorage(
 				// TODO: allow configure with a public interface
-				libraryOptions?.ssr ? cookieBasedKeyValueStorage : defaultStorage,
+				resolvedKeyValueStorage,
 			);
 
 			Amplify.configure(resolvedResourceConfig, {
 				...libraryOptions,
 				Auth: {
 					tokenProvider: cognitoUserPoolsTokenProvider,
-					credentialsProvider: libraryOptions?.ssr
-						? cookieBasedCredentialsAndIdentityIdProvider
-						: cognitoCredentialsProvider,
+					credentialsProvider: resolvedCredentialsProvider,
 				},
 			});
 
@@ -89,13 +93,10 @@ export const DefaultAmplify = {
 			if (libraryOptions.ssr !== undefined) {
 				cognitoUserPoolsTokenProvider.setKeyValueStorage(
 					// TODO: allow configure with a public interface
-					libraryOptions.ssr
-						? new CookieStorage({ sameSite: 'lax' })
-						: defaultStorage,
+					resolvedKeyValueStorage,
 				);
 
-				authLibraryOptions.credentialsProvider =
-					cookieBasedCredentialsAndIdentityIdProvider;
+				authLibraryOptions.credentialsProvider = resolvedCredentialsProvider;
 			}
 
 			Amplify.configure(resolvedResourceConfig, {
