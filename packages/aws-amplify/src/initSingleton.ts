@@ -42,12 +42,10 @@ export const DefaultAmplify = {
 		const resolvedKeyValueStorage = libraryOptions?.ssr
 			? cookieBasedKeyValueStorage
 			: defaultStorage;
-		const cookieBasedCredentialsAndIdentityIdProvider =
-			new CognitoAWSCredentialsAndIdentityIdProvider(
-				new DefaultIdentityIdStore(cookieBasedKeyValueStorage),
-			);
 		const resolvedCredentialsProvider = libraryOptions?.ssr
-			? cookieBasedCredentialsAndIdentityIdProvider
+			? new CognitoAWSCredentialsAndIdentityIdProvider(
+					new DefaultIdentityIdStore(cookieBasedKeyValueStorage),
+				)
 			: cognitoCredentialsProvider;
 
 		// If no Auth config is provided, no special handling will be required, configure as is.
