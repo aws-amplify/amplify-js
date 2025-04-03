@@ -2,7 +2,6 @@
 	"editor.detectIndentation": false,
 	"editor.insertSpaces": false,
 	"prettier.requireConfig": true,
-	"files.insertFinalNewline": true,
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"formattingToggle.affects": [
 		"editor.codeActionsOnSave.source.fixAll.eslint",
