@@ -12,6 +12,7 @@ import { configure, normalizeAuth, serializeEvents } from './utils';
 import type {
 	EventsChannel,
 	EventsOptions,
+	ProviderOptions,
 	PublishResponse,
 	PublishedEvent,
 	SubscriptionObserver,
@@ -44,15 +45,14 @@ async function connect(
 	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel> {
-	const providerOptions = {
-		...configure(),
-		...options,
-	};
+	const providerOptions: ProviderOptions = configure();
 
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
 		providerOptions.authenticationType,
 	);
+	providerOptions.apiKey = options?.apiKey || providerOptions.apiKey;
+	providerOptions.authToken = options?.authToken || providerOptions.authToken;
 
 	await eventProvider.connect(providerOptions);
 
@@ -68,15 +68,14 @@ async function connect(
 		if (!openChannels.has(channelId)) {
 			throw new Error('Channel is closed');
 		}
-		const subscribeOptions = {
-			...providerOptions,
-			...subOptions,
-			query: channel,
-		};
+		const subscribeOptions = { ...providerOptions, query: channel };
 		subscribeOptions.authenticationType = normalizeAuth(
 			subOptions?.authMode,
 			subscribeOptions.authenticationType,
 		);
+		subscribeOptions.apiKey = subOptions?.apiKey || subscribeOptions.apiKey;
+		subscribeOptions.authToken =
+			subOptions?.authToken || subscribeOptions.authToken;
 
 		_subscription = eventProvider
 			.subscribe(subscribeOptions)
