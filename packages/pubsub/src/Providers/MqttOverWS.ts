@@ -4,6 +4,7 @@
 import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
 import { ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
+import mqtt, { MqttClient } from 'mqtt';
 
 import {
 	ConnectionState,
@@ -13,9 +14,6 @@ import {
 	PublishInput,
 	SubscribeInput,
 } from '../types/PubSub';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore this module is expected to not have declaration file
-import * as Paho from '../vendor/paho-mqtt.js';
 import {
 	CONNECTION_CHANGE,
 	ConnectionStateMonitor,
@@ -51,28 +49,12 @@ export interface MqttOptions extends PubSubOptions {
 	endpoint?: string;
 }
 
-interface PahoClient {
-	onMessageArrived(params: {
-		destinationName: string;
-		payloadString: string;
-	}): void;
-	onConnectionLost(params: { errorCode: number }): void;
-	connect(
-		params: Record<string, string | number | boolean | (() => void)>,
-	): void;
-	disconnect(): void;
-	isConnected(): boolean;
-	subscribe(topic: string): void;
-	unsubscribe(topic: string): void;
-	send(topic: string, message: string): void;
-}
-
 class ClientsQueue {
-	private promises = new Map<string, Promise<PahoClient | undefined>>();
+	private promises = new Map<string, Promise<MqttClient | undefined>>();
 
 	async get(
 		clientId: string,
-		clientFactory?: (input: string) => Promise<PahoClient | undefined>,
+		clientFactory?: (input: string) => Promise<MqttClient | undefined>,
 	) {
 		const cachedPromise = this.promises.get(clientId);
 		if (cachedPromise) return cachedPromise;
@@ -149,11 +131,6 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		return this._clientsQueue;
 	}
 
-	protected get isSSLEnabled() {
-		return !this.options
-			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
-	}
-
 	public onDisconnect({
 		clientId,
 		errorCode,
@@ -176,53 +153,36 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		}
 	}
 
-	public async newClient({ url, clientId }: MqttOptions): Promise<PahoClient> {
+	public async newClient({
+		url,
+		clientId,
+	}: MqttOptions): Promise<MqttClient | undefined> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore this module is expected to not have declaration file
-		const client = new Paho.Client(url, clientId) as PahoClient;
 
-		client.onMessageArrived = ({
-			destinationName: topic,
-			payloadString: msg,
-		}: {
-			destinationName: string;
-			payloadString: string;
-		}) => {
-			this._onMessage(topic, msg);
-		};
-		client.onConnectionLost = ({
-			errorCode,
-			...args
-		}: {
-			errorCode: number;
-		}) => {
-			this.onDisconnect({ clientId, errorCode, ...args });
+		let client: MqttClient;
+		try {
+			client = await mqtt.connectAsync(url!, { clientId, protocolVersion: 3 });
+		} catch (e) {
+			if (clientId) this._clientsQueue.remove(clientId);
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
-		};
 
-		const connected = await new Promise((resolve, _reject) => {
-			client.connect({
-				useSSL: this.isSSLEnabled,
-				mqttVersion: 3,
-				onSuccess: () => {
-					resolve(true);
-				},
-				onFailure: () => {
-					if (clientId) this._clientsQueue.remove(clientId);
-					this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
-					resolve(false);
-				},
-			});
+			return undefined;
+		}
+
+		client.on('message', (topic, payload) => {
+			this._onMessage(topic, payload.toString());
+		});
+		client.on('disconnect', packet => {
+			const { reasonCode, properties } = packet;
+			this.onDisconnect({ clientId, errorCode: reasonCode, ...properties });
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 		});
 
-		if (connected) {
-			this.connectionStateMonitor.record(
-				CONNECTION_CHANGE.CONNECTION_ESTABLISHED,
-			);
-		}
+		this.connectionStateMonitor.record(
+			CONNECTION_CHANGE.CONNECTION_ESTABLISHED,
+		);
 
 		return client;
 	}
@@ -230,7 +190,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 	protected async connect(
 		clientId: string,
 		options: MqttOptions = {},
-	): Promise<PahoClient | undefined> {
+	): Promise<MqttClient | undefined> {
 		return this.clientsQueue.get(clientId, async inputClientId => {
 			const client = await this.newClient({
 				...options,
@@ -253,8 +213,8 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 	protected async disconnect(clientId: string): Promise<void> {
 		const client = await this.clientsQueue.get(clientId);
 
-		if (client && client.isConnected()) {
-			client.disconnect();
+		if (client && client.connected) {
+			client.end();
 		}
 		this.clientsQueue.remove(clientId);
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
@@ -269,7 +229,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		if (client) {
 			logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
 			targetTopics.forEach(topic => {
-				client.send(topic, msg);
+				client.publish(topic, msg);
 			});
 		} else {
 			logger.debug(
@@ -396,7 +356,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 						// if no observers exists for the topic, topic should be removed
 						if (observersForTopic.size === 0) {
 							this._topicObservers.delete(topic);
-							if (client.isConnected()) {
+							if (client.connected) {
 								client.unsubscribe(topic);
 							}
 						}
