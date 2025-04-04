@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { authenticatedHandler } from '../../clients/handlers/authenticated';
+import { authenticatedHandler } from '../../clients/handlers/aws/authenticated';
 import { composeServiceApi } from '../../clients/internal/composeServiceApi';
 import { extendedEncodeURIComponent } from '../../clients/middleware/signing/utils/extendedEncodeURIComponent';
 import {
