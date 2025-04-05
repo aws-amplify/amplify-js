@@ -3,10 +3,10 @@ name: Release Verification Tests
 on: workflow_call
 
 jobs:
-  # prebuild-ubuntu:
-  #   uses: ./.github/workflows/callable-prebuild-amplify-js.yml
-  #   with:
-  #     runs_on: ubuntu-latest
+  prebuild-ubuntu:
+    uses: ./.github/workflows/callable-prebuild-amplify-js.yml
+    with:
+      runs_on: ubuntu-latest
   # prebuild-macos:
   #   uses: ./.github/workflows/callable-prebuild-amplify-js.yml
   #   with:
