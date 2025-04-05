@@ -16,7 +16,7 @@
 > **Note**
 > aws-amplify 6 has been released. If you are looking for upgrade guidance [click here](#notice)
 
-### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications
+### AWS Amplify is a JavScript library for frontend and mobile developers building cloud-enabled applications
 
 AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations. AWS Amplify goes well with any JavaScript based frontend workflow and React Native for mobile developers.
 
