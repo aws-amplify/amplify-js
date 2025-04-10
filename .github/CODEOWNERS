@@ -1,12 +1,12 @@
 * @aws-amplify/amplify-js
-/packages/api @aws-amplify/amplify-js @aws-amplify/amplify-data
-/packages/api-graphql @aws-amplify/amplify-data
-/packages/api-rest @aws-amplify/amplify-js @aws-amplify/amplify-data
-/packages/core @aws-amplify/amplify-js @aws-amplify/amplify-data
-/packages/datastore @aws-amplify/amplify-data
-/packages/datastore-storage-adapter @aws-amplify/amplify-data
+/packages/api @aws-amplify/amplify-js
+/packages/api-graphql @aws-amplify/amplify-js
+/packages/api-rest @aws-amplify/amplify-js
+/packages/core @aws-amplify/amplify-js
+/packages/datastore @aws-amplify/amplify-js
+/packages/datastore-storage-adapter @aws-amplify/amplify-js
 /packages/geo @aws-amplify/amplify-js @aws-amplify/amplify-ui
-/packages/pubsub @aws-amplify/amplify-js @aws-amplify/amplify-data
+/packages/pubsub @aws-amplify/amplify-js
 /packages/aws-amplify/package.json @aws-amplify/amplify-js-admins
 /packages/storage/src/storageBrowser @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /packages/storage/storage-browser @aws-amplify/amplify-js @aws-amplify/amplify-ui
