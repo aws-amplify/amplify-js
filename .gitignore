@@ -19,6 +19,7 @@ package-lock.json
 packages/*/.watchmanconfig
 dual-publish-tmp
 docs/reference.json
+.yarn
 
 ### Version file - core build artifact
 packages/core/src/Platform/version.ts
