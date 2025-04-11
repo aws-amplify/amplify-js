@@ -1,0 +1,13 @@
+name: Set Yarn Berry
+description: Enable Yarn Berry in the workflow
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Enable corepack
+      run: corepack enable
+      shell: bash
+    - name: Set yarn version to berry
+      run: yarn set version berry
+      shell: bash
+    
