@@ -48,25 +48,35 @@ jobs:
         run: |
           yarn run docs:references
 
-      - name: Create a docs PR and update API references to merge back into the docs site
+      - name: Prepare docs temp branch
         working-directory: ./docs
         env:
           TEMP_BRANCH_NAME: ${{ needs.docs-update-prep.outputs.branch_name }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
         run: |
-          # First sync pre-prod/main with main
+          # First sync pre-prod/main with main using the "theirs" strategy to resolve conflicts
           git fetch origin main pre-prod/main
           git checkout pre-prod/main
-          git merge origin/main --no-edit
+          # Use -X theirs to automatically resolve conflicts in favor of main
+          git merge origin/main --no-edit -X theirs
           git push origin pre-prod/main
           
           # Now create a new branch from the updated pre-prod/main
           git checkout -b $TEMP_BRANCH_NAME
-          
-          # Apply the API reference changes to this branch
+
+      - name: Update API references in the docs site
+        working-directory: ./docs
+        run: |
           yarn clean-references -- -p amplify-js
           git add .
           git commit --allow-empty -m "chore: Update amplify-js API references"
+
+      - name: Create a docs PR to merge api references back into the docs site
+        working-directory: ./docs
+        env:
+          TEMP_BRANCH_NAME: ${{ needs.docs-update-prep.outputs.branch_name }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
+        run: |
           git push origin $TEMP_BRANCH_NAME
           
           # Create PR from the temp branch to pre-prod/main
