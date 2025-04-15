@@ -16,6 +16,8 @@ export {
 export type {
 	GraphQLResult,
 	GraphQLReturnType,
+	GraphQLOptionsV6,
+	GraphQLResponseV6,
 } from '@aws-amplify/api-graphql';
 
 export { CONNECTION_STATE_CHANGE, events } from '@aws-amplify/api-graphql';
