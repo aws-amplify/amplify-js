@@ -35,6 +35,12 @@ export interface RestApiOptionsBase {
 	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials}
 	 */
 	withCredentials?: boolean;
+	/**
+	 * Retry strategy for the REST API calls. It will take precedence over REST `retryStrategy` in Amplify configuration libraryOptions.
+	 *
+	 * @default ` { strategy: 'jittered-exponential-backoff' } `
+	 */
+	retryStrategy?: RetryStrategy;
 }
 
 type Headers = Record<string, string>;
@@ -82,12 +88,6 @@ export interface ApiInput<Options> {
 	 * Options to overwrite the REST API call behavior.
 	 */
 	options?: Options;
-	/**
-	 * Retry strategy for the REST API calls. It will take precedence over REST `retryStrategy` in Amplify configuration libraryOptions.
-	 *
-	 * @default ` { strategy: 'jittered-exponential-backoff' } `
-	 */
-	retryStrategy?: RetryStrategy;
 }
 
 /**
@@ -97,7 +97,7 @@ export interface ApiInput<Options> {
 export interface InternalPostInput {
 	// Resolved GraphQl endpoint url
 	url: URL;
-	options?: RestApiOptionsBase & {
+	options?: Omit<RestApiOptionsBase, 'retryStrategy'> & {
 		/**
 		 * Internal-only option for GraphQL client to provide the IAM signing service and region.
 		 * * If auth mode is 'iam', you MUST set this value.

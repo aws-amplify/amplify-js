@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.14.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.1...aws-amplify@6.14.2) (2025-04-09)
+
+### Bug Fixes
+
+- **aws-amplify:** cookie store is not used for identity store in SSR ([#14326](https://github.com/aws-amplify/amplify-js/issues/14326)) ([42f6332](https://github.com/aws-amplify/amplify-js/commit/42f6332678b8c1670becf5fa5ce98daeb602ed9f))
+
+## [6.14.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.0...aws-amplify@6.14.1) (2025-03-28)
+
+**Note:** Version bump only for package aws-amplify
+
 # [6.14.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.6...aws-amplify@6.14.0) (2025-03-25)
 
 ### Features

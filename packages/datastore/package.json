@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "5.0.78",
+	"version": "5.0.80",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -44,8 +44,8 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/api": "6.3.7",
-		"@aws-amplify/api-graphql": "4.7.11",
+		"@aws-amplify/api": "6.3.9",
+		"@aws-amplify/api-graphql": "4.7.13",
 		"buffer": "4.9.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
@@ -56,8 +56,8 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.11.0",
-		"@aws-amplify/react-native": "1.1.7",
+		"@aws-amplify/core": "6.11.2",
+		"@aws-amplify/react-native": "1.1.8",
 		"@types/uuid-validate": "^0.0.1",
 		"dexie": "3.2.2",
 		"dexie-export-import": "1.0.3",

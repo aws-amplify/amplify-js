@@ -54,6 +54,23 @@ describe('createUrlSearchParamsForSignInSignUp', () => {
 			'redirect_uri=https%3A%2F%2Fexample.com%2Fsignin&response_type=code&client_id=userPoolClientId&scope=openid&state=state&code_challenge=code_challenge&code_challenge_method=S256&identity_provider=Google',
 		);
 	});
+
+	it('returns URLSearchParams with the correct values when lang query parameter is supplied', () => {
+		const url = 'https://example.com?lang=es';
+
+		const result = createUrlSearchParamsForSignInSignUp({
+			url,
+			oAuthConfig,
+			userPoolClientId,
+			state,
+			origin,
+			codeVerifier,
+		});
+
+		expect(result.toString()).toBe(
+			'redirect_uri=https%3A%2F%2Fexample.com%2Fsignin&response_type=code&client_id=userPoolClientId&scope=openid&state=state&code_challenge=code_challenge&code_challenge_method=S256&lang=es',
+		);
+	});
 });
 
 describe('createUrlSearchParamsForTokenExchange', () => {

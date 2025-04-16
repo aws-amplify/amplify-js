@@ -11,6 +11,8 @@ import {
 import { AmplifyOutputs } from '@aws-amplify/core/internals/utils';
 
 import {
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	DefaultIdentityIdStore,
 	cognitoCredentialsProvider,
 	cognitoUserPoolsTokenProvider,
 } from '../src/auth/cognito';
@@ -23,6 +25,8 @@ jest.mock('../src/auth/cognito', () => ({
 		setKeyValueStorage: jest.fn(),
 	},
 	cognitoCredentialsProvider: jest.fn(),
+	DefaultIdentityIdStore: jest.fn(),
+	CognitoAWSCredentialsAndIdentityIdProvider: jest.fn(),
 }));
 
 const mockCognitoUserPoolsTokenProviderSetAuthConfig =
@@ -32,6 +36,10 @@ const mockCognitoUserPoolsTokenProviderSetKeyValueStorage =
 const mockAmplifySingletonConfigure = AmplifySingleton.configure as jest.Mock;
 const mockAmplifySingletonGetConfig = AmplifySingleton.getConfig as jest.Mock;
 const MockCookieStorage = CookieStorage as jest.Mock;
+const MockDefaultIdentityIdStore = jest.mocked(DefaultIdentityIdStore);
+const MockCognitoAWSCredentialsAndIdentityIdProvider = jest.mocked(
+	CognitoAWSCredentialsAndIdentityIdProvider,
+);
 
 const mockResourceConfig: ResourcesConfig = {
 	Auth: {
@@ -50,8 +58,16 @@ const mockResourceConfig: ResourcesConfig = {
 
 describe('initSingleton (DefaultAmplify)', () => {
 	const mockCookieStorageInstance = {};
+	const mockCognitoAWSCredentialsAndIdentityIdProviderInstance = {} as any;
+	const mockDefaultIdentityIdStoreInstance = {} as any;
 	beforeAll(() => {
 		MockCookieStorage.mockImplementation(() => mockCookieStorageInstance);
+		MockDefaultIdentityIdStore.mockImplementation(
+			() => mockDefaultIdentityIdStoreInstance,
+		);
+		MockCognitoAWSCredentialsAndIdentityIdProvider.mockImplementation(
+			() => mockCognitoAWSCredentialsAndIdentityIdProviderInstance,
+		);
 	});
 	beforeEach(() => {
 		mockAmplifySingletonConfigure.mockImplementation((_, libraryOptions) => {
@@ -64,6 +80,8 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 	afterEach(() => {
 		MockCookieStorage.mockClear();
+		MockCognitoAWSCredentialsAndIdentityIdProvider.mockClear();
+		MockDefaultIdentityIdStore.mockClear();
 		mockCognitoUserPoolsTokenProviderSetAuthConfig.mockReset();
 		mockCognitoUserPoolsTokenProviderSetKeyValueStorage.mockReset();
 		mockAmplifySingletonConfigure.mockReset();
@@ -252,13 +270,20 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).toHaveBeenCalledWith(mockCookieStorageInstance);
+					expect(MockDefaultIdentityIdStore).toHaveBeenCalledWith(
+						mockCookieStorageInstance,
+					);
+					expect(
+						MockCognitoAWSCredentialsAndIdentityIdProvider,
+					).toHaveBeenCalledWith(mockDefaultIdentityIdStoreInstance);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
 							...libraryOptions,
 							Auth: {
 								tokenProvider: cognitoUserPoolsTokenProvider,
-								credentialsProvider: cognitoCredentialsProvider,
+								credentialsProvider:
+									mockCognitoAWSCredentialsAndIdentityIdProviderInstance,
 							},
 						},
 					);
@@ -345,7 +370,6 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig,
 					).not.toHaveBeenCalled();
-					expect(MockCookieStorage).not.toHaveBeenCalled();
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).not.toHaveBeenCalled();

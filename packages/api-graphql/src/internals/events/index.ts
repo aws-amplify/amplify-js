@@ -12,6 +12,7 @@ import { configure, normalizeAuth, serializeEvents } from './utils';
 import type {
 	EventsChannel,
 	EventsOptions,
+	ProviderOptions,
 	PublishResponse,
 	PublishedEvent,
 	SubscriptionObserver,
@@ -44,12 +45,14 @@ async function connect(
 	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel> {
-	const providerOptions = configure();
+	const providerOptions: ProviderOptions = configure();
 
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
 		providerOptions.authenticationType,
 	);
+	providerOptions.apiKey = options?.apiKey || providerOptions.apiKey;
+	providerOptions.authToken = options?.authToken || providerOptions.authToken;
 
 	await eventProvider.connect(providerOptions);
 
@@ -70,6 +73,9 @@ async function connect(
 			subOptions?.authMode,
 			subscribeOptions.authenticationType,
 		);
+		subscribeOptions.apiKey = subOptions?.apiKey || subscribeOptions.apiKey;
+		subscribeOptions.authToken =
+			subOptions?.authToken || subscribeOptions.authToken;
 
 		_subscription = eventProvider
 			.subscribe(subscribeOptions)
@@ -94,6 +100,9 @@ async function connect(
 			pubOptions?.authMode,
 			publishOptions.authenticationType,
 		);
+		publishOptions.apiKey = pubOptions?.apiKey || publishOptions.apiKey;
+		publishOptions.authToken =
+			pubOptions?.authToken || publishOptions.authToken;
 
 		return eventProvider.publish(publishOptions);
 	};
@@ -141,11 +150,13 @@ async function post(
 	event: DocumentType | DocumentType[],
 	options?: EventsOptions,
 ): Promise<void | PublishedEvent[]> {
-	const providerOptions = configure();
+	const providerOptions: ProviderOptions = configure();
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
 		providerOptions.authenticationType,
 	);
+	providerOptions.apiKey = options?.apiKey || providerOptions.apiKey;
+	providerOptions.authToken = options?.authToken || providerOptions.authToken;
 
 	// trailing slash required in publish
 	const normalizedChannelName = channel[0] === '/' ? channel : `/${channel}`;
@@ -154,7 +165,6 @@ async function post(
 		...providerOptions,
 		query: normalizedChannelName,
 		variables: serializeEvents(event),
-		authToken: options?.authToken,
 	};
 
 	const abortController = new AbortController();

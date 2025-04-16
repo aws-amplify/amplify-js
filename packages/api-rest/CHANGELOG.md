@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.1...@aws-amplify/api-rest@4.1.2) (2025-04-09)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.0...@aws-amplify/api-rest@4.1.1) (2025-03-28)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
 # [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.75...@aws-amplify/api-rest@4.1.0) (2025-03-25)
 
 ### Features

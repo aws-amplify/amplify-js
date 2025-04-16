@@ -100,13 +100,13 @@ describe('Events client', () => {
 			});
 		});
 
-		const authModes: GraphQLAuthMode[] = [
-			'apiKey',
-			'userPool',
-			'oidc',
-			'iam',
-			'lambda',
-			'none',
+		const authModeConfigs: { authMode: GraphQLAuthMode, apiKey?: string, authToken?: string }[] = [
+			{ authMode: 'apiKey', apiKey: 'testAPIKey' },
+			{ authMode: 'userPool', authToken: 'userPoolToken' },
+			{ authMode: 'oidc', authToken: 'oidcToken' },
+			{ authMode: 'iam', authToken: 'iamToken' },
+			{ authMode: 'lambda', authToken: 'lambdaToken' },
+			{ authMode: 'none' },
 		];
 
 		describe('channel', () => {
@@ -124,12 +124,16 @@ describe('Events client', () => {
 					mockProvider = AppSyncEventProvider;
 				});
 
-				for (const authMode of authModes) {
-					test(`auth override: ${authMode}`, async () => {
-						await events.connect('/', { authMode });
+				for (const authConfig of authModeConfigs) {
+					const {authMode: authenticationType, ...config} = authConfig
+					test(`connect auth override: ${authConfig.authMode}`, async () => {
+						const channel = await events.connect('/', authConfig);
 
 						expect(mockProvider.connect).toHaveBeenCalledWith(
-							expect.objectContaining({ authenticationType: authMode }),
+							expect.objectContaining({
+								authenticationType,
+								...config
+							}),
 						);
 					});
 				}
@@ -153,20 +157,24 @@ describe('Events client', () => {
 					mockProvider = AppSyncEventProvider;
 				});
 
-				for (const authMode of authModes) {
-					test(`auth override: ${authMode}`, async () => {
-						const channel = await events.connect('/');
+				for (const authConfig of authModeConfigs) {
+					const {authMode: authenticationType, ...config} = authConfig
 
-						channel.subscribe(
+					test(`subscription auth override: ${authConfig.authMode}`, async () => {
+						const channel = await events.connect('/');
+						channel.subscribe( 
 							{
 								next: data => void data,
 								error: error => void error,
 							},
-							{ authMode },
-						);
+							authConfig
+						)
 
-						expect(mockSubscribeObservable).toHaveBeenCalledWith(
-							expect.objectContaining({ authenticationType: authMode }),
+						expect(mockProvider.subscribe).toHaveBeenCalledWith(
+							expect.objectContaining({
+								authenticationType,
+								...config
+							}),
 						);
 					});
 				}
@@ -195,14 +203,21 @@ describe('Events client', () => {
 					mockProvider = AppSyncEventProvider;
 				});
 
-				for (const authMode of authModes) {
-					test(`auth override: ${authMode}`, async () => {
-						const channel = await events.connect('/');
+				for (const authConfig of authModeConfigs) {
+					const {authMode: authenticationType, ...config} = authConfig
 
-						channel.publish({ some: 'data' }, { authMode });
+					test(`publish auth override: ${authConfig.authMode}`, async () => {
+						const channel = await events.connect('/');
+						channel.publish( 
+							"Test message",
+							authConfig
+						)
 
 						expect(mockProvider.publish).toHaveBeenCalledWith(
-							expect.objectContaining({ authenticationType: authMode }),
+							expect.objectContaining({
+								authenticationType,
+								...config
+							}),
 						);
 					});
 				}
@@ -230,16 +245,19 @@ describe('Events client', () => {
 				);
 			});
 
-			for (const authMode of authModes) {
-				test(`auth override: ${authMode}`, async () => {
-					await events.post('/', { test: 'data' }, { authMode });
+			for (const authConfig of authModeConfigs) {
+				const {authMode: authenticationType, ...config} = authConfig
+
+				test(`auth override: ${authenticationType}`, async () => {
+					await events.post('/', { test: 'data' }, authConfig);
 
 					expect(mockReq).toHaveBeenCalledWith(
 						Amplify,
 						expect.objectContaining({
 							query: '/',
 							variables: ['{"test":"data"}'],
-							authenticationType: authMode,
+							authenticationType,
+							...config
 						}),
 						{},
 						abortController,

@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/rtn-push-notification",
-	"version": "1.2.32",
+	"version": "1.2.33",
 	"description": "React Native module for aws-amplify push notifications",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -27,8 +27,7 @@
 		"lodash": "^4.17.21"
 	},
 	"devDependencies": {
-		"@types/react-native": "0.70.0",
-		"react-native": "0.71.0",
+		"react-native": "0.72.17",
 		"typescript": "5.0.2"
 	},
 	"peerDependencies": {

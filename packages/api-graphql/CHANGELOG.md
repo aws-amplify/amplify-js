@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.12...@aws-amplify/api-graphql@4.7.13) (2025-04-09)
+
+### Bug Fixes
+
+- (14277) Unable to override options when calling `events.connect` and `subscribe` ([#14278](https://github.com/aws-amplify/amplify-js/issues/14278)) ([db70f7b](https://github.com/aws-amplify/amplify-js/commit/db70f7be22711c6bf03fe68d7d3d3d93070d9a85))
+
+## [4.7.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.11...@aws-amplify/api-graphql@4.7.12) (2025-03-28)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
 ## [4.7.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.10...@aws-amplify/api-graphql@4.7.11) (2025-03-25)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

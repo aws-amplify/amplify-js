@@ -84,6 +84,7 @@ export type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
 export interface EventsOptions {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
+	apiKey?: string;
 }
 
 export interface PublishedEvent {
@@ -95,3 +96,14 @@ export interface PublishResponse {
 	failed: PublishedEvent[];
 	successful: PublishedEvent[];
 }
+
+interface EventsConfigure {
+	appSyncGraphqlEndpoint: string;
+	region?: string;
+	authenticationType: ResolvedGraphQLAuthModes;
+	apiKey?: string;
+}
+
+export type ProviderOptions = EventsConfigure & {
+	authToken?: string;
+};

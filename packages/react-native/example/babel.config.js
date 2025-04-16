@@ -1,4 +1,5 @@
 const path = require('path');
+
 const pak = require('../package.json');
 
 module.exports = {
@@ -13,5 +14,17 @@ module.exports = {
 				},
 			},
 		],
+	],
+	overrides: [
+		{
+			plugins: [
+				[
+					'@babel/plugin-transform-private-methods',
+					{
+						loose: true,
+					},
+				],
+			],
+		},
 	],
 };

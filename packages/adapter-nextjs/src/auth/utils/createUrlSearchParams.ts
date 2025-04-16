@@ -6,6 +6,7 @@ import { generateCodeVerifier } from 'aws-amplify/adapter-core';
 
 import { resolveIdentityProviderFromUrl } from './resolveIdentityProviderFromUrl';
 import { resolveRedirectSignInUrl } from './resolveRedirectUrl';
+import { getSearchParamValueFromUrl } from './getSearchParamValueFromUrl';
 
 export const createUrlSearchParamsForSignInSignUp = ({
 	url,
@@ -23,6 +24,7 @@ export const createUrlSearchParamsForSignInSignUp = ({
 	codeVerifier: ReturnType<typeof generateCodeVerifier>;
 }): URLSearchParams => {
 	const resolvedProvider = resolveIdentityProviderFromUrl(url);
+	const lang = getSearchParamValueFromUrl(url, 'lang');
 
 	const redirectUrlSearchParams = new URLSearchParams({
 		redirect_uri: resolveRedirectSignInUrl(origin, oAuthConfig),
@@ -36,6 +38,10 @@ export const createUrlSearchParamsForSignInSignUp = ({
 
 	if (resolvedProvider) {
 		redirectUrlSearchParams.append('identity_provider', resolvedProvider);
+	}
+
+	if (lang) {
+		redirectUrlSearchParams.append('lang', lang);
 	}
 
 	return redirectUrlSearchParams;
