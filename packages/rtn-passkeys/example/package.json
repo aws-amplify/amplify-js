@@ -11,7 +11,13 @@
 	},
 	"dependencies": {
 		"react": "19.0.0",
-		"react-native": "0.78.0"
+		"react-native": "0.78.0",
+		"aws-amplify": "*",
+		"@aws-amplify/react-native": "*",
+		"@aws-amplify/rtn-passkeys": "*",
+		"@react-native-async-storage/async-storage": "^2.1.2",
+		"react-native-get-random-values": "^1.11.0",
+		"@react-native-community/netinfo": "^11.4.1"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.25.2",

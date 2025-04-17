@@ -1,7 +1,7 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"jsx": "react",
+		"jsx": "react-native",
 		"paths": {
 			"@aws-amplify/rtn-passkeys": ["../src/index"]
 		}

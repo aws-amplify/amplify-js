@@ -17,4 +17,7 @@
 
 @end
 
-
+@interface AmplifyRtnPasskeysBase64UrlTranscoder : NSObject
+	+ (NSString *)base64UrlEncode:(NSData *)string;
+	+ (NSData *)base64UrlDecode:(NSString *)base64UrlString;
+@end

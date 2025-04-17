@@ -17,6 +17,11 @@ static facebook::jsi::Value __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_multi
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, NumberKind, "multiply", "(DD)D", args, count, cachedMethodId);
 }
 
+static facebook::jsi::Value __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getIsPasskeySupported(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, BooleanKind, "getIsPasskeySupported", "()Z", args, count, cachedMethodId);
+}
+
 static facebook::jsi::Value __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_createPasskey(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "createPasskey", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
@@ -30,6 +35,7 @@ static facebook::jsi::Value __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getPa
 NativeAmplifyRtnPasskeysSpecJSI::NativeAmplifyRtnPasskeysSpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
   methodMap_["multiply"] = MethodMetadata {2, __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_multiply};
+  methodMap_["getIsPasskeySupported"] = MethodMetadata {0, __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getIsPasskeySupported};
   methodMap_["createPasskey"] = MethodMetadata {1, __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_createPasskey};
   methodMap_["getPasskey"] = MethodMetadata {1, __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getPasskey};
 }

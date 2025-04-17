@@ -178,6 +178,7 @@ namespace JS {
 
 - (NSNumber *)multiply:(double)a
                      b:(double)b;
+- (NSNumber *)getIsPasskeySupported;
 - (void)createPasskey:(JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson &)input
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject;

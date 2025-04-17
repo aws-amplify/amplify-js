@@ -9,6 +9,7 @@ const config = getDefaultConfig(projectRoot);
 
 // only look for internal deps from monorepo root
 const monorepoPackages = {
+	'aws-amplify': path.resolve(monorepoRoot, 'packages/aws-amplify'),
 	'@aws-amplify/react-native': path.resolve(
 		monorepoRoot,
 		'packages/react-native',

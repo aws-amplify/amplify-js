@@ -3,8 +3,6 @@
 
 import AmplifyRtnPasskeys from './NativeAmplifyRtnPasskeys';
 
-export function multiply(a: number, b: number): number {
-	return AmplifyRtnPasskeys.multiply(a, b);
-}
+export type AmplifyRtnPasskeysModule = typeof AmplifyRtnPasskeys;
 
-export const { getPasskey, createPasskey } = AmplifyRtnPasskeys;
+export const module = AmplifyRtnPasskeys;

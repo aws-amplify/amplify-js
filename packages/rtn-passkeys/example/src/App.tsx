@@ -1,14 +1,24 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { multiply } from '@aws-amplify/rtn-passkeys';
+import { Amplify } from 'aws-amplify';
+import { module } from '@aws-amplify/rtn-passkeys';
 
-const result = multiply(6, 7);
+import outputs from '../amplify_outputs.json';
+
+import { Authenticator } from './components/Authenticator';
+import { Passkeys } from './components/Passkeys';
+
+const result = module.multiply(6, 7);
+
+Amplify.configure(outputs);
 
 export default function App() {
 	return (
 		<View style={styles.container}>
-			<Text>Result: {result}</Text>
+			<Authenticator>
+				<Text>Result: {result}</Text>
+				<Passkeys />
+			</Authenticator>
 		</View>
 	);
 }

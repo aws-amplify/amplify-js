@@ -300,6 +300,7 @@ export default [
 			'**/__tests__/**',
 			'**/packages/adapter-nextjs/**',
 			'**/packages/react-native/example/**',
+			'**/packages/rtn-passkeys/example/**',
 		],
 		rules: {
 			'import/no-extraneous-dependencies': 'error',

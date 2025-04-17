@@ -56,7 +56,6 @@
 		"typescript": "^5.2.2"
 	},
 	"peerDependencies": {
-		"react": "*",
 		"react-native": "*"
 	},
 	"codegenConfig": {

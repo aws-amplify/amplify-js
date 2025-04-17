@@ -19,8 +19,9 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = AmplifyRtnPasskeysExample/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AmplifyRtnPasskeysExample/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = AmplifyRtnPasskeysExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		3B4392A12AC88292D35C810B /* Pods-AmplifyRtnPasskeysExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AmplifyRtnPasskeysExample.debug.xcconfig"; path = "Target Support Files/Pods-AmplifyRtnPasskeysExample/Pods-AmplifyRtnPasskeysExample.debug.xcconfig"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-AmplifyRtnPasskeysExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AmplifyRtnPasskeysExample.release.xcconfig"; path = "Target Support Files/Pods-AmplifyRtnPasskeysExample/Pods-AmplifyRtnPasskeysExample.release.xcconfig"; sourceTree = "<group>"; };
+		1DDFCE8A2D82166300CFD52E /* AmplifyRtnPasskeysExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = AmplifyRtnPasskeysExample.entitlements; path = AmplifyRtnPasskeysExample/AmplifyRtnPasskeysExample.entitlements; sourceTree = "<group>"; };
+		28B60A264610278F0F5A136A /* Pods-AmplifyRtnPasskeysExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AmplifyRtnPasskeysExample.release.xcconfig"; path = "Target Support Files/Pods-AmplifyRtnPasskeysExample/Pods-AmplifyRtnPasskeysExample.release.xcconfig"; sourceTree = "<group>"; };
+		35DEFAAFB11EC5A06275E6CA /* Pods-AmplifyRtnPasskeysExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AmplifyRtnPasskeysExample.debug.xcconfig"; path = "Target Support Files/Pods-AmplifyRtnPasskeysExample/Pods-AmplifyRtnPasskeysExample.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-AmplifyRtnPasskeysExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AmplifyRtnPasskeysExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = AmplifyRtnPasskeysExample/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = AmplifyRtnPasskeysExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -42,6 +43,7 @@
 		13B07FAE1A68108700A75B9A /* AmplifyRtnPasskeysExample */ = {
 			isa = PBXGroup;
 			children = (
+				1DDFCE8A2D82166300CFD52E /* AmplifyRtnPasskeysExample.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -60,6 +62,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		56E5D2791365D644F24728F6 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				35DEFAAFB11EC5A06275E6CA /* Pods-AmplifyRtnPasskeysExample.debug.xcconfig */,
+				28B60A264610278F0F5A136A /* Pods-AmplifyRtnPasskeysExample.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -74,7 +85,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				56E5D2791365D644F24728F6 /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -87,15 +98,6 @@
 				13B07F961A680F5B00A75B9A /* AmplifyRtnPasskeysExample.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				3B4392A12AC88292D35C810B /* Pods-AmplifyRtnPasskeysExample.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-AmplifyRtnPasskeysExample.release.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -255,11 +257,13 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-AmplifyRtnPasskeysExample.debug.xcconfig */;
+			baseConfigurationReference = 35DEFAAFB11EC5A06275E6CA /* Pods-AmplifyRtnPasskeysExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = AmplifyRtnPasskeysExample/AmplifyRtnPasskeysExample.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LXJMF8N53N;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AmplifyRtnPasskeysExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -273,7 +277,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = amazonaws.amplify.rtnpasskeys.example;
+				PRODUCT_BUNDLE_IDENTIFIER = com.amazonaws.amplify.rtnpasskeys.example;
 				PRODUCT_NAME = AmplifyRtnPasskeysExample;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -283,11 +287,13 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-AmplifyRtnPasskeysExample.release.xcconfig */;
+			baseConfigurationReference = 28B60A264610278F0F5A136A /* Pods-AmplifyRtnPasskeysExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = AmplifyRtnPasskeysExample/AmplifyRtnPasskeysExample.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LXJMF8N53N;
 				INFOPLIST_FILE = AmplifyRtnPasskeysExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -300,7 +306,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = amazonaws.amplify.rtnpasskeys.example;
+				PRODUCT_BUNDLE_IDENTIFIER = com.amazonaws.amplify.rtnpasskeys.example;
 				PRODUCT_NAME = AmplifyRtnPasskeysExample;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

@@ -6,6 +6,7 @@ import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
 	multiply(a: number, b: number): number;
+	getIsPasskeySupported(): boolean;
 	createPasskey(
 		input: PasskeyCreateOptionsJson,
 	): Promise<PasskeyCreateResultJson>;

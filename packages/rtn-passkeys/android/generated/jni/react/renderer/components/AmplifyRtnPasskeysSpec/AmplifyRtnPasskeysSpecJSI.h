@@ -599,6 +599,7 @@ protected:
 
 public:
   virtual double multiply(jsi::Runtime &rt, double a, double b) = 0;
+  virtual bool getIsPasskeySupported(jsi::Runtime &rt) = 0;
   virtual jsi::Value createPasskey(jsi::Runtime &rt, jsi::Object input) = 0;
   virtual jsi::Value getPasskey(jsi::Runtime &rt, jsi::Object input) = 0;
 
@@ -638,6 +639,14 @@ private:
 
       return bridging::callFromJs<double>(
           rt, &T::multiply, jsInvoker_, instance_, std::move(a), std::move(b));
+    }
+    bool getIsPasskeySupported(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::getIsPasskeySupported) == 1,
+          "Expected getIsPasskeySupported(...) to have 1 parameters");
+
+      return bridging::callFromJs<bool>(
+          rt, &T::getIsPasskeySupported, jsInvoker_, instance_);
     }
     jsi::Value createPasskey(jsi::Runtime &rt, jsi::Object input) override {
       static_assert(
