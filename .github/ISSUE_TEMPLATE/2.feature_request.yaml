@@ -7,6 +7,13 @@ body:
       value: |
         Thanks for taking the time to submit a feature request! Try to include as much information as you can.
 
+  - type: markdown
+    attributes:
+      value: |
+        Please provide a link to the issue you're trying to solve, if you haven't, please open an issue first.
+    validations:
+      required: true
+
   - type: dropdown
     attributes:
       label: Is this related to a new or existing framework?
