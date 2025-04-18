@@ -12,7 +12,7 @@ the requirements below.
 
 #### Issue #, if available
 <!-- Also, please reference any associated PRs for documentation updates. -->
-
+<!-- If you're an external contributor, please provide a link to the issue you're trying to solve. Please open an issue first if you don't have one. -->
 
 
 #### Description of how you validated changes
