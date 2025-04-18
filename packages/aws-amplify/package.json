@@ -8,34 +8,34 @@
 	"react-native": "./src/index.ts",
 	"exports": {
 		".": {
+			"react-native": "./src/index.ts",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./utils": {
+			"react-native": "./src/utils/index.ts",
 			"types": "./dist/esm/utils/index.d.ts",
 			"import": "./dist/esm/utils/index.mjs",
-			"require": "./dist/cjs/utils/index.js",
-			"react-native": "./src/utils/index.ts"
+			"require": "./dist/cjs/utils/index.js"
 		},
 		"./auth": {
+			"react-native": "./src/auth/index.ts",
 			"types": "./dist/esm/auth/index.d.ts",
 			"import": "./dist/esm/auth/index.mjs",
-			"require": "./dist/cjs/auth/index.js",
-			"react-native": "./src/auth/index.ts"
+			"require": "./dist/cjs/auth/index.js"
 		},
 		"./api": {
+			"react-native": "./src/api/index.ts",
 			"types": "./dist/esm/api/index.d.ts",
 			"import": "./dist/esm/api/index.mjs",
-			"require": "./dist/cjs/api/index.js",
-			"react-native": "./src/api/index.ts"
+			"require": "./dist/cjs/api/index.js"
 		},
 		"./api/internals": {
+			"react-native": "./src/api/internals.ts",
 			"types": "./dist/esm/api/internals.d.ts",
 			"import": "./dist/esm/api/internals.mjs",
-			"require": "./dist/cjs/api/internals.js",
-			"react-native": "./src/api/internals.ts"
+			"require": "./dist/cjs/api/internals.js"
 		},
 		"./api/server": {
 			"types": "./dist/esm/api/server.d.ts",
@@ -43,10 +43,10 @@
 			"require": "./dist/cjs/api/server.js"
 		},
 		"./data": {
+			"react-native": "./src/api/index.ts",
 			"types": "./dist/esm/api/index.d.ts",
 			"import": "./dist/esm/api/index.mjs",
-			"require": "./dist/cjs/api/index.js",
-			"react-native": "./src/api/index.ts"
+			"require": "./dist/cjs/api/index.js"
 		},
 		"./data/server": {
 			"types": "./dist/esm/api/server.d.ts",
@@ -54,16 +54,16 @@
 			"require": "./dist/cjs/api/server.js"
 		},
 		"./datastore": {
+			"react-native": "./src/datastore/index.ts",
 			"types": "./dist/esm/datastore/index.d.ts",
 			"import": "./dist/esm/datastore/index.mjs",
-			"require": "./dist/cjs/datastore/index.js",
-			"react-native": "./src/datastore/index.ts"
+			"require": "./dist/cjs/datastore/index.js"
 		},
 		"./auth/cognito": {
+			"react-native": "./src/auth/cognito/index.ts",
 			"types": "./dist/esm/auth/cognito/index.d.ts",
 			"import": "./dist/esm/auth/cognito/index.mjs",
-			"require": "./dist/cjs/auth/cognito/index.js",
-			"react-native": "./src/auth/cognito/index.ts"
+			"require": "./dist/cjs/auth/cognito/index.js"
 		},
 		"./auth/cognito/server": {
 			"types": "./dist/esm/auth/cognito/server/index.d.ts",
@@ -81,46 +81,46 @@
 			"require": "./dist/cjs/auth/enableOAuthListener.js"
 		},
 		"./analytics": {
+			"react-native": "./src/analytics/index.ts",
 			"types": "./dist/esm/analytics/index.d.ts",
 			"import": "./dist/esm/analytics/index.mjs",
-			"require": "./dist/cjs/analytics/index.js",
-			"react-native": "./src/analytics/index.ts"
+			"require": "./dist/cjs/analytics/index.js"
 		},
 		"./analytics/pinpoint": {
+			"react-native": "./src/analytics/pinpoint/index.ts",
 			"types": "./dist/esm/analytics/pinpoint/index.d.ts",
 			"import": "./dist/esm/analytics/pinpoint/index.mjs",
-			"require": "./dist/cjs/analytics/pinpoint/index.js",
-			"react-native": "./src/analytics/pinpoint/index.ts"
+			"require": "./dist/cjs/analytics/pinpoint/index.js"
 		},
 		"./analytics/kinesis": {
+			"react-native": "./src/analytics/kinesis/index.ts",
 			"types": "./dist/esm/analytics/kinesis/index.d.ts",
 			"import": "./dist/esm/analytics/kinesis/index.mjs",
-			"require": "./dist/cjs/analytics/kinesis/index.js",
-			"react-native": "./src/analytics/kinesis/index.ts"
+			"require": "./dist/cjs/analytics/kinesis/index.js"
 		},
 		"./analytics/kinesis-firehose": {
+			"react-native": "./src/analytics/kinesis-firehose/index.ts",
 			"types": "./dist/esm/analytics/kinesis-firehose/index.d.ts",
 			"import": "./dist/esm/analytics/kinesis-firehose/index.mjs",
-			"require": "./dist/cjs/analytics/kinesis-firehose/index.js",
-			"react-native": "./src/analytics/kinesis-firehose/index.ts"
+			"require": "./dist/cjs/analytics/kinesis-firehose/index.js"
 		},
 		"./analytics/personalize": {
+			"react-native": "./src/analytics/personalize/index.ts",
 			"types": "./dist/esm/analytics/personalize/index.d.ts",
 			"import": "./dist/esm/analytics/personalize/index.mjs",
-			"require": "./dist/cjs/analytics/personalize/index.js",
-			"react-native": "./src/analytics/personalize/index.ts"
+			"require": "./dist/cjs/analytics/personalize/index.js"
 		},
 		"./storage": {
+			"react-native": "./src/storage/index.ts",
 			"types": "./dist/esm/storage/index.d.ts",
 			"import": "./dist/esm/storage/index.mjs",
-			"require": "./dist/cjs/storage/index.js",
-			"react-native": "./src/storage/index.ts"
+			"require": "./dist/cjs/storage/index.js"
 		},
 		"./storage/s3": {
+			"react-native": "./src/storage/s3/index.ts",
 			"types": "./dist/esm/storage/s3/index.d.ts",
 			"import": "./dist/esm/storage/s3/index.mjs",
-			"require": "./dist/cjs/storage/s3/index.js",
-			"react-native": "./src/storage/s3/index.ts"
+			"require": "./dist/cjs/storage/s3/index.js"
 		},
 		"./storage/server": {
 			"types": "./dist/esm/storage/server.d.ts",
@@ -133,28 +133,28 @@
 			"require": "./dist/cjs/storage/s3/server.js"
 		},
 		"./in-app-messaging": {
+			"react-native": "./src/in-app-messaging/index.ts",
 			"types": "./dist/esm/in-app-messaging/index.d.ts",
 			"import": "./dist/esm/in-app-messaging/index.mjs",
-			"require": "./dist/cjs/in-app-messaging/index.js",
-			"react-native": "./src/in-app-messaging/index.ts"
+			"require": "./dist/cjs/in-app-messaging/index.js"
 		},
 		"./push-notifications": {
+			"react-native": "./src/push-notifications/index.ts",
 			"types": "./dist/esm/push-notifications/index.d.ts",
 			"import": "./dist/esm/push-notifications/index.mjs",
-			"require": "./dist/cjs/push-notifications/index.js",
-			"react-native": "./src/push-notifications/index.ts"
+			"require": "./dist/cjs/push-notifications/index.js"
 		},
 		"./in-app-messaging/pinpoint": {
+			"react-native": "./src/in-app-messaging/pinpoint/index.ts",
 			"types": "./dist/esm/in-app-messaging/pinpoint/index.d.ts",
 			"import": "./dist/esm/in-app-messaging/pinpoint/index.mjs",
-			"require": "./dist/cjs/in-app-messaging/pinpoint/index.js",
-			"react-native": "./src/in-app-messaging/pinpoint/index.ts"
+			"require": "./dist/cjs/in-app-messaging/pinpoint/index.js"
 		},
 		"./push-notifications/pinpoint": {
+			"react-native": "./src/push-notifications/pinpoint/index.ts",
 			"types": "./dist/esm/push-notifications/pinpoint/index.d.ts",
 			"import": "./dist/esm/push-notifications/pinpoint/index.mjs",
-			"require": "./dist/cjs/push-notifications/pinpoint/index.js",
-			"react-native": "./src/push-notifications/pinpoint/index.ts"
+			"require": "./dist/cjs/push-notifications/pinpoint/index.js"
 		},
 		"./adapter-core": {
 			"types": "./dist/esm/adapter-core/index.d.ts",
