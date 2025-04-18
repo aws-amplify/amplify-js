@@ -12,7 +12,7 @@ the requirements below.
 
 #### Issue #, if available
 <!-- Also, please reference any associated PRs for documentation updates. -->
-<!-- For external contributions, provide the gtihub issue the PR is addressing. If no github issue exists for the related changes, open a new issue in https://github.com/aws-amplify/amplify-js/issues. -->
+<!-- For external contributions, provide the github issue the PR is addressing. If no github issue exists for the related changes, open a new issue in https://github.com/aws-amplify/amplify-js/issues. -->
 
 
 #### Description of how you validated changes
