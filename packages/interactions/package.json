@@ -42,16 +42,16 @@
 			"require": "./dist/cjs/index.js"
 		},
 		"./lex-v1": {
+			"react-native": "./src/lex-v1/index.ts",
 			"types": "./dist/esm/lex-v1/index.d.ts",
 			"import": "./dist/esm/lex-v1/index.mjs",
-			"require": "./dist/cjs/lex-v1/index.js",
-			"react-native": "./src/lex-v1/index.ts"
+			"require": "./dist/cjs/lex-v1/index.js"
 		},
 		"./lex-v2": {
+			"react-native": "./src/lex-v2/index.ts",
 			"types": "./dist/esm/lex-v2/index.d.ts",
 			"import": "./dist/esm/lex-v2/index.mjs",
-			"require": "./dist/cjs/lex-v2/index.js",
-			"react-native": "./src/lex-v2/index.ts"
+			"require": "./dist/cjs/lex-v2/index.js"
 		}
 	},
 	"repository": {
