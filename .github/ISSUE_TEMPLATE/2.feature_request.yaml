@@ -10,7 +10,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Please provide a link to the issue you're trying to solve, if you haven't, please open an issue first.
+        Please provide a link to the issue you're trying to solve. Please open an issue first if you don't have one.
     validations:
       required: true
 
