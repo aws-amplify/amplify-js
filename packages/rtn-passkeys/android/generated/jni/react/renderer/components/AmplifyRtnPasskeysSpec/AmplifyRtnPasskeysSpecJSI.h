@@ -598,7 +598,6 @@ protected:
   NativeAmplifyRtnPasskeysCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-  virtual double multiply(jsi::Runtime &rt, double a, double b) = 0;
   virtual bool getIsPasskeySupported(jsi::Runtime &rt) = 0;
   virtual jsi::Value createPasskey(jsi::Runtime &rt, jsi::Object input) = 0;
   virtual jsi::Value getPasskey(jsi::Runtime &rt, jsi::Object input) = 0;
@@ -632,14 +631,6 @@ private:
 
     }
 
-    double multiply(jsi::Runtime &rt, double a, double b) override {
-      static_assert(
-          bridging::getParameterCount(&T::multiply) == 3,
-          "Expected multiply(...) to have 3 parameters");
-
-      return bridging::callFromJs<double>(
-          rt, &T::multiply, jsInvoker_, instance_, std::move(a), std::move(b));
-    }
     bool getIsPasskeySupported(jsi::Runtime &rt) override {
       static_assert(
           bridging::getParameterCount(&T::getIsPasskeySupported) == 1,

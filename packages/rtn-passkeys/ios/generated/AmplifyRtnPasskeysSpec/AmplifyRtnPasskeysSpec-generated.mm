@@ -73,10 +73,6 @@
 @end
 namespace facebook::react {
   
-    static facebook::jsi::Value __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_multiply(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, "multiply", @selector(multiply:b:), args, count);
-    }
-
     static facebook::jsi::Value __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getIsPasskeySupported(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, BooleanKind, "getIsPasskeySupported", @selector(getIsPasskeySupported), args, count);
     }
@@ -92,9 +88,6 @@ namespace facebook::react {
   NativeAmplifyRtnPasskeysSpecJSI::NativeAmplifyRtnPasskeysSpecJSI(const ObjCTurboModule::InitParams &params)
     : ObjCTurboModule(params) {
       
-        methodMap_["multiply"] = MethodMetadata {2, __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_multiply};
-        
-        
         methodMap_["getIsPasskeySupported"] = MethodMetadata {0, __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getIsPasskeySupported};
         
         

@@ -145,5 +145,6 @@
 	"overrides": {
 		"tar": "6.2.1",
 		"cross-spawn": "7.0.5"
-	}
+	},
+	"packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

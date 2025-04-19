@@ -35,10 +35,6 @@ public abstract class NativeAmplifyRtnPasskeysSpec extends ReactContextBaseJavaM
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
-  public abstract double multiply(double a, double b);
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  @DoNotStrip
   public abstract boolean getIsPasskeySupported();
 
   @ReactMethod
