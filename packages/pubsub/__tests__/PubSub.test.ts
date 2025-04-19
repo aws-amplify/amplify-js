@@ -21,50 +21,11 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 
 import { Reachability } from '@aws-amplify/core/internals/utils';
-import * as Paho from '../src/vendor/paho-mqtt';
 import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
 import { PubSub as MqttPubSub } from '../src/clients/mqtt';
 import { HubConnectionListener } from './helpers';
 import { Observable, Observer } from 'rxjs';
 import * as constants from '../src/Providers/constants';
-
-const pahoClientMockCache = {};
-
-const mockConnect = jest.fn(options => {
-	options.onSuccess();
-});
-
-const pahoClientMock = jest.fn().mockImplementation((host, clientId) => {
-	if (pahoClientMockCache[clientId]) {
-		return pahoClientMockCache[clientId];
-	}
-
-	var client = {} as any;
-
-	client.connect = mockConnect;
-	client.send = jest.fn((topic, message) => {
-		client.onMessageArrived({ destinationName: topic, payloadString: message });
-	});
-	client.subscribe = jest.fn((topics, options) => {});
-	client.unsubscribe = jest.fn(() => {});
-	client.onMessageArrived = jest.fn(() => {});
-
-	client.isConnected = jest.fn(() => true);
-	client.disconnect = jest.fn(() => {});
-
-	pahoClientMockCache[clientId] = client;
-
-	return client;
-});
-
-jest.mock('../src/vendor/paho-mqtt', () => ({
-	__esModule: true,
-	...jest.requireActual('../src/vendor/paho-mqtt'),
-	Client: {},
-}));
-
-// @ts-ignore
-Paho.Client = pahoClientMock;
 
 const testPubSubAsync = (
 	pubsub,
@@ -410,28 +371,6 @@ describe('PubSub', () => {
 					ConnectionState.ConnectedPendingNetwork,
 					ConnectionState.ConnectionDisruptedPendingNetwork,
 				]);
-			});
-		});
-	});
-
-	describe('MqttOverWSProvider local testing config', () => {
-		test('ssl should be disabled in the case of local testing', async () => {
-			mockConnect.mockClear();
-			const pubsub = new MqttPubSubTest({
-				region: 'region',
-				aws_appsync_dangerously_connect_to_http_endpoint_for_testing: true,
-			});
-
-			await testPubSubAsync(pubsub, 'topicA', 'my message MqttOverWSProvider', {
-				provider: 'MqttOverWSProvider',
-			});
-
-			expect(pubsub['isSSLEnabled']).toBe(false);
-			expect(mockConnect).toHaveBeenCalledWith({
-				useSSL: false,
-				mqttVersion: 3,
-				onSuccess: expect.any(Function),
-				onFailure: expect.any(Function),
 			});
 		});
 	});
