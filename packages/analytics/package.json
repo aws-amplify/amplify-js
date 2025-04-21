@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/analytics",
-	"version": "7.0.78",
+	"version": "7.0.79",
 	"description": "Analytics category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -42,34 +42,34 @@
 	},
 	"exports": {
 		".": {
+			"react-native": "./src/index.ts",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./pinpoint": {
+			"react-native": "./src/providers/pinpoint/index.ts",
 			"types": "./dist/esm/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/providers/pinpoint/index.mjs",
-			"require": "./dist/cjs/providers/pinpoint/index.js",
-			"react-native": "./src/providers/pinpoint/index.ts"
+			"require": "./dist/cjs/providers/pinpoint/index.js"
 		},
 		"./kinesis": {
+			"react-native": "./src/providers/kinesis/index.ts",
 			"types": "./dist/esm/providers/kinesis/index.d.ts",
 			"import": "./dist/esm/providers/kinesis/index.mjs",
-			"require": "./dist/cjs/providers/kinesis/index.js",
-			"react-native": "./src/providers/kinesis/index.ts"
+			"require": "./dist/cjs/providers/kinesis/index.js"
 		},
 		"./kinesis-firehose": {
+			"react-native": "./src/providers/kinesis-firehose/index.ts",
 			"types": "./dist/esm/providers/kinesis-firehose/index.d.ts",
 			"import": "./dist/esm/providers/kinesis-firehose/index.mjs",
-			"require": "./dist/cjs/providers/kinesis-firehose/index.js",
-			"react-native": "./src/providers/kinesis-firehose/index.ts"
+			"require": "./dist/cjs/providers/kinesis-firehose/index.js"
 		},
 		"./personalize": {
+			"react-native": "./src/providers/personalize/index.ts",
 			"types": "./dist/esm/providers/personalize/index.d.ts",
 			"import": "./dist/esm/providers/personalize/index.mjs",
-			"require": "./dist/cjs/providers/personalize/index.js",
-			"react-native": "./src/providers/personalize/index.ts"
+			"require": "./dist/cjs/providers/personalize/index.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -103,7 +103,7 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.11.2",
+		"@aws-amplify/core": "6.11.3",
 		"@aws-amplify/react-native": "1.1.8",
 		"@aws-sdk/types": "3.398.0",
 		"typescript": "5.0.2"
