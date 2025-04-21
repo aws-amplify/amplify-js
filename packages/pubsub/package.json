@@ -78,7 +78,8 @@
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
 		"tslib": "^2.5.0",
-		"url": "0.11.0"
+		"url": "0.11.0",
+		"paho-mqtt": "file:./src/vendor"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.1.0"

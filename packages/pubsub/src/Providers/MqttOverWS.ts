@@ -4,6 +4,9 @@
 import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
 import { ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore this module is expected to not have declaration file
+import * as Paho from 'paho-mqtt';
 
 import {
 	ConnectionState,
@@ -13,9 +16,6 @@ import {
 	PublishInput,
 	SubscribeInput,
 } from '../types/PubSub';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore this module is expected to not have declaration file
-import * as Paho from '../vendor/paho-mqtt.js';
 import {
 	CONNECTION_CHANGE,
 	ConnectionStateMonitor,

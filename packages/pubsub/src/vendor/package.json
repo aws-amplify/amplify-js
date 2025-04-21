@@ -1,0 +1,10 @@
+{
+  "name": "paho-mqtt",
+  "version": "1.0.0",
+  "main": "paho-mqtt.js",
+  "module": "paho-mqtt.mjs",
+  "exports": {
+    "import": "./paho-mqtt.mjs",
+    "require": "./paho-mqtt.js"
+  }
+}

@@ -1,5 +1,8 @@
 module.exports = {
 	...require('../../jest.config'),
+	modulePathIgnorePatterns: [
+		'<rootDir>/src/vendor/',
+	],
 	coverageThreshold: {
 		global: {
 			branches: 16,
