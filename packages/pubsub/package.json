@@ -70,7 +70,8 @@
 		"dist/esm",
 		"src",
 		"iot",
-		"mqtt"
+		"mqtt",
+		"vendor"
 	],
 	"dependencies": {
 		"@aws-amplify/auth": "6.12.3",
@@ -89,7 +90,6 @@
 		"@types/paho-mqtt": "1.0.10",
 		"typescript": "5.0.2"
 	},
-	"bundleDependencies": ["paho-mqtt"],
 	"size-limit": [
 		{
 			"name": "PubSub (IoT provider)",
