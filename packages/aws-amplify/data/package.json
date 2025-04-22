@@ -1,7 +1,7 @@
 {
 	"name": "aws-amplify/data",
 	"main": "../dist/cjs/api/index.js",
-	"react-native": "../src/api/index.ts",
+	"react-native": "../dist/cjs/api/index.js",
 	"browser": "../dist/esm/api/index.mjs",
 	"module": "../dist/esm/api/index.mjs",
 	"typings": "../dist/esm/api/index.d.ts"
