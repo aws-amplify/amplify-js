@@ -15,8 +15,8 @@
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs && cp -R src/vendor dist/cjs/vendor && cp -R src/vendor dist/esm/vendor",
-		"build:watch": "mkdirp dist/esm/vendor && mkdirp dist/cjs/vendor && cp -R src/vendor dist/cjs/vendor && cp -R src/vendor dist/esm/vendor && rollup --forceExit -c rollup.config.mjs --watch",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
+		"build:watch": "mkdirp dist/esm/vendor && rollup --forceExit -c rollup.config.mjs --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
@@ -79,15 +79,17 @@
 		"rxjs": "^7.8.1",
 		"tslib": "^2.5.0",
 		"url": "0.11.0",
-		"paho-mqtt": "file:./src/vendor"
+		"paho-mqtt": "file:./vendor/paho-mqtt"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.11.3",
+		"@types/paho-mqtt": "1.0.10",
 		"typescript": "5.0.2"
 	},
+	"bundleDependencies": ["paho-mqtt"],
 	"size-limit": [
 		{
 			"name": "PubSub (IoT provider)",

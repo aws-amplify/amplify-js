@@ -4,9 +4,7 @@
 import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
 import { ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore this module is expected to not have declaration file
-import * as Paho from 'paho-mqtt';
+import Paho from 'paho-mqtt';
 
 import {
 	ConnectionState,
@@ -180,9 +178,8 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore this module is expected to not have declaration file
-		const client = new Paho.Client(url, clientId) as PahoClient;
+
+		const client = new Paho.Client(url!, clientId!) as PahoClient;
 
 		client.onMessageArrived = ({
 			destinationName: topic,

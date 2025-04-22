@@ -21,7 +21,7 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 
 import { Reachability } from '@aws-amplify/core/internals/utils';
-import * as Paho from '../src/vendor/paho-mqtt';
+import Paho from 'paho-mqtt';
 import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
 import { PubSub as MqttPubSub } from '../src/clients/mqtt';
 import { HubConnectionListener } from './helpers';
@@ -57,10 +57,12 @@ const pahoClientMock = jest.fn().mockImplementation((host, clientId) => {
 	return client;
 });
 
-jest.mock('../src/vendor/paho-mqtt', () => ({
+jest.mock('paho-mqtt', () => ({
 	__esModule: true,
-	...jest.requireActual('../src/vendor/paho-mqtt'),
-	Client: {},
+	default: {
+		...jest.requireActual('paho-mqtt').default,
+		Client: {},
+	}
 }));
 
 // @ts-ignore

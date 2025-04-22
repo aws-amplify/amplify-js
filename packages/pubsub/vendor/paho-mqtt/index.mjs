@@ -2824,7 +2824,11 @@ function onMessageArrived(message) {
 					? window
 					: {},
 	);
+	PahoMQTT.default = PahoMQTT;
 	return PahoMQTT;
 });
+
+export const Client = PahoMQTT.Client;
+export const Message = PahoMQTT.Message;
 
 export default PahoMQTT;

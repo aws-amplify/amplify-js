@@ -1,4 +1,10 @@
 {
 	"extends": "../../tsconfig.json",
-	"include": ["./src", "__tests__", "__mocks__"]
+	"include": [
+		"./src",
+		"__tests__",
+		"__mocks__",
+		"vendor/paho-mqtt/index.js",
+		"vendor/paho-mqtt/index.mjs"
+	]
 }

@@ -1,0 +1,8 @@
+{
+	"name": "paho-mqtt",
+	"version": "0.1.0",
+	"description": "Vendored private Paho MQTT client",
+	"private": true,
+	"main": "./index.js",
+	"module": "./index.mjs"
+}

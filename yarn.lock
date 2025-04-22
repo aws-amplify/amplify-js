@@ -5095,6 +5095,11 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
 
+"@types/paho-mqtt@1.0.10":
+  version "1.0.10"
+  resolved "https://registry.npmjs.org/@types/paho-mqtt/-/paho-mqtt-1.0.10.tgz#543349b95570c58e9d6c9e40c7e07937b38b8192"
+  integrity sha512-xOEii1m7jw7mIKjufDkolpz7VlyqptUmm/YFPtLJCybrPCuLhN+WYgNpulQ/CXo7wtEW7x4uGon2v89+6g/pcA==
+
 "@types/pako@^2.0.0":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/pako/-/pako-2.0.3.tgz#b6993334f3af27c158f3fe0dfeeba987c578afb1"
@@ -12179,6 +12184,9 @@ pacote@^18.0.0, pacote@^18.0.6:
     sigstore "^2.2.0"
     ssri "^10.0.0"
     tar "^6.1.11"
+
+"paho-mqtt@file:./packages/pubsub/vendor/paho-mqtt":
+  version "0.1.0"
 
 pako@2.0.4:
   version "2.0.4"
