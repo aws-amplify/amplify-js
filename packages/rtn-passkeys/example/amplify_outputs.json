@@ -1,0 +1,37 @@
+{
+	"auth": {
+		"user_pool_id": "us-east-1_znLnFkJd4",
+		"aws_region": "us-east-1",
+		"user_pool_client_id": "5jqc2n5d8j6gvvfnvq17bd37b2",
+		"identity_pool_id": "us-east-1:bcff0578-4e86-49fb-bf6c-3bf0f78efc2d",
+		"mfa_methods": [
+			"TOTP",
+			"SMS"
+		],
+		"standard_required_attributes": [
+			"nickname"
+		],
+		"username_attributes": [],
+		"user_verification_types": [
+			"email",
+			"phone_number"
+		],
+		"mfa_configuration": "OPTIONAL",
+		"password_policy": {
+			"min_length": 8,
+			"require_lowercase": true,
+			"require_numbers": true,
+			"require_symbols": true,
+			"require_uppercase": true
+		},
+		"unauthenticated_identities_enabled": true
+	},
+	"version": "1.3",
+	"data": {
+		"aws_region": "us-east-1",
+		"url": "https://skpr2pjpyjgwnc5qeisqxznqri.appsync-api.us-east-1.amazonaws.com/graphql",
+		"api_key": "da2-6xlwykglbjhfbikwn2dhpdwdma",
+		"default_authorization_type": "API_KEY",
+		"authorization_types": []
+	}
+}

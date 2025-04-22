@@ -14,6 +14,18 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
    		return NAME
   	}
 
+	override fun getIsPasskeySupported(): Boolean {
+		TODO("Not yet implemented")
+	}
+
+	override fun createPasskey(input: ReadableMap?, promise: Promise?) {
+		TODO("Not yet implemented")
+	}
+
+	override fun getPasskey(input: ReadableMap?, promise: Promise?) {
+		TODO("Not yet implemented")
+	}
+
 	companion object {
     const val NAME = "AmplifyRtnPasskeys"
   }
