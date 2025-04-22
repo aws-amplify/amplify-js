@@ -1,0 +1,41 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { getIsNativeError } from '@aws-amplify/react-native';
+
+import { handlePasskeyError } from './handlePasskeyError';
+import {
+	PasskeyError,
+	PasskeyErrorCode,
+	passkeyErrorMap,
+} from './passkeyError';
+
+/**
+ * Handle Passkey Authentication Errors
+ *
+ * @param err unknown
+ * @returns PasskeyError
+ */
+export const handlePasskeyAuthenticationError = (
+	err: unknown,
+): PasskeyError => {
+	if (err instanceof PasskeyError) {
+		return err;
+	}
+
+	if (getIsNativeError(err)) {
+		if (err.code === 'CANCELED') {
+			const { message, recoverySuggestion } =
+				passkeyErrorMap[PasskeyErrorCode.PasskeyAuthenticationCanceled];
+
+			return new PasskeyError({
+				name: PasskeyErrorCode.PasskeyAuthenticationCanceled,
+				message,
+				recoverySuggestion,
+				underlyingError: err,
+			});
+		}
+	}
+
+	return handlePasskeyError(err);
+};
