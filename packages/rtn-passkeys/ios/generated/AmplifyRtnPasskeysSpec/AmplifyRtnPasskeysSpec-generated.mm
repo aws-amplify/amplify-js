@@ -23,12 +23,60 @@
 }
 @end
 
-
+@implementation RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonRp)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonRp:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonRp>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonUser)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJsonUser:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJsonUser>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAmplifyRtnPasskeys_PkcDescriptor)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PkcDescriptor:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAmplifyRtnPasskeys::PkcDescriptor>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJson)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJson:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAmplifyRtnPasskeys::PasskeyCreateOptionsJson>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAmplifyRtnPasskeys_PasskeyGetOptionsJson)
++ (RCTManagedPointer *)JS_NativeAmplifyRtnPasskeys_PasskeyGetOptionsJson:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAmplifyRtnPasskeys::PasskeyGetOptionsJson>(json);
+}
+@end
 namespace facebook::react {
   
+    static facebook::jsi::Value __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getIsPasskeySupported(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, BooleanKind, "getIsPasskeySupported", @selector(getIsPasskeySupported), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_createPasskey(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "createPasskey", @selector(createPasskey:resolve:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getPasskey(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getPasskey", @selector(getPasskey:resolve:reject:), args, count);
+    }
 
   NativeAmplifyRtnPasskeysSpecJSI::NativeAmplifyRtnPasskeysSpecJSI(const ObjCTurboModule::InitParams &params)
     : ObjCTurboModule(params) {
       
+        methodMap_["getIsPasskeySupported"] = MethodMetadata {0, __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getIsPasskeySupported};
+        
+        
+        methodMap_["createPasskey"] = MethodMetadata {1, __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_createPasskey};
+        setMethodArgConversionSelector(@"createPasskey", 0, @"JS_NativeAmplifyRtnPasskeys_PasskeyCreateOptionsJson:");
+        
+        methodMap_["getPasskey"] = MethodMetadata {1, __hostFunction_NativeAmplifyRtnPasskeysSpecJSI_getPasskey};
+        setMethodArgConversionSelector(@"getPasskey", 0, @"JS_NativeAmplifyRtnPasskeys_PasskeyGetOptionsJson:");
   }
 } // namespace facebook::react
