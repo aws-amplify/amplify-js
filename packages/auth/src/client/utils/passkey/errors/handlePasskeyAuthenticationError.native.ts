@@ -24,6 +24,19 @@ export const handlePasskeyAuthenticationError = (
 	}
 
 	if (getIsNativeError(err)) {
+		// Passkey Retrieval Failed
+		if (err.code === 'FAILED') {
+			const { message, recoverySuggestion } =
+				passkeyErrorMap[PasskeyErrorCode.PasskeyRetrievalFailed];
+
+			return new PasskeyError({
+				name: PasskeyErrorCode.PasskeyRetrievalFailed,
+				message,
+				recoverySuggestion,
+				underlyingError: err,
+			});
+		}
+
 		if (err.code === 'CANCELED') {
 			const { message, recoverySuggestion } =
 				passkeyErrorMap[PasskeyErrorCode.PasskeyAuthenticationCanceled];

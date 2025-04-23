@@ -22,7 +22,8 @@ export interface RTNCore {
 
 export interface NativeError extends Error {
 	code: string;
-	domain: string;
+	domain?: string;
 	userInfo?: Record<string, unknown>;
-	nativeStackIOS?: string[];
+	nativeStackIOS?: never[];
+	nativeStackAndroid?: Record<string, unknown>[];
 }

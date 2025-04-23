@@ -22,6 +22,19 @@ export const handlePasskeyRegistrationError = (err: unknown): PasskeyError => {
 	}
 
 	if (getIsNativeError(err)) {
+		// Passkey Registration Failed
+		if (err.code === 'FAILED') {
+			const { message, recoverySuggestion } =
+				passkeyErrorMap[PasskeyErrorCode.PasskeyRegistrationFailed];
+
+			return new PasskeyError({
+				name: PasskeyErrorCode.PasskeyRegistrationFailed,
+				message,
+				recoverySuggestion,
+				underlyingError: err,
+			});
+		}
+
 		// Duplicate Passkey
 		if (err.code === 'DUPLICATE') {
 			const { message, recoverySuggestion } =
