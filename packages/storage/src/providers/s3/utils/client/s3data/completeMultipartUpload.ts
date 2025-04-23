@@ -51,6 +51,7 @@ export type CompleteMultipartUploadInput = Pick<
 	| 'ChecksumCRC32'
 	| 'ExpectedBucketOwner'
 	| 'IfNoneMatch'
+	| 'MpuObjectSize'
 >;
 
 export type CompleteMultipartUploadOutput = Pick<
@@ -68,6 +69,7 @@ const completeMultipartUploadSerializer = async (
 			'x-amz-checksum-crc32': input.ChecksumCRC32,
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 			'If-None-Match': input.IfNoneMatch,
+			'mpu-object-size': input.MpuObjectSize?.toString(),
 		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());

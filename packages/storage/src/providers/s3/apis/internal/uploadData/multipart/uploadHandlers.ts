@@ -31,7 +31,6 @@ import {
 	Part,
 	abortMultipartUpload,
 	completeMultipartUpload,
-	headObject,
 } from '../../../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../../../utils/userAgent';
 import { logger } from '../../../../../../utils';
@@ -186,17 +185,15 @@ export const getMultipartUploadHandlers = (
 			};
 		}
 
-		uploadCacheKey = size
-			? getUploadsCacheKey({
-					file: data instanceof File ? data : undefined,
-					accessLevel: resolvedAccessLevel,
-					contentType: uploadDataOptions?.contentType,
-					bucket: resolvedBucket!,
-					size,
-					key: objectKey,
-					optionsHash,
-				})
-			: undefined;
+		uploadCacheKey = getUploadsCacheKey({
+			file: data instanceof File ? data : undefined,
+			accessLevel: resolvedAccessLevel,
+			contentType: uploadDataOptions?.contentType,
+			bucket: resolvedBucket!,
+			size,
+			key: objectKey,
+			optionsHash,
+		});
 
 		const dataChunker = getDataChunker(data, size);
 		const completedPartNumberSet = new Set<number>(
@@ -244,41 +241,40 @@ export const getMultipartUploadHandlers = (
 
 		validateCompletedParts(inProgressUpload.completedParts, size);
 
-		const { ETag: eTag } = await completeMultipartUpload(
-			{
-				...resolvedS3Config,
-				abortSignal: abortController.signal,
-				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData),
-			},
-			{
-				Bucket: resolvedBucket,
-				Key: finalKey,
-				UploadId: inProgressUpload.uploadId,
-				ChecksumCRC32: inProgressUpload.finalCrc32,
-				IfNoneMatch: preventOverwrite ? '*' : undefined,
-				MultipartUpload: {
-					Parts: sortUploadParts(inProgressUpload.completedParts),
+		let eTag: string;
+		try {
+			const { ETag } = await completeMultipartUpload(
+				{
+					...resolvedS3Config,
+					abortSignal: abortController.signal,
+					userAgentValue: getStorageUserAgentValue(StorageAction.UploadData),
 				},
-				ExpectedBucketOwner: expectedBucketOwner,
-			},
-		);
-
-		if (size) {
-			const { ContentLength: uploadedObjectSize, $metadata } = await headObject(
-				resolvedS3Config,
 				{
 					Bucket: resolvedBucket,
 					Key: finalKey,
+					UploadId: inProgressUpload.uploadId,
+					ChecksumCRC32: inProgressUpload.finalCrc32,
+					IfNoneMatch: preventOverwrite ? '*' : undefined,
+					MultipartUpload: {
+						Parts: sortUploadParts(inProgressUpload.completedParts),
+					},
+					MpuObjectSize: size,
 					ExpectedBucketOwner: expectedBucketOwner,
 				},
 			);
-			if (uploadedObjectSize && uploadedObjectSize !== size) {
+			eTag = ETag!;
+		} catch (error) {
+			if (
+				error instanceof StorageError &&
+				error.metadata?.httpStatusCode === 400
+			) {
 				throw new StorageError({
 					name: 'Error',
-					message: `Upload failed. Expected object size ${size}, but got ${uploadedObjectSize}.`,
-					metadata: $metadata,
+					message: `Upload failed.`,
+					metadata: error.metadata,
 				});
 			}
+			throw error;
 		}
 
 		if (resumableUploadsCache && uploadCacheKey) {

@@ -60,8 +60,15 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 			],
 		},
 		UploadId: 'uploadId',
+		MpuObjectSize: 100,
 	},
-	expect.objectContaining(defaultExpectedRequest),
+	expect.objectContaining({
+		...defaultExpectedRequest,
+		headers: expect.objectContaining({
+			'content-type': 'application/xml',
+			'x-amz-mpu-object-size': '100',
+		}),
+	}),
 	{
 		status: 200,
 		headers: { ...DEFAULT_RESPONSE_HEADERS },
