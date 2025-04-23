@@ -7,5 +7,9 @@ import { NativeError } from './types';
  * @internal
  */
 export const getIsNativeError = (err: unknown): err is NativeError => {
-	return err instanceof Error && 'code' in err && 'domain' in err;
+	return (
+		err instanceof Error &&
+		'code' in err &&
+		('nativeStackIOS' in err || 'nativeStackAndroid' in err)
+	);
 };

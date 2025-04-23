@@ -18,18 +18,6 @@ import {
  */
 export const handlePasskeyError = (err: unknown): PasskeyError => {
 	if (getIsNativeError(err)) {
-		// Passkey Operation Aborted
-		if (err.code === 'FAILED') {
-			const { message, recoverySuggestion } =
-				passkeyErrorMap[PasskeyErrorCode.PasskeyOperationAborted];
-
-			return new PasskeyError({
-				name: PasskeyErrorCode.PasskeyOperationAborted,
-				message,
-				recoverySuggestion,
-				underlyingError: err,
-			});
-		}
 		// Relying Party / Domain Mismatch
 		if (err.code === 'RELYING_PARTY_MISMATCH') {
 			const { message, recoverySuggestion } =
@@ -37,6 +25,19 @@ export const handlePasskeyError = (err: unknown): PasskeyError => {
 
 			return new PasskeyError({
 				name: PasskeyErrorCode.RelyingPartyMismatch,
+				message,
+				recoverySuggestion,
+				underlyingError: err,
+			});
+		}
+
+		// Not Supported
+		if (err.code === 'NOT_SUPPORTED') {
+			const { message, recoverySuggestion } =
+				passkeyErrorMap[PasskeyErrorCode.PasskeyNotSupported];
+
+			return new PasskeyError({
+				name: PasskeyErrorCode.PasskeyNotSupported,
 				message,
 				recoverySuggestion,
 				underlyingError: err,
