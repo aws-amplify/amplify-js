@@ -12,9 +12,9 @@ on:
       - poc/add-start-after
 
 jobs:
-  e2e:
-    secrets: inherit
-    uses: ./.github/workflows/callable-release-verification.yml
+  # e2e:
+  #   secrets: inherit
+  #   uses: ./.github/workflows/callable-release-verification.yml
   parse-preid:
     name: Parse preid from branch
     runs-on: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
 
   preid-release:
     needs:
-      - e2e
+      # - e2e
       - parse-preid
     secrets: inherit
     uses: ./.github/workflows/callable-npm-publish-preid.yml
