@@ -192,7 +192,7 @@ RCT_EXPORT_MODULE()
 		return;
 	}
 
-	self.handler.reject(@"NOT_HANDLED", nil, nil);
+	self.handler.reject(@"FAILED", nil, nil);
 	self.handler = nil;
 }
 
