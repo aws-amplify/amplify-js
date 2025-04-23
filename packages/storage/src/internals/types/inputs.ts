@@ -48,6 +48,7 @@ export interface GetDataAccessInput {
 export interface AdvancedOptions {
 	locationCredentialsProvider?: CredentialsProvider;
 	customEndpoint?: string;
+	startAfter?: string;
 }
 
 /**

@@ -40,6 +40,7 @@ export function list(input: ListInput): Promise<ListOutput> {
 			// Advanced options
 			locationCredentialsProvider: input.options?.locationCredentialsProvider,
 			customEndpoint: input?.options?.customEndpoint,
+			startAfter: input.options?.startAfter,
 		},
 		// Type casting is necessary because `listInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.

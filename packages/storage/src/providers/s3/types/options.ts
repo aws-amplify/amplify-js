@@ -53,6 +53,8 @@ interface CommonOptions {
 
 	bucket?: StorageBucket;
 
+	startAfter?: string;
+
 	/**
 	 * The expected owner of the target bucket.
 	 */

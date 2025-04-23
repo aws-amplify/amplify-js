@@ -142,7 +142,7 @@ export default [
 				},
 			],
 
-			'import/no-deprecated': 'warn',
+			'import/no-deprecated': 'off',
 			'import/no-empty-named-blocks': 'error',
 			'import/no-mutable-exports': 'error',
 			'import/no-relative-packages': 'error',

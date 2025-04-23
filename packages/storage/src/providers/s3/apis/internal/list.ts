@@ -87,6 +87,7 @@ export const list = async (
 		Delimiter: getDelimiter(options),
 		ExpectedBucketOwner: options?.expectedBucketOwner,
 		EncodingType: 'url',
+		StartAfter: options.startAfter,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
