@@ -4255,7 +4255,7 @@ export interface PutObjectCommandInput extends Omit<PutObjectRequest, 'Body'> {
 	/**
 	 * For *`PutObjectRequest["Body"]`*, see {@link PutObjectRequest.Body}.
 	 */
-		Body?: string | Blob | ArrayBuffer | ArrayBufferView;
+	Body?: string | Blob | ArrayBuffer | ArrayBufferView;
 }
 /**
  * @public
