@@ -153,9 +153,9 @@ export const createStringEnumDeserializer = <T extends readonly string[]>(
 };
 
 /**
- * Deserializes a string if a string tag type. The function simply cast the parsed string into a given string tag type.
- * It does NOT validate whether the string value against the string tag. This behavior is the same to AWS SDK parsing
- * logic of string tag types.
+ * Deserializes a string to a string tag type. The function simply casts the parsed string into a given string tag type.
+ * It does NOT validate the string value against the string tag. This behavior is the same to AWS SDK parsing logic of
+ * string tag types.
  *
  * If you need to verify the string value, you must use {@link createStringEnumDeserializer} instead.
  *
