@@ -137,6 +137,7 @@ export const loadOrCreateMultipartUpload = async ({
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
 				ChecksumAlgorithm: finalCrc32 ? 'CRC32' : undefined,
+				ChecksumType: finalCrc32 ? 'FULL_OBJECT' : undefined,
 				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
