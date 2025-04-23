@@ -1,4 +1,4 @@
-package amazonaws.amplify.rtnpasskeys.example
+package com.amazonaws.amplify.rtnpasskeys.example
 
 import android.app.Application
 import com.facebook.react.PackageList
