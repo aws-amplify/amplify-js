@@ -22,5 +22,6 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
-    </application>
+			<meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
+		</application>
 </manifest>

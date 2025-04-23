@@ -221,7 +221,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (nonnull NSNumber *)getIsPasskeySupported {
-	if (@available(iOS 15.0, *)) {
+	if (@available(iOS 17.4, *)) {
 		return @YES;
 	}
 	return @NO;

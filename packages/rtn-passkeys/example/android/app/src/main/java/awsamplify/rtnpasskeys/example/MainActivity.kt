@@ -1,4 +1,4 @@
-package amazonaws.amplify.rtnpasskeys.example
+package com.amazonaws.amplify.rtnpasskeys.example
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
