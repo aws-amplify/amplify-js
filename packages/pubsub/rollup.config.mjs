@@ -18,18 +18,12 @@ const config = defineConfig([
 	// CJS config
 	{
 		input: input,
-		// external: [
-		// 	fileURLToPath(new URL('vendor/paho-mqtt.js', import.meta.url)),
-		// ],
 		output: cjsOutput,
 		plugins: [typescript(cjsTSOptions)],
 	},
 	// ESM config
 	{
 		input: input,
-		// external: [
-		// 	fileURLToPath(new URL('vendor/paho-mqtt.mjs', import.meta.url)),
-		// ],
 		output: esmOutput,
 		plugins: [typescript(esmTSOptions)],
 	},
