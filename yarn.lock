@@ -3906,7 +3906,7 @@
   dependencies:
     "@types/estree" "^1.0.0"
     estree-walker "^2.0.2"
-    picomatch "^4.0.2"
+    picomatch "^2.3.1"
 
 "@rollup/rollup-android-arm-eabi@4.36.0":
   version "4.36.0"
@@ -14524,10 +14524,15 @@ typescript@4.2.x:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.4.tgz#8610b59747de028fda898a8aef0e103f156d0961"
   integrity sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==
 
-"typescript@>=3 < 6", typescript@~5.3.0:
+"typescript@>=3 < 6":
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.3.tgz#b3ce6ba258e72e6305ba66f5c9b452aaee3ffe37"
   integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==
+
+typescript@^5.3.0:
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.3.tgz#92f8a3e5e3cf497356f4178c34cd65a7f5e8440e"
+  integrity sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==
 
 typeson-registry@^1.0.0-alpha.20:
   version "1.0.0-alpha.39"
