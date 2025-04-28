@@ -5,7 +5,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -30,13 +30,13 @@
 	},
 	"exports": {
 		".": {
-			"react-native": "./src/index.ts",
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js"
 		},
 		"./location-service": {
-			"react-native": "./src/providers/location-service/AmazonLocationServiceProvider.ts",
+			"react-native": "./dist/cjs/providers/location-service/AmazonLocationServiceProvider.js",
 			"types": "./dist/esm/providers/location-service/AmazonLocationServiceProvider.d.ts",
 			"import": "./dist/esm/providers/location-service/AmazonLocationServiceProvider.mjs",
 			"require": "./dist/cjs/providers/location-service/AmazonLocationServiceProvider.js"
