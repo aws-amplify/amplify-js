@@ -23,10 +23,12 @@ import {
 	validateS3RequiredParameter,
 } from '../utils';
 import { validateObjectUrl } from '../../validateObjectUrl';
+import { deserializeStringTag } from '../utils/deserializeHelpers';
 
 import type {
 	DeleteObjectCommandInput,
 	DeleteObjectCommandOutput,
+	RequestPayer,
 } from './types';
 import { defaultConfig, parseXmlError } from './base';
 
@@ -73,7 +75,10 @@ const deleteObjectDeserializer = async (
 		const content = map(response.headers, {
 			DeleteMarker: ['x-amz-delete-marker', deserializeBoolean],
 			VersionId: 'x-amz-version-id',
-			RequestCharged: 'x-amz-request-charged',
+			RequestCharged: [
+				'x-amz-request-charged',
+				deserializeStringTag<RequestPayer>,
+			],
 		});
 
 		return {

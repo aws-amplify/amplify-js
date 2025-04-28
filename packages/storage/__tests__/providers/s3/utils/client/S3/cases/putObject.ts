@@ -14,7 +14,7 @@ export const putObjectRequest = {
 	Bucket: 'bucket',
 	Key: 'key',
 	Body: 'body',
-	ACL: 'public-read',
+	ACL: 'public-read' as const,
 	CacheControl: 'CacheControl',
 	ContentDisposition: 'ContentDisposition',
 	ContentEncoding: 'ContentEncoding',
