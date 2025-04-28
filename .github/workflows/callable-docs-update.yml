@@ -56,9 +56,19 @@ jobs:
         run: |
           # First sync pre-prod/main with main using the "theirs" strategy to resolve conflicts
           git fetch origin main pre-prod/main
+
+          git checkout main
+          echo $(git log -5 --oneline)
+
           git checkout pre-prod/main
+          echo $(git log -5 --oneline)
+          echo $(git remote -v)
+
+          # git merge --no-ff origin/main --no-edit --allow-unrelated-histories
           # Use -X theirs to automatically resolve conflicts in favor of main
-          git merge origin/main --no-edit -X theirs
+          git merge origin/main --no-edit -X theirs --allow-unrelated-histories
+          echo "MERGE COMPLETE"
+          echo $(git log -5 --oneline)
           git push origin pre-prod/main
           
           # Now create a new branch from the updated pre-prod/main
