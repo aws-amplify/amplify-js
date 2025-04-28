@@ -4,7 +4,7 @@
 import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
 import { ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
-import Paho from 'paho-mqtt';
+import { Client } from 'paho-mqtt';
 
 import {
 	ConnectionState,
@@ -179,7 +179,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
 
-		const client = new Paho.Client(url!, clientId!) as PahoClient;
+		const client = new Client(url!, clientId!) as PahoClient;
 
 		client.onMessageArrived = ({
 			destinationName: topic,
