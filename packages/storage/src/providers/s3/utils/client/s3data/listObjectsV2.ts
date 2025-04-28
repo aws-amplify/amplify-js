@@ -25,10 +25,13 @@ import {
 	s3TransferHandler,
 } from '../utils';
 import { IntegrityError } from '../../../../../errors/IntegrityError';
+import { deserializeStringTag } from '../utils/deserializeHelpers';
 
 import type {
+	ChecksumAlgorithm,
 	ListObjectsV2CommandInput,
 	ListObjectsV2CommandOutput,
+	StorageClass,
 } from './types';
 import { defaultConfig, parseXmlError } from './base';
 
@@ -83,7 +86,7 @@ const listObjectsV2Deserializer = async (
 			],
 			ContinuationToken: 'ContinuationToken',
 			Delimiter: 'Delimiter',
-			EncodingType: 'EncodingType',
+			EncodingType: ['EncodingType', deserializeStringTag<'url'>],
 			IsTruncated: ['IsTruncated', deserializeBoolean],
 			KeyCount: ['KeyCount', deserializeNumber],
 			MaxKeys: ['MaxKeys', deserializeNumber],
@@ -124,12 +127,12 @@ const deserializeObject = (output: any) =>
 			value => emptyArrayGuard(value, deserializeChecksumAlgorithmList),
 		],
 		Size: ['Size', deserializeNumber],
-		StorageClass: 'StorageClass',
+		StorageClass: ['StorageClass', deserializeStringTag<StorageClass>],
 		Owner: ['Owner', deserializeOwner],
 	});
 
 const deserializeChecksumAlgorithmList = (output: any[]) =>
-	output.map(entry => String(entry));
+	output.map(deserializeStringTag<ChecksumAlgorithm>);
 
 const deserializeOwner = (output: any) =>
 	map(output, { DisplayName: 'DisplayName', ID: 'ID' });
