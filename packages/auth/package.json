@@ -101,7 +101,6 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.11.3",
 		"@aws-amplify/react-native": "1.1.8",
-		"@jest/test-sequencer": "^29.7.0",
-		"typescript": "5.0.2"
+		"@jest/test-sequencer": "^29.7.0"
 	}
 }
