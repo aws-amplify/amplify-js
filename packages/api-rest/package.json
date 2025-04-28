@@ -87,9 +87,8 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.11.4",
-		"@aws-amplify/react-native": "1.1.9",
-		"@aws-sdk/types": "3.387.0",
-		"typescript": "5.0.2"
+		"@aws-amplify/core": "6.11.3",
+		"@aws-amplify/react-native": "1.1.8",
+		"@aws-sdk/types": "3.387.0"
 	}
 }
