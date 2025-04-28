@@ -100,7 +100,6 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.11.3",
-		"@aws-amplify/react-native": "1.1.8",
-		"typescript": "5.0.2"
+		"@aws-amplify/react-native": "1.1.8"
 	}
 }
