@@ -73,7 +73,7 @@ jobs:
           yarn -v
 
           # Update API references
-          yarn clean-references -- -p amplify-js
+          yarn && yarn clean-references -- -p amplify-js
           git add .
           git commit --allow-empty -m "chore: Update amplify-js API references"
 
