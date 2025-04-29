@@ -1,16 +1,16 @@
 name: Push - run release verifications
 
-# concurrency:
-#   # group name unique for push to push-integ-test
-#   group: push-e2e-${{ github.ref }}
-#   cancel-in-progress: true
+concurrency:
+  # group name unique for push to push-integ-test
+  group: push-e2e-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
   push:
     branches:
-      - fix/api-ref-worflow
+      - replace-with-your-branch
 
 jobs:
-    publish-docs:
-        secrets: inherit
-        uses: ./.github/workflows/callable-docs-update.yml
+  e2e:
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
