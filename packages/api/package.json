@@ -68,7 +68,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@aws-amplify/core": "6.11.3",
+		"@aws-amplify/core": "6.11.4",
 		"jest-fetch-mock": "3.0.3"
 	},
 	"files": [
