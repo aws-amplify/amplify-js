@@ -1,12 +1,12 @@
 {
 	"name": "@aws-amplify/api-rest",
 	"private": false,
-	"version": "4.0.58",
+	"version": "4.1.4",
 	"description": "Api-rest category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -27,10 +27,10 @@
 	},
 	"exports": {
 		".": {
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
@@ -38,10 +38,10 @@
 			"require": "./dist/cjs/server.js"
 		},
 		"./internals": {
+			"react-native": "./dist/cjs/internals/index.js",
 			"types": "./dist/esm/internals/index.d.ts",
 			"import": "./dist/esm/internals/index.mjs",
-			"require": "./dist/cjs/internals/index.js",
-			"react-native": "./src/internals/index.ts"
+			"require": "./dist/cjs/internals/index.js"
 		},
 		"./internals/server": {
 			"types": "./dist/esm/internals/server.d.ts",
@@ -87,16 +87,8 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.5.3",
-		"@aws-amplify/react-native": "1.1.6",
-		"typescript": "5.0.2"
-	},
-	"size-limit": [
-		{
-			"name": "API (rest client)",
-			"path": "./dist/esm/index.mjs",
-			"import": "{ Amplify, RestAPI }",
-			"limit": "31.5 kB"
-		}
-	]
+		"@aws-amplify/core": "6.11.4",
+		"@aws-amplify/react-native": "1.1.9",
+		"@aws-sdk/types": "3.387.0"
+	}
 }

@@ -7,11 +7,13 @@ import { Socket } from 'net';
 import { enableFetchMocks } from 'jest-fetch-mock';
 import { NextRequest, NextResponse } from 'next/server.js';
 import { cookies } from 'next/headers.js';
+import { CookieStorage } from 'aws-amplify/adapter-core';
 
 import {
 	DATE_IN_THE_PAST,
 	createCookieStorageAdapterFromNextServerContext,
 } from '../../src/utils/createCookieStorageAdapterFromNextServerContext';
+import { isServerSideAuthAllowedCookie } from '../../src/auth/utils';
 
 // Make global Request available during test
 enableFetchMocks();
@@ -19,8 +21,12 @@ enableFetchMocks();
 jest.mock('next/headers', () => ({
 	cookies: jest.fn(),
 }));
+jest.mock('../../src/auth/utils');
 
 const mockNextCookiesFunc = cookies as jest.Mock;
+const mockIsServerSideAuthAllowedCookie = jest.mocked(
+	isServerSideAuthAllowedCookie,
+);
 
 describe('createCookieStorageAdapterFromNextServerContext', () => {
 	const mockGetFunc = jest.fn();
@@ -39,36 +45,40 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 	const mockKeyWithEncoding = 'test%40email.com';
 	const mockValue = 'fabCookie';
 
-	beforeEach(() => {
-		jest.resetAllMocks();
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('cookieStorageAdapter created from NextRequest and NextResponse', () => {
 		const request = new NextRequest(new URL('https://example.com'));
 		const response = NextResponse.next();
-
-		jest.spyOn(request, 'cookies', 'get').mockImplementation(
-			() =>
-				({
-					get: mockGetFunc,
-					getAll: mockGetAllFunc,
-				}) as any,
-		);
-
-		jest.spyOn(response, 'cookies', 'get').mockImplementation(() => ({
-			set: mockSetFunc,
-			delete: mockDeleteFunc,
-			get: jest.fn(),
-			getAll: jest.fn(),
-			has: jest.fn(),
-		}));
-
 		const mockContext = {
 			request,
 			response,
 		} as any;
+		let result: CookieStorage.Adapter;
 
-		const result = createCookieStorageAdapterFromNextServerContext(mockContext);
+		beforeAll(async () => {
+			mockIsServerSideAuthAllowedCookie.mockReturnValue(true);
+			jest.spyOn(request, 'cookies', 'get').mockImplementation(
+				() =>
+					({
+						get: mockGetFunc,
+						getAll: mockGetAllFunc,
+					}) as any,
+			);
+
+			jest.spyOn(response, 'cookies', 'get').mockImplementation(() => ({
+				set: mockSetFunc,
+				delete: mockDeleteFunc,
+				get: jest.fn(),
+				getAll: jest.fn(),
+				has: jest.fn(),
+			}));
+
+			result =
+				await createCookieStorageAdapterFromNextServerContext(mockContext);
+		});
 
 		it('gets cookie by calling `get` method of the underlying cookie store', () => {
 			result.get(mockKey);
@@ -116,30 +126,60 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
+
+		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			const testCookieName =
+				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
+			const adapterWithIgnore =
+				await createCookieStorageAdapterFromNextServerContext(
+					mockContext,
+					true,
+				);
+
+			adapterWithIgnore.set(testCookieName, 'value');
+			expect(mockSetFunc).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.delete(testCookieName);
+			expect(mockDeleteFunc).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+		});
 	});
 
 	describe('cookieStorageAdapter created from NextRequest and Response', () => {
 		const request = new NextRequest(new URL('https://example.com'));
 		const response = new Response();
-
-		jest.spyOn(request, 'cookies', 'get').mockImplementation(
-			() =>
-				({
-					get: mockGetFunc,
-					getAll: mockGetAllFunc,
-				}) as any,
-		);
-		jest.spyOn(response, 'headers', 'get').mockImplementation(
-			() =>
-				({
-					append: mockAppend,
-				}) as any,
-		);
-
 		const mockContext = {
 			request,
 			response,
 		} as any;
+
+		let adapter: CookieStorage.Adapter;
+
+		beforeAll(async () => {
+			jest.spyOn(request, 'cookies', 'get').mockImplementation(
+				() =>
+					({
+						get: mockGetFunc,
+						getAll: mockGetAllFunc,
+					}) as any,
+			);
+			jest.spyOn(response, 'headers', 'get').mockImplementation(
+				() =>
+					({
+						append: mockAppend,
+					}) as any,
+			);
+
+			adapter =
+				await createCookieStorageAdapterFromNextServerContext(mockContext);
+		});
 
 		const mockSerializeOptions = {
 			domain: 'example.com',
@@ -148,53 +188,52 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			httpOnly: true,
 			secure: true,
 			path: '/a-path',
+			maxAge: 3600,
 		};
 
-		const result = createCookieStorageAdapterFromNextServerContext(mockContext);
-
 		it('gets cookie by calling `get` method of the underlying cookie store', () => {
-			result.get(mockKey);
+			adapter.get(mockKey);
 			expect(mockGetFunc).toHaveBeenCalledWith(mockKey);
 		});
 
 		it('gets cookie by calling `get` method of the underlying cookie store with a encoded cookie name', () => {
-			result.get(mockKeyWithEncoding);
+			adapter.get(mockKeyWithEncoding);
 			expect(mockGetFunc).toHaveBeenCalledWith(
 				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
 
 		it('gets all cookies by calling `getAll` method of the underlying cookie store', () => {
-			result.getAll();
+			adapter.getAll();
 			expect(mockGetAllFunc).toHaveBeenCalled();
 		});
 
 		it('sets cookie by calling the `set` method of the underlying cookie store with options', () => {
-			result.set(mockKey, mockValue, mockSerializeOptions);
+			adapter.set(mockKey, mockValue, mockSerializeOptions);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${mockKey}=${mockValue};Domain=${
 					mockSerializeOptions.domain
 				};Expires=${mockSerializeOptions.expires.toUTCString()};HttpOnly;SameSite=${
 					mockSerializeOptions.sameSite
-				};Secure;Path=${mockSerializeOptions.path}`,
+				};Secure;Path=${mockSerializeOptions.path};Max-Age=${mockSerializeOptions.maxAge}`,
 			);
 		});
 
 		it('sets cookie by calling the `set` method of the underlying cookie store with options and a encoded cookie name', () => {
-			result.set(mockKeyWithEncoding, mockValue, mockSerializeOptions);
+			adapter.set(mockKeyWithEncoding, mockValue, mockSerializeOptions);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${encodeURIComponent(mockKeyWithEncoding)}=${mockValue};Domain=${
 					mockSerializeOptions.domain
 				};Expires=${mockSerializeOptions.expires.toUTCString()};HttpOnly;SameSite=${
 					mockSerializeOptions.sameSite
-				};Secure;Path=${mockSerializeOptions.path}`,
+				};Secure;Path=${mockSerializeOptions.path};Max-Age=${mockSerializeOptions.maxAge}`,
 			);
 		});
 
 		it('sets cookie by calling the `set` method of the underlying cookie store without options', () => {
-			result.set(mockKey, mockValue, undefined);
+			adapter.set(mockKey, mockValue, undefined);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${mockKey}=${mockValue};`,
@@ -202,7 +241,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		it('sets cookie by calling the `set` method of the underlying cookie store with options that do not need to be serialized', () => {
-			result.set(mockKey, mockValue, {
+			adapter.set(mockKey, mockValue, {
 				httpOnly: false,
 				sameSite: false,
 				secure: false,
@@ -214,7 +253,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store', () => {
-			result.delete(mockKey);
+			adapter.delete(mockKey);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${mockKey}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
@@ -222,7 +261,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		});
 
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store with a encoded cookie name', () => {
-			result.delete(mockKeyWithEncoding);
+			adapter.delete(mockKeyWithEncoding);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${encodeURIComponent(
@@ -230,12 +269,42 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
 			);
 		});
+
+		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			const testCookieName =
+				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
+			const adapterWithIgnore =
+				await createCookieStorageAdapterFromNextServerContext(
+					mockContext,
+					true,
+				);
+
+			adapterWithIgnore.set(testCookieName, 'value');
+			expect(mockAppend).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.delete(testCookieName);
+			expect(mockAppend).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+		});
 	});
 
 	describe('cookieStorageAdapter created from Next cookies function', () => {
-		mockNextCookiesFunc.mockReturnValueOnce(mockNextCookiesFuncReturn);
+		let result: CookieStorage.Adapter;
 
-		const result = createCookieStorageAdapterFromNextServerContext({ cookies });
+		beforeAll(async () => {
+			mockNextCookiesFunc.mockReturnValue(mockNextCookiesFuncReturn);
+
+			result = await createCookieStorageAdapterFromNextServerContext({
+				cookies,
+			});
+		});
 
 		it('gets cookie by calling `get` method of the underlying cookie store', () => {
 			result.get(mockKey);
@@ -283,10 +352,34 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
+
+		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			const testCookieName =
+				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
+			const adapterWithIgnore =
+				await createCookieStorageAdapterFromNextServerContext(
+					{ cookies },
+					true,
+				);
+
+			adapterWithIgnore.set(testCookieName, 'value');
+			expect(mockNextCookiesFuncReturn.set).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.delete(testCookieName);
+			expect(mockNextCookiesFuncReturn.delete).not.toHaveBeenCalled();
+			expect(mockIsServerSideAuthAllowedCookie).toHaveBeenCalledWith(
+				testCookieName,
+			);
+		});
 	});
 
 	describe('cookieStorageAdapter created from IncomingMessage and ServerResponse as the Pages Router context', () => {
-		it('operates with the underlying cookie store', () => {
+		it('operates with the underlying cookie store', async () => {
 			const mockCookies = {
 				key1: 'value1',
 				key2: 'value2',
@@ -302,7 +395,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				},
 			});
 
-			const result = createCookieStorageAdapterFromNextServerContext({
+			const result = await createCookieStorageAdapterFromNextServerContext({
 				request: request as any,
 				response,
 			});
@@ -341,7 +434,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			]);
 		});
 
-		it('operates with the underlying cookie store with encoded cookie names', () => {
+		it('operates with the underlying cookie store with encoded cookie names', async () => {
 			// these the auth keys generated by Amplify
 			const encodedCookieName1 = encodeURIComponent('test@email.com.idToken');
 			const encodedCookieName2 = encodeURIComponent(
@@ -364,7 +457,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				},
 			});
 
-			const result = createCookieStorageAdapterFromNextServerContext({
+			const result = await createCookieStorageAdapterFromNextServerContext({
 				request: request as any,
 				response,
 			});
@@ -413,7 +506,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			]);
 		});
 
-		it('does not add duplicate cookies when the cookies are defined in the response Set-Cookie headers', () => {
+		it('does not add duplicate cookies when the cookies are defined in the response Set-Cookie headers', async () => {
 			const mockExistingSetCookieValues = [
 				'CognitoIdentityServiceProvider.1234.accessToken=1234;Path=/',
 				'CognitoIdentityServiceProvider.1234.refreshToken=1234;Path=/',
@@ -433,7 +526,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 
 			getHeaderSpy.mockReturnValue(mockExistingSetCookieValues);
 
-			const result = createCookieStorageAdapterFromNextServerContext({
+			const result = await createCookieStorageAdapterFromNextServerContext({
 				request: request as any,
 				response,
 			});
@@ -447,6 +540,40 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			result.delete('CognitoIdentityServiceProvider.1234.identityId');
 			expect(appendHeaderSpy).not.toHaveBeenCalled();
 		});
+
+		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
+			const testCookieName =
+				'CognitoIdentityServiceProvider.4epnu2hld0q0ig2dtd426bv7ab.123.clockDrift';
+
+			const request = new IncomingMessage(new Socket());
+			const response = new ServerResponse(request);
+			const appendHeaderSpy = jest.spyOn(response, 'appendHeader');
+
+			Object.defineProperty(request, 'cookies', {
+				get() {
+					return {
+						[testCookieName]: 'value',
+					};
+				},
+			});
+
+			const adapterWithIgnore =
+				await createCookieStorageAdapterFromNextServerContext(
+					{
+						request: request as any,
+						response,
+					},
+					true,
+				);
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.set(testCookieName, 'value');
+			expect(appendHeaderSpy).not.toHaveBeenCalled();
+
+			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
+			adapterWithIgnore.delete(testCookieName);
+			expect(appendHeaderSpy).not.toHaveBeenCalled();
+		});
 	});
 
 	it('should throw error when no cookie storage adapter is created from the context', () => {
@@ -455,6 +582,6 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				request: undefined,
 				response: new ServerResponse({} as any),
 			} as any),
-		).toThrow();
+		).rejects.toThrow();
 	});
 });

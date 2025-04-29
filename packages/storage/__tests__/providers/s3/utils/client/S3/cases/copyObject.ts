@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { copyObject } from '../../../../../../../src/providers/s3/utils/client';
+import { copyObject } from '../../../../../../../src/providers/s3/utils/client/s3data';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -22,18 +22,22 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 		Key: 'key',
 		CacheControl: 'cacheControl',
 		ContentType: 'contentType',
-		ACL: 'acl',
+		ACL: 'public-read',
+		CopySourceIfMatch: 'eTag',
+		CopySourceIfUnmodifiedSince: new Date(0),
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key',
+			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?x-id=CopyObject',
 		}),
 		method: 'PUT',
 		headers: expect.objectContaining({
 			'x-amz-copy-source': 'sourceBucket/sourceKey',
 			'cache-control': 'cacheControl',
 			'content-type': 'contentType',
-			'x-amz-acl': 'acl',
+			'x-amz-acl': 'public-read',
+			'x-amz-copy-source-if-match': 'eTag',
+			'x-amz-copy-source-if-unmodified-since': 'Thu, 01 Jan 1970 00:00:00 GMT',
 		}),
 	}),
 	{
@@ -54,4 +58,34 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 	},
 ];
 
-export default [copyObjectHappyCase];
+const copyObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof copyObject
+> = [
+	'happy case',
+	'getObject with custom endpoint',
+	copyObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+		CopySource: 'sourceBucket/sourceKey',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key?x-id=CopyObject',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+export default [copyObjectHappyCase, copyObjectHappyCaseCustomEndpoint];

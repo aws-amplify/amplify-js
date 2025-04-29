@@ -3,6 +3,7 @@
 
 import { AuthStandardAttributeKey } from '@aws-amplify/core/internals/utils';
 
+import { ChallengeName } from '../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { SignInOutput } from '../providers/cognito';
 
 /**
@@ -217,6 +218,16 @@ export interface DoneSignInStep {
 	signInStep: 'DONE';
 }
 
+// New interfaces for USER_AUTH flow
+export interface ContinueSignInWithFirstFactorSelection {
+	signInStep: 'CONTINUE_SIGN_IN_WITH_FIRST_FACTOR_SELECTION';
+	availableChallenges?: ChallengeName[];
+}
+
+export interface ConfirmSignInWithPassword {
+	signInStep: 'CONFIRM_SIGN_IN_WITH_PASSWORD';
+}
+
 export type AuthNextSignInStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > =
@@ -229,6 +240,8 @@ export type AuthNextSignInStep<
 	| ContinueSignInWithTOTPSetup
 	| ContinueSignInWithEmailSetup
 	| ContinueSignInWithMFASetupSelection
+	| ContinueSignInWithFirstFactorSelection
+	| ConfirmSignInWithPassword
 	| ConfirmSignUpStep
 	| ResetPasswordStep
 	| DoneSignInStep;
@@ -238,9 +251,7 @@ export type AuthNextSignInStep<
  */
 export type AuthUserAttributes<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
-	[Attribute in UserAttributeKey]?: string;
-};
+> = Partial<Record<UserAttributeKey, string>>;
 
 /**
  * The interface of a user attribute.
@@ -319,4 +330,5 @@ export interface AWSAuthUser {
  */
 export interface AuthDevice {
 	id: string;
+	name?: string;
 }

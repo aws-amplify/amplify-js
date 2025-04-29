@@ -6,8 +6,6 @@ import {
 	AmplifyUrl,
 	AuthAction,
 	assertTokenProviderConfig,
-	base64Encoder,
-	getDeviceName,
 } from '@aws-amplify/core/internals/utils';
 
 import { ClientMetadata, ConfirmSignInOptions } from '../types';
@@ -29,11 +27,10 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
 import { getCurrentUser } from '../apis/getCurrentUser';
-import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
+import { AuthTokenOrchestrator } from '../tokenProvider/types';
 import { getAuthUserAgentValue } from '../../../utils';
 import {
 	createAssociateSoftwareTokenClient,
-	createConfirmDeviceClient,
 	createInitiateAuthClient,
 	createRespondToAuthChallengeClient,
 	createVerifySoftwareTokenClient,
@@ -45,23 +42,24 @@ import {
 	CognitoMFAType,
 	InitiateAuthCommandInput,
 	InitiateAuthCommandOutput,
-	NewDeviceMetadataType,
 	RespondToAuthChallengeCommandInput,
 	RespondToAuthChallengeCommandOutput,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
+import { handleWebAuthnSignInResult } from '../../../client/flows/userAuth/handleWebAuthnSignInResult';
+import { handlePasswordSRP } from '../../../client/flows/shared/handlePasswordSRP';
+import { initiateSelectedChallenge } from '../../../client/flows/userAuth/handleSelectChallenge';
+import { handleSelectChallengeWithPassword } from '../../../client/flows/userAuth/handleSelectChallengeWithPassword';
+import { handleSelectChallengeWithPasswordSRP } from '../../../client/flows/userAuth/handleSelectChallengeWithPasswordSRP';
+import { signInStore } from '../../../client/utils/store';
+import { WebAuthnSignInResult } from '../../../client/flows/userAuth/types';
 
-import { signInStore } from './signInStore';
-import { assertDeviceMetadata } from './types';
-import {
-	getAuthenticationHelper,
-	getBytesFromHex,
-	getNowString,
-	getSignatureString,
-} from './srp';
-import { BigInteger } from './srp/BigInteger';
-import { AuthenticationHelper } from './srp/AuthenticationHelper';
+import { getAuthenticationHelper } from './srp';
 import { getUserContextData } from './userContextData';
+import { handlePasswordVerifierChallenge } from './handlePasswordVerifierChallenge';
+import { handleDeviceSRPAuth } from './handleDeviceSRPAuth';
+import { retryOnResourceNotFoundException } from './retryOnResourceNotFoundException';
+import { setActiveSignInUsername } from './setActiveSignInUsername';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -75,12 +73,10 @@ interface HandleAuthChallengeRequest {
 	config: CognitoUserPoolConfig;
 }
 
-interface HandleDeviceSRPInput {
-	username: string;
-	config: CognitoUserPoolConfig;
-	clientMetadata: ClientMetadata | undefined;
-	session: string | undefined;
-	tokenOrchestrator?: AuthTokenOrchestrator;
+function isWebAuthnResultAuthSignInOutput(
+	result: WebAuthnSignInResult,
+): result is AuthSignInOutput {
+	return 'isSignedIn' in result && 'nextStep' in result;
 }
 
 export async function handleCustomChallenge({
@@ -433,60 +429,14 @@ export async function handleUserSRPAuthFlow(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
-	const userPoolName = userPoolId?.split('_')[1] || '';
-	const authenticationHelper = await getAuthenticationHelper(userPoolName);
-
-	const authParameters: Record<string, string> = {
-		USERNAME: username,
-		SRP_A: authenticationHelper.A.toString(16),
-	};
-
-	const UserContextData = getUserContextData({
+	return handlePasswordSRP({
 		username,
-		userPoolId,
-		userPoolClientId,
-	});
-
-	const jsonReq: InitiateAuthCommandInput = {
-		AuthFlow: 'USER_SRP_AUTH',
-		AuthParameters: authParameters,
-		ClientMetadata: clientMetadata,
-		ClientId: userPoolClientId,
-		UserContextData,
-	};
-
-	const initiateAuth = createInitiateAuthClient({
-		endpointResolver: createCognitoUserPoolEndpointResolver({
-			endpointOverride: userPoolEndpoint,
-		}),
-	});
-
-	const resp = await initiateAuth(
-		{
-			region: getRegionFromUserPoolId(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
-		},
-		jsonReq,
-	);
-	const { ChallengeParameters: challengeParameters, Session: session } = resp;
-	const activeUsername = challengeParameters?.USERNAME ?? username;
-	setActiveSignInUsername(activeUsername);
-
-	return retryOnResourceNotFoundException(
-		handlePasswordVerifierChallenge,
-		[
-			password,
-			challengeParameters as ChallengeParameters,
-			clientMetadata,
-			session,
-			authenticationHelper,
-			config,
-			tokenOrchestrator,
-		],
-		activeUsername,
+		password,
+		clientMetadata,
+		config,
 		tokenOrchestrator,
-	);
+		authFlow: 'USER_SRP_AUTH',
+	});
 }
 
 export async function handleCustomAuthFlowWithoutSRP(
@@ -612,208 +562,12 @@ export async function handleCustomSRPAuthFlow(
 	);
 }
 
-async function handleDeviceSRPAuth({
-	username,
-	config,
-	clientMetadata,
-	session,
-	tokenOrchestrator,
-}: HandleDeviceSRPInput): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolEndpoint } = config;
-	const clientId = config.userPoolClientId;
-	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
-	assertDeviceMetadata(deviceMetadata);
-	const authenticationHelper = await getAuthenticationHelper(
-		deviceMetadata.deviceGroupKey,
-	);
-	const challengeResponses: Record<string, string> = {
-		USERNAME: username,
-		SRP_A: authenticationHelper.A.toString(16),
-		DEVICE_KEY: deviceMetadata.deviceKey,
-	};
-
-	const jsonReqResponseChallenge: RespondToAuthChallengeCommandInput = {
-		ChallengeName: 'DEVICE_SRP_AUTH',
-		ClientId: clientId,
-		ChallengeResponses: challengeResponses,
-		ClientMetadata: clientMetadata,
-		Session: session,
-	};
-	const respondToAuthChallenge = createRespondToAuthChallengeClient({
-		endpointResolver: createCognitoUserPoolEndpointResolver({
-			endpointOverride: userPoolEndpoint,
-		}),
-	});
-	const { ChallengeParameters: respondedChallengeParameters, Session } =
-		await respondToAuthChallenge(
-			{ region: getRegionFromUserPoolId(userPoolId) },
-			jsonReqResponseChallenge,
-		);
-
-	return handleDevicePasswordVerifier(
-		username,
-		respondedChallengeParameters as ChallengeParameters,
-		clientMetadata,
-		Session,
-		authenticationHelper,
-		config,
-		tokenOrchestrator,
-	);
-}
-
-async function handleDevicePasswordVerifier(
-	username: string,
-	challengeParameters: ChallengeParameters,
-	clientMetadata: ClientMetadata | undefined,
-	session: string | undefined,
-	authenticationHelper: AuthenticationHelper,
-	{ userPoolId, userPoolClientId, userPoolEndpoint }: CognitoUserPoolConfig,
-	tokenOrchestrator?: AuthTokenOrchestrator,
-): Promise<RespondToAuthChallengeCommandOutput> {
-	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
-	assertDeviceMetadata(deviceMetadata);
-
-	const serverBValue = new BigInteger(challengeParameters?.SRP_B, 16);
-	const salt = new BigInteger(challengeParameters?.SALT, 16);
-	const { deviceKey } = deviceMetadata;
-	const { deviceGroupKey } = deviceMetadata;
-	const hkdf = await authenticationHelper.getPasswordAuthenticationKey({
-		username: deviceMetadata.deviceKey,
-		password: deviceMetadata.randomPassword,
-		serverBValue,
-		salt,
-	});
-
-	const dateNow = getNowString();
-	const challengeResponses = {
-		USERNAME: (challengeParameters?.USERNAME as string) ?? username,
-		PASSWORD_CLAIM_SECRET_BLOCK: challengeParameters?.SECRET_BLOCK,
-		TIMESTAMP: dateNow,
-		PASSWORD_CLAIM_SIGNATURE: getSignatureString({
-			username: deviceKey,
-			userPoolName: deviceGroupKey,
-			challengeParameters,
-			dateNow,
-			hkdf,
-		}),
-		DEVICE_KEY: deviceKey,
-	} as Record<string, string>;
-
-	const UserContextData = getUserContextData({
-		username,
-		userPoolId,
-		userPoolClientId,
-	});
-
-	const jsonReqResponseChallenge: RespondToAuthChallengeCommandInput = {
-		ChallengeName: 'DEVICE_PASSWORD_VERIFIER',
-		ClientId: userPoolClientId,
-		ChallengeResponses: challengeResponses,
-		Session: session,
-		ClientMetadata: clientMetadata,
-		UserContextData,
-	};
-	const respondToAuthChallenge = createRespondToAuthChallengeClient({
-		endpointResolver: createCognitoUserPoolEndpointResolver({
-			endpointOverride: userPoolEndpoint,
-		}),
-	});
-
-	return respondToAuthChallenge(
-		{ region: getRegionFromUserPoolId(userPoolId) },
-		jsonReqResponseChallenge,
-	);
-}
-
-export async function handlePasswordVerifierChallenge(
-	password: string,
-	challengeParameters: ChallengeParameters,
-	clientMetadata: ClientMetadata | undefined,
-	session: string | undefined,
-	authenticationHelper: AuthenticationHelper,
-	config: CognitoUserPoolConfig,
-	tokenOrchestrator: AuthTokenOrchestrator,
-): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
-	const userPoolName = userPoolId?.split('_')[1] || '';
-	const serverBValue = new (BigInteger as any)(challengeParameters?.SRP_B, 16);
-	const salt = new (BigInteger as any)(challengeParameters?.SALT, 16);
-	const username = challengeParameters?.USER_ID_FOR_SRP;
-	if (!username)
-		throw new AuthError({
-			name: 'EmptyUserIdForSRPException',
-			message: 'USER_ID_FOR_SRP was not found in challengeParameters',
-		});
-	const hkdf = await authenticationHelper.getPasswordAuthenticationKey({
-		username,
-		password,
-		serverBValue,
-		salt,
-	});
-
-	const dateNow = getNowString();
-
-	const challengeResponses = {
-		USERNAME: username,
-		PASSWORD_CLAIM_SECRET_BLOCK: challengeParameters?.SECRET_BLOCK,
-		TIMESTAMP: dateNow,
-		PASSWORD_CLAIM_SIGNATURE: getSignatureString({
-			username,
-			userPoolName,
-			challengeParameters,
-			dateNow,
-			hkdf,
-		}),
-	} as Record<string, string>;
-
-	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
-	if (deviceMetadata && deviceMetadata.deviceKey) {
-		challengeResponses.DEVICE_KEY = deviceMetadata.deviceKey;
-	}
-
-	const UserContextData = getUserContextData({
-		username,
-		userPoolId,
-		userPoolClientId,
-	});
-
-	const jsonReqResponseChallenge: RespondToAuthChallengeCommandInput = {
-		ChallengeName: 'PASSWORD_VERIFIER',
-		ChallengeResponses: challengeResponses,
-		ClientMetadata: clientMetadata,
-		Session: session,
-		ClientId: userPoolClientId,
-		UserContextData,
-	};
-
-	const respondToAuthChallenge = createRespondToAuthChallengeClient({
-		endpointResolver: createCognitoUserPoolEndpointResolver({
-			endpointOverride: userPoolEndpoint,
-		}),
-	});
-
-	const response = await respondToAuthChallenge(
-		{ region: getRegionFromUserPoolId(userPoolId) },
-		jsonReqResponseChallenge,
-	);
-
-	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
-		return handleDeviceSRPAuth({
-			username,
-			config,
-			clientMetadata,
-			session: response.Session,
-			tokenOrchestrator,
-		});
-
-	return response;
-}
-
 export async function getSignInResult(params: {
 	challengeName: ChallengeName;
 	challengeParameters: ChallengeParameters;
+	availableChallenges?: ChallengeName[];
 }): Promise<AuthSignInOutput> {
-	const { challengeName, challengeParameters } = params;
+	const { challengeName, challengeParameters, availableChallenges } = params;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
@@ -909,6 +663,7 @@ export async function getSignInResult(params: {
 					),
 				},
 			};
+		case 'SMS_OTP':
 		case 'SMS_MFA':
 			return {
 				isSignedIn: false,
@@ -938,6 +693,31 @@ export async function getSignInResult(params: {
 							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as AuthDeliveryMedium,
 						destination: challengeParameters.CODE_DELIVERY_DESTINATION,
 					},
+				},
+			};
+
+		case 'WEB_AUTHN': {
+			const result = await handleWebAuthnSignInResult(challengeParameters);
+			if (isWebAuthnResultAuthSignInOutput(result)) {
+				return result;
+			}
+
+			return getSignInResult(result);
+		}
+		case 'PASSWORD':
+		case 'PASSWORD_SRP':
+			return {
+				isSignedIn: false,
+				nextStep: {
+					signInStep: 'CONFIRM_SIGN_IN_WITH_PASSWORD',
+				},
+			};
+		case 'SELECT_CHALLENGE':
+			return {
+				isSignedIn: false,
+				nextStep: {
+					signInStep: 'CONTINUE_SIGN_IN_WITH_FIRST_FACTOR_SELECTION',
+					availableChallenges,
 				},
 			};
 		case 'ADMIN_NO_SRP_AUTH':
@@ -1027,6 +807,26 @@ export async function handleChallengeName(
 	const deviceName = options?.friendlyDeviceName;
 
 	switch (challengeName) {
+		case 'WEB_AUTHN':
+		case 'SELECT_CHALLENGE':
+			if (
+				challengeResponse === 'PASSWORD_SRP' ||
+				challengeResponse === 'PASSWORD'
+			) {
+				return {
+					ChallengeName: challengeResponse,
+					Session: session,
+					$metadata: {},
+				};
+			}
+
+			return initiateSelectedChallenge({
+				username,
+				session,
+				selectedChallenge: challengeResponse,
+				config,
+				clientMetadata,
+			});
 		case 'SELECT_MFA_TYPE':
 			return handleSelectMFATypeChallenge({
 				challengeResponse,
@@ -1071,6 +871,7 @@ export async function handleChallengeName(
 			);
 		case 'SMS_MFA':
 		case 'SOFTWARE_TOKEN_MFA':
+		case 'SMS_OTP':
 		case 'EMAIL_OTP':
 			return handleMFAChallenge({
 				challengeName,
@@ -1080,6 +881,23 @@ export async function handleChallengeName(
 				username,
 				config,
 			});
+		case 'PASSWORD':
+			return handleSelectChallengeWithPassword(
+				username,
+				challengeResponse,
+				clientMetadata,
+				config,
+				session,
+			);
+		case 'PASSWORD_SRP':
+			return handleSelectChallengeWithPasswordSRP(
+				username,
+				challengeResponse, // This is the actual password
+				clientMetadata,
+				config,
+				session,
+				tokenOrchestrator,
+			);
 	}
 	// TODO: remove this error message for production apps
 	throw new AuthError({
@@ -1136,114 +954,6 @@ export async function assertUserNotAuthenticated() {
 	}
 }
 
-/**
- * This function is used to kick off the device management flow.
- *
- * If an error is thrown while generating a hash device or calling the `ConfirmDevice`
- * client, then this API will ignore the error and return undefined. Otherwise the authentication
- * flow will not complete and the user won't be able to be signed in.
- *
- * @returns DeviceMetadata | undefined
- */
-export async function getNewDeviceMetadata({
-	userPoolId,
-	userPoolEndpoint,
-	newDeviceMetadata,
-	accessToken,
-}: {
-	userPoolId: string;
-	userPoolEndpoint: string | undefined;
-	newDeviceMetadata?: NewDeviceMetadataType;
-	accessToken?: string;
-}): Promise<DeviceMetadata | undefined> {
-	if (!newDeviceMetadata) return undefined;
-	const userPoolName = userPoolId.split('_')[1] || '';
-	const authenticationHelper = await getAuthenticationHelper(userPoolName);
-	const deviceKey = newDeviceMetadata?.DeviceKey;
-	const deviceGroupKey = newDeviceMetadata?.DeviceGroupKey;
-
-	try {
-		await authenticationHelper.generateHashDevice(
-			deviceGroupKey ?? '',
-			deviceKey ?? '',
-		);
-	} catch (errGenHash) {
-		// TODO: log error here
-		return undefined;
-	}
-
-	const deviceSecretVerifierConfig = {
-		Salt: base64Encoder.convert(
-			getBytesFromHex(authenticationHelper.getSaltToHashDevices()),
-		),
-		PasswordVerifier: base64Encoder.convert(
-			getBytesFromHex(authenticationHelper.getVerifierDevices()),
-		),
-	};
-	const randomPassword = authenticationHelper.getRandomPassword();
-
-	try {
-		const confirmDevice = createConfirmDeviceClient({
-			endpointResolver: createCognitoUserPoolEndpointResolver({
-				endpointOverride: userPoolEndpoint,
-			}),
-		});
-		await confirmDevice(
-			{ region: getRegionFromUserPoolId(userPoolId) },
-			{
-				AccessToken: accessToken,
-				DeviceName: await getDeviceName(),
-				DeviceKey: newDeviceMetadata?.DeviceKey,
-				DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
-			},
-		);
-
-		return {
-			deviceKey,
-			deviceGroupKey,
-			randomPassword,
-		};
-	} catch (error) {
-		// TODO: log error here
-		return undefined;
-	}
-}
-
-/**
- * It will retry the function if the error is a `ResourceNotFoundException` and
- * will clean the device keys stored in the storage mechanism.
- *
- */
-export async function retryOnResourceNotFoundException<
-	F extends (...args: any[]) => any,
->(
-	func: F,
-	args: Parameters<F>,
-	username: string,
-	tokenOrchestrator: AuthTokenOrchestrator,
-): Promise<ReturnType<F>> {
-	try {
-		return await func(...args);
-	} catch (error) {
-		if (
-			error instanceof AuthError &&
-			error.name === 'ResourceNotFoundException' &&
-			error.message.includes('Device does not exist.')
-		) {
-			await tokenOrchestrator.clearDeviceMetadata(username);
-
-			return func(...args);
-		}
-		throw error;
-	}
-}
-
-export function setActiveSignInUsername(username: string) {
-	const { dispatch } = signInStore;
-
-	dispatch({ type: 'SET_USERNAME', value: username });
-}
-
 export function getActiveSignInUsername(username: string): string {
 	const state = signInStore.getState();
 
@@ -1260,7 +970,7 @@ export async function handleMFAChallenge({
 }: HandleAuthChallengeRequest & {
 	challengeName: Extract<
 		ChallengeName,
-		'EMAIL_OTP' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
+		'EMAIL_OTP' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | 'SMS_OTP'
 	>;
 }) {
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
@@ -1275,6 +985,10 @@ export async function handleMFAChallenge({
 
 	if (challengeName === 'SMS_MFA') {
 		challengeResponses.SMS_MFA_CODE = challengeResponse;
+	}
+
+	if (challengeName === 'SMS_OTP') {
+		challengeResponses.SMS_OTP_CODE = challengeResponse;
 	}
 
 	if (challengeName === 'SOFTWARE_TOKEN_MFA') {

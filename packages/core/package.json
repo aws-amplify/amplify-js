@@ -1,10 +1,10 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "6.5.3",
+	"version": "6.11.4",
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"typings": "./dist/esm/index.d.ts",
 	"publishConfig": {
 		"access": "public"
@@ -60,35 +60,34 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/react-native": "1.1.6",
+		"@aws-amplify/react-native": "1.1.9",
 		"@types/js-cookie": "3.0.2",
-		"genversion": "^2.2.0",
-		"typescript": "5.0.2"
+		"genversion": "^2.2.0"
 	},
 	"size-limit": [
 		{
 			"name": "Core (Hub)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Hub }",
-			"limit": "1.43 kB"
+			"limit": "1.46 kB"
 		},
 		{
 			"name": "Core (I18n)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ I18n }",
-			"limit": "1.46 kB"
+			"limit": "1.51 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
 			"path": "./dist/esm/clients/handlers/fetch.mjs",
 			"import": "{ fetchTransferHandler }",
-			"limit": "575 B"
+			"limit": "900 B"
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
-			"path": "./dist/esm/clients/handlers/unauthenticated.mjs",
+			"path": "./dist/esm/clients/handlers/aws/unauthenticated.mjs",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "1.15 kB"
+			"limit": "4.09 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
@@ -111,10 +110,10 @@
 	],
 	"exports": {
 		".": {
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
@@ -127,40 +126,40 @@
 			"require": "./dist/cjs/adapterCore/index.js"
 		},
 		"./internals/aws-client-utils": {
+			"react-native": "./dist/cjs/clients/index.js",
 			"types": "./dist/esm/clients/index.d.ts",
 			"import": "./dist/esm/clients/index.mjs",
-			"require": "./dist/cjs/clients/index.js",
-			"react-native": "./src/clients/index.ts"
+			"require": "./dist/cjs/clients/index.js"
 		},
 		"./internals/aws-client-utils/composers": {
+			"react-native": "./dist/cjs/clients/internal/index.js",
 			"types": "./dist/esm/clients/internal/index.d.ts",
 			"import": "./dist/esm/clients/internal/index.mjs",
-			"require": "./dist/cjs/clients/internal/index.js",
-			"react-native": "./src/clients/internal/index.ts"
+			"require": "./dist/cjs/clients/internal/index.js"
 		},
 		"./internals/aws-clients/cognitoIdentity": {
+			"react-native": "./dist/cjs/awsClients/cognitoIdentity/index.js",
 			"types": "./dist/esm/awsClients/cognitoIdentity/index.d.ts",
 			"import": "./dist/esm/awsClients/cognitoIdentity/index.mjs",
-			"require": "./dist/cjs/awsClients/cognitoIdentity/index.js",
-			"react-native": "./src/awsClients/cognitoIdentity/index.ts"
+			"require": "./dist/cjs/awsClients/cognitoIdentity/index.js"
 		},
 		"./internals/aws-clients/pinpoint": {
+			"react-native": "./dist/cjs/awsClients/pinpoint/index.js",
 			"types": "./dist/esm/awsClients/pinpoint/index.d.ts",
 			"import": "./dist/esm/awsClients/pinpoint/index.mjs",
-			"require": "./dist/cjs/awsClients/pinpoint/index.js",
-			"react-native": "./src/awsClients/pinpoint/index.ts"
+			"require": "./dist/cjs/awsClients/pinpoint/index.js"
 		},
 		"./internals/providers/pinpoint": {
+			"react-native": "./dist/cjs/providers/pinpoint/index.js",
 			"types": "./dist/esm/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/providers/pinpoint/index.mjs",
-			"require": "./dist/cjs/providers/pinpoint/index.js",
-			"react-native": "./src/providers/pinpoint/index.ts"
+			"require": "./dist/cjs/providers/pinpoint/index.js"
 		},
 		"./internals/utils": {
+			"react-native": "./dist/cjs/libraryUtils.js",
 			"types": "./dist/esm/libraryUtils.d.ts",
 			"import": "./dist/esm/libraryUtils.mjs",
-			"require": "./dist/cjs/libraryUtils.js",
-			"react-native": "./src/libraryUtils.ts"
+			"require": "./dist/cjs/libraryUtils.js"
 		},
 		"./package.json": "./package.json"
 	},

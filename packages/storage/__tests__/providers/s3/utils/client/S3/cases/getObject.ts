@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getObject } from '../../../../../../../src/providers/s3/utils/client';
+import { getObject } from '../../../../../../../src/providers/s3/utils/client/s3data';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -54,7 +54,7 @@ const getObjectResponseHeaders = {
 } as const;
 
 export const expectedGetObjectUrl =
-	'https://bucket.s3.us-east-1.amazonaws.com/key';
+	'https://bucket.s3.us-east-1.amazonaws.com/key?x-id=GetObject';
 
 // API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
 const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
@@ -143,21 +143,23 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 	},
 ];
 
-const getObjectAccelerateEndpoint: ApiFunctionalTestCase<typeof getObject> = [
+const getObjectHappyCaseAccelerateEndpoint: ApiFunctionalTestCase<
+	typeof getObject
+> = [
 	'happy case',
 	'getObject with accelerate endpoint',
 	getObject,
 	{
 		...defaultConfig,
 		useAccelerateEndpoint: true,
-	} as Parameters<typeof getObject>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3-accelerate.amazonaws.com/key',
+			href: 'https://bucket.s3-accelerate.amazonaws.com/key?x-id=GetObject',
 		}),
 	}),
 	{
@@ -170,22 +172,24 @@ const getObjectAccelerateEndpoint: ApiFunctionalTestCase<typeof getObject> = [
 	}) as any,
 ];
 
-const getObjectCustomEndpoint: ApiFunctionalTestCase<typeof getObject> = [
+const getObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof getObject
+> = [
 	'happy case',
 	'getObject with custom endpoint',
 	getObject,
 	{
 		...defaultConfig,
-		customEndpoint: 'https://custom.endpoint.com',
+		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof getObject>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key',
+			href: 'https://custom.endpoint.com/bucket/key?x-id=GetObject',
 		}),
 	}),
 	{
@@ -198,8 +202,100 @@ const getObjectCustomEndpoint: ApiFunctionalTestCase<typeof getObject> = [
 	}) as any,
 ];
 
+const getObjectErrorCaseAccelerateEndpoint: ApiFunctionalTestCase<
+	typeof getObject
+> = [
+	'error case',
+	'getObject with accelerate endpoint and forcePathStyle',
+	getObject,
+	{
+		...defaultConfig,
+		useAccelerateEndpoint: true,
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://bucket.s3-accelerate.amazonaws.com/key?x-id=GetObject',
+		}),
+	}),
+	{
+		status: 400,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: 'mockBody',
+	},
+	{
+		message: 'Path style URLs are not supported with S3 Transfer Acceleration.',
+		name: 'ForcePathStyleEndpointNotSupported',
+	},
+];
+
+const getObjectErrorCaseInvalidCustomEndpoint: ApiFunctionalTestCase<
+	typeof getObject
+> = [
+	'error case',
+	'getObject with invalid custom endpoint',
+	getObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'http://custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key?x-id=GetObject',
+		}),
+	}),
+	{
+		status: 400,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: 'mockBody',
+	},
+	{
+		message: 'Invalid S3 custom endpoint.',
+		name: 'InvalidCustomEndpoint',
+	},
+];
+
+const getObjectErrorCaseInvalidBucketName: ApiFunctionalTestCase<
+	typeof getObject
+> = [
+	'error case',
+	'getObject with incompatible Dns bucket name',
+	getObject,
+	defaultConfig,
+	{
+		Bucket: 'incompatibleDnsCompatibleBucketName',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://incompatibleDnsCompatibleBucketName.s3.us-east-1.amazonaws.com/key',
+		}),
+	}),
+	{
+		status: 400,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: 'mockBody',
+	},
+	{
+		message: `The bucket name isn't DNS compatible.`,
+		name: 'DnsIncompatibleBucketName',
+	},
+];
+
 export default [
 	getObjectHappyCase,
-	getObjectAccelerateEndpoint,
-	getObjectCustomEndpoint,
+	getObjectHappyCaseAccelerateEndpoint,
+	getObjectHappyCaseCustomEndpoint,
+	getObjectErrorCaseAccelerateEndpoint,
+	getObjectErrorCaseInvalidCustomEndpoint,
+	getObjectErrorCaseInvalidBucketName,
 ];

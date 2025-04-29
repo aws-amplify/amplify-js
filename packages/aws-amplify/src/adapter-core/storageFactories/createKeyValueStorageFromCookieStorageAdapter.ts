@@ -7,13 +7,14 @@ import {
 	KeyValueStorageMethodValidator,
 } from '@aws-amplify/core/internals/adapter-core';
 
+import { DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE } from '../constants';
+
 export const defaultSetCookieOptions: CookieStorage.SetCookieOptions = {
 	// TODO: allow configure with a public interface
 	sameSite: 'lax',
 	secure: true,
 	path: '/',
 };
-const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
 
 /**
  * Creates a Key Value storage interface using the `cookieStorageAdapter` as the
@@ -23,7 +24,8 @@ const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
  */
 export const createKeyValueStorageFromCookieStorageAdapter = (
 	cookieStorageAdapter: CookieStorage.Adapter,
-	validatorMap?: KeyValueStorageMethodValidator,
+	validator?: KeyValueStorageMethodValidator,
+	setCookieOptions: CookieStorage.SetCookieOptions = {},
 ): KeyValueStorageInterface => {
 	return {
 		setItem(key, value) {
@@ -32,11 +34,17 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 			// SetCookie: key=value;expires=Date.now() + 365 days;path=/;secure=true
 			cookieStorageAdapter.delete(key);
 
-			// TODO(HuiSF): follow up the default CookieSerializeOptions values
-			cookieStorageAdapter.set(key, value, {
+			const mergedCookieOptions = {
 				...defaultSetCookieOptions,
-				expires: new Date(Date.now() + ONE_YEAR_IN_MS),
-			});
+				...setCookieOptions,
+			};
+
+			// when expires and maxAge both are not specified, we set a default maxAge
+			if (!mergedCookieOptions.expires && !mergedCookieOptions.maxAge) {
+				mergedCookieOptions.maxAge = DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE;
+			}
+
+			cookieStorageAdapter.set(key, value, mergedCookieOptions);
 
 			return Promise.resolve();
 		},
@@ -44,8 +52,8 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 			const cookie = cookieStorageAdapter.get(key);
 			const value = cookie?.value ?? null;
 
-			if (value && validatorMap?.getItem) {
-				const isValid = await validatorMap.getItem(key, value);
+			if (value && validator?.getItem) {
+				const isValid = await validator.getItem(key, value);
 				if (!isValid) return null;
 			}
 

@@ -14,7 +14,7 @@ class PushNotificationHeadlessTaskService : HeadlessJsTaskService() {
     private val defaultTimeout: Long = 10000 // 10 seconds
 
     @InternalAmplifyApi
-    override fun getTaskConfig(intent: Intent): HeadlessJsTaskConfig? {
+    override fun getTaskConfig(intent: Intent?): HeadlessJsTaskConfig? {
         return NotificationPayload.fromIntent(intent)?.let {
             HeadlessJsTaskConfig(
                 HEADLESS_TASK_KEY, it.toWritableMap(), defaultTimeout, true

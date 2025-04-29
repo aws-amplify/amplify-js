@@ -425,6 +425,13 @@ tests:
     sample_name: [data-client-gen2]
     spec: data-client-gen2
     browser: [chrome] # Issues using Auth category / setting secure cookies in FF using Cypress with a Next.js app. Manual testing in FF works as expected
+  - test_name: integ_next_api_multi_endpoint_gen2
+    desc: Next.js Multi Endpoint Gen 2
+    framework: next
+    category: api
+    sample_name: [multi-endpoint-gen2]
+    spec: multi-endpoint-gen2
+    browser: [chrome]
   - test_name: integ_react_rest_api
     desc: 'Vite + React REST API'
     framework: vite
@@ -609,6 +616,22 @@ tests:
     sample_name: [subdomains]
     spec: subdomains
     browser: [chrome]
+  - test_name: integ_next_custom_auth
+    desc: 'Sign-in with Custom Auth flow'
+    framework: next
+    category: auth
+    sample_name: [custom-auth]
+    spec: custom-auth
+    browser: *minimal_browser_list
+  - test_name: integ_next_auth_sign_in_with_sms_mfa
+    desc: 'Resumable sign in with SMS MFA flow'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: sign-in-resumable-mfa
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: resum-signin
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
@@ -735,13 +758,6 @@ tests:
   #   amplifyjs_dir: true
 
   # INTERACTIONS
-  # - test_name: integ_react_interactions_react_interactions
-  #   desc: 'React Interactions'
-  #   framework: react
-  #   category: interactions
-  #   sample_name: [chatbot-component]
-  #   spec: chatbot-component
-  #   browser: *minimal_browser_list
   - test_name: integ_react_interactions_chatbot_v1
     desc: 'Chatbot V1'
     framework: react
@@ -756,27 +772,6 @@ tests:
     sample_name: [lex-test-component]
     spec: chatbot-v2
     browser: *minimal_browser_list
-  # - test_name: integ_angular_interactions
-  #   desc: 'Angular Interactions'
-  #   framework: angular
-  #   category: interactions
-  #   sample_name: [chatbot-component]
-  #   spec: chatbot-component
-  #   browser: *minimal_browser_list
-  # - test_name: integ_vue_interactions_vue_2_interactions
-  #   desc: 'Vue 2 Interactions'
-  #   framework: vue
-  #   category: interactions
-  #   sample_name: [chatbot-component]
-  #   spec: chatbot-component
-  #   browser: [chrome]
-  # - test_name: integ_vue_interactionsvue_3_interactions
-  #   desc: 'Vue 3 Interactions'
-  #   framework: vue
-  #   category: interactions
-  #   sample_name: [chatbot-component-vue3]
-  #   spec: chatbot-component
-  #   browser: [chrome]
 
   # PREDICTIONS
   - test_name: integ_react_predictions
@@ -827,6 +822,13 @@ tests:
     sample_name: [multi-part-copy]
     spec: multi-part-copy
     browser: *minimal_browser_list
+  - test_name: integ_react_storage_browser
+    desc: 'React Storage Browser'
+    framework: vite
+    category: storage
+    sample_name: [storage-browser]
+    spec: storage-browser
+    browser: *minimal_browser_list
 
   # GEN2 STORAGE
   - test_name: integ_react_storage
@@ -835,6 +837,13 @@ tests:
     category: storage
     sample_name: [storage-gen2]
     spec: storage-gen2
+    browser: *minimal_browser_list
+  - test_name: integ_react_storage_internal
+    desc: 'React Storage Gen2 Internal APIs'
+    framework: react
+    category: storage
+    sample_name: [storage-gen2-internal]
+    spec: storage-gen2-internal
     browser: *minimal_browser_list
   - test_name: integ_next_storage
     desc: 'Next Storage Auth'
@@ -861,14 +870,42 @@ tests:
   #   spec: duplicate-packages
   #   browser: *minimal_browser_list
 
-  # SSR context isolation
-  - test_name: integ_ssr_context_isolation
-    desc: 'SSR Context Isolation'
+  # Next.js use cases
+  - test_name: integ_next-use-cases-14
+    desc: 'Next.js use cases tests with v14'
     framework: next
     category: ssr-adapter
-    sample_name: ssr-context-isolation
-    spec: ssr-context-isolation
-    yarn_script: ci:ssr-context-isolation
+    sample_name: next-use-cases-14
+    spec: next-use-cases
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: '14'
+    browser: [chrome]
+  - test_name: integ_next-use-cases-15
+    desc: 'Next.js use cases tests with v15'
+    framework: next
+    category: ssr-adapter
+    sample_name: next-use-cases-15
+    spec: next-use-cases
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: '15'
+    browser: [chrome]
+  - test_name: integ_next-use-cases-server-auth-14
+    desc: 'Next.js server-side auth use cases tests with v14'
+    framework: next
+    category: ssr-adapter
+    sample_name: next-use-cases-server-auth-14
+    spec: next-use-cases-server-auth
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: server-auth-14
+    browser: [chrome]
+  - test_name: integ_next-use-cases-server-auth-15
+    desc: 'Next.js server-side auth use cases tests with v15'
+    framework: next
+    category: ssr-adapter
+    sample_name: next-use-cases-server-auth-15
+    spec: next-use-cases-server-auth
+    yarn_script: ci:next-use-cases-test
+    yarn_script_args: server-auth-15
     browser: [chrome]
   - test_name: integ_next_mfa_req_email
     desc: 'mfa required with email sign in attribute'
@@ -876,7 +913,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-email
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-email
   - test_name: integ_next_mfa_req_phone
@@ -885,7 +922,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-phone
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-phone
   - test_name: integ_next_mfa_opt_email
@@ -894,7 +931,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-email
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-email
   - test_name: integ_next_mfa_opt_phone
@@ -903,7 +940,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-phone
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-phone
   - test_name: integ_next_mfa_setup
@@ -912,6 +949,71 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-setup
-    browser: [chrome]
+    browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup
+  - test_name: integ_next_passwordless_auto_sign_in
+    desc: 'passwordless auto sign in with session'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/auto-sign-in
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-autosignin
+  - test_name: integ_next_passwordless_first_factor_selection
+    desc: 'passwordless sign in with first factor selection'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/first-factor-selection
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-ffselect
+  - test_name: integ_next_passwordless_preferred_challenge
+    desc: 'passwordless sign in with preferred challenge'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/preferred-challenge
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-prefchal
+  - test_name: integ_next_passwordless_sign_up
+    desc: 'passwordless sign up'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/sign-up
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-signup
+  - test_name: integ_next_passwordless_misc
+    desc: 'passwordless miscellaneous flows'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/miscellaneous
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-misc
+  - test_name: integ_next_passwordless_webauthn
+    desc: 'passwordless webauthn sign in and lifecycle management'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: passwordless/webauthn
+    # chrome only
+    # https://chromedevtools.github.io/devtools-protocol/tot/WebAuthn/
+    browser: [chrome]
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: pwl-webauthn
+  - test_name: integ_next_refresh_token_auth
+    desc: 'refresh token auth'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: refresh-token-auth
+    browser: *minimal_browser_list
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: misc-tokenref

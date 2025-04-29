@@ -506,6 +506,10 @@ export type TypeConstructorMap = Record<
 export declare const __identifierBrand__: unique symbol;
 export type IdentifierBrand<T, K> = T & { [__identifierBrand__]: K };
 
+interface GenericIdentifier {
+	field: any;
+}
+
 // datastore generates a uuid for you
 export type ManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
 	{ field: F extends string ? F : never; type: T },
@@ -548,7 +552,9 @@ export type IdentifierFields<
 				infer B
 		  >
 		? B[number] // B[number]
-		: MetadataOrDefault<T, M>['identifier']['field']) &
+		: MetadataOrDefault<T, M>['identifier'] extends GenericIdentifier
+			? MetadataOrDefault<T, M>['identifier']['field']
+			: unknown) &
 	string;
 
 export type IdentifierFieldsForInit<
@@ -710,7 +716,9 @@ export type IdentifierFieldValue<
 		? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
 			? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
 			: never
-		: T[MetadataOrDefault<T, M>['identifier']['field']];
+		: MetadataOrDefault<T, M>['identifier'] extends GenericIdentifier
+			? T[MetadataOrDefault<T, M>['identifier']['field']]
+			: unknown;
 
 export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,
@@ -1075,9 +1083,7 @@ export enum ModelOperation {
 
 export type ModelAuthModes = Record<
 	string,
-	{
-		[Property in ModelOperation]: GraphQLAuthMode[];
-	}
+	Record<ModelOperation, GraphQLAuthMode[]>
 >;
 
 export type SyncExpression = Promise<{

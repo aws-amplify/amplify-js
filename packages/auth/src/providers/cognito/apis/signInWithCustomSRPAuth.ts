@@ -9,7 +9,6 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleCustomSRPAuthFlow,
@@ -24,9 +23,9 @@ import {
 	SignInWithCustomSRPAuthOutput,
 } from '../types';
 import {
-	cleanActiveSignInState,
+	resetActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
@@ -34,6 +33,7 @@ import {
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -100,7 +100,7 @@ export async function signInWithCustomSRPAuth(
 				}),
 				signInDetails,
 			});
-			cleanActiveSignInState();
+			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 
@@ -115,7 +115,7 @@ export async function signInWithCustomSRPAuth(
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		cleanActiveSignInState();
+		resetActiveSignInState();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

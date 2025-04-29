@@ -180,6 +180,9 @@ describe('aws-amplify Exports', () => {
 					'autoSignIn',
 					'fetchAuthSession',
 					'decodeJWT',
+					'associateWebAuthnCredential',
+					'listWebAuthnCredentials',
+					'deleteWebAuthnCredential',
 				].sort(),
 			);
 		});
@@ -187,6 +190,8 @@ describe('aws-amplify Exports', () => {
 		it('should only export expected symbols from the Cognito provider', () => {
 			expect(Object.keys(authCognitoExports).sort()).toEqual(
 				[
+					'AUTH_KEY_PREFIX',
+					'createKeysForAuthStorage',
 					'signUp',
 					'resetPassword',
 					'confirmResetPassword',
@@ -201,7 +206,10 @@ describe('aws-amplify Exports', () => {
 					'setUpTOTP',
 					'updateUserAttributes',
 					'updateUserAttribute',
+					'generateCodeVerifier',
+					'generateState',
 					'getCurrentUser',
+					'getRedirectUrl',
 					'confirmUserAttribute',
 					'signInWithRedirect',
 					'fetchUserAttributes',
@@ -221,6 +229,7 @@ describe('aws-amplify Exports', () => {
 					'DefaultTokenStore',
 					'refreshAuthTokens',
 					'refreshAuthTokensWithoutDedupe',
+					'validateState',
 				].sort(),
 			);
 		});
@@ -239,6 +248,7 @@ describe('aws-amplify Exports', () => {
 					'getUrl',
 					'isCancelError',
 					'StorageError',
+					'DEFAULT_PART_SIZE',
 				].sort(),
 			);
 		});
@@ -253,6 +263,7 @@ describe('aws-amplify Exports', () => {
 					'getProperties',
 					'copy',
 					'getUrl',
+					'DEFAULT_PART_SIZE',
 				].sort(),
 			);
 		});

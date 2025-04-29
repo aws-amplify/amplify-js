@@ -40,6 +40,4 @@ export interface AuthUpdateUserAttributeOutput<
 
 export type AuthUpdateUserAttributesOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
-	[authKey in UserAttributeKey]: AuthUpdateUserAttributeOutput<UserAttributeKey>;
-};
+> = Record<UserAttributeKey, AuthUpdateUserAttributeOutput<UserAttributeKey>>;

@@ -17,7 +17,6 @@ import {
 } from '../types/errors';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
@@ -28,12 +27,15 @@ import {
 	SignInWithSRPOutput,
 } from '../types';
 import {
-	cleanActiveSignInState,
+	resetActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
+
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Signs a user in
@@ -89,7 +91,6 @@ export async function signInWithSRP(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
@@ -101,8 +102,11 @@ export async function signInWithSRP(
 				}),
 				signInDetails,
 			});
+			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent();
+
+			resetAutoSignIn();
 
 			return {
 				isSignedIn: true,
@@ -115,7 +119,8 @@ export async function signInWithSRP(
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		cleanActiveSignInState();
+		resetActiveSignInState();
+		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

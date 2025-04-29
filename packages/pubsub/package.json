@@ -1,11 +1,11 @@
 {
 	"name": "@aws-amplify/pubsub",
-	"version": "6.1.33",
+	"version": "6.1.55",
 	"description": "Pubsub category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
@@ -37,22 +37,22 @@
 	},
 	"exports": {
 		".": {
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./iot": {
+			"react-native": "./dist/cjs/clients/iot.js",
 			"types": "./dist/esm/clients/iot.d.ts",
 			"import": "./dist/esm/clients/iot.mjs",
-			"require": "./dist/cjs/clients/iot.js",
-			"react-native": "./src/clients/iot.ts"
+			"require": "./dist/cjs/clients/iot.js"
 		},
 		"./mqtt": {
+			"react-native": "./dist/cjs/clients/mqtt.js",
 			"types": "./dist/esm/clients/mqtt.d.ts",
 			"import": "./dist/esm/clients/mqtt.mjs",
-			"require": "./dist/cjs/clients/mqtt.js",
-			"react-native": "./src/clients/mqtt.ts"
+			"require": "./dist/cjs/clients/mqtt.js"
 		}
 	},
 	"repository": {
@@ -73,7 +73,7 @@
 		"mqtt"
 	],
 	"dependencies": {
-		"@aws-amplify/auth": "6.6.2",
+		"@aws-amplify/auth": "6.12.4",
 		"buffer": "4.9.2",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
@@ -84,8 +84,7 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.5.3",
-		"typescript": "5.0.2"
+		"@aws-amplify/core": "6.11.4"
 	},
 	"size-limit": [
 		{

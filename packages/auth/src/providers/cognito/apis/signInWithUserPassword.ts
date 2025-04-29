@@ -13,11 +13,9 @@ import {
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
-	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { InitiateAuthException } from '../types/errors';
 import {
@@ -26,12 +24,16 @@ import {
 	SignInWithUserPasswordOutput,
 } from '../types';
 import {
-	cleanActiveSignInState,
+	resetActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+import { retryOnResourceNotFoundException } from '../utils/retryOnResourceNotFoundException';
+import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
+
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
@@ -95,9 +97,11 @@ export async function signInWithUserPassword(
 				}),
 				signInDetails,
 			});
-			cleanActiveSignInState();
+			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent();
+
+			resetAutoSignIn();
 
 			return {
 				isSignedIn: true,
@@ -110,7 +114,8 @@ export async function signInWithUserPassword(
 			challengeParameters: retriedChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		cleanActiveSignInState();
+		resetActiveSignInState();
+		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

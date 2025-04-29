@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig } from 'aws-amplify';
-import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
+import { KeyValueStorageMethodValidator } from 'aws-amplify/adapter-core/internals';
+import { parseAmplifyConfig } from 'aws-amplify/utils';
 
-import { createRunWithAmplifyServerContext } from './utils';
+import { createRunWithAmplifyServerContext, globalSettings } from './utils';
 import { NextServer } from './types';
+import { createTokenValidator } from './utils/createTokenValidator';
+import { createAuthRouteHandlersFactory } from './auth';
+import { isSSLOrigin, isValidOrigin } from './auth/utils';
 
 /**
  * Creates the `runWithAmplifyServerContext` function to run Amplify server side APIs in an isolated request context.
@@ -27,12 +31,42 @@ import { NextServer } from './types';
  */
 export const createServerRunner: NextServer.CreateServerRunner = ({
 	config,
+	runtimeOptions,
 }) => {
 	const amplifyConfig = parseAmplifyConfig(config);
+	const amplifyAppOrigin = process.env.AMPLIFY_APP_ORIGIN;
+
+	globalSettings.setRuntimeOptions(runtimeOptions ?? {});
+
+	if (isValidOrigin(amplifyAppOrigin)) {
+		globalSettings.setIsSSLOrigin(isSSLOrigin(amplifyAppOrigin));
+
+		// update the isServerSideAuthEnabled flag of the globalSettings to true
+		globalSettings.enableServerSideAuth();
+	}
+
+	let tokenValidator: KeyValueStorageMethodValidator | undefined;
+	if (amplifyConfig?.Auth) {
+		const { Cognito } = amplifyConfig.Auth;
+		tokenValidator = createTokenValidator({
+			userPoolId: Cognito?.userPoolId,
+			userPoolClientId: Cognito?.userPoolClientId,
+		});
+	}
+
+	const runWithAmplifyServerContext = createRunWithAmplifyServerContext({
+		config: amplifyConfig,
+		tokenValidator,
+		globalSettings,
+	});
 
 	return {
-		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
+		runWithAmplifyServerContext,
+		createAuthRouteHandlers: createAuthRouteHandlersFactory({
 			config: amplifyConfig,
+			amplifyAppOrigin,
+			globalSettings,
+			runWithAmplifyServerContext,
 		}),
 	};
 };

@@ -11,6 +11,7 @@ export {
 	generateRandomString,
 	isBrowser,
 	isNonRetryableError,
+	isTokenExpired,
 	isWebWorker,
 	jitteredBackoff,
 	jitteredExponentialRetry,
@@ -23,7 +24,10 @@ export {
 export { parseAWSExports } from './parseAWSExports';
 export { isAmplifyOutputs, parseAmplifyOutputs } from './parseAmplifyOutputs';
 export { LegacyConfig } from './singleton/types';
-export { AmplifyOutputs } from './singleton/AmplifyOutputs/types';
+export {
+	AmplifyOutputs,
+	AmplifyOutputsUnknown,
+} from './singleton/AmplifyOutputs/types';
 export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
@@ -38,7 +42,6 @@ export {
 	assertIdentityPoolIdConfig,
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
-export { isTokenExpired } from './singleton/Auth';
 export {
 	AssociationBelongsTo,
 	AssociationHasMany,
@@ -59,6 +62,7 @@ export {
 	ModelAttribute,
 	SecondaryIndexAttribute,
 	GraphQLProviderConfig,
+	RetryStrategy,
 } from './singleton/API/types';
 export { Signer } from './Signer';
 export {

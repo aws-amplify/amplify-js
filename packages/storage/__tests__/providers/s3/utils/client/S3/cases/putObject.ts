@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { putObject } from '../../../../../../../src/providers/s3/utils/client';
+import { putObject } from '../../../../../../../src/providers/s3/utils/client/s3data';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -14,7 +14,7 @@ export const putObjectRequest = {
 	Bucket: 'bucket',
 	Key: 'key',
 	Body: 'body',
-	ACL: 'public-read',
+	ACL: 'public-read' as const,
 	CacheControl: 'CacheControl',
 	ContentDisposition: 'ContentDisposition',
 	ContentEncoding: 'ContentEncoding',
@@ -55,7 +55,7 @@ const putObjectHappyCase: ApiFunctionalTestCase<typeof putObject> = [
 	putObjectRequest,
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key',
+			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?x-id=PutObject',
 		}),
 		headers: expect.objectContaining(expectedPutObjectRequestHeaders),
 		body: 'body',
@@ -68,7 +68,32 @@ const putObjectHappyCase: ApiFunctionalTestCase<typeof putObject> = [
 	},
 ];
 
-const pubObjectDefaultContentType: ApiFunctionalTestCase<typeof putObject> = [
+const putObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof putObject
+> = [
+	'happy case',
+	'putObject with custom endpoint',
+	putObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	putObjectRequest,
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key?x-id=PutObject',
+		}),
+	}),
+	putObjectSuccessResponse,
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
+const pubObjectHappyCaseDefaultContentType: ApiFunctionalTestCase<
+	typeof putObject
+> = [
 	'happy case',
 	'putObject default content type',
 	putObject,
@@ -86,4 +111,8 @@ const pubObjectDefaultContentType: ApiFunctionalTestCase<typeof putObject> = [
 	expect.anything(),
 ];
 
-export default [putObjectHappyCase, pubObjectDefaultContentType];
+export default [
+	putObjectHappyCase,
+	putObjectHappyCaseCustomEndpoint,
+	pubObjectHappyCaseDefaultContentType,
+];

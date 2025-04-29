@@ -53,3 +53,5 @@ export { TransferProgressEvent } from './types';
 
 export { isCancelError } from './errors/CanceledError';
 export { StorageError } from './errors/StorageError';
+
+export { DEFAULT_PART_SIZE } from './providers/s3/utils/constants';

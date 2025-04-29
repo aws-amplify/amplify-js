@@ -9,11 +9,9 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleCustomAuthFlowWithoutSRP,
-	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { InitiateAuthException } from '../types/errors';
 import {
@@ -22,9 +20,9 @@ import {
 	SignInWithCustomAuthOutput,
 } from '../types';
 import {
-	cleanActiveSignInState,
+	resetActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
@@ -32,6 +30,8 @@ import {
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+import { retryOnResourceNotFoundException } from '../utils/retryOnResourceNotFoundException';
+import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
 /**
  * Signs a user in using a custom authentication flow without password
@@ -84,8 +84,6 @@ export async function signInWithCustomAuth(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
-
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
@@ -97,6 +95,7 @@ export async function signInWithCustomAuth(
 				}),
 				signInDetails,
 			});
+			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 
@@ -111,7 +110,7 @@ export async function signInWithCustomAuth(
 			challengeParameters: retiredChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		cleanActiveSignInState();
+		resetActiveSignInState();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;
