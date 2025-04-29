@@ -56,27 +56,23 @@ jobs:
         run: |
           # First sync pre-prod/main with main using the "theirs" strategy to resolve conflicts
           git fetch origin main pre-prod/main
-
-          git checkout main
-          echo $(git log -5 --oneline)
-
           git checkout pre-prod/main
-          echo $(git log -5 --oneline)
-          echo $(git remote -v)
-
-          # git merge --no-ff origin/main --no-edit --allow-unrelated-histories
           # Use -X theirs to automatically resolve conflicts in favor of main
           git merge origin/main --no-edit -X theirs --allow-unrelated-histories
           echo "MERGE COMPLETE"
-          echo $(git log -5 --oneline)
           git push origin pre-prod/main
           
           # Now create a new branch from the updated pre-prod/main
           git checkout -b $TEMP_BRANCH_NAME
 
-      - name: Update API references in the docs site
+      - name: Setup yarn berry and Update API references
         working-directory: ./docs
         run: |
+          npm install -g corepack
+          corepack enable
+          yarn -v
+
+          # Update API references
           yarn clean-references -- -p amplify-js
           git add .
           git commit --allow-empty -m "chore: Update amplify-js API references"
