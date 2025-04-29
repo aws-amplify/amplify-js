@@ -4,7 +4,7 @@
 	"description": "Notifications category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"typings": "./dist/esm/index.d.ts",
 	"sideEffects": false,
 	"publishConfig": {
@@ -43,30 +43,30 @@
 	},
 	"exports": {
 		".": {
-			"react-native": "./src/index.ts",
+			"react-native": "./dist/cjs/index.js",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js"
 		},
 		"./in-app-messaging": {
-			"react-native": "./src/inAppMessaging/index.ts",
+			"react-native": "./dist/cjs/inAppMessaging/index.js",
 			"types": "./dist/esm/inAppMessaging/index.d.ts",
 			"import": "./dist/esm/inAppMessaging/index.mjs",
 			"require": "./dist/cjs/inAppMessaging/index.js"
 		},
 		"./push-notifications": {
-			"react-native": "./src/pushNotifications/index.ts",
+			"react-native": "./dist/cjs/pushNotifications/index.js",
 			"types": "./dist/esm/pushNotifications/index.d.ts",
 			"import": "./dist/esm/pushNotifications/index.mjs",
 			"require": "./dist/cjs/pushNotifications/index.js"
 		},
 		"./in-app-messaging/pinpoint": {
-			"react-native": "./src/inAppMessaging/providers/pinpoint/index.ts",
+			"react-native": "./dist/cjs/inAppMessaging/providers/pinpoint/index.js",
 			"types": "./dist/esm/inAppMessaging/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/inAppMessaging/providers/pinpoint/index.mjs",
 			"require": "./dist/cjs/inAppMessaging/providers/pinpoint/index.js"
 		},
 		"./push-notifications/pinpoint": {
-			"react-native": "./src/pushNotifications/providers/pinpoint/index.ts",
+			"react-native": "./dist/cjs/pushNotifications/providers/pinpoint/index.js",
 			"types": "./dist/esm/pushNotifications/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/pushNotifications/providers/pinpoint/index.mjs",
 			"require": "./dist/cjs/pushNotifications/providers/pinpoint/index.js"
@@ -100,7 +100,6 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.11.3",
-		"@aws-amplify/react-native": "1.1.8",
-		"typescript": "5.0.2"
+		"@aws-amplify/react-native": "1.1.8"
 	}
 }

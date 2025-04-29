@@ -5,34 +5,34 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"exports": {
 		".": {
-			"react-native": "./src/index.ts",
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js"
 		},
 		"./utils": {
-			"react-native": "./src/utils/index.ts",
+			"react-native": "./dist/cjs/utils/index.js",
 			"types": "./dist/esm/utils/index.d.ts",
 			"import": "./dist/esm/utils/index.mjs",
 			"require": "./dist/cjs/utils/index.js"
 		},
 		"./auth": {
-			"react-native": "./src/auth/index.ts",
+			"react-native": "./dist/cjs/auth/index.js",
 			"types": "./dist/esm/auth/index.d.ts",
 			"import": "./dist/esm/auth/index.mjs",
 			"require": "./dist/cjs/auth/index.js"
 		},
 		"./api": {
-			"react-native": "./src/api/index.ts",
+			"react-native": "./dist/cjs/api/index.js",
 			"types": "./dist/esm/api/index.d.ts",
 			"import": "./dist/esm/api/index.mjs",
 			"require": "./dist/cjs/api/index.js"
 		},
 		"./api/internals": {
-			"react-native": "./src/api/internals.ts",
+			"react-native": "./dist/cjs/api/internals.js",
 			"types": "./dist/esm/api/internals.d.ts",
 			"import": "./dist/esm/api/internals.mjs",
 			"require": "./dist/cjs/api/internals.js"
@@ -43,7 +43,7 @@
 			"require": "./dist/cjs/api/server.js"
 		},
 		"./data": {
-			"react-native": "./src/api/index.ts",
+			"react-native": "./dist/cjs/api/index.js",
 			"types": "./dist/esm/api/index.d.ts",
 			"import": "./dist/esm/api/index.mjs",
 			"require": "./dist/cjs/api/index.js"
@@ -54,13 +54,13 @@
 			"require": "./dist/cjs/api/server.js"
 		},
 		"./datastore": {
-			"react-native": "./src/datastore/index.ts",
+			"react-native": "./dist/cjs/datastore/index.js",
 			"types": "./dist/esm/datastore/index.d.ts",
 			"import": "./dist/esm/datastore/index.mjs",
 			"require": "./dist/cjs/datastore/index.js"
 		},
 		"./auth/cognito": {
-			"react-native": "./src/auth/cognito/index.ts",
+			"react-native": "./dist/cjs/auth/cognito/index.js",
 			"types": "./dist/esm/auth/cognito/index.d.ts",
 			"import": "./dist/esm/auth/cognito/index.mjs",
 			"require": "./dist/cjs/auth/cognito/index.js"
@@ -81,43 +81,43 @@
 			"require": "./dist/cjs/auth/enableOAuthListener.js"
 		},
 		"./analytics": {
-			"react-native": "./src/analytics/index.ts",
+			"react-native": "./dist/cjs/analytics/index.js",
 			"types": "./dist/esm/analytics/index.d.ts",
 			"import": "./dist/esm/analytics/index.mjs",
 			"require": "./dist/cjs/analytics/index.js"
 		},
 		"./analytics/pinpoint": {
-			"react-native": "./src/analytics/pinpoint/index.ts",
+			"react-native": "./dist/cjs/analytics/pinpoint/index.js",
 			"types": "./dist/esm/analytics/pinpoint/index.d.ts",
 			"import": "./dist/esm/analytics/pinpoint/index.mjs",
 			"require": "./dist/cjs/analytics/pinpoint/index.js"
 		},
 		"./analytics/kinesis": {
-			"react-native": "./src/analytics/kinesis/index.ts",
+			"react-native": "./dist/cjs/analytics/kinesis/index.js",
 			"types": "./dist/esm/analytics/kinesis/index.d.ts",
 			"import": "./dist/esm/analytics/kinesis/index.mjs",
 			"require": "./dist/cjs/analytics/kinesis/index.js"
 		},
 		"./analytics/kinesis-firehose": {
-			"react-native": "./src/analytics/kinesis-firehose/index.ts",
+			"react-native": "./dist/cjs/analytics/kinesis-firehose/index.js",
 			"types": "./dist/esm/analytics/kinesis-firehose/index.d.ts",
 			"import": "./dist/esm/analytics/kinesis-firehose/index.mjs",
 			"require": "./dist/cjs/analytics/kinesis-firehose/index.js"
 		},
 		"./analytics/personalize": {
-			"react-native": "./src/analytics/personalize/index.ts",
+			"react-native": "./dist/cjs/analytics/personalize/index.js",
 			"types": "./dist/esm/analytics/personalize/index.d.ts",
 			"import": "./dist/esm/analytics/personalize/index.mjs",
 			"require": "./dist/cjs/analytics/personalize/index.js"
 		},
 		"./storage": {
-			"react-native": "./src/storage/index.ts",
+			"react-native": "./dist/cjs/storage/index.js",
 			"types": "./dist/esm/storage/index.d.ts",
 			"import": "./dist/esm/storage/index.mjs",
 			"require": "./dist/cjs/storage/index.js"
 		},
 		"./storage/s3": {
-			"react-native": "./src/storage/s3/index.ts",
+			"react-native": "./dist/cjs/storage/s3/index.js",
 			"types": "./dist/esm/storage/s3/index.d.ts",
 			"import": "./dist/esm/storage/s3/index.mjs",
 			"require": "./dist/cjs/storage/s3/index.js"
@@ -133,25 +133,25 @@
 			"require": "./dist/cjs/storage/s3/server.js"
 		},
 		"./in-app-messaging": {
-			"react-native": "./src/in-app-messaging/index.ts",
+			"react-native": "./dist/cjs/in-app-messaging/index.js",
 			"types": "./dist/esm/in-app-messaging/index.d.ts",
 			"import": "./dist/esm/in-app-messaging/index.mjs",
 			"require": "./dist/cjs/in-app-messaging/index.js"
 		},
 		"./push-notifications": {
-			"react-native": "./src/push-notifications/index.ts",
+			"react-native": "./dist/cjs/push-notifications/index.js",
 			"types": "./dist/esm/push-notifications/index.d.ts",
 			"import": "./dist/esm/push-notifications/index.mjs",
 			"require": "./dist/cjs/push-notifications/index.js"
 		},
 		"./in-app-messaging/pinpoint": {
-			"react-native": "./src/in-app-messaging/pinpoint/index.ts",
+			"react-native": "./dist/cjs/in-app-messaging/pinpoint/index.js",
 			"types": "./dist/esm/in-app-messaging/pinpoint/index.d.ts",
 			"import": "./dist/esm/in-app-messaging/pinpoint/index.mjs",
 			"require": "./dist/cjs/in-app-messaging/pinpoint/index.js"
 		},
 		"./push-notifications/pinpoint": {
-			"react-native": "./src/push-notifications/pinpoint/index.ts",
+			"react-native": "./dist/cjs/push-notifications/pinpoint/index.js",
 			"types": "./dist/esm/push-notifications/pinpoint/index.d.ts",
 			"import": "./dist/esm/push-notifications/pinpoint/index.mjs",
 			"require": "./dist/cjs/push-notifications/pinpoint/index.js"
@@ -301,9 +301,6 @@
 		"@aws-amplify/notifications": "2.0.79",
 		"@aws-amplify/storage": "6.8.3",
 		"tslib": "^2.5.0"
-	},
-	"devDependencies": {
-		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{

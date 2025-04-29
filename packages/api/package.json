@@ -5,7 +5,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"sideEffects": [
 		"./dist/cjs/API.js",
 		"./dist/esm/API.mjs"
@@ -29,13 +29,13 @@
 	},
 	"exports": {
 		".": {
-			"react-native": "./src/index.ts",
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js"
 		},
 		"./internals": {
-			"react-native": "./src/internals/index.ts",
+			"react-native": "./dist/cjs/internals/index.js",
 			"types": "./dist/esm/internals/index.d.ts",
 			"import": "./dist/esm/internals/index.mjs",
 			"require": "./dist/cjs/internals/index.js"
@@ -69,8 +69,7 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
 		"@aws-amplify/core": "6.11.3",
-		"jest-fetch-mock": "3.0.3",
-		"typescript": "5.0.2"
+		"jest-fetch-mock": "3.0.3"
 	},
 	"files": [
 		"dist/cjs",

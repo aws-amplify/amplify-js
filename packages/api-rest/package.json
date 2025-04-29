@@ -6,7 +6,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -27,7 +27,7 @@
 	},
 	"exports": {
 		".": {
-			"react-native": "./src/index.ts",
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js"
@@ -38,7 +38,7 @@
 			"require": "./dist/cjs/server.js"
 		},
 		"./internals": {
-			"react-native": "./src/internals/index.ts",
+			"react-native": "./dist/cjs/internals/index.js",
 			"types": "./dist/esm/internals/index.d.ts",
 			"import": "./dist/esm/internals/index.mjs",
 			"require": "./dist/cjs/internals/index.js"
@@ -89,7 +89,6 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.11.3",
 		"@aws-amplify/react-native": "1.1.8",
-		"@aws-sdk/types": "3.387.0",
-		"typescript": "5.0.2"
+		"@aws-sdk/types": "3.387.0"
 	}
 }

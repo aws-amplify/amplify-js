@@ -5,7 +5,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
@@ -42,13 +42,13 @@
 			"require": "./dist/cjs/index.js"
 		},
 		"./lex-v1": {
-			"react-native": "./src/lex-v1/index.ts",
+			"react-native": "./dist/cjs/lex-v1/index.js",
 			"types": "./dist/esm/lex-v1/index.d.ts",
 			"import": "./dist/esm/lex-v1/index.mjs",
 			"require": "./dist/cjs/lex-v1/index.js"
 		},
 		"./lex-v2": {
-			"react-native": "./src/lex-v2/index.ts",
+			"react-native": "./dist/cjs/lex-v2/index.js",
 			"types": "./dist/esm/lex-v2/index.d.ts",
 			"import": "./dist/esm/lex-v2/index.mjs",
 			"require": "./dist/cjs/lex-v2/index.js"
@@ -81,8 +81,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.11.3",
-		"typescript": "^5.0.2"
+		"@aws-amplify/core": "6.11.3"
 	},
 	"size-limit": [
 		{
