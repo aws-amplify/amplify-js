@@ -40,7 +40,8 @@ runs:
         NPM_PASS: verdaccio
         NPM_EMAIL: verdaccio@amplify.js
       run: |
-        yarn config set registry $NPM_REGISTRY
+        yarn -v
+        yarn config set npmRegistryServer $NPM_REGISTRY
         npm set registry $NPM_REGISTRY
         git config --global user.email $NPM_EMAIL
         git config --global user.name $NPM_USER
@@ -51,8 +52,8 @@ runs:
       working-directory: ./amplify-js
       run: |
         scripts/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
-        yarn info aws-amplify@unstable description
-        npm info aws-amplify@unstable version
+        # yarn info aws-amplify@unstable description
+        # npm info aws-amplify@unstable version
     - name: Upload artifact
       uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
       if: failure()

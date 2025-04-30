@@ -44,6 +44,20 @@ runs:
             echo "Branch '$BRANCH' does not exist"
         fi
 
+    - name: Setup yarn berry
+      shell: bash
+      run: |
+        npm install -g corepack
+        corepack enable
+        corepack prepare yarn@4.9.0 --activate
+        yarn -v
+    # - name: Setup Node.js 20
+    #   uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+    #   with:
+    #     node-version: 20
+    #   env:
+    #     SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+
     - name: Install
       run: |
         yarn

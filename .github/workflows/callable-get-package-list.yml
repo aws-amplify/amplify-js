@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout AmplifyJs
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
       - uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         id: cache-package-list
         with:
@@ -32,11 +34,11 @@ jobs:
       - name: Dump Package List
         if: steps.cache-package-list.outputs.cache-hit != 'true'
         run: |
-          echo "packages=$(yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({name: split(" ")[0], path: split(" ")[-1]})')" > package-list.json
+          echo "./amplify-js/packages=$(yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({name: split(" ")[0], path: split(" ")[-1]})')" > ./amplify-js/package-list.json
       - name: Get Package List
         id: get_package_list
         run: |
-          cat package-list.json >> $GITHUB_OUTPUT
-          cat package-list.json
+          cat ./amplify-js/package-list.json >> $GITHUB_OUTPUT
+          cat ./amplify-js/package-list.json
     outputs:
       packages: ${{ steps.get_package_list.outputs.packages }}
