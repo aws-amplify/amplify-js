@@ -23,10 +23,11 @@ jobs:
             ${{ runner.os }}-package-list-
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
-      - name: Install
+
+      - name: Setup node and build the repository
         if: steps.cache-package-list.outputs.cache-hit != 'true'
-        run: yarn
-        shell: bash
+        uses: ./amplify-js/.github/actions/node-and-build
+
       # Need the repo checked out in order to read the file
       - name: Dump Package List
         if: steps.cache-package-list.outputs.cache-hit != 'true'
