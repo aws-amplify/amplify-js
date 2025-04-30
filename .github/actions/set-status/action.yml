@@ -1,0 +1,68 @@
+name: 'Set Status'
+description: 'Set status on a specified head-sha'
+inputs:
+  context:
+    description: 'Name of the status'
+    required: true
+  description:
+    description: 'Short description of the status'
+    required: false
+  state:
+    description: >-
+      State of the status with possible values of 'error', 'failure', 'pending', 'success'
+    required: true
+  sha:
+    description: 'The commit ID to add the status to'
+    required: true
+  target-url:
+    description: >-
+      Target URL to associate with this status.
+      This URL will be linked from the GitHub UI to allow users to easily see the source of the status.'
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Set a commit status
+      id: set-status
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1 https://github.com/actions/github-script/commit/60a0d83039c74a4aee543508d2ffcb1c3799cdea
+      env:
+        status_context: ${{ inputs.context }}
+        description: ${{ inputs.description }}
+        state: ${{ inputs.state }}
+        sha: ${{ inputs.sha }}
+        target_url: ${{ inputs.target-url }}
+        owner: ${{ github.event.repository.owner.login }}
+        repo: ${{ github.event.repository.name }}
+      with:
+        result-encoding: string
+        script: |
+          const { status_context, description, state, sha, target_url, owner, repo } = process.env;
+          const inputValidationErrors = [];
+          if (state.length === 0) {
+            inputValidationErrors.push('"state" input cannot be empty.');
+          }
+          if (!["error", "failure", "pending", "success"].includes(state)) {
+            inputValidationErrors.push('"state" must be a string input with possible value of "error", "failure", "pending", "success".');
+          }
+          if (context.length === 0) {
+            inputValidationErrors.push('"context" input cannot be empty.');
+          }
+          if (sha.length === 0) {
+            inputValidationErrors.push('"sha" input cannot be empty.');
+          }
+          if (!sha.match(/^[0-9a-z]+$/)) {
+            inputValidationErrors.push('"sha" must be an alphanumeric string.');
+          }
+          if (inputValidationErrors.length > 0) {
+            inputValidationErrors.forEach(core.error);
+            process.exit(1);
+          }
+          github.rest.repos.createCommitStatus({
+            owner,
+            repo,
+            sha,
+            state,
+            context: status_context,
+            description: description.length > 0 ? description : undefined,
+            target_url: target_url.length > 0 ? target_url : undefined,
+          });

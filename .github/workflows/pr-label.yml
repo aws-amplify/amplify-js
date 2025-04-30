@@ -1,0 +1,90 @@
+# Description: This workflow runs test suite against PRs that are not from forks.
+#
+# Triggers:
+# - When a PR is opened, updated, or labeled against specific branches
+# - Only runs when the PR has the 'run-tests' label
+# - Only runs for internal PRs (not from forks)
+
+name: Test / Internal PRs
+
+concurrency:
+  group: push-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: [main, release]
+    types: [opened, synchronize, labeled]
+
+jobs:
+  setup:
+    if: |
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(github.event.pull_request.labels.*.name, 'run-tests')
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write # This is required for running set-status actions
+    steps:
+      - uses: actions/checkout@b80ff79f1755d06ba70441c368a6fe801f5f3a62 # v4.1.3 https://github.com/actions/checkout/commit/cd7d8d697e10461458bc61a30d094dc601a8b017
+      - name: Update status to pending prior to starting tests
+        uses: ./.github/actions/set-status
+        with:
+          sha: ${{ github.event.pull_request.head.sha }}
+          state: 'pending'
+          context: 'Run PR e2e checks'
+          description: 'PR e2e checks are now running'
+          # URL below is a link to the current workflow run to allow users to see the status of the workflow.
+          target-url: https://github.com/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/actions/runs/${{ github.run_id }}
+
+  prebuild:
+    needs: setup
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+    uses: ./.github/workflows/callable-prebuild-amplify-js.yml
+    with:
+      runs_on: ${{ matrix.platform }}
+
+  prebuild-samples-staging:
+    needs: setup
+    secrets: inherit
+    uses: ./.github/workflows/callable-prebuild-samples-staging.yml
+
+  e2e:
+    needs: [setup, prebuild, prebuild-samples-staging]
+    secrets: inherit
+    uses: ./.github/workflows/callable-e2e-tests.yml
+
+  update-success-status:
+    if: ${{ success() }}
+    needs: [setup, prebuild, prebuild-samples-staging, e2e]
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write # This is required for running set-status actions
+    steps:
+      - uses: actions/checkout@b80ff79f1755d06ba70441c368a6fe801f5f3a62 # v4.1.3 https://github.com/actions/checkout/commit/cd7d8d697e10461458bc61a30d094dc601a8b017
+      - name: Update status when tests are successful
+        uses: ./.github/actions/set-status
+        with:
+          sha: ${{ github.event.pull_request.head.sha }}
+          state: 'success'
+          context: 'Run PR e2e checks'
+          description: 'PR e2e checks have finished running'
+          target-url: https://github.com/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/actions/runs/${{ github.run_id }}
+
+  update-failure-status:
+    if: ${{ failure() }}
+    needs: [setup, prebuild, prebuild-samples-staging, e2e]
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write # This is required for running set-status actions
+    steps:
+      - uses: actions/checkout@b80ff79f1755d06ba70441c368a6fe801f5f3a62 # v4.1.3 https://github.com/actions/checkout/commit/cd7d8d697e10461458bc61a30d094dc601a8b017
+      - name: Update status when tests are not successful
+        uses: ./.github/actions/set-status
+        with:
+          sha: ${{ github.event.pull_request.head.sha }}
+          state: 'failure'
+          context: 'Run e2e PR checks'
+          description: 'PR e2e checks have failed'
+          target-url: https://github.com/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/actions/runs/${{ github.run_id }}
