@@ -1,0 +1,61 @@
+# Description: This workflow runs test suite against PRs that are not from forks.
+#
+# Triggered by:
+#   (1) Opening a PR with a 'run-tests' label
+#   (2) Adding 'run-tests' label to the PR
+#   (3) On every commit to the PR with 'run-tests' label
+
+name: Test / Internal PRs
+
+concurrency:
+  group: test-internal-prs-${{ github.event.pull_request.id }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    # branches: [main, release]
+    branches: [ashwin-run-integ-onTag]
+    types: [opened, synchronize, labeled]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    # We run tests only if
+    #   (1) this pr is not from a fork, and
+    #   (2) it's either 'opened' or 'synchronize' action or 'labeled' action with 'run-tests' label.
+    if: |
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(github.event.pull_request.labels.*.name, 'run-tests')
+    permissions:
+      pull-requests: write # used to remove label
+      statuses: write # This is required for running set-status actions
+    steps:
+      - name: Remove run-tests label, if applicable
+        if: github.event.label.name == 'run-tests'
+        env:
+          ISSUE_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          LABEL_NAME: 'run-tests'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1 https://github.com/actions/github-script/commit/60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { ISSUE_NUMBER, REPO_OWNER, REPO_NAME, LABEL_NAME } = process.env
+            github.rest.issues.removeLabel({ owner: REPO_OWNER, repo: REPO_NAME, issue_number: ISSUE_NUMBER, name: LABEL_NAME })
+      - name: Checkout Repository
+        uses: actions/checkout@b80ff79f1755d06ba70441c368a6fe801f5f3a62 # v4.1.3 https://github.com/actions/checkout/commit/cd7d8d697e10461458bc61a30d094dc601a8b017
+      - name: Set status to commit sha
+        uses: ./.github/actions/set-status
+        with:
+          sha: ${{ github.event.pull_request.head.sha }}
+          state: 'pending'
+          context: 'Run PR checks'
+          description: 'PR checks are now running'
+          # URL below is a link to the current workflow run to allow users to see the status of the workflow.
+          target-url: https://github.com/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/actions/runs/${{ github.run_id }}
+  e2e:
+    needs:
+      - setup
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
