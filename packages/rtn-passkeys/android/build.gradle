@@ -1,20 +1,22 @@
+import groovy.json.JsonSlurper
+
 buildscript {
   ext.getExtOrDefault = {name ->
     return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['AmplifyRtnPasskeys_' + name]
   }
 
   repositories {
+		mavenCentral()
     google()
-    mavenCentral()
   }
 
   dependencies {
     classpath "com.android.tools.build:gradle:8.7.2"
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
-  }
-}
 
+	}
+}
 
 def isNewArchitectureEnabled() {
   return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
@@ -29,6 +31,13 @@ if (isNewArchitectureEnabled()) {
 
 def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["AmplifyRtnPasskeys_" + name]).toInteger()
+}
+
+def getRNVersionFromNpm() {
+    def inputFile = new File("$rootDir/../package.json")
+    def packageJson = new JsonSlurper().parseText(inputFile.text)
+
+    return packageJson["devDependencies"]["react-native"]
 }
 
 def supportsNamespace() {
@@ -47,6 +56,9 @@ android {
     sourceSets {
       main {
         manifest.srcFile "src/main/AndroidManifestNew.xml"
+        java.srcDirs += [
+          "generated/java"
+        ]
       }
     }
   }
@@ -78,11 +90,17 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+
   sourceSets {
     main {
+      java.srcDirs += [
+        "generated/java"
+      ]
       if (isNewArchitectureEnabled()) {
           java.srcDirs += [
-            "generated/java",
             "generated/jni"
           ]
       }
@@ -95,14 +113,23 @@ repositories {
   google()
 }
 
+def packageJsonFile = new File("$rootDir/../package.json")
 def kotlin_version = getExtOrDefault("kotlinVersion")
+def rn_version = getRNVersionFromNpm()
 
 dependencies {
-  implementation "com.facebook.react:react-android"
+	implementation "com.facebook.react:react-android:$rn_version"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   implementation "androidx.credentials:credentials:1.5.0"
   implementation "androidx.credentials:credentials-play-services-auth:1.5.0"
+  
+  // Test dependencies
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "org.robolectric:robolectric:4.10.3"
+  testImplementation "org.mockito:mockito-core:5.3.1"
+  testImplementation "org.mockito.kotlin:mockito-kotlin:5.1.0"
+  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"
 }
 
 if (isNewArchitectureEnabled()) {
