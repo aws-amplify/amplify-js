@@ -417,3 +417,7 @@ export const mockUserCredentials = [
 		CreatedAt: 1582939425,
 	},
 ];
+
+export class MockNativeError extends Error {
+	code?: string;
+}
