@@ -136,7 +136,7 @@ class AmplifyRtnPasskeysTest {
     fun `createPasskey should call toHashMap on the input`() {
         val mockMap = HashMap<String, Any?>()
         mockMap["challenge"] = "challenge_string"
-        mockMap["rp"] = mapOf("id" to "example.com", "name" to "Example")
+        mockMap["rp"] = mapOf("id" to "amplify.com", "name" to "Amplify")
         mockMap["user"] = mapOf(
             "id" to "amplify523", 
             "name" to "Amplify User", 
