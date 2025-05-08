@@ -7,7 +7,7 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, 16
+platform :ios, 17.4
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
