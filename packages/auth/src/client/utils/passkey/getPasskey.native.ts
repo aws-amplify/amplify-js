@@ -4,27 +4,13 @@
 import { loadAmplifyRtnPasskeys } from '@aws-amplify/react-native';
 
 import { PasskeyGetOptionsJson, PasskeyGetResultJson } from './types';
-import {
-	PasskeyErrorCode,
-	assertPasskeyError,
-	handlePasskeyAuthenticationError,
-} from './errors';
-import { getIsPasskeySupported } from './getIsPasskeySupported';
+import { handlePasskeyAuthenticationError } from './errors';
 
 export const getPasskey = async (
 	input: PasskeyGetOptionsJson,
 ): Promise<PasskeyGetResultJson> => {
 	try {
-		const isPasskeySupported = getIsPasskeySupported();
-
-		assertPasskeyError(
-			isPasskeySupported,
-			PasskeyErrorCode.PasskeyNotSupported,
-		);
-
-		const credential = await loadAmplifyRtnPasskeys().getPasskey(input);
-
-		return credential;
+		return await loadAmplifyRtnPasskeys().getPasskey(input);
 	} catch (err: unknown) {
 		throw handlePasskeyAuthenticationError(err);
 	}
