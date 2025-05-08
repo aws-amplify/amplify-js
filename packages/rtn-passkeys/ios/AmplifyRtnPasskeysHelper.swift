@@ -10,29 +10,23 @@ public class AmplifyRtnPasskeysHelper: NSObject, AmplifyRtnPasskeysResultHandler
 	private var delegate: AmplifyRtnPasskeysDelegate?
 	private var handler: AmplifyRtnPasskeysHandler?
 
+	// MARK: - AmplifyRtnPasskeysHelper.createPasskey
 	@objc
 	@available(iOS 17.4, *)
 	public func createPasskey(
-		_ input: NSMutableDictionary,
+		_ rpId: String,
+		userId: String,
+		userName: String,
+		challenge: String,
+		excludeCredentials: [String],
 		resolve: @escaping RCTPromiseResolveBlock,
 		reject: @escaping RCTPromiseRejectBlock
 	) {
 
 		handler = AmplifyRtnPasskeysHandler(resolve, reject)
 
-		guard let rpId = input["rp"] as? [String: Any],
-			let rpIdString = rpId["id"] as? String,
-			let challenge = input["challenge"] as? String,
-			let user = input["user"] as? [String: Any],
-			let userName = user["name"] as? String,
-			let userId = user["id"] as? String
-		else {
-			handleError(errorName: "FAILED")
-			return
-		}
-
 		let platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
-			relyingPartyIdentifier: rpIdString)
+			relyingPartyIdentifier: rpId)
 
 		let platformKeyRequest =
 			platformProvider.createCredentialRegistrationRequest(
@@ -41,23 +35,11 @@ public class AmplifyRtnPasskeysHelper: NSObject, AmplifyRtnPasskeysResultHandler
 				userID: userId.toBase64UrlDecodedData()
 			)
 
-		var excludedCredentials:
-			[ASAuthorizationPlatformPublicKeyCredentialDescriptor] = []
-
-		if let excludeCredentialsArray = input["excludeCredentials"]
-			as? [[String: Any]]
-		{
-			for credential in excludeCredentialsArray {
-				if let credentialId = credential["id"] as? String {
-					let pkcDescriptor =
-						ASAuthorizationPlatformPublicKeyCredentialDescriptor(
-							credentialID:
-								credentialId.toBase64UrlDecodedData()
-						)
-					excludedCredentials.append(pkcDescriptor)
+		let excludedCredentials:
+			[ASAuthorizationPlatformPublicKeyCredentialDescriptor] =
+				excludeCredentials.compactMap { credentialId in
+					return .init(credentialID: credentialId.toBase64UrlDecodedData())
 				}
-			}
-		}
 
 		platformKeyRequest.excludedCredentials = excludedCredentials
 
@@ -71,23 +53,20 @@ public class AmplifyRtnPasskeysHelper: NSObject, AmplifyRtnPasskeysResultHandler
 		authController.presentationContextProvider = delegate
 		authController.performRequests()
 	}
-
+	
+	// MARK: - AmplifyRtnPasskeysHelper.getPasskey
 	@objc
 	@available(iOS 17.4, *)
 	public func getPasskey(
-		_ input: NSDictionary,
+		_ rpId: String,
+		challenge: String,
+		userVerification: String,
+		allowCredentials: [String],
 		resolve: @escaping RCTPromiseResolveBlock,
 		reject: @escaping RCTPromiseRejectBlock
 	) {
 
 		handler = AmplifyRtnPasskeysHandler(resolve, reject)
-
-		guard let rpId = input["rpId"] as? String,
-			let challenge = input["challenge"] as? String
-		else {
-			handleError(errorName: "FAILED")
-			return
-		}
 
 		let platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
 			relyingPartyIdentifier: rpId)
@@ -96,30 +75,17 @@ public class AmplifyRtnPasskeysHelper: NSObject, AmplifyRtnPasskeysResultHandler
 			challenge: challenge.toBase64UrlDecodedData()
 		)
 
-		var allowedCredentials:
-			[ASAuthorizationPlatformPublicKeyCredentialDescriptor] = []
-
-		if let allowCredentialsArray = input["allowCredentials"]
-			as? [[String: Any]]
-		{
-			for credential in allowCredentialsArray {
-				if let credentialId = credential["id"] as? String {
-					let pkcDescriptor =
-						ASAuthorizationPlatformPublicKeyCredentialDescriptor(
-							credentialID: credentialId.toBase64UrlDecodedData()
-						)
-					allowedCredentials.append(pkcDescriptor)
+		let allowedCredentials:
+			[ASAuthorizationPlatformPublicKeyCredentialDescriptor] =
+				allowCredentials.compactMap { credentialId in
+					return .init(credentialID: credentialId.toBase64UrlDecodedData())
 				}
-			}
-		}
 
 		platformKeyRequest.allowedCredentials = allowedCredentials
 
-		if let userVerification = input["userVerification"] as? String {
-			platformKeyRequest.userVerificationPreference =
-				ASAuthorizationPublicKeyCredentialUserVerificationPreference(
-					userVerification)
-		}
+		platformKeyRequest.userVerificationPreference =
+			ASAuthorizationPublicKeyCredentialUserVerificationPreference(
+				userVerification)
 
 		let authController = ASAuthorizationController(authorizationRequests: [
 			platformKeyRequest
