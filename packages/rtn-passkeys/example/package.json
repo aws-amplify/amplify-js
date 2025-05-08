@@ -11,7 +11,7 @@
 	},
 	"dependencies": {
 		"react": "19.0.0",
-		"react-native": "0.79.0",
+		"react-native": "0.79.2",
 		"aws-amplify": "*",
 		"@aws-amplify/react-native": "*",
 		"@aws-amplify/rtn-passkeys": "*",
@@ -26,10 +26,10 @@
 		"@react-native-community/cli": "18.0.0",
 		"@react-native-community/cli-platform-android": "18.0.0",
 		"@react-native-community/cli-platform-ios": "18.0.0",
-		"@react-native/babel-preset": "0.79.0",
-		"@react-native/eslint-config": "0.79.0",
-		"@react-native/metro-config": "0.79.0",
-		"@react-native/typescript-config": "0.79.0"
+		"@react-native/babel-preset": "0.79.2",
+		"@react-native/eslint-config": "0.79.2",
+		"@react-native/metro-config": "0.79.2",
+		"@react-native/typescript-config": "0.79.2"
 	},
 	"engines": {
 		"node": ">=18"
