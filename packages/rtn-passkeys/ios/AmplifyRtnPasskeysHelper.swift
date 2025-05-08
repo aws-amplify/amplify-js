@@ -12,7 +12,7 @@ public class AmplifyRtnPasskeysHelper: NSObject, AmplifyRtnPasskeysResultHandler
 
 	// MARK: - AmplifyRtnPasskeysHelper.createPasskey
 	@objc
-	@available(iOS 17.4, *)
+	@available(iOS 15.0, *)
 	public func createPasskey(
 		_ rpId: String,
 		userId: String,
@@ -24,6 +24,11 @@ public class AmplifyRtnPasskeysHelper: NSObject, AmplifyRtnPasskeysResultHandler
 	) {
 
 		handler = AmplifyRtnPasskeysHandler(resolve, reject)
+		
+		guard AmplifyRtnPasskeysHelper.getIsPasskeySupported() == true else {
+			handleError(errorName:"NOT_SUPPORTED", errorMessage: nil, error: nil)
+			return
+		}
 
 		let platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
 			relyingPartyIdentifier: rpId)
@@ -35,13 +40,15 @@ public class AmplifyRtnPasskeysHelper: NSObject, AmplifyRtnPasskeysResultHandler
 				userID: userId.toBase64UrlDecodedData()
 			)
 
-		let excludedCredentials:
-			[ASAuthorizationPlatformPublicKeyCredentialDescriptor] =
-				excludeCredentials.compactMap { credentialId in
-					return .init(credentialID: credentialId.toBase64UrlDecodedData())
-				}
+		if #available(iOS 17.4, *) {
+			let excludedCredentials:
+				[ASAuthorizationPlatformPublicKeyCredentialDescriptor] =
+					excludeCredentials.compactMap { credentialId in
+						return .init(credentialID: credentialId.toBase64UrlDecodedData())
+					}
 
-		platformKeyRequest.excludedCredentials = excludedCredentials
+			platformKeyRequest.excludedCredentials = excludedCredentials
+		}
 
 		let authController = ASAuthorizationController(authorizationRequests: [
 			platformKeyRequest
@@ -53,10 +60,10 @@ public class AmplifyRtnPasskeysHelper: NSObject, AmplifyRtnPasskeysResultHandler
 		authController.presentationContextProvider = delegate
 		authController.performRequests()
 	}
-	
+
 	// MARK: - AmplifyRtnPasskeysHelper.getPasskey
 	@objc
-	@available(iOS 17.4, *)
+	@available(iOS 15.0, *)
 	public func getPasskey(
 		_ rpId: String,
 		challenge: String,
@@ -65,9 +72,13 @@ public class AmplifyRtnPasskeysHelper: NSObject, AmplifyRtnPasskeysResultHandler
 		resolve: @escaping RCTPromiseResolveBlock,
 		reject: @escaping RCTPromiseRejectBlock
 	) {
-
 		handler = AmplifyRtnPasskeysHandler(resolve, reject)
 
+		guard AmplifyRtnPasskeysHelper.getIsPasskeySupported() == true else {
+			handleError(errorName:"NOT_SUPPORTED")
+			return
+		}
+		
 		let platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
 			relyingPartyIdentifier: rpId)
 

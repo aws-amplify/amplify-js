@@ -1,5 +1,6 @@
 package com.amazonaws.amplify.rtnpasskeys
 
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.credentials.CreateCredentialResponse
 import androidx.credentials.CreatePublicKeyCredentialRequest
 import androidx.credentials.CreatePublicKeyCredentialResponse
@@ -36,32 +37,41 @@ import org.json.JSONObject
 class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 	NativeAmplifyRtnPasskeysSpec(reactContext) {
 
-	private val credentialManager =
-		CredentialManager.create(reactApplicationContext.applicationContext)
 	private val coroutineScope = CoroutineScope(Dispatchers.Default)
-
 
 	override fun getName(): String {
 		return NAME
 	}
 
+	companion object {
+		const val NAME = "AmplifyRtnPasskeys"
+	}
+
+	@ChecksSdkIntAtLeast
 	override fun getIsPasskeySupported(): Boolean {
-		return true
+		// Requires Android SDK >= 28 (PIE)
+		return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P
 	}
 
 	override fun createPasskey(input: ReadableMap, promise: Promise) {
-		val requestJson = JSONObject(input.toHashMap()).toString()
+		if (!isPasskeySupported) {
+			return promise.reject("NOT_SUPPORTED", "CreatePasskeyNotSupported")
+		}
 
+		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
+
+		val requestJson = JSONObject(input.toHashMap()).toString()
 		val request =
 			CreatePublicKeyCredentialRequest(requestJson = requestJson)
 
 		coroutineScope.launch {
 			try {
 				val result: CreateCredentialResponse =
-					credentialManager.createCredential(context = reactApplicationContext, request = request)
+					credentialManager.createCredential(context = currentActivity ?: reactApplicationContext, request = request)
 
 				val publicKeyResult =
-					result as? CreatePublicKeyCredentialResponse ?: throw Exception("PasskeyRegistrationFailed")
+					result as? CreatePublicKeyCredentialResponse
+						?: throw Exception("CreatePasskeyFailed")
 
 				val jsonObject = JSONObject(publicKeyResult.registrationResponseJson)
 
@@ -76,6 +86,12 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 	}
 
 	override fun getPasskey(input: ReadableMap, promise: Promise) {
+		if (!isPasskeySupported) {
+			return promise.reject("NOT_SUPPORTED", "GetPasskeyNotSupported")
+		}
+
+		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
+
 		val requestJson = JSONObject(input.toHashMap()).toString()
 		val options =
 			GetPublicKeyCredentialOption(requestJson = requestJson)
@@ -84,10 +100,10 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 		coroutineScope.launch {
 			try {
 				val result: GetCredentialResponse =
-					credentialManager.getCredential(context = reactApplicationContext, request = request)
+					credentialManager.getCredential(context = currentActivity ?: reactApplicationContext, request = request)
 
 				val publicKeyResult =
-					result.credential as? PublicKeyCredential ?: throw Exception("PasskeyRetrievalFailed")
+					result.credential as? PublicKeyCredential ?: throw Exception("GetPasskeyFailed")
 
 				val jsonObject = JSONObject(publicKeyResult.authenticationResponseJson)
 
@@ -95,14 +111,10 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 			} catch (e: GetCredentialException) {
 				val errorCode = handlePasskeyAuthenticationFailure(e)
 				promise.reject(errorCode, e)
-			} catch(e: Exception) {
+			} catch (e: Exception) {
 				promise.reject("FAILED", e)
 			}
 		}
-	}
-
-	companion object {
-		const val NAME = "AmplifyRtnPasskeys"
 	}
 
 	private fun handlePasskeyRegistrationFailure(e: CreateCredentialException): String {
@@ -112,24 +124,28 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 					is NotAllowedError -> {
 						return "CANCELED"
 					}
+
 					is InvalidStateError -> {
 						return "DUPLICATE"
 					}
+
 					is DataError -> {
 						return "RELYING_PARTY_MISMATCH"
 					}
 				}
 			}
+
 			is CreateCredentialCancellationException -> {
 				return "CANCELED"
 			}
+
 			is CreateCredentialUnsupportedException,
 			is CreateCredentialProviderConfigurationException
 				-> {
 				return "NOT_SUPPORTED"
 			}
 		}
-		return "UNKNOWN"
+		return "FAILED"
 	}
 
 	private fun handlePasskeyAuthenticationFailure(e: GetCredentialException): String {
@@ -139,20 +155,23 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 					is NotAllowedError -> {
 						return "CANCELED"
 					}
+
 					is DataError -> {
 						return "RELYING_PARTY_MISMATCH"
 					}
 				}
 			}
+
 			is GetCredentialCancellationException -> {
 				return "CANCELED"
 			}
+
 			is GetCredentialUnsupportedException,
 			is GetCredentialProviderConfigurationException
 				-> {
 				return "NOT_SUPPORTED"
 			}
 		}
-		return "UNKNOWN"
+		return "FAILED"
 	}
 }
