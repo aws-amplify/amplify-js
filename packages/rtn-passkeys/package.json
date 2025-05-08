@@ -52,7 +52,7 @@
 	},
 	"homepage": "https://docs.amplify.aws",
 	"devDependencies": {
-		"react-native": "0.79.0",
+		"react-native": "0.79.2",
 		"typescript": "^5.2.2"
 	},
 	"peerDependencies": {
