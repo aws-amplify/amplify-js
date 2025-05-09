@@ -32,6 +32,7 @@
 	],
 	"scripts": {
 		"test": "jest",
+		"test:android": "cd ./example/android && ./gradlew test",
 		"typecheck": "tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build": "yarn clean && yarn build:esm-cjs && yarn codegen",
