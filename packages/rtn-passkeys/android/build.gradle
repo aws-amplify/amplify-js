@@ -1,114 +1,92 @@
 buildscript {
-  ext.getExtOrDefault = {name ->
-    return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['AmplifyRtnPasskeys_' + name]
-  }
+	ext.getExtOrDefault = { name ->
+		return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['AmplifyRtnPasskeys_' + name]
+	}
 
-  repositories {
-    google()
-    mavenCentral()
-  }
+	repositories {
+		google()
+		mavenCentral()
+	}
 
-  dependencies {
-    classpath "com.android.tools.build:gradle:8.7.2"
-    // noinspection DifferentKotlinGradleVersion
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
-  }
+	dependencies {
+		classpath "com.android.tools.build:gradle:8.7.3"
+		// noinspection DifferentKotlinGradleVersion
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
+	}
 }
 
-
-def isNewArchitectureEnabled() {
-  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
-}
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
-
-if (isNewArchitectureEnabled()) {
-  apply plugin: "com.facebook.react"
-}
+apply plugin: "com.facebook.react"
 
 def getExtOrIntegerDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["AmplifyRtnPasskeys_" + name]).toInteger()
+	return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["AmplifyRtnPasskeys_" + name]).toInteger()
 }
 
-def supportsNamespace() {
-  def parsed = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')
-  def major = parsed[0].toInteger()
-  def minor = parsed[1].toInteger()
-
-  // Namespace support was added in 7.3.0
-  return (major == 7 && minor >= 3) || major >= 8
-}
 
 android {
-  if (supportsNamespace()) {
-    namespace "com.amazonaws.amplify.rtnpasskeys"
+	namespace "com.amazonaws.amplify.rtnpasskeys"
 
-    sourceSets {
-      main {
-        manifest.srcFile "src/main/AndroidManifestNew.xml"
-      }
-    }
-  }
+	compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
 
-  compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+	defaultConfig {
+		minSdkVersion getExtOrIntegerDefault("minSdkVersion")
+		targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+	}
 
-  defaultConfig {
-    minSdkVersion getExtOrIntegerDefault("minSdkVersion")
-    targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
-    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
-  }
+	buildFeatures {
+		buildConfig true
+	}
 
-  buildFeatures {
-    buildConfig true
-  }
+	buildTypes {
+		release {
+			minifyEnabled false
+		}
+	}
 
-  buildTypes {
-    release {
-      minifyEnabled false
-    }
-  }
+	lintOptions {
+		disable "GradleCompatible"
+	}
 
-  lintOptions {
-    disable "GradleCompatible"
-  }
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
-
-  sourceSets {
-    main {
-      if (isNewArchitectureEnabled()) {
-          java.srcDirs += [
-            "generated/java",
-            "generated/jni"
-          ]
-      }
-    }
-  }
+	sourceSets {
+		main {
+			java.srcDirs += [
+				"generated/java",
+				"generated/jni"
+			]
+		}
+	}
 }
 
 repositories {
-  mavenCentral()
-  google()
+	mavenCentral()
+	google()
 }
 
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-  implementation "com.facebook.react:react-android"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+	implementation "com.facebook.react:react-android"
+	implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-  implementation "androidx.credentials:credentials:1.5.0"
-  implementation "androidx.credentials:credentials-play-services-auth:1.5.0"
+	implementation "androidx.credentials:credentials:1.5.0"
+	implementation "androidx.credentials:credentials-play-services-auth:1.5.0"
+
+	testImplementation "junit:junit:4.13.2"
+	testImplementation "org.robolectric:robolectric:4.14.1"
+	testImplementation "io.mockk:mockk:1.14.2"
+	testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
+	testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2"
 }
 
-if (isNewArchitectureEnabled()) {
-  react {
-    jsRootDir = file("../src/")
-    libraryName = "AmplifyRtnPasskeys"
-    codegenJavaPackageName = "com.amazonaws.amplify.rtnpasskeys"
-  }
+react {
+	jsRootDir = file("../src/")
+	libraryName = "AmplifyRtnPasskeys"
+	codegenJavaPackageName = "com.amazonaws.amplify.rtnpasskeys"
 }

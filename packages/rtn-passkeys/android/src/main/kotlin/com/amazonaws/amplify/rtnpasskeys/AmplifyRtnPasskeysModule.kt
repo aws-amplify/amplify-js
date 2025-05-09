@@ -10,11 +10,9 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.GetPublicKeyCredentialOption
 import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.CreateCredentialCancellationException
-import androidx.credentials.exceptions.CreateCredentialException
 import androidx.credentials.exceptions.CreateCredentialProviderConfigurationException
 import androidx.credentials.exceptions.CreateCredentialUnsupportedException
 import androidx.credentials.exceptions.GetCredentialCancellationException
-import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.GetCredentialProviderConfigurationException
 import androidx.credentials.exceptions.GetCredentialUnsupportedException
 import androidx.credentials.exceptions.domerrors.DataError
@@ -22,12 +20,12 @@ import androidx.credentials.exceptions.domerrors.InvalidStateError
 import androidx.credentials.exceptions.domerrors.NotAllowedError
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.credentials.exceptions.publickeycredential.GetPublicKeyCredentialDomException
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.module.annotations.ReactModule
 import com.facebook.fbreact.specs.NativeAmplifyRtnPasskeysSpec
 import com.facebook.react.bridge.JSONArguments
 import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.module.annotations.ReactModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,7 +45,7 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 		const val NAME = "AmplifyRtnPasskeys"
 	}
 
-	@ChecksSdkIntAtLeast
+	@ChecksSdkIntAtLeast(api = android.os.Build.VERSION_CODES.P)
 	override fun getIsPasskeySupported(): Boolean {
 		// Requires Android SDK >= 28 (PIE)
 		return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P
@@ -55,7 +53,7 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 
 	override fun createPasskey(input: ReadableMap, promise: Promise) {
 		if (!isPasskeySupported) {
-			return promise.reject("NOT_SUPPORTED", "CreatePasskeyNotSupported")
+			return promise.reject("NOT_SUPPORTED",  CreateCredentialUnsupportedException("CreatePasskeyNotSupported"))
 		}
 
 		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
@@ -76,18 +74,16 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 				val jsonObject = JSONObject(publicKeyResult.registrationResponseJson)
 
 				promise.resolve(JSONArguments.fromJSONObject(jsonObject))
-			} catch (e: CreateCredentialException) {
-				val errorCode = handlePasskeyRegistrationFailure(e)
-				promise.reject(errorCode, e)
 			} catch (e: Exception) {
-				promise.reject("FAILED", e)
+				val errorCode = handlePasskeyFailure(e)
+				promise.reject(errorCode, e)
 			}
 		}
 	}
 
 	override fun getPasskey(input: ReadableMap, promise: Promise) {
 		if (!isPasskeySupported) {
-			return promise.reject("NOT_SUPPORTED", "GetPasskeyNotSupported")
+			return promise.reject("NOT_SUPPORTED", GetCredentialUnsupportedException("GetPasskeyNotSupported"))
 		}
 
 		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
@@ -108,70 +104,37 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 				val jsonObject = JSONObject(publicKeyResult.authenticationResponseJson)
 
 				promise.resolve(JSONArguments.fromJSONObject(jsonObject))
-			} catch (e: GetCredentialException) {
-				val errorCode = handlePasskeyAuthenticationFailure(e)
-				promise.reject(errorCode, e)
 			} catch (e: Exception) {
-				promise.reject("FAILED", e)
+				val errorCode = handlePasskeyFailure(e)
+				promise.reject(errorCode, e)
 			}
 		}
 	}
 
-	private fun handlePasskeyRegistrationFailure(e: CreateCredentialException): String {
-		when (e) {
+	private fun handlePasskeyFailure(e: Exception): String {
+		return when (e) {
 			is CreatePublicKeyCredentialDomException -> {
 				when (e.domError) {
-					is NotAllowedError -> {
-						return "CANCELED"
-					}
-
-					is InvalidStateError -> {
-						return "DUPLICATE"
-					}
-
-					is DataError -> {
-						return "RELYING_PARTY_MISMATCH"
-					}
+					is NotAllowedError -> "CANCELED"
+					is InvalidStateError -> "DUPLICATE"
+					is DataError -> "RELYING_PARTY_MISMATCH"
+					else -> "FAILED"
 				}
 			}
-
-			is CreateCredentialCancellationException -> {
-				return "CANCELED"
-			}
-
-			is CreateCredentialUnsupportedException,
-			is CreateCredentialProviderConfigurationException
-				-> {
-				return "NOT_SUPPORTED"
-			}
-		}
-		return "FAILED"
-	}
-
-	private fun handlePasskeyAuthenticationFailure(e: GetCredentialException): String {
-		when (e) {
 			is GetPublicKeyCredentialDomException -> {
 				when (e.domError) {
-					is NotAllowedError -> {
-						return "CANCELED"
-					}
-
-					is DataError -> {
-						return "RELYING_PARTY_MISMATCH"
-					}
+					is NotAllowedError -> "CANCELED"
+					is DataError -> "RELYING_PARTY_MISMATCH"
+					else -> "FAILED"
 				}
 			}
-
-			is GetCredentialCancellationException -> {
-				return "CANCELED"
-			}
-
+			is CreateCredentialCancellationException,
+			is GetCredentialCancellationException -> "CANCELED"
+			is CreateCredentialUnsupportedException,
+			is CreateCredentialProviderConfigurationException,
 			is GetCredentialUnsupportedException,
-			is GetCredentialProviderConfigurationException
-				-> {
-				return "NOT_SUPPORTED"
-			}
+			is GetCredentialProviderConfigurationException -> "NOT_SUPPORTED"
+			else -> "FAILED"
 		}
-		return "FAILED"
 	}
 }
