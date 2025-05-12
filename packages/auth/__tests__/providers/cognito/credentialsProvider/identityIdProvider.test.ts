@@ -9,16 +9,17 @@ import {
 } from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
-import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
-import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
-
-import { authAPITestParams } from './testUtils/authApiTestParams';
+import { DefaultIdentityIdStore } from '../../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
+import { cognitoIdentityIdProvider } from '../../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
+import { authAPITestParams } from '../testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
 	createGetIdClient: jest.fn(),
 }));
-jest.mock('../../../src/providers/cognito/credentialsProvider/IdentityIdStore');
+jest.mock(
+	'../../../../src/providers/cognito/credentialsProvider/IdentityIdStore',
+);
 
 const ampConfig: ResourcesConfig = {
 	Auth: {

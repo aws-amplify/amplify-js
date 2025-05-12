@@ -10,10 +10,9 @@ import {
 import {
 	CognitoAWSCredentialsAndIdentityIdProvider,
 	DefaultIdentityIdStore,
-} from '../../../src/providers/cognito';
-import { AuthError } from '../../../src/errors/AuthError';
-
-import { authAPITestParams } from './testUtils/authApiTestParams';
+} from '../../../../src/providers/cognito';
+import { AuthError } from '../../../../src/errors/AuthError';
+import { authAPITestParams } from '../testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
@@ -21,7 +20,7 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 
 jest.mock(
-	'./../../../src/providers/cognito/credentialsProvider/IdentityIdProvider',
+	'../../../../src/providers/cognito/credentialsProvider/IdentityIdProvider',
 	() => ({
 		cognitoIdentityIdProvider: jest
 			.fn()
