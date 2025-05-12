@@ -48,6 +48,8 @@ export {
 	createGetCredentialsForIdentityClient,
 	createGetIdClient,
 	cognitoIdentityPoolEndpointResolver,
+	GetCredentialsForIdentityInput,
+	GetCredentialsForIdentityOutput,
 } from './foundation/factories/serviceClients/cognitoIdentity';
 
 // Amplify-wide constructs
