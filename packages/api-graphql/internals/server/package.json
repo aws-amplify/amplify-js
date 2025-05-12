@@ -3,6 +3,6 @@
 	"types": "../../dist/esm/internals/server/index.d.ts",
 	"main": "../../dist/cjs/internals/server/index.js",
 	"module": "../../dist/esm/internals/server/index.mjs",
-	"react-native": "../../src/internals/server/index.ts",
+	"react-native": "../../dist/cjs/internals/server/index.js",
 	"sideEffects": false
 }

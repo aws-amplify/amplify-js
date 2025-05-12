@@ -1,5 +1,4 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { expect } from '@jest/globals';
 import { type MatcherFunction } from 'expect';
 
 const toBeLastCalledWithConfigAndInput: MatcherFunction<

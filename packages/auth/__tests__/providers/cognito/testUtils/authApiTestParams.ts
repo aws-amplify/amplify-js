@@ -149,6 +149,8 @@ export const authAPITestParams = {
 			SessionToken: 'SessionToken',
 			Expiration: new Date('2023-07-29'),
 		},
+		IdentityId:
+			'I am expected to be returned as a part of the result as I am the source of truth',
 		$metadata: {},
 	},
 	NoAccessKeyCredentialsForIdentityIdResult: {

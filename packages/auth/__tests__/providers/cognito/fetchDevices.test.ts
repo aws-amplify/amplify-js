@@ -81,7 +81,23 @@ describe('fetchDevices', () => {
 	});
 
 	it('should fetch devices and parse client response correctly', async () => {
-		expect(await fetchDevices()).toEqual([apiOutputDevice]);
+		const {
+			id,
+			name,
+			attributes,
+			createDate,
+			lastAuthenticatedDate,
+			lastModifiedDate,
+		} = (await fetchDevices())[0];
+		expect(id).toEqual(apiOutputDevice.id);
+		expect(name).toEqual(apiOutputDevice.name);
+		expect(attributes).toEqual(apiOutputDevice.attributes);
+		expect(createDate).toEqual(apiOutputDevice.createDate);
+		expect(lastAuthenticatedDate).toEqual(
+			apiOutputDevice.lastAuthenticatedDate,
+		);
+		expect(lastModifiedDate).toEqual(apiOutputDevice.lastModifiedDate);
+
 		expect(mockListDevices).toHaveBeenCalledWith(
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({

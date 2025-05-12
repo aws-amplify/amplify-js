@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { KeyValueStorageMethodValidator } from '@aws-amplify/core/internals/adapter-core';
+import { KeyValueStorageMethodValidator } from 'aws-amplify/adapter-core/internals';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 
 import { JwtVerifier } from '../types';

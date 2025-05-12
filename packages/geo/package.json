@@ -1,11 +1,11 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "3.0.65",
+	"version": "3.0.80",
 	"description": "Geo category for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -30,16 +30,16 @@
 	},
 	"exports": {
 		".": {
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./location-service": {
+			"react-native": "./dist/cjs/providers/location-service/AmazonLocationServiceProvider.js",
 			"types": "./dist/esm/providers/location-service/AmazonLocationServiceProvider.d.ts",
 			"import": "./dist/esm/providers/location-service/AmazonLocationServiceProvider.mjs",
-			"require": "./dist/cjs/providers/location-service/AmazonLocationServiceProvider.js",
-			"react-native": "./src/providers/location-service/AmazonLocationServiceProvider.ts"
+			"require": "./dist/cjs/providers/location-service/AmazonLocationServiceProvider.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -68,6 +68,7 @@
 	],
 	"dependencies": {
 		"@aws-sdk/client-location": "3.621.0",
+		"@aws-sdk/types": "3.398.0",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2",
 		"tslib": "^2.5.0"
@@ -76,8 +77,7 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.9.0",
-		"typescript": "5.0.2"
+		"@aws-amplify/core": "6.11.4"
 	},
 	"size-limit": [
 		{

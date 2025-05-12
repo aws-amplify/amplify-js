@@ -3,7 +3,7 @@
 
 import { Subscription } from 'rxjs';
 import { Amplify } from '@aws-amplify/core';
-import { DocumentType } from '@aws-amplify/core/internals/utils';
+import { DocumentType, amplifyUuid } from '@aws-amplify/core/internals/utils';
 
 import { AppSyncEventProvider as eventProvider } from '../../Providers/AWSAppSyncEventsProvider';
 
@@ -12,10 +12,14 @@ import { configure, normalizeAuth, serializeEvents } from './utils';
 import type {
 	EventsChannel,
 	EventsOptions,
+	ProviderOptions,
 	PublishResponse,
 	PublishedEvent,
 	SubscriptionObserver,
 } from './types';
+
+// Keeps a list of open channels in the websocket
+const openChannels = new Set<string>();
 
 /**
  * @experimental API may change in future versions
@@ -41,14 +45,19 @@ async function connect(
 	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel> {
-	const providerOptions = configure();
+	const providerOptions: ProviderOptions = configure();
 
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
 		providerOptions.authenticationType,
 	);
+	providerOptions.apiKey = options?.apiKey || providerOptions.apiKey;
+	providerOptions.authToken = options?.authToken || providerOptions.authToken;
 
 	await eventProvider.connect(providerOptions);
+
+	const channelId = amplifyUuid();
+	openChannels.add(channelId);
 
 	let _subscription: Subscription;
 
@@ -56,11 +65,17 @@ async function connect(
 		observer: SubscriptionObserver<any>,
 		subOptions?: EventsOptions,
 	): Subscription => {
+		if (!openChannels.has(channelId)) {
+			throw new Error('Channel is closed');
+		}
 		const subscribeOptions = { ...providerOptions, query: channel };
 		subscribeOptions.authenticationType = normalizeAuth(
 			subOptions?.authMode,
 			subscribeOptions.authenticationType,
 		);
+		subscribeOptions.apiKey = subOptions?.apiKey || subscribeOptions.apiKey;
+		subscribeOptions.authToken =
+			subOptions?.authToken || subscribeOptions.authToken;
 
 		_subscription = eventProvider
 			.subscribe(subscribeOptions)
@@ -69,11 +84,13 @@ async function connect(
 		return _subscription;
 	};
 
-	// WS publish is not enabled in the service yet. It will be a follow up feature
-	const _pub = async (
+	const pub = async (
 		event: DocumentType,
 		pubOptions?: EventsOptions,
 	): Promise<any> => {
+		if (!openChannels.has(channelId)) {
+			throw new Error('Channel is closed');
+		}
 		const publishOptions = {
 			...providerOptions,
 			query: channel,
@@ -83,18 +100,27 @@ async function connect(
 			pubOptions?.authMode,
 			publishOptions.authenticationType,
 		);
+		publishOptions.apiKey = pubOptions?.apiKey || publishOptions.apiKey;
+		publishOptions.authToken =
+			pubOptions?.authToken || publishOptions.authToken;
 
 		return eventProvider.publish(publishOptions);
 	};
 
-	const close = () => {
+	const close = async () => {
 		_subscription && _subscription.unsubscribe();
+		openChannels.delete(channelId);
+		setTimeout(() => {
+			if (openChannels.size === 0) {
+				eventProvider.closeIfNoActiveSubscription();
+			}
+		}, 1000);
 	};
 
 	return {
 		subscribe: sub,
 		close,
-		// publish: pub,
+		publish: pub,
 	};
 }
 
@@ -124,11 +150,13 @@ async function post(
 	event: DocumentType | DocumentType[],
 	options?: EventsOptions,
 ): Promise<void | PublishedEvent[]> {
-	const providerOptions = configure();
+	const providerOptions: ProviderOptions = configure();
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
 		providerOptions.authenticationType,
 	);
+	providerOptions.apiKey = options?.apiKey || providerOptions.apiKey;
+	providerOptions.authToken = options?.authToken || providerOptions.authToken;
 
 	// trailing slash required in publish
 	const normalizedChannelName = channel[0] === '/' ? channel : `/${channel}`;
@@ -137,7 +165,6 @@ async function post(
 		...providerOptions,
 		query: normalizedChannelName,
 		variables: serializeEvents(event),
-		authToken: options?.authToken,
 	};
 
 	const abortController = new AbortController();

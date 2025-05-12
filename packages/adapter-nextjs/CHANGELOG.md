@@ -3,6 +3,77 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.6.1...@aws-amplify/adapter-nextjs@1.6.2) (2025-04-28)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.6.0...@aws-amplify/adapter-nextjs@1.6.1) (2025-04-21)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+# [1.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.8...@aws-amplify/adapter-nextjs@1.6.0) (2025-04-09)
+
+### Features
+
+- **adapter-nextjs:** support sending lang param to managed login ([#14322](https://github.com/aws-amplify/amplify-js/issues/14322)) ([d11c5ce](https://github.com/aws-amplify/amplify-js/commit/d11c5ce413219cc88b7b68fb5b2c2c9050a5c6b1))
+
+## [1.5.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.7...@aws-amplify/adapter-nextjs@1.5.8) (2025-03-28)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.5.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.6...@aws-amplify/adapter-nextjs@1.5.7) (2025-03-25)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.5.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.5...@aws-amplify/adapter-nextjs@1.5.6) (2025-03-21)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.4...@aws-amplify/adapter-nextjs@1.5.5) (2025-03-14)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.3...@aws-amplify/adapter-nextjs@1.5.4) (2025-03-07)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.2...@aws-amplify/adapter-nextjs@1.5.3) (2025-03-05)
+
+### Bug Fixes
+
+- **core:** make AmplifyOutputs category types as unknown ([#14153](https://github.com/aws-amplify/amplify-js/issues/14153)) ([5dbfbf3](https://github.com/aws-amplify/amplify-js/commit/5dbfbf3f83799b7691fa4d51a61726326a22f1e5))
+
+## [1.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.1...@aws-amplify/adapter-nextjs@1.5.2) (2025-02-27)
+
+### Bug Fixes
+
+- **adapter-nextjs:** secure: false is not set for localhost on sign-in ([#14231](https://github.com/aws-amplify/amplify-js/issues/14231)) ([677f466](https://github.com/aws-amplify/amplify-js/commit/677f466716c2467f441642c357a7bbe33f5a1dbe))
+- **adapter-nextjs:** server-side sign out not working with Firefox and Safari ([#14246](https://github.com/aws-amplify/amplify-js/issues/14246)) ([b940a23](https://github.com/aws-amplify/amplify-js/commit/b940a23d111138cc19000c0fee5280b1c1fe0851))
+
+## [1.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.5.0...@aws-amplify/adapter-nextjs@1.5.1) (2025-02-20)
+
+### Bug Fixes
+
+- **core:** build in CookieSerializeOptions def ([#14213](https://github.com/aws-amplify/amplify-js/issues/14213)) ([406157d](https://github.com/aws-amplify/amplify-js/commit/406157df09ea25a8b3d4d42ee65104cde8886fe9))
+
+# [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.4.3...@aws-amplify/adapter-nextjs@1.5.0) (2025-02-12)
+
+### Features
+
+- support server-side auth flows with Cognito managed login ([#14168](https://github.com/aws-amplify/amplify-js/issues/14168)) ([825d338](https://github.com/aws-amplify/amplify-js/commit/825d338021964a48ffab07d7b5961c5afa63a50e)), closes [#13788](https://github.com/aws-amplify/amplify-js/issues/13788) [#13801](https://github.com/aws-amplify/amplify-js/issues/13801) [#13827](https://github.com/aws-amplify/amplify-js/issues/13827) [#13839](https://github.com/aws-amplify/amplify-js/issues/13839) [#13840](https://github.com/aws-amplify/amplify-js/issues/13840) [#13841](https://github.com/aws-amplify/amplify-js/issues/13841) [#14103](https://github.com/aws-amplify/amplify-js/issues/14103) [#14112](https://github.com/aws-amplify/amplify-js/issues/14112) [#14114](https://github.com/aws-amplify/amplify-js/issues/14114) [#14115](https://github.com/aws-amplify/amplify-js/issues/14115) [#14119](https://github.com/aws-amplify/amplify-js/issues/14119) [#14125](https://github.com/aws-amplify/amplify-js/issues/14125) [#14116](https://github.com/aws-amplify/amplify-js/issues/14116) [#14134](https://github.com/aws-amplify/amplify-js/issues/14134) [#14132](https://github.com/aws-amplify/amplify-js/issues/14132) [#14141](https://github.com/aws-amplify/amplify-js/issues/14141) [#14152](https://github.com/aws-amplify/amplify-js/issues/14152) [#14169](https://github.com/aws-amplify/amplify-js/issues/14169)
+
+## [1.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.4.2...@aws-amplify/adapter-nextjs@1.4.3) (2025-02-04)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.4.1...@aws-amplify/adapter-nextjs@1.4.2) (2025-01-24)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.4.0...@aws-amplify/adapter-nextjs@1.4.1) (2025-01-14)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
 # [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.3.1...@aws-amplify/adapter-nextjs@1.4.0) (2025-01-03)
 
 ### Features

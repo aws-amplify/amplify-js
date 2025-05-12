@@ -1,11 +1,11 @@
 {
 	"name": "@aws-amplify/auth",
-	"version": "6.9.1",
+	"version": "6.12.4",
 	"description": "Auth category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"sideEffects": [
 		"./dist/cjs/providers/cognito/apis/signInWithRedirect.js",
 		"./dist/esm/providers/cognito/apis/signInWithRedirect.mjs",
@@ -44,16 +44,16 @@
 	},
 	"exports": {
 		".": {
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./cognito": {
+			"react-native": "./dist/cjs/providers/cognito/index.js",
 			"types": "./dist/esm/providers/cognito/index.d.ts",
 			"import": "./dist/esm/providers/cognito/index.mjs",
-			"require": "./dist/cjs/providers/cognito/index.js",
-			"react-native": "./src/providers/cognito/index.ts"
+			"require": "./dist/cjs/providers/cognito/index.js"
 		},
 		"./cognito/server": {
 			"types": "./dist/esm/providers/cognito/apis/server/index.d.ts",
@@ -99,9 +99,8 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.9.0",
-		"@aws-amplify/react-native": "1.1.6",
-		"@jest/test-sequencer": "^29.7.0",
-		"typescript": "5.0.2"
+		"@aws-amplify/core": "6.11.4",
+		"@aws-amplify/react-native": "1.1.9",
+		"@jest/test-sequencer": "^29.7.0"
 	}
 }

@@ -1,11 +1,11 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "6.1.6",
+	"version": "6.1.21",
 	"description": "Interactions category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
@@ -42,16 +42,16 @@
 			"require": "./dist/cjs/index.js"
 		},
 		"./lex-v1": {
+			"react-native": "./dist/cjs/lex-v1/index.js",
 			"types": "./dist/esm/lex-v1/index.d.ts",
 			"import": "./dist/esm/lex-v1/index.mjs",
-			"require": "./dist/cjs/lex-v1/index.js",
-			"react-native": "./src/lex-v1/index.ts"
+			"require": "./dist/cjs/lex-v1/index.js"
 		},
 		"./lex-v2": {
+			"react-native": "./dist/cjs/lex-v2/index.js",
 			"types": "./dist/esm/lex-v2/index.d.ts",
 			"import": "./dist/esm/lex-v2/index.mjs",
-			"require": "./dist/cjs/lex-v2/index.js",
-			"react-native": "./src/lex-v2/index.ts"
+			"require": "./dist/cjs/lex-v2/index.js"
 		}
 	},
 	"repository": {
@@ -81,8 +81,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.9.0",
-		"typescript": "^5.0.2"
+		"@aws-amplify/core": "6.11.4"
 	},
 	"size-limit": [
 		{

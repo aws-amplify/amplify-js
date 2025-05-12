@@ -88,6 +88,10 @@ describe('CognitoIdentity - getId', () => {
 		const expectedError = {
 			name: 'NotAuthorizedException',
 			message: failureResponse.body.message,
+			$metadata: expect.objectContaining({
+				httpStatusCode: 400,
+				requestId: mockRequestId,
+			}),
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(failureResponse),

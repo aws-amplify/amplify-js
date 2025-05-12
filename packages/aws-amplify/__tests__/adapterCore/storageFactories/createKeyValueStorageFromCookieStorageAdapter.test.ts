@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createKeyValueStorageFromCookieStorageAdapter } from '../../../src/adapter-core';
+import {
+	CookieStorage,
+	DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE,
+	createKeyValueStorageFromCookieStorageAdapter,
+} from '../../../src/adapter-core';
 import { defaultSetCookieOptions } from '../../../src/adapter-core/storageFactories/createKeyValueStorageFromCookieStorageAdapter';
 
 const mockCookiesStorageAdapter = {
@@ -12,6 +16,13 @@ const mockCookiesStorageAdapter = {
 };
 
 describe('keyValueStorage', () => {
+	afterEach(() => {
+		mockCookiesStorageAdapter.delete.mockClear();
+		mockCookiesStorageAdapter.get.mockClear();
+		mockCookiesStorageAdapter.set.mockClear();
+		mockCookiesStorageAdapter.getAll.mockClear();
+	});
+
 	describe('createKeyValueStorageFromCookiesStorageAdapter', () => {
 		it('should return a key value storage', () => {
 			const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
@@ -35,7 +46,7 @@ describe('keyValueStorage', () => {
 					testValue,
 					{
 						...defaultSetCookieOptions,
-						expires: expect.any(Date),
+						maxAge: DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE,
 					},
 				);
 			});
@@ -50,7 +61,7 @@ describe('keyValueStorage', () => {
 					testValue,
 					{
 						...defaultSetCookieOptions,
-						expires: expect.any(Date),
+						maxAge: DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE,
 					},
 				);
 			});
@@ -64,7 +75,7 @@ describe('keyValueStorage', () => {
 					testValue,
 					{
 						...defaultSetCookieOptions,
-						expires: expect.any(Date),
+						maxAge: DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE,
 					},
 				);
 			});
@@ -97,6 +108,54 @@ describe('keyValueStorage', () => {
 				expect(() => {
 					keyValueStorage.clear();
 				}).toThrow('This method has not implemented.');
+			});
+		});
+
+		describe('passing setCookieOptions parameter', () => {
+			it('sets item with specified setCookieOptions', async () => {
+				const testSetCookieOptions: CookieStorage.SetCookieOptions = {
+					httpOnly: true,
+					sameSite: 'strict',
+					maxAge: 3600,
+				};
+				const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
+					mockCookiesStorageAdapter,
+					undefined,
+					testSetCookieOptions,
+				);
+
+				keyValueStorage.setItem('testKey', 'testValue');
+				expect(mockCookiesStorageAdapter.set).toHaveBeenCalledWith(
+					'testKey',
+					'testValue',
+					{
+						...defaultSetCookieOptions,
+						...testSetCookieOptions,
+					},
+				);
+			});
+
+			it('sets default maxAge when expires and maxAges are not provided', async () => {
+				const testSetCookieOptions: CookieStorage.SetCookieOptions = {
+					httpOnly: true,
+					sameSite: 'strict',
+				};
+				const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
+					mockCookiesStorageAdapter,
+					undefined,
+					testSetCookieOptions,
+				);
+
+				keyValueStorage.setItem('testKey', 'testValue');
+				expect(mockCookiesStorageAdapter.set).toHaveBeenCalledWith(
+					'testKey',
+					'testValue',
+					{
+						...defaultSetCookieOptions,
+						...testSetCookieOptions,
+						maxAge: DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE,
+					},
+				);
 			});
 		});
 

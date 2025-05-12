@@ -22,20 +22,20 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 		Key: 'key',
 		CacheControl: 'cacheControl',
 		ContentType: 'contentType',
-		ACL: 'acl',
+		ACL: 'public-read',
 		CopySourceIfMatch: 'eTag',
 		CopySourceIfUnmodifiedSince: new Date(0),
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key',
+			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?x-id=CopyObject',
 		}),
 		method: 'PUT',
 		headers: expect.objectContaining({
 			'x-amz-copy-source': 'sourceBucket/sourceKey',
 			'cache-control': 'cacheControl',
 			'content-type': 'contentType',
-			'x-amz-acl': 'acl',
+			'x-amz-acl': 'public-read',
 			'x-amz-copy-source-if-match': 'eTag',
 			'x-amz-copy-source-if-unmodified-since': 'Thu, 01 Jan 1970 00:00:00 GMT',
 		}),
@@ -76,7 +76,7 @@ const copyObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key',
+			href: 'https://custom.endpoint.com/bucket/key?x-id=CopyObject',
 		}),
 	}),
 	{
