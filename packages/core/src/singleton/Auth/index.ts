@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { isSecureServiceEndpoint } from '../../utils';
+import { ConsoleLogger } from '../../Logger';
 
 import {
 	AuthConfig,
@@ -11,6 +11,7 @@ import {
 	LibraryAuthOptions,
 } from './types';
 
+const logger = new ConsoleLogger('Auth');
 export class AuthClass {
 	private authConfig?: AuthConfig;
 	private authOptions?: LibraryAuthOptions;
@@ -29,25 +30,21 @@ export class AuthClass {
 		authResourcesConfig: AuthConfig,
 		authOptions?: LibraryAuthOptions,
 	): void {
-		const userPoolEndpoint = authResourcesConfig?.Cognito?.userPoolEndpoint;
-		const identityPoolEndpoint =
-			authResourcesConfig?.Cognito?.identityPoolEndpoint;
+		this.authConfig = authResourcesConfig;
+		this.authOptions = authOptions;
 
-		if (userPoolEndpoint && !isSecureServiceEndpoint(userPoolEndpoint)) {
-			throw new Error(getNonHttpsEndpointErrorMessage('`userPoolEndpoint`'));
+		if (authResourcesConfig && authResourcesConfig.Cognito?.userPoolEndpoint) {
+			logger.warn(getCustomEndpointWarningMessage('Amazon Cognito User Pool'));
 		}
 
 		if (
-			identityPoolEndpoint &&
-			!isSecureServiceEndpoint(identityPoolEndpoint)
+			authResourcesConfig &&
+			authResourcesConfig.Cognito?.identityPoolEndpoint
 		) {
-			throw new Error(
-				getNonHttpsEndpointErrorMessage('`identityPoolEndpoint`'),
+			logger.warn(
+				getCustomEndpointWarningMessage('Amazon Cognito Identity Pool'),
 			);
 		}
-
-		this.authConfig = authResourcesConfig;
-		this.authOptions = authOptions;
 	}
 
 	/**
@@ -114,5 +111,5 @@ export class AuthClass {
 	}
 }
 
-const getNonHttpsEndpointErrorMessage = (target: string): string =>
-	`${target} must use HTTPS protocol.`;
+const getCustomEndpointWarningMessage = (target: string): string =>
+	`You are using a custom Amazon ${target} endpoint, ensure the endpoint is correct.`;
