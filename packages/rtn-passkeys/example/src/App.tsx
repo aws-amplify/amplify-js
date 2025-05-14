@@ -40,6 +40,7 @@ function App(): React.JSX.Element {
 		setWebAuthNAssociated(false);
 		setReadySignInWithPassKeys(false);
 		setSignedInWithPasskeys(false);
+		setTestComplete(false);
 	};
 
 	const handleSignUp = async () => {
@@ -58,6 +59,9 @@ function App(): React.JSX.Element {
 
 			setSignedIn(true);
 		} catch (error) {
+			if ((error as any).name === 'UserAlreadyAuthenticatedException') {
+				await signOut();
+			}
 			console.error('Error signing up:', error);
 		}
 	};
@@ -73,7 +77,9 @@ function App(): React.JSX.Element {
 			await associateWebAuthnCredential();
 			setWebAuthNAssociated(true);
 		} catch (error) {
-			console.error('Error associating WebAuthN credentials:', error);
+			console.error('Error associating WebAuthN credentials:');
+			console.error(error);
+			console.error((error as any).name);
 			console.error((error as any).underlyingError);
 		}
 	};
@@ -119,9 +125,9 @@ function App(): React.JSX.Element {
 			)}
 			{signedIn && (
 				<View style={styles.contentContainer}>
-					<Text>Step 3: associate WebAuthN credential</Text>
+					<Text>Step 3: associate webauthn credential</Text>
 					<Button
-						title="Associate WebAuthN credentials"
+						title="associate webauthn credential"
 						onPress={handleAssociateWebAuthNCredentials}
 					/>
 					{webAuthNAssociated && (
@@ -135,7 +141,7 @@ function App(): React.JSX.Element {
 				<>
 					<View style={styles.container} />
 					<View>
-						<Button title="Sign out" onPress={handleSignOut} />
+						<Button title="sign out" onPress={handleSignOut} />
 					</View>
 				</>
 			)}
@@ -143,18 +149,17 @@ function App(): React.JSX.Element {
 				<View style={styles.contentContainer}>
 					<Text>Step 4: sign in with passkeys</Text>
 					<Button
-						title="Sign in with passkeys"
+						title="sign in with passkeys"
 						onPress={handleSignInWithPasskeys}
 					/>
 					{signedInWithPasskeys && (
-						<Text testID="authn-status-text">
-							Successfully signed in with Passkeys.
-						</Text>
+						<Text>successfully signed in with passkeys.</Text>
 					)}
 				</View>
 			)}
 			{signedInWithPasskeys && (
 				<View style={styles.contentContainer}>
+					<View style={{ height: 10 }} />
 					<Text>Step 5: delete user</Text>
 					<Button
 						testID="delete-user"
@@ -171,25 +176,32 @@ function App(): React.JSX.Element {
 			{testComplete && (
 				<View style={{ ...styles.container, ...styles.contentContainer }}>
 					<Text style={styles.bold}>Test completed! 🎉</Text>
+					<View>
+						<Button
+							title="Reset"
+							onPress={async () => {
+								resetState();
+							}}
+						/>
+					</View>
 				</View>
 			)}
 			{!testComplete && (
-				<ScrollView style={styles.container}>
-					{renderInCompleteTests()}
-				</ScrollView>
+				<>
+					<ScrollView style={styles.container}>
+						{renderInCompleteTests()}
+					</ScrollView>
+					<View>
+						<Button
+							title="Delete user"
+							onPress={async () => {
+								await deleteUser();
+								resetState();
+							}}
+						/>
+					</View>
+				</>
 			)}
-			<>
-				<View style={styles.container} />
-				<View>
-					<Button
-						title="Delete user"
-						onPress={async () => {
-							await deleteUser();
-							resetState();
-						}}
-					/>
-				</View>
-			</>
 		</SafeAreaView>
 	);
 }

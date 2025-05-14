@@ -5178,11 +5178,6 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.7.0.tgz#7482d36836cac69d0a0ae25581f65bc472639930"
   integrity sha512-a/sDB+AsLEUNmhAUlAaTYeXKyQdFGBUfatqKkX5jluBo2CB3OAuTHfm7rSjcaLB9EmG5iSq3fOTpync2E7EYTA==
 
-"@react-native-community/netinfo@^11.4.1":
-  version "11.4.1"
-  resolved "https://registry.npmjs.org/@react-native-community/netinfo/-/netinfo-11.4.1.tgz#a3c247aceab35f75dd0aa4bfa85d2be5a4508688"
-  integrity sha512-B0BYAkghz3Q2V09BF88RA601XursIEA111tnc2JOaN7axJWmNefmfjZqw/KdSxKZp7CZUuPpjBmz/WCR9uaHYg==
-
 "@react-native/assets-registry@0.75.5":
   version "0.75.5"
   resolved "https://registry.npmjs.org/@react-native/assets-registry/-/assets-registry-0.75.5.tgz#e432010450afb235483413bfb2b4ed2e7145ef07"
