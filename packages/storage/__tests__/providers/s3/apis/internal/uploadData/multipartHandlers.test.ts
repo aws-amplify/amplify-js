@@ -75,11 +75,7 @@ const getZeroDelayTimeout = () =>
 
 const mockCalculateContentCRC32Mock = () => {
 	mockCalculateContentCRC32.mockReset();
-	mockCalculateContentCRC32.mockResolvedValue({
-		checksumArrayBuffer: new ArrayBuffer(0),
-		checksum: 'mockChecksum',
-		seed: 0,
-	});
+	mockCalculateContentCRC32.mockResolvedValue('mockChecksum');
 };
 const mockCalculateContentCRC32Reset = () => {
 	mockCalculateContentCRC32.mockReset();
@@ -298,17 +294,12 @@ describe('getMultipartUploadHandlers with key', () => {
 				await multipartUploadJob();
 
 				/**
-				 * final crc32 calculation calls calculateContentCRC32 3 times
-				 * 1 time for each of the 2 parts
-				 * 1 time to combine the resulting hash for each of the two parts
-				 *
-				 * uploading each part calls calculateContentCRC32 1 time each
-				 *
-				 * 1 time for optionsHash
-				 *
-				 * these steps results in 6 calls in total
+				 * `calculateContentCRC32` is called 4 times with Full-body checksum:
+				 * * 1 time when calculating final crc32 for the whole object to be uploaded.
+				 * * 1 time when calculating optionsHash.
+				 * * 1 time each when uploading part calls, 2 calls in total.
 				 */
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(6);
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(4);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -389,7 +380,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				file.size,
 			);
 			await multipartUploadJob();
-			expect(file.slice).toHaveBeenCalledTimes(10_000 * 2); // S3 limit of parts count double for crc32 calculations
+			expect(file.slice).toHaveBeenCalledTimes(10_000);
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockUploadPart).toHaveBeenCalledTimes(10_000);
 			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
@@ -1112,17 +1103,12 @@ describe('getMultipartUploadHandlers with path', () => {
 				await multipartUploadJob();
 
 				/**
-				 * final crc32 calculation calls calculateContentCRC32 3 times
-				 * 1 time for each of the 2 parts
-				 * 1 time to combine the resulting hash for each of the two parts
-				 *
-				 * uploading each part calls calculateContentCRC32 1 time each
-				 *
-				 * 1 time for optionsHash
-				 *
-				 * these steps results in 6 calls in total
+				 * `calculateContentCRC32` is called 4 times with Full-body checksum:
+				 * * 1 time when calculating final crc32 for the whole object to be uploaded.
+				 * * 1 time when calculating optionsHash.
+				 * * 1 time each when uploading part calls, 2 calls in total.
 				 */
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(6);
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(4);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -1203,7 +1189,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				file.size,
 			);
 			await multipartUploadJob();
-			expect(file.slice).toHaveBeenCalledTimes(10_000 * 2); // S3 limit of parts count double for crc32 calculations
+			expect(file.slice).toHaveBeenCalledTimes(10_000);
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockUploadPart).toHaveBeenCalledTimes(10_000);
 			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
