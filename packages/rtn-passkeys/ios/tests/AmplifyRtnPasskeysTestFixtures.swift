@@ -8,7 +8,7 @@ struct TestFixtures {
 	// AmplifyRtnPasskeysHelpersTests
 	static let base64String = "PDw/Pz8+Pg=="
 	static let base64UrlString = "PDw_Pz8-Pg"
-	
+
 	// AmplifyRtnPasskeysTests
 	static let validRpId = "example.com"
 	static let validChallenge = "Y2hhbGxlbmdlLXZhbHVl"
@@ -29,10 +29,9 @@ struct TestFixtures {
 		"Y3JlZGVudGlhbC1pZC0y",
 	]
 
-	// Mock successful createPasskey result
 	static func createPasskeySuccess() -> NSDictionary {
 		return [
-			"id": "Y3JlZGVudGlhbC1pZC1uZXc=",  // Base64URL encoded "credential-id-new"
+			"id": "Y3JlZGVudGlhbC1pZC1uZXc=",
 			"rawId": "Y3JlZGVudGlhbC1pZC1uZXc=",
 			"type": "public-key",
 			"authenticatorAttachment": "platform",
