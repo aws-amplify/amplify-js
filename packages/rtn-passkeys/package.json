@@ -32,6 +32,7 @@
 	],
 	"scripts": {
 		"test": "jest",
+		"test:ios": "xcodebuild test -workspace example/ios/AmplifyRtnPasskeysExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16' -scheme AmplifyRtnPasskeys-Unit-tests",
 		"test:android": "cd ./example/android && ./gradlew test",
 		"typecheck": "tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",

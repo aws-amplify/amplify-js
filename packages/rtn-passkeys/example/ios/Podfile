@@ -7,7 +7,7 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, 17.4
+platform :ios, '17.4'
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -17,8 +17,10 @@ if linkage != nil
 end
 
 target 'AmplifyRtnPasskeysExample' do
-  config = use_native_modules!
-
+	pod 'AmplifyRtnPasskeys', :path => '../..', :testspecs => ['tests']
+  
+	config = use_native_modules!
+	
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
@@ -35,3 +37,4 @@ target 'AmplifyRtnPasskeysExample' do
     )
   end
 end
+

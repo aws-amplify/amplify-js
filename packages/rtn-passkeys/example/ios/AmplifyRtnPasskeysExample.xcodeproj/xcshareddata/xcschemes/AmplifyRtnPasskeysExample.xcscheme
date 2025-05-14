@@ -32,10 +32,20 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "00E356ED1AD99517003FC87E"
+               BlueprintIdentifier = "1D7533F62DD2898F00B464C4"
                BuildableName = "AmplifyRtnPasskeysExampleTests.xctest"
                BlueprintName = "AmplifyRtnPasskeysExampleTests"
                ReferencedContainer = "container:AmplifyRtnPasskeysExample.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "698F8971DE6686BF19E81F6AF73C178E"
+               BuildableName = "AmplifyRtnPasskeys-Unit-tests.xctest"
+               BlueprintName = "AmplifyRtnPasskeys-Unit-tests"
+               ReferencedContainer = "container:Pods/Pods.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

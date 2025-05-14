@@ -22,14 +22,19 @@ class AmplifyRtnPasskeysDelegate: NSObject,
 		1006: "DUPLICATE",
 	]
 
-	private let _handler: AmplifyRtnPasskeysResultHandler
+	let _resultHandler: AmplifyRtnPasskeysResultHandler
 
-	init(handler: AmplifyRtnPasskeysResultHandler) {
-		_handler = handler
+	init(resultHandler: AmplifyRtnPasskeysResultHandler) {
+		_resultHandler = resultHandler
 	}
 
-	// MARK: - ASAuthorizationControllerDelegate
-	public func authorizationController(
+	func performAuthForController(_ authController: ASAuthorizationController) {
+		authController.delegate = self
+		authController.presentationContextProvider = self
+		authController.performRequests()
+	}
+
+	func authorizationController(
 		controller: ASAuthorizationController,
 		didCompleteWithAuthorization authorization: ASAuthorization
 	) {
@@ -54,7 +59,7 @@ class AmplifyRtnPasskeysDelegate: NSObject,
 				],
 			]
 
-			_handler.handleSuccess(assertionResult)
+			_resultHandler.handleSuccess(assertionResult)
 
 		case let registrationCredential
 			as ASAuthorizationPlatformPublicKeyCredentialRegistration:
@@ -73,50 +78,42 @@ class AmplifyRtnPasskeysDelegate: NSObject,
 				],
 			]
 
-			_handler.handleSuccess(registrationResult)
+			_resultHandler.handleSuccess(registrationResult)
 
 		default:
-			_handler.handleError(errorName: "FAILED", errorMessage: nil, error: nil)
+			_resultHandler.handleError(
+				errorName: "FAILED", errorMessage: nil, error: nil)
 		}
 	}
 
-	public func authorizationController(
+	func authorizationController(
 		controller: ASAuthorizationController,
 		didCompleteWithError error: any Error
 	) {
 		let errorMessage = error.localizedDescription
-		
+
 		var errorName =
 			AmplifyRtnPasskeysDelegate.ERROR_MAP[(error as NSError).code] ?? "UNKNOWN"
 
+		// pre-iOS 18 does not through explicit error for duplicate
 		if errorMessage.contains(
 			"credential matches an entry of the excludeCredentials list")
 		{
 			errorName = "DUPLICATE"
 		}
 
+		// no explicit error with for SecurityError
 		if errorMessage.contains("not associated with domain") {
 			errorName = "RELYING_PARTY_MISMATCH"
 		}
 
-		_handler.handleError(
+		_resultHandler.handleError(
 			errorName: errorName, errorMessage: errorMessage, error: error)
 	}
 
-	// MARK: - ASAuthorizationControllerPresentationContextProviding
 	func presentationAnchor(for controller: ASAuthorizationController)
 		-> ASPresentationAnchor
 	{
 		return ASPresentationAnchor()
-	}
-}
-
-// MARK: - Data Extension
-extension Data {
-	fileprivate func toBase64UrlEncodedString() -> String {
-		return self.base64EncodedString()
-			.replacingOccurrences(of: "/", with: "_")
-			.replacingOccurrences(of: "+", with: "-")
-			.replacingOccurrences(of: "=", with: "")
 	}
 }

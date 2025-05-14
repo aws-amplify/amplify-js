@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 #import "AmplifyRtnPasskeys.h"
 #import "AmplifyRtnPasskeys-Swift.h"
 
@@ -17,7 +20,7 @@
 		}
 	}
 
-	return [[AmplifyRtnPasskeysHelper alloc] createPasskey:input.rp().id_()
+	return [[AmplifyRtnPasskeysSwift alloc] createPasskey:input.rp().id_()
 	                                                userId:input.user().id_()
 	                                              userName:input.user().name()
 	                                             challenge:input.challenge()
@@ -39,7 +42,7 @@
 		}
 	}
 
-	return [[AmplifyRtnPasskeysHelper alloc] getPasskey:input.rpId()
+	return [[AmplifyRtnPasskeysSwift alloc] getPasskey:input.rpId()
 	                                          challenge:input.challenge()
 	                                   userVerification:input.userVerification()
 	                                   allowCredentials:allowCredentials
@@ -48,7 +51,7 @@
 }
 
 - (nonnull NSNumber *)getIsPasskeySupported {
-	return [AmplifyRtnPasskeysHelper getIsPasskeySupported];
+	return [[AmplifyRtnPasskeysSwift alloc] getIsPasskeySupported];
 }
 
 + (NSString *)moduleName {
