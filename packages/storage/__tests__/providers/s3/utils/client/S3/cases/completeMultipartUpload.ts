@@ -167,6 +167,10 @@ const completeMultipartUploadErrorCase: ApiFunctionalTestCase<
 	{
 		message: 'Access Denied',
 		name: 'AccessDenied',
+		metadata: expect.objectContaining({
+			...expectedMetadata,
+			httpStatusCode: 403,
+		}),
 	},
 ];
 
@@ -199,6 +203,7 @@ const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
 	{
 		message: 'We encountered an internal error. Please try again.',
 		name: 'InternalError',
+		metadata: expect.objectContaining(expectedMetadata),
 	},
 ];
 

@@ -20,7 +20,7 @@ export enum AuthErrorTypes {
 	OAuthSignInError = 'oauthSignInError',
 }
 
-export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };
+export type AuthErrorMessages = Record<AuthErrorTypes, AuthErrorMessage>;
 
 export interface AuthErrorMessage {
 	message: string;

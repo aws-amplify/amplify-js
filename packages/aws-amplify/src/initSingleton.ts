@@ -8,12 +8,14 @@ import {
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
-	AmplifyOutputs,
+	AmplifyOutputsUnknown,
 	LegacyConfig,
 	parseAmplifyConfig,
 } from '@aws-amplify/core/internals/utils';
 
 import {
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	DefaultIdentityIdStore,
 	cognitoCredentialsProvider,
 	cognitoUserPoolsTokenProvider,
 } from './auth/cognito';
@@ -32,10 +34,19 @@ export const DefaultAmplify = {
 	 * Amplify.configure(config);
 	 */
 	configure(
-		resourceConfig: ResourcesConfig | LegacyConfig | AmplifyOutputs,
+		resourceConfig: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
 		libraryOptions?: LibraryOptions,
 	): void {
 		const resolvedResourceConfig = parseAmplifyConfig(resourceConfig);
+		const cookieBasedKeyValueStorage = new CookieStorage({ sameSite: 'lax' });
+		const resolvedKeyValueStorage = libraryOptions?.ssr
+			? cookieBasedKeyValueStorage
+			: defaultStorage;
+		const resolvedCredentialsProvider = libraryOptions?.ssr
+			? new CognitoAWSCredentialsAndIdentityIdProvider(
+					new DefaultIdentityIdStore(cookieBasedKeyValueStorage),
+				)
+			: cognitoCredentialsProvider;
 
 		// If no Auth config is provided, no special handling will be required, configure as is.
 		// Otherwise, we can assume an Auth config is provided from here on.
@@ -58,16 +69,14 @@ export const DefaultAmplify = {
 			cognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
 			cognitoUserPoolsTokenProvider.setKeyValueStorage(
 				// TODO: allow configure with a public interface
-				libraryOptions?.ssr
-					? new CookieStorage({ sameSite: 'lax' })
-					: defaultStorage,
+				resolvedKeyValueStorage,
 			);
 
 			Amplify.configure(resolvedResourceConfig, {
 				...libraryOptions,
 				Auth: {
 					tokenProvider: cognitoUserPoolsTokenProvider,
-					credentialsProvider: cognitoCredentialsProvider,
+					credentialsProvider: resolvedCredentialsProvider,
 				},
 			});
 
@@ -77,18 +86,19 @@ export const DefaultAmplify = {
 		// At this point, Auth libraryOptions would have been previously configured and no overriding
 		// Auth options were given, so we should preserve the currently configured Auth libraryOptions.
 		if (libraryOptions) {
+			const authLibraryOptions = Amplify.libraryOptions.Auth;
 			// If ssr is provided through libraryOptions, we should respect the intentional reconfiguration.
 			if (libraryOptions.ssr !== undefined) {
 				cognitoUserPoolsTokenProvider.setKeyValueStorage(
 					// TODO: allow configure with a public interface
-					libraryOptions.ssr
-						? new CookieStorage({ sameSite: 'lax' })
-						: defaultStorage,
+					resolvedKeyValueStorage,
 				);
+
+				authLibraryOptions.credentialsProvider = resolvedCredentialsProvider;
 			}
 
 			Amplify.configure(resolvedResourceConfig, {
-				Auth: Amplify.libraryOptions.Auth,
+				Auth: authLibraryOptions,
 				...libraryOptions,
 			});
 

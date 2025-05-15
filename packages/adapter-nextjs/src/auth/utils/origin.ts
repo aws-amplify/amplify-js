@@ -17,6 +17,7 @@ export const isValidOrigin = (origin: string | undefined): boolean => {
 		url.hostname !== 'localhost' &&
 		url.hostname !== '127.0.0.1'
 	) {
+		// eslint-disable-next-line no-console
 		console.warn(
 			'HTTP origin detected. This is insecure and should only be used for local development.',
 		);

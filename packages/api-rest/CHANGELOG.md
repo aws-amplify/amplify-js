@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.3...@aws-amplify/api-rest@4.1.4) (2025-04-28)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.2...@aws-amplify/api-rest@4.1.3) (2025-04-21)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.1...@aws-amplify/api-rest@4.1.2) (2025-04-09)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.0...@aws-amplify/api-rest@4.1.1) (2025-03-28)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.75...@aws-amplify/api-rest@4.1.0) (2025-03-25)
+
+### Features
+
+- **api-rest:** configurable retry behavior ([#14303](https://github.com/aws-amplify/amplify-js/issues/14303)) ([65207a6](https://github.com/aws-amplify/amplify-js/commit/65207a668cf66f07932b7f89f38651cbb84b8187))
+- library observability improvements ([#14309](https://github.com/aws-amplify/amplify-js/issues/14309)) ([b383885](https://github.com/aws-amplify/amplify-js/commit/b3838851da3c5620d6c1ea7950d16d81b21e073f)), closes [#14230](https://github.com/aws-amplify/amplify-js/issues/14230) [#14237](https://github.com/aws-amplify/amplify-js/issues/14237) [#14259](https://github.com/aws-amplify/amplify-js/issues/14259) [#14251](https://github.com/aws-amplify/amplify-js/issues/14251) [#14296](https://github.com/aws-amplify/amplify-js/issues/14296)
+
+## [4.0.75](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.74...@aws-amplify/api-rest@4.0.75) (2025-03-21)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.0.74](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.73...@aws-amplify/api-rest@4.0.74) (2025-03-14)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.0.73](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.72...@aws-amplify/api-rest@4.0.73) (2025-03-07)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.0.72](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.71...@aws-amplify/api-rest@4.0.72) (2025-03-05)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
 ## [4.0.71](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.0.70...@aws-amplify/api-rest@4.0.71) (2025-02-27)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

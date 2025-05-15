@@ -1083,9 +1083,7 @@ export enum ModelOperation {
 
 export type ModelAuthModes = Record<
 	string,
-	{
-		[Property in ModelOperation]: GraphQLAuthMode[];
-	}
+	Record<ModelOperation, GraphQLAuthMode[]>
 >;
 
 export type SyncExpression = Promise<{

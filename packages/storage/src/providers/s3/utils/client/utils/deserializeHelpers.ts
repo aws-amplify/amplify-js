@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
+import {
+	ErrorParser,
+	Headers,
+} from '@aws-amplify/core/internals/aws-client-utils';
 import { ServiceError } from '@aws-amplify/core/internals/utils';
 
 import { StorageError } from '../../../../../errors/StorageError';
@@ -109,6 +112,9 @@ export const deserializeTimestamp = (value: string): Date | undefined => {
  * Create a function deserializing a string to an enum value. If the string is not a valid enum value, it throws a
  * StorageError.
  *
+ * This utility is ONLY preferred if the enum value is critical. Since the enum values are hard-coded, new enum values
+ * returned from service would break the library.
+ *
  * @example
  * ```typescript
  * const deserializeStringEnum = createStringEnumDeserializer(['a', 'b', 'c'] as const, 'FieldName');
@@ -127,7 +133,7 @@ export const createStringEnumDeserializer = <T extends readonly string[]>(
 ) => {
 	const deserializeStringEnum = (
 		value: any,
-	): T extends (infer E)[] ? E : never => {
+	): T extends readonly (infer E)[] ? E : never => {
 		const parsedEnumValue = value
 			? (enumValues.find(enumValue => enumValue === value) as any)
 			: undefined;
@@ -145,6 +151,18 @@ export const createStringEnumDeserializer = <T extends readonly string[]>(
 
 	return deserializeStringEnum;
 };
+
+/**
+ * Deserializes a string to a string tag type. The function simply casts the parsed string into a given string tag type.
+ * It does NOT validate the string value against the string tag. This behavior is the same to AWS SDK parsing logic of
+ * string tag types.
+ *
+ * If you need to verify the string value, you must use {@link createStringEnumDeserializer} instead.
+ *
+ * @internal
+ */
+export const deserializeStringTag = <T extends string>(value: any): T =>
+	String(value) as T;
 
 /**
  * Function that makes sure the deserializer receives non-empty array.
@@ -170,7 +188,7 @@ export const emptyArrayGuard = <T extends any[]>(
  */
 export const deserializeMetadata = (
 	headers: Headers,
-): Record<string, string> => {
+): Record<string, string> | undefined => {
 	const objectMetadataHeaderPrefix = 'x-amz-meta-';
 	const deserialized = Object.keys(headers)
 		.filter(header => header.startsWith(objectMetadataHeaderPrefix))
@@ -183,26 +201,21 @@ export const deserializeMetadata = (
 	return Object.keys(deserialized).length > 0 ? deserialized : undefined;
 };
 
+export type ParsedError = Awaited<ReturnType<ErrorParser>> & {};
+
 /**
- * Internal-only method to create a new StorageError from a service error.
+ * Internal-only method to create a new StorageError from a service error with AWS SDK-compatible interfaces
+ * @param error - The output of a service error parser, with AWS SDK-compatible interface(e.g. $metadata)
+ * @returns A new StorageError.
  *
  * @internal
  */
-export const buildStorageServiceError = (
-	error: Error,
-	statusCode: number,
-): ServiceError => {
-	const storageError = new StorageError({
+export const buildStorageServiceError = (error: ParsedError): ServiceError =>
+	new StorageError({
 		name: error.name,
 		message: error.message,
+		metadata: error.$metadata,
 	});
-	if (statusCode === 404) {
-		storageError.recoverySuggestion =
-			'Please add the object with this key to the bucket as the key is not found.';
-	}
-
-	return storageError;
-};
 
 /**
  * Internal-only method used for deserializing the parts of a multipart upload.

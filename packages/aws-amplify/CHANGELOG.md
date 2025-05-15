@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.14.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.3...aws-amplify@6.14.4) (2025-04-28)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.14.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.2...aws-amplify@6.14.3) (2025-04-21)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.14.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.1...aws-amplify@6.14.2) (2025-04-09)
+
+### Bug Fixes
+
+- **aws-amplify:** cookie store is not used for identity store in SSR ([#14326](https://github.com/aws-amplify/amplify-js/issues/14326)) ([42f6332](https://github.com/aws-amplify/amplify-js/commit/42f6332678b8c1670becf5fa5ce98daeb602ed9f))
+
+## [6.14.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.0...aws-amplify@6.14.1) (2025-03-28)
+
+**Note:** Version bump only for package aws-amplify
+
+# [6.14.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.6...aws-amplify@6.14.0) (2025-03-25)
+
+### Features
+
+- library observability improvements ([#14309](https://github.com/aws-amplify/amplify-js/issues/14309)) ([b383885](https://github.com/aws-amplify/amplify-js/commit/b3838851da3c5620d6c1ea7950d16d81b21e073f)), closes [#14230](https://github.com/aws-amplify/amplify-js/issues/14230) [#14237](https://github.com/aws-amplify/amplify-js/issues/14237) [#14259](https://github.com/aws-amplify/amplify-js/issues/14259) [#14251](https://github.com/aws-amplify/amplify-js/issues/14251) [#14296](https://github.com/aws-amplify/amplify-js/issues/14296)
+
+## [6.13.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.5...aws-amplify@6.13.6) (2025-03-21)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.13.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.4...aws-amplify@6.13.5) (2025-03-14)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.13.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.3...aws-amplify@6.13.4) (2025-03-07)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.13.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.2...aws-amplify@6.13.3) (2025-03-05)
+
+### Bug Fixes
+
+- **core:** make AmplifyOutputs category types as unknown ([#14153](https://github.com/aws-amplify/amplify-js/issues/14153)) ([5dbfbf3](https://github.com/aws-amplify/amplify-js/commit/5dbfbf3f83799b7691fa4d51a61726326a22f1e5))
+
 ## [6.13.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.1...aws-amplify@6.13.2) (2025-02-27)
 
 **Note:** Version bump only for package aws-amplify
