@@ -95,7 +95,7 @@ export const putObjectJob =
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
 				ContentMD5: contentMD5,
-				ChecksumCRC32: checksumCRC32?.checksum,
+				ChecksumCRC32: checksumCRC32,
 				ExpectedBucketOwner: expectedBucketOwner,
 				IfNoneMatch: preventOverwrite ? '*' : undefined,
 			},

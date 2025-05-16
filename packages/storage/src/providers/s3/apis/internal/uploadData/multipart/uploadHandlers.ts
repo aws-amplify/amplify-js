@@ -155,7 +155,7 @@ export const getMultipartUploadHandlers = (
 			resolvedAccessLevel = resolveAccessLevel(accessLevel);
 		}
 
-		const { checksum: optionsHash } = await calculateContentCRC32(
+		const optionsHash = await calculateContentCRC32(
 			serializeUploadOptions(uploadDataOptions),
 		);
 
