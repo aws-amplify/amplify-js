@@ -37,12 +37,12 @@ const getIdDeserializer = async (
 	if (response.statusCode >= 300) {
 		const error = await parseJsonError(response);
 		throw error;
-	} else {
-		const body = await parseJsonBody(response);
-
-		return {
-			IdentityId: body.IdentityId,
-			$metadata: parseMetadata(response),
-		};
 	}
+
+	const body = await parseJsonBody(response);
+
+	return {
+		IdentityId: body.IdentityId,
+		$metadata: parseMetadata(response),
+	};
 };
