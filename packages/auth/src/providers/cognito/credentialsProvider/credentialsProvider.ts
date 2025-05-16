@@ -7,7 +7,7 @@ import {
 	CredentialsAndIdentityId,
 	CredentialsAndIdentityIdProvider,
 	GetCredentialsOptions,
-	getCredentialsForIdentity,
+	createGetCredentialsForIdentityClient,
 } from '@aws-amplify/core';
 import {
 	CognitoIdentityPoolConfig,
@@ -18,6 +18,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { getRegionFromIdentityPoolId } from '../../../foundation/parsers';
 import { assertIdTokenInAuthTokens } from '../utils/types';
+import { createCognitoIdentityPoolEndpointResolver } from '../factories';
 
 import { IdentityIdStore } from './types';
 import { cognitoIdentityIdProvider } from './IdentityIdProvider';
@@ -113,6 +114,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
 
+		const getCredentialsForIdentity = createGetCredentialsForIdentityClient({
+			endpointResolver: createCognitoIdentityPoolEndpointResolver({
+				endpointOverride: authConfig.identityPoolEndpoint,
+			}),
+		});
+
 		// use identityId to obtain guest credentials
 		// save credentials in-memory
 		// No logins params should be passed for guest creds:
@@ -193,6 +200,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			: {};
 
 		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
+
+		const getCredentialsForIdentity = createGetCredentialsForIdentityClient({
+			endpointResolver: createCognitoIdentityPoolEndpointResolver({
+				endpointOverride: authConfig.identityPoolEndpoint,
+			}),
+		});
 
 		let clientResult:
 			| Awaited<ReturnType<typeof getCredentialsForIdentity>>
