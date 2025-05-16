@@ -181,6 +181,7 @@ export interface OAuthConfig {
 	redirectSignOut: string[];
 	responseType: 'code' | 'token';
 	providers?: (OAuthProvider | CustomProvider)[];
+	urlOpener?: (url: string) => Promise<void>
 }
 
 export type OAuthProvider = 'Google' | 'Facebook' | 'Amazon' | 'Apple';

@@ -25,6 +25,7 @@ import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWi
 import type { OAuthStore } from '../../../src/providers/cognito/utils/types';
 import { mockAuthConfigWithOAuth } from '../../mockData';
 
+const mockUrlOpener = jest.fn();
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	assertOAuthConfig: jest.fn(),
@@ -39,7 +40,22 @@ jest.mock('@aws-amplify/core', () => {
 
 	return {
 		Amplify: {
-			getConfig: jest.fn(() => mockAuthConfigWithOAuth),
+			getConfig: jest.fn(() => ({
+				...mockAuthConfigWithOAuth,
+				Auth: {
+					...mockAuthConfigWithOAuth.Auth,
+					Cognito: {
+						...mockAuthConfigWithOAuth.Auth?.Cognito,
+						loginWith: {
+							...mockAuthConfigWithOAuth.Auth?.Cognito?.loginWith,
+							oauth: {
+								...mockAuthConfigWithOAuth.Auth?.Cognito?.loginWith?.oauth,
+								urlOpener: mockUrlOpener,
+							},
+						},
+					},
+				},
+			})),
 			[ACTUAL_ADD_OAUTH_LISTENER]: jest.fn(),
 		},
 		ConsoleLogger: jest.fn().mockImplementation(() => {
@@ -129,6 +145,7 @@ describe('signInWithRedirect', () => {
 		mockToCodeChallenge.mockClear();
 		mockHandleFailure.mockClear();
 		mockCompleteOAuthFlow.mockClear();
+		mockUrlOpener.mockClear();
 
 		(oAuthStore.setAuthConfig as jest.Mock).mockClear();
 		(oAuthStore.storeOAuthInFlight as jest.Mock).mockClear();
@@ -187,6 +204,11 @@ describe('signInWithRedirect', () => {
 		const expectedCustomState = 'verify_me';
 		await signInWithRedirect({ customState: expectedCustomState });
 		expect(mockUrlSafeEncode).toHaveBeenCalledWith(expectedCustomState);
+	});
+
+	it('uses custom url opener if specified', async () => {
+		await signInWithRedirect();
+		expect(mockUrlOpener).toHaveBeenCalled();
 	});
 
 	describe('specifications on Web', () => {
