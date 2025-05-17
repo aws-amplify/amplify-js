@@ -8,6 +8,7 @@ export {
 	getDeviceName,
 } from './apis';
 export {
+	loadAmplifyRtnPasskeys,
 	loadAmplifyPushNotification,
 	loadAmplifyWebBrowser,
 	loadAsyncStorage,

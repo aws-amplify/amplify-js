@@ -10,9 +10,27 @@
 	"publishConfig": {
 		"access": "public"
 	},
+	"exports": {
+		".": {
+			"react-native": "./dist/cjs/index.js",
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js"
+		},
+		"./internals/utils": {
+			"react-native": "./dist/cjs/utils/index.js",
+			"types": "./dist/esm/utils/index.d.ts",
+			"import": "./dist/esm/utils/index.mjs",
+			"require": "./dist/cjs/utils/index.js"
+		},
+		"./package.json": "./package.json"
+	},
 	"scripts": {
+		"prepare:ios": "cd example && npx pod-install",
+		"prepare:android": "echo 'no-op'",
 		"test": "echo 'no-op'",
-		"test:android": "./android/gradlew test -p ./android",
+		"test:ios": "echo 'no-op'",
+		"test:android": "cd ./example/android && ./gradlew test -i",
 		"build-with-test": "npm run clean && npm test && tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
@@ -33,6 +51,7 @@
 		"react-native-get-random-values": ">=1.8.0"
 	},
 	"devDependencies": {
+		"@aws-amplify/rtn-passkeys": "*",
 		"@aws-amplify/rtn-push-notification": "1.2.34",
 		"@aws-amplify/rtn-web-browser": "1.1.3",
 		"@react-native-async-storage/async-storage": "^1.17.12",
