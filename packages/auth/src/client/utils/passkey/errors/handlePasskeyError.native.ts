@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyErrorCode } from '@aws-amplify/core/internals/utils';
-import { getIsNativeError } from '@aws-amplify/react-native';
+import { getIsNativeError } from '@aws-amplify/react-native/internals/utils';
 
 import {
 	PasskeyError,

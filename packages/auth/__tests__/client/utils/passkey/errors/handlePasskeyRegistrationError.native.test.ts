@@ -1,4 +1,4 @@
-import { getIsNativeError } from '@aws-amplify/react-native';
+import { getIsNativeError } from '@aws-amplify/react-native/internals/utils';
 
 import {
 	PasskeyError,
@@ -12,7 +12,7 @@ import { MockNativeError } from '../../../../mockData';
 const mockHandlePasskeyError = jest.mocked(handlePasskeyError);
 jest.mock('../../../../../src/client/utils/passkey/errors/handlePasskeyError');
 
-jest.mock('@aws-amplify/react-native', () => ({
+jest.mock('@aws-amplify/react-native/internals/utils', () => ({
 	getIsNativeError: jest.fn(() => true),
 }));
 

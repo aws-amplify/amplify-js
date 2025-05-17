@@ -8,7 +8,7 @@ import { handlePasskeyError } from '../../../../../src/client/utils/passkey/erro
 import { passkeyErrorMap } from '../../../../../src/client/utils/passkey/errors/passkeyError';
 import { MockNativeError } from '../../../../mockData';
 
-jest.mock('@aws-amplify/react-native', () => ({
+jest.mock('@aws-amplify/react-native/internals/utils', () => ({
 	getIsNativeError: jest.fn(() => true),
 }));
 

@@ -19,6 +19,3 @@ export {
 	loadBase64,
 	loadAppState,
 } from './moduleLoaders';
-
-export { getIsNativeError } from './errors';
-export { NativeError } from './types';

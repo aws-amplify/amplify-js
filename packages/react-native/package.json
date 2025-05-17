@@ -10,6 +10,21 @@
 	"publishConfig": {
 		"access": "public"
 	},
+	"exports": {
+		".": {
+			"react-native": "./dist/cjs/index.js",
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js"
+		},
+		"./internals/utils": {
+			"react-native": "./dist/cjs/utils/index.js",
+			"types": "./dist/esm/utils/index.d.ts",
+			"import": "./dist/esm/utils/index.mjs",
+			"require": "./dist/cjs/utils/index.js"
+		},
+		"./package.json": "./package.json"
+	},
 	"scripts": {
 		"prepare:ios": "cd example && npx pod-install",
 		"prepare:android": "echo 'no-op'",

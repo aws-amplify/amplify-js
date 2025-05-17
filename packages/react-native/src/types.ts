@@ -19,11 +19,3 @@ export interface RTNCore {
 
 	getDeviceName(): Promise<string>;
 }
-
-export interface NativeError extends Error {
-	code: string;
-	domain?: string;
-	userInfo?: Record<string, unknown>;
-	nativeStackIOS?: never[];
-	nativeStackAndroid?: Record<string, unknown>[];
-}
