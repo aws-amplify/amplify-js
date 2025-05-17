@@ -31,9 +31,11 @@
 		"!**/.*"
 	],
 	"scripts": {
+		"prepare:ios": "cd ./example && npx pod-install",
+		"prepare:android": "cd ./example && echo \"{}\" > amplify_outputs.json",
 		"test": "jest",
-		"test:ios": "xcodebuild test -workspace example/ios/AmplifyRtnPasskeysExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16' -scheme AmplifyRtnPasskeys-Unit-tests",
-		"test:android": "cd ./example/android && ./gradlew test",
+		"test:ios": "xcodebuild test -quiet -workspace example/ios/AmplifyRtnPasskeysExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16' -scheme AmplifyRtnPasskeys-Unit-tests",
+		"test:android": "cd ./example/android && ./gradlew test -i",
 		"typecheck": "tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build": "yarn clean && yarn build:esm-cjs && yarn codegen",

@@ -20,22 +20,29 @@ import androidx.credentials.exceptions.domerrors.InvalidStateError
 import androidx.credentials.exceptions.domerrors.NotAllowedError
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.credentials.exceptions.publickeycredential.GetPublicKeyCredentialDomException
+
 import com.facebook.fbreact.specs.NativeAmplifyRtnPasskeysSpec
 import com.facebook.react.bridge.JSONArguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.module.annotations.ReactModule
+import kotlinx.coroutines.CoroutineDispatcher
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 import org.json.JSONObject
 
 @ReactModule(name = AmplifyRtnPasskeysModule.NAME)
-class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
+class AmplifyRtnPasskeysModule(
+	reactContext: ReactApplicationContext,
+	dispatcher: CoroutineDispatcher = Dispatchers.Default
+) :
 	NativeAmplifyRtnPasskeysSpec(reactContext) {
 
-	private val coroutineScope = CoroutineScope(Dispatchers.Default)
+	private val moduleScope = CoroutineScope(dispatcher)
 
 	override fun getName(): String {
 		return NAME
@@ -53,7 +60,10 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 
 	override fun createPasskey(input: ReadableMap, promise: Promise) {
 		if (!isPasskeySupported) {
-			return promise.reject("NOT_SUPPORTED",  CreateCredentialUnsupportedException("CreatePasskeyNotSupported"))
+			return promise.reject(
+				"NOT_SUPPORTED",
+				CreateCredentialUnsupportedException("CreatePasskeyNotSupported")
+			)
 		}
 
 		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
@@ -62,10 +72,13 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 		val request =
 			CreatePublicKeyCredentialRequest(requestJson = requestJson)
 
-		coroutineScope.launch {
+		moduleScope.launch {
 			try {
 				val result: CreateCredentialResponse =
-					credentialManager.createCredential(context = currentActivity ?: reactApplicationContext, request = request)
+					credentialManager.createCredential(
+						context = currentActivity ?: reactApplicationContext,
+						request = request
+					)
 
 				val publicKeyResult =
 					result as? CreatePublicKeyCredentialResponse
@@ -83,7 +96,10 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 
 	override fun getPasskey(input: ReadableMap, promise: Promise) {
 		if (!isPasskeySupported) {
-			return promise.reject("NOT_SUPPORTED", GetCredentialUnsupportedException("GetPasskeyNotSupported"))
+			return promise.reject(
+				"NOT_SUPPORTED",
+				GetCredentialUnsupportedException("GetPasskeyNotSupported")
+			)
 		}
 
 		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
@@ -93,10 +109,13 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 			GetPublicKeyCredentialOption(requestJson = requestJson)
 		val request = GetCredentialRequest(credentialOptions = listOf(options))
 
-		coroutineScope.launch {
+		moduleScope.launch {
 			try {
 				val result: GetCredentialResponse =
-					credentialManager.getCredential(context = currentActivity ?: reactApplicationContext, request = request)
+					credentialManager.getCredential(
+						context = currentActivity ?: reactApplicationContext,
+						request = request
+					)
 
 				val publicKeyResult =
 					result.credential as? PublicKeyCredential ?: throw Exception("GetPasskeyFailed")
@@ -121,6 +140,7 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 					else -> "FAILED"
 				}
 			}
+
 			is GetPublicKeyCredentialDomException -> {
 				when (e.domError) {
 					is NotAllowedError -> "CANCELED"
@@ -128,12 +148,15 @@ class AmplifyRtnPasskeysModule(reactContext: ReactApplicationContext) :
 					else -> "FAILED"
 				}
 			}
+
 			is CreateCredentialCancellationException,
 			is GetCredentialCancellationException -> "CANCELED"
+
 			is CreateCredentialUnsupportedException,
 			is CreateCredentialProviderConfigurationException,
 			is GetCredentialUnsupportedException,
 			is GetCredentialProviderConfigurationException -> "NOT_SUPPORTED"
+
 			else -> "FAILED"
 		}
 	}
