@@ -272,14 +272,25 @@ describe('getMultipartUploadHandlers with key', () => {
 				'file',
 				new File([getBlob(8 * MB)], 'someName'),
 				['JCnBsQ==', 'HELzGQ=='],
+				'/YBlgg==',
 			],
-			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ==']],
-			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g==']],
-			['arrayBuffer', new ArrayBuffer(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
-			['arrayBufferView', new Uint8Array(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
+			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ=='], '/YBlgg=='],
+			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g=='], 'dPB9Lw=='],
+			[
+				'arrayBuffer',
+				new ArrayBuffer(8 * MB),
+				['yTuzdQ==', 'eXJPxg=='],
+				'GtK8RQ==',
+			],
+			[
+				'arrayBufferView',
+				new Uint8Array(8 * MB),
+				['yTuzdQ==', 'eXJPxg=='],
+				'GtK8RQ==',
+			],
 		])(
 			`should create crc32 for %s type body`,
-			async (_, twoPartsPayload, expectedCrc32) => {
+			async (_, twoPartsPayload, expectedCrc32, finalCrc32) => {
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
 					{
@@ -309,6 +320,13 @@ describe('getMultipartUploadHandlers with key', () => {
 				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
 					expect.objectContaining({ ChecksumCRC32: expectedCrc32[1] }),
+				);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						ChecksumCRC32: finalCrc32,
+						ChecksumType: 'FULL_OBJECT',
+					}),
 				);
 			},
 		);
@@ -1081,14 +1099,25 @@ describe('getMultipartUploadHandlers with path', () => {
 				'file',
 				new File([getBlob(8 * MB)], 'someName'),
 				['JCnBsQ==', 'HELzGQ=='],
+				'/YBlgg==',
 			],
-			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ==']],
-			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g==']],
-			['arrayBuffer', new ArrayBuffer(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
-			['arrayBufferView', new Uint8Array(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
+			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ=='], '/YBlgg=='],
+			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g=='], 'dPB9Lw=='],
+			[
+				'arrayBuffer',
+				new ArrayBuffer(8 * MB),
+				['yTuzdQ==', 'eXJPxg=='],
+				'GtK8RQ==',
+			],
+			[
+				'arrayBufferView',
+				new Uint8Array(8 * MB),
+				['yTuzdQ==', 'eXJPxg=='],
+				'GtK8RQ==',
+			],
 		])(
 			`should create crc32 for %s type body`,
-			async (_, twoPartsPayload, expectedCrc32) => {
+			async (_, twoPartsPayload, expectedCrc32, finalCrc32) => {
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
 					{
@@ -1118,6 +1147,13 @@ describe('getMultipartUploadHandlers with path', () => {
 				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
 					expect.objectContaining({ ChecksumCRC32: expectedCrc32[1] }),
+				);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						ChecksumCRC32: finalCrc32,
+						ChecksumType: 'FULL_OBJECT',
+					}),
 				);
 			},
 		);

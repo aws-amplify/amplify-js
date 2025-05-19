@@ -255,6 +255,7 @@ export const getMultipartUploadHandlers = (
 				Key: finalKey,
 				UploadId: inProgressUpload.uploadId,
 				ChecksumCRC32: inProgressUpload.finalCrc32,
+				ChecksumType: 'FULL_OBJECT',
 				IfNoneMatch: preventOverwrite ? '*' : undefined,
 				MultipartUpload: {
 					Parts: sortUploadParts(inProgressUpload.completedParts),
@@ -263,7 +264,7 @@ export const getMultipartUploadHandlers = (
 			},
 		);
 
-		if (size) {
+		if (size && !inProgressUpload.finalCrc32) {
 			const { ContentLength: uploadedObjectSize, $metadata } = await headObject(
 				resolvedS3Config,
 				{
