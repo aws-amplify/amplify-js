@@ -255,7 +255,7 @@ export const getMultipartUploadHandlers = (
 				Key: finalKey,
 				UploadId: inProgressUpload.uploadId,
 				ChecksumCRC32: inProgressUpload.finalCrc32,
-				ChecksumType: 'FULL_OBJECT',
+				ChecksumType: inProgressUpload.finalCrc32 ? 'FULL_OBJECT' : undefined,
 				IfNoneMatch: preventOverwrite ? '*' : undefined,
 				MultipartUpload: {
 					Parts: sortUploadParts(inProgressUpload.completedParts),
@@ -264,7 +264,9 @@ export const getMultipartUploadHandlers = (
 			},
 		);
 
-		if (size && !inProgressUpload.finalCrc32) {
+		// If full-object CRC32 checksum is NOT enabled, we need to ensure the upload integrity by making extra HEAD call
+		// to verify the uploaded object size.
+		if (!inProgressUpload.finalCrc32) {
 			const { ContentLength: uploadedObjectSize, $metadata } = await headObject(
 				resolvedS3Config,
 				{
