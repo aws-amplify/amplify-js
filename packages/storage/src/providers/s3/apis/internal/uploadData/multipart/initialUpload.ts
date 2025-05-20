@@ -20,7 +20,7 @@ import { calculateContentCRC32 } from '../../../../utils/crc32';
 
 import {
 	cacheMultipartUpload,
-	findCachedUploadParts,
+	findCachedUploadPartsAndEvictExpired,
 	getUploadsCacheKey,
 } from './uploadCache';
 
@@ -100,7 +100,7 @@ export const loadOrCreateMultipartUpload = async ({
 			optionsHash,
 		});
 
-		const cachedUploadParts = await findCachedUploadParts({
+		const cachedUploadParts = await findCachedUploadPartsAndEvictExpired({
 			s3Config,
 			cacheKey: uploadCacheKey,
 			bucket,

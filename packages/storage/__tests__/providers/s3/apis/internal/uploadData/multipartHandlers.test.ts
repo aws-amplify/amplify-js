@@ -574,6 +574,7 @@ describe('getMultipartUploadHandlers with key', () => {
 							bucket,
 							key: defaultKey,
 							finalCrc32: 'mock-crc32',
+							lastTouched: Date.now() - 2 * 60 * 1000, // 2 mins ago
 						},
 					}),
 				);
@@ -660,7 +661,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			await multipartUploadJob();
 			expect(mockCalculateContentCRC32).toHaveBeenNthCalledWith(
 				1,
-				JSON.stringify(serializableOptions),
+				JSON.stringify({ ...serializableOptions, checksumType: 'FULL_OBJECT' }),
 			);
 		});
 
@@ -743,6 +744,38 @@ describe('getMultipartUploadHandlers with key', () => {
 			]);
 		});
 
+		it('should clean any outdated in-progress uploads', async () => {
+			mockDefaultStorage.getItem.mockResolvedValue(
+				JSON.stringify({
+					'other-outdated-update': {
+						uploadId: '000',
+						bucket,
+						key: defaultKey,
+						lastTouched: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
+					},
+				}),
+			);
+			mockMultipartUploadSuccess();
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new File([new ArrayBuffer(size)], 'someName'),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
+				},
+				size,
+			);
+			await multipartUploadJob();
+			// 1 for evicting outdated cached uploads;
+			// 1 for caching upload task;
+			// 1 for remove cache after upload is completed
+			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(3);
+			expect(mockDefaultStorage.setItem.mock.calls[0][1]).toEqual('{}');
+		});
+
 		it('should send listParts request if the upload task is cached', async () => {
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
@@ -750,7 +783,7 @@ describe('getMultipartUploadHandlers with key', () => {
 						uploadId: 'uploadId',
 						bucket,
 						key: defaultKey,
-						lastModified: Date.now(),
+						lastTouched: Date.now(),
 					},
 				}),
 			);
@@ -969,6 +1002,7 @@ describe('getMultipartUploadHandlers with key', () => {
 						uploadId: 'uploadId',
 						bucket,
 						key: defaultKey,
+						lastTouched: Date.now(),
 					},
 				}),
 			);
@@ -1435,6 +1469,7 @@ describe('getMultipartUploadHandlers with path', () => {
 							bucket,
 							key: defaultKey,
 							finalCrc32: 'mock-crc32',
+							lastTouched: Date.now(),
 						},
 					}),
 				);
@@ -1541,7 +1576,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			await multipartUploadJob();
 			expect(mockCalculateContentCRC32).toHaveBeenNthCalledWith(
 				1,
-				JSON.stringify(serializableOptions),
+				JSON.stringify({ ...serializableOptions, checksumType: 'FULL_OBJECT' }),
 			);
 		});
 
@@ -1605,6 +1640,38 @@ describe('getMultipartUploadHandlers with path', () => {
 			]);
 		});
 
+		it('should clean any outdated in-progress uploads', async () => {
+			mockDefaultStorage.getItem.mockResolvedValue(
+				JSON.stringify({
+					'other-outdated-update': {
+						uploadId: '000',
+						bucket,
+						key: defaultKey,
+						lastTouched: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
+					},
+				}),
+			);
+			mockMultipartUploadSuccess();
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: new File([new ArrayBuffer(size)], 'someName'),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
+				},
+				size,
+			);
+			await multipartUploadJob();
+			// 1 for evicting outdated cached uploads;
+			// 1 for caching upload task;
+			// 1 for remove cache after upload is completed
+			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(3);
+			expect(mockDefaultStorage.setItem.mock.calls[0][1]).toEqual('{}');
+		});
+
 		it('should send listParts request if the upload task is cached', async () => {
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
@@ -1612,7 +1679,7 @@ describe('getMultipartUploadHandlers with path', () => {
 						uploadId: 'uploadId',
 						bucket,
 						key: testPath,
-						lastModified: Date.now(),
+						lastTouched: Date.now(),
 					},
 				}),
 			);
@@ -1830,6 +1897,7 @@ describe('getMultipartUploadHandlers with path', () => {
 						uploadId: 'uploadId',
 						bucket,
 						key: testPath,
+						lastTouched: Date.now(),
 					},
 				}),
 			);
