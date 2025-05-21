@@ -67,7 +67,8 @@
 		"ios",
 		"dist/cjs",
 		"dist/esm",
-		"src"
+		"src",
+		"internals"
 	],
 	"source": "src/index"
 }
