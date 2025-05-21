@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthTokens, Identity, getId } from '@aws-amplify/core';
+import { AuthTokens, Identity, createGetIdClient } from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { getRegionFromIdentityPoolId } from '../../../foundation/parsers';
 import { GetIdException } from '../types/errors';
+import { createCognitoIdentityPoolEndpointResolver } from '../factories';
 
 import { IdentityIdStore } from './types';
 import { formLoginsMap } from './utils';
@@ -57,6 +58,12 @@ async function generateIdentityId(
 ): Promise<string> {
 	const identityPoolId = authConfig?.identityPoolId;
 	const region = getRegionFromIdentityPoolId(identityPoolId);
+
+	const getId = createGetIdClient({
+		endpointResolver: createCognitoIdentityPoolEndpointResolver({
+			endpointOverride: authConfig.identityPoolEndpoint,
+		}),
+	});
 
 	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
 	let idResult: string | undefined;
