@@ -1,9 +1,10 @@
+import { createGetIdClient } from '../../../src';
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
 import {
 	GetIdInput,
 	GetIdOutput,
-	getId,
-} from '../../../src/awsClients/cognitoIdentity';
+} from '../../../src/foundation/factories/serviceClients/cognitoIdentity/types';
+import { AmplifyUrl } from '../../../src/libraryUtils';
 import {
 	cognitoIdentityHandlerOptions,
 	mockIdentityId,
@@ -57,6 +58,13 @@ describe('CognitoIdentity - getId', () => {
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(succeedResponse),
 		);
+		const getId = createGetIdClient({
+			endpointResolver: jest.fn(() => ({
+				url: new AmplifyUrl(
+					'https://cognito-identity.us-east-1.amazonaws.com/',
+				),
+			})),
+		});
 		const response = await getId(cognitoIdentityHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
 		expect(fetchTransferHandler).toHaveBeenCalledWith(
@@ -89,6 +97,13 @@ describe('CognitoIdentity - getId', () => {
 			mockJsonResponse(failureResponse),
 		);
 		expect.assertions(1);
+		const getId = createGetIdClient({
+			endpointResolver: jest.fn(() => ({
+				url: new AmplifyUrl(
+					'https://cognito-identity.us-east-1.amazonaws.com/',
+				),
+			})),
+		});
 		try {
 			await getId(cognitoIdentityHandlerOptions, params);
 			fail('test should fail');
