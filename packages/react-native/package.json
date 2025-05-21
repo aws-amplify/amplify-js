@@ -10,21 +10,6 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"exports": {
-		".": {
-			"react-native": "./dist/cjs/index.js",
-			"types": "./dist/esm/index.d.ts",
-			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js"
-		},
-		"./internals/utils": {
-			"react-native": "./dist/cjs/utils/index.js",
-			"types": "./dist/esm/utils/index.d.ts",
-			"import": "./dist/esm/utils/index.mjs",
-			"require": "./dist/cjs/utils/index.js"
-		},
-		"./package.json": "./package.json"
-	},
 	"scripts": {
 		"prepare:ios": "cd example && npx pod-install",
 		"prepare:android": "echo 'no-op'",
@@ -48,7 +33,13 @@
 	},
 	"peerDependencies": {
 		"react-native": ">=0.70",
-		"react-native-get-random-values": ">=1.8.0"
+		"react-native-get-random-values": ">=1.8.0",
+		"@aws-amplify/rtn-passkeys": "^1.0.0"
+	},
+	"peerDependenciesMeta": {
+		"@aws-amplify/rtn-passkeys": {
+			"optional": true
+		}
 	},
 	"devDependencies": {
 		"@aws-amplify/rtn-passkeys": "*",

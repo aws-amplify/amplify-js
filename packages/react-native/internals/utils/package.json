@@ -1,8 +1,0 @@
-{
-	"name": "@aws-amplify/react-native/internals/utils",
-	"types": "../../dist/esm/utils/index.d.ts",
-	"main": "../../dist/cjs/utils/index.js",
-	"module": "../../dist/esm/utils/index.mjs",
-	"react-native": "../../dist/cjs/utils/index.js",
-	"sideEffects": false
-}

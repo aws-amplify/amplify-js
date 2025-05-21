@@ -6,6 +6,7 @@ export {
 	computeS,
 	getOperatingSystem,
 	getDeviceName,
+	getIsNativeError,
 } from './apis';
 export {
 	loadAmplifyRtnPasskeys,

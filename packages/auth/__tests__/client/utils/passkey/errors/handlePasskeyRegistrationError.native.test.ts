@@ -1,4 +1,4 @@
-import { getIsNativeError } from '@aws-amplify/react-native/internals/utils';
+import { getIsNativeError } from '@aws-amplify/react-native';
 
 import {
 	PasskeyError,
@@ -12,7 +12,7 @@ import { MockNativeError } from '../../../../mockData';
 const mockHandlePasskeyError = jest.mocked(handlePasskeyError);
 jest.mock('../../../../../src/client/utils/passkey/errors/handlePasskeyError');
 
-jest.mock('@aws-amplify/react-native/internals/utils', () => ({
+jest.mock('@aws-amplify/react-native', () => ({
 	getIsNativeError: jest.fn(() => true),
 }));
 
@@ -46,6 +46,7 @@ describe('handlePasskeyRegistrationError', () => {
 		);
 		expect(mockGetIsNativeError).toHaveBeenCalledWith(err);
 	});
+
 	it('returns new instance of PasskeyError with correct attributes when input error code is DUPLICATE', () => {
 		const err = new MockNativeError();
 		err.code = 'DUPLICATE';

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export interface NativeError extends Error {
+interface NativeError extends Error {
 	code: string;
 	domain?: string;
 	userInfo?: Record<string, unknown>;

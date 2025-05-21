@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getIsNativeError } from '@aws-amplify/react-native/internals/utils';
+import { getIsNativeError } from '@aws-amplify/react-native';
 
 import { handlePasskeyError } from './handlePasskeyError';
 import {
