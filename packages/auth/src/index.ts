@@ -88,9 +88,8 @@ export {
 	JWT,
 } from '@aws-amplify/core';
 
-export { associateWebAuthnCredential } from './client/apis';
-
 export {
+	associateWebAuthnCredential,
 	listWebAuthnCredentials,
 	deleteWebAuthnCredential,
 } from './client/apis';

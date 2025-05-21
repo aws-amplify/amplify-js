@@ -96,7 +96,13 @@
 		"tslib": "^2.5.0"
 	},
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.1.0"
+		"@aws-amplify/core": "^6.1.0",
+		"@aws-amplify/react-native": "^1.1.10"
+	},
+	"peerDependenciesMeta": {
+		"@aws-amplify/react-native": {
+			"optional": true
+		}
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.11.4",
