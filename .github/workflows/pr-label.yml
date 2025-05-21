@@ -74,7 +74,7 @@ jobs:
 
   update-failure-status:
     if: ${{ failure() }}
-    needs: [setup, prebuild, prebuild-samples-staging, e2e]
+    needs: [e2e]
     runs-on: ubuntu-latest
     permissions:
       statuses: write # This is required for running set-status actions
