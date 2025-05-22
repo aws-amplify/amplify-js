@@ -119,6 +119,15 @@ export const loadOrCreateMultipartUpload = async ({
 			finalCrc32: cachedUpload.finalCrc32,
 		};
 	} else {
+		/**
+		 * Note: This step reads the uploading file from beginning to end to calculate the CRC32 checksum of the entire
+		 * object before sending the 1st byte over the wire. This is a performance bottleneck when uploading large files.
+		 * The rationale to do this is S3 team wants to reduce the possibility of a file getting corrupted(on disk or in
+		 * memory). So we calculate the full-object checksum as soon as possible in the upload flow.
+		 *
+		 * Going forward we should re-evaluate this decision with S3 team. The alternative is calling calculateContentCRC32()
+		 * as we upload each part sequentially with seeds from already uploaded parts, ideally inside the data chunker.
+		 */
 		const finalCrc32 =
 			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
 				? await calculateContentCRC32(data)
