@@ -11,7 +11,10 @@
 		"access": "public"
 	},
 	"scripts": {
+		"prepare:ios": "echo 'no-op'",
+		"prepare:android": "echo 'no-op'",
 		"test": "echo 'no-op'",
+		"test:ios": "echo 'no-op'",
 		"test:android": "./android/gradlew test -p ./android",
 		"build-with-test": "npm run clean && npm test && tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
