@@ -307,7 +307,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.90 kB"
+			"limit": "17.92 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
