@@ -59,9 +59,18 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 				},
 			],
 		},
+		ChecksumCRC32: '123',
+		ChecksumType: 'FULL_OBJECT',
 		UploadId: 'uploadId',
 	},
-	expect.objectContaining(defaultExpectedRequest),
+	expect.objectContaining({
+		...defaultExpectedRequest,
+		headers: {
+			'content-type': 'application/xml',
+			'x-amz-checksum-crc32': '123',
+			'x-amz-checksum-type': 'FULL_OBJECT',
+		},
+	}),
 	{
 		status: 200,
 		headers: { ...DEFAULT_RESPONSE_HEADERS },
@@ -94,10 +103,10 @@ const completeMultipartUploadHappyCaseIfNoneMatch: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		...defaultExpectedRequest,
-		headers: {
+		headers: expect.objectContaining({
 			'content-type': 'application/xml',
 			'If-None-Match': 'mock-if-none-match',
-		},
+		}),
 	}),
 	completeMultipartUploadHappyCase[6],
 	completeMultipartUploadHappyCase[7],

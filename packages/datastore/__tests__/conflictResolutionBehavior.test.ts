@@ -612,7 +612,7 @@ describe('DataStore sync engine', () => {
 						await harness.expectGraphqlSettledWithEventCount(4);
 
 						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version' ?? null]),
+							harness.subscriptionLogs(['title', 'blogId', '_version']),
 						).toEqual([
 							['original title', 'original blogId', 1],
 							['post title 0', 'original blogId', 1],
@@ -1270,7 +1270,7 @@ describe('DataStore sync engine', () => {
 				});
 
 				expect(
-					harness.subscriptionLogs(['title', 'blogId', '_version' ?? null]),
+					harness.subscriptionLogs(['title', 'blogId', '_version']),
 				).toEqual([
 					['original title', 'original blogId', 1],
 					['post title 0', 'original blogId', 1],

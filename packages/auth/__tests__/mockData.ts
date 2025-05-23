@@ -266,6 +266,9 @@ export const passkeyRegistrationResult: PkcWithAuthenticatorAttestationResponse 
 				]),
 			getTransports: () => ['internal'],
 		},
+		toJSON() {
+			return 'json';
+		},
 	};
 
 export const passkeyRegistrationRequest: PublicKeyCredentialCreationOptions = {
@@ -396,6 +399,9 @@ export const passkeyGetResult: PkcWithAuthenticatorAssertionResponse = {
 		userHandle: new Uint8Array([
 			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
 		]),
+	},
+	toJSON() {
+		return 'json';
 	},
 };
 

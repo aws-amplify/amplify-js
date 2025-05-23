@@ -81,8 +81,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.11.4",
-		"typescript": "^5.0.2"
+		"@aws-amplify/core": "6.11.4"
 	},
 	"size-limit": [
 		{

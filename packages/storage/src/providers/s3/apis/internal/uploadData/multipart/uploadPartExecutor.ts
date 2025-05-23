@@ -5,7 +5,7 @@ import { TransferProgressEvent } from '../../../../../../types';
 import { ResolvedS3Config } from '../../../../types/options';
 import { uploadPart } from '../../../../utils/client/s3data';
 import { logger } from '../../../../../../utils';
-import { CRC32Checksum, calculateContentCRC32 } from '../../../../utils/crc32';
+import { calculateContentCRC32 } from '../../../../utils/crc32';
 import { calculateContentMd5 } from '../../../../utils';
 
 import { PartToUpload } from './getDataChunker';
@@ -58,7 +58,7 @@ export const uploadPartExecutor = async ({
 			});
 		} else {
 			// handle cancel error
-			let checksumCRC32: CRC32Checksum | undefined;
+			let checksumCRC32: string | undefined;
 			if (useCRC32Checksum) {
 				checksumCRC32 = await calculateContentCRC32(data);
 			}
@@ -85,14 +85,14 @@ export const uploadPartExecutor = async ({
 					UploadId: uploadId,
 					Body: data,
 					PartNumber: partNumber,
-					ChecksumCRC32: checksumCRC32?.checksum,
+					ChecksumCRC32: checksumCRC32,
 					ContentMD5: contentMD5,
 					ExpectedBucketOwner: expectedBucketOwner,
 				},
 			);
 			transferredBytes += size;
 			// eTag will always be set even the S3 model interface marks it as optional.
-			onPartUploadCompletion(partNumber, eTag!, checksumCRC32?.checksum);
+			onPartUploadCompletion(partNumber, eTag!, checksumCRC32);
 		}
 	}
 };
