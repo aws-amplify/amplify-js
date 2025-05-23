@@ -80,7 +80,8 @@ const oauthSignIn = async ({
 	preferPrivateSession?: boolean;
 	options?: SignInWithRedirectInput['options'];
 }) => {
-	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
+	const { domain, redirectSignIn, responseType, scopes, urlOpener } =
+		oauthConfig;
 	const { loginHint, lang, nonce } = options ?? {};
 	const randomState = generateState();
 
@@ -130,8 +131,12 @@ const oauthSignIn = async ({
 
 	// the following is effective only in react-native as openAuthSession resolves only in react-native
 	const { type, error, url } =
-		(await openAuthSession(oAuthUrl, redirectSignIn, preferPrivateSession)) ??
-		{};
+		(await openAuthSession(
+			oAuthUrl,
+			redirectSignIn,
+			preferPrivateSession,
+			urlOpener,
+		)) ?? {};
 
 	try {
 		if (type === 'error') {
