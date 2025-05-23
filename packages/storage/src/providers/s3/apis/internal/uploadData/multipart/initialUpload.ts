@@ -16,11 +16,11 @@ import { Part, createMultipartUpload } from '../../../../utils/client/s3data';
 import { logger } from '../../../../../../utils';
 import { constructContentDisposition } from '../../../../utils/constructContentDisposition';
 import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../utils/constants';
-import { getCombinedCrc32 } from '../../../../utils/getCombinedCrc32.native';
+import { calculateContentCRC32 } from '../../../../utils/crc32';
 
 import {
 	cacheMultipartUpload,
-	findCachedUploadParts,
+	findCachedUploadPartsAndEvictExpired,
 	getUploadsCacheKey,
 } from './uploadCache';
 
@@ -100,7 +100,7 @@ export const loadOrCreateMultipartUpload = async ({
 			optionsHash,
 		});
 
-		const cachedUploadParts = await findCachedUploadParts({
+		const cachedUploadParts = await findCachedUploadPartsAndEvictExpired({
 			s3Config,
 			cacheKey: uploadCacheKey,
 			bucket,
@@ -119,9 +119,18 @@ export const loadOrCreateMultipartUpload = async ({
 			finalCrc32: cachedUpload.finalCrc32,
 		};
 	} else {
+		/**
+		 * Note: This step reads the uploading file from beginning to end to calculate the CRC32 checksum of the entire
+		 * object before sending the 1st byte over the wire. This is a performance bottleneck when uploading large files.
+		 * The rationale to do this is S3 team wants to reduce the possibility of a file getting corrupted(on disk or in
+		 * memory). So we calculate the full-object checksum as soon as possible in the upload flow.
+		 *
+		 * Going forward we should re-evaluate this decision with S3 team. The alternative is calling calculateContentCRC32()
+		 * as we upload each part sequentially with seeds from already uploaded parts, ideally inside the data chunker.
+		 */
 		const finalCrc32 =
 			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
-				? await getCombinedCrc32(data, size)
+				? await calculateContentCRC32(data)
 				: undefined;
 
 		const { UploadId } = await createMultipartUpload(
@@ -137,6 +146,7 @@ export const loadOrCreateMultipartUpload = async ({
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
 				ChecksumAlgorithm: finalCrc32 ? 'CRC32' : undefined,
+				ChecksumType: finalCrc32 ? 'FULL_OBJECT' : undefined,
 				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
