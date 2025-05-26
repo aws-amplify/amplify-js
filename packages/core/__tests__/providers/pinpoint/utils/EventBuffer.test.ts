@@ -56,7 +56,7 @@ describe('EventBuffer', () => {
 		buffer.push(EVENT_OBJECT);
 	});
 
-	test('haveCredentialsChanged returns true if credentials has changed', () => {
+	test('haveCredentialsChanged returns true if credentials have changed', () => {
 		const config = { ...DEFAULT_CONFIG, bufferSize: 1 };
 		const buffer = new PinpointEventBuffer(config);
 		expect(
