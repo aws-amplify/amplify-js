@@ -1,8 +1,8 @@
 {
 	"name": "@aws-amplify/core/internals/aws-clients/cognitoIdentity",
-	"types": "../../../dist/esm/awsClients/cognitoIdentity/index.d.ts",
-	"main": "../../../dist/cjs/awsClients/cognitoIdentity/index.js",
-	"module": "../../../dist/esm/awsClients/cognitoIdentity/index.mjs",
-	"react-native": "../../../src/awsClients/cognitoIdentity/index.ts",
+	"types": "../../../dist/esm/foundation/factories/serviceClients/cognitoIdentity/index.d.ts",
+	"main": "../../../dist/cjs/foundation/factories/serviceClients/cognitoIdentity/index.js",
+	"module": "../../../dist/esm/foundation/factories/serviceClients/cognitoIdentity/index.mjs",
+	"react-native": "../../../dist/cjs/foundation/factories/serviceClients/cognitoIdentity/index.js",
 	"sideEffects": false
 }

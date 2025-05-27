@@ -3,6 +3,7 @@
 
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'rollup';
+import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import { getInputForGlob } from '../../rollup/utils.mjs';
 import {
@@ -27,11 +28,14 @@ const config = defineConfig([
 	// ESM config
 	{
 		input: input,
-		external: [
-			fileURLToPath(new URL('src/vendor/paho-mqtt.js', import.meta.url)),
-		],
 		output: esmOutput,
-		plugins: [typescript(esmTSOptions)],
+		plugins: [
+			commonjs({
+				include: ['src/vendor/paho-mqtt.js'],
+				exclude: ['**/*.ts'],
+			}),
+			typescript(esmTSOptions),
+		],
 	},
 ]);
 

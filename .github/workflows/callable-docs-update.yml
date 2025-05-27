@@ -48,10 +48,32 @@ jobs:
         run: |
           yarn run docs:references
 
-      - name: Update API references in the docs site
+      - name: Prepare docs temp branch
+        working-directory: ./docs
+        env:
+          TEMP_BRANCH_NAME: ${{ needs.docs-update-prep.outputs.branch_name }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
+        run: |
+          # First sync pre-prod/main with main using the "theirs" strategy to resolve conflicts
+          git fetch origin main pre-prod/main
+          git checkout pre-prod/main
+          # Use -X theirs to automatically resolve conflicts in favor of main
+          git merge origin/main --no-edit -X theirs --allow-unrelated-histories
+          echo "MERGE COMPLETE"
+          git push origin pre-prod/main
+          
+          # Now create a new branch from the updated pre-prod/main
+          git checkout -b $TEMP_BRANCH_NAME
+
+      - name: Setup yarn berry and Update API references
         working-directory: ./docs
         run: |
-          yarn clean-references -- -p amplify-js
+          npm install -g corepack
+          corepack enable
+          yarn -v
+
+          # Update API references
+          yarn && yarn clean-references -- -p amplify-js
           git add .
           git commit --allow-empty -m "chore: Update amplify-js API references"
 
@@ -61,6 +83,7 @@ jobs:
           TEMP_BRANCH_NAME: ${{ needs.docs-update-prep.outputs.branch_name }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
         run: |
-          git checkout -b $TEMP_BRANCH_NAME
           git push origin $TEMP_BRANCH_NAME
+          
+          # Create PR from the temp branch to pre-prod/main
           gh pr create -B pre-prod/main -H $TEMP_BRANCH_NAME --title 'chore: amplify-js api references update' --body 'Merge the api references changes from the most recent release.'

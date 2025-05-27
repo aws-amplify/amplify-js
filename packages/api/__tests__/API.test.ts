@@ -2,7 +2,10 @@ import { enableFetchMocks } from 'jest-fetch-mock';
 import { Amplify } from '@aws-amplify/core';
 import { GraphQLAPI } from '@aws-amplify/api-graphql';
 import { generateClient, CONNECTION_STATE_CHANGE } from '@aws-amplify/api';
-import { generateServerClientUsingCookies, generateServerClientUsingReqRes } from '@aws-amplify/adapter-nextjs/api';
+import {
+	generateServerClientUsingCookies,
+	generateServerClientUsingReqRes,
+} from '@aws-amplify/adapter-nextjs/api';
 import { generateClientWithAmplifyInstance } from '@aws-amplify/api/internals';
 import { Observable } from 'rxjs';
 import { decodeJWT } from '@aws-amplify/core';
@@ -43,9 +46,9 @@ const _setProviderSpy = jest.fn();
 
 (GraphQLAPI as any).appSyncRealTime = {
 	get() {
-		return { subscribe: _subspy }
+		return { subscribe: _subspy };
 	},
-	set: _setProviderSpy
+	set: _setProviderSpy,
 };
 
 /**
@@ -214,7 +217,7 @@ function prepareMocks() {
 
 describe('generateClient (web)', () => {
 	beforeEach(() => {
-		prepareMocks()
+		prepareMocks();
 	});
 
 	afterEach(() => {
@@ -225,15 +228,17 @@ describe('generateClient (web)', () => {
 		const opType = op === 'subscription' ? 'sub' : 'qry';
 
 		describe(`[${opType}] without a custom endpoint`, () => {
-			test("does not require `authMode` or `apiKey` override", () => {
-				expect(() => { generateClient() }).not.toThrow();
+			test('does not require `authMode` or `apiKey` override', () => {
+				expect(() => {
+					generateClient();
+				}).not.toThrow();
 			});
 
-			test("does not require `authMode` or `apiKey` override in client.graphql()", async () => {
+			test('does not require `authMode` or `apiKey` override in client.graphql()', async () => {
 				const client = generateClient();
 
 				await client.graphql({ query: `${op} A { queryA { a b c } }` });
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
@@ -241,15 +246,15 @@ describe('generateClient (web)', () => {
 				});
 			});
 
-			test("allows `authMode` override in client", async () => {
+			test('allows `authMode` override in client', async () => {
 				const client = generateClient({
 					authMode: 'userPool',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
@@ -257,14 +262,14 @@ describe('generateClient (web)', () => {
 				});
 			});
 
-			test("allows `authMode` override in `client.graphql()`", async () => {
+			test('allows `authMode` override in `client.graphql()`', async () => {
 				const client = generateClient();
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 					authMode: 'userPool',
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
@@ -272,70 +277,72 @@ describe('generateClient (web)', () => {
 				});
 			});
 
-			test("allows `apiKey` override in `client.graphql()`", async () => {
+			test('allows `apiKey` override in `client.graphql()`', async () => {
 				const client = generateClient();
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 					apiKey: CUSTOM_API_KEY,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
 					authMode: 'apiKey',
-					apiKeyOverride: CUSTOM_API_KEY
+					apiKeyOverride: CUSTOM_API_KEY,
 				});
 			});
 
-			test("allows `authMode` + `apiKey` override in `client.graphql()`", async () => {
+			test('allows `authMode` + `apiKey` override in `client.graphql()`', async () => {
 				const client = generateClient({
-					authMode: 'userPool'
+					authMode: 'userPool',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 					authMode: 'apiKey',
 					apiKey: CUSTOM_API_KEY,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
 					authMode: 'apiKey',
-					apiKeyOverride: CUSTOM_API_KEY
+					apiKeyOverride: CUSTOM_API_KEY,
 				});
 			});
 		});
 
 		describe(`[${opType}] with a custom endpoint`, () => {
-			test("requires `authMode` override", () => {
-				// @ts-expect-error
-				expect(() => generateClient({
-					endpoint: CUSTOM_ENDPOINT
-				})).toThrow()
-			})
-
-			test("requires `apiKey` with `authMode: 'apiKey'` override in client", async () => {
-				expect(() =>  {
+			test('requires `authMode` override', () => {
+				expect(() =>
+					// @ts-expect-error omitting authMode for test
 					generateClient({
 						endpoint: CUSTOM_ENDPOINT,
-						// @ts-expect-error
+					}),
+				).toThrow();
+			});
+
+			test("requires `apiKey` with `authMode: 'apiKey'` override in client", async () => {
+				expect(() => {
+					// @ts-expect-error omitting apiKey for test
+					generateClient({
+						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'apiKey',
-					})
+					});
 				}).toThrow();
 			});
 
-			test("allows `authMode` override in client", async () => {
+			test('allows `authMode` override in client', async () => {
 				const client = generateClient({
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'userPool',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
@@ -348,11 +355,11 @@ describe('generateClient (web)', () => {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
@@ -364,32 +371,32 @@ describe('generateClient (web)', () => {
 				const client = generateClient({
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'apiKey',
-					apiKey: CUSTOM_API_KEY
+					apiKey: CUSTOM_API_KEY,
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'apiKey',
-					apiKeyOverride: CUSTOM_API_KEY
+					apiKeyOverride: CUSTOM_API_KEY,
 				});
 			});
 
-			test("allows `authMode` override in client.graphql()", async () => {
+			test('allows `authMode` override in client.graphql()', async () => {
 				const client = generateClient({
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
-					authMode: 'userPool'
+					authMode: 'userPool',
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
@@ -402,12 +409,14 @@ describe('generateClient (web)', () => {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
-	
-				// @ts-expect-error
-				expect(() => client.graphql({
-					query: `${op} A { queryA { a b c } }`,
-					authMode: 'apiKey'
-				})).toThrow()
+
+				expect(() =>
+					// @ts-expect-error omitting apiKey for test
+					client.graphql({
+						query: `${op} A { queryA { a b c } }`,
+						authMode: 'apiKey',
+					}),
+				).toThrow();
 			});
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client.graphql()", async () => {
@@ -415,35 +424,34 @@ describe('generateClient (web)', () => {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 					authMode: 'apiKey',
-					apiKey: CUSTOM_API_KEY
+					apiKey: CUSTOM_API_KEY,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'apiKey',
-					apiKeyOverride: CUSTOM_API_KEY
+					apiKeyOverride: CUSTOM_API_KEY,
 				});
 			});
-		})
-	};
+		});
+	}
 });
 
 describe('generateClient (cookie client)', () => {
-
 	/**
 	 * NOTICE
-	 * 
+	 *
 	 * Cookie client is largely a pass-thru to `generateClientWithAmplifyInstance`.
-	 * 
+	 *
 	 * These tests intend to cover narrowing rules on the public surface. Behavior is
 	 * tested in the `SSR common` describe block.
 	 */
-	
+
 	beforeEach(() => {
 		prepareMocks();
 	});
@@ -452,118 +460,128 @@ describe('generateClient (cookie client)', () => {
 		jest.resetAllMocks();
 	});
 
-	const cookies = () => ({
-		get() { return undefined },
-		getAll() { return [] },
-		has() { return false },
-	}) as any;
+	const cookies = () =>
+		({
+			get() {
+				return undefined;
+			},
+			getAll() {
+				return [];
+			},
+			has() {
+				return false;
+			},
+		}) as any;
 
 	describe('typings', () => {
 		/**
 		 * Static / Type tests only.
-		 * 
+		 *
 		 * (No executed intended or expected.)
 		 */
 
 		describe('without a custom endpoint', () => {
-			test("do not require `authMode` or `apiKey` override", () => {
+			test('do not require `authMode` or `apiKey` override', () => {
 				// expect no type error
-				() => generateServerClientUsingCookies({
-					config: Amplify.getConfig(),
-					cookies
-				});
+				() =>
+					generateServerClientUsingCookies({
+						config: Amplify.getConfig(),
+						cookies,
+					});
 			});
-	
-			test("do not require `authMode` or `apiKey` override in client.graphql()", () => {
+
+			test('do not require `authMode` or `apiKey` override in client.graphql()', () => {
 				async () => {
 					const client = generateServerClientUsingCookies({
 						config: Amplify.getConfig(),
-						cookies
+						cookies,
 					});
 					await client.graphql({ query: `query A { queryA { a b c } }` });
-				}
+				};
 			});
-	
-			test("allows `authMode` override in client", () => {
+
+			test('allows `authMode` override in client', () => {
 				async () => {
 					const client = generateServerClientUsingCookies({
 						config: Amplify.getConfig(),
 						cookies,
 						authMode: 'userPool',
 					});
-		
+
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
 					});
-				}
+				};
 			});
-	
-			test("allow `authMode` override in `client.graphql()`", () => {
+
+			test('allow `authMode` override in `client.graphql()`', () => {
 				async () => {
 					const client = generateServerClientUsingCookies({
 						config: Amplify.getConfig(),
 						cookies,
 					});
-		
+
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
 						authMode: 'userPool',
 					});
-				}
+				};
 			});
-	
-			test("allows `apiKey` override in `client.graphql()`", () => {
+
+			test('allows `apiKey` override in `client.graphql()`', () => {
 				async () => {
 					const client = generateServerClientUsingCookies({
 						config: Amplify.getConfig(),
 						cookies,
 					});
-		
+
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
 						apiKey: CUSTOM_API_KEY,
-					});	
-				}
+					});
+				};
 			});
-	
-			test("allows `authMode` + `apiKey` override in `client.graphql()`", () => {
+
+			test('allows `authMode` + `apiKey` override in `client.graphql()`', () => {
 				async () => {
 					const client = generateServerClientUsingCookies({
 						config: Amplify.getConfig(),
 						cookies,
-						authMode: 'userPool'
+						authMode: 'userPool',
 					});
-		
+
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
 						authMode: 'apiKey',
 						apiKey: CUSTOM_API_KEY,
 					});
-				}
+				};
 			});
-		})
+		});
 
 		describe('with a custom endpoint', () => {
-			test("requires `authMode` override", () => {
-				// @ts-expect-error
-				() => generateServerClientUsingCookies({
-					config: Amplify.getConfig(),
-					cookies,
-					endpoint: CUSTOM_ENDPOINT
-				});
-			})
-
-			test("requires `apiKey` with `authMode: 'apiKey'` override in client", () => {
-				// @ts-expect-error
-				() =>  generateServerClientUsingCookies({
-					config: Amplify.getConfig(),
-					cookies,
-					endpoint: CUSTOM_ENDPOINT,
-					authMode: 'apiKey',
-				});
+			test('requires `authMode` override', () => {
+				() =>
+					// @ts-expect-error omitting authMode for test
+					generateServerClientUsingCookies({
+						config: Amplify.getConfig(),
+						cookies,
+						endpoint: CUSTOM_ENDPOINT,
+					});
 			});
 
-			test("allows `authMode` override in client", () => {
+			test("requires `apiKey` with `authMode: 'apiKey'` override in client", () => {
+				() =>
+					// @ts-expect-error omitting apiKey for test
+					generateServerClientUsingCookies({
+						config: Amplify.getConfig(),
+						cookies,
+						endpoint: CUSTOM_ENDPOINT,
+						authMode: 'apiKey',
+					});
+			});
+
+			test('allows `authMode` override in client', () => {
 				async () => {
 					const client = generateServerClientUsingCookies({
 						config: Amplify.getConfig(),
@@ -571,11 +589,11 @@ describe('generateClient (cookie client)', () => {
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'userPool',
 					});
-		
+
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
 					});
-				}
+				};
 			});
 
 			test("allows `authMode: 'none'` override in client.graphql()", () => {
@@ -586,11 +604,11 @@ describe('generateClient (cookie client)', () => {
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'none',
 					});
-		
+
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
 					});
-				}
+				};
 			});
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client", () => {
@@ -600,16 +618,16 @@ describe('generateClient (cookie client)', () => {
 						cookies,
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'apiKey',
-						apiKey: CUSTOM_API_KEY
+						apiKey: CUSTOM_API_KEY,
 					});
-		
+
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
 					});
-				}
+				};
 			});
 
-			test("allows `authMode` override in client.graphql()", () => {
+			test('allows `authMode` override in client.graphql()', () => {
 				async () => {
 					const client = generateServerClientUsingCookies({
 						config: Amplify.getConfig(),
@@ -617,12 +635,12 @@ describe('generateClient (cookie client)', () => {
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'none',
 					});
-		
+
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
-						authMode: 'userPool'
+						authMode: 'userPool',
 					});
-				}
+				};
 			});
 
 			test("requires `apiKey` with `authMode: 'apiKey'` override in client.graphql()", () => {
@@ -633,13 +651,13 @@ describe('generateClient (cookie client)', () => {
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'none',
 					});
-		
+
 					// @ts-expect-error
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
-						authMode: 'apiKey'
+						authMode: 'apiKey',
 					});
-				}
+				};
 			});
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client.graphql()", () => {
@@ -650,31 +668,29 @@ describe('generateClient (cookie client)', () => {
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'none',
 					});
-		
+
 					await client.graphql({
 						query: `query A { queryA { a b c } }`,
 						authMode: 'apiKey',
-						apiKey: CUSTOM_API_KEY
+						apiKey: CUSTOM_API_KEY,
 					});
-				}
+				};
 			});
-		})
-
+		});
 	});
 });
 
 describe('generateClient (req/res client)', () => {
-
 	/**
 	 * NOTICE
-	 * 
+	 *
 	 * ReqRes client is largely a pass-thru to `server/generateClient`, which is a pass-thru
 	 * to `generateClientWithAmplifyInstance` (with add Amplify instance).
-	 * 
+	 *
 	 * These tests intend to cover narrowing rules on the public surface. Behavior is
 	 * tested in the `SSR common` describe block.
 	 */
-	
+
 	beforeEach(() => {
 		prepareMocks();
 	});
@@ -683,123 +699,135 @@ describe('generateClient (req/res client)', () => {
 		jest.resetAllMocks();
 	});
 
-	const cookies = () => ({
-		get() { return undefined },
-		getAll() { return [] },
-		has() { return false },
-	}) as any;
+	const cookies = () =>
+		({
+			get() {
+				return undefined;
+			},
+			getAll() {
+				return [];
+			},
+			has() {
+				return false;
+			},
+		}) as any;
 
 	const contextSpec = {} as any;
 
 	describe('typings', () => {
 		/**
 		 * Static / Type tests only.
-		 * 
+		 *
 		 * (No executed intended or expected.)
 		 */
 
 		describe('without a custom endpoint', () => {
-			test("do not require `authMode` or `apiKey` override", () => {
+			test('do not require `authMode` or `apiKey` override', () => {
 				// expect no type error
-				() => generateServerClientUsingReqRes({
-					config: Amplify.getConfig(),
-				});
+				() =>
+					generateServerClientUsingReqRes({
+						config: Amplify.getConfig(),
+					});
 			});
-	
-			test("do not require `authMode` or `apiKey` override in client.graphql()", () => {
+
+			test('do not require `authMode` or `apiKey` override in client.graphql()', () => {
 				async () => {
 					const client = generateServerClientUsingReqRes({
 						config: Amplify.getConfig(),
 					});
-					await client.graphql(contextSpec, { query: `query A { queryA { a b c } }` });
-				}
+					await client.graphql(contextSpec, {
+						query: `query A { queryA { a b c } }`,
+					});
+				};
 			});
-	
-			test("allows `authMode` override in client", () => {
+
+			test('allows `authMode` override in client', () => {
 				async () => {
 					const client = generateServerClientUsingReqRes({
 						config: Amplify.getConfig(),
 						authMode: 'userPool',
 					});
-		
+
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
 					});
-				}
+				};
 			});
-	
-			test("allow `authMode` override in `client.graphql()`", () => {
+
+			test('allow `authMode` override in `client.graphql()`', () => {
 				async () => {
 					const client = generateServerClientUsingReqRes({
 						config: Amplify.getConfig(),
 					});
-		
+
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
 						authMode: 'userPool',
 					});
-				}
+				};
 			});
-	
-			test("allows `apiKey` override in `client.graphql()`", () => {
+
+			test('allows `apiKey` override in `client.graphql()`', () => {
 				async () => {
 					const client = generateServerClientUsingReqRes({
 						config: Amplify.getConfig(),
 					});
-		
+
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
 						apiKey: CUSTOM_API_KEY,
-					});	
-				}
+					});
+				};
 			});
-	
-			test("allows `authMode` + `apiKey` override in `client.graphql()`", () => {
+
+			test('allows `authMode` + `apiKey` override in `client.graphql()`', () => {
 				async () => {
 					const client = generateServerClientUsingReqRes({
 						config: Amplify.getConfig(),
-						authMode: 'userPool'
+						authMode: 'userPool',
 					});
-		
+
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
 						authMode: 'apiKey',
 						apiKey: CUSTOM_API_KEY,
 					});
-				}
+				};
 			});
-		})
+		});
 
 		describe('with a custom endpoint', () => {
-			test("requires `authMode` override", () => {
-				// @ts-expect-error
-				() => generateServerClientUsingReqRes({
-					config: Amplify.getConfig(),
-					endpoint: CUSTOM_ENDPOINT
-				});
-			})
-
-			test("requires `apiKey` with `authMode: 'apiKey'` override in client", () => {
-				// @ts-expect-error
-				() =>  generateServerClientUsingReqRes({
-					config: Amplify.getConfig(),
-					endpoint: CUSTOM_ENDPOINT,
-					authMode: 'apiKey',
-				});
+			test('requires `authMode` override', () => {
+				() =>
+					// @ts-expect-error omitting authMode for test
+					generateServerClientUsingReqRes({
+						config: Amplify.getConfig(),
+						endpoint: CUSTOM_ENDPOINT,
+					});
 			});
 
-			test("allows `authMode` override in client", () => {
+			test("requires `apiKey` with `authMode: 'apiKey'` override in client", () => {
+				() =>
+					// @ts-expect-error omitting apiKey for test
+					generateServerClientUsingReqRes({
+						config: Amplify.getConfig(),
+						endpoint: CUSTOM_ENDPOINT,
+						authMode: 'apiKey',
+					});
+			});
+
+			test('allows `authMode` override in client', () => {
 				async () => {
 					const client = generateServerClientUsingReqRes({
 						config: Amplify.getConfig(),
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'userPool',
 					});
-		
+
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
 					});
-				}
+				};
 			});
 
 			test("allows `authMode: 'none'` override in client.graphql()", () => {
@@ -809,11 +837,11 @@ describe('generateClient (req/res client)', () => {
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'none',
 					});
-		
+
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
 					});
-				}
+				};
 			});
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client", () => {
@@ -822,28 +850,28 @@ describe('generateClient (req/res client)', () => {
 						config: Amplify.getConfig(),
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'apiKey',
-						apiKey: CUSTOM_API_KEY
+						apiKey: CUSTOM_API_KEY,
 					});
-		
+
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
 					});
-				}
+				};
 			});
 
-			test("allows `authMode` override in client.graphql()", () => {
+			test('allows `authMode` override in client.graphql()', () => {
 				async () => {
 					const client = generateServerClientUsingReqRes({
 						config: Amplify.getConfig(),
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'none',
 					});
-		
+
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
-						authMode: 'userPool'
+						authMode: 'userPool',
 					});
-				}
+				};
 			});
 
 			test("requires `apiKey` with `authMode: 'apiKey'` override in client.graphql()", () => {
@@ -853,13 +881,13 @@ describe('generateClient (req/res client)', () => {
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'none',
 					});
-		
+
 					// @ts-expect-error
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
-						authMode: 'apiKey'
+						authMode: 'apiKey',
 					});
-				}
+				};
 			});
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client.graphql()", () => {
@@ -869,30 +897,29 @@ describe('generateClient (req/res client)', () => {
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'none',
 					});
-		
+
 					await client.graphql(contextSpec, {
 						query: `query A { queryA { a b c } }`,
 						authMode: 'apiKey',
-						apiKey: CUSTOM_API_KEY
+						apiKey: CUSTOM_API_KEY,
 					});
-				}
+				};
 			});
-		})
-
+		});
 	});
 });
 
 describe('SSR common', () => {
 	/**
 	 * NOTICE
-	 * 
+	 *
 	 * This tests the runtime validation behavior common to both SSR clients.
-	 * 
+	 *
 	 * 1. Cookie client uses `generateClientWithAmplifyInstance` directly.
 	 * 2. ReqRest client uses `server/generateClient`.
 	 * 3. `server/generateClient` is a pass-thru to `generateClientWithAmplifyInstance` that
 	 * injects an `Amplify` instance.
-	 * 
+	 *
 	 * The runtime validations we need to check funnel through `generateClientWithAmplifyInstance`.
 	 */
 
@@ -908,21 +935,23 @@ describe('SSR common', () => {
 		const opType = op === 'subscription' ? 'sub' : 'qry';
 
 		describe(`[${opType}] without a custom endpoint`, () => {
-			test("does not require `authMode` or `apiKey` override", () => {
-				expect(() => generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
-					config: Amplify.getConfig(),
-				})).not.toThrow();
+			test('does not require `authMode` or `apiKey` override', () => {
+				expect(() =>
+					generateClientWithAmplifyInstance({
+						amplify: Amplify as any,
+						config: Amplify.getConfig(),
+					}),
+				).not.toThrow();
 			});
 
-			test("does not require `authMode` or `apiKey` override in client.graphql()", async () => {
+			test('does not require `authMode` or `apiKey` override in client.graphql()', async () => {
 				const client = generateClientWithAmplifyInstance({
 					amplify: Amplify as any,
 					config: Amplify.getConfig(),
 				});
 
 				await client.graphql({ query: `${op} A { queryA { a b c } }` });
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
@@ -930,17 +959,17 @@ describe('SSR common', () => {
 				});
 			});
 
-			test("allows `authMode` override in client", async () => {
+			test('allows `authMode` override in client', async () => {
 				const client = generateClientWithAmplifyInstance({
 					amplify: Amplify as any,
 					config: Amplify.getConfig(),
 					authMode: 'userPool',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
@@ -948,17 +977,17 @@ describe('SSR common', () => {
 				});
 			});
 
-			test("allows `authMode` override in `client.graphql()`", async () => {
+			test('allows `authMode` override in `client.graphql()`', async () => {
 				const client = generateClientWithAmplifyInstance({
 					amplify: Amplify as any,
 					config: Amplify.getConfig(),
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 					authMode: 'userPool',
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
@@ -966,79 +995,83 @@ describe('SSR common', () => {
 				});
 			});
 
-			test("allows `apiKey` override in `client.graphql()`", async () => {
+			test('allows `apiKey` override in `client.graphql()`', async () => {
 				const client = generateClientWithAmplifyInstance({
 					amplify: Amplify as any,
 					config: Amplify.getConfig(),
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 					apiKey: CUSTOM_API_KEY,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
 					authMode: 'apiKey',
-					apiKeyOverride: CUSTOM_API_KEY
+					apiKeyOverride: CUSTOM_API_KEY,
 				});
 			});
 
-			test("allows `authMode` + `apiKey` override in `client.graphql()`", async () => {
+			test('allows `authMode` + `apiKey` override in `client.graphql()`', async () => {
 				const client = generateClientWithAmplifyInstance({
 					amplify: Amplify as any,
 					config: Amplify.getConfig(),
-					authMode: 'userPool'
+					authMode: 'userPool',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 					authMode: 'apiKey',
 					apiKey: CUSTOM_API_KEY,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: DEFAULT_ENDPOINT,
 					authMode: 'apiKey',
-					apiKeyOverride: CUSTOM_API_KEY
+					apiKeyOverride: CUSTOM_API_KEY,
 				});
 			});
 		});
 
 		describe(`[${opType}] with a custom endpoint`, () => {
-			test("requires `authMode` override", () => {
-				// @ts-expect-error
-				expect(() => generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
-					config: Amplify.getConfig(),
-					endpoint: CUSTOM_ENDPOINT
-				})).toThrow()
-			})
-
-			test("requires `apiKey` with `authMode: 'apiKey'` override in client", async () => {
-				// @ts-expect-error
-				expect(() =>  generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
-					config: Amplify.getConfig(),
-					endpoint: CUSTOM_ENDPOINT,
-					authMode: 'apiKey',
-				})).toThrow();
+			test('requires `authMode` override', () => {
+				expect(() =>
+					// @ts-expect-error omitting authMode for test
+					generateClientWithAmplifyInstance({
+						amplify: Amplify as any,
+						config: Amplify.getConfig(),
+						endpoint: CUSTOM_ENDPOINT,
+					}),
+				).toThrow();
 			});
 
-			test("allows `authMode` override in client", async () => {
+			test("requires `apiKey` with `authMode: 'apiKey'` override in client", async () => {
+				expect(() =>
+					// @ts-expect-error omitting apiKey for test
+					generateClientWithAmplifyInstance({
+						amplify: Amplify as any,
+						config: Amplify.getConfig(),
+						endpoint: CUSTOM_ENDPOINT,
+						authMode: 'apiKey',
+					}),
+				).toThrow();
+			});
+
+			test('allows `authMode` override in client', async () => {
 				const client = generateClientWithAmplifyInstance({
 					amplify: Amplify as any,
 					config: Amplify.getConfig(),
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'userPool',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
@@ -1053,11 +1086,11 @@ describe('SSR common', () => {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
@@ -1071,34 +1104,34 @@ describe('SSR common', () => {
 					config: Amplify.getConfig(),
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'apiKey',
-					apiKey: CUSTOM_API_KEY
+					apiKey: CUSTOM_API_KEY,
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'apiKey',
-					apiKeyOverride: CUSTOM_API_KEY
+					apiKeyOverride: CUSTOM_API_KEY,
 				});
 			});
 
-			test("allows `authMode` override in client.graphql()", async () => {
+			test('allows `authMode` override in client.graphql()', async () => {
 				const client = generateClientWithAmplifyInstance({
 					amplify: Amplify as any,
 					config: {},
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
-					authMode: 'userPool'
+					authMode: 'userPool',
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
@@ -1115,11 +1148,13 @@ describe('SSR common', () => {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
-	
-				expect(() => client.graphql({
-					query: `${op} A { queryA { a b c } }`,
-					authMode: 'apiKey'
-				})).toThrow()
+
+				expect(() =>
+					client.graphql({
+						query: `${op} A { queryA { a b c } }`,
+						authMode: 'apiKey',
+					}),
+				).toThrow();
 			});
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client.graphql()", async () => {
@@ -1129,20 +1164,20 @@ describe('SSR common', () => {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
-	
+
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
 					authMode: 'apiKey',
-					apiKey: CUSTOM_API_KEY
+					apiKey: CUSTOM_API_KEY,
 				});
-	
+
 				expectOp({
 					op,
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'apiKey',
-					apiKeyOverride: CUSTOM_API_KEY
+					apiKeyOverride: CUSTOM_API_KEY,
 				});
 			});
-		})
-	};
-})
+		});
+	}
+});
