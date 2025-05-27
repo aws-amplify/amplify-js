@@ -62,8 +62,7 @@
 	"devDependencies": {
 		"@aws-amplify/react-native": "1.1.9",
 		"@types/js-cookie": "3.0.2",
-		"genversion": "^2.2.0",
-		"typescript": "5.0.2"
+		"genversion": "^2.2.0"
 	},
 	"size-limit": [
 		{
@@ -139,10 +138,10 @@
 			"require": "./dist/cjs/clients/internal/index.js"
 		},
 		"./internals/aws-clients/cognitoIdentity": {
-			"react-native": "./dist/cjs/awsClients/cognitoIdentity/index.js",
-			"types": "./dist/esm/awsClients/cognitoIdentity/index.d.ts",
-			"import": "./dist/esm/awsClients/cognitoIdentity/index.mjs",
-			"require": "./dist/cjs/awsClients/cognitoIdentity/index.js"
+			"react-native": "./dist/cjs/foundation/factories/serviceClients/cognitoIdentity/index.js",
+			"types": "./dist/esm/foundation/factories/serviceClients/cognitoIdentity/index.d.ts",
+			"import": "./dist/esm/foundation/factories/serviceClients/cognitoIdentity/index.mjs",
+			"require": "./dist/cjs/foundation/factories/serviceClients/cognitoIdentity/index.js"
 		},
 		"./internals/aws-clients/pinpoint": {
 			"react-native": "./dist/cjs/awsClients/pinpoint/index.js",
@@ -179,7 +178,7 @@
 				"./dist/esm/clients/internal/index.d.ts"
 			],
 			"internals/aws-clients/cognitoIdentity": [
-				"./dist/esm/awsClients/cognitoIdentity/index.d.ts"
+				"./dist/esm/foundation/factories/serviceClients/cognitoIdentity/index.d.ts"
 			],
 			"internals/aws-clients/pinpoint": [
 				"./dist/esm/awsClients/pinpoint/index.d.ts"

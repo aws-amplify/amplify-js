@@ -29,6 +29,7 @@ import { deserializeStringTag } from '../utils/deserializeHelpers';
 
 import type {
 	ChecksumAlgorithm,
+	ChecksumType,
 	ListObjectsV2CommandInput,
 	ListObjectsV2CommandOutput,
 	StorageClass,
@@ -126,6 +127,7 @@ const deserializeObject = (output: any) =>
 			'ChecksumAlgorithm',
 			value => emptyArrayGuard(value, deserializeChecksumAlgorithmList),
 		],
+		ChecksumType: ['ChecksumType', deserializeStringTag<ChecksumType>],
 		Size: ['Size', deserializeNumber],
 		StorageClass: ['StorageClass', deserializeStringTag<StorageClass>],
 		Owner: ['Owner', deserializeOwner],

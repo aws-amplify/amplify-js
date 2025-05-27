@@ -27,7 +27,7 @@ interface FindCachedUploadPartsOptions {
  * Find the cached multipart upload id and get the parts that have been uploaded
  * with ListParts API. If the cached upload is expired(1 hour), return null.
  */
-export const findCachedUploadParts = async ({
+export const findCachedUploadPartsAndEvictExpired = async ({
 	resumableUploadsCache,
 	cacheKey,
 	s3Config,
@@ -38,20 +38,33 @@ export const findCachedUploadParts = async ({
 	uploadId: string;
 	finalCrc32?: string;
 } | null> => {
-	const cachedUploads = await listCachedUploadTasks(resumableUploadsCache);
+	const allCachedUploads = await listCachedUploadTasks(resumableUploadsCache);
+	// Evict all outdated uploads.
+	const validCachedUploads = Object.fromEntries(
+		Object.entries(allCachedUploads).filter(
+			([_, cacheValue]) => cacheValue.lastTouched >= Date.now() - ONE_HOUR,
+		),
+	);
 	if (
-		!cachedUploads[cacheKey] ||
-		cachedUploads[cacheKey].lastTouched < Date.now() - ONE_HOUR // Uploads are cached for 1 hour
+		Object.keys(validCachedUploads).length !==
+		Object.keys(allCachedUploads).length
 	) {
+		await resumableUploadsCache.setItem(
+			UPLOADS_STORAGE_KEY,
+			JSON.stringify(validCachedUploads),
+		);
+	}
+
+	if (!validCachedUploads[cacheKey]) {
 		return null;
 	}
 
-	const cachedUpload = cachedUploads[cacheKey];
+	const cachedUpload = validCachedUploads[cacheKey];
 	cachedUpload.lastTouched = Date.now();
 
 	await resumableUploadsCache.setItem(
 		UPLOADS_STORAGE_KEY,
-		JSON.stringify(cachedUploads),
+		JSON.stringify(validCachedUploads),
 	);
 
 	try {
@@ -111,11 +124,18 @@ export const serializeUploadOptions = (
 		'resumableUploadsCache', // Internally injected implementation not set by customers
 		'locationCredentialsProvider', // Internally injected implementation not set by customers
 	] satisfies (keyof typeof options)[];
-	const serializableOptions = Object.fromEntries(
-		Object.entries(options).filter(
-			([key]) => !unserializableOptionProperties.includes(key),
-		),
+	const serializableOptionEntries = Object.entries(options).filter(
+		([key]) => !unserializableOptionProperties.includes(key),
 	);
+
+	if (options.checksumAlgorithm === 'crc-32') {
+		// Additional options to differentiate the upload cache created before introducing the full-object checksum and
+		// after. If full-object checksum is enabled, the previous upload caches that created with composite checksum should
+		// be ignored.
+		serializableOptionEntries.push(['checksumType', 'FULL_OBJECT']);
+	}
+
+	const serializableOptions = Object.fromEntries(serializableOptionEntries);
 
 	return JSON.stringify(serializableOptions);
 };
