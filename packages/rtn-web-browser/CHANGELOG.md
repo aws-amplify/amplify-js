@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.1.3...@aws-amplify/rtn-web-browser@1.1.4) (2025-05-27)
+
+**Note:** Version bump only for package @aws-amplify/rtn-web-browser
+
 ## [1.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.1.2...@aws-amplify/rtn-web-browser@1.1.3) (2025-04-28)
 
 **Note:** Version bump only for package @aws-amplify/rtn-web-browser
