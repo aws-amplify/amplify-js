@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.15.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.4...aws-amplify@6.15.0) (2025-05-27)
+
+### Features
+
+- **auth:** support custom identity pool endpoint ([#14382](https://github.com/aws-amplify/amplify-js/issues/14382)) ([fd56414](https://github.com/aws-amplify/amplify-js/commit/fd56414205509e383e635aceb29b9a780eed2dfc))
+
 ## [6.14.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.3...aws-amplify@6.14.4) (2025-04-28)
 
 **Note:** Version bump only for package aws-amplify
