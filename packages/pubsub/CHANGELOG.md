@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.56](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.55...@aws-amplify/pubsub@6.1.56) (2025-05-27)
+
+### Bug Fixes
+
+- **pubsub:** fix ESM compatibility issue ([0087e4f](https://github.com/aws-amplify/amplify-js/commit/0087e4f26c11e1c8f059dd79d8acdb97205de0c5))
+
+## [6.1.55](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.54...@aws-amplify/pubsub@6.1.55) (2025-04-28)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.54](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.53...@aws-amplify/pubsub@6.1.54) (2025-04-21)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
 ## [6.1.53](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.52...@aws-amplify/pubsub@6.1.53) (2025-04-09)
 
 **Note:** Version bump only for package @aws-amplify/pubsub

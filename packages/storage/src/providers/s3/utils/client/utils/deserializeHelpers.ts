@@ -112,6 +112,9 @@ export const deserializeTimestamp = (value: string): Date | undefined => {
  * Create a function deserializing a string to an enum value. If the string is not a valid enum value, it throws a
  * StorageError.
  *
+ * This utility is ONLY preferred if the enum value is critical. Since the enum values are hard-coded, new enum values
+ * returned from service would break the library.
+ *
  * @example
  * ```typescript
  * const deserializeStringEnum = createStringEnumDeserializer(['a', 'b', 'c'] as const, 'FieldName');
@@ -130,7 +133,7 @@ export const createStringEnumDeserializer = <T extends readonly string[]>(
 ) => {
 	const deserializeStringEnum = (
 		value: any,
-	): T extends (infer E)[] ? E : never => {
+	): T extends readonly (infer E)[] ? E : never => {
 		const parsedEnumValue = value
 			? (enumValues.find(enumValue => enumValue === value) as any)
 			: undefined;
@@ -148,6 +151,18 @@ export const createStringEnumDeserializer = <T extends readonly string[]>(
 
 	return deserializeStringEnum;
 };
+
+/**
+ * Deserializes a string to a string tag type. The function simply casts the parsed string into a given string tag type.
+ * It does NOT validate the string value against the string tag. This behavior is the same to AWS SDK parsing logic of
+ * string tag types.
+ *
+ * If you need to verify the string value, you must use {@link createStringEnumDeserializer} instead.
+ *
+ * @internal
+ */
+export const deserializeStringTag = <T extends string>(value: any): T =>
+	String(value) as T;
 
 /**
  * Function that makes sure the deserializer receives non-empty array.
@@ -173,7 +188,7 @@ export const emptyArrayGuard = <T extends any[]>(
  */
 export const deserializeMetadata = (
 	headers: Headers,
-): Record<string, string> => {
+): Record<string, string> | undefined => {
 	const objectMetadataHeaderPrefix = 'x-amz-meta-';
 	const deserialized = Object.keys(headers)
 		.filter(header => header.startsWith(objectMetadataHeaderPrefix))

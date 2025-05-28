@@ -49,6 +49,7 @@ export type CompleteMultipartUploadInput = Pick<
 	| 'UploadId'
 	| 'MultipartUpload'
 	| 'ChecksumCRC32'
+	| 'ChecksumType'
 	| 'ExpectedBucketOwner'
 	| 'IfNoneMatch'
 >;
@@ -66,6 +67,7 @@ const completeMultipartUploadSerializer = async (
 		'content-type': 'application/xml',
 		...assignStringVariables({
 			'x-amz-checksum-crc32': input.ChecksumCRC32,
+			'x-amz-checksum-type': input.ChecksumType,
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 			'If-None-Match': input.IfNoneMatch,
 		}),

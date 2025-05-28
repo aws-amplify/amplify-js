@@ -3,21 +3,18 @@
 
 import crc32 from 'crc-32';
 
-import { hexToArrayBuffer, hexToBase64 } from './hexUtils';
+import { hexToBase64 } from './hexUtils';
 import { readFile } from './readFile';
 
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 
-export interface CRC32Checksum {
-	checksumArrayBuffer: ArrayBuffer;
-	checksum: string;
-	seed: number;
-}
-
+/**
+ * Calculate the CRC32 checksum for given content and return base64 encoded checksum.
+ */
 export const calculateContentCRC32 = async (
 	content: Blob | string | ArrayBuffer | ArrayBufferView,
 	seed = 0,
-): Promise<CRC32Checksum> => {
+): Promise<string> => {
 	let internalSeed = seed;
 
 	if (content instanceof ArrayBuffer || ArrayBuffer.isView(content)) {
@@ -64,9 +61,5 @@ export const calculateContentCRC32 = async (
 
 	const hex = internalSeed.toString(16).padStart(8, '0');
 
-	return {
-		checksumArrayBuffer: hexToArrayBuffer(hex),
-		checksum: hexToBase64(hex),
-		seed: internalSeed,
-	};
+	return hexToBase64(hex);
 };

@@ -22,21 +22,21 @@ const listObjectsV2HappyCaseTruncated: ApiFunctionalTestCase<
 		Bucket: 'bucket',
 		ContinuationToken: 'ContinuationToken',
 		Delimiter: 'Delimiter',
-		EncodingType: 'EncodingType',
+		EncodingType: 'url',
 		ExpectedBucketOwner: 'ExpectedBucketOwner',
 		FetchOwner: false,
 		MaxKeys: 0,
 		Prefix: 'Prefix',
-		RequestPayer: 'RequestPayer',
+		RequestPayer: 'requester',
 		StartAfter: 'StartAfter',
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/?list-type=2&continuation-token=ContinuationToken&delimiter=Delimiter&encoding-type=EncodingType&fetch-owner=false&max-keys=0&prefix=Prefix&start-after=StartAfter',
+			href: 'https://bucket.s3.us-east-1.amazonaws.com/?list-type=2&continuation-token=ContinuationToken&delimiter=Delimiter&encoding-type=url&fetch-owner=false&max-keys=0&prefix=Prefix&start-after=StartAfter',
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({
-			'x-amz-request-payer': 'RequestPayer',
+			'x-amz-request-payer': 'requester',
 			'x-amz-expected-bucket-owner': 'ExpectedBucketOwner',
 		}),
 	}),
@@ -51,7 +51,7 @@ const listObjectsV2HappyCaseTruncated: ApiFunctionalTestCase<
 		<StartAfter>ExampleGuide.pdf</StartAfter>
 		<MaxKeys>1000</MaxKeys>
 		<IsTruncated>true</IsTruncated>
-		<EncodingType>string</EncodingType>
+		<EncodingType>url</EncodingType>
 		<ContinuationToken>1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36Hy4vbOwM=</ContinuationToken>
 		<NextContinuationToken>Next1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36Hy4vbOwM=</NextContinuationToken>
 		<Contents>
@@ -112,7 +112,7 @@ const listObjectsV2HappyCaseTruncated: ApiFunctionalTestCase<
 		],
 		ContinuationToken: '1ueGcxLPRx1Tr/XYExHnhbYLgveDs2J/wm36Hy4vbOwM=',
 		Delimiter: 'string',
-		EncodingType: 'string',
+		EncodingType: 'url',
 		IsTruncated: true,
 		KeyCount: 4,
 		MaxKeys: 1000,

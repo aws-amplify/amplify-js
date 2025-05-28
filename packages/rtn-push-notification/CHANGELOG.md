@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.35](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.2.34...@aws-amplify/rtn-push-notification@1.2.35) (2025-05-27)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## [1.2.34](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.2.33...@aws-amplify/rtn-push-notification@1.2.34) (2025-04-28)
+
+### Bug Fixes
+
+- **rtn-push-notification:** wrong override signature ([#14360](https://github.com/aws-amplify/amplify-js/issues/14360)) ([893d9cf](https://github.com/aws-amplify/amplify-js/commit/893d9cf04bf1bb349e1d1a7094cf6507d413d713))
+
 ## [1.2.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.2.32...@aws-amplify/rtn-push-notification@1.2.33) (2025-04-09)
 
 **Note:** Version bump only for package @aws-amplify/rtn-push-notification

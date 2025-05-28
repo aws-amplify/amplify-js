@@ -1,41 +1,41 @@
 {
 	"name": "aws-amplify",
-	"version": "6.14.2",
+	"version": "6.15.0",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"exports": {
 		".": {
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./utils": {
+			"react-native": "./dist/cjs/utils/index.js",
 			"types": "./dist/esm/utils/index.d.ts",
 			"import": "./dist/esm/utils/index.mjs",
-			"require": "./dist/cjs/utils/index.js",
-			"react-native": "./src/utils/index.ts"
+			"require": "./dist/cjs/utils/index.js"
 		},
 		"./auth": {
+			"react-native": "./dist/cjs/auth/index.js",
 			"types": "./dist/esm/auth/index.d.ts",
 			"import": "./dist/esm/auth/index.mjs",
-			"require": "./dist/cjs/auth/index.js",
-			"react-native": "./src/auth/index.ts"
+			"require": "./dist/cjs/auth/index.js"
 		},
 		"./api": {
+			"react-native": "./dist/cjs/api/index.js",
 			"types": "./dist/esm/api/index.d.ts",
 			"import": "./dist/esm/api/index.mjs",
-			"require": "./dist/cjs/api/index.js",
-			"react-native": "./src/api/index.ts"
+			"require": "./dist/cjs/api/index.js"
 		},
 		"./api/internals": {
+			"react-native": "./dist/cjs/api/internals.js",
 			"types": "./dist/esm/api/internals.d.ts",
 			"import": "./dist/esm/api/internals.mjs",
-			"require": "./dist/cjs/api/internals.js",
-			"react-native": "./src/api/internals.ts"
+			"require": "./dist/cjs/api/internals.js"
 		},
 		"./api/server": {
 			"types": "./dist/esm/api/server.d.ts",
@@ -43,10 +43,10 @@
 			"require": "./dist/cjs/api/server.js"
 		},
 		"./data": {
+			"react-native": "./dist/cjs/api/index.js",
 			"types": "./dist/esm/api/index.d.ts",
 			"import": "./dist/esm/api/index.mjs",
-			"require": "./dist/cjs/api/index.js",
-			"react-native": "./src/api/index.ts"
+			"require": "./dist/cjs/api/index.js"
 		},
 		"./data/server": {
 			"types": "./dist/esm/api/server.d.ts",
@@ -54,16 +54,16 @@
 			"require": "./dist/cjs/api/server.js"
 		},
 		"./datastore": {
+			"react-native": "./dist/cjs/datastore/index.js",
 			"types": "./dist/esm/datastore/index.d.ts",
 			"import": "./dist/esm/datastore/index.mjs",
-			"require": "./dist/cjs/datastore/index.js",
-			"react-native": "./src/datastore/index.ts"
+			"require": "./dist/cjs/datastore/index.js"
 		},
 		"./auth/cognito": {
+			"react-native": "./dist/cjs/auth/cognito/index.js",
 			"types": "./dist/esm/auth/cognito/index.d.ts",
 			"import": "./dist/esm/auth/cognito/index.mjs",
-			"require": "./dist/cjs/auth/cognito/index.js",
-			"react-native": "./src/auth/cognito/index.ts"
+			"require": "./dist/cjs/auth/cognito/index.js"
 		},
 		"./auth/cognito/server": {
 			"types": "./dist/esm/auth/cognito/server/index.d.ts",
@@ -81,46 +81,46 @@
 			"require": "./dist/cjs/auth/enableOAuthListener.js"
 		},
 		"./analytics": {
+			"react-native": "./dist/cjs/analytics/index.js",
 			"types": "./dist/esm/analytics/index.d.ts",
 			"import": "./dist/esm/analytics/index.mjs",
-			"require": "./dist/cjs/analytics/index.js",
-			"react-native": "./src/analytics/index.ts"
+			"require": "./dist/cjs/analytics/index.js"
 		},
 		"./analytics/pinpoint": {
+			"react-native": "./dist/cjs/analytics/pinpoint/index.js",
 			"types": "./dist/esm/analytics/pinpoint/index.d.ts",
 			"import": "./dist/esm/analytics/pinpoint/index.mjs",
-			"require": "./dist/cjs/analytics/pinpoint/index.js",
-			"react-native": "./src/analytics/pinpoint/index.ts"
+			"require": "./dist/cjs/analytics/pinpoint/index.js"
 		},
 		"./analytics/kinesis": {
+			"react-native": "./dist/cjs/analytics/kinesis/index.js",
 			"types": "./dist/esm/analytics/kinesis/index.d.ts",
 			"import": "./dist/esm/analytics/kinesis/index.mjs",
-			"require": "./dist/cjs/analytics/kinesis/index.js",
-			"react-native": "./src/analytics/kinesis/index.ts"
+			"require": "./dist/cjs/analytics/kinesis/index.js"
 		},
 		"./analytics/kinesis-firehose": {
+			"react-native": "./dist/cjs/analytics/kinesis-firehose/index.js",
 			"types": "./dist/esm/analytics/kinesis-firehose/index.d.ts",
 			"import": "./dist/esm/analytics/kinesis-firehose/index.mjs",
-			"require": "./dist/cjs/analytics/kinesis-firehose/index.js",
-			"react-native": "./src/analytics/kinesis-firehose/index.ts"
+			"require": "./dist/cjs/analytics/kinesis-firehose/index.js"
 		},
 		"./analytics/personalize": {
+			"react-native": "./dist/cjs/analytics/personalize/index.js",
 			"types": "./dist/esm/analytics/personalize/index.d.ts",
 			"import": "./dist/esm/analytics/personalize/index.mjs",
-			"require": "./dist/cjs/analytics/personalize/index.js",
-			"react-native": "./src/analytics/personalize/index.ts"
+			"require": "./dist/cjs/analytics/personalize/index.js"
 		},
 		"./storage": {
+			"react-native": "./dist/cjs/storage/index.js",
 			"types": "./dist/esm/storage/index.d.ts",
 			"import": "./dist/esm/storage/index.mjs",
-			"require": "./dist/cjs/storage/index.js",
-			"react-native": "./src/storage/index.ts"
+			"require": "./dist/cjs/storage/index.js"
 		},
 		"./storage/s3": {
+			"react-native": "./dist/cjs/storage/s3/index.js",
 			"types": "./dist/esm/storage/s3/index.d.ts",
 			"import": "./dist/esm/storage/s3/index.mjs",
-			"require": "./dist/cjs/storage/s3/index.js",
-			"react-native": "./src/storage/s3/index.ts"
+			"require": "./dist/cjs/storage/s3/index.js"
 		},
 		"./storage/server": {
 			"types": "./dist/esm/storage/server.d.ts",
@@ -133,28 +133,28 @@
 			"require": "./dist/cjs/storage/s3/server.js"
 		},
 		"./in-app-messaging": {
+			"react-native": "./dist/cjs/in-app-messaging/index.js",
 			"types": "./dist/esm/in-app-messaging/index.d.ts",
 			"import": "./dist/esm/in-app-messaging/index.mjs",
-			"require": "./dist/cjs/in-app-messaging/index.js",
-			"react-native": "./src/in-app-messaging/index.ts"
+			"require": "./dist/cjs/in-app-messaging/index.js"
 		},
 		"./push-notifications": {
+			"react-native": "./dist/cjs/push-notifications/index.js",
 			"types": "./dist/esm/push-notifications/index.d.ts",
 			"import": "./dist/esm/push-notifications/index.mjs",
-			"require": "./dist/cjs/push-notifications/index.js",
-			"react-native": "./src/push-notifications/index.ts"
+			"require": "./dist/cjs/push-notifications/index.js"
 		},
 		"./in-app-messaging/pinpoint": {
+			"react-native": "./dist/cjs/in-app-messaging/pinpoint/index.js",
 			"types": "./dist/esm/in-app-messaging/pinpoint/index.d.ts",
 			"import": "./dist/esm/in-app-messaging/pinpoint/index.mjs",
-			"require": "./dist/cjs/in-app-messaging/pinpoint/index.js",
-			"react-native": "./src/in-app-messaging/pinpoint/index.ts"
+			"require": "./dist/cjs/in-app-messaging/pinpoint/index.js"
 		},
 		"./push-notifications/pinpoint": {
+			"react-native": "./dist/cjs/push-notifications/pinpoint/index.js",
 			"types": "./dist/esm/push-notifications/pinpoint/index.d.ts",
 			"import": "./dist/esm/push-notifications/pinpoint/index.mjs",
-			"require": "./dist/cjs/push-notifications/pinpoint/index.js",
-			"react-native": "./src/push-notifications/pinpoint/index.ts"
+			"require": "./dist/cjs/push-notifications/pinpoint/index.js"
 		},
 		"./adapter-core": {
 			"types": "./dist/esm/adapter-core/index.d.ts",
@@ -293,24 +293,21 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.78",
-		"@aws-amplify/api": "6.3.9",
-		"@aws-amplify/auth": "6.12.2",
-		"@aws-amplify/core": "6.11.2",
-		"@aws-amplify/datastore": "5.0.80",
-		"@aws-amplify/notifications": "2.0.78",
-		"@aws-amplify/storage": "6.8.2",
+		"@aws-amplify/analytics": "7.0.81",
+		"@aws-amplify/api": "6.3.12",
+		"@aws-amplify/auth": "6.13.0",
+		"@aws-amplify/core": "6.12.0",
+		"@aws-amplify/datastore": "5.0.83",
+		"@aws-amplify/notifications": "2.0.81",
+		"@aws-amplify/storage": "6.9.0",
 		"tslib": "^2.5.0"
-	},
-	"devDependencies": {
-		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.78 kB"
+			"limit": "17.90 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -334,7 +331,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "16.29 kB"
+			"limit": "16.40 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -370,169 +367,169 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "13.19 kB"
+			"limit": "13.31 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmResetPassword }",
-			"limit": "13.14 kB"
+			"limit": "13.25 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn }",
-			"limit": "29.22 kB"
+			"limit": "29.34 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resendSignUpCode }",
-			"limit": "13.15 kB"
+			"limit": "13.28 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignUp }",
-			"limit": "13.82 kB"
+			"limit": "13.93 kB"
 		},
 		{
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "29.16 kB"
+			"limit": "29.29 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "12.61 kB"
+			"limit": "12.74 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchMFAPreference }",
-			"limit": "12.64 kB"
+			"limit": "12.78 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "13.49 kB"
+			"limit": "13.61 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "13.5 kB"
+			"limit": "13.61 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ setUpTOTP }",
-			"limit": "13.8 kB"
+			"limit": "13.89 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "12.71 kB"
+			"limit": "12.85 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "8.16 kB"
+			"limit": "8.30 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmUserAttribute }",
-			"limit": "13.48 kB"
+			"limit": "13.60 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "21.21 kB"
+			"limit": "19.35 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "12.53 kB"
+			"limit": "12.66 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "31.45 kB"
+			"limit": "31.58 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "21.64 kB"
+			"limit": "19.92 kB"
 		},
 		{
 			"name": "[Auth] Associate WebAuthN Credential (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ associateWebAuthnCredential }",
-			"limit": "14.06 kB"
+			"limit": "14.20 kB"
 		},
 		{
 			"name": "[Auth] List WebAuthN Credentials (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ listWebAuthnCredentials }",
-			"limit": "12.64 kB"
+			"limit": "12.78 kB"
 		},
 		{
 			"name": "[Auth] Delete WebAuthN Credential (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ deleteWebAuthnCredential }",
-			"limit": "12.51 kB"
+			"limit": "12.65 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "16.79 kB"
+			"limit": "16.90 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "17.14 kB"
+			"limit": "17.26 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "16.38 kB"
+			"limit": "16.50 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "17.65 kB"
+			"limit": "17.75 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "17.21 kB"
+			"limit": "17.35 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "16.27 kB"
+			"limit": "16.40 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "23.49 kB"
+			"limit": "23.61 kB"
 		}
 	]
 }
