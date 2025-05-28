@@ -192,6 +192,36 @@ describe('public APIs', () => {
 				);
 			});
 
+			if (!['HEAD'].includes(method.toUpperCase())) {
+				it('should support body', async () => {
+					await fn(mockAmplifyInstance, {
+						apiName: 'restApi1',
+						path: '/items',
+						options: {
+							body: {
+								message: 'body',
+							},
+						},
+					}).response;
+					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+						{
+							url: new URL(
+								'https://123.execute-api.us-west-2.amazonaws.com/development/items',
+							),
+							method,
+							headers: {
+								'content-type': 'application/json; charset=UTF-8',
+							},
+							body: '{"message":"body"}',
+						},
+						expect.objectContaining({
+							region: 'us-west-2',
+							service: 'execute-api',
+						}),
+					);
+				});
+			}
+
 			it('should support path parameters', async () => {
 				await fn(mockAmplifyInstance, {
 					apiName: 'restApi1',

@@ -531,6 +531,5 @@
 			"import": "{ uploadData }",
 			"limit": "24 kB"
 		}
-	],
-	"gitHead": "e327fed0f7f1b436ceac0100ba2eefe9ce3133ef"
+	]
 }
