@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.8.4...@aws-amplify/storage@6.9.0) (2025-05-27)
+
+### Features
+
+- **storage:** upload with fullbody checksum ([#14383](https://github.com/aws-amplify/amplify-js/issues/14383)) ([7d58598](https://github.com/aws-amplify/amplify-js/commit/7d58598f7fcd9a3c158c8462b8aa763cce3b85f3))
+
 ## [6.8.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.8.3...@aws-amplify/storage@6.8.4) (2025-04-28)
 
 **Note:** Version bump only for package @aws-amplify/storage
