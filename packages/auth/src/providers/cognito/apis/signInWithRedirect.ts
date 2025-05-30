@@ -105,7 +105,7 @@ const oauthSignIn = async ({
 	oAuthStore.storePKCE(value);
 
 	const queryString = Object.entries({
-		prompt: requireSignIn ? 'login': 'none',
+		prompt: requireSignIn ? 'login' : 'none',
 		redirect_uri: redirectUri,
 		response_type: responseType,
 		client_id: clientId,
