@@ -55,6 +55,7 @@ export async function signInWithRedirect(
 		oauthConfig: authConfig.loginWith.oauth,
 		clientId: authConfig.userPoolClientId,
 		provider,
+		requireSignIn: input?.options?.requireSignIn,
 		customState: input?.customState,
 		preferPrivateSession: input?.options?.preferPrivateSession,
 		options: {
@@ -69,6 +70,7 @@ const oauthSignIn = async ({
 	oauthConfig,
 	provider,
 	clientId,
+	requireSignIn,
 	customState,
 	preferPrivateSession,
 	options,
@@ -76,6 +78,7 @@ const oauthSignIn = async ({
 	oauthConfig: OAuthConfig;
 	provider: string;
 	clientId: string;
+	requireSignIn?: boolean;
 	customState?: string;
 	preferPrivateSession?: boolean;
 	options?: SignInWithRedirectInput['options'];
@@ -102,6 +105,7 @@ const oauthSignIn = async ({
 	oAuthStore.storePKCE(value);
 
 	const queryString = Object.entries({
+		prompt: requireSignIn ? 'login': 'none',
 		redirect_uri: redirectUri,
 		response_type: responseType,
 		client_id: clientId,
