@@ -157,7 +157,7 @@ describe('signInWithRedirect', () => {
 		const [oauthUrl, redirectSignIn, preferPrivateSession] =
 			mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
-			'https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=Google&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256',
+			'https://oauth.domain.com/oauth2/authorize?prompt=none&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=Google&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256',
 		);
 		expect(redirectSignIn).toEqual(
 			mockAuthConfigWithOAuth.Auth.Cognito.loginWith.oauth.redirectSignIn,
@@ -170,7 +170,7 @@ describe('signInWithRedirect', () => {
 		await signInWithRedirect();
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
-			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedDefaultProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
+			`https://oauth.domain.com/oauth2/authorize?prompt=none&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedDefaultProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
 		);
 	});
 
@@ -179,7 +179,7 @@ describe('signInWithRedirect', () => {
 		await signInWithRedirect({ provider: { custom: expectedCustomProvider } });
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
-			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
+			`https://oauth.domain.com/oauth2/authorize?prompt=none&rredirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
 		);
 	});
 
@@ -187,6 +187,18 @@ describe('signInWithRedirect', () => {
 		const expectedCustomState = 'verify_me';
 		await signInWithRedirect({ customState: expectedCustomState });
 		expect(mockUrlSafeEncode).toHaveBeenCalledWith(expectedCustomState);
+	});
+
+	it('uses "login" as the prompt query param value to when require sign in is true', async () => {
+		const expectedCustomProvider = 'PieAuth';
+		await signInWithRedirect({
+			provider: { custom: expectedCustomProvider },
+			options: { requireSignIn: true },
+		});
+		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
+		expect(oauthUrl).toStrictEqual(
+			`https://oauth.domain.com/oauth2/authorize?prompt=login&rredirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
+		);
 	});
 
 	describe('specifications on Web', () => {
@@ -324,7 +336,7 @@ describe('signInWithRedirect', () => {
 				mockOpenAuthSession.mock.calls[0];
 
 			expect(oauthUrl).toStrictEqual(
-				'https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=Google&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&login_hint=someone%40gmail.com&lang=en&nonce=88388838883&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256',
+				'https://oauth.domain.com/oauth2/authorize?prompt=none&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=Google&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&login_hint=someone%40gmail.com&lang=en&nonce=88388838883&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256',
 			);
 			expect(redirectSignIn).toEqual(
 				mockAuthConfigWithOAuth.Auth.Cognito.loginWith.oauth.redirectSignIn,
