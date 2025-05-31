@@ -179,7 +179,7 @@ describe('signInWithRedirect', () => {
 		await signInWithRedirect({ provider: { custom: expectedCustomProvider } });
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
-			`https://oauth.domain.com/oauth2/authorize?prompt=none&rredirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
+			`https://oauth.domain.com/oauth2/authorize?prompt=none&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
 		);
 	});
 
@@ -197,7 +197,7 @@ describe('signInWithRedirect', () => {
 		});
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
-			`https://oauth.domain.com/oauth2/authorize?prompt=login&rredirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
+			`https://oauth.domain.com/oauth2/authorize?prompt=login&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
 		);
 	});
 
