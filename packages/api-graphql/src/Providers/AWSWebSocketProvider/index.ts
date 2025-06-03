@@ -80,6 +80,7 @@ interface AWSWebSocketProviderArgs {
 export abstract class AWSWebSocketProvider {
 	protected logger: ConsoleLogger;
 	protected subscriptionObserverMap = new Map<string, ObserverQuery>();
+	protected allowNoSubscriptions = false;
 
 	protected awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
@@ -157,6 +158,7 @@ export abstract class AWSWebSocketProvider {
 
 			let subscriptionStartInProgress = false;
 			const subscriptionId = amplifyUuid();
+
 			const startSubscription = () => {
 				if (!subscriptionStartInProgress) {
 					subscriptionStartInProgress = true;
@@ -263,22 +265,43 @@ export abstract class AWSWebSocketProvider {
 								'message',
 								publishListener,
 							);
-
+						cleanup();
 						resolve();
 					}
 
-					if (data.erroredEvents && data.erroredEvents.length > 0) {
-						// TODO: handle errors
+					if (data.errors && data.errors.length > 0) {
+						const errorTypes = data.errors.map((error: any) => error.errorType);
+						cleanup();
+						reject(new Error(`Publish errors: ${errorTypes.join(', ')}`));
 					}
 				};
-				this.awsRealTimeSocket.addEventListener('message', publishListener);
-				this.awsRealTimeSocket.addEventListener('close', () => {
+
+				const errorListener = (error: Event) => {
+					cleanup();
+					reject(new Error(`WebSocket error: ${error}`));
+				};
+
+				const closeListener = () => {
+					cleanup();
 					reject(new Error('WebSocket is closed'));
-				});
-				//
-				// this.awsRealTimeSocket.addEventListener('error', publishListener);
+				};
+
+				const cleanup = () => {
+					this.awsRealTimeSocket?.removeEventListener(
+						'message',
+						publishListener,
+					);
+					this.awsRealTimeSocket?.removeEventListener('error', errorListener);
+					this.awsRealTimeSocket?.removeEventListener('close', closeListener);
+				};
+
+				this.awsRealTimeSocket.addEventListener('message', publishListener);
+				this.awsRealTimeSocket.addEventListener('error', errorListener);
+				this.awsRealTimeSocket.addEventListener('close', closeListener);
 
 				this.awsRealTimeSocket.send(serializedSubscriptionMessage);
+			} else {
+				reject(new Error('WebSocket is not connected'));
 			}
 		});
 	}
@@ -374,9 +397,6 @@ export abstract class AWSWebSocketProvider {
 	}) {
 		const { query, variables } = options;
 
-		const { additionalCustomHeaders, libraryConfigHeaders } =
-			await additionalHeadersFromOptions(options);
-
 		this.subscriptionObserverMap.set(subscriptionId, {
 			observer,
 			query: query ?? '',
@@ -384,6 +404,9 @@ export abstract class AWSWebSocketProvider {
 			subscriptionState: SUBSCRIPTION_STATUS.PENDING,
 			startAckTimeoutId: undefined,
 		});
+
+		const { additionalCustomHeaders, libraryConfigHeaders } =
+			await additionalHeadersFromOptions(options);
 
 		const serializedSubscriptionMessage =
 			await this._prepareSubscriptionPayload({
@@ -522,10 +545,12 @@ export abstract class AWSWebSocketProvider {
 		this.subscriptionObserverMap.delete(subscriptionId);
 
 		// Verifying 1000ms after removing subscription in case there are new subscription unmount/mount
-		setTimeout(this._closeSocketIfRequired.bind(this), 1000);
+		if (!this.allowNoSubscriptions) {
+			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
+		}
 	}
 
-	private _closeSocketIfRequired() {
+	protected _closeSocketIfRequired() {
 		if (this.subscriptionObserverMap.size > 0) {
 			// Active subscriptions on the WebSocket
 			return;

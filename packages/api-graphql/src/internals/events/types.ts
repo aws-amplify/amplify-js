@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Subscription } from 'rxjs';
-import type { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import type {
+	DocumentType,
+	GraphQLAuthMode,
+} from '@aws-amplify/core/internals/utils';
 
 export interface SubscriptionObserver<T> {
 	next(value: T): void;
@@ -42,6 +45,29 @@ export interface EventsChannel {
 	/**
 	 * @experimental API may change in future versions
 	 *
+	 * Publish events to a channel via WebSocket
+	 *
+	 * @example
+	 * const channel = await events.connect("default/channel")
+	 *
+	 * await channel.publish({ some: "data" });
+	 *
+	 * @example // event batching
+	 * await channel.publish("default/channel", [{ some: "event" }, { some: "event2" }])
+	 *
+	 * @example // authMode override
+	 * await channel.publish({ some: "data" }, { authMode: "userPool" });
+	 *
+	 * @param event - JSON-serializable value or an array of values
+	 * @param pubOptions - request overrides: `authMode`, `authToken`
+	 *
+	 * @returns void on success
+	 * @throws on error
+	 */
+	publish(event: DocumentType, pubOptions?: EventsOptions): Promise<any>;
+	/**
+	 * @experimental API may change in future versions
+	 *
 	 * Close channel and any active subscriptions
 	 *
 	 * @example
@@ -58,6 +84,7 @@ export type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
 export interface EventsOptions {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
+	apiKey?: string;
 }
 
 export interface PublishedEvent {
@@ -69,3 +96,14 @@ export interface PublishResponse {
 	failed: PublishedEvent[];
 	successful: PublishedEvent[];
 }
+
+interface EventsConfigure {
+	appSyncGraphqlEndpoint: string;
+	region?: string;
+	authenticationType: ResolvedGraphQLAuthModes;
+	apiKey?: string;
+}
+
+export type ProviderOptions = EventsConfigure & {
+	authToken?: string;
+};

@@ -87,7 +87,7 @@ export const list = async (
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 		Delimiter: getDelimiter(options),
 		ExpectedBucketOwner: options?.expectedBucketOwner,
-		EncodingType: 'url',
+		EncodingType: 'url' as const,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -299,7 +299,7 @@ const validateEchoedElements = (
 		listInput.ContinuationToken === listOutput.ContinuationToken;
 
 	if (!validEchoedParameters) {
-		throw new IntegrityError();
+		throw new IntegrityError({ metadata: listOutput.$metadata });
 	}
 };
 

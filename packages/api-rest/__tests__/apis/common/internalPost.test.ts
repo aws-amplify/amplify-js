@@ -4,9 +4,8 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 import {
-	authenticatedHandler,
+	getRetryDecider,
 	parseJsonError,
-	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
 import {
@@ -14,13 +13,18 @@ import {
 	post,
 	updateRequestToBeCancellable,
 } from '../../../src/apis/common/internalPost';
+import { authenticatedHandler } from '../../../src/apis/common/baseHandlers/authenticatedHandler';
+import { unauthenticatedHandler } from '../../../src/apis/common/baseHandlers/unauthenticatedHandler';
 import { RestApiError, isCancelError } from '../../../src/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
+jest.mock('../../../src/apis/common/baseHandlers/authenticatedHandler');
+jest.mock('../../../src/apis/common/baseHandlers/unauthenticatedHandler');
 
-const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
-const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;
-const mockParseJsonError = parseJsonError as jest.Mock;
+const mockAuthenticatedHandler = jest.mocked(authenticatedHandler);
+const mockUnauthenticatedHandler = jest.mocked(unauthenticatedHandler);
+const mockParseJsonError = jest.mocked(parseJsonError);
+const mockGetRetryDecider = jest.mocked(getRetryDecider);
 const mockFetchAuthSession = jest.fn();
 const mockAssertConfigured = jest.fn();
 const mockAmplifyInstance = {
@@ -48,6 +52,9 @@ const credentials = {
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
+const retryExpectedResponse = { retryable: true };
+const mockGetRetryDeciderResponse = () =>
+	Promise.resolve(retryExpectedResponse);
 
 describe('internal post', () => {
 	beforeEach(() => {
@@ -55,7 +62,7 @@ describe('internal post', () => {
 		mockFetchAuthSession.mockResolvedValue({ credentials });
 		mockAuthenticatedHandler.mockResolvedValue(successResponse);
 		mockUnauthenticatedHandler.mockResolvedValue(successResponse);
-		mockAssertConfigured.mockReturnValue(true);
+		mockGetRetryDecider.mockReturnValue(mockGetRetryDeciderResponse);
 	});
 
 	it('should call authenticatedHandler with specified region from signingServiceInfo', async () => {
@@ -324,11 +331,12 @@ describe('internal post', () => {
 			},
 		};
 		mockParseJsonError.mockImplementationOnce(async response => {
-			const errorResponsePayload = await response.body?.json();
+			const errorResponsePayload = await response?.body?.json();
 			const error = new Error(errorResponsePayload.message);
 
 			return Object.assign(error, {
 				name: errorResponsePayload.name,
+				$metadata: {},
 			});
 		});
 		mockUnauthenticatedHandler.mockResolvedValueOnce(errorResponse);
@@ -369,11 +377,12 @@ describe('internal post', () => {
 			},
 		};
 		mockParseJsonError.mockImplementationOnce(async response => {
-			const errorResponsePayload = await response.body?.json();
+			const errorResponsePayload = await response?.body?.json();
 			const error = new Error(errorResponsePayload.message);
 
 			return Object.assign(error, {
 				name: errorResponsePayload.name,
+				$metadata: {},
 			});
 		});
 		mockUnauthenticatedHandler.mockResolvedValueOnce(errorResponse);
@@ -399,5 +408,53 @@ describe('internal post', () => {
 				body: errorResponseStr,
 			});
 		}
+	});
+
+	it('should use jittered-exponential-backoff retry strategy', async () => {
+		expect.assertions(2);
+		await post(mockAmplifyInstance, {
+			url: apiGatewayUrl,
+			options: {
+				signingServiceInfo: {},
+			},
+		});
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({ retryDecider: expect.any(Function) }),
+		);
+		const callArgs = mockAuthenticatedHandler.mock.calls[0];
+		const { retryDecider } = callArgs[1];
+		const retryDeciderResult = await retryDecider();
+		expect(retryDeciderResult).toEqual(retryExpectedResponse);
+	});
+
+	it('should use jittered-exponential-backoff retry strategy, even when configuring using library options', async () => {
+		expect.assertions(2);
+		const mockAmplifyInstanceWithNoRetry = {
+			...mockAmplifyInstance,
+			libraryOptions: {
+				API: {
+					REST: {
+						retryStrategy: {
+							strategy: 'no-retry',
+						},
+					},
+				},
+			},
+		} as any as AmplifyClassV6;
+		await post(mockAmplifyInstanceWithNoRetry, {
+			url: apiGatewayUrl,
+			options: {
+				signingServiceInfo: {},
+			},
+		});
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({ retryDecider: expect.any(Function) }),
+		);
+		const callArgs = mockAuthenticatedHandler.mock.calls[0];
+		const { retryDecider } = callArgs[1];
+		const retryDeciderResult = await retryDecider();
+		expect(retryDeciderResult).toEqual(retryExpectedResponse);
 	});
 });

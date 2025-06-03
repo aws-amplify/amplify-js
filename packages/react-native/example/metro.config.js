@@ -1,7 +1,9 @@
-const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const path = require('path');
+
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const escape = require('escape-string-regexp');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
+
 const pak = require('../package.json');
 
 const root = path.resolve(__dirname, '..');
@@ -22,8 +24,10 @@ const config = {
 		),
 		extraNodeModules: modules.reduce((acc, name) => {
 			acc[name] = path.join(__dirname, 'node_modules', name);
+
 			return acc;
 		}, {}),
+		// eslint-disable-next-line camelcase
 		unstable_enableSymlinks: true,
 	},
 	transformer: {
@@ -35,5 +39,7 @@ const config = {
 		}),
 	},
 };
+
+config.resetCache = true;
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

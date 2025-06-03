@@ -58,13 +58,13 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 				}
 
 				return handleSignInSignUpRequest({
-					request,
-					userPoolClientId,
-					oAuthConfig,
 					customState: handlerInput.customState,
+					oAuthConfig,
 					origin,
+					request,
 					setCookieOptions,
 					type: 'signUp',
+					userPoolClientId,
 				});
 			}
 			case 'sign-in': {
@@ -85,38 +85,39 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 				}
 
 				return handleSignInSignUpRequest({
-					request,
-					userPoolClientId,
-					oAuthConfig,
 					customState: handlerInput.customState,
+					oAuthConfig,
 					origin,
+					request,
 					setCookieOptions,
 					type: 'signIn',
+					userPoolClientId,
 				});
 			}
 			case 'sign-out':
 				return handleSignOutRequest({
-					userPoolClientId,
 					oAuthConfig,
 					origin,
 					setCookieOptions,
+					userPoolClientId,
 				});
 			case 'sign-in-callback':
 				return handleSignInCallbackRequest({
-					request,
 					handlerInput,
 					oAuthConfig,
 					origin,
+					request,
 					setCookieOptions,
 					userPoolClientId,
 				});
 			case 'sign-out-callback':
 				return handleSignOutCallbackRequest({
-					request,
 					handlerInput,
 					oAuthConfig,
-					userPoolClientId,
+					origin,
+					request,
 					setCookieOptions,
+					userPoolClientId,
 				});
 			// default:
 			// is unreachable by the guard of isSupportedAuthApiRoutePath()

@@ -1,17 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthTokens, ConsoleLogger, Identity, getId } from '@aws-amplify/core';
+import { AuthTokens, Identity, createGetIdClient } from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { getRegionFromIdentityPoolId } from '../../../foundation/parsers';
 import { GetIdException } from '../types/errors';
+import { createCognitoIdentityPoolEndpointResolver } from '../factories';
 
 import { IdentityIdStore } from './types';
 import { formLoginsMap } from './utils';
 
-const logger = new ConsoleLogger('CognitoIdentityIdProvider');
 /**
  * Provides a Cognito identityId
  *
@@ -33,46 +34,22 @@ export async function cognitoIdentityIdProvider({
 	identityIdStore.setAuthConfig({ Cognito: authConfig });
 
 	// will return null only if there is no identityId cached or if there is an error retrieving it
-	let identityId: Identity | null = await identityIdStore.loadIdentityId();
+	const identityId: Identity | null = await identityIdStore.loadIdentityId();
 
-	// Tokens are available so return primary identityId
-	if (tokens) {
-		// If there is existing primary identityId in-memory return that
-		if (identityId && identityId.type === 'primary') {
-			return identityId.id;
-		} else {
-			const logins = tokens.idToken
-				? formLoginsMap(tokens.idToken.toString())
-				: {};
-
-			const generatedIdentityId = await generateIdentityId(logins, authConfig);
-
-			if (identityId && identityId.id === generatedIdentityId) {
-				logger.debug(
-					`The guest identity ${identityId.id} has become the primary identity.`,
-				);
-			}
-			identityId = {
-				id: generatedIdentityId,
-				type: 'primary',
-			};
-		}
-	} else {
-		// If there is existing guest identityId cached return that
-		if (identityId && identityId.type === 'guest') {
-			return identityId.id;
-		} else {
-			identityId = {
-				id: await generateIdentityId({}, authConfig),
-				type: 'guest',
-			};
-		}
+	if (identityId) {
+		return identityId.id;
 	}
+	const logins = tokens?.idToken
+		? formLoginsMap(tokens.idToken.toString())
+		: {};
+	const generatedIdentityId = await generateIdentityId(logins, authConfig);
+	// Store generated identityId
+	identityIdStore.storeIdentityId({
+		id: generatedIdentityId,
+		type: tokens ? 'primary' : 'guest',
+	});
 
-	// Store in-memory or local storage depending on guest or primary identityId
-	identityIdStore.storeIdentityId(identityId);
-
-	return identityId.id;
+	return generatedIdentityId;
 }
 
 async function generateIdentityId(
@@ -82,11 +59,18 @@ async function generateIdentityId(
 	const identityPoolId = authConfig?.identityPoolId;
 	const region = getRegionFromIdentityPoolId(identityPoolId);
 
+	const getId = createGetIdClient({
+		endpointResolver: createCognitoIdentityPoolEndpointResolver({
+			endpointOverride: authConfig.identityPoolEndpoint,
+		}),
+	});
+
 	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
-	const idResult =
-		// for a first-time user, this will return a brand new identity
-		// for a returning user, this will retrieve the previous identity assocaited with the logins
-		(
+	let idResult: string | undefined;
+	// for a first-time user, this will return a brand new identity
+	// for a returning user, this will retrieve the previous identity assocaited with the logins
+	try {
+		idResult = (
 			await getId(
 				{
 					region,
@@ -97,6 +81,10 @@ async function generateIdentityId(
 				},
 			)
 		).IdentityId;
+	} catch (e) {
+		assertServiceError(e);
+		throw new AuthError(e);
+	}
 	if (!idResult) {
 		throw new AuthError({
 			name: 'GetIdResponseException',

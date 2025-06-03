@@ -7,7 +7,7 @@ import {
 	CredentialsAndIdentityId,
 	CredentialsAndIdentityIdProvider,
 	GetCredentialsOptions,
-	getCredentialsForIdentity,
+	createGetCredentialsForIdentityClient,
 } from '@aws-amplify/core';
 import {
 	CognitoIdentityPoolConfig,
@@ -15,8 +15,10 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { getRegionFromIdentityPoolId } from '../../../foundation/parsers';
 import { assertIdTokenInAuthTokens } from '../utils/types';
+import { createCognitoIdentityPoolEndpointResolver } from '../factories';
 
 import { IdentityIdStore } from './types';
 import { cognitoIdentityIdProvider } from './IdentityIdProvider';
@@ -112,23 +114,37 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
 
+		const getCredentialsForIdentity = createGetCredentialsForIdentityClient({
+			endpointResolver: createCognitoIdentityPoolEndpointResolver({
+				endpointOverride: authConfig.identityPoolEndpoint,
+			}),
+		});
+
 		// use identityId to obtain guest credentials
 		// save credentials in-memory
 		// No logins params should be passed for guest creds:
 		// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html
-		const clientResult = await getCredentialsForIdentity(
-			{ region },
-			{
-				IdentityId: identityId,
-			},
-		);
+		let clientResult:
+			| Awaited<ReturnType<typeof getCredentialsForIdentity>>
+			| undefined;
+		try {
+			clientResult = await getCredentialsForIdentity(
+				{ region },
+				{
+					IdentityId: identityId,
+				},
+			);
+		} catch (e) {
+			assertServiceError(e);
+			throw new AuthError(e);
+		}
 
 		if (
-			clientResult.Credentials &&
-			clientResult.Credentials.AccessKeyId &&
-			clientResult.Credentials.SecretKey
+			clientResult?.Credentials?.AccessKeyId &&
+			clientResult?.Credentials?.SecretKey
 		) {
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
+
 			const res: CredentialsAndIdentityId = {
 				credentials: {
 					accessKeyId: clientResult.Credentials.AccessKeyId,
@@ -138,11 +154,10 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 				},
 				identityId,
 			};
-			const identityIdRes = clientResult.IdentityId;
-			if (identityIdRes) {
-				res.identityId = identityIdRes;
+			if (clientResult.IdentityId) {
+				res.identityId = clientResult.IdentityId;
 				this._identityIdStore.storeIdentityId({
-					id: identityIdRes,
+					id: clientResult.IdentityId,
 					type: 'guest',
 				});
 			}
@@ -186,19 +201,34 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
 
-		const clientResult = await getCredentialsForIdentity(
-			{ region },
-			{
-				IdentityId: identityId,
-				Logins: logins,
-			},
-		);
+		const getCredentialsForIdentity = createGetCredentialsForIdentityClient({
+			endpointResolver: createCognitoIdentityPoolEndpointResolver({
+				endpointOverride: authConfig.identityPoolEndpoint,
+			}),
+		});
+
+		let clientResult:
+			| Awaited<ReturnType<typeof getCredentialsForIdentity>>
+			| undefined;
+		try {
+			clientResult = await getCredentialsForIdentity(
+				{ region },
+				{
+					IdentityId: identityId,
+					Logins: logins,
+				},
+			);
+		} catch (e) {
+			assertServiceError(e);
+			throw new AuthError(e);
+		}
 
 		if (
-			clientResult.Credentials &&
-			clientResult.Credentials.AccessKeyId &&
-			clientResult.Credentials.SecretKey
+			clientResult?.Credentials?.AccessKeyId &&
+			clientResult?.Credentials?.SecretKey
 		) {
+			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
+
 			const res: CredentialsAndIdentityId = {
 				credentials: {
 					accessKeyId: clientResult.Credentials.AccessKeyId,
@@ -208,22 +238,22 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 				},
 				identityId,
 			};
+
+			if (clientResult.IdentityId) {
+				res.identityId = clientResult.IdentityId;
+				// note: the following call removes guest identityId from the persistent store (localStorage)
+				this._identityIdStore.storeIdentityId({
+					id: clientResult.IdentityId,
+					type: 'primary',
+				});
+			}
+
 			// Store the credentials in-memory along with the expiration
 			this._credentialsAndIdentityId = {
 				...res,
 				isAuthenticatedCreds: true,
 				associatedIdToken: authTokens.idToken?.toString(),
 			};
-			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
-
-			const identityIdRes = clientResult.IdentityId;
-			if (identityIdRes) {
-				res.identityId = identityIdRes;
-				this._identityIdStore.storeIdentityId({
-					id: identityIdRes,
-					type: 'primary',
-				});
-			}
 
 			return res;
 		} else {

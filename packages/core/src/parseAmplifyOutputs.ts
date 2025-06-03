@@ -19,7 +19,6 @@ import {
 } from './singleton/Auth/types';
 import { NotificationsConfig } from './singleton/Notifications/types';
 import {
-	AmplifyOutputs,
 	AmplifyOutputsAnalyticsProperties,
 	AmplifyOutputsAuthProperties,
 	AmplifyOutputsCustomProperties,
@@ -28,6 +27,7 @@ import {
 	AmplifyOutputsNotificationsProperties,
 	AmplifyOutputsStorageBucketProperties,
 	AmplifyOutputsStorageProperties,
+	AmplifyOutputsUnknown,
 } from './singleton/AmplifyOutputs/types';
 import {
 	AnalyticsConfig,
@@ -40,10 +40,10 @@ import {
 } from './singleton/types';
 
 export function isAmplifyOutputs(
-	config: ResourcesConfig | LegacyConfig | AmplifyOutputs,
-): config is AmplifyOutputs {
+	config: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
+): config is AmplifyOutputsUnknown {
 	// version format initially will be '1' but is expected to be something like x.y where x is major and y minor version
-	const { version } = config as AmplifyOutputs;
+	const { version } = config as AmplifyOutputsUnknown;
 
 	if (!version) {
 		return false;
@@ -291,16 +291,20 @@ function parseNotifications(
 }
 
 export function parseAmplifyOutputs(
-	amplifyOutputs: AmplifyOutputs,
+	amplifyOutputs: AmplifyOutputsUnknown,
 ): ResourcesConfig {
 	const resourcesConfig: ResourcesConfig = {};
 
 	if (amplifyOutputs.storage) {
-		resourcesConfig.Storage = parseStorage(amplifyOutputs.storage);
+		resourcesConfig.Storage = parseStorage(
+			amplifyOutputs.storage as AmplifyOutputsStorageProperties,
+		);
 	}
 
 	if (amplifyOutputs.auth) {
-		resourcesConfig.Auth = parseAuth(amplifyOutputs.auth);
+		resourcesConfig.Auth = parseAuth(
+			amplifyOutputs.auth as AmplifyOutputsAuthProperties,
+		);
 	}
 
 	if (amplifyOutputs.analytics) {
@@ -308,11 +312,15 @@ export function parseAmplifyOutputs(
 	}
 
 	if (amplifyOutputs.geo) {
-		resourcesConfig.Geo = parseGeo(amplifyOutputs.geo);
+		resourcesConfig.Geo = parseGeo(
+			amplifyOutputs.geo as AmplifyOutputsGeoProperties,
+		);
 	}
 
 	if (amplifyOutputs.data) {
-		resourcesConfig.API = parseData(amplifyOutputs.data);
+		resourcesConfig.API = parseData(
+			amplifyOutputs.data as AmplifyOutputsDataProperties,
+		);
 	}
 
 	if (amplifyOutputs.custom) {
@@ -325,7 +333,7 @@ export function parseAmplifyOutputs(
 
 	if (amplifyOutputs.notifications) {
 		resourcesConfig.Notifications = parseNotifications(
-			amplifyOutputs.notifications,
+			amplifyOutputs.notifications as AmplifyOutputsNotificationsProperties,
 		);
 	}
 
