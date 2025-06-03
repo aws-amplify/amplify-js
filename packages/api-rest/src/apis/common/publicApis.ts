@@ -35,6 +35,7 @@ const publicHandler = (
 	method: string,
 ) =>
 	createCancellableOperation(async abortSignal => {
+		amplify.assertConfigured();
 		const { apiName, options: apiOptions = {}, path: apiPath } = options;
 		const url = resolveApiUrl(
 			amplify,

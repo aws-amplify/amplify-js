@@ -27,6 +27,7 @@ jest.mock('@aws-amplify/core', () => ({
 	Amplify: {
 		getConfig: jest.fn(() => ({})),
 		ADD_OAUTH_LISTENER: jest.fn(() => ({})),
+		assertConfigured: jest.fn(),
 	},
 	syncSessionStorage: {
 		setItem: jest.fn((key, value) => {

@@ -24,6 +24,7 @@ jest.mock('@aws-amplify/core', () => ({
 	}),
 	Amplify: {
 		getConfig: jest.fn(),
+		assertConfigured: jest.fn(),
 		Auth: {
 			fetchAuthSession: jest.fn(),
 		},
@@ -438,6 +439,22 @@ describe('copy API', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
+
+		it('throws if Amplify is not configured', async () => {
+			(Amplify.assertConfigured as jest.Mock).mockImplementationOnce(() => {
+				throw new Error(
+					'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+				);
+			});
+
+			await expect(
+				copy(Amplify, {
+					source: { key: 'sourceKey' },
+					destination: { key: 'destinationKey' },
+				}),
+			).rejects.toThrow('Amplify has not been configured');
+		});
+
 		it('should return a not found error', async () => {
 			mockCopyObject.mockRejectedValueOnce(
 				Object.assign(new Error(), {

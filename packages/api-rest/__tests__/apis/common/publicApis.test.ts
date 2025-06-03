@@ -49,11 +49,13 @@ const mockConfig = {
 const mockParseJsonError = parseJsonError as jest.Mock;
 const mockRestHeaders = jest.fn();
 const mockGetConfig = jest.fn();
+const mockAssertConfigured = jest.fn();
 const mockAmplifyInstance = {
 	Auth: {
 		fetchAuthSession: mockFetchAuthSession,
 	},
 	getConfig: mockGetConfig,
+	assertConfigured: mockAssertConfigured,
 	libraryOptions: {
 		API: {
 			REST: {

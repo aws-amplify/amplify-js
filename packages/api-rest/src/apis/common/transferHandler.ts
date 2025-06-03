@@ -128,6 +128,7 @@ const getRetryDeciderFromStrategy = (
 const resolveCredentials = async (
 	amplify: AmplifyClassV6,
 ): Promise<AWSCredentials | null> => {
+	amplify.assertConfigured();
 	try {
 		const { credentials } = await amplify.Auth.fetchAuthSession();
 		if (credentials) {

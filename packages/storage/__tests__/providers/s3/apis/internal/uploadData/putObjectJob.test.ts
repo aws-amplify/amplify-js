@@ -26,6 +26,7 @@ jest.mock('@aws-amplify/core', () => ({
 	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
+		assertConfigured: jest.fn(),
 		Auth: {
 			fetchAuthSession: jest.fn(),
 		},
@@ -451,6 +452,35 @@ describe('putObjectJob with path', () => {
 					Body: data,
 					ContentType: 'application/octet-stream',
 				},
+			);
+		});
+	});
+
+	describe('Error tests', () => {
+		beforeEach(() => {
+			mockPutObject.mockClear();
+			jest.spyOn(CRC32, 'calculateContentCRC32').mockRestore();
+		});
+
+		// Add at the beginning of the describe block
+		it('throws if Amplify is not configured', async () => {
+			(Amplify.assertConfigured as jest.Mock).mockImplementationOnce(() => {
+				throw new Error(
+					'Amplify has not been configured. Please call Amplify.configure() before using this service.',
+				);
+			});
+
+			const job = putObjectJob(
+				{
+					key: 'testKey',
+					data: 'testData',
+				},
+				new AbortController().signal,
+				'testData'.length,
+			);
+
+			await expect(job()).rejects.toThrow(
+				'Amplify has not been configured. Please call Amplify.configure() before using this service.',
 			);
 		});
 	});

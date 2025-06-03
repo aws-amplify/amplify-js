@@ -26,10 +26,13 @@ const mockUnauthenticatedHandler = jest.mocked(unauthenticatedHandler);
 const mockParseJsonError = jest.mocked(parseJsonError);
 const mockGetRetryDecider = jest.mocked(getRetryDecider);
 const mockFetchAuthSession = jest.fn();
+const mockAssertConfigured = jest.fn();
 const mockAmplifyInstance = {
 	Auth: {
 		fetchAuthSession: mockFetchAuthSession,
 	},
+	isConfigured: true,
+	assertConfigured: mockAssertConfigured,
 } as any as AmplifyClassV6;
 
 const successResponse = {
