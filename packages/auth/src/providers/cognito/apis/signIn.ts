@@ -14,7 +14,7 @@ import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
 import { signInWithUserAuth } from './signInWithUserAuth';
-import { resetAutoSignIn } from './autoSignIn';
+import { resetAutoSignInStoreOnly } from './autoSignIn';
 
 /**
  * Signs a user in
@@ -32,7 +32,7 @@ export async function signIn(input: SignInInput): Promise<SignInOutput> {
 	// The callback is reset when the underlying promise resolves or rejects.
 	// With the advent of session based sign in, this guarantees that the signIn API initiates a new auth flow,
 	// regardless of whether it is called for a user currently engaged in an active auto sign in session.
-	resetAutoSignIn(false);
+	resetAutoSignInStoreOnly();
 
 	const authFlowType = input.options?.authFlowType;
 	await assertUserNotAuthenticated();
