@@ -13,7 +13,7 @@ import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
-import { createGetTokensFromRefreshTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/createGetTokensFromRefreshTokenClient';
+import { createGetTokensFromRefreshTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 
 const refreshAuthTokensFunction: TokenRefresher = async ({
 	tokens,
