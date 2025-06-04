@@ -8,7 +8,7 @@ import { SignInInput, SignInOutput } from '../types';
 import { AutoSignInEventData } from '../types/models';
 import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
-import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
+import { resetAutoSignInCompletely, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
 import { signInWithUserAuth } from '../apis/signInWithUserAuth';
 
@@ -37,7 +37,7 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 	const timeOutId = setTimeout(() => {
 		stopHubListener();
 		clearTimeout(timeOutId);
-		resetAutoSignIn();
+		resetAutoSignInCompletely();
 	}, MAX_AUTOSIGNIN_POLLING_MS);
 }
 
@@ -81,19 +81,19 @@ function handleAutoSignInWithLink(
 						'Try to verify your account by clicking the link sent your email or phone and then login manually.',
 				}),
 			);
-			resetAutoSignIn();
+			resetAutoSignInCompletely();
 		} else {
 			try {
 				const signInOutput = await signIn(signInInput);
 				if (signInOutput.nextStep.signInStep !== 'CONFIRM_SIGN_UP') {
 					resolve(signInOutput);
 					clearInterval(autoSignInPollingIntervalId);
-					resetAutoSignIn();
+					resetAutoSignInCompletely();
 				}
 			} catch (error) {
 				clearInterval(autoSignInPollingIntervalId);
 				reject(error);
-				resetAutoSignIn();
+				resetAutoSignInCompletely();
 			}
 		}
 	}, 5000);
@@ -125,10 +125,10 @@ async function handleAutoSignInWithCodeOrUserConfirmed(
 				: await signIn(signInInput);
 
 		resolve(output);
-		resetAutoSignIn();
+		resetAutoSignInCompletely();
 	} catch (error) {
 		reject(error);
-		resetAutoSignIn();
+		resetAutoSignInCompletely();
 	}
 }
 
