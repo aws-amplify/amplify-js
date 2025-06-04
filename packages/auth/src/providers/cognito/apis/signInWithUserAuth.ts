@@ -39,7 +39,7 @@ import {
 } from '../../../client/flows/userAuth/handleUserAuthFlow';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
-import { resetAutoSignIn } from './autoSignIn';
+import { resetAutoSignInCompletely } from './autoSignIn';
 
 /**
  * Signs a user in through a registered email or phone number without a password by by receiving and entering an OTP.
@@ -115,7 +115,7 @@ export async function signInWithUserAuth(
 
 			await dispatchSignedInHubEvent();
 
-			resetAutoSignIn();
+			resetAutoSignInCompletely();
 
 			return {
 				isSignedIn: true,
@@ -133,7 +133,7 @@ export async function signInWithUserAuth(
 		});
 	} catch (error) {
 		resetActiveSignInState();
-		resetAutoSignIn();
+		resetAutoSignInCompletely();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;
