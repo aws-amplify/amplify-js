@@ -10,7 +10,7 @@ import {
 } from '../../../src/providers/cognito';
 import {
 	autoSignIn,
-	resetAutoSignIn,
+	resetAutoSignInCompletely,
 } from '../../../src/providers/cognito/apis/autoSignIn';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import {
@@ -84,7 +84,7 @@ describe('autoSignIn()', () => {
 			mockCreateSignUpClient.mockClear();
 			handleUserSRPAuthFlowSpy.mockClear();
 
-			resetAutoSignIn();
+			resetAutoSignInCompletely();
 		});
 
 		afterAll(() => {
@@ -163,7 +163,7 @@ describe('autoSignIn()', () => {
 			mockHandleUserAuthFlow.mockClear();
 			mockCreateConfirmSignUpClient.mockClear();
 
-			resetAutoSignIn();
+			resetAutoSignInCompletely();
 		});
 
 		afterAll(() => {
