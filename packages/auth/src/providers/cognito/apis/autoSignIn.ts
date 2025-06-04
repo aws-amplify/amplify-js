@@ -126,12 +126,12 @@ export function resetAutoSignIn(resetCallback = true) {
  * Clears auto sign-in state and triggers reset callback.
  */
 export function resetAutoSignInCompletely() {
-	return resetAutoSignIn(true);
+	resetAutoSignIn(true);
 }
 
 /**
  * Clears auto sign-in state without triggering reset callback
  */
 export function resetAutoSignInStoreOnly() {
-	return resetAutoSignIn(false);
+	resetAutoSignIn(false);
 }
