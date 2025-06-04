@@ -35,7 +35,7 @@ import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
-import { resetAutoSignIn } from './autoSignIn';
+import { resetAutoSignInCompletely } from './autoSignIn';
 
 /**
  * Signs a user in
@@ -106,7 +106,7 @@ export async function signInWithSRP(
 
 			await dispatchSignedInHubEvent();
 
-			resetAutoSignIn();
+			resetAutoSignInCompletely();
 
 			return {
 				isSignedIn: true,
@@ -120,7 +120,7 @@ export async function signInWithSRP(
 		});
 	} catch (error) {
 		resetActiveSignInState();
-		resetAutoSignIn();
+		resetAutoSignInCompletely();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;
