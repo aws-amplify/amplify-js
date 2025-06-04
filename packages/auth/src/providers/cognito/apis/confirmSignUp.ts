@@ -20,7 +20,7 @@ import { createConfirmSignUpClient } from '../../../foundation/factories/service
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 import { autoSignInStore } from '../../../client/utils/store';
 
-import { resetAutoSignIn } from './autoSignIn';
+import { resetAutoSignInCompletely } from './autoSignIn';
 
 /**
  * Confirms a new user account.
@@ -93,7 +93,7 @@ export async function confirmSignUp(
 				autoSignInStoreState.username !== username
 			) {
 				resolve(signUpOut);
-				resetAutoSignIn();
+				resetAutoSignInCompletely();
 
 				return;
 			}
