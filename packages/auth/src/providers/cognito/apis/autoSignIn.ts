@@ -121,3 +121,17 @@ export function resetAutoSignIn(resetCallback = true) {
 	}
 	autoSignInStore.dispatch({ type: 'RESET' });
 }
+
+/**
+ * Clears auto sign-in state and triggers reset callback.
+ */
+export function resetAutoSignInCompletely() {
+	return resetAutoSignIn(true);
+}
+
+/**
+ * Clears auto sign-in state without triggering reset callback
+ */
+export function resetAutoSignInStoreOnly() {
+	return resetAutoSignIn(false);
+}
