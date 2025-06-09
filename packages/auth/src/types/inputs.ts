@@ -55,7 +55,7 @@ export interface AuthSignOutInput {
 export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 
 export interface AuthSignInWithRedirectInput {
-	provider?: AuthProvider | { custom: string };
+	provider?: AuthProvider | { custom: string; isIdpIdentifier?: boolean };
 	customState?: string;
 	options?: {
 		/**
