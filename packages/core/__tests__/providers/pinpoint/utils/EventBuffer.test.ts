@@ -55,4 +55,15 @@ describe('EventBuffer', () => {
 		buffer.push(EVENT_OBJECT);
 		buffer.push(EVENT_OBJECT);
 	});
+
+	test('haveCredentialsChanged returns true if credentials have changed', () => {
+		const config = { ...DEFAULT_CONFIG, bufferSize: 1 };
+		const buffer = new PinpointEventBuffer(config);
+		expect(
+			buffer.haveCredentialsChanged({
+				accessKeyId: 'different-access-key-id',
+				secretAccessKey: 'different-secret-access-key',
+			}),
+		).toBeTruthy();
+	});
 });
