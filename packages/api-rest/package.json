@@ -89,6 +89,6 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.12.0",
 		"@aws-amplify/react-native": "1.1.10",
-		"@aws-sdk/types": "3.387.0"
+		"@aws-sdk/types": "^3.387.0"
 	}
 }
