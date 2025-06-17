@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.82](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.81...@aws-amplify/notifications@2.0.82) (2025-06-17)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
 ## [2.0.81](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.80...@aws-amplify/notifications@2.0.81) (2025-05-27)
 
 **Note:** Version bump only for package @aws-amplify/notifications
