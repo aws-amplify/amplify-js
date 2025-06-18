@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.15.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.0...aws-amplify@6.15.1) (2025-06-17)
+
+### Bug Fixes
+
+- recreate event buffer in pinpoint if the credentials has changed ([#14403](https://github.com/aws-amplify/amplify-js/issues/14403)) ([2b4282a](https://github.com/aws-amplify/amplify-js/commit/2b4282a4042529ad073b7e2435df82fbb416070a))
+
 # [6.15.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.4...aws-amplify@6.15.0) (2025-05-27)
 
 ### Features
