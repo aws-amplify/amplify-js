@@ -14,7 +14,8 @@ import {
 	EventBuffer,
 	PinpointEventBufferConfig,
 } from '../types/buffer';
-import { AuthSession } from '../../../singleton/Auth/types';
+import { AWSCredentials, AuthSession } from '../../../singleton/Auth/types';
+import { haveCredentialsChanged } from '../../../utils/haveCredentialsChanged';
 
 import { isAppInForeground } from './isAppInForeground';
 
@@ -64,6 +65,10 @@ export class PinpointEventBuffer {
 
 	public identityHasChanged(identityId: AuthSession['identityId']) {
 		return this._config.identityId !== identityId;
+	}
+
+	public haveCredentialsChanged(credentials: AWSCredentials) {
+		return haveCredentialsChanged(this._config.credentials, credentials);
 	}
 
 	public flushAll() {
