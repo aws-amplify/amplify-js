@@ -3,10 +3,21 @@
 
 import { OpenAuthSession } from './types';
 
-export const openAuthSession: OpenAuthSession = async (url: string) => {
+export const openAuthSession: OpenAuthSession = async (
+	url: string,
+	_redirectUrls: string[],
+	_preferPrivateSession?: boolean,
+	urlOpener: (_url: string) => Promise<void> = async (_url: string) => {
+		window.location.href = _url;
+	},
+) => {
 	if (!window?.location) {
 		return;
 	}
+
 	// enforce HTTPS
-	window.location.href = url.replace('http://', 'https://');
+	const secureUrl = url.replace('http://', 'https://');
+
+	// Call the provided or default urlOpener
+	await urlOpener(secureUrl);
 };

@@ -5,6 +5,7 @@ export type OpenAuthSession = (
 	url: string,
 	redirectUrls: string[],
 	preferPrivateSession?: boolean,
+	urlOpener?: (url: string) => Promise<void>,
 ) => Promise<OpenAuthSessionResult | void>;
 
 type OpenAuthSessionResultType = 'canceled' | 'success' | 'error';
