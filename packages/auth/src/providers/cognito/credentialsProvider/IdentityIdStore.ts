@@ -83,7 +83,9 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 			// On the server-side we use the _hasGuestIdentityId flag to avoid caching issues
 			const serverside = typeof window === 'undefined';
 			if (this._hasGuestIdentityId || !serverside) {
-				this.keyValueStorage.removeItem(this._authKeys.identityId);
+				if (this.keyValueStorage.getItem(this._authKeys.identityId) !== null) {
+					this.keyValueStorage.removeItem(this._authKeys.identityId);
+				}
 				this._hasGuestIdentityId = false;
 			}
 		}

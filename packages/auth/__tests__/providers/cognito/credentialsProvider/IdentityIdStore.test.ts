@@ -47,7 +47,7 @@ describe('DefaultIdentityIdStore', () => {
 
 	afterEach(() => {
 		mockKeyValueStorage.setItem.mockClear();
-		mockKeyValueStorage.getItem.mockClear();
+		mockKeyValueStorage.getItem.mockReset();
 		mockKeyValueStorage.removeItem.mockClear();
 		mockKeyValueStorage.clear.mockClear();
 	});
@@ -73,6 +73,7 @@ describe('DefaultIdentityIdStore', () => {
 	});
 
 	it('should store primary identityId in keyValueStorage', async () => {
+		mockKeyValueStorage.getItem.mockResolvedValue(validGuestIdentityId.id);
 		defaultIdStore.storeIdentityId(validPrimaryIdentityId);
 		expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
 			validAuthKey.identityId,
@@ -114,6 +115,7 @@ describe('DefaultIdentityIdStore', () => {
 	});
 
 	it('should not call keyValueStorage.removeItem when there is no guest identityId to clear', async () => {
+		mockKeyValueStorage.getItem.mockReturnValue(null);
 		const refreshIdentityIdStore = new DefaultIdentityIdStore(
 			mockKeyValueStorage,
 		);
