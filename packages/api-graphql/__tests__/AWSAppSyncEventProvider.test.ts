@@ -60,7 +60,7 @@ jest.mock('@aws-amplify/core', () => {
 });
 
 describe('AppSyncEventProvider', () => {
-	describe('connect', () => {Add commentMore actions
+	describe('connect', () => {
 		let fakeWebSocketInterface: FakeWebSocketInterface;
 		const loggerSpy: jest.SpyInstance = jest.spyOn(
 			ConsoleLogger.prototype,
