@@ -61,7 +61,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	}
 
 	public async connect(options: AWSAppSyncEventProviderOptions) {
-		super.connect(options);
+		return super.connect(options);
 	}
 
 	public subscribe(
