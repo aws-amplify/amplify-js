@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - fix/appsync_connect
+      - fix/appsync_connect_test
 
 jobs:
   e2e:
