@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - fix/appsync_connect
 
 jobs:
   e2e:
