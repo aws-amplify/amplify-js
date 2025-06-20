@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { createInitiateAuthClient } from './createInitiateAuthClient';
+export { createGetTokensFromRefreshTokenClient } from './createGetTokensFromRefreshTokenClient';
 export { createRevokeTokenClient } from './createRevokeTokenClient';
 export { createSignUpClient } from './createSignUpClient';
 export { createConfirmSignUpClient } from './createConfirmSignUpClient';

@@ -13,6 +13,7 @@ type ClientOperation =
 	| 'ForgotPassword'
 	| 'ConfirmForgotPassword'
 	| 'InitiateAuth'
+	| 'GetTokensFromRefreshToken'
 	| 'RespondToAuthChallenge'
 	| 'ResendConfirmationCode'
 	| 'VerifySoftwareToken'

@@ -408,6 +408,99 @@ declare namespace DeleteUserAttributesResponse {
 	 */
 	const filterSensitiveLog: (obj: DeleteUserAttributesResponse) => any;
 }
+
+/**
+ * @public
+ *
+ * The input for {@link GetTokensFromRefreshTokenCommand}.
+ */
+export interface GetTokensFromRefreshTokenCommandInput
+	extends GetTokensFromRefreshTokenRequest {}
+/**
+ * @public
+ *
+ * The output of {@link GetTokensFromRefreshTokenCommand}.
+ */
+export interface GetTokensFromRefreshTokenCommandOutput
+	extends GetTokensFromRefreshTokenResponse,
+		__MetadataBearer {}
+/**
+ * @public
+ */
+export interface GetTokensFromRefreshTokenRequest {
+	/**
+	 * <p>A valid refresh token that can authorize the request for new tokens. When refresh
+	 *             token rotation is active in the requested app client, this token is invalidated after
+	 *             the request is complete.</p>
+	 * @public
+	 */
+	RefreshToken: string | undefined;
+	/**
+	 * <p>The app client that issued the refresh token to the user who wants to request new
+	 *             tokens.</p>
+	 * @public
+	 */
+	ClientId: string | undefined;
+	/**
+	 * <p>The client secret of the requested app client, if the client has a secret.</p>
+	 * @public
+	 */
+	ClientSecret?: string | undefined;
+	/**
+	 * <p>When you enable device remembering, Amazon Cognito issues a device key that you can use for
+	 *             device authentication that bypasses multi-factor authentication (MFA). To implement
+	 *                 <code>GetTokensFromRefreshToken</code> in a user pool with device remembering, you
+	 *             must capture the device key from the initial authentication request. If your application
+	 *             doesn't provide the key of a registered device, Amazon Cognito issues a new one. You must
+	 *             provide the confirmed device key in this request if device remembering is
+	 *             enabled in your user pool.</p>
+	 *          <p>For more information about device remembering, see <a href="https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html">Working with devices</a>.</p>
+	 * @public
+	 */
+	DeviceKey?: string | undefined;
+	/**
+	 * <p>A map of custom key-value pairs that you can provide as input for certain custom
+	 *             workflows that this action triggers.</p>
+	 *          <p>You create custom workflows by assigning Lambda functions to user pool triggers.
+	 *             When you use the <code>GetTokensFromRefreshToken</code> API action, Amazon Cognito invokes the
+	 *             Lambda function the pre token generation trigger.</p>
+	 *          <p>For more information, see <a href="https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html">
+	 * Using Lambda triggers</a> in the <i>Amazon Cognito Developer Guide</i>.</p>
+	 *          <note>
+	 *             <p>When you use the <code>ClientMetadata</code> parameter, note that Amazon Cognito won't do the
+	 *                 following:</p>
+	 *             <ul>
+	 *                <li>
+	 *                   <p>Store the <code>ClientMetadata</code> value. This data is available only
+	 *                         to Lambda triggers that are assigned to a user pool to support custom
+	 *                         workflows. If your user pool configuration doesn't include triggers, the
+	 *                         <code>ClientMetadata</code> parameter serves no purpose.</p>
+	 *                </li>
+	 *                <li>
+	 *                   <p>Validate the <code>ClientMetadata</code> value.</p>
+	 *                </li>
+	 *                <li>
+	 *                   <p>Encrypt the <code>ClientMetadata</code> value. Don't send sensitive
+	 *                         information in this parameter.</p>
+	 *                </li>
+	 *             </ul>
+	 *          </note>
+	 * @public
+	 */
+	ClientMetadata?: Record<string, string> | undefined;
+}
+/**
+ * @public
+ */
+export interface GetTokensFromRefreshTokenResponse {
+	/**
+	 * <p>The object that your application receives after authentication. Contains tokens and
+	 *             information for device authentication.</p>
+	 * @public
+	 */
+	AuthenticationResult?: AuthenticationResultType | undefined;
+}
+
 /**
  * <p>An Amazon Pinpoint analytics endpoint.</p>
  *         <p>An endpoint uniquely identifies a mobile device, email address, or phone number that can receive messages from Amazon Pinpoint analytics.</p>
