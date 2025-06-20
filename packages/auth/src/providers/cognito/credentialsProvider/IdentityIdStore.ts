@@ -80,14 +80,12 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		} else {
 			this._primaryIdentityId = identity.id;
 			// Clear locally stored guest id
-			// On the server-side we use the _hasGuestIdentityId flag to avoid caching issues
-			const serverside = typeof window === 'undefined';
-			if (this._hasGuestIdentityId || !serverside) {
-				if (this.keyValueStorage.getItem(this._authKeys.identityId) !== null) {
+			this.keyValueStorage.getItem(this._authKeys.identityId).then(item => {
+				if (item) {
 					this.keyValueStorage.removeItem(this._authKeys.identityId);
 				}
-				this._hasGuestIdentityId = false;
-			}
+			});
+			this._hasGuestIdentityId = false;
 		}
 	}
 
