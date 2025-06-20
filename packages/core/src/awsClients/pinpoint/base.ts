@@ -31,7 +31,9 @@ export const defaultConfig = {
 	endpointResolver,
 	retryDecider: getRetryDecider(parseJsonError),
 	computeDelay: jitteredBackoff,
-	userAgentValue: getAmplifyUserAgent(),
+	get userAgentValue() {
+		return getAmplifyUserAgent();
+	},
 };
 
 /**
