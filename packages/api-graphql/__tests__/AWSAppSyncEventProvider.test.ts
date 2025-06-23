@@ -98,10 +98,15 @@ describe('AppSyncEventProvider', () => {
 				region: 'us-east-1'
 			});
 
+			// Verify the socket status to be CONNECTING
+			await new Promise(resolve => setTimeout(resolve, 1));
+			expect((provider as any).socketStatus).toBe(constants.SOCKET_STATUS.CONNECTING);
+
 			// Trigger the websocket open event
 			await fakeWebSocketInterface.readyForUse;
 			await fakeWebSocketInterface.triggerOpen();
 
+			// Initiate handshake			
 			await fakeWebSocketInterface.sendDataMessage({
 				type: MESSAGE_TYPES.GQL_CONNECTION_ACK
 			});
