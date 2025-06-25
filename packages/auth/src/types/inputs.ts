@@ -95,6 +95,12 @@ export interface AuthSignInWithRedirectInput {
 		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
 		 */
 		nonce?: string;
+
+		/**
+		 * A flag to use if you want to force the user to sign in again or view the account selector screen.
+		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
+		 */
+		requireSignIn?: boolean;
 	};
 }
 
