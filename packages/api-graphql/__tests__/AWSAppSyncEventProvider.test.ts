@@ -60,6 +60,64 @@ jest.mock('@aws-amplify/core', () => {
 });
 
 describe('AppSyncEventProvider', () => {
+	describe('connect', () => {
+		let fakeWebSocketInterface: FakeWebSocketInterface;
+		const loggerSpy: jest.SpyInstance = jest.spyOn(
+			ConsoleLogger.prototype,
+			'_log',
+		);
+		let provider: AWSAppSyncEventProvider;
+		beforeEach(async () => {
+			fakeWebSocketInterface = new FakeWebSocketInterface();
+			provider = new AWSAppSyncEventProvider();
+
+			Object.defineProperty(provider, 'socketStatus', {
+				value: constants.SOCKET_STATUS.CLOSED,
+			});
+			
+			jest.spyOn(provider as any, '_getNewWebSocket').mockImplementation(() => {
+				fakeWebSocketInterface.newWebSocket();
+				return fakeWebSocketInterface.webSocket as WebSocket;
+			});
+		})
+
+		afterEach(async () => {
+			provider?.close();
+			await fakeWebSocketInterface?.closeInterface();
+			fakeWebSocketInterface?.teardown();
+			loggerSpy.mockClear();
+		});
+
+		test('socket status should be READY', async () => {
+
+			// Connect to the provider
+			const connectPromise = provider.connect({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				authenticationType: 'apiKey',
+				apiKey: 'test-api-key',
+				region: 'us-east-1'
+			});
+
+			// Verify the socket status to be CONNECTING
+			await new Promise(resolve => setTimeout(resolve, 1));
+			expect((provider as any).socketStatus).toBe(constants.SOCKET_STATUS.CONNECTING);
+
+			// Trigger the websocket open event
+			await fakeWebSocketInterface.readyForUse;
+			await fakeWebSocketInterface.triggerOpen();
+
+			// Initiate handshake			
+			await fakeWebSocketInterface.sendDataMessage({
+				type: MESSAGE_TYPES.GQL_CONNECTION_ACK
+			});
+
+			// Wait for connection to complete
+			await connectPromise;
+
+			// Verify the socket status
+			expect((provider as any).socketStatus).toBe(constants.SOCKET_STATUS.READY);
+		});
+	});
 	describe('subscribe()', () => {
 		describe('returned observer', () => {
 			describe('connection logic with mocked websocket', () => {
