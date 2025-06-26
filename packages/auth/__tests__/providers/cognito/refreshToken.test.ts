@@ -6,7 +6,7 @@ import {
 	oAuthTokenRefreshException,
 	tokenRefreshException,
 } from '../../../src/providers/cognito/utils/types';
-import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createGetTokensFromRefreshTokenClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
 import { mockAccessToken, mockRequestId } from './testUtils/data';
@@ -16,7 +16,9 @@ jest.mock(
 );
 jest.mock('../../../src/providers/cognito/factories');
 
-const mockCreateInitiateAuthClient = jest.mocked(createInitiateAuthClient);
+const mockCreateGetTokensFromRefreshTokenClient = jest.mocked(
+	createGetTokensFromRefreshTokenClient,
+);
 const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
 	createCognitoUserPoolEndpointResolver,
 );
@@ -24,27 +26,27 @@ const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
 describe('refreshToken', () => {
 	const mockedUsername = 'mockedUsername';
 	const mockedRefreshToken = 'mockedRefreshToken';
-	const mockInitiateAuth = jest.fn();
+	const mockGetTokensFromRefreshToken = jest.fn();
 
 	beforeEach(() => {
-		mockCreateInitiateAuthClient.mockReturnValueOnce(mockInitiateAuth);
+		mockCreateGetTokensFromRefreshTokenClient.mockReturnValueOnce(
+			mockGetTokensFromRefreshToken,
+		);
 	});
 
 	afterEach(() => {
-		mockCreateInitiateAuthClient.mockClear();
 		mockCreateCognitoUserPoolEndpointResolver.mockClear();
 	});
 
 	describe('positive cases', () => {
 		beforeEach(() => {
-			mockInitiateAuth.mockResolvedValue({
+			mockGetTokensFromRefreshToken.mockResolvedValue({
 				AuthenticationResult: {
 					AccessToken: mockAccessToken,
 					ExpiresIn: 3600,
 					IdToken: mockAccessToken,
 					TokenType: 'Bearer',
 				},
-				ChallengeParameters: {},
 				$metadata: {
 					attempts: 1,
 					httpStatusCode: 200,
@@ -54,7 +56,7 @@ describe('refreshToken', () => {
 		});
 
 		afterEach(() => {
-			mockInitiateAuth.mockReset();
+			mockGetTokensFromRefreshToken.mockReset();
 		});
 
 		it('should refresh token', async () => {
@@ -86,54 +88,13 @@ describe('refreshToken', () => {
 			expect(JSON.parse(JSON.stringify(response))).toMatchObject(
 				JSON.parse(JSON.stringify(expectedOutput)),
 			);
-			expect(mockInitiateAuth).toHaveBeenCalledWith(
+			expect(mockGetTokensFromRefreshToken).toHaveBeenCalledWith(
 				expect.objectContaining({ region: 'us-east-1' }),
 				expect.objectContaining({
 					ClientId: 'aaaaaaaaaaaa',
-					AuthFlow: 'REFRESH_TOKEN_AUTH',
-					AuthParameters: {
-						REFRESH_TOKEN: mockedRefreshToken,
-					},
+					RefreshToken: mockedRefreshToken,
 				}),
 			);
-		});
-
-		it('should send UserContextData', async () => {
-			(window as any).AmazonCognitoAdvancedSecurityData = {
-				getData() {
-					return 'abcd';
-				},
-			};
-			await refreshAuthTokens({
-				username: 'username',
-				tokens: {
-					accessToken: decodeJWT(
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
-					),
-					idToken: decodeJWT(
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
-					),
-					clockDrift: 0,
-					refreshToken: 'refreshtoken',
-					username: 'username',
-				},
-				authConfig: {
-					Cognito: {
-						userPoolId: 'us-east-1_aaaaaaa',
-						userPoolClientId: 'aaaaaaaaaaaa',
-					},
-				},
-			});
-			expect(mockInitiateAuth).toHaveBeenCalledWith(
-				expect.objectContaining({ region: 'us-east-1' }),
-				expect.objectContaining({
-					AuthFlow: 'REFRESH_TOKEN_AUTH',
-					AuthParameters: { REFRESH_TOKEN: 'refreshtoken' },
-					ClientId: 'aaaaaaaaaaaa',
-					UserContextData: { EncodedData: 'abcd' },
-				}),
-			);
-			(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 		});
 
 		it('invokes mockCreateCognitoUserPoolEndpointResolver with expected parameters', async () => {
@@ -164,7 +125,7 @@ describe('refreshToken', () => {
 			expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
 				endpointOverride: expectedParam,
 			});
-			expect(mockCreateInitiateAuthClient).toHaveBeenCalledWith({
+			expect(mockCreateGetTokensFromRefreshTokenClient).toHaveBeenCalledWith({
 				endpointResolver: expectedEndpointResolver,
 			});
 		});
@@ -174,13 +135,13 @@ describe('refreshToken', () => {
 		const mockedError = new Error('Refresh Token has expired');
 		mockedError.name = 'NotAuthorizedException';
 		beforeEach(() => {
-			mockInitiateAuth.mockImplementationOnce(() => {
+			mockGetTokensFromRefreshToken.mockImplementationOnce(() => {
 				throw mockedError;
 			});
 		});
 
 		afterEach(() => {
-			mockInitiateAuth.mockReset();
+			mockGetTokensFromRefreshToken.mockReset();
 		});
 
 		it('should throw an exception when refresh_token is not available', async () => {
