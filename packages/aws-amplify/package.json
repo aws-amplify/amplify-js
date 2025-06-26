@@ -451,7 +451,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "19.37 kB"
+			"limit": "19.44 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -469,7 +469,7 @@
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "19.93 kB"
+			"limit": "20.01 kB"
 		},
 		{
 			"name": "[Auth] Associate WebAuthN Credential (Cognito)",
