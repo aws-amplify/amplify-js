@@ -19,6 +19,8 @@ export class AmplifyClass {
 		| ((authConfig: AuthConfig['Cognito']) => void)
 		| undefined = undefined;
 
+	private isConfigured = false;
+
 	resourcesConfig: ResourcesConfig;
 	libraryOptions: LibraryOptions;
 
@@ -76,6 +78,7 @@ export class AmplifyClass {
 		);
 
 		this.notifyOAuthListener();
+		this.isConfigured = true;
 	}
 
 	/**
@@ -84,6 +87,13 @@ export class AmplifyClass {
 	 * @returns Returns the immutable back-end resource configuration.
 	 */
 	getConfig(): Readonly<ResourcesConfig> {
+		if (!this.isConfigured) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				`Amplify has not been configured. Please call Amplify.configure() before using this service.`,
+			);
+		}
+
 		return this.resourcesConfig;
 	}
 

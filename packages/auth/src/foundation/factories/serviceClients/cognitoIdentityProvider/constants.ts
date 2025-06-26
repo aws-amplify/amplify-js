@@ -14,6 +14,8 @@ export const DEFAULT_SERVICE_CLIENT_API_CONFIG = {
 	service: COGNITO_IDP_SERVICE_NAME,
 	retryDecider: getRetryDecider(parseJsonError),
 	computeDelay: jitteredBackoff,
-	userAgentValue: getAmplifyUserAgent(),
+	get userAgentValue() {
+		return getAmplifyUserAgent();
+	},
 	cache: 'no-store',
 };
