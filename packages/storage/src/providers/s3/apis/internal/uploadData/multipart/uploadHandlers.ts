@@ -156,7 +156,7 @@ export const getMultipartUploadHandlers = (
 		}
 
 		const optionsHash = await calculateContentCRC32(
-			serializeUploadOptions(uploadDataOptions),
+			data,
 		);
 
 		if (!inProgressUpload) {
