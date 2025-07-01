@@ -7,7 +7,10 @@ import {
 	Identity,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
-import { assertIdentityPoolIdConfig } from '@aws-amplify/core/internals/utils';
+import {
+	assertIdentityPoolIdConfig,
+	isBrowser,
+} from '@aws-amplify/core/internals/utils';
 
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 import { AuthKeys } from '../tokenProvider/types';
@@ -80,11 +83,9 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		} else {
 			this._primaryIdentityId = identity.id;
 			// Clear locally stored guest id
-			this.keyValueStorage.getItem(this._authKeys.identityId).then(item => {
-				if (item) {
-					this.keyValueStorage.removeItem(this._authKeys.identityId);
-				}
-			});
+			if (this._hasGuestIdentityId || isBrowser()) {
+				this.keyValueStorage.removeItem(this._authKeys.identityId);
+			}
 			this._hasGuestIdentityId = false;
 		}
 	}
