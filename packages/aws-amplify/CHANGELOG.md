@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.15.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.1...aws-amplify@6.15.2) (2025-07-02)
+
+### Bug Fixes
+
+- remove import side effects for getAmplifyUserAgent() ([#14433](https://github.com/aws-amplify/amplify-js/issues/14433)) ([f94a30b](https://github.com/aws-amplify/amplify-js/commit/f94a30b71e4e5abbce1ad8c215fbb67386721bff))
+
 ## [6.15.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.0...aws-amplify@6.15.1) (2025-06-17)
 
 ### Bug Fixes
