@@ -58,6 +58,7 @@
 		"rxjs": "^7.8.1",
 		"tslib": "^2.5.0",
 		"uuid": "^11.0.0"
+		"uuid": "^11.0.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/react-native": "1.1.10",
@@ -87,7 +88,7 @@
 			"name": "Custom clients (unauthenticated handler)",
 			"path": "./dist/esm/clients/handlers/aws/unauthenticated.mjs",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "4.09 kB"
+			"limit": "4.25 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
@@ -99,7 +100,7 @@
 			"name": "Custom clients (url presigner)",
 			"path": "./dist/esm/clients/middleware/signing/signer/signatureV4/index.mjs",
 			"import": "{ presignUrl }",
-			"limit": "3.65 kB"
+			"limit": "3.7 kB"
 		},
 		{
 			"name": "Cache (default browser storage)",
