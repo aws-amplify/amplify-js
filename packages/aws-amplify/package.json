@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.15.1",
+	"version": "6.0.18-unstable.352+e327fed0f",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -293,13 +293,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.82",
-		"@aws-amplify/api": "6.3.13",
-		"@aws-amplify/auth": "6.13.1",
-		"@aws-amplify/core": "6.12.1",
-		"@aws-amplify/datastore": "5.0.84",
-		"@aws-amplify/notifications": "2.0.82",
-		"@aws-amplify/storage": "6.9.1",
+		"@aws-amplify/analytics": "7.0.18-unstable.352+e327fed0f",
+		"@aws-amplify/api": "6.0.18-unstable.352+e327fed0f",
+		"@aws-amplify/auth": "6.0.18-unstable.352+e327fed0f",
+		"@aws-amplify/core": "6.0.18-unstable.352+e327fed0f",
+		"@aws-amplify/datastore": "5.0.18-unstable.352+e327fed0f",
+		"@aws-amplify/notifications": "2.0.18-unstable.352+e327fed0f",
+		"@aws-amplify/storage": "6.0.18-unstable.352+e327fed0f",
 		"tslib": "^2.5.0"
 	},
 	"size-limit": [
@@ -531,5 +531,6 @@
 			"import": "{ uploadData }",
 			"limit": "23.61 kB"
 		}
-	]
+	],
+	"gitHead": "e327fed0f7f1b436ceac0100ba2eefe9ce3133ef"
 }

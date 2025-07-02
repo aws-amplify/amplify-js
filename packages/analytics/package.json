@@ -1,110 +1,111 @@
 {
-	"name": "@aws-amplify/analytics",
-	"version": "7.0.82",
-	"description": "Analytics category of aws-amplify",
-	"main": "./dist/cjs/index.js",
-	"module": "./dist/esm/index.mjs",
-	"react-native": "./dist/cjs/index.js",
-	"typings": "./dist/esm/index.d.ts",
-	"sideEffects": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"scripts": {
-		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
-		"build-with-test": "npm run clean && npm run test && npm run build",
-		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
-		"build:watch": "npm run build:esm-cjs -- --watch",
-		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
-		"clean": "npm run clean:size && rimraf dist lib lib-esm",
-		"clean:size": "rimraf dual-publish-tmp tmp*",
-		"format": "echo \"Not implemented\"",
-		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
-		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 71.4"
-	},
-	"typesVersions": {
-		">=4.2": {
-			"pinpoint": [
-				"./dist/esm/providers/pinpoint/index.d.ts"
-			],
-			"kinesis": [
-				"./dist/esm/providers/kinesis/index.d.ts"
-			],
-			"kinesis-firehose": [
-				"./dist/esm/providers/kinesis-firehose/index.d.ts"
-			],
-			"personalize": [
-				"./dist/esm/providers/personalize/index.d.ts"
-			]
-		}
-	},
-	"exports": {
-		".": {
-			"react-native": "./dist/cjs/index.js",
-			"types": "./dist/esm/index.d.ts",
-			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js"
-		},
-		"./pinpoint": {
-			"react-native": "./dist/cjs/providers/pinpoint/index.js",
-			"types": "./dist/esm/providers/pinpoint/index.d.ts",
-			"import": "./dist/esm/providers/pinpoint/index.mjs",
-			"require": "./dist/cjs/providers/pinpoint/index.js"
-		},
-		"./kinesis": {
-			"react-native": "./dist/cjs/providers/kinesis/index.js",
-			"types": "./dist/esm/providers/kinesis/index.d.ts",
-			"import": "./dist/esm/providers/kinesis/index.mjs",
-			"require": "./dist/cjs/providers/kinesis/index.js"
-		},
-		"./kinesis-firehose": {
-			"react-native": "./dist/cjs/providers/kinesis-firehose/index.js",
-			"types": "./dist/esm/providers/kinesis-firehose/index.d.ts",
-			"import": "./dist/esm/providers/kinesis-firehose/index.mjs",
-			"require": "./dist/cjs/providers/kinesis-firehose/index.js"
-		},
-		"./personalize": {
-			"react-native": "./dist/cjs/providers/personalize/index.js",
-			"types": "./dist/esm/providers/personalize/index.d.ts",
-			"import": "./dist/esm/providers/personalize/index.mjs",
-			"require": "./dist/cjs/providers/personalize/index.js"
-		},
-		"./package.json": "./package.json"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
-	},
-	"author": "Amazon Web Services",
-	"license": "Apache-2.0",
-	"bugs": {
-		"url": "https://github.com/aws/aws-amplify/issues"
-	},
-	"homepage": "https://aws-amplify.github.io/",
-	"files": [
-		"dist/cjs",
-		"dist/esm",
-		"src",
-		"pinpoint",
-		"kinesis",
-		"kinesis-firehose",
-		"personalize"
-	],
-	"dependencies": {
-		"@aws-sdk/client-firehose": "3.621.0",
-		"@aws-sdk/client-kinesis": "3.621.0",
-		"@aws-sdk/client-personalize-events": "3.621.0",
-		"@smithy/util-utf8": "2.0.0",
-		"tslib": "^2.5.0"
-	},
-	"peerDependencies": {
-		"@aws-amplify/core": "^6.1.0"
-	},
-	"devDependencies": {
-		"@aws-amplify/core": "6.12.1",
-		"@aws-amplify/react-native": "1.1.10",
-		"@aws-sdk/types": "3.398.0"
-	}
+  "name": "@aws-amplify/analytics",
+  "version": "7.0.18-unstable.352+e327fed0f",
+  "description": "Analytics category of aws-amplify",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.mjs",
+  "react-native": "./dist/cjs/index.js",
+  "typings": "./dist/esm/index.d.ts",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
+    "build-with-test": "npm run clean && npm run test && npm run build",
+    "build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+    "build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
+    "build:watch": "npm run build:esm-cjs -- --watch",
+    "build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+    "clean": "npm run clean:size && rimraf dist lib lib-esm",
+    "clean:size": "rimraf dual-publish-tmp tmp*",
+    "format": "echo \"Not implemented\"",
+    "lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+    "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 71.4"
+  },
+  "typesVersions": {
+    ">=4.2": {
+      "pinpoint": [
+        "./dist/esm/providers/pinpoint/index.d.ts"
+      ],
+      "kinesis": [
+        "./dist/esm/providers/kinesis/index.d.ts"
+      ],
+      "kinesis-firehose": [
+        "./dist/esm/providers/kinesis-firehose/index.d.ts"
+      ],
+      "personalize": [
+        "./dist/esm/providers/personalize/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "react-native": "./dist/cjs/index.js",
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.js"
+    },
+    "./pinpoint": {
+      "react-native": "./dist/cjs/providers/pinpoint/index.js",
+      "types": "./dist/esm/providers/pinpoint/index.d.ts",
+      "import": "./dist/esm/providers/pinpoint/index.mjs",
+      "require": "./dist/cjs/providers/pinpoint/index.js"
+    },
+    "./kinesis": {
+      "react-native": "./dist/cjs/providers/kinesis/index.js",
+      "types": "./dist/esm/providers/kinesis/index.d.ts",
+      "import": "./dist/esm/providers/kinesis/index.mjs",
+      "require": "./dist/cjs/providers/kinesis/index.js"
+    },
+    "./kinesis-firehose": {
+      "react-native": "./dist/cjs/providers/kinesis-firehose/index.js",
+      "types": "./dist/esm/providers/kinesis-firehose/index.d.ts",
+      "import": "./dist/esm/providers/kinesis-firehose/index.mjs",
+      "require": "./dist/cjs/providers/kinesis-firehose/index.js"
+    },
+    "./personalize": {
+      "react-native": "./dist/cjs/providers/personalize/index.js",
+      "types": "./dist/esm/providers/personalize/index.d.ts",
+      "import": "./dist/esm/providers/personalize/index.mjs",
+      "require": "./dist/cjs/providers/personalize/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-js.git"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws/aws-amplify/issues"
+  },
+  "homepage": "https://aws-amplify.github.io/",
+  "files": [
+    "dist/cjs",
+    "dist/esm",
+    "src",
+    "pinpoint",
+    "kinesis",
+    "kinesis-firehose",
+    "personalize"
+  ],
+  "dependencies": {
+    "@aws-sdk/client-firehose": "3.621.0",
+    "@aws-sdk/client-kinesis": "3.621.0",
+    "@aws-sdk/client-personalize-events": "3.621.0",
+    "@smithy/util-utf8": "2.0.0",
+    "tslib": "^2.5.0"
+  },
+  "peerDependencies": {
+    "@aws-amplify/core": "6.0.18-unstable.352+e327fed0f"
+  },
+  "devDependencies": {
+    "@aws-amplify/core": "6.0.18-unstable.352+e327fed0f",
+    "@aws-amplify/react-native": "1.0.18-unstable.352+e327fed0f",
+    "@aws-sdk/types": "3.398.0"
+  },
+  "gitHead": "e327fed0f7f1b436ceac0100ba2eefe9ce3133ef"
 }

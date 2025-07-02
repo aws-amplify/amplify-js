@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "6.12.1",
+	"version": "6.0.18-unstable.352+e327fed0f",
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -57,7 +57,7 @@
 		"js-cookie": "^3.0.5",
 		"rxjs": "^7.8.1",
 		"tslib": "^2.5.0",
-		"uuid": "^9.0.0"
+		"uuid": "^11.0.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/react-native": "1.1.10",
@@ -190,5 +190,6 @@
 				"./dist/esm/libraryUtils.d.ts"
 			]
 		}
-	}
+	},
+	"gitHead": "e327fed0f7f1b436ceac0100ba2eefe9ce3133ef"
 }
