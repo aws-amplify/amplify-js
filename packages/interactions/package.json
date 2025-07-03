@@ -78,7 +78,7 @@
 		"fflate": "0.7.3",
 		"pako": "2.0.4",
 		"tslib": "^2.5.0",
-		"uuid": "^9.0.0"
+		"uuid": "^11.0.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.12.2"
