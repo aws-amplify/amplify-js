@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.15.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.2...aws-amplify@6.15.3) (2025-07-03)
+
+### Bug Fixes
+
+- error building expo application ([#14436](https://github.com/aws-amplify/amplify-js/issues/14436)) ([f14dc87](https://github.com/aws-amplify/amplify-js/commit/f14dc873a05030fd3e98400451a82bf7d509c3d4))
+
 ## [6.15.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.1...aws-amplify@6.15.2) (2025-07-02)
 
 ### Bug Fixes
