@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "6.12.2",
+	"version": "6.12.3",
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -191,6 +191,11 @@
 				"./dist/esm/libraryUtils.d.ts"
 			]
 		}
+<<<<<<< HEAD
 	},
 	"gitHead": "e327fed0f7f1b436ceac0100ba2eefe9ce3133ef"
 }
+=======
+	}
+}
+>>>>>>> f2a10cf28 (chore(release): Publish [skip release])

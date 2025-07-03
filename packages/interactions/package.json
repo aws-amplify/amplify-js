@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "6.1.24",
+	"version": "6.1.25",
 	"description": "Interactions category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -81,7 +81,7 @@
 		"uuid": "^11.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.12.2"
+		"@aws-amplify/core": "6.12.3"
 	},
 	"size-limit": [
 		{
@@ -102,6 +102,11 @@
 			"import": "{ Interactions }",
 			"limit": "47.46 kB"
 		}
+<<<<<<< HEAD
 	],
 	"gitHead": "e327fed0f7f1b436ceac0100ba2eefe9ce3133ef"
 }
+=======
+	]
+}
+>>>>>>> f2a10cf28 (chore(release): Publish [skip release])
