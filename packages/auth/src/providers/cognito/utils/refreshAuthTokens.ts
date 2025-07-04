@@ -12,10 +12,8 @@ import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
-import { createInitiateAuthClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
-
-import { getUserContextData } from './userContextData';
+import { createGetTokensFromRefreshTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 
 const refreshAuthTokensFunction: TokenRefresher = async ({
 	tokens,
@@ -30,34 +28,19 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig.Cognito;
 	const region = getRegionFromUserPoolId(userPoolId);
 	assertAuthTokensWithRefreshToken(tokens);
-	const refreshTokenString = tokens.refreshToken;
 
-	const AuthParameters: Record<string, string> = {
-		REFRESH_TOKEN: refreshTokenString,
-	};
-	if (tokens.deviceMetadata?.deviceKey) {
-		AuthParameters.DEVICE_KEY = tokens.deviceMetadata.deviceKey;
-	}
-
-	const UserContextData = getUserContextData({
-		username,
-		userPoolId,
-		userPoolClientId,
-	});
-
-	const initiateAuth = createInitiateAuthClient({
+	const getTokensFromRefreshToken = createGetTokensFromRefreshTokenClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({
 			endpointOverride: userPoolEndpoint,
 		}),
 	});
 
-	const { AuthenticationResult } = await initiateAuth(
+	const { AuthenticationResult } = await getTokensFromRefreshToken(
 		{ region },
 		{
 			ClientId: userPoolClientId,
-			AuthFlow: 'REFRESH_TOKEN_AUTH',
-			AuthParameters,
-			UserContextData,
+			RefreshToken: tokens.refreshToken,
+			DeviceKey: tokens.deviceMetadata?.deviceKey,
 		},
 	);
 
@@ -79,7 +62,7 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 		accessToken,
 		idToken,
 		clockDrift,
-		refreshToken: refreshTokenString,
+		refreshToken: AuthenticationResult?.RefreshToken ?? tokens.refreshToken,
 		username,
 	};
 };
