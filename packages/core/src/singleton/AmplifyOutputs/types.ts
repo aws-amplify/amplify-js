@@ -17,7 +17,7 @@ type UserGroupName = string;
 type UserGroupPrecedence = Record<string, number>;
 export interface AmplifyOutputsAuthProperties {
 	aws_region: string;
-	authentication_flow_type?: 'USER_SRP_AUTH' | 'CUSTOM_AUTH';
+	authentication_flow_type?: string;
 	user_pool_id: string;
 	user_pool_client_id: string;
 	identity_pool_id?: string;
@@ -115,6 +115,7 @@ export interface AmplifyOutputsNotificationsProperties {
 	channels: string[];
 }
 
+/** @deprecated This type is deprecated and will be removed in future versions. */
 export interface AmplifyOutputs {
 	version?: string;
 	storage?: AmplifyOutputsStorageProperties;
@@ -124,4 +125,15 @@ export interface AmplifyOutputs {
 	data?: AmplifyOutputsDataProperties;
 	custom?: AmplifyOutputsCustomProperties;
 	notifications?: AmplifyOutputsNotificationsProperties;
+}
+
+export interface AmplifyOutputsUnknown {
+	version?: string;
+	storage?: unknown;
+	auth?: unknown;
+	analytics?: unknown;
+	geo?: unknown;
+	data?: unknown;
+	custom?: unknown;
+	notifications?: unknown;
 }

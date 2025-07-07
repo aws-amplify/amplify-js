@@ -61,11 +61,7 @@ export interface CredentialsAndIdentityIdProvider {
 }
 
 export interface TokenProvider {
-	getTokens({
-		forceRefresh,
-	}?: {
-		forceRefresh?: boolean;
-	}): Promise<AuthTokens | null>;
+	getTokens(options?: { forceRefresh?: boolean }): Promise<AuthTokens | null>;
 }
 
 export interface FetchAuthSessionOptions {
@@ -139,12 +135,17 @@ export interface AuthIdentityPoolConfig {
 
 export interface CognitoIdentityPoolConfig {
 	identityPoolId: string;
+	/**
+	 * Use this field to specify a custom endpoint for the Amazon Cognito identity pool. Ensure this endpoint is correct and valid.
+	 */
+	identityPoolEndpoint?: string;
 	allowGuestAccess?: boolean;
 }
 
 export interface AuthUserPoolConfig {
 	Cognito: CognitoUserPoolConfig & {
 		identityPoolId?: never;
+		identityPoolEndpoint?: never;
 		allowGuestAccess?: never;
 	};
 }
@@ -154,6 +155,9 @@ export type CognitoUserPoolConfigMfaStatus = 'on' | 'off' | 'optional';
 export interface CognitoUserPoolConfig {
 	userPoolClientId: string;
 	userPoolId: string;
+	/**
+	 * Use this field to specify a custom endpoint for the Amazon Cognito user pool. Ensure this endpoint is correct and valid.
+	 */
 	userPoolEndpoint?: string;
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {

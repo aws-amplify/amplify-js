@@ -40,7 +40,11 @@ import { StorageOperationOptionsInput } from '../../../../../../types/inputs';
 import { IntegrityError } from '../../../../../../errors/IntegrityError';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
-import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
+import {
+	getUploadsCacheKey,
+	removeCachedUpload,
+	serializeUploadOptions,
+} from './uploadCache';
 import { getConcurrentUploadsProgressTracker } from './progressTracker';
 import { loadOrCreateMultipartUpload } from './initialUpload';
 import { getDataChunker } from './getDataChunker';
@@ -151,9 +155,9 @@ export const getMultipartUploadHandlers = (
 			resolvedAccessLevel = resolveAccessLevel(accessLevel);
 		}
 
-		const optionsHash = (
-			await calculateContentCRC32(JSON.stringify(uploadDataOptions))
-		).checksum;
+		const optionsHash = await calculateContentCRC32(
+			serializeUploadOptions(uploadDataOptions),
+		);
 
 		if (!inProgressUpload) {
 			const { uploadId, cachedParts, finalCrc32 } =
@@ -251,6 +255,7 @@ export const getMultipartUploadHandlers = (
 				Key: finalKey,
 				UploadId: inProgressUpload.uploadId,
 				ChecksumCRC32: inProgressUpload.finalCrc32,
+				ChecksumType: inProgressUpload.finalCrc32 ? 'FULL_OBJECT' : undefined,
 				IfNoneMatch: preventOverwrite ? '*' : undefined,
 				MultipartUpload: {
 					Parts: sortUploadParts(inProgressUpload.completedParts),
@@ -259,8 +264,10 @@ export const getMultipartUploadHandlers = (
 			},
 		);
 
-		if (size) {
-			const { ContentLength: uploadedObjectSize } = await headObject(
+		// If full-object CRC32 checksum is NOT enabled, we need to ensure the upload integrity by making extra HEAD call
+		// to verify the uploaded object size.
+		if (!inProgressUpload.finalCrc32) {
+			const { ContentLength: uploadedObjectSize, $metadata } = await headObject(
 				resolvedS3Config,
 				{
 					Bucket: resolvedBucket,
@@ -272,6 +279,7 @@ export const getMultipartUploadHandlers = (
 				throw new StorageError({
 					name: 'Error',
 					message: `Upload failed. Expected object size ${size}, but got ${uploadedObjectSize}.`,
+					metadata: $metadata,
 				});
 			}
 		}

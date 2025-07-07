@@ -44,10 +44,10 @@ const bucket = 'bucket';
 const region = 'region';
 const defaultKey = 'key';
 const defaultContentType = 'application/octet-stream';
-const defaultCacheKey =
-	'Jz3O2w==_8388608_application/octet-stream_bucket_public_key';
+const emptyOptionHash = 'o6a/Qw=='; // crc32 for '{}'
+const defaultCacheKey = `${emptyOptionHash}_8388608_application/octet-stream_bucket_public_key`;
 const testPath = 'testPath/object';
-const testPathCacheKey = `Jz3O2w==_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
+const testPathCacheKey = `${emptyOptionHash}_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
 
 const mockCreateMultipartUpload = jest.mocked(createMultipartUpload);
 const mockUploadPart = jest.mocked(uploadPart);
@@ -75,11 +75,7 @@ const getZeroDelayTimeout = () =>
 
 const mockCalculateContentCRC32Mock = () => {
 	mockCalculateContentCRC32.mockReset();
-	mockCalculateContentCRC32.mockResolvedValue({
-		checksumArrayBuffer: new ArrayBuffer(0),
-		checksum: 'mockChecksum',
-		seed: 0,
-	});
+	mockCalculateContentCRC32.mockResolvedValue('mockChecksum');
 };
 const mockCalculateContentCRC32Reset = () => {
 	mockCalculateContentCRC32.mockReset();
@@ -276,14 +272,25 @@ describe('getMultipartUploadHandlers with key', () => {
 				'file',
 				new File([getBlob(8 * MB)], 'someName'),
 				['JCnBsQ==', 'HELzGQ=='],
+				'/YBlgg==',
 			],
-			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ==']],
-			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g==']],
-			['arrayBuffer', new ArrayBuffer(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
-			['arrayBufferView', new Uint8Array(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
+			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ=='], '/YBlgg=='],
+			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g=='], 'dPB9Lw=='],
+			[
+				'arrayBuffer',
+				new ArrayBuffer(8 * MB),
+				['yTuzdQ==', 'eXJPxg=='],
+				'GtK8RQ==',
+			],
+			[
+				'arrayBufferView',
+				new Uint8Array(8 * MB),
+				['yTuzdQ==', 'eXJPxg=='],
+				'GtK8RQ==',
+			],
 		])(
 			`should create crc32 for %s type body`,
-			async (_, twoPartsPayload, expectedCrc32) => {
+			async (_, twoPartsPayload, expectedCrc32, finalCrc32) => {
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
 					{
@@ -298,17 +305,12 @@ describe('getMultipartUploadHandlers with key', () => {
 				await multipartUploadJob();
 
 				/**
-				 * final crc32 calculation calls calculateContentCRC32 3 times
-				 * 1 time for each of the 2 parts
-				 * 1 time to combine the resulting hash for each of the two parts
-				 *
-				 * uploading each part calls calculateContentCRC32 1 time each
-				 *
-				 * 1 time for optionsHash
-				 *
-				 * these steps results in 6 calls in total
+				 * `calculateContentCRC32` is called 4 times with Full-body checksum:
+				 * * 1 time when calculating final crc32 for the whole object to be uploaded.
+				 * * 1 time when calculating optionsHash.
+				 * * 1 time each when uploading part calls, 2 calls in total.
 				 */
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(6);
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(4);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -318,6 +320,13 @@ describe('getMultipartUploadHandlers with key', () => {
 				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
 					expect.objectContaining({ ChecksumCRC32: expectedCrc32[1] }),
+				);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						ChecksumCRC32: finalCrc32,
+						ChecksumType: 'FULL_OBJECT',
+					}),
 				);
 			},
 		);
@@ -389,7 +398,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				file.size,
 			);
 			await multipartUploadJob();
-			expect(file.slice).toHaveBeenCalledTimes(10_000 * 2); // S3 limit of parts count double for crc32 calculations
+			expect(file.slice).toHaveBeenCalledTimes(10_000);
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockUploadPart).toHaveBeenCalledTimes(10_000);
 			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
@@ -545,14 +554,14 @@ describe('getMultipartUploadHandlers with key', () => {
 		describe('cache validation', () => {
 			it.each([
 				{
-					name: 'wrong part count',
+					name: 'mismatched part count between cached upload and actual upload',
 					parts: [{ PartNumber: 1 }, { PartNumber: 2 }, { PartNumber: 3 }],
 				},
 				{
-					name: 'wrong part numbers',
+					name: 'mismatched part numbers between cached upload and actual upload',
 					parts: [{ PartNumber: 1 }, { PartNumber: 1 }],
 				},
-			])('should throw with $name', async ({ parts }) => {
+			])('should throw integrity error with $name', async ({ parts }) => {
 				mockMultipartUploadSuccess();
 
 				const mockDefaultStorage = defaultStorage as jest.Mocked<
@@ -565,6 +574,7 @@ describe('getMultipartUploadHandlers with key', () => {
 							bucket,
 							key: defaultKey,
 							finalCrc32: 'mock-crc32',
+							lastTouched: Date.now() - 2 * 60 * 1000, // 2 mins ago
 						},
 					}),
 				);
@@ -617,6 +627,42 @@ describe('getMultipartUploadHandlers with key', () => {
 			expect(mockDefaultStorage.setItem).not.toHaveBeenCalled();
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockListParts).not.toHaveBeenCalled();
+		});
+
+		it('should omit unserializable option properties when calculating the hash key', async () => {
+			mockMultipartUploadSuccess();
+			const serializableOptions = {
+				useAccelerateEndpoint: true,
+				bucket: { bucketName: 'bucket', region: 'us-west-2' },
+				expectedBucketOwner: '123',
+				contentDisposition: 'attachment',
+				contentEncoding: 'deflate',
+				contentType: 'text/html',
+				customEndpoint: 'abc',
+				metadata: {},
+				preventOverwrite: true,
+				checksumAlgorithm: 'crc-32' as const,
+			};
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+					options: {
+						...serializableOptions,
+						// The following options will be omitted
+						locationCredentialsProvider: jest.fn(),
+						onProgress: jest.fn(),
+						resumableUploadsCache: mockDefaultStorage,
+					},
+				},
+				size,
+			);
+			await multipartUploadJob();
+			expect(mockCalculateContentCRC32).toHaveBeenNthCalledWith(
+				1,
+				JSON.stringify({ ...serializableOptions, checksumType: 'FULL_OBJECT' }),
+			);
 		});
 
 		it('should send createMultipartUpload request if the upload task is not cached', async () => {
@@ -693,9 +739,41 @@ describe('getMultipartUploadHandlers with key', () => {
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					// \d{13} is the file lastModified property of a file
-					/someName_\d{13}_Jz3O2w==_8388608_application\/octet-stream_bucket_public_key/,
+					new RegExp(`someName_\\d{13}_${defaultCacheKey}`),
 				),
 			]);
+		});
+
+		it('should clean any outdated in-progress uploads', async () => {
+			mockDefaultStorage.getItem.mockResolvedValue(
+				JSON.stringify({
+					'other-outdated-update': {
+						uploadId: '000',
+						bucket,
+						key: defaultKey,
+						lastTouched: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
+					},
+				}),
+			);
+			mockMultipartUploadSuccess();
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new File([new ArrayBuffer(size)], 'someName'),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
+				},
+				size,
+			);
+			await multipartUploadJob();
+			// 1 for evicting outdated cached uploads;
+			// 1 for caching upload task;
+			// 1 for remove cache after upload is completed
+			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(3);
+			expect(mockDefaultStorage.setItem.mock.calls[0][1]).toEqual('{}');
 		});
 
 		it('should send listParts request if the upload task is cached', async () => {
@@ -705,7 +783,7 @@ describe('getMultipartUploadHandlers with key', () => {
 						uploadId: 'uploadId',
 						bucket,
 						key: defaultKey,
-						lastModified: Date.now(),
+						lastTouched: Date.now(),
 					},
 				}),
 			);
@@ -924,6 +1002,7 @@ describe('getMultipartUploadHandlers with key', () => {
 						uploadId: 'uploadId',
 						bucket,
 						key: defaultKey,
+						lastTouched: Date.now(),
 					},
 				}),
 			);
@@ -1054,14 +1133,25 @@ describe('getMultipartUploadHandlers with path', () => {
 				'file',
 				new File([getBlob(8 * MB)], 'someName'),
 				['JCnBsQ==', 'HELzGQ=='],
+				'/YBlgg==',
 			],
-			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ==']],
-			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g==']],
-			['arrayBuffer', new ArrayBuffer(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
-			['arrayBufferView', new Uint8Array(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
+			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ=='], '/YBlgg=='],
+			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g=='], 'dPB9Lw=='],
+			[
+				'arrayBuffer',
+				new ArrayBuffer(8 * MB),
+				['yTuzdQ==', 'eXJPxg=='],
+				'GtK8RQ==',
+			],
+			[
+				'arrayBufferView',
+				new Uint8Array(8 * MB),
+				['yTuzdQ==', 'eXJPxg=='],
+				'GtK8RQ==',
+			],
 		])(
 			`should create crc32 for %s type body`,
-			async (_, twoPartsPayload, expectedCrc32) => {
+			async (_, twoPartsPayload, expectedCrc32, finalCrc32) => {
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
 					{
@@ -1076,17 +1166,12 @@ describe('getMultipartUploadHandlers with path', () => {
 				await multipartUploadJob();
 
 				/**
-				 * final crc32 calculation calls calculateContentCRC32 3 times
-				 * 1 time for each of the 2 parts
-				 * 1 time to combine the resulting hash for each of the two parts
-				 *
-				 * uploading each part calls calculateContentCRC32 1 time each
-				 *
-				 * 1 time for optionsHash
-				 *
-				 * these steps results in 6 calls in total
+				 * `calculateContentCRC32` is called 4 times with Full-body checksum:
+				 * * 1 time when calculating final crc32 for the whole object to be uploaded.
+				 * * 1 time when calculating optionsHash.
+				 * * 1 time each when uploading part calls, 2 calls in total.
 				 */
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(6);
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(4);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -1096,6 +1181,13 @@ describe('getMultipartUploadHandlers with path', () => {
 				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
 					expect.objectContaining({ ChecksumCRC32: expectedCrc32[1] }),
+				);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						ChecksumCRC32: finalCrc32,
+						ChecksumType: 'FULL_OBJECT',
+					}),
 				);
 			},
 		);
@@ -1167,7 +1259,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				file.size,
 			);
 			await multipartUploadJob();
-			expect(file.slice).toHaveBeenCalledTimes(10_000 * 2); // S3 limit of parts count double for crc32 calculations
+			expect(file.slice).toHaveBeenCalledTimes(10_000);
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockUploadPart).toHaveBeenCalledTimes(10_000);
 			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
@@ -1377,6 +1469,7 @@ describe('getMultipartUploadHandlers with path', () => {
 							bucket,
 							key: defaultKey,
 							finalCrc32: 'mock-crc32',
+							lastTouched: Date.now(),
 						},
 					}),
 				);
@@ -1451,6 +1544,42 @@ describe('getMultipartUploadHandlers with path', () => {
 			expect(mockListParts).not.toHaveBeenCalled();
 		});
 
+		it('should omit unserializable option properties when calculating the hash key', async () => {
+			mockMultipartUploadSuccess();
+			const serializableOptions = {
+				useAccelerateEndpoint: true,
+				bucket: { bucketName: 'bucket', region: 'us-west-2' },
+				expectedBucketOwner: '123',
+				contentDisposition: 'attachment',
+				contentEncoding: 'deflate',
+				contentType: 'text/html',
+				customEndpoint: 'abc',
+				metadata: {},
+				preventOverwrite: true,
+				checksumAlgorithm: 'crc-32' as const,
+			};
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: new ArrayBuffer(size),
+					options: {
+						...serializableOptions,
+						// The following options will be omitted
+						locationCredentialsProvider: jest.fn(),
+						onProgress: jest.fn(),
+						resumableUploadsCache: mockDefaultStorage,
+					},
+				},
+				size,
+			);
+			await multipartUploadJob();
+			expect(mockCalculateContentCRC32).toHaveBeenNthCalledWith(
+				1,
+				JSON.stringify({ ...serializableOptions, checksumType: 'FULL_OBJECT' }),
+			);
+		});
+
 		it('should send createMultipartUpload request if the upload task is cached but outdated', async () => {
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
@@ -1511,6 +1640,38 @@ describe('getMultipartUploadHandlers with path', () => {
 			]);
 		});
 
+		it('should clean any outdated in-progress uploads', async () => {
+			mockDefaultStorage.getItem.mockResolvedValue(
+				JSON.stringify({
+					'other-outdated-update': {
+						uploadId: '000',
+						bucket,
+						key: defaultKey,
+						lastTouched: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
+					},
+				}),
+			);
+			mockMultipartUploadSuccess();
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: new File([new ArrayBuffer(size)], 'someName'),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
+				},
+				size,
+			);
+			await multipartUploadJob();
+			// 1 for evicting outdated cached uploads;
+			// 1 for caching upload task;
+			// 1 for remove cache after upload is completed
+			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(3);
+			expect(mockDefaultStorage.setItem.mock.calls[0][1]).toEqual('{}');
+		});
+
 		it('should send listParts request if the upload task is cached', async () => {
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
@@ -1518,7 +1679,7 @@ describe('getMultipartUploadHandlers with path', () => {
 						uploadId: 'uploadId',
 						bucket,
 						key: testPath,
-						lastModified: Date.now(),
+						lastTouched: Date.now(),
 					},
 				}),
 			);
@@ -1736,6 +1897,7 @@ describe('getMultipartUploadHandlers with path', () => {
 						uploadId: 'uploadId',
 						bucket,
 						key: testPath,
+						lastTouched: Date.now(),
 					},
 				}),
 			);

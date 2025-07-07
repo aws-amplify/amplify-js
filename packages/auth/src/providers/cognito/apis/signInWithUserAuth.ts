@@ -17,7 +17,6 @@ import {
 } from '../types/errors';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 } from '../utils/signInHelpers';
@@ -38,6 +37,7 @@ import {
 	HandleUserAuthFlowInput,
 	handleUserAuthFlow,
 } from '../../../client/flows/userAuth/handleUserAuthFlow';
+import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
 import { resetAutoSignIn } from './autoSignIn';
 

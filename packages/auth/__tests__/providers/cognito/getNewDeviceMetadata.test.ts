@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmDeviceException } from '../../../src/providers/cognito/types/errors';
-import { getNewDeviceMetadata } from '../../../src/providers/cognito/utils/signInHelpers';
+import { getNewDeviceMetadata } from '../../../src/providers/cognito/utils/getNewDeviceMetadata';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 import { createConfirmDeviceClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 

@@ -5,7 +5,7 @@ import { deepFreeze } from '../utils';
 import { parseAmplifyConfig } from '../libraryUtils';
 
 import {
-	AmplifyOutputs,
+	AmplifyOutputsUnknown,
 	AuthConfig,
 	LegacyConfig,
 	LibraryOptions,
@@ -18,6 +18,8 @@ export class AmplifyClass {
 	private oAuthListener:
 		| ((authConfig: AuthConfig['Cognito']) => void)
 		| undefined = undefined;
+
+	private isConfigured = false;
 
 	resourcesConfig: ResourcesConfig;
 	libraryOptions: LibraryOptions;
@@ -49,7 +51,7 @@ export class AmplifyClass {
 	 * @param libraryOptions - Additional options for customizing the behavior of the library.
 	 */
 	configure(
-		resourcesConfig: ResourcesConfig | LegacyConfig | AmplifyOutputs,
+		resourcesConfig: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
 		libraryOptions?: LibraryOptions,
 	): void {
 		const resolvedResourceConfig = parseAmplifyConfig(resourcesConfig);
@@ -76,6 +78,7 @@ export class AmplifyClass {
 		);
 
 		this.notifyOAuthListener();
+		this.isConfigured = true;
 	}
 
 	/**
@@ -84,6 +87,13 @@ export class AmplifyClass {
 	 * @returns Returns the immutable back-end resource configuration.
 	 */
 	getConfig(): Readonly<ResourcesConfig> {
+		if (!this.isConfigured) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				`Amplify has not been configured. Please call Amplify.configure() before using this service.`,
+			);
+		}
+
 		return this.resourcesConfig;
 	}
 

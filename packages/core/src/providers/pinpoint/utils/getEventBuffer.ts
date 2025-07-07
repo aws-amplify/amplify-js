@@ -37,10 +37,14 @@ export const getEventBuffer = ({
 		const buffer = eventBufferMap[region][appId];
 
 		/*
-		If the identity has changed flush out the buffer and create a new instance. The old instance will be garbage
+		If the identity or credentials has changed flush out the buffer and create a new instance. The old instance will be garbage
 		collected.
 		*/
-		if (buffer.identityHasChanged(identityId)) {
+		const shouldFlushBuffer =
+			buffer.identityHasChanged(identityId) ||
+			buffer.haveCredentialsChanged(credentials);
+
+		if (shouldFlushBuffer) {
 			buffer.flush();
 		} else {
 			return buffer;

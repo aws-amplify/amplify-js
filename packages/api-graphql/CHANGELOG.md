@@ -3,6 +3,97 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.18...@aws-amplify/api-graphql@4.7.19) (2025-07-03)
+
+### Bug Fixes
+
+- error building expo application ([#14436](https://github.com/aws-amplify/amplify-js/issues/14436)) ([f14dc87](https://github.com/aws-amplify/amplify-js/commit/f14dc873a05030fd3e98400451a82bf7d509c3d4))
+
+## [4.7.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.17...@aws-amplify/api-graphql@4.7.18) (2025-07-02)
+
+### Bug Fixes
+
+- await AppSyncEvent WebSocket connection establishment ([0f4ab3c](https://github.com/aws-amplify/amplify-js/commit/0f4ab3c8a436e29e89964c0d8452558cf0a0744c))
+- verify the socket status to be CONNECTING in test ([c946cf7](https://github.com/aws-amplify/amplify-js/commit/c946cf7a09d47a9e74f5d81743d36a2ebbc82207))
+
+## [4.7.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.16...@aws-amplify/api-graphql@4.7.17) (2025-06-17)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.15...@aws-amplify/api-graphql@4.7.16) (2025-05-27)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.14...@aws-amplify/api-graphql@4.7.15) (2025-04-28)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.13...@aws-amplify/api-graphql@4.7.14) (2025-04-21)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.12...@aws-amplify/api-graphql@4.7.13) (2025-04-09)
+
+### Bug Fixes
+
+- (14277) Unable to override options when calling `events.connect` and `subscribe` ([#14278](https://github.com/aws-amplify/amplify-js/issues/14278)) ([db70f7b](https://github.com/aws-amplify/amplify-js/commit/db70f7be22711c6bf03fe68d7d3d3d93070d9a85))
+
+## [4.7.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.11...@aws-amplify/api-graphql@4.7.12) (2025-03-28)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.10...@aws-amplify/api-graphql@4.7.11) (2025-03-25)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.9...@aws-amplify/api-graphql@4.7.10) (2025-03-21)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.8...@aws-amplify/api-graphql@4.7.9) (2025-03-14)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.7...@aws-amplify/api-graphql@4.7.8) (2025-03-07)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.6...@aws-amplify/api-graphql@4.7.7) (2025-03-05)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.5...@aws-amplify/api-graphql@4.7.6) (2025-02-27)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.4...@aws-amplify/api-graphql@4.7.5) (2025-02-20)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.3...@aws-amplify/api-graphql@4.7.4) (2025-02-12)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.2...@aws-amplify/api-graphql@4.7.3) (2025-02-04)
+
+### Bug Fixes
+
+- **api-graphql:** Data messages should maintain the keep alive status ([#14164](https://github.com/aws-amplify/amplify-js/issues/14164)) ([8b489d1](https://github.com/aws-amplify/amplify-js/commit/8b489d1667c67741cbc1111b0a52d10996aa857d))
+
+## [4.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.1...@aws-amplify/api-graphql@4.7.2) (2025-01-24)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.0...@aws-amplify/api-graphql@4.7.1) (2025-01-14)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+# [4.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.6.7...@aws-amplify/api-graphql@4.7.0) (2025-01-03)
+
+### Features
+
+- **api:** add custom endpoint support to API ([#14086](https://github.com/aws-amplify/amplify-js/issues/14086)) ([ca2e4b8](https://github.com/aws-amplify/amplify-js/commit/ca2e4b87a456dfe9a027e49bdcd912a2cba8e59d))
+
 ## [4.6.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.6.6...@aws-amplify/api-graphql@4.6.7) (2024-12-19)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

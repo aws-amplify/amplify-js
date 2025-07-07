@@ -39,7 +39,7 @@ on:
         type: string
       yarn_script_args:
         required: false
-        type: number
+        type: string
       env:
         required: false
         type: string
@@ -49,10 +49,6 @@ env:
   CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
   CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
   CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
-  CYPRESS_AUTH0_CLIENTID: ${{ secrets.CYPRESS_AUTH0_CLIENTID }}
-  CYPRESS_AUTH0_SECRET: ${{ secrets.CYPRESS_AUTH0_SECRET }}
-  CYPRESS_AUTH0_AUDIENCE: ${{ secrets.CYPRESS_AUTH0_AUDIENCE }}
-  CYPRESS_AUTH0_DOMAIN: ${{ secrets.CYPRESS_AUTH0_DOMAIN }}
 
 jobs:
   e2e-test:
@@ -145,10 +141,10 @@ jobs:
             $E2E_YARN_SCRIPT \
             -n $E2E_RETRY_COUNT
           else
-            yarn "$E2E_YARN_SCRIPT" "$E2E_YARN_SCRIPT_ARGS"
+            yarn "$E2E_YARN_SCRIPT" "$E2E_YARN_SCRIPT_ARGS" "$E2E_SPEC"
           fi
       - name: Upload artifact
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         if: failure()
         with:
           name: ${{ inputs.test_name }}
@@ -157,3 +153,4 @@ jobs:
             amplify-js-samples-staging/cypress/videos
             amplify-js-samples-staging/cypress/screenshots
           retention-days: 14
+          overwrite: true

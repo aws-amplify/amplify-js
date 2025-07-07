@@ -7,7 +7,7 @@ import {
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
 
-import { FetchDevicesOutput } from '../types';
+import { AWSAuthDevice, FetchDevicesOutput } from '../types';
 import { DeviceType } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { assertAuthTokens } from '../utils/types';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
@@ -77,7 +77,7 @@ const parseDevicesResponse = async (
 				{},
 			);
 
-			return {
+			const result: AWSAuthDevice = {
 				id,
 				name: deviceName,
 				attributes,
@@ -91,6 +91,8 @@ const parseDevicesResponse = async (
 					? new Date(DeviceLastAuthenticatedDate * 1000)
 					: undefined,
 			};
+
+			return result;
 		},
 	);
 };

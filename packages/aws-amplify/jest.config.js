@@ -8,6 +8,10 @@ module.exports = {
 			statements: 91,
 		},
 	},
+	coveragePathIgnorePatterns: [
+		'src/adapter-core/index.ts',
+		'src/utils/index.ts',
+	],
 	moduleNameMapper: {
 		uuid: require.resolve('uuid'),
 	},

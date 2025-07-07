@@ -3,6 +3,111 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.15.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.2...aws-amplify@6.15.3) (2025-07-03)
+
+### Bug Fixes
+
+- error building expo application ([#14436](https://github.com/aws-amplify/amplify-js/issues/14436)) ([f14dc87](https://github.com/aws-amplify/amplify-js/commit/f14dc873a05030fd3e98400451a82bf7d509c3d4))
+
+## [6.15.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.1...aws-amplify@6.15.2) (2025-07-02)
+
+### Bug Fixes
+
+- remove import side effects for getAmplifyUserAgent() ([#14433](https://github.com/aws-amplify/amplify-js/issues/14433)) ([f94a30b](https://github.com/aws-amplify/amplify-js/commit/f94a30b71e4e5abbce1ad8c215fbb67386721bff))
+
+## [6.15.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.0...aws-amplify@6.15.1) (2025-06-17)
+
+### Bug Fixes
+
+- recreate event buffer in pinpoint if the credentials has changed ([#14403](https://github.com/aws-amplify/amplify-js/issues/14403)) ([2b4282a](https://github.com/aws-amplify/amplify-js/commit/2b4282a4042529ad073b7e2435df82fbb416070a))
+
+# [6.15.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.4...aws-amplify@6.15.0) (2025-05-27)
+
+### Features
+
+- **auth:** support custom identity pool endpoint ([#14382](https://github.com/aws-amplify/amplify-js/issues/14382)) ([fd56414](https://github.com/aws-amplify/amplify-js/commit/fd56414205509e383e635aceb29b9a780eed2dfc))
+
+## [6.14.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.3...aws-amplify@6.14.4) (2025-04-28)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.14.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.2...aws-amplify@6.14.3) (2025-04-21)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.14.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.1...aws-amplify@6.14.2) (2025-04-09)
+
+### Bug Fixes
+
+- **aws-amplify:** cookie store is not used for identity store in SSR ([#14326](https://github.com/aws-amplify/amplify-js/issues/14326)) ([42f6332](https://github.com/aws-amplify/amplify-js/commit/42f6332678b8c1670becf5fa5ce98daeb602ed9f))
+
+## [6.14.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.14.0...aws-amplify@6.14.1) (2025-03-28)
+
+**Note:** Version bump only for package aws-amplify
+
+# [6.14.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.6...aws-amplify@6.14.0) (2025-03-25)
+
+### Features
+
+- library observability improvements ([#14309](https://github.com/aws-amplify/amplify-js/issues/14309)) ([b383885](https://github.com/aws-amplify/amplify-js/commit/b3838851da3c5620d6c1ea7950d16d81b21e073f)), closes [#14230](https://github.com/aws-amplify/amplify-js/issues/14230) [#14237](https://github.com/aws-amplify/amplify-js/issues/14237) [#14259](https://github.com/aws-amplify/amplify-js/issues/14259) [#14251](https://github.com/aws-amplify/amplify-js/issues/14251) [#14296](https://github.com/aws-amplify/amplify-js/issues/14296)
+
+## [6.13.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.5...aws-amplify@6.13.6) (2025-03-21)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.13.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.4...aws-amplify@6.13.5) (2025-03-14)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.13.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.3...aws-amplify@6.13.4) (2025-03-07)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.13.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.2...aws-amplify@6.13.3) (2025-03-05)
+
+### Bug Fixes
+
+- **core:** make AmplifyOutputs category types as unknown ([#14153](https://github.com/aws-amplify/amplify-js/issues/14153)) ([5dbfbf3](https://github.com/aws-amplify/amplify-js/commit/5dbfbf3f83799b7691fa4d51a61726326a22f1e5))
+
+## [6.13.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.1...aws-amplify@6.13.2) (2025-02-27)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.13.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.13.0...aws-amplify@6.13.1) (2025-02-20)
+
+**Note:** Version bump only for package aws-amplify
+
+# [6.13.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.12.3...aws-amplify@6.13.0) (2025-02-12)
+
+### Features
+
+- support server-side auth flows with Cognito managed login ([#14168](https://github.com/aws-amplify/amplify-js/issues/14168)) ([825d338](https://github.com/aws-amplify/amplify-js/commit/825d338021964a48ffab07d7b5961c5afa63a50e)), closes [#13788](https://github.com/aws-amplify/amplify-js/issues/13788) [#13801](https://github.com/aws-amplify/amplify-js/issues/13801) [#13827](https://github.com/aws-amplify/amplify-js/issues/13827) [#13839](https://github.com/aws-amplify/amplify-js/issues/13839) [#13840](https://github.com/aws-amplify/amplify-js/issues/13840) [#13841](https://github.com/aws-amplify/amplify-js/issues/13841) [#14103](https://github.com/aws-amplify/amplify-js/issues/14103) [#14112](https://github.com/aws-amplify/amplify-js/issues/14112) [#14114](https://github.com/aws-amplify/amplify-js/issues/14114) [#14115](https://github.com/aws-amplify/amplify-js/issues/14115) [#14119](https://github.com/aws-amplify/amplify-js/issues/14119) [#14125](https://github.com/aws-amplify/amplify-js/issues/14125) [#14116](https://github.com/aws-amplify/amplify-js/issues/14116) [#14134](https://github.com/aws-amplify/amplify-js/issues/14134) [#14132](https://github.com/aws-amplify/amplify-js/issues/14132) [#14141](https://github.com/aws-amplify/amplify-js/issues/14141) [#14152](https://github.com/aws-amplify/amplify-js/issues/14152) [#14169](https://github.com/aws-amplify/amplify-js/issues/14169)
+
+## [6.12.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.12.2...aws-amplify@6.12.3) (2025-02-04)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.12.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.12.1...aws-amplify@6.12.2) (2025-01-24)
+
+### Bug Fixes
+
+- **auth:** Setting Store Tokens should only clear tokens that no longer have a value ([#13584](https://github.com/aws-amplify/amplify-js/issues/13584)) ([3606482](https://github.com/aws-amplify/amplify-js/commit/3606482c980766466f2c3f27bd4887c550897c26))
+
+## [6.12.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.12.0...aws-amplify@6.12.1) (2025-01-14)
+
+**Note:** Version bump only for package aws-amplify
+
+# [6.12.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.11.0...aws-amplify@6.12.0) (2025-01-03)
+
+### Bug Fixes
+
+- **core:** amplify configure with storage path type issue ([#14088](https://github.com/aws-amplify/amplify-js/issues/14088)) ([0ecded1](https://github.com/aws-amplify/amplify-js/commit/0ecded15a4d1318fe10b16dbe534a111a12bdc21))
+
+### Features
+
+- **api:** add custom endpoint support to API ([#14086](https://github.com/aws-amplify/amplify-js/issues/14086)) ([ca2e4b8](https://github.com/aws-amplify/amplify-js/commit/ca2e4b87a456dfe9a027e49bdcd912a2cba8e59d))
+- **auth:** proactive token refresh ([#14076](https://github.com/aws-amplify/amplify-js/issues/14076)) ([b818753](https://github.com/aws-amplify/amplify-js/commit/b8187536ab3633e6a390ea38b9e8434b23293380))
+
 # [6.11.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.10.3...aws-amplify@6.11.0) (2024-12-19)
 
 ### Bug Fixes

@@ -36,7 +36,11 @@ import type {
 } from './types';
 
 const INVALID_PARAMETER_ERROR_MSG =
-	'Invalid parameter for ComplteMultipartUpload API';
+	'Invalid parameter for CompleteMultipartUpload API';
+
+const MISSING_ETAG_ERROR_MSG = 'ETag missing from multipart upload';
+const MISSING_ETAG_ERROR_SUGGESTION =
+	'Please ensure S3 bucket CORS configuration includes ETag as part of its `ExposeHeaders` element';
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,
@@ -45,6 +49,7 @@ export type CompleteMultipartUploadInput = Pick<
 	| 'UploadId'
 	| 'MultipartUpload'
 	| 'ChecksumCRC32'
+	| 'ChecksumType'
 	| 'ExpectedBucketOwner'
 	| 'IfNoneMatch'
 >;
@@ -62,6 +67,7 @@ const completeMultipartUploadSerializer = async (
 		'content-type': 'application/xml',
 		...assignStringVariables({
 			'x-amz-checksum-crc32': input.ChecksumCRC32,
+			'x-amz-checksum-type': input.ChecksumType,
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 			'If-None-Match': input.IfNoneMatch,
 		}),
@@ -95,7 +101,7 @@ const serializeCompletedMultipartUpload = (
 	input: CompletedMultipartUpload,
 ): string => {
 	if (!input.Parts?.length) {
-		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
+		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${JSON.stringify(input)}`);
 	}
 
 	return `<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${input.Parts.map(
@@ -104,8 +110,13 @@ const serializeCompletedMultipartUpload = (
 };
 
 const serializeCompletedPartList = (input: CompletedPart): string => {
-	if (!input.ETag || input.PartNumber == null) {
-		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
+	if (input.PartNumber == null) {
+		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${JSON.stringify(input)}`);
+	}
+	if (!input.ETag) {
+		throw new Error(
+			`${MISSING_ETAG_ERROR_MSG}: ${JSON.stringify(input)}. ${MISSING_ETAG_ERROR_SUGGESTION}`,
+		);
 	}
 
 	const eTag = `<ETag>${input.ETag}</ETag>`;
@@ -126,11 +137,12 @@ const serializeCompletedPartList = (input: CompletedPart): string => {
 const parseXmlBodyOrThrow = async (response: HttpResponse): Promise<any> => {
 	const parsed = await parseXmlBody(response); // Handles empty body case
 	if (parsed.Code !== undefined && parsed.Message !== undefined) {
-		const error = (await parseXmlError({
+		const error = await parseXmlError({
 			...response,
 			statusCode: 500, // To workaround the >=300 status code check common to other APIs.
-		})) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		});
+		error!.$metadata.httpStatusCode = response.statusCode;
+		throw buildStorageServiceError(error!);
 	}
 
 	return parsed;
@@ -140,8 +152,8 @@ const completeMultipartUploadDeserializer = async (
 	response: HttpResponse,
 ): Promise<CompleteMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		// error is always set when statusCode >= 300
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		const parsed = await parseXmlBodyOrThrow(response);
 		const contents = map(parsed, {

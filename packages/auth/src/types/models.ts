@@ -251,9 +251,7 @@ export type AuthNextSignInStep<
  */
 export type AuthUserAttributes<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
-	[Attribute in UserAttributeKey]?: string;
-};
+> = Partial<Record<UserAttributeKey, string>>;
 
 /**
  * The interface of a user attribute.
@@ -332,4 +330,5 @@ export interface AWSAuthUser {
  */
 export interface AuthDevice {
 	id: string;
+	name?: string;
 }

@@ -1,9 +1,10 @@
+import { createGetCredentialsForIdentityClient } from '../../../src';
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
 import {
 	GetCredentialsForIdentityInput,
 	GetCredentialsForIdentityOutput,
-	getCredentialsForIdentity,
-} from '../../../src/awsClients/cognitoIdentity';
+} from '../../../src/foundation/factories/serviceClients/cognitoIdentity/types';
+import { AmplifyUrl } from '../../../src/libraryUtils';
 import {
 	cognitoIdentityHandlerOptions,
 	mockCredentials,
@@ -60,6 +61,14 @@ describe('CognitoIdentity - getCredentialsForIdentity', () => {
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(succeedResponse),
 		);
+		const getCredentialsForIdentity = createGetCredentialsForIdentityClient({
+			endpointResolver: jest.fn(() => ({
+				url: new AmplifyUrl(
+					'https://cognito-identity.us-east-1.amazonaws.com/',
+				),
+			})),
+		});
+
 		const response = await getCredentialsForIdentity(
 			cognitoIdentityHandlerOptions,
 			params,
@@ -86,11 +95,22 @@ describe('CognitoIdentity - getCredentialsForIdentity', () => {
 		const expectedError = {
 			name: 'NotAuthorizedException',
 			message: failureResponse.body.message,
+			$metadata: expect.objectContaining({
+				requestId: mockRequestId,
+				httpStatusCode: failureResponse.status,
+			}),
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(failureResponse),
 		);
 		expect.assertions(1);
+		const getCredentialsForIdentity = createGetCredentialsForIdentityClient({
+			endpointResolver: jest.fn(() => ({
+				url: new AmplifyUrl(
+					'https://cognito-identity.us-east-1.amazonaws.com/',
+				),
+			})),
+		});
 		try {
 			await getCredentialsForIdentity(cognitoIdentityHandlerOptions, params);
 			fail('test should fail');

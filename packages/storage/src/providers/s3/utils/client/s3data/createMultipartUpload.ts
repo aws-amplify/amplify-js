@@ -32,7 +32,8 @@ import { defaultConfig, parseXmlError } from './base';
 export type CreateMultipartUploadInput = Extract<
 	CreateMultipartUploadCommandInput,
 	PutObjectInput
->;
+> &
+	Pick<CreateMultipartUploadCommandInput, 'ChecksumType'>;
 
 export type CreateMultipartUploadOutput = Pick<
 	CreateMultipartUploadCommandOutput,
@@ -47,6 +48,7 @@ const createMultipartUploadSerializer = async (
 		...(await serializeObjectConfigsToHeaders(input)),
 		...assignStringVariables({
 			'x-amz-checksum-algorithm': input.ChecksumAlgorithm,
+			'x-amz-checksum-type': input.ChecksumType,
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
 	};
@@ -71,8 +73,8 @@ const createMultipartUploadDeserializer = async (
 	response: HttpResponse,
 ): Promise<CreateMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
-		const error = (await parseXmlError(response)) as Error;
-		throw buildStorageServiceError(error, response.statusCode);
+		// error is always set when statusCode >= 300
+		throw buildStorageServiceError((await parseXmlError(response))!);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {

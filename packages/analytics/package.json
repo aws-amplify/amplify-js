@@ -1,10 +1,10 @@
 {
 	"name": "@aws-amplify/analytics",
-	"version": "7.0.64",
+	"version": "7.0.84",
 	"description": "Analytics category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
-	"react-native": "./src/index.ts",
+	"react-native": "./dist/cjs/index.js",
 	"typings": "./dist/esm/index.d.ts",
 	"sideEffects": false,
 	"publishConfig": {
@@ -42,34 +42,34 @@
 	},
 	"exports": {
 		".": {
+			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js",
-			"react-native": "./src/index.ts"
+			"require": "./dist/cjs/index.js"
 		},
 		"./pinpoint": {
+			"react-native": "./dist/cjs/providers/pinpoint/index.js",
 			"types": "./dist/esm/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/providers/pinpoint/index.mjs",
-			"require": "./dist/cjs/providers/pinpoint/index.js",
-			"react-native": "./src/providers/pinpoint/index.ts"
+			"require": "./dist/cjs/providers/pinpoint/index.js"
 		},
 		"./kinesis": {
+			"react-native": "./dist/cjs/providers/kinesis/index.js",
 			"types": "./dist/esm/providers/kinesis/index.d.ts",
 			"import": "./dist/esm/providers/kinesis/index.mjs",
-			"require": "./dist/cjs/providers/kinesis/index.js",
-			"react-native": "./src/providers/kinesis/index.ts"
+			"require": "./dist/cjs/providers/kinesis/index.js"
 		},
 		"./kinesis-firehose": {
+			"react-native": "./dist/cjs/providers/kinesis-firehose/index.js",
 			"types": "./dist/esm/providers/kinesis-firehose/index.d.ts",
 			"import": "./dist/esm/providers/kinesis-firehose/index.mjs",
-			"require": "./dist/cjs/providers/kinesis-firehose/index.js",
-			"react-native": "./src/providers/kinesis-firehose/index.ts"
+			"require": "./dist/cjs/providers/kinesis-firehose/index.js"
 		},
 		"./personalize": {
+			"react-native": "./dist/cjs/providers/personalize/index.js",
 			"types": "./dist/esm/providers/personalize/index.d.ts",
 			"import": "./dist/esm/providers/personalize/index.mjs",
-			"require": "./dist/cjs/providers/personalize/index.js",
-			"react-native": "./src/providers/personalize/index.ts"
+			"require": "./dist/cjs/providers/personalize/index.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -103,9 +103,8 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.8.0",
-		"@aws-amplify/react-native": "1.1.6",
-		"@aws-sdk/types": "3.398.0",
-		"typescript": "5.0.2"
+		"@aws-amplify/core": "6.12.3",
+		"@aws-amplify/react-native": "1.1.10",
+		"@aws-sdk/types": "3.398.0"
 	}
 }
