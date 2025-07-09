@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.13.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.2...@aws-amplify/auth@6.13.3) (2025-07-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.13.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.1...@aws-amplify/auth@6.13.2) (2025-07-02)
+
+### Bug Fixes
+
+- remove import side effects for getAmplifyUserAgent() ([#14433](https://github.com/aws-amplify/amplify-js/issues/14433)) ([f94a30b](https://github.com/aws-amplify/amplify-js/commit/f94a30b71e4e5abbce1ad8c215fbb67386721bff))
+
+## [6.13.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.0...@aws-amplify/auth@6.13.1) (2025-06-17)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 # [6.13.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.12.4...@aws-amplify/auth@6.13.0) (2025-05-27)
 
 ### Features

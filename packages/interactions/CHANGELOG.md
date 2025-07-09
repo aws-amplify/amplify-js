@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.1.24...@aws-amplify/interactions@6.1.25) (2025-07-03)
+
+### Bug Fixes
+
+- error building expo application ([#14436](https://github.com/aws-amplify/amplify-js/issues/14436)) ([f14dc87](https://github.com/aws-amplify/amplify-js/commit/f14dc873a05030fd3e98400451a82bf7d509c3d4))
+
+## [6.1.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.1.23...@aws-amplify/interactions@6.1.24) (2025-07-02)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+## [6.1.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.1.22...@aws-amplify/interactions@6.1.23) (2025-06-17)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
 ## [6.1.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.1.21...@aws-amplify/interactions@6.1.22) (2025-05-27)
 
 **Note:** Version bump only for package @aws-amplify/interactions
