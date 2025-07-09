@@ -191,11 +191,5 @@
 				"./dist/esm/libraryUtils.d.ts"
 			]
 		}
-<<<<<<< HEAD
-	},
-	"gitHead": "e327fed0f7f1b436ceac0100ba2eefe9ce3133ef"
-}
-=======
 	}
 }
->>>>>>> f2a10cf28 (chore(release): Publish [skip release])
