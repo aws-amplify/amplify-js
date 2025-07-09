@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "6.0.18-unstable.352+e327fed0f",
+	"version": "6.1.24",
 	"description": "Interactions category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -81,7 +81,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.18-unstable.352+e327fed0f"
+		"@aws-amplify/core": "6.12.2"
 	},
 	"size-limit": [
 		{

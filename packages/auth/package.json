@@ -1,107 +1,106 @@
 {
-  "name": "@aws-amplify/auth",
-  "version": "6.0.18-unstable.352+e327fed0f",
-  "description": "Auth category of aws-amplify",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.mjs",
-  "typings": "./dist/esm/index.d.ts",
-  "react-native": "./dist/cjs/index.js",
-  "sideEffects": [
-    "./dist/cjs/providers/cognito/apis/signInWithRedirect.js",
-    "./dist/esm/providers/cognito/apis/signInWithRedirect.mjs",
-    "./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js",
-    "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "test": "yarn lint --fix && jest -w 1 --coverage --logHeapUsage",
-    "build-with-test": "npm test && npm run build",
-    "build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
-    "build:watch": "npm run build:esm-cjs -- --watch",
-    "build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
-    "clean": "npm run clean:size && rimraf lib-esm lib dist",
-    "clean:size": "rimraf dual-publish-tmp tmp*",
-    "format": "echo \"Not implemented\"",
-    "lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
-    "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 91.18"
-  },
-  "typesVersions": {
-    ">=4.2": {
-      "cognito": [
-        "./dist/esm/providers/cognito/index.d.ts"
-      ],
-      "cognito/server": [
-        "./dist/esm/providers/cognito/apis/server/index.d.ts"
-      ],
-      "server": [
-        "./dist/esm/server.d.ts"
-      ]
-    }
-  },
-  "exports": {
-    ".": {
-      "react-native": "./dist/cjs/index.js",
-      "types": "./dist/esm/index.d.ts",
-      "import": "./dist/esm/index.mjs",
-      "require": "./dist/cjs/index.js"
-    },
-    "./cognito": {
-      "react-native": "./dist/cjs/providers/cognito/index.js",
-      "types": "./dist/esm/providers/cognito/index.d.ts",
-      "import": "./dist/esm/providers/cognito/index.mjs",
-      "require": "./dist/cjs/providers/cognito/index.js"
-    },
-    "./cognito/server": {
-      "types": "./dist/esm/providers/cognito/apis/server/index.d.ts",
-      "import": "./dist/esm/providers/cognito/apis/server/index.mjs",
-      "require": "./dist/cjs/providers/cognito/apis/server/index.js"
-    },
-    "./server": {
-      "types": "./dist/esm/server.d.ts",
-      "import": "./dist/esm/server.mjs",
-      "require": "./dist/cjs/server.js"
-    },
-    "./enable-oauth-listener": {
-      "types": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.d.ts",
-      "import": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs",
-      "require": "./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-js.git"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
-  },
-  "homepage": "https://aws-amplify.github.io/",
-  "files": [
-    "dist/cjs",
-    "dist/esm",
-    "src",
-    "cognito",
-    "server",
-    "enable-oauth-listener"
-  ],
-  "dependencies": {
-    "@aws-crypto/sha256-js": "5.2.0",
-    "@smithy/types": "^3.3.0",
-    "tslib": "^2.5.0"
-  },
-  "peerDependencies": {
-    "@aws-amplify/core": "6.0.18-unstable.352+e327fed0f"
-  },
-  "devDependencies": {
-    "@aws-amplify/core": "6.0.18-unstable.352+e327fed0f",
-    "@aws-amplify/react-native": "1.0.18-unstable.352+e327fed0f",
-    "@jest/test-sequencer": "^29.7.0"
-  },
-  "gitHead": "e327fed0f7f1b436ceac0100ba2eefe9ce3133ef"
+	"name": "@aws-amplify/auth",
+	"version": "6.13.2",
+	"description": "Auth category of aws-amplify",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"typings": "./dist/esm/index.d.ts",
+	"react-native": "./dist/cjs/index.js",
+	"sideEffects": [
+		"./dist/cjs/providers/cognito/apis/signInWithRedirect.js",
+		"./dist/esm/providers/cognito/apis/signInWithRedirect.mjs",
+		"./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js",
+		"./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "yarn lint --fix && jest -w 1 --coverage --logHeapUsage",
+		"build-with-test": "npm test && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
+		"build:watch": "npm run build:esm-cjs -- --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
+		"format": "echo \"Not implemented\"",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 91.18"
+	},
+	"typesVersions": {
+		">=4.2": {
+			"cognito": [
+				"./dist/esm/providers/cognito/index.d.ts"
+			],
+			"cognito/server": [
+				"./dist/esm/providers/cognito/apis/server/index.d.ts"
+			],
+			"server": [
+				"./dist/esm/server.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"react-native": "./dist/cjs/index.js",
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js"
+		},
+		"./cognito": {
+			"react-native": "./dist/cjs/providers/cognito/index.js",
+			"types": "./dist/esm/providers/cognito/index.d.ts",
+			"import": "./dist/esm/providers/cognito/index.mjs",
+			"require": "./dist/cjs/providers/cognito/index.js"
+		},
+		"./cognito/server": {
+			"types": "./dist/esm/providers/cognito/apis/server/index.d.ts",
+			"import": "./dist/esm/providers/cognito/apis/server/index.mjs",
+			"require": "./dist/cjs/providers/cognito/apis/server/index.js"
+		},
+		"./server": {
+			"types": "./dist/esm/server.d.ts",
+			"import": "./dist/esm/server.mjs",
+			"require": "./dist/cjs/server.js"
+		},
+		"./enable-oauth-listener": {
+			"types": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.d.ts",
+			"import": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs",
+			"require": "./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"files": [
+		"dist/cjs",
+		"dist/esm",
+		"src",
+		"cognito",
+		"server",
+		"enable-oauth-listener"
+	],
+	"dependencies": {
+		"@aws-crypto/sha256-js": "5.2.0",
+		"@smithy/types": "^3.3.0",
+		"tslib": "^2.5.0"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.1.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/core": "6.12.2",
+		"@aws-amplify/react-native": "1.1.10",
+		"@jest/test-sequencer": "^29.7.0"
+	}
 }

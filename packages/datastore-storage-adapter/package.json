@@ -1,48 +1,47 @@
 {
-  "name": "@aws-amplify/datastore-storage-adapter",
-  "version": "2.1.18-unstable.352+e327fed0f",
-  "description": "SQLite storage adapter for Amplify DataStore ",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.mjs",
-  "typings": "./dist/esm/index.d.ts",
-  "react-native": "./dist/cjs/index.js",
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
-    "build-with-test": "npm test && npm run build",
-    "build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
-    "build:watch": "npm run build:esm-cjs -- --watch",
-    "build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
-    "clean": "rimraf dist lib lib-esm",
-    "format": "echo \"Not implemented\"",
-    "lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
-    "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 94.16"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-js.git"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
-  },
-  "homepage": "https://aws-amplify.github.io/",
-  "peerDependencies": {
-    "@aws-amplify/core": "6.0.18-unstable.352+e327fed0f"
-  },
-  "devDependencies": {
-    "@aws-amplify/core": "6.0.18-unstable.352+e327fed0f",
-    "@aws-amplify/datastore": "5.0.18-unstable.352+e327fed0f",
-    "@types/react-native-sqlite-storage": "5.0.1",
-    "expo-file-system": "13.1.4",
-    "expo-sqlite": "10.1.0",
-    "react-native-sqlite-storage": "5.0.0",
-    "sqlite3": "^5.0.2"
-  },
-  "gitHead": "e327fed0f7f1b436ceac0100ba2eefe9ce3133ef"
+	"name": "@aws-amplify/datastore-storage-adapter",
+	"version": "2.1.85",
+	"description": "SQLite storage adapter for Amplify DataStore ",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"typings": "./dist/esm/index.d.ts",
+	"react-native": "./dist/cjs/index.js",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
+		"build-with-test": "npm test && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
+		"build:watch": "npm run build:esm-cjs -- --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "rimraf dist lib lib-esm",
+		"format": "echo \"Not implemented\"",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 94.16"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.1.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/core": "6.12.2",
+		"@aws-amplify/datastore": "5.0.85",
+		"@types/react-native-sqlite-storage": "5.0.1",
+		"expo-file-system": "13.1.4",
+		"expo-sqlite": "10.1.0",
+		"react-native-sqlite-storage": "5.0.0",
+		"sqlite3": "^5.0.2"
+	}
 }
