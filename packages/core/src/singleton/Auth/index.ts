@@ -49,8 +49,8 @@ export class AuthClass {
 
 	/**
 	 * Fetch the auth tokens, and the temporary AWS credentials and identity if they are configured. By default it
-	 * does not refresh the auth tokens or credentials if they are loaded in storage already. You can force a refresh
-	 * with `{ forceRefresh: true }` input.
+	 * will automatically refresh expired auth tokens if a valid refresh token is present. You can force a refresh
+	 * of non-expired tokens with `{ forceRefresh: true }` input.
 	 *
 	 * @param options - Options configuring the fetch behavior.
 	 *
