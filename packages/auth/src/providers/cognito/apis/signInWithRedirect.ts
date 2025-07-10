@@ -25,6 +25,7 @@ import {
 } from '../utils/oauth';
 import { createOAuthError } from '../utils/oauth/createOAuthError';
 import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
+import { ExtraQueryParameters } from '../../../types/inputs';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -57,6 +58,7 @@ export async function signInWithRedirect(
 		provider,
 		customState: input?.customState,
 		preferPrivateSession: input?.options?.preferPrivateSession,
+		extraQueryParams: input?.extraQueryParams,
 		options: {
 			loginHint: input?.options?.loginHint,
 			lang: input?.options?.lang,
@@ -71,6 +73,7 @@ const oauthSignIn = async ({
 	clientId,
 	customState,
 	preferPrivateSession,
+	extraQueryParams,
 	options,
 }: {
 	oauthConfig: OAuthConfig;
@@ -78,6 +81,7 @@ const oauthSignIn = async ({
 	clientId: string;
 	customState?: string;
 	preferPrivateSession?: boolean;
+	extraQueryParams?: ExtraQueryParameters;
 	options?: SignInWithRedirectInput['options'];
 }) => {
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
@@ -116,6 +120,7 @@ const oauthSignIn = async ({
 			code_challenge: toCodeChallenge(),
 			code_challenge_method: method,
 		}),
+		...extraQueryParams,
 	})
 		.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 		.join('&');
