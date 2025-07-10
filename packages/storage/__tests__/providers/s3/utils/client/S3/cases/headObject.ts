@@ -22,7 +22,7 @@ const headObjectHappyCase: ApiFunctionalTestCase<typeof headObject> = [
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key',
+			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?response-cache-control=no-store',
 		}),
 		method: 'HEAD',
 	}),
@@ -65,7 +65,7 @@ const headObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key',
+			href: 'https://custom.endpoint.com/bucket/key?response-cache-control=no-store',
 		}),
 	}),
 	{

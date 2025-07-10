@@ -310,6 +310,48 @@ describe('downloadData with key', () => {
 			);
 		});
 	});
+
+	describe('ResponseCacheControl passed in options', () => {
+		it('should include cacheControl in headers when provided', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			downloadData({
+				path: inputKey,
+				options: {
+					cacheControl: 'no-store',
+				},
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				expect.any(Object),
+				expect.objectContaining({
+					ResponseCacheControl: 'no-store',
+				}),
+			);
+		});
+
+		it('should NOT include cacheControl in headers when not provided', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			downloadData({
+				path: inputKey,
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				expect.any(Object),
+				{
+					Bucket: bucket,
+					Key: 'public/key',
+				},
+			);
+		});
+	});
 });
 
 describe('downloadData with path', () => {
@@ -541,6 +583,48 @@ describe('downloadData with path', () => {
 				expect.objectContaining({
 					ExpectedBucketOwner: validBucketOwner,
 				}),
+			);
+		});
+	});
+
+	describe('ResponseCacheControl passed in options', () => {
+		it('should include cacheControl in headers when provided', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			downloadData({
+				path: inputKey,
+				options: {
+					cacheControl: 'no-store',
+				},
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				expect.any(Object),
+				expect.objectContaining({
+					ResponseCacheControl: 'no-store',
+				}),
+			);
+		});
+
+		it('should NOT include cacheControl in headers when not provided', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			downloadData({
+				path: inputKey,
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				expect.any(Object),
+				{
+					Bucket: bucket,
+					Key: inputPath,
+				},
 			);
 		});
 	});
