@@ -7,13 +7,13 @@ import {
 } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
+import { AUTH_KEY_PREFIX } from '../tokenProvider/constants';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 
 import { OAuthStorageKeys, OAuthStore } from './types';
 
 const V5_HOSTED_UI_KEY = 'amplify-signin-with-hostedUI';
 
-const name = 'CognitoIdentityServiceProvider';
 export class DefaultOAuthStore implements OAuthStore {
 	keyValueStorage: KeyValueStorageInterface;
 	cognitoConfig?: CognitoUserPoolConfig;
@@ -26,7 +26,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 		await Promise.all([
@@ -39,7 +39,7 @@ export class DefaultOAuthStore implements OAuthStore {
 	async clearOAuthData(): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 		await this.clearOAuthInflightData();
@@ -52,7 +52,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 
@@ -63,7 +63,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 
@@ -74,7 +74,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 
@@ -85,7 +85,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 
@@ -100,7 +100,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 
@@ -112,7 +112,7 @@ export class DefaultOAuthStore implements OAuthStore {
 	async storeOAuthInFlight(inflight: boolean): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 
@@ -126,7 +126,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 
@@ -151,7 +151,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const authKeys = createKeysForAuthStorage(
-			name,
+			AUTH_KEY_PREFIX,
 			this.cognitoConfig.userPoolClientId,
 		);
 
