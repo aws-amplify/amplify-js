@@ -82,6 +82,14 @@ export class HubClass {
 		ampSymbol?: symbol,
 	): void;
 
+	dispatch<Channel extends AmplifyChannel>(
+		channel: Channel,
+		payload: HubPayload<AmplifyEventData[Channel]>,
+		source?: string,
+		ampSymbol?: symbol,
+		crossTab?: boolean,
+	): void;
+
 	dispatch(
 		channel: string,
 		payload: HubPayload,
@@ -97,6 +105,7 @@ export class HubClass {
 		payload: HubPayload<EventData>,
 		source?: string,
 		ampSymbol?: symbol,
+		crossTab?: boolean,
 	): void {
 		if (
 			typeof channel === 'string' &&
@@ -113,6 +122,7 @@ export class HubClass {
 
 		const capsule: HubCapsule<Channel | string, EventData> = {
 			channel,
+			crossTab,
 			payload: { ...payload },
 			source,
 			patternInfo: [],
@@ -140,6 +150,16 @@ export class HubClass {
 		listenerName?: string,
 	): StopListenerCallback;
 
+	// the crosstab option is only available for the 'auth' channel
+	listen<Channel extends AmplifyChannel>(
+		channel: Channel,
+		callback: HubCallback<Channel, AmplifyEventData[Channel]>,
+		options?: {
+			listenerName?: string;
+			enableCrossTabEvents?: boolean;
+		},
+	): StopListenerCallback;
+
 	listen<EventData extends EventDataMap>(
 		channel: string,
 		callback: HubCallback<string, EventData>,
@@ -152,9 +172,19 @@ export class HubClass {
 	>(
 		channel: Channel,
 		callback: HubCallback<Channel, EventData>,
-		listenerName = 'noname',
+		options:
+			| string
+			| { listenerName?: string; enableCrossTabEvents?: boolean } = {
+			listenerName: 'noname',
+		},
 	): StopListenerCallback {
-		let cb: HubCallback<string, EventDataMap>;
+		let cb: HubCallback;
+		let o;
+		if (typeof options === 'string') {
+			o = { listenerName: options, enableCrossTabEvents: false };
+		} else {
+			o = { listenerName: 'noname', enableCrossTabEvents: false, ...options };
+		}
 		if (typeof callback !== 'function') {
 			throw new AmplifyError({
 				name: NO_HUBCALLBACK_PROVIDED_EXCEPTION,
@@ -162,7 +192,7 @@ export class HubClass {
 			});
 		} else {
 			// Needs to be casted as a more generic type
-			cb = callback as HubCallback<string, EventDataMap>;
+			cb = callback as HubCallback;
 		}
 		let holder = this.listeners.get(channel);
 
@@ -172,7 +202,10 @@ export class HubClass {
 		}
 
 		holder.push({
-			name: listenerName,
+			name: (o as { listenerName: string; enableCrossTabEvents: boolean })
+				.listenerName,
+			crossTab: (o as { listenerName: string; enableCrossTabEvents: boolean })
+				.enableCrossTabEvents,
 			callback: cb,
 		});
 
@@ -184,10 +217,16 @@ export class HubClass {
 	private _toListeners<Channel extends AmplifyChannel | string>(
 		capsule: HubCapsule<Channel, EventDataMap | AmplifyEventData[Channel]>,
 	) {
-		const { channel, payload } = capsule;
+		const { channel, payload, crossTab } = capsule;
 		const holder = this.listeners.get(channel);
 		if (holder) {
-			holder.forEach(listener => {
+			const crossTabHolders = holder.filter(listener => {
+				const sameCrossTabSpec = !!crossTab === !!listener.crossTab;
+				const rightChannel = crossTab ? channel === 'auth' : true;
+
+				return sameCrossTabSpec && rightChannel;
+			});
+			crossTabHolders.forEach(listener => {
 				logger.debug(`Dispatching to ${channel} with `, payload);
 				try {
 					listener.callback(capsule);

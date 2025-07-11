@@ -1,12 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
+import { AuthConfig, Hub, KeyValueStorageInterface } from '@aws-amplify/core';
 import {
+	AMPLIFY_SYMBOL,
 	assertTokenProviderConfig,
 	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
+import { KeyValueStorageEvent } from '@aws-amplify/core/src/types';
 
 import { AuthError } from '../../../errors/AuthError';
+import { getCurrentUser } from '../apis/getCurrentUser';
 
 import {
 	AuthKeys,
@@ -40,6 +43,47 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	setAuthConfig(authConfig: AuthConfig) {
 		this.authConfig = authConfig;
+	}
+
+	setupNotify() {
+		this.keyValueStorage?.addListener?.(async (e: KeyValueStorageEvent) => {
+			const [key, , , id] = (e.key || '').split('.');
+			if (key === AUTH_KEY_PREFIX && id === 'refreshToken') {
+				const { newValue, oldValue } = e;
+				if (newValue && oldValue === null) {
+					Hub.dispatch(
+						'auth',
+						{
+							event: 'signedIn',
+							data: await getCurrentUser(),
+						},
+						'Auth',
+						AMPLIFY_SYMBOL,
+						true,
+					);
+				} else if (newValue === null && oldValue) {
+					Hub.dispatch(
+						'auth',
+						{
+							event: 'signedOut',
+						},
+						'Auth',
+						AMPLIFY_SYMBOL,
+						true,
+					);
+				} else if (newValue && oldValue) {
+					Hub.dispatch(
+						'auth',
+						{
+							event: 'tokenRefresh',
+						},
+						'Auth',
+						AMPLIFY_SYMBOL,
+						true,
+					);
+				}
+			}
+		});
 	}
 
 	async loadTokens(): Promise<CognitoAuthTokens | null> {
