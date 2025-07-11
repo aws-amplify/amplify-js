@@ -1,5 +1,6 @@
 import { DefaultStorage } from '../../src/storage/DefaultStorage';
 import { InMemoryStorage } from '../../src/storage/InMemoryStorage';
+import * as utils from '../../src/utils';
 
 const key = 'k';
 const value = 'value';
@@ -56,5 +57,17 @@ describe('DefaultStorage', () => {
 		Object.defineProperty(window, 'localStorage', {
 			value: originalLocalStorage,
 		});
+	});
+
+	it('should setup listeners, when in browser', () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
+		const windowSpy = jest.spyOn(window, 'addEventListener');
+
+		defaultStorage = new DefaultStorage();
+		expect(windowSpy).toHaveBeenCalledWith(
+			'storage',
+			expect.any(Function),
+			false,
+		);
 	});
 });

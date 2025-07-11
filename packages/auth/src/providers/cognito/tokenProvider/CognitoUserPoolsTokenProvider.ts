@@ -23,6 +23,7 @@ export class CognitoUserPoolsTokenProvider
 	constructor() {
 		this.authTokenStore = new DefaultTokenStore();
 		this.authTokenStore.setKeyValueStorage(defaultStorage);
+		this.authTokenStore.setupNotify();
 		this.tokenOrchestrator = new TokenOrchestrator();
 		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
 		this.tokenOrchestrator.setTokenRefresher(refreshAuthTokens);
