@@ -10,7 +10,25 @@ import { AuthRoutesHandlerContext } from '../types';
 export function isNextRequest(request: object): request is NextRequest {
 	// NextRequest extends the Web Request API with additional convenience methods.
 	// Details: https://nextjs.org/docs/app/api-reference/functions/next-request#nexturl
-	return request instanceof Request && 'nextUrl' in request;
+	//
+	// Use duck typing instead of instanceof to handle Lambda/serverless environments
+	// where Request constructor references may differ between invocations
+
+	return (
+		typeof request === 'object' &&
+		request !== null &&
+		// NextRequest-specific properties
+		'nextUrl' in request &&
+		typeof (request as any).nextUrl === 'object' &&
+		(request as any).nextUrl !== null &&
+		'cookies' in request &&
+		// Basic Request API properties
+		'url' in request &&
+		typeof (request as any).url === 'string' &&
+		'headers' in request &&
+		'method' in request &&
+		typeof (request as any).method === 'string'
+	);
 }
 
 // AuthRoutesHandlersContext is the 2nd parameter type for the API route handlers in the App Router
