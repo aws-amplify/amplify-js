@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - fix/next_request_check_test
 
 jobs:
   e2e:
