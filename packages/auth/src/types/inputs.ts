@@ -57,10 +57,10 @@ export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 /**
  * OIDC prompt parameter that specifies whether the Authorization Server prompts the End-User for reauthentication and consent.
  *
- * - `'none'` - No authentication or consent UI will be displayed
- * - `'login'` - Force user to re-authenticate even if they have a valid session
- * - `'consent'` - Force user to consent to sharing information with the client
- * - `'select_account'` - Prompt user to select among multiple authenticated accounts
+ * - `'NONE'` - No authentication or consent UI will be displayed
+ * - `'LOGIN'` - Force user to re-authenticate even if they have a valid session
+ * - `'CONSENT'` - Force user to consent to sharing information with the client
+ * - `'SELECT_ACCOUNT'` - Prompt user to select among multiple authenticated accounts
  *
  * @see https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
  */
