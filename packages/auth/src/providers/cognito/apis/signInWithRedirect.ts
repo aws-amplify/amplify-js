@@ -15,6 +15,7 @@ import { cognitoHostedUIIdentityProviderMap } from '../types/models';
 import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
+import { mapAuthPromptForCognito } from '../../../types/inputs';
 import {
 	completeOAuthFlow,
 	generateCodeVerifier,
@@ -115,7 +116,7 @@ const oauthSignIn = async ({
 		...(loginHint && { login_hint: loginHint }),
 		...(lang && { lang }),
 		...(nonce && { nonce }),
-		...(prompt && { prompt }),
+		...(prompt && { prompt: mapAuthPromptForCognito(prompt) }),
 		state,
 		...(responseType === 'code' && {
 			code_challenge: toCodeChallenge(),
