@@ -19,15 +19,15 @@ export function isNextRequest(request: object): request is NextRequest {
 		request !== null &&
 		// NextRequest-specific properties
 		'nextUrl' in request &&
-		typeof (request as any).nextUrl === 'object' &&
-		(request as any).nextUrl !== null &&
+		typeof request.nextUrl === 'object' &&
+		request.nextUrl !== null &&
 		'cookies' in request &&
 		// Basic Request API properties
 		'url' in request &&
-		typeof (request as any).url === 'string' &&
+		typeof request.url === 'string' &&
 		'headers' in request &&
 		'method' in request &&
-		typeof (request as any).method === 'string'
+		typeof request.method === 'string'
 	);
 }
 
