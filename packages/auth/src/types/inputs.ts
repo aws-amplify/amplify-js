@@ -64,7 +64,22 @@ export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
  *
  * @see https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
  */
-export type AuthPrompt = 'none' | 'login' | 'consent' | 'select_account';
+export type AuthPrompt = 'NONE' | 'LOGIN' | 'CONSENT' | 'SELECT_ACCOUNT';
+
+/**
+ * Maps internal AuthPromptType enum values to the values expected by Cognito
+ * @internal
+ */
+export function mapAuthPromptForCognito(prompt: AuthPrompt): string {
+	const map: Record<AuthPrompt, string> = {
+		NONE: 'none',
+		LOGIN: 'login',
+		CONSENT: 'consent',
+		SELECT_ACCOUNT: 'select_account',
+	};
+
+	return map[prompt];
+}
 
 export interface AuthSignInWithRedirectInput {
 	provider?: AuthProvider | { custom: string };
