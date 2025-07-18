@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - chore/update_node_workflow_test
 
 jobs:
   e2e:
