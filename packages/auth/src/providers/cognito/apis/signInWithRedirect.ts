@@ -15,6 +15,7 @@ import { cognitoHostedUIIdentityProviderMap } from '../types/models';
 import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
+import { mapAuthPromptForCognito } from '../../../types/inputs';
 import {
 	completeOAuthFlow,
 	generateCodeVerifier,
@@ -41,7 +42,10 @@ export async function signInWithRedirect(
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	oAuthStore.setAuthConfig(authConfig);
-	await assertUserNotAuthenticated();
+
+	if (!input?.options?.prompt) {
+		await assertUserNotAuthenticated();
+	}
 
 	let provider = 'COGNITO'; // Default
 
@@ -61,6 +65,7 @@ export async function signInWithRedirect(
 			loginHint: input?.options?.loginHint,
 			lang: input?.options?.lang,
 			nonce: input?.options?.nonce,
+			prompt: input?.options?.prompt,
 		},
 	});
 }
@@ -81,7 +86,7 @@ const oauthSignIn = async ({
 	options?: SignInWithRedirectInput['options'];
 }) => {
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
-	const { loginHint, lang, nonce } = options ?? {};
+	const { loginHint, lang, nonce, prompt } = options ?? {};
 	const randomState = generateState();
 
 	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito
@@ -111,6 +116,7 @@ const oauthSignIn = async ({
 		...(loginHint && { login_hint: loginHint }),
 		...(lang && { lang }),
 		...(nonce && { nonce }),
+		...(prompt && { prompt: mapAuthPromptForCognito(prompt) }),
 		state,
 		...(responseType === 'code' && {
 			code_challenge: toCodeChallenge(),
