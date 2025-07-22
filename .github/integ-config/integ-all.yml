@@ -514,6 +514,13 @@ tests:
     sample_name: [auth-rsc]
     spec: auth-rsc
     browser: [chrome]
+  - test_name: integ_next_auth_token_revocation
+    desc: 'Token Revocation tests in v6'
+    framework: next
+    category: auth
+    sample_name: [auth-rsc]
+    spec: auth-rsc-token-revocation
+    browser: [chrome]
   - test_name: integ_next_sign_in_with_oauth
     desc: 'Sign-in with the OAuth flow'
     framework: next
