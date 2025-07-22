@@ -142,7 +142,8 @@
 		"tar": "6.2.1",
 		"**/cross-spawn": "7.0.5",
 		"**/brace-expansion": "1.1.12",
-		"**/on-headers": "1.1.0"
+		"**/on-headers": "1.1.0",
+		"**/form-data": "4.0.4"
 	},
 	"overrides": {
 		"tar": "6.2.1",
