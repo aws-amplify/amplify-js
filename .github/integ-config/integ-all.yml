@@ -528,6 +528,13 @@ tests:
     sample_name: [sign-in-with-oauth]
     spec: sign-out-oidc-provider
     browser: [chrome]
+  - test_name: integ_next_auth_token_revocation
+    desc: 'Token Revocation'
+    framework: next
+    category: auth
+    sample_name: [auth-rsc]
+    spec: token-revocation
+    browser: [chrome]
 
   # AUTH GEN2
   - test_name: integ_react_javascript_authentication_gen2
