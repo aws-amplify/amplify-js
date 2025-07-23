@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.13.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.12.3...@aws-amplify/core@6.13.0) (2025-07-23)
+
+### Features
+
+- **api-rest:** support "body" in delete API ([#14462](https://github.com/aws-amplify/amplify-js/issues/14462)) ([d6f1422](https://github.com/aws-amplify/amplify-js/commit/d6f14227f2d42b6b170e8e114952c97d2928f5e6))
+
 ## [6.12.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.12.2...@aws-amplify/core@6.12.3) (2025-07-03)
 
 ### Bug Fixes
