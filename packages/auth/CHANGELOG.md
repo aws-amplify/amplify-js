@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.3...@aws-amplify/auth@6.14.0) (2025-07-23)
+
+### Features
+
+- refresh token rotation ([#14427](https://github.com/aws-amplify/amplify-js/issues/14427)) ([e5a8569](https://github.com/aws-amplify/amplify-js/commit/e5a85697101735c21548e397832fab12d001a5dc))
+
 ## [6.13.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.2...@aws-amplify/auth@6.13.3) (2025-07-03)
 
 **Note:** Version bump only for package @aws-amplify/auth
