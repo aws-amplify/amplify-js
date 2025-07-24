@@ -53,6 +53,31 @@ runs:
           if (!sha.match(/^[0-9a-z]+$/)) {
             inputValidationErrors.push('"sha" must be an alphanumeric string.');
           }
+          if (target_url && target_url.length > 0) {
+            if (target_url.length > 2048) {
+              inputValidationErrors.push('"target-url" must be less than 2048 characters.');
+            }
+
+            try {
+              const url = new URL(target_url);
+
+              if (url.protocol !== 'https:') {
+                inputValidationErrors.push('"target-url" must use HTTPS protocol.');
+              }
+
+              const allowedHostnames = ['github.com', 'api.github.com'];
+              if (!allowedHostnames.includes(url.hostname)) {
+                inputValidationErrors.push(`"target-url" must be one of: ${allowedHostnames.join(', ')}.`);
+              }
+
+            } catch (error) {
+              if (error instanceof TypeError && error.message.includes('Invalid URL')) {
+                inputValidationErrors.push('"target-url" must be a valid URL format.');
+              } else {
+                inputValidationErrors.push(`"target-url" validation failed: ${error.message}`);
+              }
+            }
+          }
           if (inputValidationErrors.length > 0) {
             inputValidationErrors.forEach(core.error);
             process.exit(1);
