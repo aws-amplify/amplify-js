@@ -24,10 +24,7 @@ import { createOAuthError } from '../../../src/providers/cognito/utils/oauth/cre
 import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWithRedirect';
 import type { OAuthStore } from '../../../src/providers/cognito/utils/types';
 import { mockAuthConfigWithOAuth } from '../../mockData';
-import {
-	type AuthPrompt,
-	mapAuthPromptForCognito,
-} from '../../../src/types/inputs';
+import { type AuthPrompt } from '../../../src/types/inputs';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -208,7 +205,7 @@ describe('signInWithRedirect', () => {
 				options: { prompt },
 			});
 			const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
-			const cognitoPrompt = mapAuthPromptForCognito(prompt);
+			const cognitoPrompt = prompt.toLowerCase();
 			expect(oauthUrl).toStrictEqual(
 				`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&prompt=${cognitoPrompt}&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
 			);

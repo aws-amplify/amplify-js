@@ -66,21 +66,6 @@ export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
  */
 export type AuthPrompt = 'NONE' | 'LOGIN' | 'CONSENT' | 'SELECT_ACCOUNT';
 
-/**
- * Maps internal AuthPrompt enum values to the values expected by Cognito
- * @internal
- */
-export function mapAuthPromptForCognito(prompt: AuthPrompt): string {
-	const map: Record<AuthPrompt, string> = {
-		NONE: 'none',
-		LOGIN: 'login',
-		CONSENT: 'consent',
-		SELECT_ACCOUNT: 'select_account',
-	};
-
-	return map[prompt];
-}
-
 export interface AuthSignInWithRedirectInput {
 	provider?: AuthProvider | { custom: string };
 	customState?: string;
