@@ -142,6 +142,9 @@ const oauthSignIn = async ({
 		if (type === 'error') {
 			throw createOAuthError(String(error));
 		}
+		if (type === 'canceled') {
+			throw createOAuthError(String(type));
+		}
 		if (type === 'success' && url) {
 			await completeOAuthFlow({
 				currentUrl: url,
