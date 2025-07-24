@@ -54,6 +54,18 @@ export interface AuthSignOutInput {
 
 export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 
+/**
+ * OIDC prompt parameter that specifies whether the Authorization Server prompts the End-User for reauthentication and consent.
+ *
+ * - `'NONE'` - No authentication or consent UI will be displayed
+ * - `'LOGIN'` - Force user to re-authenticate even if they have a valid session
+ * - `'CONSENT'` - Force user to consent to sharing information with the client
+ * - `'SELECT_ACCOUNT'` - Prompt user to select among multiple authenticated accounts
+ *
+ * @see https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+ */
+export type AuthPrompt = 'NONE' | 'LOGIN' | 'CONSENT' | 'SELECT_ACCOUNT';
+
 export interface AuthSignInWithRedirectInput {
 	provider?: AuthProvider | { custom: string };
 	customState?: string;
@@ -95,6 +107,12 @@ export interface AuthSignInWithRedirectInput {
 		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
 		 */
 		nonce?: string;
+
+		/**
+		 * An OIDC parameter that controls authentication behavior for existing sessions. It can be used by the Client to make sure that the End-User is still present for the current session or to bring attention to the request. Available in the managed login branding version only, not in the classic hosted UI.
+		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
+		 */
+		prompt?: AuthPrompt;
 	};
 }
 
