@@ -233,6 +233,16 @@ describe('signInWithRedirect', () => {
 		mockAssertUserNotAuthenticated.mockClear();
 	});
 
+	it('calls default openAuthSession if no override specified', async () => {
+		const mockAuthSessionOpener = jest.fn();
+		await signInWithRedirect({
+			provider: 'Google',
+		});
+
+		expect(mockOpenAuthSession).toHaveBeenCalled();
+		expect(mockAuthSessionOpener).not.toHaveBeenCalled();
+	});
+
 	it('allows to override openAuthSession if specified', async () => {
 		const mockAuthSessionOpener = jest.fn();
 		await signInWithRedirect({
