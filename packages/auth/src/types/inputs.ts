@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { OpenAuthSession } from '../utils/types';
+
 import {
 	AuthDevice,
 	AuthUserAttribute,
@@ -70,6 +72,12 @@ export interface AuthSignInWithRedirectInput {
 	provider?: AuthProvider | { custom: string };
 	customState?: string;
 	options?: {
+		/**
+		 * on various mobile frameworks which allow js usage for app development (e.g. cordova)
+		 * in-app or webview redirects are discouraged or not allowed by the OS.
+		 * this gives an option to adjust the behaviour to the framework
+		 */
+		authSessionOpener?: OpenAuthSession;
 		/**
 		 * On iOS devices, setting this to true requests that the browser not share cookies or other browsing data between
 		 * the authentication session and the user’s normal browser session. This will bypass the permissions dialog that
