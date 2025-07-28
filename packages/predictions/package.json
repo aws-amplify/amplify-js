@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "6.1.57",
+	"version": "6.1.60",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -43,7 +43,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/storage": "6.9.1",
+		"@aws-amplify/storage": "6.9.4",
 		"@aws-sdk/client-comprehend": "3.621.0",
 		"@aws-sdk/client-polly": "3.621.0",
 		"@aws-sdk/client-rekognition": "3.621.0",
@@ -53,13 +53,13 @@
 		"@smithy/util-utf8": "2.0.0",
 		"buffer": "4.9.2",
 		"tslib": "^2.5.0",
-		"uuid": "^9.0.0"
+		"uuid": "^11.0.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.12.1"
+		"@aws-amplify/core": "6.13.0"
 	},
 	"size-limit": [
 		{
