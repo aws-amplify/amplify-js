@@ -47,17 +47,20 @@ export async function signInWithRedirect(
 	}
 
 	let provider = 'COGNITO'; // Default
+	let isProviderIdpIdentifier: boolean = false;
 
 	if (typeof input?.provider === 'string') {
 		provider = cognitoHostedUIIdentityProviderMap[input.provider];
 	} else if (input?.provider?.custom) {
 		provider = input.provider.custom;
+		isProviderIdpIdentifier = !!input.provider.isIdpIdentifier;
 	}
 
 	return oauthSignIn({
 		oauthConfig: authConfig.loginWith.oauth,
 		clientId: authConfig.userPoolClientId,
 		provider,
+		isProviderIdpIdentifier,
 		customState: input?.customState,
 		preferPrivateSession: input?.options?.preferPrivateSession,
 		options: {
@@ -72,6 +75,7 @@ export async function signInWithRedirect(
 const oauthSignIn = async ({
 	oauthConfig,
 	provider,
+	isProviderIdpIdentifier,
 	clientId,
 	customState,
 	preferPrivateSession,
@@ -79,6 +83,7 @@ const oauthSignIn = async ({
 }: {
 	oauthConfig: OAuthConfig;
 	provider: string;
+	isProviderIdpIdentifier: boolean;
 	clientId: string;
 	customState?: string;
 	preferPrivateSession?: boolean;
@@ -109,7 +114,8 @@ const oauthSignIn = async ({
 		redirect_uri: redirectUri,
 		response_type: responseType,
 		client_id: clientId,
-		identity_provider: provider,
+		...(!isProviderIdpIdentifier && { identity_provider: provider }),
+		...(isProviderIdpIdentifier && { idp_identifier: provider }),
 		scope: scopes.join(' '),
 		// eslint-disable-next-line camelcase
 		...(loginHint && { login_hint: loginHint }),

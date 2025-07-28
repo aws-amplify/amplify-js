@@ -67,7 +67,7 @@ export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 export type AuthPrompt = 'NONE' | 'LOGIN' | 'CONSENT' | 'SELECT_ACCOUNT';
 
 export interface AuthSignInWithRedirectInput {
-	provider?: AuthProvider | { custom: string };
+	provider?: AuthProvider | { custom: string; isIdpIdentifier?: boolean };
 	customState?: string;
 	options?: {
 		/**
