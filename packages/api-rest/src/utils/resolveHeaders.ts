@@ -10,11 +10,11 @@ export const resolveHeaders = (
 		normalizedHeaders[key.toLowerCase()] = headers[key];
 	}
 	if (body) {
-		const existingContentType = normalizedHeaders['content-type'];
+		const contentType = normalizedHeaders['content-type'];
 		const isJsonCompatible =
-			existingContentType &&
-			(existingContentType.startsWith('application/json') ||
-				existingContentType.includes('+json'));
+			contentType &&
+			(contentType.startsWith('application/json') ||
+				contentType.includes('+json'));
 
 		if (!isJsonCompatible) {
 			normalizedHeaders['content-type'] = 'application/json; charset=UTF-8';
