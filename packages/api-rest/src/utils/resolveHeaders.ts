@@ -14,7 +14,8 @@ export const resolveHeaders = (
 		const isJsonCompatible =
 			contentType &&
 			(contentType.startsWith('application/json') ||
-				contentType.includes('+json'));
+				(contentType.startsWith('application/') &&
+					contentType.includes('+json')));
 
 		if (!isJsonCompatible) {
 			normalizedHeaders['content-type'] = 'application/json; charset=UTF-8';
