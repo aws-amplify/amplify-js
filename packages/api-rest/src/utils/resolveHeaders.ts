@@ -10,13 +10,13 @@ export const resolveHeaders = (
 		normalizedHeaders[key.toLowerCase()] = headers[key];
 	}
 	if (body) {
-		const jsonContentTypeRegex = /^application\/json|.*\+json/i;
-		const existingContentType = normalizedHeaders['content-type'];
+		const contentType = normalizedHeaders['content-type'];
+		const isJsonCompatible =
+			contentType &&
+			(contentType.startsWith('application/json') ||
+				contentType.includes('+json'));
 
-		if (
-			!existingContentType ||
-			!jsonContentTypeRegex.test(existingContentType)
-		) {
+		if (!isJsonCompatible) {
 			normalizedHeaders['content-type'] = 'application/json; charset=UTF-8';
 		}
 
