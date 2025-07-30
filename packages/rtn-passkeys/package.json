@@ -1,0 +1,78 @@
+{
+	"name": "@aws-amplify/rtn-passkeys",
+	"version": "0.1.0",
+	"description": "React Native module for aws-amplify webauthn support",
+	"source": "./src/index.ts",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./src/index.ts",
+	"typings": "./dist/esm/index.d.ts",
+	"sideEffects": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"src",
+		"dist/cjs",
+		"dist/esm",
+		"android",
+		"ios",
+		"*.podspec",
+		"react-native.config.js",
+		"!ios/build",
+		"!android/build",
+		"!android/gradle",
+		"!android/gradlew",
+		"!android/gradlew.bat",
+		"!android/local.properties",
+		"!**/__tests__",
+		"!**/__fixtures__",
+		"!**/__mocks__",
+		"!**/.*"
+	],
+	"scripts": {
+		"prepare:ios": "cd ./example && npx pod-install",
+		"prepare:android": "cd ./example && echo \"{}\" > amplify_outputs.json",
+		"test": "echo 'no-op'",
+		"test:ios": "xcodebuild test -quiet -workspace example/ios/AmplifyRtnPasskeysExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16' -scheme AmplifyRtnPasskeys-Unit-tests",
+		"test:android": "cd ./example/android && ./gradlew test -i",
+		"typecheck": "tsc",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
+		"build": "yarn clean && yarn build:esm-cjs && yarn codegen",
+		"lint": "eslint \"**/*.{js,ts,tsx}\"",
+		"codegen:ios": "react-native codegen --platform ios --outputPath ios/generated --source library",
+		"codegen:android": "react-native codegen --platform android --outputPath android/generated --source library",
+		"codegen": "yarn codegen:ios && yarn codegen:android",
+		"clean": "rimraf android/build example/android/build example/android/app/.cxx example/android/app/debug example/android/app/build example/ios/build example/ios/Pods example/ios/Podfile.lock dist"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://docs.amplify.aws",
+	"devDependencies": {
+		"react-native": "0.79.2",
+		"typescript": "^5.2.2"
+	},
+	"peerDependencies": {
+		"react-native": "*"
+	},
+	"codegenConfig": {
+		"name": "AmplifyRtnPasskeysSpec",
+		"type": "modules",
+		"jsSrcsDir": "src",
+		"outputDir": {
+			"ios": "ios/generated",
+			"android": "android/generated"
+		},
+		"android": {
+			"javaPackageName": "com.amazonaws.amplify.rtnpasskeys"
+		},
+		"includesGeneratedCode": true
+	}
+}
