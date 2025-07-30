@@ -60,7 +60,7 @@
 		"typescript": "^5.2.2"
 	},
 	"peerDependencies": {
-		"react-native": "*"
+		"react-native": ">=0.76"
 	},
 	"codegenConfig": {
 		"name": "AmplifyRtnPasskeysSpec",
