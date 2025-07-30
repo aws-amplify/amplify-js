@@ -10,7 +10,17 @@ export const resolveHeaders = (
 		normalizedHeaders[key.toLowerCase()] = headers[key];
 	}
 	if (body) {
-		normalizedHeaders['content-type'] = 'application/json; charset=UTF-8';
+		const contentType = normalizedHeaders['content-type'];
+		const isJsonCompatible =
+			contentType &&
+			(contentType.startsWith('application/json') ||
+				(contentType.startsWith('application/') &&
+					contentType.includes('+json')));
+
+		if (!isJsonCompatible) {
+			normalizedHeaders['content-type'] = 'application/json; charset=UTF-8';
+		}
+
 		if (body instanceof FormData) {
 			/**
 			 * If body is a FormData we should not allow setting content-type.
