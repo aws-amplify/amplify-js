@@ -85,6 +85,6 @@ jobs:
         with:
           sha: ${{ github.event.pull_request.head.sha }}
           state: 'failure'
-          context: 'Run e2e PR checks'
+          context: 'Run PR e2e checks'
           description: 'PR e2e checks have failed'
           target-url: https://github.com/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/actions/runs/${{ github.run_id }}

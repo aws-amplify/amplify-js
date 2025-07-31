@@ -38,16 +38,16 @@ runs:
         script: |
           const { status_context, description, state, sha, target_url, owner, repo } = process.env;
           const inputValidationErrors = [];
-          if (state.length === 0) {
+          if (!state || state.length === 0) {
             inputValidationErrors.push('"state" input cannot be empty.');
           }
           if (!["error", "failure", "pending", "success"].includes(state)) {
             inputValidationErrors.push('"state" must be a string input with possible value of "error", "failure", "pending", "success".');
           }
-          if (context.length === 0) {
+          if (!status_context || status_context.length === 0) {
             inputValidationErrors.push('"context" input cannot be empty.');
           }
-          if (sha.length === 0) {
+          if (!sha || sha.length === 0) {
             inputValidationErrors.push('"sha" input cannot be empty.');
           }
           if (!sha.match(/^[0-9a-z]+$/)) {
@@ -88,6 +88,6 @@ runs:
             sha,
             state,
             context: status_context,
-            description: description.length > 0 ? description : undefined,
-            target_url: target_url.length > 0 ? target_url : undefined,
+            description: description && description.length > 0 ? description : undefined,
+            target_url: target_url && target_url.length > 0 ? target_url : undefined,
           });
