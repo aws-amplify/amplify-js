@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { ConsoleLogger } from '../../Logger';
+
 import {
 	AuthConfig,
 	AuthSession,
@@ -9,6 +11,7 @@ import {
 	LibraryAuthOptions,
 } from './types';
 
+const logger = new ConsoleLogger('Auth');
 export class AuthClass {
 	private authConfig?: AuthConfig;
 	private authOptions?: LibraryAuthOptions;
@@ -29,12 +32,25 @@ export class AuthClass {
 	): void {
 		this.authConfig = authResourcesConfig;
 		this.authOptions = authOptions;
+
+		if (authResourcesConfig && authResourcesConfig.Cognito?.userPoolEndpoint) {
+			logger.warn(getCustomEndpointWarningMessage('Amazon Cognito User Pool'));
+		}
+
+		if (
+			authResourcesConfig &&
+			authResourcesConfig.Cognito?.identityPoolEndpoint
+		) {
+			logger.warn(
+				getCustomEndpointWarningMessage('Amazon Cognito Identity Pool'),
+			);
+		}
 	}
 
 	/**
 	 * Fetch the auth tokens, and the temporary AWS credentials and identity if they are configured. By default it
-	 * does not refresh the auth tokens or credentials if they are loaded in storage already. You can force a refresh
-	 * with `{ forceRefresh: true }` input.
+	 * will automatically refresh expired auth tokens if a valid refresh token is present. You can force a refresh
+	 * of non-expired tokens with `{ forceRefresh: true }` input.
 	 *
 	 * @param options - Options configuring the fetch behavior.
 	 *
@@ -94,3 +110,6 @@ export class AuthClass {
 		);
 	}
 }
+
+const getCustomEndpointWarningMessage = (target: string): string =>
+	`You are using a custom Amazon ${target} endpoint, ensure the endpoint is correct.`;

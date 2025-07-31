@@ -108,7 +108,7 @@ describe(fetchTransferHandler.name, () => {
 		expect(mockBody.json).toHaveBeenCalledTimes(1); // test caching
 	});
 
-	test.each(['GET', 'HEAD', 'DELETE'])(
+	test.each(['GET', 'HEAD'])(
 		'should ignore request payload for %s request',
 		async method => {
 			await fetchTransferHandler(
@@ -116,7 +116,19 @@ describe(fetchTransferHandler.name, () => {
 				{},
 			);
 			expect(mockFetch).toHaveBeenCalledTimes(1);
-			expect(mockFetch.mock.calls[0][0].body).toBeUndefined();
+			expect(mockFetch.mock.calls[0][1].body).toBeUndefined();
+		},
+	);
+
+	test.each(['POST', 'PUT', 'DELETE', 'PATCH'])(
+		'should include request payload for %s request',
+		async method => {
+			await fetchTransferHandler(
+				{ ...mockRequest, method, body: 'Mock Body' },
+				{},
+			);
+			expect(mockFetch).toHaveBeenCalledTimes(1);
+			expect(mockFetch.mock.calls[0][1].body).toBe('Mock Body');
 		},
 	);
 });

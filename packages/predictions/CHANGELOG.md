@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.60](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.59...@aws-amplify/predictions@6.1.60) (2025-07-23)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.59](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.58...@aws-amplify/predictions@6.1.59) (2025-07-03)
+
+### Bug Fixes
+
+- error building expo application ([#14436](https://github.com/aws-amplify/amplify-js/issues/14436)) ([f14dc87](https://github.com/aws-amplify/amplify-js/commit/f14dc873a05030fd3e98400451a82bf7d509c3d4))
+
+## [6.1.58](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.57...@aws-amplify/predictions@6.1.58) (2025-07-02)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.57](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.56...@aws-amplify/predictions@6.1.57) (2025-06-17)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.56](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.55...@aws-amplify/predictions@6.1.56) (2025-05-27)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
 ## [6.1.55](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.54...@aws-amplify/predictions@6.1.55) (2025-04-28)
 
 **Note:** Version bump only for package @aws-amplify/predictions

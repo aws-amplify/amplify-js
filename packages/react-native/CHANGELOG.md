@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.1.9...@aws-amplify/react-native@1.1.10) (2025-05-27)
+
+**Note:** Version bump only for package @aws-amplify/react-native
+
 ## [1.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.1.8...@aws-amplify/react-native@1.1.9) (2025-04-28)
 
 **Note:** Version bump only for package @aws-amplify/react-native

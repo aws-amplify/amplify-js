@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, Identity, ResourcesConfig, getId } from '@aws-amplify/core';
 import {
-	GetIdInput,
-	GetIdOutput,
-} from '@aws-amplify/core/internals/aws-clients/cognitoIdentity';
+	Amplify,
+	Identity,
+	ResourcesConfig,
+	createGetIdClient,
+} from '@aws-amplify/core';
 import {
 	AmplifyError,
 	CognitoIdentityPoolConfig,
@@ -18,9 +19,8 @@ import { authAPITestParams } from '../testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
-	getId: jest.fn(),
+	createGetIdClient: jest.fn(),
 }));
-jest.mock('@aws-amplify/core/internals/aws-clients/cognitoIdentity');
 jest.mock(
 	'../../../../src/providers/cognito/credentialsProvider/IdentityIdStore',
 );
@@ -35,7 +35,7 @@ const ampConfig: ResourcesConfig = {
 	},
 };
 
-const mockGetId = getId as jest.Mock;
+const mockCreateGetIdClient = jest.mocked(createGetIdClient);
 const mockKeyValueStorage = {
 	setItem: jest.fn(),
 	getItem: jest.fn(),
@@ -48,23 +48,26 @@ describe('Cognito IdentityId Provider', () => {
 	const _ = new DefaultIdentityIdStore(mockKeyValueStorage);
 	const mockDefaultIdentityIdStoreInstance =
 		MockDefaultIdentityIdStore.mock.instances[0];
+	const mockGetId: jest.MockedFunction<ReturnType<typeof createGetIdClient>> =
+		jest.fn(async (_config, params) => {
+			if (params.Logins && Object.keys(params.Logins).length === 0) {
+				return {
+					IdentityId: authAPITestParams.GuestIdentityId.id,
+					$metadata: {},
+				};
+			} else {
+				return {
+					IdentityId: authAPITestParams.PrimaryIdentityId.id,
+					$metadata: {},
+				};
+			}
+		});
+
 	describe('Happy Path Cases:', () => {
 		beforeAll(() => {
 			jest.spyOn(Amplify, 'getConfig').mockImplementationOnce(() => ampConfig);
 
-			mockGetId.mockImplementation(
-				async (_config: object, params: GetIdInput) => {
-					if (params.Logins && Object.keys(params.Logins).length === 0) {
-						return {
-							IdentityId: authAPITestParams.GuestIdentityId.id,
-						} as GetIdOutput;
-					} else {
-						return {
-							IdentityId: authAPITestParams.PrimaryIdentityId.id,
-						} as GetIdOutput;
-					}
-				},
-			);
+			mockCreateGetIdClient.mockReturnValue(mockGetId);
 		});
 
 		afterEach(() => {

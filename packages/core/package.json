@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "6.11.4",
+	"version": "6.13.0",
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -57,10 +57,10 @@
 		"js-cookie": "^3.0.5",
 		"rxjs": "^7.8.1",
 		"tslib": "^2.5.0",
-		"uuid": "^9.0.0"
+		"uuid": "^11.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/react-native": "1.1.9",
+		"@aws-amplify/react-native": "1.1.10",
 		"@types/js-cookie": "3.0.2",
 		"genversion": "^2.2.0"
 	},
@@ -87,7 +87,7 @@
 			"name": "Custom clients (unauthenticated handler)",
 			"path": "./dist/esm/clients/handlers/aws/unauthenticated.mjs",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "4.09 kB"
+			"limit": "4.25 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
@@ -99,7 +99,7 @@
 			"name": "Custom clients (url presigner)",
 			"path": "./dist/esm/clients/middleware/signing/signer/signatureV4/index.mjs",
 			"import": "{ presignUrl }",
-			"limit": "3.65 kB"
+			"limit": "3.7 kB"
 		},
 		{
 			"name": "Cache (default browser storage)",
@@ -138,10 +138,10 @@
 			"require": "./dist/cjs/clients/internal/index.js"
 		},
 		"./internals/aws-clients/cognitoIdentity": {
-			"react-native": "./dist/cjs/awsClients/cognitoIdentity/index.js",
-			"types": "./dist/esm/awsClients/cognitoIdentity/index.d.ts",
-			"import": "./dist/esm/awsClients/cognitoIdentity/index.mjs",
-			"require": "./dist/cjs/awsClients/cognitoIdentity/index.js"
+			"react-native": "./dist/cjs/foundation/factories/serviceClients/cognitoIdentity/index.js",
+			"types": "./dist/esm/foundation/factories/serviceClients/cognitoIdentity/index.d.ts",
+			"import": "./dist/esm/foundation/factories/serviceClients/cognitoIdentity/index.mjs",
+			"require": "./dist/cjs/foundation/factories/serviceClients/cognitoIdentity/index.js"
 		},
 		"./internals/aws-clients/pinpoint": {
 			"react-native": "./dist/cjs/awsClients/pinpoint/index.js",
@@ -178,7 +178,7 @@
 				"./dist/esm/clients/internal/index.d.ts"
 			],
 			"internals/aws-clients/cognitoIdentity": [
-				"./dist/esm/awsClients/cognitoIdentity/index.d.ts"
+				"./dist/esm/foundation/factories/serviceClients/cognitoIdentity/index.d.ts"
 			],
 			"internals/aws-clients/pinpoint": [
 				"./dist/esm/awsClients/pinpoint/index.d.ts"

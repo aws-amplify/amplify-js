@@ -105,6 +105,7 @@ const getObjectDeserializer = async (
 				ChecksumCRC32C: 'x-amz-checksum-crc32c',
 				ChecksumSHA1: 'x-amz-checksum-sha1',
 				ChecksumSHA256: 'x-amz-checksum-sha256',
+				ChecksumType: 'x-amz-checksum-type',
 				MissingMeta: ['x-amz-missing-meta', deserializeNumber],
 				VersionId: 'x-amz-version-id',
 				CacheControl: 'cache-control',
