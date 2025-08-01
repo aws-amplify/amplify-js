@@ -704,7 +704,7 @@ export abstract class AWSWebSocketProvider {
 
 				if (type === MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR) {
 					const { errors } = JSON.parse(String(message.data));
-					if (errors && Array.isArray(errors) && errors.length > 0) {
+					if (Array.isArray(errors) && errors.length > 0) {
 						const error = errors[0];
 						errorMessage = `${error.errorType}: ${error.message}`;
 					}
