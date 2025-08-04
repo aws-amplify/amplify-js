@@ -248,7 +248,7 @@ describe('signInWithRedirect', () => {
 			expect(mockGetAuthUserAgentValue).toHaveBeenCalledTimes(1);
 		});
 
-		it('invokes `handleFailure` with the error created by `createOAuthError` when `openAuthSession` completes with error', async () => {
+		it('invokes `handleFailure` with the error created by `createOAuthError` when `openAuthSession` is canceled', async () => {
 			const mockOpenAuthSessionResult = {
 				type: 'error',
 				error: new Error('some error'),
@@ -312,10 +312,8 @@ describe('signInWithRedirect', () => {
 				}),
 			).rejects.toThrow(expectedError);
 
-			expect(mockCompleteOAuthFlow).toHaveBeenCalledWith(
-				expect.objectContaining({
-					currentUrl: mockOpenAuthSessionResult.url,
-				}),
+			expect(mockCreateOAuthError).toHaveBeenCalledWith(
+					'User canceled the OAuth flow',
 			);
 			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
 		});
