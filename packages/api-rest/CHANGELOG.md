@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.8...@aws-amplify/api-rest@4.2.0) (2025-07-23)
+
+### Features
+
+- **api-rest:** support "body" in delete API ([#14462](https://github.com/aws-amplify/amplify-js/issues/14462)) ([d6f1422](https://github.com/aws-amplify/amplify-js/commit/d6f14227f2d42b6b170e8e114952c97d2928f5e6))
+
+## [4.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.7...@aws-amplify/api-rest@4.1.8) (2025-07-03)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.6...@aws-amplify/api-rest@4.1.7) (2025-07-02)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
 ## [4.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.5...@aws-amplify/api-rest@4.1.6) (2025-06-17)
 
 **Note:** Version bump only for package @aws-amplify/api-rest
