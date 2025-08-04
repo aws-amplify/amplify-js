@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.15.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.3...aws-amplify@6.15.4) (2025-07-23)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.15.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.2...aws-amplify@6.15.3) (2025-07-03)
+
+### Bug Fixes
+
+- error building expo application ([#14436](https://github.com/aws-amplify/amplify-js/issues/14436)) ([f14dc87](https://github.com/aws-amplify/amplify-js/commit/f14dc873a05030fd3e98400451a82bf7d509c3d4))
+
+## [6.15.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.1...aws-amplify@6.15.2) (2025-07-02)
+
+### Bug Fixes
+
+- remove import side effects for getAmplifyUserAgent() ([#14433](https://github.com/aws-amplify/amplify-js/issues/14433)) ([f94a30b](https://github.com/aws-amplify/amplify-js/commit/f94a30b71e4e5abbce1ad8c215fbb67386721bff))
+
 ## [6.15.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.0...aws-amplify@6.15.1) (2025-06-17)
 
 ### Bug Fixes
