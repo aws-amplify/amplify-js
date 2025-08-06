@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.15.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.14.0...@aws-amplify/auth@6.15.0) (2025-08-06)
+
+### Features
+
+- **auth:** add prompt parameter to signInWithRedirect ([#14464](https://github.com/aws-amplify/amplify-js/issues/14464)) ([76548ca](https://github.com/aws-amplify/amplify-js/commit/76548ca51f2df7b5faac3233a1cc1d54d176b2ac))
+- make authSessionOpener configurable ([1d6c320](https://github.com/aws-amplify/amplify-js/commit/1d6c3206d517967cd28214c3c648da08f65b75dd))
+
 # [6.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.3...@aws-amplify/auth@6.14.0) (2025-07-23)
 
 ### Features
