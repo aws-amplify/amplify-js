@@ -1,0 +1,47 @@
+name: PR Maintainer Feedback
+
+on:
+  pull_request_review:
+    types: [submitted]
+  issue_comment:
+    types: [created]
+
+jobs:
+  handle-maintainer-feedback:
+    runs-on: ubuntu-latest
+    # Only run on PR comments/reviews from maintainers targeting main branch
+    if: ${{ (github.event.pull_request && github.event.pull_request.base.ref == 'main' && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.review.author_association)) || (github.event.issue.pull_request && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association)) }}
+    permissions:
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+      REPOSITORY_NAME: ${{ github.event.repository.full_name }}
+    steps:
+      - name: Check if PR targets main branch (for issue comments)
+        if: ${{ github.event.comment }}
+        id: check-branch
+        shell: bash
+        run: |
+          BASE_BRANCH=$(gh pr view $PR_NUMBER --repo $REPOSITORY_NAME --json baseRefName --jq '.baseRefName')
+          echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          
+      - name: Handle maintainer feedback on PR reviews
+        if: ${{ github.event.review && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.review.author_association) }}
+        shell: bash
+        run: |
+          # Remove pending labels and add pending-community-response
+          gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
+            --remove-label "pending-first-review" \
+            --remove-label "pending-maintainer-review" \
+            --add-label "pending-community-response"
+      
+      - name: Handle maintainer feedback on PR comments
+        if: ${{ github.event.comment && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && steps.check-branch.outputs.base_branch == 'main' }}
+        shell: bash
+        run: |
+          # Remove pending labels and add pending-community-response
+          gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
+            --remove-label "pending-first-review" \
+            --remove-label "pending-maintainer-review" \
+            --add-label "pending-community-response"

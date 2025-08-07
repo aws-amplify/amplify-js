@@ -1,0 +1,42 @@
+name: PR Community Response
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [synchronize]  # Triggered when new commits are pushed
+    branches: [main]
+
+jobs:
+  handle-community-response:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+      REPOSITORY_NAME: ${{ github.event.repository.full_name }}
+    steps:
+      - name: Check if PR targets main branch (for issue comments)
+        if: ${{ github.event.comment }}
+        id: check-branch
+        shell: bash
+        run: |
+          BASE_BRANCH=$(gh pr view $PR_NUMBER --repo $REPOSITORY_NAME --json baseRefName --jq '.baseRefName')
+          echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          
+      - name: Handle community comment response
+        if: ${{ github.event.comment && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && steps.check-branch.outputs.base_branch == 'main' }}
+        shell: bash
+        run: |
+          gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
+            --add-label "pending-maintainer-review" \
+            --remove-label "pending-community-response"
+      
+      - name: Handle community code revision (new commits)
+        if: ${{ github.event.pull_request && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.user.type) }}
+        shell: bash
+        run: |
+          gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
+            --add-label "pending-maintainer-review" \
+            --remove-label "pending-community-response"

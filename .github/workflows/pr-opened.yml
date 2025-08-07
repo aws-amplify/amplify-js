@@ -1,0 +1,22 @@
+name: PR Opened
+
+on:
+  pull_request:
+    types: [opened]
+    branches: [main]
+
+jobs:
+  add-pr-opened-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      REPOSITORY_NAME: ${{ github.event.repository.full_name }}
+    steps:
+      - name: Add the pending-first-review label for external contributors
+        if: ${{ !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association) }}
+        shell: bash
+        run: |
+          gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME --add-label "pending-first-review"
