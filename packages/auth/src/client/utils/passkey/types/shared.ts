@@ -55,8 +55,8 @@ export interface PkcAttestationResponse<T> {
 	attestationObject: T;
 	transports: string[];
 	publicKey?: string;
-	publicKeyAlgorithm: number;
-	authenticatorData: T;
+	publicKeyAlgorithm?: number;
+	authenticatorData?: T;
 }
 export interface PasskeyCreateResult {
 	id: string;
@@ -69,7 +69,7 @@ export interface PasskeyCreateResultJson {
 	id: string;
 	rawId: string;
 	type: string;
-	clientExtensionResults: {
+	clientExtensionResults?: {
 		appId?: boolean;
 		credProps?: { rk?: boolean };
 		hmacCreateSecret?: boolean;
@@ -121,7 +121,7 @@ export interface PasskeyGetResultJson {
 	id: string;
 	rawId: string;
 	type: string;
-	clientExtensionResults: {
+	clientExtensionResults?: {
 		appId?: boolean;
 		credProps?: { rk?: boolean };
 		hmacCreateSecret?: boolean;

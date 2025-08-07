@@ -1,0 +1,8 @@
+<resources>
+	<string name="app_name">AmplifyRtnPasskeysExample</string>
+	<string name="asset_statements" translatable="false">
+		[{
+		\"include\": \"https://staging.d375f6hcyb75ic.amplifyapp.com/.well-known/assetlinks.json\"
+		}]
+	</string>
+</resources>
