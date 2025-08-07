@@ -93,6 +93,11 @@ export enum MESSAGE_TYPES {
 	 * This is the ack response from AWS AppSync Events to EVENT_STOP message
 	 */
 	EVENT_COMPLETE = 'unsubscribe_success',
+	/**
+	 * Server -> Client message.
+	 * This message type is for sending error messages from AWS AppSync Events to the client
+	 */
+	EVENT_SUBSCRIBE_ERROR = 'subscribe_error',
 }
 
 export enum SUBSCRIPTION_STATUS {
