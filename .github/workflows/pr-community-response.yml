@@ -17,16 +17,18 @@ jobs:
       PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
       REPOSITORY_NAME: ${{ github.event.repository.full_name }}
     steps:
-      - name: Check if PR targets main branch (for issue comments)
+      - name: Check PR details for comments
         if: ${{ github.event.comment }}
-        id: check-branch
+        id: check-pr
         shell: bash
         run: |
           BASE_BRANCH=$(gh pr view $PR_NUMBER --repo $REPOSITORY_NAME --json baseRefName --jq '.baseRefName')
+          PR_TITLE=$(gh pr view $PR_NUMBER --repo $REPOSITORY_NAME --json title --jq '.title')
           echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
           
       - name: Handle community comment response
-        if: ${{ github.event.comment && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && steps.check-branch.outputs.base_branch == 'main' }}
+        if: ${{ github.event.comment && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && steps.check-pr.outputs.base_branch == 'main' && contains(steps.check-pr.outputs.pr_title, '[TEST-WORKFLOW]') }}
         shell: bash
         run: |
           gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
@@ -34,7 +36,7 @@ jobs:
             --remove-label "pending-community-response"
       
       - name: Handle community code revision (new commits)
-        if: ${{ github.event.pull_request && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association) }}
+        if: ${{ github.event.pull_request && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association) && contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
         shell: bash
         run: |
           gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
