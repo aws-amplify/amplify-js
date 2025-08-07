@@ -1,0 +1,25 @@
+name: PR Approved
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  handle-approval:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.review.state == 'approved' && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.review.author_association) && github.event.pull_request.base.ref == 'main' }}
+    permissions:
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      REPOSITORY_NAME: ${{ github.event.repository.full_name }}
+    steps:
+      - name: Add approved label and remove pending labels
+        shell: bash
+        run: |
+          gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
+            --add-label "approved" \
+            --remove-label "pending-first-review" \
+            --remove-label "pending-maintainer-review" \
+            --remove-label "pending-community-response"
