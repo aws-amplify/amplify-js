@@ -3,7 +3,7 @@ name: PR Opened
 on:
   pull_request:
     types: [opened]
-    branches: [feat/josh/test-pr-workflows]
+    branches: [main]
 
 jobs:
   add-pr-opened-labels:

@@ -5,7 +5,7 @@ on:
     types: [created]
   pull_request:
     types: [synchronize]  # Triggered when new commits are pushed
-    branches: [feat/josh/test-pr-workflows]
+    branches: [main]
 
 jobs:
   handle-community-response:
@@ -26,7 +26,7 @@ jobs:
           echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
           
       - name: Handle community comment response
-        if: ${{ github.event.comment && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && steps.check-branch.outputs.base_branch == 'feat/josh/test-pr-workflows' }}
+        if: ${{ github.event.comment && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && steps.check-branch.outputs.base_branch == 'main' }}
         shell: bash
         run: |
           gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
@@ -34,7 +34,7 @@ jobs:
             --remove-label "pending-community-response"
       
       - name: Handle community code revision (new commits)
-        if: ${{ github.event.pull_request && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.user.type) }}
+        if: ${{ github.event.pull_request && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association) }}
         shell: bash
         run: |
           gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
