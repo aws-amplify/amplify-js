@@ -9,8 +9,6 @@ on:
 jobs:
   handle-maintainer-feedback:
     runs-on: ubuntu-latest
-    # Only run on PR comments/reviews from maintainers targeting main branch
-    if: ${{ (github.event.pull_request && github.event.pull_request.base.ref == 'main' && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.review.author_association) && contains(github.event.pull_request.title, '[TEST-WORKFLOW]')) || (github.event.issue.pull_request && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association)) }}
     permissions:
       pull-requests: write
     env:
