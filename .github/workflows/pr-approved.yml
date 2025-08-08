@@ -7,7 +7,7 @@ on:
 jobs:
   handle-approval:
     runs-on: ubuntu-latest
-    if: ${{ github.event.review.state == 'approved' && github.event.pull_request.base.ref == 'feat/josh/test-pr-workflows' && contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
+    if: ${{ github.event.review.state == 'approved' && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.review.author_association) && github.event.pull_request.base.ref == 'feat/josh/test-pr-workflows' && contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
     permissions:
       pull-requests: write
     env:

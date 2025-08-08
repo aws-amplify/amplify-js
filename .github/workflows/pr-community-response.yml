@@ -10,6 +10,7 @@ on:
 jobs:
   handle-community-response:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request || (github.event.comment && github.event.issue.pull_request) }}
     permissions:
       pull-requests: write
     env:
@@ -28,7 +29,7 @@ jobs:
           echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
           
       - name: Handle community comment response
-        if: ${{ github.event.comment && github.event.issue.pull_request && steps.check-pr.outputs.base_branch == 'feat/josh/test-pr-workflows' && contains(steps.check-pr.outputs.pr_title, '[TEST-WORKFLOW]') }}
+        if: ${{ github.event.comment && github.event.issue.pull_request && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && steps.check-pr.outputs.base_branch == 'feat/josh/test-pr-workflows' && contains(steps.check-pr.outputs.pr_title, '[TEST-WORKFLOW]') }}
         shell: bash
         run: |
           gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
@@ -36,7 +37,7 @@ jobs:
             --remove-label "pending-community-response"
       
       - name: Handle community code revision (new commits)
-        if: ${{ github.event.pull_request && contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
+        if: ${{ github.event.pull_request && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association) && contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
         shell: bash
         run: |
           gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
