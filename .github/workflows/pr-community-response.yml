@@ -32,14 +32,28 @@ jobs:
         if: ${{ github.event.comment && github.event.issue.pull_request && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && steps.check-pr.outputs.base_branch == 'feat/josh/test-pr-workflows' && contains(steps.check-pr.outputs.pr_title, '[TEST-WORKFLOW]') }}
         shell: bash
         run: |
-          gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
-            --add-label "pending-maintainer-review" \
-            --remove-label "pending-community-response"
+          # Check if pending-first-review exists
+          LABELS=$(gh pr view $PR_NUMBER --repo $REPOSITORY_NAME --json labels --jq '.labels[].name')
+          if echo "$LABELS" | grep -q "pending-first-review"; then
+            echo "PR has pending-first-review, not adding pending-maintainer-review"
+            gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME --remove-label "pending-community-response"
+          else
+            gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
+              --add-label "pending-maintainer-review" \
+              --remove-label "pending-community-response"
+          fi
       
       - name: Handle community code revision (new commits)
         if: ${{ github.event.pull_request && !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association) && contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
         shell: bash
         run: |
-          gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
-            --add-label "pending-maintainer-review" \
-            --remove-label "pending-community-response"
+          # Check if pending-first-review exists
+          LABELS=$(gh pr view $PR_NUMBER --repo $REPOSITORY_NAME --json labels --jq '.labels[].name')
+          if echo "$LABELS" | grep -q "pending-first-review"; then
+            echo "PR has pending-first-review, not adding pending-maintainer-review"
+            gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME --remove-label "pending-community-response"
+          else
+            gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME \
+              --add-label "pending-maintainer-review" \
+              --remove-label "pending-community-response"
+          fi
