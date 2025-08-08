@@ -27,7 +27,7 @@ jobs:
           echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
           
       - name: Handle maintainer feedback on PR reviews
-        if: ${{ github.event.review && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.review.author_association) && contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
+        if: ${{ github.event.review && contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
         shell: bash
         run: |
           # Remove pending labels and add pending-community-response
@@ -37,7 +37,7 @@ jobs:
             --add-label "pending-community-response"
       
       - name: Handle maintainer feedback on PR comments
-        if: ${{ github.event.comment && github.event.issue.pull_request && contains(fromJSON('["MEMBER", "OWNER"]'), github.event.comment.author_association) && steps.check-pr.outputs.base_branch == 'main' && contains(steps.check-pr.outputs.pr_title, '[TEST-WORKFLOW]') }}
+        if: ${{ github.event.comment && github.event.issue.pull_request && steps.check-pr.outputs.base_branch == 'feat/josh/test-pr-workflows' && contains(steps.check-pr.outputs.pr_title, '[TEST-WORKFLOW]') }}
         shell: bash
         run: |
           # Remove pending labels and add pending-community-response

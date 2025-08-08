@@ -3,7 +3,7 @@ name: PR Opened
 on:
   pull_request:
     types: [opened]
-    branches: [main]
+    branches: [feat/josh/test-pr-workflows]
 
 jobs:
   add-pr-opened-labels:
@@ -16,7 +16,7 @@ jobs:
       REPOSITORY_NAME: ${{ github.event.repository.full_name }}
     steps:
       - name: Add the pending-first-review label for external contributors
-        if: ${{ !contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association) && contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
+        if: ${{ contains(github.event.pull_request.title, '[TEST-WORKFLOW]') }}
         shell: bash
         run: |
           gh pr edit $PR_NUMBER --repo $REPOSITORY_NAME --add-label "pending-first-review"
