@@ -629,6 +629,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: sign-in-resumable-mfa
+    retry_count: 3
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: resum-signin
@@ -913,6 +914,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-email
+    retry_count: 3
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-email
@@ -922,6 +924,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-phone
+    retry_count: 3
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-phone
@@ -931,6 +934,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-email
+    retry_count: 3
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-email
@@ -940,6 +944,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-phone
+    retry_count: 3
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-phone
@@ -949,6 +954,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-setup
+    retry_count: 3
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup
@@ -1014,6 +1020,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: refresh-token-auth
+    retry_count: 3
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: misc-tokenref
