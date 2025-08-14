@@ -363,6 +363,28 @@ describe('signInWithRedirect', () => {
 			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
 		});
 
+		it('invokes `handleFailure` with the error created by `createOAuthError` when `openAuthSession` is canceled', async () => {
+			const expectedError = new Error('OAuth flow was cancelled.');
+			const mockOpenAuthSessionResult = {
+				type: 'canceled',
+				url: 'https://url.com',
+			};
+			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
+			mockCompleteOAuthFlow.mockRejectedValueOnce(expectedError);
+
+			await expect(
+				signInWithRedirect({
+					provider: 'Google',
+					options: { preferPrivateSession: true },
+				}),
+			).rejects.toThrow(expectedError);
+
+			expect(mockCreateOAuthError).toHaveBeenCalledWith(
+					'User canceled the OAuth flow',
+			);
+			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
+		});
+
 		it('should not set the Oauth flag on non-browser environments', async () => {
 			const mockOpenAuthSessionResult = {
 				type: 'success',
