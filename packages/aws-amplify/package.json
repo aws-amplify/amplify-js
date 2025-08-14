@@ -307,7 +307,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "18.10 kB"
+			"limit": "18.17 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -427,19 +427,19 @@
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ setUpTOTP }",
-			"limit": "14 kB"
+			"limit": "14.08 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "13 kB"
+			"limit": "13.01 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "8.30 kB"
+			"limit": "8.37 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
@@ -493,7 +493,7 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "17 kB"
+			"limit": "17.08 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
