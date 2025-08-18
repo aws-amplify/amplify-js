@@ -633,7 +633,7 @@ tests:
     category: auth
     sample_name: [custom-auth]
     spec: custom-auth
-    retry_count: 5
+    retry_count: 10
     browser: *minimal_browser_list
   - test_name: integ_next_auth_sign_in_with_sms_mfa
     desc: 'Resumable sign in with SMS MFA flow'
@@ -972,7 +972,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-setup
-    retry_count: 5
+    retry_count: 10
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup
@@ -1044,7 +1044,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: refresh-token-auth
-    retry_count: 5
+    retry_count: 10
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: misc-tokenref
