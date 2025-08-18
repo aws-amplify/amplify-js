@@ -15,6 +15,7 @@ tests:
     category: datastore
     sample_name: owner-based-default
     spec: owner-based-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-static-user-pool-groups-default
     desc: 'DataStore Auth'
@@ -22,6 +23,7 @@ tests:
     category: datastore
     sample_name: static-user-pool-groups-default
     spec: static-user-pool-groups-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-static-user-pool-groups-operations
     desc: 'DataStore Auth'
@@ -29,6 +31,7 @@ tests:
     category: datastore
     sample_name: static-user-pool-groups-operations
     spec: static-user-pool-groups-operations
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-owner-and-group-different-models-default
     desc: 'DataStore Auth'
@@ -36,6 +39,7 @@ tests:
     category: datastore
     sample_name: owner-and-group-different-models-default
     spec: owner-and-group-different-models-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-owner-and-group-same-model-default
     desc: 'DataStore Auth'
@@ -43,6 +47,7 @@ tests:
     category: datastore
     sample_name: owner-and-group-same-model-default
     spec: owner-and-group-same-model-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-owner-and-group-same-model-operations
     desc: 'DataStore Auth'
@@ -50,6 +55,7 @@ tests:
     category: datastore
     sample_name: owner-and-group-same-model-operations
     spec: owner-and-group-same-model-operations
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-dynamic-user-pool-groups-default
     desc: 'DataStore Auth'
@@ -57,6 +63,7 @@ tests:
     category: datastore
     sample_name: dynamic-user-pool-groups-default
     spec: dynamic-user-pool-groups-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-dynamic-user-pool-groups-owner-based-default
     desc: 'DataStore Auth'
@@ -64,6 +71,7 @@ tests:
     category: datastore
     sample_name: dynamic-user-pool-groups-owner-based-default
     spec: dynamic-user-pool-groups-owner-based-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-private-auth-default
     desc: 'DataStore Auth'
@@ -71,6 +79,7 @@ tests:
     category: datastore
     sample_name: private-auth-default
     spec: private-auth-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-private-auth-iam
     desc: 'DataStore Auth'
@@ -78,6 +87,7 @@ tests:
     category: datastore
     sample_name: private-auth-iam
     spec: private-auth-iam
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-public-auth-default
     desc: 'DataStore Auth'
@@ -85,6 +95,7 @@ tests:
     category: datastore
     sample_name: public-auth-default
     spec: public-auth-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-public-auth-iam
     desc: 'DataStore Auth'
@@ -92,6 +103,7 @@ tests:
     category: datastore
     sample_name: public-auth-iam
     spec: public-auth-iam
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-owner-custom-claim-default
     desc: 'DataStore Auth'
@@ -99,6 +111,7 @@ tests:
     category: datastore
     sample_name: owner-custom-claim-default
     spec: owner-custom-claim-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth-owner-custom-field-default
     desc: 'DataStore Auth'
@@ -106,6 +119,7 @@ tests:
     category: datastore
     sample_name: owner-custom-field-default
     spec: owner-custom-field-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-owner-based-default
     desc: 'DataStore Auth CLI v2'
@@ -113,6 +127,7 @@ tests:
     category: datastore
     sample_name: v2/owner-based-default-v2
     spec: owner-based-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-static-user-pool-groups-default
     desc: 'DataStore Auth CLI v2'
@@ -120,6 +135,7 @@ tests:
     category: datastore
     sample_name: v2/static-user-pool-groups-default-v2
     spec: static-user-pool-groups-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-static-user-pool-groups-operations
     desc: 'DataStore Auth CLI v2'
@@ -127,6 +143,7 @@ tests:
     category: datastore
     sample_name: v2/static-user-pool-groups-operations-v2
     spec: static-user-pool-groups-operations
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-owner-and-group-different-models-default
     desc: 'DataStore Auth CLI v2'
@@ -134,6 +151,7 @@ tests:
     category: datastore
     sample_name: v2/owner-and-group-different-models-default-v2
     spec: owner-and-group-different-models-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-owner-and-group-same-model-default
     desc: 'DataStore Auth CLI v2'
@@ -141,6 +159,7 @@ tests:
     category: datastore
     sample_name: v2/owner-and-group-same-model-default-v2
     spec: owner-and-group-same-model-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-owner-and-group-same-model-operations
     desc: 'DataStore Auth CLI v2'
@@ -148,6 +167,7 @@ tests:
     category: datastore
     sample_name: v2/owner-and-group-same-model-operations-v2
     spec: owner-and-group-same-model-operations
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-dynamic-user-pool-groups-default
     desc: 'DataStore Auth CLI v2'
@@ -155,6 +175,7 @@ tests:
     category: datastore
     sample_name: v2/dynamic-user-pool-groups-default-v2
     spec: dynamic-user-pool-groups-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-dynamic-user-pool-groups-owner-based-default
     desc: 'DataStore Auth CLI v2'
@@ -162,6 +183,7 @@ tests:
     category: datastore
     sample_name: v2/dynamic-user-pool-groups-owner-based-default-v2
     spec: dynamic-user-pool-groups-owner-based-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-private-auth-default
     desc: 'DataStore Auth CLI v2'
@@ -169,6 +191,7 @@ tests:
     category: datastore
     sample_name: v2/private-auth-default-v2
     spec: private-auth-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-private-auth-iam
     desc: 'DataStore Auth CLI v2'
@@ -176,6 +199,7 @@ tests:
     category: datastore
     sample_name: v2/private-auth-iam-v2
     spec: private-auth-iam
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-public-auth-default
     desc: 'DataStore Auth CLI v2'
@@ -183,6 +207,7 @@ tests:
     category: datastore
     sample_name: v2/public-auth-default-v2
     spec: public-auth-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-public-auth-iam
     desc: 'DataStore Auth CLI v2'
@@ -190,6 +215,7 @@ tests:
     category: datastore
     sample_name: v2/public-auth-iam-v2
     spec: public-auth-iam
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-owner-custom-claim-default
     desc: 'DataStore Auth CLI v2'
@@ -197,6 +223,7 @@ tests:
     category: datastore
     sample_name: v2/owner-custom-claim-default-v2
     spec: owner-custom-claim-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-owner-custom-field-default
     desc: 'DataStore Auth CLI v2'
@@ -204,6 +231,7 @@ tests:
     category: datastore
     sample_name: v2/owner-custom-field-default-v2
     spec: owner-custom-field-default
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore
     desc: 'React DataStore'
@@ -211,6 +239,7 @@ tests:
     category: datastore
     sample_name: [many-to-many]
     spec: many-to-many
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_v2
     desc: 'React DataStore CLI v2'
@@ -218,6 +247,7 @@ tests:
     category: datastore
     sample_name: [v2/many-to-many-v2]
     spec: many-to-many
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_one_rule
     desc: 'React DataStore Multi-Auth - One Rule'
@@ -225,6 +255,7 @@ tests:
     category: datastore
     sample_name: [multi-auth]
     spec: multi-auth-one-rule
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_one_rule_v2
     desc: 'React DataStore Multi-Auth - One Rule CLI v2'
@@ -232,6 +263,7 @@ tests:
     category: datastore
     sample_name: [v2/multi-auth-v2]
     spec: multi-auth-one-rule
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_one_rule_oidc_v2
     desc: 'React DataStore Multi-Auth OIDC - One Rule CLI v2'
@@ -239,6 +271,7 @@ tests:
     category: datastore
     sample_name: [v2/multi-auth-oidc-v2]
     spec: multi-auth-one-rule-oidc
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_two_rules
     desc: 'React DataStore Multi-Auth - Two Rules'
@@ -246,6 +279,7 @@ tests:
     category: datastore
     sample_name: [multi-auth]
     spec: multi-auth-two-rules
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_two_rules_v2
     desc: 'React DataStore Multi-Auth - Two Rules CLI v2'
@@ -253,6 +287,7 @@ tests:
     category: datastore
     sample_name: [v2/multi-auth-v2]
     spec: multi-auth-two-rules
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_two_rules_oidc_v2
     desc: 'React DataStore Multi-Auth OIDC - Two Rules CLI v2'
@@ -260,6 +295,7 @@ tests:
     category: datastore
     sample_name: [v2/multi-auth-oidc-v2]
     spec: multi-auth-two-rules-oidc
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_three_plus_rules
     desc: 'React DataStore Multi-Auth - Three Plus Rules'
@@ -267,6 +303,7 @@ tests:
     category: datastore
     sample_name: [multi-auth]
     spec: multi-auth-three-plus-rules
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_three_plus_rules_v2
     desc: 'React DataStore Multi-Auth - Three Plus Rules CLI v2'
@@ -274,6 +311,7 @@ tests:
     category: datastore
     sample_name: [v2/multi-auth-v2]
     spec: multi-auth-three-plus-rules
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_subs_disabled
     desc: 'DataStore - Subs Disabled'
@@ -281,6 +319,7 @@ tests:
     category: datastore
     sample_name: [subs-disabled]
     spec: subs-disabled
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_subs_disabled_v2
     desc: 'DataStore - Subs Disabled CLI v2'
@@ -288,6 +327,7 @@ tests:
     category: datastore
     sample_name: [v2/subs-disabled-v2]
     spec: subs-disabled
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_consecutive_saves
     desc: 'DataStore - Subs Disabled'
@@ -295,6 +335,7 @@ tests:
     category: datastore
     sample_name: [consecutive-saves]
     spec: consecutive-saves
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_consecutive_saves_v2
     desc: 'DataStore - Subs Disabled CLI v2'
@@ -302,6 +343,7 @@ tests:
     category: datastore
     sample_name: [v2/consecutive-saves-v2]
     spec: consecutive-saves
+    retry_count: 3
     browser: *minimal_browser_list
   # - test_name: integ_react_datastore_observe_query
   #   desc: 'DataStore - Observe Query'
@@ -323,6 +365,7 @@ tests:
     category: datastore
     sample_name: [schema-drift]
     spec: schema-drift
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_background_process_manager
     desc: 'DataStore - Background Process Manager'
@@ -330,6 +373,7 @@ tests:
     category: datastore
     sample_name: [v2/background-process-manager]
     spec: background-process-manager
+    retry_count: 3
     browser: *extended_browser_list
   # - test_name: integ_react_datastore_background_process_manager_webkit
   #   desc: 'DataStore - Background Process Manager'
@@ -344,6 +388,7 @@ tests:
     category: datastore
     sample_name: [v2/related-models]
     spec: cpk-related-models
+    retry_count: 3
     browser: *extended_browser_list
   - test_name: integ_react_datastore_selective_sync
     desc: 'DataStore - Selective Sync'
@@ -351,6 +396,7 @@ tests:
     category: datastore
     sample_name: [selective-sync-v5]
     spec: selective-sync-v5
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_nested_predicate
     desc: 'DataStore - Nested Predicate'
@@ -358,6 +404,7 @@ tests:
     category: datastore
     sample_name: [nested-predicate]
     spec: nested-predicate
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_docs_examples
     desc: 'DataStore - Docs Examples'
@@ -365,6 +412,7 @@ tests:
     category: datastore
     sample_name: [v2/amplify-docs-examples]
     spec: amplify-docs-examples
+    retry_count: 3
     browser: [chrome]
   - test_name: integ_vanilla_js_datastore_basic_crud
     desc: 'Vanilla JS + Webpack 4 + DataStore - Basic CRUD'
@@ -373,6 +421,7 @@ tests:
     sample_name: [basic-crud]
     browser: [chrome]
     spec: vanilla-js-basic-crud
+    retry_count: 3
     amplifyjs_dir: true
   - test_name: integ_next_datastore_13_basic
     desc: 'DataStore - Nextjs 13 build with SWC - basic JS app'
@@ -380,6 +429,7 @@ tests:
     category: datastore
     sample_name: [next-13-basic]
     spec: nextjs-13-basic
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_next_datastore_13_js
     desc: 'DataStore - Nextjs 13 build with SWC - JS app'
@@ -387,6 +437,7 @@ tests:
     category: datastore
     sample_name: [next-13-js]
     spec: nextjs-13
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_vite_datastore_basic_crud
     desc: 'Vite + DataStore - Basic CRUD'
@@ -394,6 +445,7 @@ tests:
     category: datastore
     sample_name: [v2/basic-crud]
     spec: vite-basic-crud
+    retry_count: 3
     browser: [chrome]
   - test_name: integ_rollup_datastore_basic_crud
     desc: 'Rollup + DataStore - Basic CRUD'
@@ -401,6 +453,7 @@ tests:
     category: datastore
     sample_name: [rollup-basic-crud]
     spec: rollup-basic-crud
+    retry_count: 3
     browser: [chrome]
 
   # API
@@ -410,6 +463,7 @@ tests:
     category: api
     sample_name: [graphql]
     spec: graphql
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_api_optimistic_ui
     desc: React GraphQL API Optimistic UI with Tan/ReactQuery
@@ -417,6 +471,7 @@ tests:
     category: api
     sample_name: [optimistic-ui]
     spec: optimistic-ui
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_next_api_data_client_gen2
     desc: Next.js Data Client Gen 2
@@ -424,6 +479,7 @@ tests:
     category: api
     sample_name: [data-client-gen2]
     spec: data-client-gen2
+    retry_count: 3
     browser: [chrome] # Issues using Auth category / setting secure cookies in FF using Cypress with a Next.js app. Manual testing in FF works as expected
   - test_name: integ_next_api_multi_endpoint_gen2
     desc: Next.js Multi Endpoint Gen 2
@@ -431,6 +487,7 @@ tests:
     category: api
     sample_name: [multi-endpoint-gen2]
     spec: multi-endpoint-gen2
+    retry_count: 3
     browser: [chrome]
   - test_name: integ_react_rest_api
     desc: 'Vite + React REST API'
@@ -438,6 +495,7 @@ tests:
     category: api
     sample_name: [rest]
     spec: restful
+    retry_count: 3
     browser: *minimal_browser_list
 
     # API Gen2
@@ -447,6 +505,7 @@ tests:
     category: api
     sample_name: [rest]
     spec: restful
+    retry_count: 3
     backend: gen2
     browser: *minimal_browser_list
 
@@ -457,6 +516,7 @@ tests:
     category: auth
     sample_name: [javascript-auth]
     spec: functional-auth
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_auth_1_guest_to_authenticated_user
     desc: 'Guest to Authenticated User'
@@ -464,6 +524,7 @@ tests:
     category: auth
     sample_name: [guest-to-auth-user]
     spec: guest-to-auth-user
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_typescript_authentication
     desc: 'React Typescript Authentication'
@@ -471,6 +532,7 @@ tests:
     category: auth
     sample_name: [typescript-auth]
     spec: functional-auth
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_credentials_different_region
     desc: 'React Credentials Different Region'
@@ -478,6 +540,7 @@ tests:
     category: auth
     sample_name: [credentials-auth]
     spec: credentials-auth
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_auth_2_sign_in_after_sign_up
     desc: 'Sign In after Sign Up'
@@ -485,6 +548,7 @@ tests:
     category: auth
     sample_name: [auto-signin-after-signup]
     spec: auto-signin-after-signup
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_device_tracking
     desc: 'cognito-device-tracking'
@@ -492,6 +556,7 @@ tests:
     category: auth
     sample_name: [device-tracking]
     spec: device-tracking
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_delete_user
     desc: 'delete-user'
@@ -499,6 +564,7 @@ tests:
     category: auth
     sample_name: [delete-user]
     spec: delete-user
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_next_auth_authenticator_and_ssr_page
     desc: 'Authenticator and SSR page'
@@ -506,6 +572,7 @@ tests:
     category: auth
     sample_name: [auth-ssr]
     spec: auth-ssr
+    retry_count: 3
     browser: [chrome]
   - test_name: integ_next_auth_authenticator_and_rsc_page
     desc: 'Authenticator and RSC page'
@@ -513,6 +580,7 @@ tests:
     category: auth
     sample_name: [auth-rsc]
     spec: auth-rsc
+    retry_count: 3
     browser: [chrome]
   - test_name: integ_next_sign_in_with_oauth
     desc: 'Sign-in with the OAuth flow'
@@ -520,6 +588,7 @@ tests:
     category: auth
     sample_name: [sign-in-with-oauth]
     spec: sign-in-with-oauth
+    retry_count: 3
     browser: [chrome]
   - test_name: integ_vue_sign_out_of_oidc_provider
     desc: 'Sign-out of OIDC provider'
@@ -527,6 +596,7 @@ tests:
     category: auth
     sample_name: [sign-in-with-oauth]
     spec: sign-out-oidc-provider
+    retry_count: 3
     browser: [chrome]
 
   # AUTH GEN2
@@ -633,7 +703,7 @@ tests:
     category: auth
     sample_name: [custom-auth]
     spec: custom-auth
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
   - test_name: integ_next_auth_sign_in_with_sms_mfa
     desc: 'Resumable sign in with SMS MFA flow'
@@ -641,7 +711,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: sign-in-resumable-mfa
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: resum-signin
@@ -697,6 +767,7 @@ tests:
     category: analytics
     sample_name: [pinpoint-test]
     spec: pinpoint
+    retry_count: 3
     # Temp fix:
     browser: *minimal_browser_list
 
@@ -706,6 +777,7 @@ tests:
     category: analytics
     sample_name: [personalize-test]
     spec: personalize
+    retry_count: 3
     # Temp fix:
     browser: *minimal_browser_list
 
@@ -715,6 +787,7 @@ tests:
     category: analytics
     sample_name: [personalize-test]
     spec: personalize-unauth
+    retry_count: 3
     # Temp fix:
     browser: *minimal_browser_list
 
@@ -724,6 +797,7 @@ tests:
     category: analytics
     sample_name: [kinesis-firehose-test]
     spec: kinesis-firehose
+    retry_count: 3
     # Temp fix:
     browser: *minimal_browser_list
 
@@ -733,6 +807,7 @@ tests:
     category: analytics
     sample_name: [kinesis-firehose-test]
     spec: kinesis-firehose-unauth
+    retry_count: 3
     # Temp fix:
     browser: *minimal_browser_list
 
@@ -743,6 +818,7 @@ tests:
     category: geo
     sample_name: [display-map]
     spec: display-map
+    retry_count: 3
     # Temp fix:
     browser: [chrome]
   - test_name: integ_react_geo_search_outside_map
@@ -751,6 +827,7 @@ tests:
     category: geo
     sample_name: [search-outside-map]
     spec: search-outside-map
+    retry_count: 3
     # Temp fix:
     browser: [chrome]
   # - test_name: integ_javascript_geo_display_map
@@ -777,6 +854,7 @@ tests:
     category: interactions
     sample_name: [lex-test-component]
     spec: chatbot-v1
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_interactions_chatbot_v2
     desc: 'Chatbot V2'
@@ -784,6 +862,7 @@ tests:
     category: interactions
     sample_name: [lex-test-component]
     spec: chatbot-v2
+    retry_count: 3
     browser: *minimal_browser_list
 
   # PREDICTIONS
@@ -793,6 +872,7 @@ tests:
     category: predictions
     sample_name: [multi-user-translation]
     spec: multiuser-translation
+    retry_count: 3
     browser: *minimal_browser_list
 
   # PUBSUB
@@ -802,6 +882,7 @@ tests:
     category: pubsub
     sample_name: [reconnection-iot]
     spec: reconnection
+    retry_count: 3
     # Firefox doesn't support network state management in cypress
     browser: [chrome]
   - test_name: integ_react_api_reconnect
@@ -810,6 +891,7 @@ tests:
     category: pubsub
     sample_name: [reconnection-api]
     spec: reconnection
+    retry_count: 3
     # Firefox doesn't support network state management in cypress
     browser: [chrome]
 
@@ -828,6 +910,7 @@ tests:
     category: storage
     sample_name: [multi-part-upload-with-progress]
     spec: multi-part-upload-with-progress
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_storage_copy
     desc: 'React Storage Copy'
@@ -835,6 +918,7 @@ tests:
     category: storage
     sample_name: [multi-part-copy]
     spec: multi-part-copy
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_storage_browser
     desc: 'React Storage Browser'
@@ -842,6 +926,7 @@ tests:
     category: storage
     sample_name: [storage-browser]
     spec: storage-browser
+    retry_count: 3
     browser: *minimal_browser_list
 
   # GEN2 STORAGE
@@ -851,6 +936,7 @@ tests:
     category: storage
     sample_name: [storage-gen2]
     spec: storage-gen2
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_storage_internal
     desc: 'React Storage Gen2 Internal APIs'
@@ -866,6 +952,7 @@ tests:
     category: storage
     sample_name: [storage-auth]
     spec: storage-client-server
+    retry_count: 3
     browser: [chrome] # firefox issues with secure cookies in cypress, manual testing works fine
 
   # INAPPMESSAGING
@@ -875,6 +962,7 @@ tests:
     category: in-app-messaging
     sample_name: [in-app-messaging-app]
     spec: in-app-messaging
+    retry_count: 3
     browser: *minimal_browser_list
 
   # - test_name: integ_duplicate_packages
@@ -932,7 +1020,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-email
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-email
@@ -942,7 +1030,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-phone
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-phone
@@ -952,7 +1040,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-email
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-email
@@ -962,7 +1050,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-phone
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-phone
@@ -972,7 +1060,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-setup
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup
@@ -982,7 +1070,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/auto-sign-in
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-autosignin
@@ -1012,7 +1100,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/sign-up
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-signup
@@ -1022,7 +1110,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/miscellaneous
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-misc
@@ -1044,7 +1132,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: refresh-token-auth
-    retry_count: 10
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: misc-tokenref
