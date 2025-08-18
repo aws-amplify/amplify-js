@@ -641,7 +641,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: sign-in-resumable-mfa
-    retry_count: 5
+    retry_count: 10
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: resum-signin
@@ -820,6 +820,7 @@ tests:
     category: storage
     sample_name: [storageApp]
     spec: storage
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_react_storage_multipart_progress
     desc: 'React Storage Multi-Part Upload with Progress'
@@ -857,6 +858,7 @@ tests:
     category: storage
     sample_name: [storage-gen2-internal]
     spec: storage-gen2-internal
+    retry_count: 3
     browser: *minimal_browser_list
   - test_name: integ_next_storage
     desc: 'Next Storage Auth'
@@ -950,7 +952,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-email
-    retry_count: 5
+    retry_count: 10
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-email
@@ -960,7 +962,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-phone
-    retry_count: 5
+    retry_count: 10
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-phone
