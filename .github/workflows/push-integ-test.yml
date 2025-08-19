@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - chore/e2e-retry
+      - replace-with-your-branch
 
 jobs:
   e2e:
