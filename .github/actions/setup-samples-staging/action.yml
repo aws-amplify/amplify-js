@@ -45,7 +45,12 @@ runs:
         fi
 
     - name: Install
-      run: |
-        yarn
       shell: bash
       working-directory: ./amplify-js-samples-staging
+      run: |
+        for i in {1..3}; do
+          echo "Starting attempt $i."
+          yarn && break
+          echo "Attempt $i failed."
+          sleep 5
+        done
