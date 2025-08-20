@@ -254,6 +254,78 @@ describe('xhrTransferHandler', () => {
 		});
 	});
 
+	it('should cap transferredBytes to totalBytes when loaded exceeds total', async () => {
+		const mockXhr = spyOnXhr();
+		const onDownloadProgress = jest.fn();
+		const onUploadProgress = jest.fn();
+		const requestPromise = xhrTransferHandler(defaultRequest, {
+			responseType: 'text',
+			onDownloadProgress,
+			onUploadProgress,
+		});
+		mockXhrResponse(mockXhr, mock200Response);
+		const uploadProgressEvent = {
+			loaded: 150,
+			total: 100,
+			lengthComputable: true,
+		};
+		const downloadProgressEvent = {
+			loaded: 300,
+			total: 200,
+			lengthComputable: true,
+		};
+		mockProgressEvents({
+			mockXhr,
+			uploadEvents: [uploadProgressEvent],
+			downloadEvents: [downloadProgressEvent],
+		});
+		await requestPromise;
+		expect(onDownloadProgress).toHaveBeenCalledWith({
+			transferredBytes: downloadProgressEvent.total,
+			totalBytes: downloadProgressEvent.total,
+		});
+		expect(onUploadProgress).toHaveBeenCalledWith({
+			transferredBytes: uploadProgressEvent.total,
+			totalBytes: uploadProgressEvent.total,
+		});
+	});
+
+	it('should use loaded bytes when lengthComputable is false', async () => {
+		const mockXhr = spyOnXhr();
+		const onDownloadProgress = jest.fn();
+		const onUploadProgress = jest.fn();
+		const requestPromise = xhrTransferHandler(defaultRequest, {
+			responseType: 'text',
+			onDownloadProgress,
+			onUploadProgress,
+		});
+		mockXhrResponse(mockXhr, mock200Response);
+		const uploadProgressEvent = {
+			loaded: 150,
+			total: 100,
+			lengthComputable: false,
+		};
+		const downloadProgressEvent = {
+			loaded: 300,
+			total: 200,
+			lengthComputable: false,
+		};
+		mockProgressEvents({
+			mockXhr,
+			uploadEvents: [uploadProgressEvent],
+			downloadEvents: [downloadProgressEvent],
+		});
+		await requestPromise;
+		expect(onDownloadProgress).toHaveBeenCalledWith({
+			transferredBytes: downloadProgressEvent.loaded,
+			totalBytes: undefined,
+		});
+		expect(onUploadProgress).toHaveBeenCalledWith({
+			transferredBytes: uploadProgressEvent.loaded,
+			totalBytes: undefined,
+		});
+	});
+
 	it('should add abort event listener to xhr', async () => {
 		const mockXhr = spyOnXhr();
 		const requestPromise = xhrTransferHandler(defaultRequest, {
