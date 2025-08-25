@@ -190,7 +190,11 @@ export const xhrTransferHandler: TransferHandler<
 const convertToTransferProgressEvent = (
 	event: ProgressEvent,
 ): TransferProgressEvent => ({
-	transferredBytes: event.loaded,
+	// `loaded` can exceed the `total` in some cases due to platform issues/bugs e.g. React Native & Expo Android
+	// clamp `loaded` values down to `total` if possible.
+	transferredBytes: event.lengthComputable
+		? Math.min(event.loaded, event.total)
+		: event.loaded,
 	totalBytes: event.lengthComputable ? event.total : undefined,
 });
 
