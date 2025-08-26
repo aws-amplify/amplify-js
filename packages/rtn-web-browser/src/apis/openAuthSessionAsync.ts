@@ -5,6 +5,7 @@ import {
 	AppState,
 	Linking,
 	NativeEventSubscription,
+	NativeModules,
 	Platform,
 } from 'react-native';
 
@@ -12,6 +13,32 @@ import { nativeModule } from '../nativeModule';
 
 let appStateListener: NativeEventSubscription | undefined;
 let redirectListener: NativeEventSubscription | undefined;
+
+export async function isChromebook(): Promise<boolean> {
+	// expo go
+	try {
+		const Device = require('expo-device');
+		if (Device?.hasPlatformFeatureAsync) {
+			if (await Device.hasPlatformFeatureAsync('org.chromium.arc')) return true;
+			if (
+				await Device.hasPlatformFeatureAsync(
+					'org.chromium.arc.device_management',
+				)
+			)
+				return true;
+		}
+	} catch {
+		// not using Expo
+	}
+
+	// fallback to native module
+	try {
+		const nm = (NativeModules as any)?.ChromeOS;
+		if (nm?.isChromeOS) return !!(await nm.isChromeOS());
+	} catch {}
+
+	return false;
+}
 
 export const openAuthSessionAsync = async (
 	url: string,
@@ -25,6 +52,15 @@ export const openAuthSessionAsync = async (
 	}
 
 	if (Platform.OS === 'android') {
+		try {
+			const isChromebookRes = await isChromebook();
+			if (isChromebookRes) {
+				return openAuthSessionChromeOs(httpsUrl, redirectUrls);
+			}
+		} catch {
+			// ignore and fallback to android
+		}
+
 		return openAuthSessionAndroid(httpsUrl, redirectUrls);
 	}
 };
@@ -58,6 +94,27 @@ const openAuthSessionAndroid = async (url: string, redirectUrls: string[]) => {
 			// open chrome tab
 			nativeModule.openAuthSessionAsync(url),
 		]);
+
+		return redirectUrl;
+	} finally {
+		removeAppStateListener();
+		removeRedirectListener();
+	}
+};
+
+const openAuthSessionChromeOs = async (url: string, redirectUrls: string[]) => {
+	try {
+		const [redirectUrl] = await Promise.all([
+			Promise.race([
+				// wait for app to redirect, resulting in a redirectUrl
+				getRedirectPromise(redirectUrls),
+				// wait for app to return some other way, resulting in null
+				getAppStatePromise(),
+			]),
+			Linking.openURL(url),
+		]);
+
+		if (redirectUrl) Linking.openURL(redirectUrl);
 
 		return redirectUrl;
 	} finally {
