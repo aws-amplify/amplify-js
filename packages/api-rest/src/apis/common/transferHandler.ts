@@ -20,7 +20,11 @@ import {
 	parseSigningInfo,
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
-import { RestApiResponse, SigningServiceInfo } from '../../types';
+import {
+	RestApiAuthMode,
+	RestApiResponse,
+	SigningServiceInfo,
+} from '../../types';
 
 import { authenticatedHandler } from './baseHandlers/authenticatedHandler';
 import { unauthenticatedHandler } from './baseHandlers/unauthenticatedHandler';
@@ -30,6 +34,7 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	headers?: Headers;
 	withCredentials?: boolean;
 	retryStrategy?: RetryStrategy;
+	authMode?: RestApiAuthMode;
 };
 
 type RetryDecider = RetryOptions['retryDecider'];
@@ -84,10 +89,20 @@ export const transferHandler = async (
 		abortSignal,
 	};
 
-	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+	if (options.authMode) {
+		// remove conflicting headers to ensure either none or iam auth will be used
+		delete request.headers.authorization;
+		delete request.headers['x-api-key'];
+	}
+
+	let credentials: AWSCredentials | null = null;
+	if (options.authMode !== 'none') {
+		credentials = await resolveCredentials(amplify);
+	}
 
 	let response: RestApiResponse;
-	const credentials = await resolveCredentials(amplify);
+	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+
 	if (isIamAuthApplicable && credentials) {
 		const signingInfoFromUrl = parseSigningInfo(url);
 		const signingService =

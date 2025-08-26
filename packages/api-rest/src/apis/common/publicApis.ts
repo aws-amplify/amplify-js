@@ -71,6 +71,7 @@ const publicHandler = (
 				method,
 				headers,
 				abortSignal,
+				authMode: apiOptions.authMode,
 			},
 			isIamAuthApplicableForRest,
 			signingServiceInfo,

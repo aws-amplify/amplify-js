@@ -16,6 +16,9 @@ export type PatchOperation = Operation<RestApiResponse>;
 export type DeleteOperation = Operation<RestApiResponse>;
 export type HeadOperation = Operation<Omit<RestApiResponse, 'body'>>;
 
+// Add this type definition
+export type RestApiAuthMode = 'none' | 'iam';
+
 /**
  * @internal
  */
@@ -41,6 +44,7 @@ export interface RestApiOptionsBase {
 	 * @default ` { strategy: 'jittered-exponential-backoff' } `
 	 */
 	retryStrategy?: RetryStrategy;
+	authMode?: RestApiAuthMode;
 }
 
 type Headers = Record<string, string>;
