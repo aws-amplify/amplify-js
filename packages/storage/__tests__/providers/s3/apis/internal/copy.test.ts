@@ -430,6 +430,37 @@ describe('copy API', () => {
 						}),
 					);
 				});
+
+				it('should pass taggingDirective to copyObject', async () => {
+					await copyWrapper({
+						source: { path: 'sourcePath' },
+						destination: {
+							path: 'destinationPath',
+							taggingDirective: 'REPLACE',
+						},
+					});
+					expect(copyObject).toHaveBeenCalledTimes(1);
+					expect(copyObject).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							TaggingDirective: 'REPLACE',
+						}),
+					);
+				});
+
+				it('should not pass taggingDirective when not specified', async () => {
+					await copyWrapper({
+						source: { path: 'sourcePath' },
+						destination: { path: 'destinationPath' },
+					});
+					expect(copyObject).toHaveBeenCalledTimes(1);
+					expect(copyObject).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							TaggingDirective: undefined,
+						}),
+					);
+				});
 			});
 		});
 	});

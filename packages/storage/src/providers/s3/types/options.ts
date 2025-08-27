@@ -14,6 +14,7 @@ import {
 	StorageListPaginateOptions,
 	StorageSubpathStrategy,
 } from '../../../types/options';
+import { TaggingDirective } from '../utils/client/s3data/types';
 
 /**
  * @internal
@@ -270,6 +271,7 @@ export interface CopyWithPathSourceOptions {
 export interface CopyWithPathDestinationOptions {
 	bucket?: StorageBucket;
 	expectedBucketOwner?: string;
+	taggingDirective?: TaggingDirective;
 }
 
 /**

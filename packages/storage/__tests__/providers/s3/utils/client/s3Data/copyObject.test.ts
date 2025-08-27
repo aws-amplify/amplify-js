@@ -89,6 +89,32 @@ describe('copyObjectSerializer', () => {
 			}),
 		).rejects.toThrow(integrityError);
 	});
+
+	it('should set x-amz-tagging-directive header when TaggingDirective is provided', async () => {
+		mockS3TransferHandler.mockResolvedValue(
+			mockBinaryResponse({
+				status: 200,
+				headers: DEFAULT_RESPONSE_HEADERS,
+				body: '<CopyObjectResult></CopyObjectResult>',
+			}),
+		);
+
+		await copyObject(defaultConfig, {
+			CopySource: 'mock-source',
+			Bucket: 'bucket',
+			Key: 'key',
+			TaggingDirective: 'REPLACE',
+		});
+
+		expect(mockS3TransferHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'x-amz-tagging-directive': 'REPLACE',
+				}),
+			}),
+			expect.any(Object),
+		);
+	});
 });
 
 describe('validateCopyObjectHeaders', () => {
@@ -107,12 +133,14 @@ describe('validateCopyObjectHeaders', () => {
 			request: {
 				...baseRequest,
 				MetadataDirective: 'mock-metadata',
+				TaggingDirective: 'REPLACE',
 				CopySourceIfMatch: 'mock-etag',
 				CopySourceIfUnmodifiedSince: new Date(0),
 			},
 			headers: {
 				...baseHeaders,
 				'x-amz-metadata-directive': 'mock-metadata',
+				'x-amz-tagging-directive': 'REPLACE',
 				'x-amz-copy-source-if-match': 'mock-etag',
 				'x-amz-copy-source-if-unmodified-since':
 					'Thu, 01 Jan 1970 00:00:00 GMT',
