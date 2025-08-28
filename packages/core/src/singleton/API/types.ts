@@ -25,6 +25,10 @@ export interface LibraryAPIOptions {
 		 * @default ` { strategy: 'jittered-exponential-backoff' } `
 		 */
 		retryStrategy?: RetryStrategy;
+		/**
+		 * Default auth fallback for REST API calls when no explicit auth is provided.
+		 */
+		authFallback?: 'none' | 'iam';
 	};
 }
 

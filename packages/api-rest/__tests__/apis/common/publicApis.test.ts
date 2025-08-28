@@ -621,33 +621,24 @@ describe('public APIs', () => {
 			});
 		});
 
-		describe('authMode option', () => {
-			it('should skip credential resolution and remove headers when authMode is "none"', async () => {
+		describe('authFallback option', () => {
+			it('should skip credential resolution when authFallback is "none"', async () => {
 				mockFetchAuthSession.mockClear();
 
 				await fn(mockAmplifyInstance, {
 					apiName: 'restApi1',
 					path: '/public',
 					options: {
-						authMode: 'none',
-						headers: {
-							authorization: 'Bearer token',
-							'x-api-key': 'test-key',
-						},
+						authFallback: 'none',
 					},
 				}).response;
 
 				expect(mockFetchAuthSession).not.toHaveBeenCalled();
 				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
 				expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
-
-				// Verify headers were removed
-				const callArgs = mockUnauthenticatedHandler.mock.calls[0][0];
-				expect(callArgs.headers.authorization).toBeUndefined();
-				expect(callArgs.headers['x-api-key']).toBeUndefined();
 			});
 
-			it('should resolve credentials and remove conflicting headers when authMode is "iam"', async () => {
+			it('should resolve credentials when authFallback is "iam"', async () => {
 				mockFetchAuthSession.mockResolvedValue({
 					credentials: {
 						accessKeyId: 'test-key',
@@ -659,22 +650,15 @@ describe('public APIs', () => {
 					apiName: 'restApi1',
 					path: '/private',
 					options: {
-						authMode: 'iam',
-						headers: {
-							'x-api-key': 'should-be-removed',
-						},
+						authFallback: 'iam',
 					},
 				}).response;
 
 				expect(mockFetchAuthSession).toHaveBeenCalled();
 				expect(mockAuthenticatedHandler).toHaveBeenCalled();
-
-				// Verify conflicting headers were removed
-				const callArgs = mockAuthenticatedHandler.mock.calls[0][0];
-				expect(callArgs.headers['x-api-key']).toBeUndefined();
 			});
 
-			it('should maintain default behavior and keep headers when no authMode specified', async () => {
+			it('should maintain default behavior when no authFallback specified', async () => {
 				mockFetchAuthSession.mockResolvedValue({
 					credentials: null,
 				});
@@ -682,19 +666,36 @@ describe('public APIs', () => {
 				await fn(mockAmplifyInstance, {
 					apiName: 'restApi1',
 					path: '/endpoint',
-					options: {
-						headers: {
-							'x-api-key': 'should-be-kept',
-						},
-					},
 				}).response;
 
 				expect(mockFetchAuthSession).toHaveBeenCalled();
 				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
+			});
 
-				// Verify headers were kept (no authMode = no header removal)
-				const callArgs = mockUnauthenticatedHandler.mock.calls[0][0];
-				expect(callArgs.headers['x-api-key']).toBe('should-be-kept');
+			it('should use global authFallback configuration when no local authFallback is specified', async () => {
+				const mockAmplifyWithGlobalConfig = {
+					...mockAmplifyInstance,
+					libraryOptions: {
+						...mockAmplifyInstance.libraryOptions,
+						API: {
+							...mockAmplifyInstance.libraryOptions?.API,
+							REST: {
+								authFallback: 'none' as const,
+							},
+						},
+					},
+				} as any as AmplifyClassV6;
+
+				mockFetchAuthSession.mockClear();
+
+				await fn(mockAmplifyWithGlobalConfig, {
+					apiName: 'restApi1',
+					path: '/public',
+				}).response;
+
+				expect(mockFetchAuthSession).not.toHaveBeenCalled();
+				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
+				expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 			});
 		});
 	});

@@ -21,7 +21,7 @@ import {
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
 import {
-	RestApiAuthMode,
+	RestApiAuthFallback,
 	RestApiResponse,
 	SigningServiceInfo,
 } from '../../types';
@@ -34,7 +34,7 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	headers?: Headers;
 	withCredentials?: boolean;
 	retryStrategy?: RetryStrategy;
-	authMode?: RestApiAuthMode;
+	authFallback?: RestApiAuthFallback;
 };
 
 type RetryDecider = RetryOptions['retryDecider'];
@@ -89,14 +89,11 @@ export const transferHandler = async (
 		abortSignal,
 	};
 
-	if (options.authMode) {
-		// remove conflicting headers to ensure either none or iam auth will be used
-		delete request.headers.authorization;
-		delete request.headers['x-api-key'];
-	}
+	const authFallback =
+		options.authFallback ?? amplify?.libraryOptions?.API?.REST?.authFallback;
 
 	let credentials: AWSCredentials | null = null;
-	if (options.authMode !== 'none') {
+	if (authFallback !== 'none') {
 		credentials = await resolveCredentials(amplify);
 	}
 
