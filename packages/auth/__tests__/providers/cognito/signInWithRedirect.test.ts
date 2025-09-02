@@ -137,6 +137,7 @@ describe('signInWithRedirect', () => {
 		mockToCodeChallenge.mockClear();
 		mockHandleFailure.mockClear();
 		mockCompleteOAuthFlow.mockClear();
+		mockCreateOAuthError.mockClear();
 
 		(oAuthStore.setAuthConfig as jest.Mock).mockClear();
 		(oAuthStore.storeOAuthInFlight as jest.Mock).mockClear();
@@ -369,8 +370,9 @@ describe('signInWithRedirect', () => {
 				type: 'canceled',
 				url: 'https://url.com',
 			};
+			mockCreateOAuthError.mockClear();
 			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
-			mockCompleteOAuthFlow.mockRejectedValueOnce(expectedError);
+			mockCreateOAuthError.mockReturnValueOnce(expectedError);
 
 			await expect(
 				signInWithRedirect({
@@ -379,9 +381,7 @@ describe('signInWithRedirect', () => {
 				}),
 			).rejects.toThrow(expectedError);
 
-			expect(mockCreateOAuthError).toHaveBeenCalledWith(
-					'User canceled the OAuth flow',
-			);
+			expect(mockCreateOAuthError).toHaveBeenCalledWith('canceled');
 			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
 		});
 
