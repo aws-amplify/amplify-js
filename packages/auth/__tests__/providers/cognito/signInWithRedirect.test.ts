@@ -368,9 +368,8 @@ describe('signInWithRedirect', () => {
 			const expectedError = new Error('OAuth flow was cancelled.');
 			const mockOpenAuthSessionResult = {
 				type: 'canceled',
-				url: 'https://url.com',
 			};
-			mockCreateOAuthError.mockClear();
+
 			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
 			mockCreateOAuthError.mockReturnValueOnce(expectedError);
 
@@ -381,7 +380,9 @@ describe('signInWithRedirect', () => {
 				}),
 			).rejects.toThrow(expectedError);
 
-			expect(mockCreateOAuthError).toHaveBeenCalledWith('canceled');
+			expect(mockCreateOAuthError).toHaveBeenCalledWith(
+				mockOpenAuthSessionResult.type,
+			);
 			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
 		});
 
