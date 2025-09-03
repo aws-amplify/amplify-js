@@ -11,7 +11,7 @@
 		"access": "public"
 	},
 	"scripts": {
-    "prepare:ios": "echo 'no-op'",
+		"prepare:ios": "echo 'no-op'",
 		"prepare:android": "echo 'no-op'",
 		"test": "jest -w 1 --coverage --logHeapUsage",
 		"test:ios": "echo 'no-op'",
