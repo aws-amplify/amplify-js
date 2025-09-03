@@ -63,7 +63,7 @@ describe('openAuthSessionAsync', () => {
 			const result = await openAuthSessionAsync(mockUrl, mockRedirectUrls);
 
 			expect(mockNativeModule).toHaveBeenCalledWith(
-				'https://example.com/auth',
+				mockUrl,
 				mockDeepLinkUrl,
 				false,
 			);
@@ -77,7 +77,7 @@ describe('openAuthSessionAsync', () => {
 			await openAuthSessionAsync(httpUrl, mockRedirectUrls);
 
 			expect(mockNativeModule).toHaveBeenCalledWith(
-				'https://example.com/auth',
+				mockUrl,
 				mockDeepLinkUrl,
 				false,
 			);
@@ -89,7 +89,7 @@ describe('openAuthSessionAsync', () => {
 			await openAuthSessionAsync(mockUrl, mockRedirectUrls, true);
 
 			expect(mockNativeModule).toHaveBeenCalledWith(
-				'https://example.com/auth',
+				mockUrl,
 				mockDeepLinkUrl,
 				true,
 			);
@@ -106,7 +106,7 @@ describe('openAuthSessionAsync', () => {
 			await openAuthSessionAsync(mockUrl, redirectUrls);
 
 			expect(mockNativeModule).toHaveBeenCalledWith(
-				'https://example.com/auth',
+				mockUrl,
 				'myapp://callback',
 				false,
 			);
@@ -118,11 +118,7 @@ describe('openAuthSessionAsync', () => {
 
 			await openAuthSessionAsync(mockUrl, webOnlyUrls);
 
-			expect(mockNativeModule).toHaveBeenCalledWith(
-				'https://example.com/auth',
-				undefined,
-				false,
-			);
+			expect(mockNativeModule).toHaveBeenCalledWith(mockUrl, undefined, false);
 		});
 	});
 
@@ -153,7 +149,7 @@ describe('openAuthSessionAsync', () => {
 
 			const result = await openAuthSessionAsync(mockUrl, mockRedirectUrls);
 
-			expect(mockNativeModule).toHaveBeenCalledWith('https://example.com/auth');
+			expect(mockNativeModule).toHaveBeenCalledWith(mockUrl);
 			expect(mockAppState.addEventListener).toHaveBeenCalledWith(
 				'change',
 				expect.any(Function),
