@@ -11,6 +11,7 @@ import {
 import {
 	AWSCredentials,
 	DocumentType,
+	RESTAuthMode,
 	RetryStrategy,
 } from '@aws-amplify/core/internals/utils';
 
@@ -20,11 +21,7 @@ import {
 	parseSigningInfo,
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
-import {
-	RestApiAuthFallback,
-	RestApiResponse,
-	SigningServiceInfo,
-} from '../../types';
+import { RestApiResponse, SigningServiceInfo } from '../../types';
 
 import { authenticatedHandler } from './baseHandlers/authenticatedHandler';
 import { unauthenticatedHandler } from './baseHandlers/unauthenticatedHandler';
@@ -34,7 +31,7 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	headers?: Headers;
 	withCredentials?: boolean;
 	retryStrategy?: RetryStrategy;
-	authFallback?: RestApiAuthFallback;
+	defaultAuthMode?: RESTAuthMode;
 };
 
 type RetryDecider = RetryOptions['retryDecider'];
@@ -89,11 +86,12 @@ export const transferHandler = async (
 		abortSignal,
 	};
 
-	const authFallback =
-		options.authFallback ?? amplify?.libraryOptions?.API?.REST?.authFallback;
+	const defaultAuthMode =
+		options.defaultAuthMode ??
+		amplify?.libraryOptions?.API?.REST?.defaultAuthMode;
 
 	let credentials: AWSCredentials | null = null;
-	if (authFallback !== 'none') {
+	if (defaultAuthMode !== 'none') {
 		credentials = await resolveCredentials(amplify);
 	}
 

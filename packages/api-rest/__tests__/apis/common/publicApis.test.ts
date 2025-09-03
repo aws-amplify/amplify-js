@@ -621,15 +621,15 @@ describe('public APIs', () => {
 			});
 		});
 
-		describe('authFallback option', () => {
-			it('should skip credential resolution when authFallback is "none"', async () => {
+		describe('defaultAuthMode option', () => {
+			it('should skip credential resolution when defaultAuthMode is "none"', async () => {
 				mockFetchAuthSession.mockClear();
 
 				await fn(mockAmplifyInstance, {
 					apiName: 'restApi1',
 					path: '/public',
 					options: {
-						authFallback: 'none',
+						defaultAuthMode: 'none',
 					},
 				}).response;
 
@@ -638,7 +638,7 @@ describe('public APIs', () => {
 				expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 			});
 
-			it('should resolve credentials when authFallback is "iam"', async () => {
+			it('should resolve credentials when defaultAuthMode is "iam"', async () => {
 				mockFetchAuthSession.mockResolvedValue({
 					credentials: {
 						accessKeyId: 'test-key',
@@ -650,7 +650,7 @@ describe('public APIs', () => {
 					apiName: 'restApi1',
 					path: '/private',
 					options: {
-						authFallback: 'iam',
+						defaultAuthMode: 'iam',
 					},
 				}).response;
 
@@ -658,7 +658,7 @@ describe('public APIs', () => {
 				expect(mockAuthenticatedHandler).toHaveBeenCalled();
 			});
 
-			it('should maintain default behavior when no authFallback specified', async () => {
+			it('should maintain default behavior when no defaultAuthMode specified', async () => {
 				mockFetchAuthSession.mockResolvedValue({
 					credentials: null,
 				});
@@ -672,7 +672,7 @@ describe('public APIs', () => {
 				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
 			});
 
-			it('should use global authFallback configuration when no local authFallback is specified', async () => {
+			it('should use global defaultAuthMode configuration when no local defaultAuthMode is specified', async () => {
 				const mockAmplifyWithGlobalConfig = {
 					...mockAmplifyInstance,
 					libraryOptions: {
@@ -680,7 +680,7 @@ describe('public APIs', () => {
 						API: {
 							...mockAmplifyInstance.libraryOptions?.API,
 							REST: {
-								authFallback: 'none' as const,
+								defaultAuthMode: 'none' as const,
 							},
 						},
 					},

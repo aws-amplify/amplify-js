@@ -26,9 +26,9 @@ export interface LibraryAPIOptions {
 		 */
 		retryStrategy?: RetryStrategy;
 		/**
-		 * Default auth fallback for REST API calls when no explicit auth is provided.
+		 * Default auth mode for REST API calls when no explicit auth is provided.
 		 */
-		authFallback?: 'none' | 'iam';
+		defaultAuthMode?: RESTAuthMode;
 	};
 }
 
@@ -141,6 +141,8 @@ export type GraphQLAuthMode =
 	| 'identityPool'
 	| 'lambda'
 	| 'none';
+
+export type RESTAuthMode = 'none' | 'iam';
 
 /**
  * Type representing a plain JavaScript object that can be serialized to JSON.

@@ -71,7 +71,7 @@ const publicHandler = (
 				method,
 				headers,
 				abortSignal,
-				authFallback: apiOptions.authFallback,
+				defaultAuthMode: apiOptions.defaultAuthMode,
 			},
 			isIamAuthApplicableForRest,
 			signingServiceInfo,
