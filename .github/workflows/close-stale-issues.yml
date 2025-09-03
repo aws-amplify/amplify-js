@@ -16,9 +16,11 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           only-issue-labels: pending-community-response,question
+          stale-issue-label: pending-community-response
+          days-before-issue-stale: -1 # skip stale labeling
           days-before-issue-close: 14
           close-issue-message: 'This issue is being automatically closed due to lack of recent activity. Please feel free to reopen it if you have any further questions.'
           days-before-pr-stale: -1 # ignore PRs
           days-before-pr-close: -1 # ignore PRs
-          remove-issue-stale-when-updated: true
+          remove-issue-stale-when-updated: false
           operations-per-run: 100
