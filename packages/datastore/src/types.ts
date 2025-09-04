@@ -792,13 +792,20 @@ type ScalarNumberOperators<T> = EqualityOperators<T> & {
 };
 type NumberOperators<T> = ScalarNumberOperators<T> & {
 	between: [T, T];
+	in: T[];
+	notIn: T[];
 };
 type StringOperators<T> = ScalarNumberOperators<T> & {
 	beginsWith: T;
 	contains: T;
 	notContains: T;
+	in: T[];
+	notIn: T[];
 };
-type BooleanOperators<T> = EqualityOperators<T>;
+type BooleanOperators<T> = EqualityOperators<T> & {
+	in: T[];
+	notIn: T[];
+};
 interface ArrayOperators<T> {
 	contains: T;
 	notContains: T;
@@ -889,7 +896,7 @@ export enum QueryOne {
 }
 export type GraphQLField = Record<
 	string,
-	Record<string, string | number | [number, number]>
+	Record<string, string | number | [number, number] | string[] | number[]>
 >;
 
 export type GraphQLCondition = Partial<
