@@ -24,7 +24,6 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 // TODO: Remove this interface when we move to public advanced APIs.
 import { CopyInput as CopyWithPathInputWithAdvancedOptions } from '../../../../internals';
-import { TaggingDirective } from '../../utils/client/s3data/types';
 
 const isCopyInputWithPath = (
 	input: CopyInput | CopyWithPathInput,
@@ -115,7 +114,6 @@ const copyWithPath = async (
 		eTag: input.source.eTag,
 		expectedSourceBucketOwner: input.source?.expectedBucketOwner,
 		expectedBucketOwner: input.destination?.expectedBucketOwner,
-		taggingDirective: input.destination?.taggingDirective,
 	});
 
 	return { path: finalCopyDestination };
@@ -195,7 +193,6 @@ const serviceCopy = async ({
 	eTag,
 	expectedSourceBucketOwner,
 	expectedBucketOwner,
-	taggingDirective,
 }: {
 	source: string;
 	destination: string;
@@ -205,7 +202,6 @@ const serviceCopy = async ({
 	eTag?: string;
 	expectedSourceBucketOwner?: string;
 	expectedBucketOwner?: string;
-	taggingDirective?: TaggingDirective;
 }) => {
 	await copyObject(
 		{
@@ -217,7 +213,7 @@ const serviceCopy = async ({
 			CopySource: source,
 			Key: destination,
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
-			TaggingDirective: taggingDirective,
+			TaggingDirective: 'REPLACE', // Replaces the existing tags with no tags since tagging is empty
 			CopySourceIfMatch: eTag,
 			CopySourceIfUnmodifiedSince: notModifiedSince,
 			ExpectedSourceBucketOwner: expectedSourceBucketOwner,

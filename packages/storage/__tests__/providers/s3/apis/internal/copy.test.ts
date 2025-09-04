@@ -196,6 +196,7 @@ describe('copy API', () => {
 								...copyObjectClientBaseParams,
 								CopySource: expectedSourceKey,
 								Key: expectedDestinationKey,
+								TaggingDirective: 'REPLACE',
 							},
 						);
 					});
@@ -226,6 +227,7 @@ describe('copy API', () => {
 						MetadataDirective: 'COPY',
 						CopySource: `${bucket}/public/sourceKey`,
 						Key: 'public/destinationKey',
+						TaggingDirective: 'REPLACE',
 					},
 				);
 			});
@@ -340,6 +342,7 @@ describe('copy API', () => {
 							...copyObjectClientBaseParams,
 							CopySource: `${bucket}/${expectedSourcePath}`,
 							Key: expectedDestinationPath,
+							TaggingDirective: 'REPLACE',
 						},
 					);
 				},
@@ -368,6 +371,7 @@ describe('copy API', () => {
 						MetadataDirective: 'COPY',
 						CopySource: `${bucket}/sourcePath`,
 						Key: 'destinationPath',
+						TaggingDirective: 'REPLACE',
 					},
 				);
 			});
@@ -430,37 +434,6 @@ describe('copy API', () => {
 						}),
 					);
 				});
-
-				it('should pass taggingDirective to copyObject', async () => {
-					await copyWrapper({
-						source: { path: 'sourcePath' },
-						destination: {
-							path: 'destinationPath',
-							taggingDirective: 'REPLACE',
-						},
-					});
-					expect(copyObject).toHaveBeenCalledTimes(1);
-					expect(copyObject).toHaveBeenCalledWith(
-						expect.anything(),
-						expect.objectContaining({
-							TaggingDirective: 'REPLACE',
-						}),
-					);
-				});
-
-				it('should not pass taggingDirective when not specified', async () => {
-					await copyWrapper({
-						source: { path: 'sourcePath' },
-						destination: { path: 'destinationPath' },
-					});
-					expect(copyObject).toHaveBeenCalledTimes(1);
-					expect(copyObject).toHaveBeenCalledWith(
-						expect.anything(),
-						expect.objectContaining({
-							TaggingDirective: undefined,
-						}),
-					);
-				});
 			});
 		});
 	});
@@ -491,6 +464,7 @@ describe('copy API', () => {
 						...copyObjectClientBaseParams,
 						CopySource: `${bucket}/public/${missingSourceKey}`,
 						Key: `public/${destinationKey}`,
+						TaggingDirective: 'REPLACE',
 					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
