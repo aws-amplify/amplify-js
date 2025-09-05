@@ -33,7 +33,13 @@ export const resolveApiUrl = (
 	const urlStr = amplify.getConfig()?.API?.REST?.[apiName]?.endpoint;
 	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
 	try {
-		const url = new AmplifyUrl(urlStr + path);
+		let url: URL;
+		if (AmplifyUrl.canParse(urlStr + path)) {
+			url = new AmplifyUrl(urlStr + path);
+		} else {
+			url = new AmplifyUrl(urlStr + path, location?.origin);
+		}
+
 		if (queryParams) {
 			const mergedQueryParams = new AmplifyUrlSearchParams(url.searchParams);
 			Object.entries(queryParams).forEach(([key, value]) => {

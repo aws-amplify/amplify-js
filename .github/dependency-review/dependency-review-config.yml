@@ -15,6 +15,7 @@ allow-licenses:
   - 'ISC'
   - 'JSON'
   - 'MIT'
+  - 'MIT-0'
   - 'OpenSSL'
   - 'PDDL-1.0'
   - 'PostgreSQL'

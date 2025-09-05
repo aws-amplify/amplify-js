@@ -130,8 +130,10 @@ const oauthSignIn = async ({
 		params.append('code_challenge', toCodeChallenge());
 		params.append('code_challenge_method', method);
 	}
-	const oAuthUrl = new URL('/oauth2/authorize', `https://${domain}/`);
-	oAuthUrl.search = params.toString();
+
+	// Using URL object is not supported in React Native as the `search` property is read-only
+	// See: https://github.com/facebook/react-native/blob/main/packages/react-native/Libraries/Blob/URL.js
+	const oAuthUrl = `https://${domain}/oauth2/authorize?${params.toString()}`;
 
 	// this will only take effect in the following scenarios:
 	// 1. the user cancels the OAuth flow on web via back button, and
@@ -140,11 +142,8 @@ const oauthSignIn = async ({
 
 	// the following is effective only in react-native as openAuthSession resolves only in react-native
 	const { type, error, url } =
-		(await openAuthSession(
-			oAuthUrl.href,
-			redirectSignIn,
-			preferPrivateSession,
-		)) ?? {};
+		(await openAuthSession(oAuthUrl, redirectSignIn, preferPrivateSession)) ??
+		{};
 
 	try {
 		if (type === 'error') {
