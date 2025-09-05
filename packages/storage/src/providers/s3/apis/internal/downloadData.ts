@@ -77,6 +77,7 @@ const downloadDataJob =
 				...(downloadDataOptions?.bytesRange && {
 					Range: `bytes=${downloadDataOptions.bytesRange.start}-${downloadDataOptions.bytesRange.end}`,
 				}),
+				ResponseCacheControl: downloadDataOptions?.cacheControl,
 				ExpectedBucketOwner: downloadDataOptions?.expectedBucketOwner,
 			},
 		);
