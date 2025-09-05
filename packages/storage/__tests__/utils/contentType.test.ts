@@ -15,6 +15,12 @@ describe('getContentType', () => {
 		expect(getContentType('data', 'document.pdf')).toBe('application/pdf');
 	});
 
+	it('should handle files with multiple dots by using last extension', () => {
+		expect(getContentType('data', 'myfile.tar.gz')).toBe('application/gzip');
+		expect(getContentType('data', 'archive.tar.bz')).toBe('application/x-bzip');
+		expect(getContentType('data', 'data.json.zip')).toBe('application/zip');
+	});
+
 	it('should handle case insensitive extensions', () => {
 		expect(getContentType('data', 'IMAGE.PNG')).toBe('image/png');
 		expect(getContentType('data', 'Video.MP4')).toBe('video/mp4');

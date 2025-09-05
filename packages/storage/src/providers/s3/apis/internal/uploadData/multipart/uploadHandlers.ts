@@ -138,8 +138,8 @@ export const getMultipartUploadHandlers = (
 		const {
 			contentDisposition,
 			contentEncoding,
-			contentType = uploadDataOptions?.contentType ||
-				getContentType(data, objectKey) ||
+			contentType = uploadDataOptions?.contentType ??
+				getContentType(data, objectKey) ??
 				'application/octet-stream',
 			metadata,
 			preventOverwrite,
