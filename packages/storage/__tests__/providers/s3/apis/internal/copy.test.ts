@@ -196,6 +196,7 @@ describe('copy API', () => {
 								...copyObjectClientBaseParams,
 								CopySource: expectedSourceKey,
 								Key: expectedDestinationKey,
+								TaggingDirective: 'REPLACE',
 							},
 						);
 					});
@@ -226,6 +227,7 @@ describe('copy API', () => {
 						MetadataDirective: 'COPY',
 						CopySource: `${bucket}/public/sourceKey`,
 						Key: 'public/destinationKey',
+						TaggingDirective: 'REPLACE',
 					},
 				);
 			});
@@ -340,6 +342,7 @@ describe('copy API', () => {
 							...copyObjectClientBaseParams,
 							CopySource: `${bucket}/${expectedSourcePath}`,
 							Key: expectedDestinationPath,
+							TaggingDirective: 'REPLACE',
 						},
 					);
 				},
@@ -368,6 +371,7 @@ describe('copy API', () => {
 						MetadataDirective: 'COPY',
 						CopySource: `${bucket}/sourcePath`,
 						Key: 'destinationPath',
+						TaggingDirective: 'REPLACE',
 					},
 				);
 			});
@@ -460,6 +464,7 @@ describe('copy API', () => {
 						...copyObjectClientBaseParams,
 						CopySource: `${bucket}/public/${missingSourceKey}`,
 						Key: `public/${destinationKey}`,
+						TaggingDirective: 'REPLACE',
 					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);

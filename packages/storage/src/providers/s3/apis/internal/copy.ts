@@ -213,6 +213,7 @@ const serviceCopy = async ({
 			CopySource: source,
 			Key: destination,
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
+			TaggingDirective: 'REPLACE', // Replaces the existing tags with no tags since tagging is empty
 			CopySourceIfMatch: eTag,
 			CopySourceIfUnmodifiedSince: notModifiedSince,
 			ExpectedSourceBucketOwner: expectedSourceBucketOwner,
