@@ -61,8 +61,8 @@ export const putObjectJob =
 		const {
 			contentDisposition,
 			contentEncoding,
-			contentType = uploadDataOptions?.contentType ||
-				getContentType(data, objectKey) ||
+			contentType = uploadDataOptions?.contentType ??
+				getContentType(data, objectKey) ??
 				'application/octet-stream',
 			preventOverwrite,
 			metadata,
