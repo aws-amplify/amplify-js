@@ -1340,7 +1340,9 @@ export type ValuePredicate<
 				inclusiveLowerBound: Scalar<MT>,
 				inclusiveUpperBound: Scalar<MT>,
 			) => PredicateInternalsKey
-		: (operand: Scalar<MT>) => PredicateInternalsKey;
+		: K extends 'in' | 'notIn'
+			? (operand: Scalar<MT>[]) => PredicateInternalsKey
+			: (operand: Scalar<MT>) => PredicateInternalsKey;
 };
 
 export type V5ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
