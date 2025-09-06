@@ -93,6 +93,8 @@ const negations = {
 	le: 'gt',
 	contains: 'notContains',
 	notContains: 'contains',
+	in: 'notIn',
+	notIn: 'in',
 };
 
 /**
@@ -216,6 +218,14 @@ export class FieldCondition {
 			notContains: () => (!v ? true : v.indexOf(this.operands[0]) === -1),
 			beginsWith: () => v?.startsWith(this.operands[0]),
 			between: () => v >= this.operands[0] && v <= this.operands[1],
+			in: () => {
+				const values = this.operands[0];
+				return Array.isArray(values) && values.includes(v);
+			},
+			notIn: () => {
+				const values = this.operands[0];
+				return Array.isArray(values) && !values.includes(v);
+			},
 		};
 		const operation = operations[this.operator as keyof typeof operations];
 		if (operation) {
@@ -264,6 +274,22 @@ export class FieldCondition {
 				(this.operands[0] > this.operands[1]
 					? 'The first argument must be less than or equal to the second argument.'
 					: null),
+			in: () => {
+				const countError = argumentCount(1)();
+				if (countError) return countError;
+				
+				const values = this.operands[0];
+				if (!Array.isArray(values)) {
+					return 'Operand must be an array.';
+				}
+				if (values.length === 0) {
+					return 'Operand array must not be empty.';
+				}
+				return null;
+			},
+			notIn: () => {
+				return validations.in();
+			},
 		};
 		const validate = validations[this.operator as keyof typeof validations];
 		if (validate) {

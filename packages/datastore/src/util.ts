@@ -177,6 +177,18 @@ export const validatePredicateField = <T>(
 				(value as unknown as string).indexOf(operand as unknown as string) ===
 					-1
 			);
+		case 'in': {
+			// Early return if operand is not an array
+			if (!Array.isArray(operand)) return false;
+
+			return (operand as T[]).includes(value);
+		}
+		case 'notIn': {
+			// Early return if operand is not an array
+			if (!Array.isArray(operand)) return false;
+
+			return !(operand as T[]).includes(value);
+		}
 		default:
 			return false;
 	}
