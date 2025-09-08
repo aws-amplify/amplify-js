@@ -196,7 +196,7 @@ describe('copy API', () => {
 								...copyObjectClientBaseParams,
 								CopySource: expectedSourceKey,
 								Key: expectedDestinationKey,
-								TaggingDirective: 'REPLACE',
+								TaggingDirective: 'COPY',
 							},
 						);
 					});
@@ -227,7 +227,7 @@ describe('copy API', () => {
 						MetadataDirective: 'COPY',
 						CopySource: `${bucket}/public/sourceKey`,
 						Key: 'public/destinationKey',
-						TaggingDirective: 'REPLACE',
+						TaggingDirective: 'COPY',
 					},
 				);
 			});
@@ -342,7 +342,7 @@ describe('copy API', () => {
 							...copyObjectClientBaseParams,
 							CopySource: `${bucket}/${expectedSourcePath}`,
 							Key: expectedDestinationPath,
-							TaggingDirective: 'REPLACE',
+							TaggingDirective: 'COPY',
 						},
 					);
 				},
@@ -371,7 +371,7 @@ describe('copy API', () => {
 						MetadataDirective: 'COPY',
 						CopySource: `${bucket}/sourcePath`,
 						Key: 'destinationPath',
-						TaggingDirective: 'REPLACE',
+						TaggingDirective: 'COPY',
 					},
 				);
 			});
@@ -435,6 +435,49 @@ describe('copy API', () => {
 					);
 				});
 			});
+
+			describe('TagConfig passed in input', () => {
+				it('should use COPY TaggingDirective when tagConfig is not provided (default)', async () => {
+					await copyWrapper({
+						source: { path: 'sourcePath' },
+						destination: { path: 'destinationPath' },
+					});
+
+					expect(copyObject).toHaveBeenCalledWith(
+						expect.any(Object),
+						expect.objectContaining({
+							TaggingDirective: 'COPY',
+						}),
+					);
+				});
+
+				it('should use COPY TaggingDirective when tagConfig mode is copy', async () => {
+					await copyWrapper({
+						source: { path: 'sourcePath' },
+						destination: { path: 'destinationPath' },
+						tagConfig: { mode: 'copy' },
+					});
+
+					expect(copyObject).toHaveBeenCalledWith(
+						expect.any(Object),
+						expect.objectContaining({
+							TaggingDirective: 'COPY',
+						}),
+					);
+				});
+
+				it('should use REPLACE TaggingDirective with empty tagging when tagConfig mode is remove', async () => {
+					await copyWrapper({
+						source: { path: 'sourcePath' },
+						destination: { path: 'destinationPath' },
+						tagConfig: { mode: 'remove' },
+					});
+
+					const callArgs = mockCopyObject.mock.calls[0][1];
+					expect(callArgs.TaggingDirective).toBe('REPLACE');
+					expect(callArgs.Tagging).toBeUndefined();
+				});
+			});
 		});
 	});
 
@@ -464,7 +507,7 @@ describe('copy API', () => {
 						...copyObjectClientBaseParams,
 						CopySource: `${bucket}/public/${missingSourceKey}`,
 						Key: `public/${destinationKey}`,
-						TaggingDirective: 'REPLACE',
+						TaggingDirective: 'COPY',
 					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);

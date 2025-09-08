@@ -10,6 +10,7 @@ import {
 	CopyWithPathInput,
 	CopyWithPathOutput,
 } from '../../types';
+import { TagConfig } from '../../../../types/inputs';
 import { ResolvedS3Config, StorageBucket } from '../../types/options';
 import {
 	isInputWithPath,
@@ -114,6 +115,7 @@ const copyWithPath = async (
 		eTag: input.source.eTag,
 		expectedSourceBucketOwner: input.source?.expectedBucketOwner,
 		expectedBucketOwner: input.destination?.expectedBucketOwner,
+		tagConfig: input.tagConfig,
 	});
 
 	return { path: finalCopyDestination };
@@ -193,6 +195,7 @@ const serviceCopy = async ({
 	eTag,
 	expectedSourceBucketOwner,
 	expectedBucketOwner,
+	tagConfig,
 }: {
 	source: string;
 	destination: string;
@@ -202,6 +205,7 @@ const serviceCopy = async ({
 	eTag?: string;
 	expectedSourceBucketOwner?: string;
 	expectedBucketOwner?: string;
+	tagConfig?: TagConfig;
 }) => {
 	await copyObject(
 		{
@@ -213,7 +217,7 @@ const serviceCopy = async ({
 			CopySource: source,
 			Key: destination,
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
-			TaggingDirective: 'REPLACE', // Replaces the existing tags with no tags since tagging is empty
+			TaggingDirective: tagConfig?.mode === 'remove' ? 'REPLACE' : 'COPY',
 			CopySourceIfMatch: eTag,
 			CopySourceIfUnmodifiedSince: notModifiedSince,
 			ExpectedSourceBucketOwner: expectedSourceBucketOwner,

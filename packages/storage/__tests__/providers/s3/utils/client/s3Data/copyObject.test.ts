@@ -107,14 +107,14 @@ describe('validateCopyObjectHeaders', () => {
 			request: {
 				...baseRequest,
 				MetadataDirective: 'mock-metadata',
-				TaggingDirective: 'REPLACE',
+				TaggingDirective: 'COPY',
 				CopySourceIfMatch: 'mock-etag',
 				CopySourceIfUnmodifiedSince: new Date(0),
 			},
 			headers: {
 				...baseHeaders,
 				'x-amz-metadata-directive': 'mock-metadata',
-				'x-amz-tagging-directive': 'REPLACE',
+				'x-amz-tagging-directive': 'COPY',
 				'x-amz-copy-source-if-match': 'mock-etag',
 				'x-amz-copy-source-if-unmodified-since':
 					'Thu, 01 Jan 1970 00:00:00 GMT',
