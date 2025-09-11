@@ -453,5 +453,71 @@ describe('putObjectJob with path', () => {
 				},
 			);
 		});
+
+		it('should detect content type from file extension', async () => {
+			const abortController = new AbortController();
+			const testData = 'data';
+			const job = putObjectJob(
+				{
+					key: 'image.jpg',
+					data: testData,
+				},
+				abortController.signal,
+				testData.length,
+			);
+			await job();
+
+			expect(mockPutObject).toHaveBeenCalledWith(
+				expect.any(Object),
+				expect.objectContaining({
+					ContentType: 'image/jpeg',
+				}),
+			);
+		});
+
+		it('should detect content type from File object', async () => {
+			const abortController = new AbortController();
+			const file = new File(['content'], 'test.png', { type: 'image/png' });
+			const job = putObjectJob(
+				{
+					key: 'test.jpg', // Different extension to test File.type takes precedence
+					data: file,
+				},
+				abortController.signal,
+				file.size,
+			);
+			await job();
+
+			expect(mockPutObject).toHaveBeenCalledWith(
+				expect.any(Object),
+				expect.objectContaining({
+					ContentType: 'image/png',
+				}),
+			);
+		});
+
+		it('should use explicit contentType when provided', async () => {
+			const abortController = new AbortController();
+			const testData = 'data';
+			const job = putObjectJob(
+				{
+					key: 'image.jpg',
+					data: testData,
+					options: {
+						contentType: 'custom/type',
+					},
+				},
+				abortController.signal,
+				testData.length,
+			);
+			await job();
+
+			expect(mockPutObject).toHaveBeenCalledWith(
+				expect.any(Object),
+				expect.objectContaining({
+					ContentType: 'custom/type',
+				}),
+			);
+		});
 	});
 });

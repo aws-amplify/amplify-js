@@ -22,6 +22,7 @@ import {
 } from '../../../utils/constants';
 import { calculateContentCRC32 } from '../../../utils/crc32';
 import { constructContentDisposition } from '../../../utils/constructContentDisposition';
+import { getContentType } from '../../../../../utils/contentType';
 
 /**
  * The input interface for UploadData API with only the options needed for single part upload.
@@ -60,7 +61,9 @@ export const putObjectJob =
 		const {
 			contentDisposition,
 			contentEncoding,
-			contentType = 'application/octet-stream',
+			contentType = uploadDataOptions?.contentType ??
+				getContentType(data, objectKey) ??
+				'application/octet-stream',
 			preventOverwrite,
 			metadata,
 			checksumAlgorithm,
