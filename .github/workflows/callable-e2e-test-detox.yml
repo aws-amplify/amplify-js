@@ -31,6 +31,9 @@ jobs:
           path: amplify-js
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
+      - name: Set Xcode version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_16.4.app
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:

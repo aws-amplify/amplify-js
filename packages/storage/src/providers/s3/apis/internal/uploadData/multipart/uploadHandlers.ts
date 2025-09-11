@@ -38,6 +38,7 @@ import { logger } from '../../../../../../utils';
 import { calculateContentCRC32 } from '../../../../utils/crc32';
 import { StorageOperationOptionsInput } from '../../../../../../types/inputs';
 import { IntegrityError } from '../../../../../../errors/IntegrityError';
+import { getContentType } from '../../../../../../utils/contentType';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import {
@@ -137,7 +138,9 @@ export const getMultipartUploadHandlers = (
 		const {
 			contentDisposition,
 			contentEncoding,
-			contentType = 'application/octet-stream',
+			contentType = uploadDataOptions?.contentType ??
+				getContentType(data, objectKey) ??
+				'application/octet-stream',
 			metadata,
 			preventOverwrite,
 			onProgress,
