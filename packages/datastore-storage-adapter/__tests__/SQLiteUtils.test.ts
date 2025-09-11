@@ -282,6 +282,91 @@ describe('SQLiteUtils tests', () => {
 
 			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
 		});
+
+		it('should generate valid WHERE clause with `in` operator and AND condition', () => {
+			const predicateGroup = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'status',
+						operator: 'in',
+						operand: ['active', 'pending'],
+					},
+					{
+						field: 'priority',
+						operator: 'ge',
+						operand: 5,
+					},
+				],
+			};
+
+			const expected = [
+				`WHERE ("status" IN (?, ?) AND "priority" >= ?)`,
+				['active', 'pending', 5],
+			];
+
+			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
+		});
+
+		it('should generate valid WHERE clause with `notIn` operator and OR condition', () => {
+			const predicateGroup = {
+				type: 'or',
+				predicates: [
+					{
+						field: 'status',
+						operator: 'notIn',
+						operand: ['archived', 'deleted'],
+					},
+					{
+						field: 'isActive',
+						operator: 'eq',
+						operand: true,
+					},
+				],
+			};
+
+			const expected = [
+				`WHERE ("status" NOT IN (?, ?) OR "isActive" = ?)`,
+				['archived', 'deleted', true],
+			];
+
+			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
+		});
+
+		it('should generate valid WHERE clause with nested AND/OR containing `in` operators', () => {
+			const predicateGroup = {
+				type: 'and',
+				predicates: [
+					{
+						type: 'or',
+						predicates: [
+							{
+								field: 'category',
+								operator: 'in',
+								operand: ['tech', 'science'],
+							},
+							{
+								field: 'featured',
+								operator: 'eq',
+								operand: true,
+							},
+						],
+					},
+					{
+						field: 'status',
+						operator: 'notIn',
+						operand: ['draft', 'archived'],
+					},
+				],
+			};
+
+			const expected = [
+				`WHERE (("category" IN (?, ?) OR "featured" = ?) AND "status" NOT IN (?, ?))`,
+				['tech', 'science', true, 'draft', 'archived'],
+			];
+
+			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
+		});
 	});
 
 	describe('whereConditionFromPredicateObject', () => {
@@ -336,6 +421,126 @@ describe('SQLiteUtils tests', () => {
 			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
 				expected,
 			);
+		});
+
+		it('should generate valid `in` condition with string array', () => {
+			const predicate = {
+				field: 'status',
+				operator: 'in',
+				operand: ['active', 'pending', 'draft'],
+			};
+
+			const expected = [`"status" IN (?, ?, ?)`, ['active', 'pending', 'draft']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
+		});
+
+		it('should generate valid `notIn` condition with string array', () => {
+			const predicate = {
+				field: 'status',
+				operator: 'notIn',
+				operand: ['archived', 'deleted'],
+			};
+
+			const expected = [`"status" NOT IN (?, ?)`, ['archived', 'deleted']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
+		});
+
+		it('should generate valid `in` condition with number array', () => {
+			const predicate = {
+				field: 'priority',
+				operator: 'in',
+				operand: [1, 3, 5],
+			};
+
+			const expected = [`"priority" IN (?, ?, ?)`, [1, 3, 5]];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
+		});
+
+		it('should generate valid `notIn` condition with mixed types', () => {
+			const predicate = {
+				field: 'value',
+				operator: 'notIn',
+				operand: [1, 'two', true, null],
+			};
+
+			const expected = [`"value" NOT IN (?, ?, ?, ?)`, [1, 'two', true, null]];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
+		});
+
+		it('should handle empty array for `in` (always false)', () => {
+			const predicate = {
+				field: 'status',
+				operator: 'in',
+				operand: [],
+			};
+
+			const expected = [`1 = 0`, []];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
+		});
+
+		it('should handle empty array for `notIn` (always true)', () => {
+			const predicate = {
+				field: 'status',
+				operator: 'notIn',
+				operand: [],
+			};
+
+			const expected = [`1 = 1`, []];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
+		});
+
+		it('should throw error for `in` with non-array operand', () => {
+			const predicate = {
+				field: 'status',
+				operator: 'in',
+				operand: 'not-an-array',
+			};
+
+			expect(() => whereConditionFromPredicateObject(predicate as any)).toThrow(
+				'Operand for in must be an array',
+			);
+		});
+
+		it('should throw error for `notIn` with non-array operand', () => {
+			const predicate = {
+				field: 'status',
+				operator: 'notIn',
+				operand: 'not-an-array',
+			};
+
+			expect(() => whereConditionFromPredicateObject(predicate as any)).toThrow(
+				'Operand for notIn must be an array',
+			);
+		});
+
+		it('should handle `in` with complex objects (JSON.stringify)', () => {
+			const predicate = {
+				field: 'metadata',
+				operator: 'in',
+				operand: [{ id: 1 }, { id: 2 }],
+			};
+
+			const expected = [`"metadata" IN (?, ?)`, ['{"id":1}', '{"id":2}']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
+		});
+
+		it('should handle `notIn` with null values', () => {
+			const predicate = {
+				field: 'tags',
+				operator: 'notIn',
+				operand: ['urgent', null, 'archived'],
+			};
+
+			const expected = [`"tags" NOT IN (?, ?, ?)`, ['urgent', null, 'archived']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
 		});
 	});
 
