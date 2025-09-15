@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.3.0...@aws-amplify/api-rest@4.4.0) (2025-09-11)
+
+### Features
+
+- **api-rest:** allow relative URL's ([6d2b4de](https://github.com/aws-amplify/amplify-js/commit/6d2b4de998e49c86397541cac588363edfcff832))
+
 # [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.2.0...@aws-amplify/api-rest@4.3.0) (2025-08-06)
 
 ### Features

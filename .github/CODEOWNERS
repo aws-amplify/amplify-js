@@ -15,24 +15,24 @@
 
 # The following paths involve server-side use cases, token/user session management.
 # Changes made to these paths requires additional reviews and approvals.
-/packages/auth @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/aws-amplify/src/adapter-core @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/adapterCore @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/singleton @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/utils/convert @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/utils/WordArray.ts @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/storage @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/utils/generateRandomString.ts @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/utils/globalHelpers @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/utils/urlSafeDecode.ts @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/awsClients/cognitoIdentity @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/clients/internal @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/core/src/Hub @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/adapter-nextjs @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/rtn-web-browser @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/storage/src/providers/s3/apis/internal @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/storage/src/providers/s3/apis/server @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/api-rest/src/apis/server.ts @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/api-rest/src/apis/common/internalPost.ts @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/api-graphql/src/server @pranavosu @sobolk @Amplifiyer @avi-karthik 
-/packages/api-graphql/src/internals/server @pranavosu @sobolk @Amplifiyer @avi-karthik 
+/packages/auth @pranavosu @sarayev @avi-karthik 
+/packages/aws-amplify/src/adapter-core @pranavosu @sarayev @avi-karthik 
+/packages/core/src/adapterCore @pranavosu @sarayev @avi-karthik 
+/packages/core/src/singleton @pranavosu @sarayev @avi-karthik 
+/packages/core/src/utils/convert @pranavosu @sarayev @avi-karthik 
+/packages/core/src/utils/WordArray.ts @pranavosu @sarayev @avi-karthik 
+/packages/core/src/storage @pranavosu @sarayev @avi-karthik 
+/packages/core/src/utils/generateRandomString.ts @pranavosu @sarayev @avi-karthik 
+/packages/core/src/utils/globalHelpers @pranavosu @sarayev @avi-karthik 
+/packages/core/src/utils/urlSafeDecode.ts @pranavosu @sarayev @avi-karthik 
+/packages/core/src/awsClients/cognitoIdentity @pranavosu @sarayev @avi-karthik 
+/packages/core/src/clients/internal @pranavosu @sarayev @avi-karthik 
+/packages/core/src/Hub @pranavosu @sarayev @avi-karthik 
+/packages/adapter-nextjs @pranavosu @sarayev @avi-karthik 
+/packages/rtn-web-browser @pranavosu @sarayev @avi-karthik 
+/packages/storage/src/providers/s3/apis/internal @pranavosu @sarayev @avi-karthik 
+/packages/storage/src/providers/s3/apis/server @pranavosu @sarayev @avi-karthik 
+/packages/api-rest/src/apis/server.ts @pranavosu @sarayev @avi-karthik 
+/packages/api-rest/src/apis/common/internalPost.ts @pranavosu @sarayev @avi-karthik 
+/packages/api-graphql/src/server @pranavosu @sarayev @avi-karthik 
+/packages/api-graphql/src/internals/server @pranavosu @sarayev @avi-karthik 
