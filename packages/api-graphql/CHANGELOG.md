@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.21...@aws-amplify/api-graphql@4.7.22) (2025-09-11)
+
+### Bug Fixes
+
+- account for EVENT_SUBSCRIBE_ERROR in AppSync ([#14491](https://github.com/aws-amplify/amplify-js/issues/14491)) ([95b9ae0](https://github.com/aws-amplify/amplify-js/commit/95b9ae075382dcedb6d1e1e39a973dfbb0016eae))
+
 ## [4.7.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.20...@aws-amplify/api-graphql@4.7.21) (2025-08-06)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql
