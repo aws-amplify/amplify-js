@@ -137,6 +137,7 @@ type ExtendCopyInputWithAdvancedOptions<InputType, ExtendedOptionsType> =
 		? {
 				source: InputType['source'];
 				destination: InputType['destination'];
+				tagConfig?: InputType['tagConfig'];
 				options?: ExtendedOptionsType;
 			}
 		: never;
