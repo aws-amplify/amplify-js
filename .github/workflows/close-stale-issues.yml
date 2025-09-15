@@ -1,0 +1,27 @@
+name: Close pending-community-response issues
+
+on:
+  schedule:
+    - cron: '30 2 * * *' # runs daily at 02:30 UTC
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          only-issue-labels: pending-community-response,question
+          stale-issue-label: pending-community-response
+          days-before-issue-stale: -1 # skip stale labeling
+          days-before-issue-close: 14
+          close-issue-message: 'This issue is being automatically closed due to lack of recent activity. Please feel free to reopen it if you have any further questions.'
+          days-before-pr-stale: -1 # ignore PRs
+          days-before-pr-close: -1 # ignore PRs
+          remove-issue-stale-when-updated: false
+          operations-per-run: 100
+          debug-only: true # TODO: remove this when the dry-run succeeds
