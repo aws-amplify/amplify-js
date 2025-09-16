@@ -57,8 +57,8 @@ export class PageViewTracker implements TrackerInterface {
 		this.options = {
 			appType: options?.appType ?? DEFAULT_APP_TYPE,
 			attributes: options?.attributes ?? undefined,
-			eventName: this.options?.eventName ?? DEFAULT_EVENT_NAME,
-			urlProvider: this.options?.urlProvider ?? DEFAULT_URL_PROVIDER,
+			eventName: options?.eventName ?? DEFAULT_EVENT_NAME,
+			urlProvider: options?.urlProvider ?? DEFAULT_URL_PROVIDER,
 		};
 
 		// Configure SPA or MPA page view tracking
