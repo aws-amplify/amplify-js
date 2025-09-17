@@ -63,6 +63,7 @@ describe('refreshToken', () => {
 		});
 
 		it('should refresh token', async () => {
+			const clientMetadata = { 'app-version': '1.0.0' };
 			const expectedOutput = {
 				accessToken: decodeJWT(mockAccessToken),
 				idToken: decodeJWT(mockAccessToken),
@@ -85,42 +86,13 @@ describe('refreshToken', () => {
 					},
 				},
 				username: mockedUsername,
+				clientMetadata,
 			});
 
 			// stringify and re-parse for JWT equality
 			expect(JSON.parse(JSON.stringify(response))).toMatchObject(
 				JSON.parse(JSON.stringify(expectedOutput)),
 			);
-			expect(mockGetTokensFromRefreshToken).toHaveBeenCalledWith(
-				expect.objectContaining({ region: 'us-east-1' }),
-				expect.objectContaining({
-					ClientId: 'aaaaaaaaaaaa',
-					RefreshToken: mockedRefreshToken,
-				}),
-			);
-		});
-
-		it('passes clientMetadata to getTokensFromRefreshToken', async () => {
-			const clientMetadata = { 'app-version': '1.0.0' };
-
-			await refreshAuthTokens({
-				username: mockedUsername,
-				tokens: {
-					accessToken: { payload: {} },
-					idToken: { payload: {} },
-					clockDrift: 0,
-					refreshToken: mockedRefreshToken,
-					username: mockedUsername,
-				},
-				authConfig: {
-					Cognito: {
-						userPoolId: 'us-east-1_aaaaaaa',
-						userPoolClientId: 'aaaaaaaaaaaa',
-					},
-				},
-				clientMetadata,
-			});
-
 			expect(mockGetTokensFromRefreshToken).toHaveBeenCalledWith(
 				expect.objectContaining({ region: 'us-east-1' }),
 				expect.objectContaining({
