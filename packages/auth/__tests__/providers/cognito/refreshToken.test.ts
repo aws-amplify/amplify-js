@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { refreshAuthTokens } from '../../../src/providers/cognito/utils/refreshAuthTokens';
@@ -93,6 +96,37 @@ describe('refreshToken', () => {
 				expect.objectContaining({
 					ClientId: 'aaaaaaaaaaaa',
 					RefreshToken: mockedRefreshToken,
+				}),
+			);
+		});
+
+		it('passes clientMetadata to getTokensFromRefreshToken', async () => {
+			const clientMetadata = { 'app-version': '1.0.0' };
+
+			await refreshAuthTokens({
+				username: mockedUsername,
+				tokens: {
+					accessToken: { payload: {} },
+					idToken: { payload: {} },
+					clockDrift: 0,
+					refreshToken: mockedRefreshToken,
+					username: mockedUsername,
+				},
+				authConfig: {
+					Cognito: {
+						userPoolId: 'us-east-1_aaaaaaa',
+						userPoolClientId: 'aaaaaaaaaaaa',
+					},
+				},
+				clientMetadata,
+			});
+
+			expect(mockGetTokensFromRefreshToken).toHaveBeenCalledWith(
+				expect.objectContaining({ region: 'us-east-1' }),
+				expect.objectContaining({
+					ClientId: 'aaaaaaaaaaaa',
+					RefreshToken: mockedRefreshToken,
+					ClientMetadata: clientMetadata,
 				}),
 			);
 		});

@@ -66,6 +66,7 @@ export interface TokenProvider {
 
 export interface FetchAuthSessionOptions {
 	forceRefresh?: boolean;
+	clientMetadata?: Record<string, string>;
 }
 
 export interface AuthTokens {

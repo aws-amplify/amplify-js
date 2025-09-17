@@ -19,7 +19,7 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { oAuthStore } from '../utils/oauth/oAuthStore';
 import { addInflightPromise } from '../utils/oauth/inflightPromise';
-import { CognitoAuthSignInDetails } from '../types';
+import { ClientMetadata, CognitoAuthSignInDetails } from '../types';
 
 import {
 	AuthTokenOrchestrator,
@@ -32,6 +32,7 @@ import {
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
+	private clientMetadata?: ClientMetadata;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
 	inflightPromise: Promise<void> | undefined;
@@ -94,6 +95,10 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		return this.tokenRefresher;
 	}
 
+	setTokenRefreshClientMetadata(clientMetadata?: ClientMetadata): void {
+		this.clientMetadata = clientMetadata;
+	}
+
 	async getTokens(
 		options?: FetchAuthSessionOptions,
 	): Promise<
@@ -130,6 +135,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			tokens = await this.refreshTokens({
 				tokens,
 				username,
+				clientMetadata: options?.clientMetadata ?? this.clientMetadata,
 			});
 
 			if (tokens === null) {
@@ -147,9 +153,11 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private async refreshTokens({
 		tokens,
 		username,
+		clientMetadata,
 	}: {
 		tokens: CognitoAuthTokens;
 		username: string;
+		clientMetadata?: ClientMetadata;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
 			const { signInDetails } = tokens;
@@ -157,6 +165,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				tokens,
 				authConfig: this.authConfig,
 				username,
+				clientMetadata,
 			});
 			newTokens.signInDetails = signInDetails;
 			await this.setTokens({ tokens: newTokens });
