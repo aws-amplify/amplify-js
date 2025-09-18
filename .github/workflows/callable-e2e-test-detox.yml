@@ -35,7 +35,7 @@ jobs:
         run: |
           sudo xcode-select -s /Applications/Xcode_16.4.app
       - name: Download iOS platform and create simulator
-        if: ${{ contains(inputs.test_name, 'rtn-passkeys') }}
+        if: ${{ contains(inputs.test_name, 'integ_rn_ios_passkeys') }}
         run: |
           xcodebuild -downloadPlatform iOS -buildVersion 17.4
           xcrun simctl create "iPhone 15" "com.apple.CoreSimulator.SimDeviceType.iPhone-15" "com.apple.CoreSimulator.SimRuntime.iOS-17-4"
