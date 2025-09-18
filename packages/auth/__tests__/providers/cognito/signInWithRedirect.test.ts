@@ -137,6 +137,7 @@ describe('signInWithRedirect', () => {
 		mockToCodeChallenge.mockClear();
 		mockHandleFailure.mockClear();
 		mockCompleteOAuthFlow.mockClear();
+		mockCreateOAuthError.mockClear();
 
 		(oAuthStore.setAuthConfig as jest.Mock).mockClear();
 		(oAuthStore.storeOAuthInFlight as jest.Mock).mockClear();
@@ -359,6 +360,28 @@ describe('signInWithRedirect', () => {
 				expect.objectContaining({
 					currentUrl: mockOpenAuthSessionResult.url,
 				}),
+			);
+			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
+		});
+
+		it('invokes `handleFailure` with the error created by `createOAuthError` when `openAuthSession` is canceled', async () => {
+			const expectedError = new Error('OAuth flow was cancelled.');
+			const mockOpenAuthSessionResult = {
+				type: 'canceled',
+			};
+
+			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
+			mockCreateOAuthError.mockReturnValueOnce(expectedError);
+
+			await expect(
+				signInWithRedirect({
+					provider: 'Google',
+					options: { preferPrivateSession: true },
+				}),
+			).rejects.toThrow(expectedError);
+
+			expect(mockCreateOAuthError).toHaveBeenCalledWith(
+				mockOpenAuthSessionResult.type,
 			);
 			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
 		});

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.9.5...@aws-amplify/storage@6.9.6) (2025-09-11)
+
+### Bug Fixes
+
+- **storage:** add correct contentType ([#14536](https://github.com/aws-amplify/amplify-js/issues/14536)) ([0f5e997](https://github.com/aws-amplify/amplify-js/commit/0f5e997fa9a641a459b8fd3392e0f6fc4de5ad94))
+- **storage:** upload progress exceeds total in Expo/RN ([#14518](https://github.com/aws-amplify/amplify-js/issues/14518)) ([4ff079c](https://github.com/aws-amplify/amplify-js/commit/4ff079c3c6e10e96687b6115b7db9e7b8f18b545))
+
+## [6.9.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.9.4...@aws-amplify/storage@6.9.5) (2025-08-06)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
 ## [6.9.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.9.3...@aws-amplify/storage@6.9.4) (2025-07-23)
 
 **Note:** Version bump only for package @aws-amplify/storage

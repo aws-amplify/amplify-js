@@ -12,6 +12,7 @@ import { Part, listParts } from '../../../../utils/client/s3data';
 import { logger } from '../../../../../../utils';
 // TODO: Remove this interface when we move to public advanced APIs.
 import { UploadDataInput as UploadDataWithPathInputWithAdvancedOptions } from '../../../../../../internals/types/inputs';
+import { getContentType } from '../../../../../../utils/contentType';
 
 const ONE_HOUR = 1000 * 60 * 60;
 
@@ -166,7 +167,7 @@ export const getUploadsCacheKey = ({
 }: UploadsCacheKeyOptions) => {
 	let levelStr;
 	const resolvedContentType =
-		contentType ?? file?.type ?? 'application/octet-stream';
+		contentType ?? getContentType(file, key) ?? 'application/octet-stream';
 
 	// If no access level is defined, we're using custom gen2 access rules
 	if (accessLevel === undefined) {
