@@ -220,10 +220,12 @@ export class FieldCondition {
 			between: () => v >= this.operands[0] && v <= this.operands[1],
 			in: () => {
 				const values = this.operands[0];
+
 				return Array.isArray(values) && values.includes(v);
 			},
 			notIn: () => {
 				const values = this.operands[0];
+
 				return Array.isArray(values) && !values.includes(v);
 			},
 		};
@@ -277,7 +279,7 @@ export class FieldCondition {
 			in: () => {
 				const countError = argumentCount(1)();
 				if (countError) return countError;
-				
+
 				const values = this.operands[0];
 				if (!Array.isArray(values)) {
 					return 'Operand must be an array.';
@@ -285,6 +287,7 @@ export class FieldCondition {
 				if (values.length === 0) {
 					return 'Operand array must not be empty.';
 				}
+
 				return null;
 			},
 			notIn: () => {

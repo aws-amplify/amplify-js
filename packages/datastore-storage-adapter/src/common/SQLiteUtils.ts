@@ -274,6 +274,11 @@ const logicalOperatorMap = {
 	between: 'BETWEEN',
 };
 
+const arrayOperatorMap = {
+	in: 'IN',
+	notIn: 'NOT IN',
+};
+
 /**
  * If the given (operator, operand) indicate the need for a special `NULL` comparison,
  * that `WHERE` clause condition will be returned. If not special `NULL` handling is
@@ -298,6 +303,22 @@ function buildSpecialNullComparison(field, operator, operand) {
 	return null;
 }
 
+/**
+ * Builds a special SQL clause that always evaluates to true or false.
+ * Used for edge cases like empty arrays in 'in'/'notIn' operators.
+ *
+ * @param operator The operator ('in' or 'notIn')
+ * @returns A ParameterizedStatement that always evaluates to true or false
+ */
+function buildSpecialAlwaysStatement(
+	operator: 'in' | 'notIn',
+): ParameterizedStatement {
+	// Empty array: nothing can be IN or NOT IN an empty set
+	// For 'in': always false (nothing matches)
+	// For 'notIn': always true (everything doesn't match)
+	return operator === 'in' ? ['1 = 0', []] : ['1 = 1', []];
+}
+
 export const whereConditionFromPredicateObject = ({
 	field,
 	operator,
@@ -307,8 +328,7 @@ export const whereConditionFromPredicateObject = ({
 	operator:
 		| keyof typeof logicalOperatorMap
 		| keyof typeof comparisonOperatorMap
-		| 'in'
-		| 'notIn';
+		| keyof typeof arrayOperatorMap;
 	operand: any;
 }): ParameterizedStatement => {
 	const specialNullClause = buildSpecialNullComparison(
@@ -325,26 +345,21 @@ export const whereConditionFromPredicateObject = ({
 		return [`"${field}" ${comparisonOperator} ?`, [operand]];
 	}
 
-	// Handle 'in' and 'notIn' operators
-	if (operator === 'in' || operator === 'notIn') {
+	// Handle array operators ('in' and 'notIn')
+	const arrayOperator = arrayOperatorMap[operator];
+	if (arrayOperator) {
 		if (!Array.isArray(operand)) {
 			throw new Error(`Operand for ${operator} must be an array`);
 		}
 		if (operand.length === 0) {
-			// Empty array: nothing can be IN or NOT IN an empty set
-			// For 'in': always false (nothing matches)
-			// For 'notIn': always true (everything doesn't match)
-			return operator === 'in'
-				? ['1 = 0', []] // Always false
-				: ['1 = 1', []]; // Always true
+			return buildSpecialAlwaysStatement(operator as 'in' | 'notIn');
 		}
 
 		// Prepare values for SQL (handle complex types)
 		const preparedValues = operand.map(prepareValueForDML);
-		const sqlOperator = operator === 'in' ? 'IN' : 'NOT IN';
 		const placeholders = preparedValues.map(() => '?').join(', ');
 
-		return [`"${field}" ${sqlOperator} (${placeholders})`, preparedValues];
+		return [`"${field}" ${arrayOperator} (${placeholders})`, preparedValues];
 	}
 
 	const logicalOperatorKey = operator as keyof typeof logicalOperatorMap;
