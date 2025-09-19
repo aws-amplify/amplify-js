@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { OpenAuthSession } from '../utils/types';
+
 import {
 	AuthDevice,
 	AuthUserAttribute,
@@ -54,10 +56,28 @@ export interface AuthSignOutInput {
 
 export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 
+/**
+ * OIDC prompt parameter that specifies whether the Authorization Server prompts the End-User for reauthentication and consent.
+ *
+ * - `'NONE'` - No authentication or consent UI will be displayed
+ * - `'LOGIN'` - Force user to re-authenticate even if they have a valid session
+ * - `'CONSENT'` - Force user to consent to sharing information with the client
+ * - `'SELECT_ACCOUNT'` - Prompt user to select among multiple authenticated accounts
+ *
+ * @see https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+ */
+export type AuthPrompt = 'NONE' | 'LOGIN' | 'CONSENT' | 'SELECT_ACCOUNT';
+
 export interface AuthSignInWithRedirectInput {
 	provider?: AuthProvider | { custom: string };
 	customState?: string;
 	options?: {
+		/**
+		 * on various mobile frameworks which allow js usage for app development (e.g. cordova)
+		 * in-app or webview redirects are discouraged or not allowed by the OS.
+		 * this gives an option to adjust the behaviour to the framework
+		 */
+		authSessionOpener?: OpenAuthSession;
 		/**
 		 * On iOS devices, setting this to true requests that the browser not share cookies or other browsing data between
 		 * the authentication session and the user’s normal browser session. This will bypass the permissions dialog that
@@ -95,6 +115,12 @@ export interface AuthSignInWithRedirectInput {
 		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
 		 */
 		nonce?: string;
+
+		/**
+		 * An OIDC parameter that controls authentication behavior for existing sessions. It can be used by the Client to make sure that the End-User is still present for the current session or to bring attention to the request. Available in the managed login branding version only, not in the classic hosted UI.
+		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
+		 */
+		prompt?: AuthPrompt;
 	};
 }
 

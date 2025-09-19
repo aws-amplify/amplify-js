@@ -11,8 +11,11 @@
 		"access": "public"
 	},
 	"scripts": {
+		"prepare:ios": "cd example && npx pod-install",
+		"prepare:android": "echo 'no-op'",
 		"test": "echo 'no-op'",
-		"test:android": "./android/gradlew test -p ./android",
+		"test:ios": "echo 'no-op'",
+		"test:android": "cd ./example/android && ./gradlew test -i",
 		"build-with-test": "npm run clean && npm test && tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
@@ -30,9 +33,16 @@
 	},
 	"peerDependencies": {
 		"react-native": ">=0.70",
-		"react-native-get-random-values": ">=1.8.0"
+		"react-native-get-random-values": ">=1.8.0",
+		"@aws-amplify/rtn-passkeys": "^1.0.0"
+	},
+	"peerDependenciesMeta": {
+		"@aws-amplify/rtn-passkeys": {
+			"optional": true
+		}
 	},
 	"devDependencies": {
+		"@aws-amplify/rtn-passkeys": "*",
 		"@aws-amplify/rtn-push-notification": "1.2.35",
 		"@aws-amplify/rtn-web-browser": "1.1.4",
 		"@react-native-async-storage/async-storage": "^1.17.12",

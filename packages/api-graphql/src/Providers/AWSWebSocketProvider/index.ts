@@ -684,7 +684,10 @@ export abstract class AWSWebSocketProvider {
 			return;
 		}
 
-		if (type === MESSAGE_TYPES.GQL_ERROR) {
+		if (
+			type === MESSAGE_TYPES.GQL_ERROR ||
+			type === MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR
+		) {
 			const subscriptionState = SUBSCRIPTION_STATUS.FAILED;
 			if (observer) {
 				this.subscriptionObserverMap.set(id, {
@@ -697,15 +700,23 @@ export abstract class AWSWebSocketProvider {
 					subscriptionState,
 				});
 
-				this.logger.debug(
-					`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload ?? data)}`,
-				);
+				let errorMessage = JSON.stringify(payload ?? data);
+
+				if (type === MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR) {
+					const { errors } = JSON.parse(String(message.data));
+					if (Array.isArray(errors) && errors.length > 0) {
+						const error = errors[0];
+						errorMessage = `${error.errorType}: ${error.message}`;
+					}
+				}
+
+				this.logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${errorMessage}`);
 
 				observer.error({
 					errors: [
 						{
 							...new GraphQLError(
-								`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload ?? data)}`,
+								`${CONTROL_MSG.CONNECTION_FAILED}: ${errorMessage}`,
 							),
 						},
 					],

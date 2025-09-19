@@ -39,4 +39,124 @@ describe('isNextRequest', () => {
 
 		expect(isNextRequest(request)).toBe(true);
 	});
+
+	it('returns true when the request is like a next request', () => {
+		const mockNextRequest = {
+			nextUrl: {
+				pathname: '/api/auth',
+				search: '?param=value',
+				searchParams: new URLSearchParams('param=value'),
+				href: 'https://example.com/api/auth?param=value',
+			},
+			cookies: {
+				get: jest.fn(),
+				set: jest.fn(),
+				delete: jest.fn(),
+			},
+			url: 'https://example.com/api/auth?param=value',
+			headers: new Headers({
+				'content-type': 'application/json',
+				'user-agent': 'test-agent',
+			}),
+			method: 'POST',
+			body: null,
+			bodyUsed: false,
+		};
+
+		expect(isNextRequest(mockNextRequest)).toBe(true);
+	});
+
+	it('returns false for regular Request objects without NextRequest properties', () => {
+		const regularRequest = {
+			headers: new Headers(),
+			method: 'GET',
+			url: 'https://example.com',
+		};
+
+		expect(isNextRequest(regularRequest)).toBe(false);
+	});
+
+	it('returns false for objects with nextUrl but missing other required properties', () => {
+		const incompleteObject = {
+			nextUrl: {
+				pathname: '/test',
+				search: '',
+			},
+		};
+
+		expect(isNextRequest(incompleteObject)).toBe(false);
+	});
+
+	it('returns false for objects with malformed nextUrl', () => {
+		const malformedNextUrl = {
+			nextUrl: 'not-an-object',
+			cookies: {},
+			headers: new Headers(),
+			method: 'GET',
+			url: 'https://example.com',
+		};
+
+		expect(isNextRequest(malformedNextUrl)).toBe(false);
+	});
+
+	it('returns false for objects with null nextUrl', () => {
+		const nullNextUrl = {
+			nextUrl: null,
+			cookies: {},
+			headers: new Headers(),
+			method: 'GET',
+			url: 'https://example.com',
+		};
+
+		expect(isNextRequest(nullNextUrl)).toBe(false);
+	});
+
+	it('returns false for objects missing cookies property', () => {
+		const missingCookies = {
+			nextUrl: {
+				pathname: '/test',
+				search: '',
+			},
+			headers: new Headers(),
+			method: 'GET',
+			url: 'https://example.com',
+		};
+
+		expect(isNextRequest(missingCookies)).toBe(false);
+	});
+
+	it('returns false for objects with non-string method', () => {
+		const invalidMethod = {
+			nextUrl: {
+				pathname: '/test',
+				search: '',
+			},
+			cookies: {},
+			headers: new Headers(),
+			method: 123,
+			url: 'https://example.com',
+		};
+
+		expect(isNextRequest(invalidMethod)).toBe(false);
+	});
+
+	it('returns false for objects with non-string url', () => {
+		const invalidUrl = {
+			nextUrl: {
+				pathname: '/test',
+				search: '',
+			},
+			cookies: {},
+			headers: new Headers(),
+			method: 'GET',
+			url: 123,
+		};
+
+		expect(isNextRequest(invalidUrl)).toBe(false);
+	});
+
+	it('returns false for null or undefined inputs', () => {
+		expect(isNextRequest(null as any)).toBe(false);
+		expect(isNextRequest(undefined as any)).toBe(false);
+	});
 });

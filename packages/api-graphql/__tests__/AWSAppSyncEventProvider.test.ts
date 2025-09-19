@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
@@ -225,6 +228,45 @@ describe('AppSyncEventProvider', () => {
 					await delay(1);
 
 					expect(socketCloseSpy).toHaveBeenCalledWith(3001);
+				});
+
+				test('subscription observer error is triggered when a subscribe_error message is received', async () => {
+					expect.assertions(2);
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					observer.subscribe({
+						error: e => {
+							expect(e.errors[0].message).toEqual(
+								'Connection failed: AuthorizationError: Not authorized to access channel',
+							);
+						},
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+
+					// Send a subscribe_error message
+					await fakeWebSocketInterface?.sendDataMessage({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR,
+						errors: [
+							{
+								errorType: 'AuthorizationError',
+								message: 'Not authorized to access channel',
+							},
+						],
+					});
+
+					// Verify error was logged
+					expect(loggerSpy).toHaveBeenCalledWith(
+						'DEBUG',
+						expect.stringContaining('Connection failed:'),
+					);
 				});
 
 				test('subscription observer error is not triggered when a connection is formed and a retriable connection_error data message is received', async () => {

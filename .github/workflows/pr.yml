@@ -24,6 +24,10 @@ jobs:
     needs:
       - prebuild
     uses: ./.github/workflows/callable-unit-tests.yml
+  native-unit-tests:
+    needs:
+      - prebuild
+    uses: ./.github/workflows/callable-native-unit-tests.yml
   bundle-size-tests:
     needs: prebuild
     uses: ./.github/workflows/callable-bundle-size-tests.yml
