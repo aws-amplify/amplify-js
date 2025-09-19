@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '../errors';
-import { KeyValueStorageInterface } from '../types';
+import { KeyValueStorageEvent, KeyValueStorageInterface } from '../types';
 
 /**
  * @internal
  */
 export class KeyValueStorage implements KeyValueStorageInterface {
 	storage?: Storage;
+	listeners?: Set<(e: KeyValueStorageEvent) => void>;
 
 	constructor(storage?: Storage) {
 		this.storage = storage;
@@ -54,5 +55,23 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	async clear() {
 		if (!this.storage) throw new PlatformNotSupportedError();
 		this.storage.clear();
+	}
+
+	/**
+	 * This is used to allow listening for changes
+	 * @param {function} listener - the function called on storage change
+	 */
+	addListener(listener: (ev: KeyValueStorageEvent) => Promise<void>) {
+		if (!this.listeners) {
+			return;
+		}
+		this.listeners.add(listener);
+	}
+
+	rmListener(listener: (ev: KeyValueStorageEvent) => Promise<void>) {
+		if (!this.listeners) {
+			return;
+		}
+		this.listeners.delete(listener);
 	}
 }
