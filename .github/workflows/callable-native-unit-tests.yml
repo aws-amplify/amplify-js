@@ -1,0 +1,36 @@
+name: Native Unit Tests
+
+on: workflow_call
+
+jobs:
+  get-package-list:
+    uses: ./.github/workflows/callable-get-package-list.yml
+  unit_test:
+    name: Native Unit Test - ${{ matrix.package.name }}
+    runs-on: macos-latest
+    needs: get-package-list
+    strategy:
+      matrix:
+        package: ${{ fromJSON(needs.get-package-list.outputs.nativePackages) }}
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+      - name: Run iOS Tests
+        working-directory: ./amplify-js
+        env:
+          TEST_PACKAGE: ${{ matrix.package.name }}
+        run: |
+          npx lerna exec --scope $TEST_PACKAGE yarn prepare:ios
+          npx lerna exec --scope $TEST_PACKAGE yarn test:ios
+      - name: Run Android Tests
+        working-directory: ./amplify-js
+        env:
+          TEST_PACKAGE: ${{ matrix.package.name }}
+        run: |
+          npx lerna exec --scope $TEST_PACKAGE yarn prepare:android
+          npx lerna exec --scope $TEST_PACKAGE yarn test:android
