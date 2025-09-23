@@ -159,7 +159,7 @@ describe('openAuthSessionAsync', () => {
 				expect.any(Function),
 			);
 			expect(result).toBeNull();
-		}, 10000);
+		});
 
 		it('resolves with redirect URL when matching URL received', async () => {
 			const mockAppStateListener = { ...mockEmitterSubscription };
@@ -179,7 +179,7 @@ describe('openAuthSessionAsync', () => {
 			const result = await openAuthSessionAsync(mockUrl, mockRedirectUrls);
 
 			expect(result).toBe(mockReturnUrl);
-		}, 10000);
+		});
 
 		it('ignores non-matching redirect URLs', async () => {
 			const mockAppStateListener = { ...mockEmitterSubscription };
@@ -212,7 +212,7 @@ describe('openAuthSessionAsync', () => {
 			const result = await openAuthSessionAsync(mockUrl, mockRedirectUrls);
 
 			expect(result).toBeNull();
-		}, 10000);
+		});
 
 		it('cleans up listeners after completion', async () => {
 			const mockAppStateListener = { ...mockEmitterSubscription };
@@ -235,7 +235,7 @@ describe('openAuthSessionAsync', () => {
 
 			expect(mockAppStateListener.remove).toHaveBeenCalled();
 			expect(mockLinkingListener.remove).toHaveBeenCalled();
-		}, 10000);
+		});
 
 		it('handles app state transition from background to active', async () => {
 			const mockAppStateListener = { ...mockEmitterSubscription };
@@ -259,7 +259,7 @@ describe('openAuthSessionAsync', () => {
 			const result = await openAuthSessionAsync(mockUrl, mockRedirectUrls);
 
 			expect(result).toBeNull();
-		}, 10000);
+		});
 
 		it('handles app state change when already active', async () => {
 			const mockAppStateListener = { ...mockEmitterSubscription };
@@ -286,7 +286,7 @@ describe('openAuthSessionAsync', () => {
 			const result = await openAuthSessionAsync(mockUrl, mockRedirectUrls);
 
 			expect(result).toBeNull();
-		}, 10000);
+		});
 	});
 
 	describe('unsupported platform', () => {
