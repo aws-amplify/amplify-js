@@ -282,16 +282,21 @@ export class FieldCondition {
 
 				const values = this.operands[0];
 				if (!Array.isArray(values)) {
-					return 'Operand must be an array.';
-				}
-				if (values.length === 0) {
-					return 'Operand array must not be empty.';
+					return 'The argument must be an array.';
 				}
 
 				return null;
 			},
 			notIn: () => {
-				return validations.in();
+				const countError = argumentCount(1)();
+				if (countError) return countError;
+
+				const values = this.operands[0];
+				if (!Array.isArray(values)) {
+					return 'The argument must be an array.';
+				}
+
+				return null;
 			},
 		};
 		const validate = validations[this.operator as keyof typeof validations];
