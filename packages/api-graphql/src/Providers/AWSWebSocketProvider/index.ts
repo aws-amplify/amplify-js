@@ -109,10 +109,10 @@ export abstract class AWSWebSocketProvider {
 	 * Mark the socket closed and release all active listeners
 	 */
 	/**
-	 * Get the connection health monitor for external health checks
+	 * Get the connection health state observable
 	 */
-	getConnectionHealthMonitor() {
-		return this.connectionHealthMonitor;
+	getConnectionHealthStateObservable() {
+		return this.connectionHealthMonitor.getHealthStateObservable();
 	}
 
 	close() {
@@ -124,8 +124,8 @@ export abstract class AWSWebSocketProvider {
 		this.connectionStateMonitorSubscription.unsubscribe();
 		// Complete all reconnect observers
 		this.reconnectionMonitor.close();
-		// Reset health monitor
-		this.connectionHealthMonitor.reset();
+		// Close health monitor
+		this.connectionHealthMonitor.close();
 
 		return new Promise<void>((resolve, reject) => {
 			if (this.awsRealTimeSocket) {
