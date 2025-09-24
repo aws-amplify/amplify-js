@@ -3,8 +3,3 @@
 
 export { resolveConfig } from './resolveConfig';
 export { resolveLibraryOptions } from './resolveLibraryOptions';
-export {
-	ConnectionHealthMonitor,
-	HEALTH_EVENT,
-} from './ConnectionHealthMonitor';
-export type { ConnectionHealthState } from './ConnectionHealthMonitor';

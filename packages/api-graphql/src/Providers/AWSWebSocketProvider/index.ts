@@ -40,10 +40,6 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-import {
-	ConnectionHealthMonitor,
-	type ConnectionHealthState,
-} from '../../utils/ConnectionHealthMonitor';
 import type { AWSAppSyncRealTimeProviderOptions } from '../AWSAppSyncRealTimeProvider';
 
 import {
@@ -92,7 +88,6 @@ export abstract class AWSWebSocketProvider {
 	private keepAliveHeartbeatIntervalId?: ReturnType<typeof setInterval>;
 	private promiseArray: { res(): void; rej(reason?: any): void }[] = [];
 	private connectionState: ConnectionState | undefined;
-	private readonly connectionHealthMonitor = new ConnectionHealthMonitor();
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 	private connectionStateMonitorSubscription: SubscriptionLike;
@@ -111,13 +106,6 @@ export abstract class AWSWebSocketProvider {
 	/**
 	 * Mark the socket closed and release all active listeners
 	 */
-	/**
-	 * Get the connection health state observable
-	 * @returns Observable of connection health state
-	 */
-	getConnectionHealthStateObservable(): Observable<ConnectionHealthState> {
-		return this.connectionHealthMonitor.getHealthStateObservable();
-	}
 
 	close() {
 		// Mark the socket closed both in status and the connection monitor
@@ -128,8 +116,6 @@ export abstract class AWSWebSocketProvider {
 		this.connectionStateMonitorSubscription.unsubscribe();
 		// Complete all reconnect observers
 		this.reconnectionMonitor.close();
-		// Close health monitor
-		this.connectionHealthMonitor.close();
 
 		return new Promise<void>((resolve, reject) => {
 			if (this.awsRealTimeSocket) {
@@ -614,7 +600,6 @@ export abstract class AWSWebSocketProvider {
 
 	private maintainKeepAlive() {
 		this.keepAliveTimestamp = Date.now();
-		this.connectionHealthMonitor.recordKeepAlive();
 	}
 
 	private keepAliveHeartbeat(connectionTimeoutMs: number) {
@@ -943,7 +928,6 @@ export abstract class AWSWebSocketProvider {
 
 				if (type === MESSAGE_TYPES.GQL_CONNECTION_ACK) {
 					ackOk = true;
-					this.connectionHealthMonitor.recordConnectionEstablished();
 					this._registerWebsocketHandlers(connectionTimeoutMs);
 					resolve('Connected to AWS AppSyncRealTime');
 
