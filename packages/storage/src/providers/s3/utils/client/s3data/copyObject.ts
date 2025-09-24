@@ -35,6 +35,7 @@ export type CopyObjectInput = Pick<
 	| 'CopySource'
 	| 'Key'
 	| 'MetadataDirective'
+	| 'TaggingDirective'
 	| 'CacheControl'
 	| 'ContentType'
 	| 'ContentDisposition'
@@ -60,6 +61,7 @@ const copyObjectSerializer = async (
 		...assignStringVariables({
 			'x-amz-copy-source': input.CopySource,
 			'x-amz-metadata-directive': input.MetadataDirective,
+			'x-amz-tagging-directive': input.TaggingDirective,
 			'x-amz-copy-source-if-match': input.CopySourceIfMatch,
 			'x-amz-copy-source-if-unmodified-since':
 				input.CopySourceIfUnmodifiedSince?.toUTCString(),
@@ -97,6 +99,7 @@ export const validateCopyObjectHeaders = (
 			input.MetadataDirective,
 			headers['x-amz-metadata-directive'],
 		),
+		bothNilOrEqual(input.TaggingDirective, headers['x-amz-tagging-directive']),
 		bothNilOrEqual(
 			input.CopySourceIfMatch,
 			headers['x-amz-copy-source-if-match'],

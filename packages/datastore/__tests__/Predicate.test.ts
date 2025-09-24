@@ -160,6 +160,35 @@ describe('Predicates', () => {
 				);
 			});
 		});
+
+		['in', 'notIn'].forEach(operator => {
+			describe(`\`${operator}\` when`, () => {
+				test('no argument is given', () => {
+					expect(() => {
+						recursivePredicateFor(AuthorMeta).name[operator]();
+					}).toThrow(
+						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`,
+					);
+				});
+
+				test('non-array argument is given', () => {
+					expect(() => {
+						// @ts-ignore
+						recursivePredicateFor(AuthorMeta).name[operator]('not an array');
+					}).toThrow(
+						`Incorrect usage of \`${operator}()\`: The argument must be an array.`,
+					);
+				});
+
+				test('too many arguments are given', () => {
+					expect(() => {
+						recursivePredicateFor(AuthorMeta).name[operator](['a'], ['b']);
+					}).toThrow(
+						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`,
+					);
+				});
+			});
+		});
 	});
 
 	/**
@@ -614,6 +643,103 @@ describe('Predicates', () => {
 							// 'Zelda from the Legend of Zelda',
 						]);
 					});
+
+					test('match on in', async () => {
+						const query =
+							recursivePredicateFor(AuthorMeta).name.in([
+								'Adam West',
+								'Bob Jones',
+								'Unknown Person',
+							]);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							'Adam West',
+							'Bob Jones',
+							// 'Clarice Starling',
+							// 'Debbie Donut',
+							// 'Zelda from the Legend of Zelda',
+						]);
+					});
+
+					test('match on in - NEGATED', async () => {
+						const query = recursivePredicateFor(AuthorMeta).not(a =>
+							a.name.in(['Adam West', 'Bob Jones', 'Unknown Person']),
+						);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							// 'Adam West',
+							// 'Bob Jones',
+							'Clarice Starling',
+							'Debbie Donut',
+							'Zelda from the Legend of Zelda',
+						]);
+					});
+
+					test('match on notIn', async () => {
+						const query =
+							recursivePredicateFor(AuthorMeta).name.notIn([
+								'Adam West',
+								'Bob Jones',
+								'Unknown Person',
+							]);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							// 'Adam West',
+							// 'Bob Jones',
+							'Clarice Starling',
+							'Debbie Donut',
+							'Zelda from the Legend of Zelda',
+						]);
+					});
+
+					test('match on notIn - NEGATED', async () => {
+						const query = recursivePredicateFor(AuthorMeta).not(a =>
+							a.name.notIn(['Adam West', 'Bob Jones', 'Unknown Person']),
+						);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							'Adam West',
+							'Bob Jones',
+							// 'Clarice Starling',
+							// 'Debbie Donut',
+							// 'Zelda from the Legend of Zelda',
+						]);
+					});
+
+					test('match on in with empty array', async () => {
+						const query =
+							recursivePredicateFor(AuthorMeta).name.in([]);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							// No matches expected for empty array
+						]);
+					});
+
+					test('match on notIn with empty array', async () => {
+						const query =
+							recursivePredicateFor(AuthorMeta).name.notIn([]);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							// All matches expected for notIn with empty array
+							'Adam West',
+							'Bob Jones',
+							'Clarice Starling',
+							'Debbie Donut',
+							'Zelda from the Legend of Zelda',
+						]);
+					});
 				});
 
 				describe('on boolean fields', () => {
@@ -1062,6 +1188,68 @@ describe('Predicates', () => {
 							'Adam West',
 							// 'Bob Jones',
 							// 'Clarice Starling',
+							// 'Debbie Donut',
+							'Zelda from the Legend of Zelda',
+						]);
+					});
+
+					test('match on in', async () => {
+						const query =
+							recursivePredicateFor(AuthorMeta).karma.in([0, 2, 4, 10]);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							'Adam West',
+							// 'Bob Jones',
+							'Clarice Starling',
+							// 'Debbie Donut',
+							'Zelda from the Legend of Zelda',
+						]);
+					});
+
+					test('match on in - NEGATED', async () => {
+						const query = recursivePredicateFor(AuthorMeta).not(a =>
+							a.karma.in([0, 2, 4, 10]),
+						);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							// 'Adam West',
+							'Bob Jones',
+							// 'Clarice Starling',
+							'Debbie Donut',
+							// 'Zelda from the Legend of Zelda',
+						]);
+					});
+
+					test('match on notIn', async () => {
+						const query =
+							recursivePredicateFor(AuthorMeta).karma.notIn([0, 2, 4, 10]);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							// 'Adam West',
+							'Bob Jones',
+							// 'Clarice Starling',
+							'Debbie Donut',
+							// 'Zelda from the Legend of Zelda',
+						]);
+					});
+
+					test('match on notIn - NEGATED', async () => {
+						const query = recursivePredicateFor(AuthorMeta).not(a =>
+							a.karma.notIn([0, 2, 4, 10]),
+						);
+						const matches =
+							await mechanism.execute<ModelOf<typeof Author>>(query);
+
+						expect(matches.map(n => n.name)).toEqual([
+							'Adam West',
+							// 'Bob Jones',
+							'Clarice Starling',
 							// 'Debbie Donut',
 							'Zelda from the Legend of Zelda',
 						]);

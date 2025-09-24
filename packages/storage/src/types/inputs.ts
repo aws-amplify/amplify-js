@@ -95,9 +95,30 @@ export interface StorageCopyInputWithKey<
 	destination: DestinationOptions;
 }
 
+export interface CopyTagConfig {
+	mode: 'copy';
+}
+
+export interface RemoveTagConfig {
+	mode: 'remove';
+}
+
+export interface ReplaceTagConfig {
+	mode: 'replace';
+	tags: Record<string, string>;
+}
+
+export type TagConfigInternal =
+	| CopyTagConfig
+	| RemoveTagConfig
+	| ReplaceTagConfig;
+
+export type TagConfig = Exclude<TagConfigInternal, ReplaceTagConfig>;
+
 export interface StorageCopyInputWithPath {
 	source: StorageOperationInputWithPath & CopyWithPathSourceOptions;
 	destination: StorageOperationInputWithPath & CopyWithPathDestinationOptions;
+	tagConfig?: TagConfig;
 }
 
 /**
