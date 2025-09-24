@@ -15,23 +15,6 @@ let appStateListener: NativeEventSubscription | undefined;
 let redirectListener: NativeEventSubscription | undefined;
 
 export async function isChromebook(): Promise<boolean> {
-	// expo go
-	try {
-		const Device = require('expo-device');
-		if (Device?.hasPlatformFeatureAsync) {
-			if (await Device.hasPlatformFeatureAsync('org.chromium.arc')) return true;
-			if (
-				await Device.hasPlatformFeatureAsync(
-					'org.chromium.arc.device_management',
-				)
-			)
-				return true;
-		}
-	} catch {
-		// not using Expo
-	}
-
-	// fallback to native module
 	try {
 		const nm = (NativeModules as any)?.ChromeOS;
 		if (nm?.isChromeOS) return !!(await nm.isChromeOS());
