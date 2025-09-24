@@ -1,5 +1,6 @@
 import { InMemoryStorage } from '../../src/storage/InMemoryStorage';
 import { SessionStorage } from '../../src/storage/SessionStorage';
+import * as utils from '../../src/utils';
 
 const key = 'k';
 const value = 'value';
@@ -58,5 +59,17 @@ describe('SessionStorage', () => {
 		Object.defineProperty(window, 'sessionStorage', {
 			value: originalSessionStorage,
 		});
+	});
+
+	it('should setup listeners, when in browser', () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
+		const windowSpy = jest.spyOn(window, 'addEventListener');
+
+		sessionStorage = new SessionStorage();
+		expect(windowSpy).toHaveBeenCalledWith(
+			'storage',
+			expect.any(Function),
+			false,
+		);
 	});
 });
