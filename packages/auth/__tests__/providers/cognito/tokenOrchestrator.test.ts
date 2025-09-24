@@ -151,4 +151,39 @@ describe('TokenOrchestrator', () => {
 			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
 		});
 	});
+
+	describe('setTokenRefreshClientMetadata', () => {
+		it('should store clientMetadata for token refresh', async () => {
+			const clientMetadata = { 'app-version': '1.0.0' };
+
+			mockTokenRefresher.mockResolvedValue({
+				accessToken: { payload: {} },
+				idToken: { payload: {} },
+				clockDrift: 0,
+				refreshToken: 'newRefreshToken',
+				username: 'testuser',
+			});
+
+			tokenOrchestrator.setTokenRefresher(mockTokenRefresher);
+			tokenOrchestrator.setAuthTokenStore(mockAuthTokenStore);
+			tokenOrchestrator.setTokenRefreshClientMetadata(clientMetadata);
+
+			mockAuthTokenStore.loadTokens.mockResolvedValue({
+				accessToken: { payload: { exp: 1 } },
+				idToken: { payload: { exp: 1 } },
+				clockDrift: 0,
+				refreshToken: 'refreshToken',
+				username: 'testuser',
+			});
+			mockAuthTokenStore.getLastAuthUser.mockResolvedValue('testuser');
+
+			await tokenOrchestrator.getTokens({ forceRefresh: true });
+
+			expect(mockTokenRefresher).toHaveBeenCalledWith(
+				expect.objectContaining({
+					clientMetadata,
+				}),
+			);
+		});
+	});
 });

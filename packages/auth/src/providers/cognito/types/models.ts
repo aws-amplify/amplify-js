@@ -38,7 +38,7 @@ export const cognitoHostedUIIdentityProviderMap: Record<AuthProvider, string> =
 /**
  * Arbitrary key/value pairs that may be passed as part of certain Cognito requests
  */
-export type ClientMetadata = Record<string, string>;
+export type { ClientMetadata } from '@aws-amplify/core';
 
 /**
  * Allowed values for preferredChallenge
