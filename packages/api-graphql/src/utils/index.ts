@@ -3,3 +3,8 @@
 
 export { resolveConfig } from './resolveConfig';
 export { resolveLibraryOptions } from './resolveLibraryOptions';
+export { ConnectionHealthMonitor } from './ConnectionHealthMonitor';
+export type {
+	ConnectionHealthMetrics,
+	KeepAliveListener,
+} from './ConnectionHealthMonitor';
