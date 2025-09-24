@@ -40,7 +40,10 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-import { ConnectionHealthMonitor } from '../../utils/ConnectionHealthMonitor';
+import {
+	ConnectionHealthMonitor,
+	type ConnectionHealthState,
+} from '../../utils/ConnectionHealthMonitor';
 import type { AWSAppSyncRealTimeProviderOptions } from '../AWSAppSyncRealTimeProvider';
 
 import {
@@ -110,8 +113,9 @@ export abstract class AWSWebSocketProvider {
 	 */
 	/**
 	 * Get the connection health state observable
+	 * @returns Observable of connection health state
 	 */
-	getConnectionHealthStateObservable() {
+	getConnectionHealthStateObservable(): Observable<ConnectionHealthState> {
 		return this.connectionHealthMonitor.getHealthStateObservable();
 	}
 

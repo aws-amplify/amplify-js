@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
-import { Observable, Observer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 export interface ConnectionHealthState {
 	isHealthy: boolean;
@@ -25,163 +26,210 @@ export enum HEALTH_EVENT {
  */
 export class ConnectionHealthMonitor {
 	private readonly logger: ConsoleLogger;
-	private _healthState: ConnectionHealthState;
-	private _healthStateObservable?: Observable<ConnectionHealthState>;
-	private _healthStateObserver?: Observer<ConnectionHealthState>;
+	private readonly destroy$ = new Subject<void>();
+	private readonly healthStateSubject: BehaviorSubject<ConnectionHealthState>;
+	public readonly healthState$: Observable<ConnectionHealthState>;
 	private healthCheckTimer?: ReturnType<typeof setTimeout>;
 	private readonly healthCheckThresholdMs: number;
 	private readonly healthCheckIntervalMs: number;
+	private isActive = true;
 
 	constructor(
 		loggerName = 'ConnectionHealthMonitor',
 		healthCheckThresholdMs = 30000,
 		healthCheckIntervalMs = 5000,
 	) {
+		// Validate inputs
+		if (healthCheckThresholdMs <= 0) {
+			throw new Error('healthCheckThresholdMs must be positive');
+		}
+		if (healthCheckIntervalMs <= 0) {
+			throw new Error('healthCheckIntervalMs must be positive');
+		}
+		if (healthCheckIntervalMs >= healthCheckThresholdMs) {
+			throw new Error(
+				'healthCheckIntervalMs must be less than healthCheckThresholdMs',
+			);
+		}
+
 		this.logger = new ConsoleLogger(loggerName);
 		this.healthCheckThresholdMs = healthCheckThresholdMs;
 		this.healthCheckIntervalMs = healthCheckIntervalMs;
 
-		this._healthState = {
+		const initialState: ConnectionHealthState = {
 			isHealthy: false,
 			consecutiveMissedKeepAlives: 0,
 			totalKeepAlivesReceived: 0,
 		};
 
-		this._healthStateObservable = new Observable(observer => {
-			this._healthStateObserver = observer;
-
-			return () => {
-				this.stopHealthCheck();
-				this._healthStateObserver = undefined;
-			};
-		});
+		this.healthStateSubject = new BehaviorSubject(initialState);
+		this.healthState$ = this.healthStateSubject
+			.asObservable()
+			.pipe(takeUntil(this.destroy$));
 	}
 
 	/**
 	 * Records a keep-alive message receipt
 	 */
 	recordKeepAlive(): void {
-		const currentTime = Date.now();
-
-		this.logger.debug(HEALTH_EVENT.KEEP_ALIVE_RECEIVED);
-
-		const previouslyUnhealthy = !this._healthState.isHealthy;
-
-		this._healthState = {
-			...this._healthState,
-			lastKeepAliveTime: currentTime,
-			isHealthy: true,
-			consecutiveMissedKeepAlives: 0,
-			totalKeepAlivesReceived: this._healthState.totalKeepAlivesReceived + 1,
-		};
-
-		this.notifyObservers();
-
-		if (previouslyUnhealthy) {
-			this.logger.info('WebSocket connection recovered');
+		if (!this.isActive) {
+			return;
 		}
 
-		// Reset health check timer
-		this.scheduleNextHealthCheck();
+		try {
+			const currentTime = Date.now();
+			this.logger.debug(HEALTH_EVENT.KEEP_ALIVE_RECEIVED);
+
+			const currentState = this.healthStateSubject.getValue();
+			const previouslyUnhealthy = !currentState.isHealthy;
+
+			const newState: ConnectionHealthState = {
+				...currentState,
+				lastKeepAliveTime: currentTime,
+				isHealthy: true,
+				consecutiveMissedKeepAlives: 0,
+				totalKeepAlivesReceived: currentState.totalKeepAlivesReceived + 1,
+			};
+
+			this.healthStateSubject.next(newState);
+
+			if (previouslyUnhealthy) {
+				this.logger.info('WebSocket connection recovered');
+			}
+
+			// Reset health check timer
+			this.scheduleNextHealthCheck();
+		} catch (error) {
+			this.logger.error('Error in recordKeepAlive:', error);
+		}
 	}
 
 	/**
 	 * Records connection establishment
 	 */
 	recordConnectionEstablished(): void {
-		const currentTime = Date.now();
+		if (!this.isActive) {
+			return;
+		}
 
-		this.logger.debug(HEALTH_EVENT.CONNECTION_ESTABLISHED);
+		try {
+			const currentTime = Date.now();
+			this.logger.debug(HEALTH_EVENT.CONNECTION_ESTABLISHED);
 
-		this._healthState = {
-			isHealthy: true,
-			connectionStartTime: currentTime,
-			lastKeepAliveTime: currentTime,
-			consecutiveMissedKeepAlives: 0,
-			totalKeepAlivesReceived: 0,
-		};
+			const newState: ConnectionHealthState = {
+				isHealthy: true,
+				connectionStartTime: currentTime,
+				lastKeepAliveTime: currentTime,
+				consecutiveMissedKeepAlives: 0,
+				totalKeepAlivesReceived: 0,
+			};
 
-		this.notifyObservers();
-		this.scheduleNextHealthCheck();
+			this.healthStateSubject.next(newState);
+			this.scheduleNextHealthCheck();
+		} catch (error) {
+			this.logger.error('Error in recordConnectionEstablished:', error);
+		}
 	}
 
 	/**
 	 * Records a missed keep-alive
 	 */
 	private recordKeepAliveMissed(): void {
-		const wasHealthy = this._healthState.isHealthy;
-
-		this._healthState = {
-			...this._healthState,
-			isHealthy: false,
-			consecutiveMissedKeepAlives:
-				this._healthState.consecutiveMissedKeepAlives + 1,
-		};
-
-		if (wasHealthy) {
-			this.logger.warn(
-				`${HEALTH_EVENT.KEEP_ALIVE_MISSED} - WebSocket may be unhealthy`,
-			);
+		if (!this.isActive) {
+			return;
 		}
 
-		this.notifyObservers();
+		try {
+			const currentState = this.healthStateSubject.getValue();
+			const wasHealthy = currentState.isHealthy;
+
+			// Cap consecutive misses at a reasonable number
+			const newConsecutiveMisses = Math.min(
+				currentState.consecutiveMissedKeepAlives + 1,
+				100,
+			);
+
+			const newState: ConnectionHealthState = {
+				...currentState,
+				isHealthy: false,
+				consecutiveMissedKeepAlives: newConsecutiveMisses,
+			};
+
+			this.healthStateSubject.next(newState);
+
+			if (wasHealthy) {
+				this.logger.warn(
+					`${HEALTH_EVENT.KEEP_ALIVE_MISSED} - WebSocket may be unhealthy`,
+				);
+			}
+		} catch (error) {
+			this.logger.error('Error in recordKeepAliveMissed:', error);
+		}
 	}
 
 	/**
 	 * Gets the current health state
+	 * @returns A copy of the current health state
 	 */
 	getHealthState(): ConnectionHealthState {
-		return { ...this._healthState };
+		return { ...this.healthStateSubject.getValue() };
 	}
 
 	/**
 	 * Checks if the connection is currently healthy
+	 * @returns true if the connection is healthy, false otherwise
 	 */
 	isHealthy(): boolean {
-		if (!this._healthState.lastKeepAliveTime) {
+		const state = this.healthStateSubject.getValue();
+		if (!state.lastKeepAliveTime) {
 			return false;
 		}
 
-		const timeSinceLastKeepAlive =
-			Date.now() - this._healthState.lastKeepAliveTime;
+		const timeSinceLastKeepAlive = Date.now() - state.lastKeepAliveTime;
 
 		return timeSinceLastKeepAlive < this.healthCheckThresholdMs;
 	}
 
 	/**
 	 * Returns an observable for monitoring health state changes
+	 * @returns Observable that emits health state changes
 	 */
-	getHealthStateObservable(): Observable<ConnectionHealthState> | undefined {
-		return this._healthStateObservable;
-	}
-
-	/**
-	 * Notifies observers of state changes
-	 */
-	private notifyObservers(): void {
-		if (this._healthStateObserver) {
-			this._healthStateObserver.next({ ...this._healthState });
-		}
+	getHealthStateObservable(): Observable<ConnectionHealthState> {
+		return this.healthState$;
 	}
 
 	/**
 	 * Schedules the next health check
 	 */
 	private scheduleNextHealthCheck(): void {
+		if (!this.isActive) {
+			return;
+		}
+
 		this.stopHealthCheck();
 
 		this.healthCheckTimer = setTimeout(() => {
-			if (this._healthState.lastKeepAliveTime) {
-				const timeSinceLastKeepAlive =
-					Date.now() - this._healthState.lastKeepAliveTime;
-
-				if (timeSinceLastKeepAlive >= this.healthCheckThresholdMs) {
-					this.recordKeepAliveMissed();
-				}
+			if (!this.isActive) {
+				return;
 			}
 
-			// Schedule next check
-			this.scheduleNextHealthCheck();
+			try {
+				const state = this.healthStateSubject.getValue();
+				if (state.lastKeepAliveTime) {
+					const timeSinceLastKeepAlive = Date.now() - state.lastKeepAliveTime;
+
+					if (timeSinceLastKeepAlive >= this.healthCheckThresholdMs) {
+						this.recordKeepAliveMissed();
+					}
+				}
+
+				// Schedule next check only if still active
+				if (this.isActive) {
+					this.scheduleNextHealthCheck();
+				}
+			} catch (error) {
+				this.logger.error('Error in health check:', error);
+			}
 		}, this.healthCheckIntervalMs);
 	}
 
@@ -196,22 +244,29 @@ export class ConnectionHealthMonitor {
 	}
 
 	/**
-	 * Resets the monitor state and closes observers
+	 * Closes the monitor and cleans up resources
 	 */
 	close(): void {
-		this.logger.debug('Closing ConnectionHealthMonitor');
-
-		this.stopHealthCheck();
-
-		if (this._healthStateObserver) {
-			this._healthStateObserver.complete();
-			this._healthStateObserver = undefined;
+		if (!this.isActive) {
+			return; // Already closed
 		}
 
-		this._healthState = {
+		this.logger.debug('Closing ConnectionHealthMonitor');
+
+		this.isActive = false;
+		this.stopHealthCheck();
+
+		// Emit final state
+		const finalState: ConnectionHealthState = {
 			isHealthy: false,
 			consecutiveMissedKeepAlives: 0,
 			totalKeepAlivesReceived: 0,
 		};
+		this.healthStateSubject.next(finalState);
+
+		// Complete subjects
+		this.destroy$.next();
+		this.destroy$.complete();
+		this.healthStateSubject.complete();
 	}
 }

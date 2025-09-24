@@ -155,11 +155,12 @@ describe('ConnectionHealthMonitor', () => {
 			const states: boolean[] = [];
 			const observable = monitor.getHealthStateObservable();
 
-			const subscription = observable!.subscribe(state => {
+			const subscription = observable.subscribe(state => {
 				states.push(state.isHealthy);
 
-				if (states.length === 2) {
-					expect(states).toEqual([true, true]);
+				// BehaviorSubject emits initial state, then updates
+				if (states.length === 3) {
+					expect(states).toEqual([false, true, true]); // initial, connected, keep-alive
 					subscription.unsubscribe();
 					done();
 				}
@@ -167,6 +168,18 @@ describe('ConnectionHealthMonitor', () => {
 
 			monitor.recordConnectionEstablished();
 			monitor.recordKeepAlive();
+		});
+
+		it('should handle constructor validation', () => {
+			expect(() => new ConnectionHealthMonitor('test', 0, 1000)).toThrow(
+				'healthCheckThresholdMs must be positive',
+			);
+			expect(() => new ConnectionHealthMonitor('test', 1000, 0)).toThrow(
+				'healthCheckIntervalMs must be positive',
+			);
+			expect(() => new ConnectionHealthMonitor('test', 1000, 2000)).toThrow(
+				'healthCheckIntervalMs must be less than healthCheckThresholdMs',
+			);
 		});
 	});
 
