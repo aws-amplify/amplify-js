@@ -126,10 +126,25 @@ class SubscriptionProcessor {
 		if (this.datastoreConfig?.subscriptionVariables) {
 			const modelVariables =
 				this.datastoreConfig.subscriptionVariables[model.name];
-			if (typeof modelVariables === 'function') {
-				customVariables = modelVariables(transformerMutationType);
-			} else if (modelVariables) {
-				customVariables = modelVariables;
+			try {
+				if (typeof modelVariables === 'function') {
+					const vars = modelVariables(transformerMutationType);
+					// Validate that function returned an object
+					if (vars && typeof vars === 'object' && !Array.isArray(vars)) {
+						customVariables = vars;
+					} else {
+						logger.warn(
+							`subscriptionVariables function must return an object for model ${model.name}`,
+						);
+					}
+				} else if (modelVariables) {
+					customVariables = modelVariables;
+				}
+			} catch (error) {
+				logger.warn(
+					`Error evaluating subscriptionVariables function for model ${model.name}:`,
+					error,
+				);
 			}
 		}
 
@@ -389,11 +404,56 @@ class SubscriptionProcessor {
 												this.datastoreConfig.subscriptionVariables[
 													modelDefinition.name
 												];
-											if (typeof modelVariables === 'function') {
-												const customVars = modelVariables(operation);
-												Object.assign(variables, customVars);
-											} else if (modelVariables) {
-												Object.assign(variables, modelVariables);
+											try {
+												let customVars: Record<string, any> | undefined;
+												if (typeof modelVariables === 'function') {
+													customVars = modelVariables(operation);
+												} else if (modelVariables) {
+													customVars = modelVariables;
+												}
+
+												if (
+													customVars &&
+													typeof customVars === 'object' &&
+													!Array.isArray(customVars)
+												) {
+													// Check for reserved keys that would conflict
+													const reservedKeys = [
+														'filter',
+														'owner',
+														'limit',
+														'nextToken',
+														'sortDirection',
+													];
+													const conflicts = Object.keys(customVars).filter(
+														key => reservedKeys.includes(key),
+													);
+
+													if (conflicts.length > 0) {
+														logger.warn(
+															`subscriptionVariables for ${modelDefinition.name} contains reserved keys: ${conflicts.join(', ')}. These will be ignored.`,
+														);
+														// Filter out reserved keys
+														const safeVars = Object.keys(customVars)
+															.filter(key => !reservedKeys.includes(key))
+															.reduce(
+																(acc, key) => {
+																	acc[key] = customVars[key];
+
+																	return acc;
+																},
+																{} as Record<string, any>,
+															);
+														Object.assign(variables, safeVars);
+													} else {
+														Object.assign(variables, customVars);
+													}
+												}
+											} catch (error) {
+												logger.warn(
+													`Error evaluating subscriptionVariables for ${modelDefinition.name}:`,
+													error,
+												);
 											}
 										}
 

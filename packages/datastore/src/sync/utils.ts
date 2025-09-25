@@ -341,7 +341,27 @@ export function buildSubscriptionGraphQLOperation(
 
 	// Add custom subscription variables
 	if (customVariables) {
+		// GraphQL variable name must start with letter or underscore, followed by letters, numbers, or underscores
+		const VALID_VAR_NAME = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
+
 		Object.keys(customVariables).forEach(varName => {
+			// Validate variable name
+			if (!VALID_VAR_NAME.test(varName)) {
+				logger.warn(
+					`Invalid GraphQL variable name '${varName}' in subscriptionVariables. Skipping.`,
+				);
+
+				return;
+			}
+
+			// Skip null/undefined values
+			if (
+				customVariables[varName] === null ||
+				customVariables[varName] === undefined
+			) {
+				return;
+			}
+
 			// Infer type from value (simplified - could be enhanced)
 			const varType = Array.isArray(customVariables[varName])
 				? '[String]'
