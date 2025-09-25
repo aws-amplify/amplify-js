@@ -33,7 +33,21 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.1.0"
+		"@aws-amplify/core": "^6.1.0",
+		"expo-sqlite": ">=10.0.0",
+		"expo-file-system": ">=13.0.0",
+		"react-native-sqlite-storage": ">=5.0.0"
+	},
+	"peerDependenciesMeta": {
+		"expo-sqlite": {
+			"optional": true
+		},
+		"expo-file-system": {
+			"optional": true
+		},
+		"react-native-sqlite-storage": {
+			"optional": true
+		}
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.13.2",
