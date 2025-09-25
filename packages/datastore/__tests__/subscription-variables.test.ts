@@ -65,11 +65,8 @@ describe('DataStore Subscription Variables', () => {
 				customVariables,
 			);
 
-			// Verify operation type and name
 			expect(opType).toBe(TransformerMutationType.CREATE);
 			expect(opName).toBe('onCreateTodo');
-
-			// Verify that custom variables are included in the query
 			expect(query).toContain('$storeId: String');
 			expect(query).toContain('$tenantId: String');
 			expect(query).toContain('storeId: $storeId');
@@ -115,11 +112,8 @@ describe('DataStore Subscription Variables', () => {
 				false,
 			);
 
-			// Verify operation type and name
 			expect(opType).toBe(TransformerMutationType.CREATE);
 			expect(opName).toBe('onCreateTodo');
-
-			// Verify that no custom variables are included
 			expect(query).not.toContain('$storeId');
 			expect(query).not.toContain('$tenantId');
 		});

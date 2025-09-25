@@ -44,7 +44,6 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			const schema = createTestSchema();
 			const sharedObject = { storeId: 'initial' };
 
-			// First call
 			const cache = new WeakMap();
 			const result1 = processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
@@ -53,10 +52,8 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 				cache,
 			);
 
-			// Mutate the shared object
 			sharedObject.storeId = 'mutated';
 
-			// Second call - should get cached value, not mutated
 			const result2 = processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.CREATE,
@@ -64,18 +61,15 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 				cache,
 			);
 
-			// Results should be equal (same cached object)
 			expect(result1).toEqual(result2);
-			// But changing the original shouldn't affect results
 			expect(result2?.storeId).not.toBe('mutated');
 		});
 
 		it('should handle circular references gracefully', () => {
 			const schema = createTestSchema();
 			const circular: any = { storeId: 'test' };
-			circular.self = circular; // Create circular reference
+			circular.self = circular;
 
-			// Should handle circular reference without crashing
 			const cache = new WeakMap();
 			const result = processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
@@ -84,7 +78,6 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 				cache,
 			);
 
-			// Should return the object but not cache it (due to JSON.stringify failure)
 			expect(result).toBeDefined();
 			expect(result?.storeId).toBe('test');
 		});
@@ -134,7 +127,6 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 		it('should handle function that throws', () => {
 			const schema = createTestSchema();
 
-			// Should not crash
 			const cache = new WeakMap();
 			const mockFn = () => {
 				throw new Error('Function error');
@@ -180,7 +172,6 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			const schema = createTestSchema();
 			const mockFn = jest.fn(() => ({ storeId: 'test' }));
 
-			// Call multiple times for same operation
 			const cache = new WeakMap();
 			for (let i = 0; i < 5; i++) {
 				processSubscriptionVariables(
@@ -191,11 +182,9 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 				);
 			}
 
-			// Should only be called once
 			expect(mockFn).toHaveBeenCalledTimes(1);
 			expect(mockFn).toHaveBeenCalledWith(TransformerMutationType.CREATE);
 
-			// Call for different operation
 			processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.UPDATE,
@@ -203,7 +192,6 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 				cache,
 			);
 
-			// Should be called again for new operation
 			expect(mockFn).toHaveBeenCalledTimes(2);
 			expect(mockFn).toHaveBeenCalledWith(TransformerMutationType.UPDATE);
 		});
@@ -226,7 +214,6 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 				},
 			);
 
-			// First call
 			let cache = new WeakMap();
 			processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
@@ -236,11 +223,9 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			);
 			expect(mockFn).toHaveBeenCalledTimes(1);
 
-			// Stop processor (clears cache) - simulate by creating new cache
 			await processor.stop();
 			cache = new WeakMap();
 
-			// Call again after stop
 			processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.CREATE,
@@ -248,7 +233,6 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 				cache,
 			);
 
-			// Should be called again since cache was cleared
 			expect(mockFn).toHaveBeenCalledTimes(2);
 		});
 	});

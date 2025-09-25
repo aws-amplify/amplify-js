@@ -339,13 +339,10 @@ export function buildSubscriptionGraphQLOperation(
 		opArgs.push(`${ownerField}: $${ownerField}`);
 	}
 
-	// Add custom subscription variables
 	if (customVariables) {
-		// GraphQL variable name must start with letter or underscore, followed by letters, numbers, or underscores
 		const VALID_VAR_NAME = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
 
 		Object.keys(customVariables).forEach(varName => {
-			// Validate variable name
 			if (!VALID_VAR_NAME.test(varName)) {
 				logger.warn(
 					`Invalid GraphQL variable name '${varName}' in subscriptionVariables. Skipping.`,
@@ -354,7 +351,6 @@ export function buildSubscriptionGraphQLOperation(
 				return;
 			}
 
-			// Skip null/undefined values
 			if (
 				customVariables[varName] === null ||
 				customVariables[varName] === undefined
@@ -362,7 +358,6 @@ export function buildSubscriptionGraphQLOperation(
 				return;
 			}
 
-			// Infer type from value (simplified - could be enhanced)
 			const varType = Array.isArray(customVariables[varName])
 				? '[String]'
 				: 'String';
@@ -995,7 +990,6 @@ export function getIdentifierValue(
 	return idOrPk;
 }
 
-// Reserved GraphQL variable names that should not be used
 const RESERVED_SUBSCRIPTION_VARIABLE_NAMES = new Set([
 	'input',
 	'condition',
@@ -1037,7 +1031,6 @@ export function processSubscriptionVariables(
 		return undefined;
 	}
 
-	// Check cache first
 	let modelCache = cache.get(model);
 	if (!modelCache) {
 		modelCache = new Map();
@@ -1050,10 +1043,8 @@ export function processSubscriptionVariables(
 		return cached || undefined;
 	}
 
-	// Process the variables
 	let vars: Record<string, any>;
 
-	// Handle function-based variables
 	if (typeof modelVariables === 'function') {
 		try {
 			vars = modelVariables(operation);
@@ -1070,7 +1061,6 @@ export function processSubscriptionVariables(
 		vars = modelVariables;
 	}
 
-	// Validate and sanitize
 	const sanitized = sanitizeSubscriptionVariables(vars, model.name);
 	modelCache.set(operation, sanitized);
 
@@ -1081,7 +1071,6 @@ function sanitizeSubscriptionVariables(
 	vars: any,
 	modelName: string,
 ): Record<string, any> | null {
-	// Validate the input is an object
 	if (vars === null || typeof vars !== 'object' || Array.isArray(vars)) {
 		logger.warn(
 			`subscriptionVariables must be an object for model ${modelName}`,
@@ -1091,12 +1080,10 @@ function sanitizeSubscriptionVariables(
 	}
 
 	try {
-		// Deep clone to prevent mutations
 		const cloned = JSON.parse(JSON.stringify(vars));
 
 		return filterReservedSubscriptionVariableKeys(cloned);
 	} catch {
-		// Can't clone (e.g., circular reference) - use shallow copy
 		return filterReservedSubscriptionVariableKeys({ ...vars });
 	}
 }
@@ -1106,7 +1093,6 @@ function filterReservedSubscriptionVariableKeys(
 ): Record<string, any> | null {
 	const result: Record<string, any> = {};
 
-	// Safe iteration that handles Object.create(null)
 	try {
 		Object.entries(vars).forEach(([key, value]) => {
 			if (!RESERVED_SUBSCRIPTION_VARIABLE_NAMES.has(key)) {
@@ -1118,7 +1104,6 @@ function filterReservedSubscriptionVariableKeys(
 			}
 		});
 	} catch {
-		// Fallback for objects that don't support Object.entries
 		for (const key in vars) {
 			if (
 				Object.prototype.hasOwnProperty.call(vars, key) &&
