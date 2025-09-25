@@ -11,7 +11,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "echo 'no-op'",
+		"test": "jest",
 		"test:android": "./android/gradlew test -p ./android",
 		"build-with-test": "npm run clean && npm test && tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
