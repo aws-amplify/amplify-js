@@ -536,6 +536,7 @@ export interface WebSocketControl {
 	disconnect(): void;
 	isConnected(): boolean;
 	getConnectionHealth(): WebSocketHealthState;
+	getPersistentConnectionHealth(): Promise<WebSocketHealthState>;
 	onConnectionStateChange(
 		callback: (state: import('./PubSub').ConnectionState) => void,
 	): () => void;
