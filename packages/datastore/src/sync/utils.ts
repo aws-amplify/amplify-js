@@ -994,3 +994,140 @@ export function getIdentifierValue(
 
 	return idOrPk;
 }
+
+// Reserved GraphQL variable names that should not be used
+const RESERVED_SUBSCRIPTION_VARIABLE_NAMES = new Set([
+	'input',
+	'condition',
+	'filter',
+	'owner',
+	'and',
+	'or',
+	'not',
+	'eq',
+	'ne',
+	'gt',
+	'ge',
+	'lt',
+	'le',
+	'contains',
+	'notContains',
+	'beginsWith',
+	'between',
+	'in',
+	'notIn',
+	'limit',
+	'nextToken',
+	'sortDirection',
+]);
+
+export function processSubscriptionVariables(
+	model: SchemaModel,
+	operation: TransformerMutationType,
+	modelVariables:
+		| Record<string, any>
+		| ((operation: TransformerMutationType) => Record<string, any>)
+		| undefined,
+	cache: WeakMap<
+		SchemaModel,
+		Map<TransformerMutationType, Record<string, any> | null>
+	>,
+): Record<string, any> | undefined {
+	if (!modelVariables) {
+		return undefined;
+	}
+
+	// Check cache first
+	let modelCache = cache.get(model);
+	if (!modelCache) {
+		modelCache = new Map();
+		cache.set(model, modelCache);
+	}
+
+	if (modelCache.has(operation)) {
+		const cached = modelCache.get(operation);
+
+		return cached || undefined;
+	}
+
+	// Process the variables
+	let vars: Record<string, any>;
+
+	// Handle function-based variables
+	if (typeof modelVariables === 'function') {
+		try {
+			vars = modelVariables(operation);
+		} catch (error) {
+			logger.warn(
+				`Error evaluating subscriptionVariables function for model ${model.name}:`,
+				error,
+			);
+			modelCache.set(operation, null);
+
+			return undefined;
+		}
+	} else {
+		vars = modelVariables;
+	}
+
+	// Validate and sanitize
+	const sanitized = sanitizeSubscriptionVariables(vars, model.name);
+	modelCache.set(operation, sanitized);
+
+	return sanitized || undefined;
+}
+
+function sanitizeSubscriptionVariables(
+	vars: any,
+	modelName: string,
+): Record<string, any> | null {
+	// Validate the input is an object
+	if (vars === null || typeof vars !== 'object' || Array.isArray(vars)) {
+		logger.warn(
+			`subscriptionVariables must be an object for model ${modelName}`,
+		);
+
+		return null;
+	}
+
+	try {
+		// Deep clone to prevent mutations
+		const cloned = JSON.parse(JSON.stringify(vars));
+
+		return filterReservedSubscriptionVariableKeys(cloned);
+	} catch {
+		// Can't clone (e.g., circular reference) - use shallow copy
+		return filterReservedSubscriptionVariableKeys({ ...vars });
+	}
+}
+
+function filterReservedSubscriptionVariableKeys(
+	vars: Record<string, any>,
+): Record<string, any> | null {
+	const result: Record<string, any> = {};
+
+	// Safe iteration that handles Object.create(null)
+	try {
+		Object.entries(vars).forEach(([key, value]) => {
+			if (!RESERVED_SUBSCRIPTION_VARIABLE_NAMES.has(key)) {
+				result[key] = value;
+			} else {
+				logger.warn(
+					`Ignoring reserved GraphQL variable name '${key}' in subscription variables`,
+				);
+			}
+		});
+	} catch {
+		// Fallback for objects that don't support Object.entries
+		for (const key in vars) {
+			if (
+				Object.prototype.hasOwnProperty.call(vars, key) &&
+				!RESERVED_SUBSCRIPTION_VARIABLE_NAMES.has(key)
+			) {
+				result[key] = vars[key];
+			}
+		}
+	}
+
+	return Object.keys(result).length > 0 ? result : null;
+}

@@ -41,6 +41,7 @@ import {
 	getTokenForCustomAuth,
 	getUserGroupsFromToken,
 	predicateToGraphQLFilter,
+	processSubscriptionVariables,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
@@ -128,10 +129,14 @@ class SubscriptionProcessor {
 			) || {};
 
 		// Get custom subscription variables from DataStore config
-		const customVariables = this.getSubscriptionVariables(
-			model,
-			transformerMutationType,
-		);
+		const customVariables = this.datastoreConfig?.subscriptionVariables
+			? processSubscriptionVariables(
+					model,
+					transformerMutationType,
+					this.datastoreConfig.subscriptionVariables[model.name],
+					this.variablesCache,
+				)
+			: undefined;
 
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
 			namespace,
@@ -384,10 +389,17 @@ class SubscriptionProcessor {
 										};
 
 										// Add custom subscription variables from DataStore config
-										const customVars = this.getSubscriptionVariables(
-											modelDefinition,
-											operation,
-										);
+										const customVars = this.datastoreConfig
+											?.subscriptionVariables
+											? processSubscriptionVariables(
+													modelDefinition,
+													operation,
+													this.datastoreConfig.subscriptionVariables[
+														modelDefinition.name
+													],
+													this.variablesCache,
+												)
+											: undefined;
 
 										if (customVars) {
 											// Check for reserved keys that would conflict
@@ -728,88 +740,6 @@ class SubscriptionProcessor {
 		await this.runningProcesses.open();
 		// Clear cache on stop
 		this.variablesCache = new WeakMap();
-	}
-
-	private getSubscriptionVariables(
-		model: SchemaModel,
-		operation: TransformerMutationType,
-	): Record<string, any> | undefined {
-		if (!this.datastoreConfig?.subscriptionVariables) {
-			return undefined;
-		}
-
-		const modelVariables =
-			this.datastoreConfig.subscriptionVariables[model.name];
-		if (!modelVariables) {
-			return undefined;
-		}
-
-		// For static variables, validate and return a copy
-		if (typeof modelVariables !== 'function') {
-			// Ensure it's a plain object (not string, number, array, etc.)
-			if (
-				typeof modelVariables === 'object' &&
-				!Array.isArray(modelVariables)
-			) {
-				// Return a shallow copy to prevent mutations
-				return { ...modelVariables };
-			}
-			logger.warn(
-				`subscriptionVariables for model ${model.name} must be an object or function, got ${typeof modelVariables}`,
-			);
-
-			return undefined;
-		}
-
-		// For function variables, use cache
-		if (!this.variablesCache.has(model)) {
-			this.variablesCache.set(model, new Map());
-		}
-
-		const cache = this.variablesCache.get(model)!;
-
-		// Check if we've already computed for this operation
-		if (cache.has(operation)) {
-			const cached = cache.get(operation);
-
-			return cached === null ? undefined : cached;
-		}
-
-		// Compute and cache the result
-		try {
-			const vars = modelVariables(operation);
-			// Validate that function returned an object
-			if (vars && typeof vars === 'object' && !Array.isArray(vars)) {
-				// Deep clone to prevent mutations affecting cached values
-				try {
-					const cloned = JSON.parse(JSON.stringify(vars));
-					cache.set(operation, cloned);
-
-					return cloned;
-				} catch (cloneError) {
-					// If cloning fails (e.g., circular reference), skip caching
-					logger.warn(
-						`Unable to cache subscriptionVariables for ${model.name} due to cloning error`,
-						cloneError,
-					);
-
-					return vars;
-				}
-			} else if (vars !== null && vars !== undefined) {
-				logger.warn(
-					`subscriptionVariables function must return an object for model ${model.name}`,
-				);
-			}
-			cache.set(operation, null);
-		} catch (error) {
-			logger.warn(
-				`Error evaluating subscriptionVariables function for model ${model.name}:`,
-				error,
-			);
-			cache.set(operation, null);
-		}
-
-		return undefined;
 	}
 
 	private passesPredicateValidation(

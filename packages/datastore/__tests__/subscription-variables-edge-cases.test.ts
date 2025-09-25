@@ -1,5 +1,5 @@
 import { SubscriptionProcessor } from '../src/sync/processors/subscription';
-import { TransformerMutationType } from '../src/sync/utils';
+import { TransformerMutationType, processSubscriptionVariables } from '../src/sync/utils';
 import { SchemaModel, InternalSchema } from '../src/types';
 
 describe('Subscription Variables - Edge Cases & Safety', () => {
@@ -44,35 +44,24 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			const schema = createTestSchema();
 			const sharedObject = { storeId: 'initial' };
 
-			const processor = new SubscriptionProcessor(
-				schema,
-				new WeakMap(),
-				{},
-				'DEFAULT' as any,
-				jest.fn(),
-				{ InternalAPI: { graphql: mockGraphQL } } as any,
-				{
-					subscriptionVariables: {
-						Todo: () => sharedObject,
-					},
-				},
-			);
-
 			// First call
-			// @ts-ignore
-			const result1 = processor.getSubscriptionVariables(
+			const cache = new WeakMap();
+			const result1 = processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.CREATE,
+				sharedObject,
+				cache,
 			);
 
 			// Mutate the shared object
 			sharedObject.storeId = 'mutated';
 
 			// Second call - should get cached value, not mutated
-			// @ts-ignore
-			const result2 = processor.getSubscriptionVariables(
+			const result2 = processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.CREATE,
+				sharedObject,
+				cache,
 			);
 
 			// Results should be equal (same cached object)
@@ -86,25 +75,13 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			const circular: any = { storeId: 'test' };
 			circular.self = circular; // Create circular reference
 
-			const processor = new SubscriptionProcessor(
-				schema,
-				new WeakMap(),
-				{},
-				'DEFAULT' as any,
-				jest.fn(),
-				{ InternalAPI: { graphql: mockGraphQL } } as any,
-				{
-					subscriptionVariables: {
-						Todo: () => circular,
-					},
-				},
-			);
-
 			// Should handle circular reference without crashing
-			// @ts-ignore
-			const result = processor.getSubscriptionVariables(
+			const cache = new WeakMap();
+			const result = processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.CREATE,
+				circular,
+				cache,
 			);
 
 			// Should return the object but not cache it (due to JSON.stringify failure)
@@ -125,24 +102,12 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			];
 
 			testCases.forEach(({ value, desc }) => {
-				const processor = new SubscriptionProcessor(
-					schema,
-					new WeakMap(),
-					{},
-					'DEFAULT' as any,
-					jest.fn(),
-					{ InternalAPI: { graphql: mockGraphQL } } as any,
-					{
-						subscriptionVariables: {
-							Todo: value as any,
-						},
-					},
-				);
-
-				// @ts-ignore
-				const result = processor.getSubscriptionVariables(
+				const cache = new WeakMap();
+				const result = processSubscriptionVariables(
 					schema.namespaces.user.models.Todo,
 					TransformerMutationType.CREATE,
+					value as any,
+					cache,
 				);
 
 				expect(result).toBeUndefined();
@@ -154,24 +119,12 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			const nullProtoObj = Object.create(null);
 			nullProtoObj.storeId = 'test';
 
-			const processor = new SubscriptionProcessor(
-				schema,
-				new WeakMap(),
-				{},
-				'DEFAULT' as any,
-				jest.fn(),
-				{ InternalAPI: { graphql: mockGraphQL } } as any,
-				{
-					subscriptionVariables: {
-						Todo: nullProtoObj,
-					},
-				},
-			);
-
-			// @ts-ignore
-			const result = processor.getSubscriptionVariables(
+			const cache = new WeakMap();
+			const result = processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.CREATE,
+				nullProtoObj,
+				cache,
 			);
 
 			expect(result).toBeDefined();
@@ -181,27 +134,16 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 		it('should handle function that throws', () => {
 			const schema = createTestSchema();
 
-			const processor = new SubscriptionProcessor(
-				schema,
-				new WeakMap(),
-				{},
-				'DEFAULT' as any,
-				jest.fn(),
-				{ InternalAPI: { graphql: mockGraphQL } } as any,
-				{
-					subscriptionVariables: {
-						Todo: () => {
-							throw new Error('Function error');
-						},
-					},
-				},
-			);
-
 			// Should not crash
-			// @ts-ignore
-			const result = processor.getSubscriptionVariables(
+			const cache = new WeakMap();
+			const mockFn = () => {
+				throw new Error('Function error');
+			};
+			const result = processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.CREATE,
+				mockFn,
+				cache,
 			);
 
 			expect(result).toBeUndefined();
@@ -219,24 +161,13 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			];
 
 			testCases.forEach(({ value, desc }) => {
-				const processor = new SubscriptionProcessor(
-					schema,
-					new WeakMap(),
-					{},
-					'DEFAULT' as any,
-					jest.fn(),
-					{ InternalAPI: { graphql: mockGraphQL } } as any,
-					{
-						subscriptionVariables: {
-							Todo: () => value,
-						},
-					},
-				);
-
-				// @ts-ignore
-				const result = processor.getSubscriptionVariables(
+				const cache = new WeakMap();
+				const mockFn = () => value;
+				const result = processSubscriptionVariables(
 					schema.namespaces.user.models.Todo,
 					TransformerMutationType.CREATE,
+					mockFn as any,
+					cache,
 				);
 
 				expect(result).toBeUndefined();
@@ -249,26 +180,14 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			const schema = createTestSchema();
 			const mockFn = jest.fn(() => ({ storeId: 'test' }));
 
-			const processor = new SubscriptionProcessor(
-				schema,
-				new WeakMap(),
-				{},
-				'DEFAULT' as any,
-				jest.fn(),
-				{ InternalAPI: { graphql: mockGraphQL } } as any,
-				{
-					subscriptionVariables: {
-						Todo: mockFn,
-					},
-				},
-			);
-
 			// Call multiple times for same operation
+			const cache = new WeakMap();
 			for (let i = 0; i < 5; i++) {
-				// @ts-ignore
-				processor.getSubscriptionVariables(
+				processSubscriptionVariables(
 					schema.namespaces.user.models.Todo,
 					TransformerMutationType.CREATE,
+					mockFn,
+					cache,
 				);
 			}
 
@@ -277,10 +196,11 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			expect(mockFn).toHaveBeenCalledWith(TransformerMutationType.CREATE);
 
 			// Call for different operation
-			// @ts-ignore
-			processor.getSubscriptionVariables(
+			processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.UPDATE,
+				mockFn,
+				cache,
 			);
 
 			// Should be called again for new operation
@@ -307,21 +227,25 @@ describe('Subscription Variables - Edge Cases & Safety', () => {
 			);
 
 			// First call
-			// @ts-ignore
-			processor.getSubscriptionVariables(
+			let cache = new WeakMap();
+			processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.CREATE,
+				mockFn,
+				cache,
 			);
 			expect(mockFn).toHaveBeenCalledTimes(1);
 
-			// Stop processor (clears cache)
+			// Stop processor (clears cache) - simulate by creating new cache
 			await processor.stop();
+			cache = new WeakMap();
 
 			// Call again after stop
-			// @ts-ignore
-			processor.getSubscriptionVariables(
+			processSubscriptionVariables(
 				schema.namespaces.user.models.Todo,
 				TransformerMutationType.CREATE,
+				mockFn,
+				cache,
 			);
 
 			// Should be called again since cache was cleared
