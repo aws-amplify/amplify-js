@@ -3,7 +3,10 @@
 
 import { AppState, Linking, Platform } from 'react-native';
 
-import { openAuthSessionAsync } from '../../src/apis/openAuthSessionAsync';
+import {
+	isChromebook,
+	openAuthSessionAsync,
+} from '../../src/apis/openAuthSessionAsync';
 import { nativeModule } from '../../src/nativeModule';
 import {
 	mockDeepLinkUrl,
@@ -21,7 +24,9 @@ jest.mock('react-native', () => ({
 	},
 	Linking: {
 		addEventListener: jest.fn(),
+		openURL: jest.fn(),
 	},
+	NativeModules: {},
 }));
 
 // Mock EmitterSubscription type
@@ -297,6 +302,100 @@ describe('openAuthSessionAsync', () => {
 
 			expect(result).toBeUndefined();
 			expect(mockNativeModule).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('isChromebook', () => {
+		it('returns false by default', async () => {
+			const result = await isChromebook();
+			expect(result).toBe(false);
+		});
+
+		it('returns true when NativeModules.ChromeOS.isChromeOS returns true', async () => {
+			const mockReactNative = require('react-native');
+			mockReactNative.NativeModules.ChromeOS = {
+				isChromeOS: jest.fn().mockResolvedValue(true),
+			};
+
+			const result = await isChromebook();
+			expect(result).toBe(true);
+
+			// Clean up
+			delete mockReactNative.NativeModules.ChromeOS;
+		});
+	});
+
+	describe('ChromeOS flow', () => {
+		beforeEach(() => {
+			mockPlatform.OS = 'android';
+			mockAppState.currentState = 'active';
+		});
+
+		it('uses ChromeOS flow when isChromebook returns true', async () => {
+			const mockAppStateListener = { ...mockEmitterSubscription };
+			const mockLinkingListener = { ...mockEmitterSubscription };
+
+			// Mock isChromebook to return true
+			const mockReactNative = require('react-native');
+			mockReactNative.NativeModules.ChromeOS = {
+				isChromeOS: jest.fn().mockResolvedValue(true),
+			};
+
+			mockAppState.addEventListener.mockReturnValue(mockAppStateListener);
+			mockLinking.addEventListener.mockReturnValue(mockLinkingListener);
+			mockLinking.openURL.mockResolvedValue(undefined);
+
+			// Mock redirect URL received
+			mockLinking.addEventListener.mockImplementation(
+				(_event: any, callback: any) => {
+					setTimeout(() => {
+						callback({ url: mockReturnUrl });
+					}, 0);
+
+					return mockLinkingListener;
+				},
+			);
+
+			const result = await openAuthSessionAsync(mockUrl, mockRedirectUrls);
+
+			expect(mockLinking.openURL).toHaveBeenCalledWith(mockUrl);
+			expect(mockLinking.openURL).toHaveBeenCalledWith(mockReturnUrl);
+			expect(result).toBe(mockReturnUrl);
+
+			// Clean up
+			delete mockReactNative.NativeModules.ChromeOS;
+		});
+
+		it('handles isChromebook error and falls back to Android', async () => {
+			const mockAppStateListener = { ...mockEmitterSubscription };
+			const mockLinkingListener = { ...mockEmitterSubscription };
+
+			// Mock isChromebook to throw error
+			const mockReactNative = require('react-native');
+			mockReactNative.NativeModules.ChromeOS = {
+				isChromeOS: jest.fn().mockRejectedValue(new Error('Detection failed')),
+			};
+
+			mockAppState.currentState = 'background';
+			mockAppState.addEventListener.mockReturnValue(mockAppStateListener);
+			mockLinking.addEventListener.mockReturnValue(mockLinkingListener);
+			mockNativeModule.mockResolvedValue(undefined);
+
+			mockAppState.addEventListener.mockImplementation((event, callback) => {
+				setTimeout(() => {
+					callback('active');
+				}, 0);
+
+				return mockAppStateListener;
+			});
+
+			const result = await openAuthSessionAsync(mockUrl, mockRedirectUrls);
+
+			expect(mockNativeModule).toHaveBeenCalledWith(mockUrl);
+			expect(result).toBeNull();
+
+			// Clean up
+			delete mockReactNative.NativeModules.ChromeOS;
 		});
 	});
 });
