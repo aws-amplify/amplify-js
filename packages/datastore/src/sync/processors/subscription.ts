@@ -75,6 +75,12 @@ class SubscriptionProcessor {
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
 
+	// Cache for subscription variables to avoid repeated function calls
+	private variablesCache = new WeakMap<
+		SchemaModel,
+		Map<TransformerMutationType, Record<string, any> | null>
+	>();
+
 	private dataObserver!: Observer<any>;
 
 	private runningProcesses = new BackgroundProcessManager();
@@ -122,31 +128,10 @@ class SubscriptionProcessor {
 			) || {};
 
 		// Get custom subscription variables from DataStore config
-		let customVariables: Record<string, any> | undefined;
-		if (this.datastoreConfig?.subscriptionVariables) {
-			const modelVariables =
-				this.datastoreConfig.subscriptionVariables[model.name];
-			try {
-				if (typeof modelVariables === 'function') {
-					const vars = modelVariables(transformerMutationType);
-					// Validate that function returned an object
-					if (vars && typeof vars === 'object' && !Array.isArray(vars)) {
-						customVariables = vars;
-					} else {
-						logger.warn(
-							`subscriptionVariables function must return an object for model ${model.name}`,
-						);
-					}
-				} else if (modelVariables) {
-					customVariables = modelVariables;
-				}
-			} catch (error) {
-				logger.warn(
-					`Error evaluating subscriptionVariables function for model ${model.name}:`,
-					error,
-				);
-			}
-		}
+		const customVariables = this.getSubscriptionVariables(
+			model,
+			transformerMutationType,
+		);
 
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
 			namespace,
@@ -399,62 +384,39 @@ class SubscriptionProcessor {
 										};
 
 										// Add custom subscription variables from DataStore config
-										if (this.datastoreConfig?.subscriptionVariables) {
-											const modelVariables =
-												this.datastoreConfig.subscriptionVariables[
-													modelDefinition.name
-												];
-											try {
-												let customVars: Record<string, any> | undefined;
-												if (typeof modelVariables === 'function') {
-													customVars = modelVariables(operation);
-												} else if (modelVariables) {
-													customVars = modelVariables;
+										const customVars = this.getSubscriptionVariables(
+											modelDefinition,
+											operation,
+										);
+
+										if (customVars) {
+											// Check for reserved keys that would conflict
+											const reservedKeys = [
+												'filter',
+												'owner',
+												'limit',
+												'nextToken',
+												'sortDirection',
+											];
+
+											const safeVars: Record<string, any> = {};
+											let hasConflicts = false;
+
+											for (const [key, value] of Object.entries(customVars)) {
+												if (reservedKeys.includes(key)) {
+													hasConflicts = true;
+												} else {
+													safeVars[key] = value;
 												}
+											}
 
-												if (
-													customVars &&
-													typeof customVars === 'object' &&
-													!Array.isArray(customVars)
-												) {
-													// Check for reserved keys that would conflict
-													const reservedKeys = [
-														'filter',
-														'owner',
-														'limit',
-														'nextToken',
-														'sortDirection',
-													];
-													const conflicts = Object.keys(customVars).filter(
-														key => reservedKeys.includes(key),
-													);
-
-													if (conflicts.length > 0) {
-														logger.warn(
-															`subscriptionVariables for ${modelDefinition.name} contains reserved keys: ${conflicts.join(', ')}. These will be ignored.`,
-														);
-														// Filter out reserved keys
-														const safeVars = Object.keys(customVars)
-															.filter(key => !reservedKeys.includes(key))
-															.reduce(
-																(acc, key) => {
-																	acc[key] = customVars[key];
-
-																	return acc;
-																},
-																{} as Record<string, any>,
-															);
-														Object.assign(variables, safeVars);
-													} else {
-														Object.assign(variables, customVars);
-													}
-												}
-											} catch (error) {
+											if (hasConflicts) {
 												logger.warn(
-													`Error evaluating subscriptionVariables for ${modelDefinition.name}:`,
-													error,
+													`subscriptionVariables for ${modelDefinition.name} contains reserved keys that were filtered out`,
 												);
 											}
+
+											Object.assign(variables, safeVars);
 										}
 
 										if (addFilter && predicatesGroup) {
@@ -745,6 +707,77 @@ class SubscriptionProcessor {
 	public async stop() {
 		await this.runningProcesses.close();
 		await this.runningProcesses.open();
+		// Clear cache on stop
+		this.variablesCache = new WeakMap();
+	}
+
+	private getSubscriptionVariables(
+		model: SchemaModel,
+		operation: TransformerMutationType,
+	): Record<string, any> | undefined {
+		if (!this.datastoreConfig?.subscriptionVariables) {
+			return undefined;
+		}
+
+		const modelVariables =
+			this.datastoreConfig.subscriptionVariables[model.name];
+		if (!modelVariables) {
+			return undefined;
+		}
+
+		// For static variables, validate and return
+		if (typeof modelVariables !== 'function') {
+			// Ensure it's a plain object (not string, number, array, etc.)
+			if (
+				typeof modelVariables === 'object' &&
+				!Array.isArray(modelVariables)
+			) {
+				return modelVariables;
+			}
+			logger.warn(
+				`subscriptionVariables for model ${model.name} must be an object or function, got ${typeof modelVariables}`,
+			);
+
+			return undefined;
+		}
+
+		// For function variables, use cache
+		if (!this.variablesCache.has(model)) {
+			this.variablesCache.set(model, new Map());
+		}
+
+		const cache = this.variablesCache.get(model)!;
+
+		// Check if we've already computed for this operation
+		if (cache.has(operation)) {
+			const cached = cache.get(operation);
+
+			return cached === null ? undefined : cached;
+		}
+
+		// Compute and cache the result
+		try {
+			const vars = modelVariables(operation);
+			// Validate that function returned an object
+			if (vars && typeof vars === 'object' && !Array.isArray(vars)) {
+				cache.set(operation, vars);
+
+				return vars;
+			} else if (vars !== null && vars !== undefined) {
+				logger.warn(
+					`subscriptionVariables function must return an object for model ${model.name}`,
+				);
+			}
+			cache.set(operation, null);
+		} catch (error) {
+			logger.warn(
+				`Error evaluating subscriptionVariables function for model ${model.name}:`,
+				error,
+			);
+			cache.set(operation, null);
+		}
+
+		return undefined;
 	}
 
 	private passesPredicateValidation(
