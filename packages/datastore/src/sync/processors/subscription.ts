@@ -402,11 +402,30 @@ class SubscriptionProcessor {
 											const safeVars: Record<string, any> = {};
 											let hasConflicts = false;
 
-											for (const [key, value] of Object.entries(customVars)) {
-												if (reservedKeys.includes(key)) {
-													hasConflicts = true;
-												} else {
-													safeVars[key] = value;
+											// Safe iteration that handles Object.create(null)
+											try {
+												for (const [key, value] of Object.entries(customVars)) {
+													if (reservedKeys.includes(key)) {
+														hasConflicts = true;
+													} else {
+														safeVars[key] = value;
+													}
+												}
+											} catch (entriesError) {
+												// Fallback for objects without prototype
+												for (const key in customVars) {
+													if (
+														Object.prototype.hasOwnProperty.call(
+															customVars,
+															key,
+														)
+													) {
+														if (reservedKeys.includes(key)) {
+															hasConflicts = true;
+														} else {
+															safeVars[key] = customVars[key];
+														}
+													}
 												}
 											}
 
@@ -725,14 +744,15 @@ class SubscriptionProcessor {
 			return undefined;
 		}
 
-		// For static variables, validate and return
+		// For static variables, validate and return a copy
 		if (typeof modelVariables !== 'function') {
 			// Ensure it's a plain object (not string, number, array, etc.)
 			if (
 				typeof modelVariables === 'object' &&
 				!Array.isArray(modelVariables)
 			) {
-				return modelVariables;
+				// Return a shallow copy to prevent mutations
+				return { ...modelVariables };
 			}
 			logger.warn(
 				`subscriptionVariables for model ${model.name} must be an object or function, got ${typeof modelVariables}`,
@@ -760,9 +780,21 @@ class SubscriptionProcessor {
 			const vars = modelVariables(operation);
 			// Validate that function returned an object
 			if (vars && typeof vars === 'object' && !Array.isArray(vars)) {
-				cache.set(operation, vars);
+				// Deep clone to prevent mutations affecting cached values
+				try {
+					const cloned = JSON.parse(JSON.stringify(vars));
+					cache.set(operation, cloned);
 
-				return vars;
+					return cloned;
+				} catch (cloneError) {
+					// If cloning fails (e.g., circular reference), skip caching
+					logger.warn(
+						`Unable to cache subscriptionVariables for ${model.name} due to cloning error`,
+						cloneError,
+					);
+
+					return vars;
+				}
 			} else if (vars !== null && vars !== undefined) {
 				logger.warn(
 					`subscriptionVariables function must return an object for model ${model.name}`,
