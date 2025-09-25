@@ -91,6 +91,7 @@ class SubscriptionProcessor {
 		private readonly amplifyContext: AmplifyContext = {
 			InternalAPI,
 		},
+		private readonly datastoreConfig?: Record<string, any>,
 	) {}
 
 	private buildSubscription(
@@ -120,6 +121,18 @@ class SubscriptionProcessor {
 				authMode,
 			) || {};
 
+		// Get custom subscription variables from DataStore config
+		let customVariables: Record<string, any> | undefined;
+		if (this.datastoreConfig?.subscriptionVariables) {
+			const modelVariables =
+				this.datastoreConfig.subscriptionVariables[model.name];
+			if (typeof modelVariables === 'function') {
+				customVariables = modelVariables(transformerMutationType);
+			} else if (modelVariables) {
+				customVariables = modelVariables;
+			}
+		}
+
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
 			namespace,
 			model,
@@ -127,6 +140,7 @@ class SubscriptionProcessor {
 			isOwner,
 			ownerField!,
 			filterArg,
+			customVariables,
 		);
 
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
@@ -368,6 +382,20 @@ class SubscriptionProcessor {
 											category: Category.DataStore,
 											action: DataStoreAction.Subscribe,
 										};
+
+										// Add custom subscription variables from DataStore config
+										if (this.datastoreConfig?.subscriptionVariables) {
+											const modelVariables =
+												this.datastoreConfig.subscriptionVariables[
+													modelDefinition.name
+												];
+											if (typeof modelVariables === 'function') {
+												const customVars = modelVariables(operation);
+												Object.assign(variables, customVars);
+											} else if (modelVariables) {
+												Object.assign(variables, modelVariables);
+											}
+										}
 
 										if (addFilter && predicatesGroup) {
 											(variables as any).filter =

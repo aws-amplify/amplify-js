@@ -318,6 +318,7 @@ export function buildSubscriptionGraphQLOperation(
 	isOwnerAuthorization: boolean,
 	ownerField: string,
 	filterArg = false,
+	customVariables?: Record<string, any>,
 ): [TransformerMutationType, string, string] {
 	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
@@ -336,6 +337,18 @@ export function buildSubscriptionGraphQLOperation(
 	if (isOwnerAuthorization) {
 		docArgs.push(`$${ownerField}: String!`);
 		opArgs.push(`${ownerField}: $${ownerField}`);
+	}
+
+	// Add custom subscription variables
+	if (customVariables) {
+		Object.keys(customVariables).forEach(varName => {
+			// Infer type from value (simplified - could be enhanced)
+			const varType = Array.isArray(customVariables[varName])
+				? '[String]'
+				: 'String';
+			docArgs.push(`$${varName}: ${varType}`);
+			opArgs.push(`${varName}: $${varName}`);
+		});
 	}
 
 	const docStr = docArgs.length ? `(${docArgs.join(',')})` : '';
