@@ -96,11 +96,112 @@ describe('tokenOrchestrator', () => {
 	});
 
 	describe('handleErrors method', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
 		it('does not call clearTokens() if the error is a network error thrown from fetch handler', () => {
 			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
 			const error = new AmplifyError({
 				name: AmplifyErrorCode.NetworkError,
 				message: 'Network Error',
+			});
+
+			expect(() => {
+				(tokenOrchestrator as any).handleErrors(error);
+			}).toThrow(error);
+
+			expect(clearTokensSpy).not.toHaveBeenCalled();
+		});
+
+		it('calls clearTokens() for NotAuthorizedException', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: 'NotAuthorizedException',
+				message: 'Not authorized',
+			});
+
+			const result = (tokenOrchestrator as any).handleErrors(error);
+
+			expect(clearTokensSpy).toHaveBeenCalled();
+			expect(result).toBeNull();
+		});
+
+		it('calls clearTokens() for TokenRevokedException', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: 'TokenRevokedException',
+				message: 'Token revoked',
+			});
+
+			expect(() => {
+				(tokenOrchestrator as any).handleErrors(error);
+			}).toThrow(error);
+
+			expect(clearTokensSpy).toHaveBeenCalled();
+		});
+
+		it('calls clearTokens() for UserNotFoundException', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: 'UserNotFoundException',
+				message: 'User not found',
+			});
+
+			expect(() => {
+				(tokenOrchestrator as any).handleErrors(error);
+			}).toThrow(error);
+
+			expect(clearTokensSpy).toHaveBeenCalled();
+		});
+
+		it('does not call clearTokens() for service errors (500)', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: 'InternalServerError',
+				message: 'Internal server error',
+			});
+
+			expect(() => {
+				(tokenOrchestrator as any).handleErrors(error);
+			}).toThrow(error);
+
+			expect(clearTokensSpy).not.toHaveBeenCalled();
+		});
+
+		it('does not call clearTokens() for rate limit errors', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: 'TooManyRequestsException',
+				message: 'Too many requests',
+			});
+
+			expect(() => {
+				(tokenOrchestrator as any).handleErrors(error);
+			}).toThrow(error);
+
+			expect(clearTokensSpy).not.toHaveBeenCalled();
+		});
+
+		it('does not call clearTokens() for throttling errors', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: 'ThrottlingException',
+				message: 'Request throttled',
+			});
+
+			expect(() => {
+				(tokenOrchestrator as any).handleErrors(error);
+			}).toThrow(error);
+
+			expect(clearTokensSpy).not.toHaveBeenCalled();
+		});
+
+		it('does not call clearTokens() for temporary service issues', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: 'ServiceUnavailable',
+				message: 'Service temporarily unavailable',
 			});
 
 			expect(() => {
