@@ -701,16 +701,43 @@ export abstract class AWSWebSocketProvider {
 				});
 
 				let errorMessage = JSON.stringify(payload ?? data);
+				let isAuthError = false;
 
 				if (type === MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR) {
 					const { errors } = JSON.parse(String(message.data));
 					if (Array.isArray(errors) && errors.length > 0) {
 						const error = errors[0];
 						errorMessage = `${error.errorType}: ${error.message}`;
+						// Check if this is an authentication/authorization error
+						isAuthError =
+							error.errorType === 'UnauthorizedException' ||
+							error.errorType === 'Unauthorized';
 					}
 				}
 
+				// Also check for auth errors in the error message
+				isAuthError =
+					isAuthError ||
+					errorMessage.includes('UnauthorizedException') ||
+					errorMessage.includes('Unauthorized') ||
+					errorMessage.includes('Token expired') ||
+					errorMessage.includes('NotAuthorizedException') ||
+					errorMessage.includes('401') ||
+					errorMessage.includes('403');
+
 				this.logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${errorMessage}`);
+
+				// If it's an auth error, trigger reconnection to refresh tokens
+				if (isAuthError && this.awsRealTimeSocket) {
+					this.logger.debug(
+						'Subscription failed due to auth error, closing WebSocket to trigger reconnection with fresh tokens',
+					);
+					// Close the WebSocket connection which will trigger reconnection
+					// The connectionStateMonitor will detect the closed connection and since
+					// intendedConnectionState is still 'connected', it will trigger ConnectionDisrupted
+					// which causes the ReconnectionMonitor to reconnect with fresh tokens
+					this.awsRealTimeSocket.close(1000, 'Auth error - reconnecting');
+				}
 
 				observer.error({
 					errors: [
