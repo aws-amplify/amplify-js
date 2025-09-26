@@ -1,15 +1,18 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import {
 	deserializeJsonToPkcCreationOptions,
 	serializePkcWithAttestationToJson,
-} from '../../../src/client/utils/passkey/serde';
+} from '../../../../src/client/utils/passkey/serde';
 import {
 	passkeyRegistrationRequest,
 	passkeyRegistrationRequestJson,
 	passkeyRegistrationResult,
 	passkeyRegistrationResultJson,
-} from '../../mockData';
+} from '../../../mockData';
 
-describe('passkey', () => {
+describe('passkey serialization / deserialization', () => {
 	it('serializes pkc into correct json format', () => {
 		expect(
 			JSON.stringify(
