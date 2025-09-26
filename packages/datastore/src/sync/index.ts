@@ -799,6 +799,22 @@ export class SyncEngine {
 			) {
 				this.datastoreConnectivity.socketDisconnected();
 			}
+			// Handle authentication errors that occur when tokens expire
+			// This fixes the issue where WebSocket subscriptions silently fail after token expiration
+			// See: https://github.com/aws-amplify/amplify-js/issues/12954
+			else if (
+				msg?.includes?.('No current user') ||
+				msg?.includes?.('Unauthorized') ||
+				msg?.includes?.('Token expired') ||
+				msg?.includes?.('NotAuthorizedException')
+			) {
+				logger.warn(
+					'DataStore sync subscription failed due to authentication error. Triggering reconnection...',
+					msg,
+				);
+				// Trigger socket disconnection to force a full reconnection with refreshed tokens
+				this.datastoreConnectivity.socketDisconnected();
+			}
 		};
 	}
 
