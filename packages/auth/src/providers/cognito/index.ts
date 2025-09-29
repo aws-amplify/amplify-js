@@ -27,7 +27,6 @@ export { rememberDevice } from './apis/rememberDevice';
 export { forgetDevice } from './apis/forgetDevice';
 export { fetchDevices } from './apis/fetchDevices';
 export { autoSignIn } from './apis/autoSignIn';
-export { setTokenRefreshClientMetadata } from './apis/setTokenRefreshClientMetadata';
 export {
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,

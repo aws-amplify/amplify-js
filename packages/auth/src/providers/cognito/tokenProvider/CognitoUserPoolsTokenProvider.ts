@@ -4,6 +4,7 @@
 import {
 	AuthConfig,
 	AuthTokens,
+	ClientMetadataProvider,
 	FetchAuthSessionOptions,
 	KeyValueStorageInterface,
 	defaultStorage,
@@ -36,6 +37,12 @@ export class CognitoUserPoolsTokenProvider
 
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void {
 		this.authTokenStore.setKeyValueStorage(keyValueStorage);
+	}
+
+	setClientMetadataProvider(
+		clientMetadataProvider: ClientMetadataProvider,
+	): void {
+		this.tokenOrchestrator.setClientMetadataProvider(clientMetadataProvider);
 	}
 
 	setAuthConfig(authConfig: AuthConfig) {

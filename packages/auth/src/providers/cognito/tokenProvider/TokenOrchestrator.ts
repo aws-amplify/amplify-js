@@ -3,6 +3,7 @@
 import {
 	AuthConfig,
 	AuthTokens,
+	ClientMetadataProvider,
 	CognitoUserPoolConfig,
 	FetchAuthSessionOptions,
 	Hub,
@@ -32,7 +33,7 @@ import {
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
-	private clientMetadata?: ClientMetadata;
+	private clientMetadataProvider?: ClientMetadataProvider;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
 	inflightPromise: Promise<void> | undefined;
@@ -95,8 +96,10 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		return this.tokenRefresher;
 	}
 
-	setTokenRefreshClientMetadata(clientMetadata?: ClientMetadata): void {
-		this.clientMetadata = clientMetadata;
+	setClientMetadataProvider(
+		clientMetadataProvider: ClientMetadataProvider,
+	): void {
+		this.clientMetadataProvider = clientMetadataProvider;
 	}
 
 	async getTokens(
@@ -135,7 +138,9 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			tokens = await this.refreshTokens({
 				tokens,
 				username,
-				clientMetadata: options?.clientMetadata ?? this.clientMetadata,
+				clientMetadata:
+					options?.clientMetadata ??
+					this.clientMetadataProvider?.getClientMetadata(),
 			});
 
 			if (tokens === null) {

@@ -63,7 +63,6 @@ export interface AuthTokenOrchestrator {
 	clearDeviceMetadata(username?: string): Promise<void>;
 	setOAuthMetadata(metadata: OAuthMetadata): Promise<void>;
 	getOAuthMetadata(): Promise<OAuthMetadata | null>;
-	setTokenRefreshClientMetadata(clientMetadata?: ClientMetadata): void;
 }
 
 export interface CognitoUserPoolTokenProviderType extends TokenProvider {

@@ -152,9 +152,12 @@ describe('TokenOrchestrator', () => {
 		});
 	});
 
-	describe('setTokenRefreshClientMetadata', () => {
-		it('should store clientMetadata for token refresh', async () => {
+	describe('setClientMetadataProvider', () => {
+		it('should use clientMetadataProvider for token refresh', async () => {
 			const clientMetadata = { 'app-version': '1.0.0' };
+			const clientMetadataProvider = {
+				getClientMetadata: () => clientMetadata,
+			};
 
 			mockTokenRefresher.mockResolvedValue({
 				accessToken: { payload: {} },
@@ -166,7 +169,7 @@ describe('TokenOrchestrator', () => {
 
 			tokenOrchestrator.setTokenRefresher(mockTokenRefresher);
 			tokenOrchestrator.setAuthTokenStore(mockAuthTokenStore);
-			tokenOrchestrator.setTokenRefreshClientMetadata(clientMetadata);
+			tokenOrchestrator.setClientMetadataProvider(clientMetadataProvider);
 
 			mockAuthTokenStore.loadTokens.mockResolvedValue({
 				accessToken: { payload: { exp: 1 } },

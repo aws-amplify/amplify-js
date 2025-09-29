@@ -9,6 +9,16 @@ import { AtLeastOne } from '../types';
  */
 export type ClientMetadata = Record<string, string>;
 
+/**
+ * Interface for providing client metadata for Cognito operations
+ */
+export interface ClientMetadataProvider {
+	/**
+	 * Returns client metadata for token refresh operations
+	 */
+	getClientMetadata(): ClientMetadata;
+}
+
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/safe-json-parse.ts
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/jwt-model.ts
 interface JwtPayloadStandardFields {
@@ -51,6 +61,7 @@ export interface AuthSession {
 export interface LibraryAuthOptions {
 	tokenProvider?: TokenProvider;
 	credentialsProvider?: CredentialsAndIdentityIdProvider;
+	clientMetadataProvider?: ClientMetadataProvider;
 }
 
 export interface Identity {
