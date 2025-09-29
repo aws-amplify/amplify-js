@@ -61,7 +61,6 @@ export interface AuthSession {
 export interface LibraryAuthOptions {
 	tokenProvider?: TokenProvider;
 	credentialsProvider?: CredentialsAndIdentityIdProvider;
-	clientMetadataProvider?: ClientMetadataProvider;
 }
 
 export interface Identity {
