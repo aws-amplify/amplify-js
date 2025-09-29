@@ -155,9 +155,7 @@ describe('TokenOrchestrator', () => {
 	describe('setClientMetadataProvider', () => {
 		it('should use clientMetadataProvider for token refresh', async () => {
 			const clientMetadata = { 'app-version': '1.0.0' };
-			const clientMetadataProvider = {
-				getClientMetadata: () => clientMetadata,
-			};
+			const clientMetadataProvider = () => Promise.resolve(clientMetadata);
 
 			mockTokenRefresher.mockResolvedValue({
 				accessToken: { payload: {} },

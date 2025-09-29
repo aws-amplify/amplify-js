@@ -139,8 +139,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				tokens,
 				username,
 				clientMetadata:
-					options?.clientMetadata ??
-					this.clientMetadataProvider?.getClientMetadata(),
+					options?.clientMetadata ?? (await this.clientMetadataProvider?.()),
 			});
 
 			if (tokens === null) {

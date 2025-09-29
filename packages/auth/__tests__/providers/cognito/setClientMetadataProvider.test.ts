@@ -11,9 +11,8 @@ const mockCognitoUserPoolsTokenProvider = jest.mocked(
 
 describe('setClientMetadataProvider', () => {
 	it('should call tokenProvider.setClientMetadataProvider', () => {
-		const clientMetadataProvider = {
-			getClientMetadata: () => ({ 'app-version': '1.0.0' }),
-		};
+		const clientMetadataProvider = () =>
+			Promise.resolve({ 'app-version': '1.0.0' });
 
 		cognitoUserPoolsTokenProvider.setClientMetadataProvider(
 			clientMetadataProvider,
