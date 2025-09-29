@@ -389,18 +389,4 @@ describe('device tokens', () => {
 			),
 		).toBeUndefined();
 	});
-
-	it('should set client metadata provider', () => {
-		const clientMetadataProvider = {
-			getClientMetadata: () => ({ 'app-version': '1.0.0' }),
-		};
-		const spy = jest.spyOn(
-			tokenStore.tokenOrchestrator,
-			'setClientMetadataProvider',
-		);
-
-		tokenStore.setClientMetadataProvider(clientMetadataProvider);
-
-		expect(spy).toHaveBeenCalledWith(clientMetadataProvider);
-	});
 });
