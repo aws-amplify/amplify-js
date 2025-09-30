@@ -33,7 +33,7 @@ import {
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
-	private clientMetadataProvider?: ClientMetadataProvider;
+	clientMetadataProvider?: ClientMetadataProvider;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
 	inflightPromise: Promise<void> | undefined;
