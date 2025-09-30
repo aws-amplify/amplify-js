@@ -3,6 +3,7 @@
 import {
 	AuthConfig,
 	AuthTokens,
+	ClientMetadataProvider,
 	FetchAuthSessionOptions,
 	KeyValueStorageInterface,
 	TokenProvider,
@@ -68,6 +69,9 @@ export interface AuthTokenOrchestrator {
 export interface CognitoUserPoolTokenProviderType extends TokenProvider {
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
 	setAuthConfig(authConfig: AuthConfig): void;
+	setClientMetadataProvider(
+		clientMetadataProvider: ClientMetadataProvider,
+	): void;
 }
 
 export type CognitoAuthTokens = AuthTokens & {
