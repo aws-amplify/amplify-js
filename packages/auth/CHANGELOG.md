@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.16.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.15.1...@aws-amplify/auth@6.16.0) (2025-09-29)
+
+### Bug Fixes
+
+- implemented cancel scenario in oauthSignIn for signInWithRedirect ([#14434](https://github.com/aws-amplify/amplify-js/issues/14434)) ([f8f2904](https://github.com/aws-amplify/amplify-js/commit/f8f29048ce806e6ae17d3493432fdae29cc4c2c9))
+
+### Features
+
+- **rtn-passkeys:** add rtn passkeys ([#14489](https://github.com/aws-amplify/amplify-js/issues/14489)) ([ac06885](https://github.com/aws-amplify/amplify-js/commit/ac06885a8f2a13365fe1ff26bfd54891f9ad4a45)), closes [#14390](https://github.com/aws-amplify/amplify-js/issues/14390) [#14391](https://github.com/aws-amplify/amplify-js/issues/14391)
+
 ## [6.15.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.15.0...@aws-amplify/auth@6.15.1) (2025-09-11)
 
 ### Bug Fixes
