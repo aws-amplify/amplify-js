@@ -74,7 +74,7 @@ export function createCancellableOperation(
 				} else {
 					const message = abortReason ?? abortSignal.reason;
 					const canceledError = new CanceledError({
-						message: message || 'Request was canceled',
+						...(message && { message }),
 						underlyingError: error,
 						recoverySuggestion:
 							'The API request was explicitly canceled. If this is not intended, validate if you called the `cancel()` function on the API request erroneously.',
