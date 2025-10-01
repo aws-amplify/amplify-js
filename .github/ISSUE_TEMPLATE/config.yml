@@ -1,4 +1,4 @@
-blank_issues_enabled: false
+blank_issues_enabled: true
 contact_links:
   - name: Amplify UI Component Issue?
     url: https://github.com/aws-amplify/amplify-ui/issues/new/choose
