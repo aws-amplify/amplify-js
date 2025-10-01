@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - test/feat/rest-api-timeout
 
 jobs:
   e2e:
