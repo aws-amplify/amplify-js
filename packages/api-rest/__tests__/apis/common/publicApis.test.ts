@@ -450,6 +450,70 @@ describe('public APIs', () => {
 			}
 		});
 
+		it('should support timeout configuration at request level', async () => {
+			expect.assertions(3);
+			const timeoutSpy = jest.spyOn(global, 'setTimeout');
+			mockAuthenticatedHandler.mockImplementation(() => {
+				return new Promise((_resolve, reject) => {
+					setTimeout(() => {
+						const abortError = new Error('AbortError');
+						abortError.name = 'AbortError';
+						reject(abortError);
+					}, 300);
+				});
+			});
+			try {
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/items',
+					options: {
+						timeout: 100,
+					},
+				}).response;
+			} catch (error: any) {
+				expect(timeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
+				expect(error.name).toBe('TimeoutError');
+				expect(error.message).toBe('Request timeout after 100ms');
+				timeoutSpy.mockRestore();
+			}
+		});
+
+		it('should support timeout configuration at library options level', async () => {
+			expect.assertions(3);
+			const timeoutSpy = jest.spyOn(global, 'setTimeout');
+			const mockTimeoutFunction = jest.fn().mockReturnValue(100);
+			const mockAmplifyInstanceWithTimeout = {
+				...mockAmplifyInstance,
+				libraryOptions: {
+					API: {
+						REST: {
+							timeout: mockTimeoutFunction,
+						},
+					},
+				},
+			} as any as AmplifyClassV6;
+			mockAuthenticatedHandler.mockImplementation(() => {
+				return new Promise((_resolve, reject) => {
+					setTimeout(() => {
+						const abortError = new Error('AbortError');
+						abortError.name = 'AbortError';
+						reject(abortError);
+					}, 300);
+				});
+			});
+			try {
+				await fn(mockAmplifyInstanceWithTimeout, {
+					apiName: 'restApi1',
+					path: '/items',
+				}).response;
+			} catch (error: any) {
+				expect(timeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
+				expect(error.name).toBe('TimeoutError');
+				expect(error.message).toBe('Request timeout after 100ms');
+				timeoutSpy.mockRestore();
+			}
+		});
+
 		describe('retry strategy', () => {
 			beforeEach(() => {
 				mockAuthenticatedHandler.mockReset();

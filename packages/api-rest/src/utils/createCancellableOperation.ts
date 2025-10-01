@@ -16,6 +16,8 @@ import { logger } from './logger';
 export function createCancellableOperation(
 	handler: () => Promise<HttpResponse>,
 	abortController: AbortController,
+	operationType: 'internal',
+	timeout?: number,
 ): Promise<HttpResponse>;
 
 /**
@@ -23,37 +25,36 @@ export function createCancellableOperation(
  * @internal
  */
 export function createCancellableOperation(
-	handler: (signal: AbortSignal) => Promise<HttpResponse>,
+	handler: () => Promise<HttpResponse>,
+	abortController: AbortController,
+	operationType: 'public',
+	timeout?: number,
 ): Operation<HttpResponse>;
 
 /**
  * @internal
  */
 export function createCancellableOperation(
-	handler:
-		| ((signal: AbortSignal) => Promise<HttpResponse>)
-		| (() => Promise<HttpResponse>),
-	abortController?: AbortController,
+	handler: () => Promise<HttpResponse>,
+	abortController: AbortController,
+	operationType: 'public' | 'internal',
+	timeout?: number,
 ): Operation<HttpResponse> | Promise<HttpResponse> {
-	const isInternalPost = (
-		targetHandler:
-			| ((signal: AbortSignal) => Promise<HttpResponse>)
-			| (() => Promise<HttpResponse>),
-	): targetHandler is () => Promise<HttpResponse> => !!abortController;
-
-	// For creating a cancellable operation for public REST APIs, we need to create an AbortController
-	// internally. Whereas for internal POST APIs, we need to accept in the AbortController from the
-	// callers.
-	const publicApisAbortController = new AbortController();
-	const publicApisAbortSignal = publicApisAbortController.signal;
-	const internalPostAbortSignal = abortController?.signal;
+	const abortSignal = abortController.signal;
 	let abortReason: string;
+	if (timeout != null) {
+		if (timeout < 0) {
+			throw new Error('Timeout must be a non-negative number');
+		}
+		setTimeout(() => {
+			abortReason = 'TimeoutError';
+			abortController.abort(abortReason);
+		}, timeout);
+	}
 
 	const job = async () => {
 		try {
-			const response = await (isInternalPost(handler)
-				? handler()
-				: handler(publicApisAbortSignal));
+			const response = await handler();
 
 			if (response.statusCode >= 300) {
 				throw await parseRestApiServiceError(response)!;
@@ -61,34 +62,43 @@ export function createCancellableOperation(
 
 			return response;
 		} catch (error: any) {
-			const abortSignal = internalPostAbortSignal ?? publicApisAbortSignal;
-			const message = abortReason ?? abortSignal.reason;
 			if (error.name === 'AbortError' || abortSignal?.aborted === true) {
-				const canceledError = new CanceledError({
-					...(message && { message }),
-					underlyingError: error,
-					recoverySuggestion:
-						'The API request was explicitly canceled. If this is not intended, validate if you called the `cancel()` function on the API request erroneously.',
-				});
-				logger.debug(error);
-				throw canceledError;
+				// Check if timeout caused the abort
+				const isTimeout = abortReason && abortReason === 'TimeoutError';
+
+				if (isTimeout) {
+					const timeoutError = new Error(`Request timeout after ${timeout}ms`);
+					timeoutError.name = 'TimeoutError';
+					logger.debug(timeoutError);
+					throw timeoutError;
+				} else {
+					const message = abortReason ?? abortSignal.reason;
+					const canceledError = new CanceledError({
+						...(message && { message }),
+						underlyingError: error,
+						recoverySuggestion:
+							'The API request was explicitly canceled. If this is not intended, validate if you called the `cancel()` function on the API request erroneously.',
+					});
+					logger.debug(canceledError);
+					throw canceledError;
+				}
 			}
 			logger.debug(error);
 			throw error;
 		}
 	};
 
-	if (isInternalPost(handler)) {
+	if (operationType === 'internal') {
 		return job();
 	} else {
 		const cancel = (abortMessage?: string) => {
-			if (publicApisAbortSignal.aborted === true) {
+			if (abortSignal.aborted === true) {
 				return;
 			}
-			publicApisAbortController.abort(abortMessage);
+			abortController.abort(abortMessage);
 			// If abort reason is not supported, set a scoped reasons instead. The reason property inside an
 			// AbortSignal is a readonly property and trying to set it would throw an error.
-			if (abortMessage && publicApisAbortSignal.reason !== abortMessage) {
+			if (abortMessage && abortSignal.reason !== abortMessage) {
 				abortReason = abortMessage;
 			}
 		};
