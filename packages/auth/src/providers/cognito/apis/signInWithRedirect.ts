@@ -55,9 +55,9 @@ export async function signInWithRedirect(
 
 	if (typeof input?.provider === 'string') {
 		provider = cognitoHostedUIIdentityProviderMap[input.provider];
-	} else if (input?.provider && 'custom' in input.provider) {
+	} else if (input?.provider?.custom) {
 		provider = input.provider.custom;
-	} else if (input?.provider && 'idpIdentifier' in input.provider) {
+	} else if (input?.provider?.idpIdentifier) {
 		({ idpIdentifier } = input.provider);
 	}
 
