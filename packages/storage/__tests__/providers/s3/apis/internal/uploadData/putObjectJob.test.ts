@@ -235,6 +235,30 @@ describe('putObjectJob with key', () => {
 			);
 		});
 	});
+
+	describe('cacheControl passed in option', () => {
+		it('should include CacheControl header', async () => {
+			const job = putObjectJob(
+				{
+					path: testPath,
+					data,
+					options: {
+						cacheControl: 'no-store',
+					},
+				},
+				new AbortController().signal,
+				dataLength,
+			);
+			await job();
+
+			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
+				expect.objectContaining({ credentials, region }),
+				expect.objectContaining({
+					CacheControl: 'no-store',
+				}),
+			);
+		});
+	});
 });
 
 describe('putObjectJob with path', () => {
@@ -517,6 +541,52 @@ describe('putObjectJob with path', () => {
 				expect.objectContaining({
 					ContentType: 'custom/type',
 				}),
+			);
+		});
+	});
+
+	describe('cacheControl passed in option', () => {
+		it('should include CacheControl header', async () => {
+			const job = putObjectJob(
+				{
+					path: testPath,
+					data,
+					options: {
+						cacheControl: 'no-store',
+					},
+				},
+				new AbortController().signal,
+				dataLength,
+			);
+			await job();
+
+			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
+				expect.objectContaining({ credentials, region }),
+				expect.objectContaining({
+					CacheControl: 'no-store',
+				}),
+			);
+		});
+
+		it('should NOT include CacheControl header', async () => {
+			const job = putObjectJob(
+				{
+					path: testPath,
+					data,
+				},
+				new AbortController().signal,
+				dataLength,
+			);
+			await job();
+
+			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
+				expect.objectContaining({ credentials, region }),
+				{
+					Bucket: bucket,
+					Key: testPath,
+					Body: data,
+					ContentType: 'application/octet-stream',
+				},
 			);
 		});
 	});
