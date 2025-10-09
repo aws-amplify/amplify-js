@@ -11,6 +11,7 @@ import {
 import {
 	AWSCredentials,
 	DocumentType,
+	RESTAuthMode,
 	RetryStrategy,
 } from '@aws-amplify/core/internals/utils';
 
@@ -30,6 +31,7 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	headers?: Headers;
 	withCredentials?: boolean;
 	retryStrategy?: RetryStrategy;
+	defaultAuthMode?: RESTAuthMode;
 };
 
 type RetryDecider = RetryOptions['retryDecider'];
@@ -84,10 +86,18 @@ export const transferHandler = async (
 		abortSignal,
 	};
 
-	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+	const defaultAuthMode =
+		options.defaultAuthMode ??
+		amplify?.libraryOptions?.API?.REST?.defaultAuthMode;
+
+	let credentials: AWSCredentials | null = null;
+	if (defaultAuthMode !== 'none') {
+		credentials = await resolveCredentials(amplify);
+	}
 
 	let response: RestApiResponse;
-	const credentials = await resolveCredentials(amplify);
+	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+
 	if (isIamAuthApplicable && credentials) {
 		const signingInfoFromUrl = parseSigningInfo(url);
 		const signingService =
