@@ -25,6 +25,10 @@ export interface LibraryAPIOptions {
 		 * @default ` { strategy: 'jittered-exponential-backoff' } `
 		 */
 		retryStrategy?: RetryStrategy;
+		/**
+		 * custom timeout in milliseconds configurable for given REST service, or/and method.
+		 */
+		timeout?(options: { apiName: string; method: string }): number;
 	};
 }
 

@@ -58,24 +58,28 @@ export const post = (
 	{ url, options, abortController }: InternalPostInput,
 ): Promise<RestApiResponse> => {
 	const controller = abortController ?? new AbortController();
-	const responsePromise = createCancellableOperation(async () => {
-		const response = transferHandler(
-			amplify,
-			{
-				url,
-				method: 'POST',
-				...options,
-				abortSignal: controller.signal,
-				retryStrategy: {
-					strategy: 'jittered-exponential-backoff',
+	const responsePromise = createCancellableOperation(
+		async () => {
+			const response = transferHandler(
+				amplify,
+				{
+					url,
+					method: 'POST',
+					...options,
+					abortSignal: controller.signal,
+					retryStrategy: {
+						strategy: 'jittered-exponential-backoff',
+					},
 				},
-			},
-			isIamAuthApplicableForGraphQL,
-			options?.signingServiceInfo,
-		);
+				isIamAuthApplicableForGraphQL,
+				options?.signingServiceInfo,
+			);
 
-		return response;
-	}, controller);
+			return response;
+		},
+		controller,
+		'internal', // operation Type
+	);
 
 	const responseWithCleanUp = responsePromise.finally(() => {
 		cancelTokenMap.delete(responseWithCleanUp);
