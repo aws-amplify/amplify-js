@@ -140,4 +140,76 @@ describe('Hub', () => {
 			expect(loggerSpy).not.toHaveBeenCalled();
 		});
 	});
+
+	describe('crossTab', () => {
+		const crossTabListener = jest.fn();
+		const uiCrossTabListener = jest.fn();
+		const sameTabListener = jest.fn();
+		beforeAll(() => {
+			Hub.listen('auth', crossTabListener, {
+				enableCrossTabEvents: true,
+			});
+			Hub.listen('ui' as 'auth', uiCrossTabListener, {
+				enableCrossTabEvents: true,
+			});
+			Hub.listen('auth', sameTabListener);
+		});
+
+		beforeEach(() => {
+			crossTabListener.mockClear();
+			sameTabListener.mockClear();
+		});
+
+		it('should not call crossTab listeners on sameTab events', () => {
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: {},
+				},
+				'Auth',
+				Symbol.for('amplify_default'),
+			);
+
+			expect(crossTabListener).not.toHaveBeenCalled();
+			expect(sameTabListener).toHaveBeenCalled();
+		});
+
+		it('should call crossTab listeners on crossTab events', () => {
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: {
+						username: 'foo',
+						userId: '123',
+					},
+				},
+				'Auth',
+				Symbol.for('amplify_default'),
+				true,
+			);
+
+			expect(crossTabListener).toHaveBeenCalled();
+			expect(sameTabListener).not.toHaveBeenCalled();
+		});
+
+		it('should not allow crossTab dispatch in other channels', () => {
+			Hub.dispatch(
+				// this looks weird but is only used to mute TS.
+				// becase the API can be called this way.
+				// and we want to check the logic, not the types
+				'ui' as 'auth',
+				{
+					event: 'tokenRefresh',
+					message: 'whooza',
+				},
+				'Auth',
+				Symbol.for('amplify_default'),
+				true,
+			);
+
+			expect(uiCrossTabListener).not.toHaveBeenCalled();
+		});
+	});
 });
