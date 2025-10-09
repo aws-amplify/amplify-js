@@ -41,6 +41,7 @@ import {
 	getTokenForCustomAuth,
 	getUserGroupsFromToken,
 	predicateToGraphQLFilter,
+	processSubscriptionVariables,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
@@ -75,6 +76,12 @@ class SubscriptionProcessor {
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
 
+	// Cache for subscription variables to avoid repeated function calls
+	private variablesCache = new WeakMap<
+		SchemaModel,
+		Map<TransformerMutationType, Record<string, any> | null>
+	>();
+
 	private dataObserver!: Observer<any>;
 
 	private runningProcesses = new BackgroundProcessManager();
@@ -91,6 +98,7 @@ class SubscriptionProcessor {
 		private readonly amplifyContext: AmplifyContext = {
 			InternalAPI,
 		},
+		private readonly datastoreConfig?: Record<string, any>,
 	) {}
 
 	private buildSubscription(
@@ -120,6 +128,16 @@ class SubscriptionProcessor {
 				authMode,
 			) || {};
 
+		// Get custom subscription variables from DataStore config
+		const customVariables = this.datastoreConfig?.subscriptionVariables
+			? processSubscriptionVariables(
+					model,
+					transformerMutationType,
+					this.datastoreConfig.subscriptionVariables[model.name],
+					this.variablesCache,
+				)
+			: undefined;
+
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
 			namespace,
 			model,
@@ -127,6 +145,7 @@ class SubscriptionProcessor {
 			isOwner,
 			ownerField!,
 			filterArg,
+			customVariables,
 		);
 
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
@@ -368,6 +387,68 @@ class SubscriptionProcessor {
 											category: Category.DataStore,
 											action: DataStoreAction.Subscribe,
 										};
+
+										// Add custom subscription variables from DataStore config
+										const customVars = this.datastoreConfig
+											?.subscriptionVariables
+											? processSubscriptionVariables(
+													modelDefinition,
+													operation,
+													this.datastoreConfig.subscriptionVariables[
+														modelDefinition.name
+													],
+													this.variablesCache,
+												)
+											: undefined;
+
+										if (customVars) {
+											// Check for reserved keys that would conflict
+											const reservedKeys = [
+												'filter',
+												'owner',
+												'limit',
+												'nextToken',
+												'sortDirection',
+											];
+
+											const safeVars: Record<string, any> = {};
+											let hasConflicts = false;
+
+											// Safe iteration that handles Object.create(null)
+											try {
+												for (const [key, value] of Object.entries(customVars)) {
+													if (reservedKeys.includes(key)) {
+														hasConflicts = true;
+													} else {
+														safeVars[key] = value;
+													}
+												}
+											} catch (entriesError) {
+												// Fallback for objects without prototype
+												for (const key in customVars) {
+													if (
+														Object.prototype.hasOwnProperty.call(
+															customVars,
+															key,
+														)
+													) {
+														if (reservedKeys.includes(key)) {
+															hasConflicts = true;
+														} else {
+															safeVars[key] = customVars[key];
+														}
+													}
+												}
+											}
+
+											if (hasConflicts) {
+												logger.warn(
+													`subscriptionVariables for ${modelDefinition.name} contains reserved keys that were filtered out`,
+												);
+											}
+
+											Object.assign(variables, safeVars);
+										}
 
 										if (addFilter && predicatesGroup) {
 											(variables as any).filter =
@@ -657,6 +738,8 @@ class SubscriptionProcessor {
 	public async stop() {
 		await this.runningProcesses.close();
 		await this.runningProcesses.open();
+		// Clear cache on stop
+		this.variablesCache = new WeakMap();
 	}
 
 	private passesPredicateValidation(
