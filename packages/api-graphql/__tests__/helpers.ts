@@ -308,7 +308,7 @@ class FakeWebSocket implements WebSocket {
 	url!: string;
 	close(code?: number, reason?: string): void {
 		const closeResolver = this.closeResolverFcn();
-		if (closeResolver) closeResolver(Promise.resolve(undefined));
+		if (closeResolver) closeResolver(undefined as any);
 
 		try {
 			this.onclose(new CloseEvent('', {}));
