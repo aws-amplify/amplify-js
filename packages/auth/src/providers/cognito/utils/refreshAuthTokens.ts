@@ -14,15 +14,18 @@ import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 import { createGetTokensFromRefreshTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { ClientMetadata } from '../types';
 
 const refreshAuthTokensFunction: TokenRefresher = async ({
 	tokens,
 	authConfig,
 	username,
+	clientMetadata,
 }: {
 	tokens: CognitoAuthTokens;
 	authConfig?: AuthConfig;
 	username: string;
+	clientMetadata?: ClientMetadata;
 }): Promise<CognitoAuthTokens> => {
 	assertTokenProviderConfig(authConfig?.Cognito);
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig.Cognito;
@@ -41,6 +44,7 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 			ClientId: userPoolClientId,
 			RefreshToken: tokens.refreshToken,
 			DeviceKey: tokens.deviceMetadata?.deviceKey,
+			ClientMetadata: clientMetadata,
 		},
 	);
 
