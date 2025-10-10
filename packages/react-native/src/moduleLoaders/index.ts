@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+export { loadAmplifyRtnPasskeys } from './loadAmplifyRtnPasskeys';
 export { loadAmplifyPushNotification } from './loadAmplifyPushNotification';
 export { loadAmplifyWebBrowser } from './loadAmplifyWebBrowser';
 export { loadAsyncStorage } from './loadAsyncStorage';

@@ -20,3 +20,6 @@
   working_directory: amplify-js-samples-staging/samples/react-native/auth/HosteduiApp
   timeout_minutes: 120
   host_signout_page: true
+- test_name: 'integ_rn_ios_passkeys'
+  working_directory: amplify-js-samples-staging/samples/react-native/auth/Passkeys
+  timeout_minutes: 120

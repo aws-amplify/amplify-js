@@ -528,6 +528,13 @@ tests:
     sample_name: [sign-in-with-oauth]
     spec: sign-out-oidc-provider
     browser: [chrome]
+  - test_name: integ_next_auth_token_revocation
+    desc: 'Token Revocation'
+    framework: next
+    category: auth
+    sample_name: [auth-rsc]
+    spec: token-revocation
+    browser: [chrome]
 
   # AUTH GEN2
   - test_name: integ_react_javascript_authentication_gen2
@@ -622,6 +629,7 @@ tests:
     category: auth
     sample_name: [custom-auth]
     spec: custom-auth
+    retry_count: 15
     browser: *minimal_browser_list
   - test_name: integ_next_auth_sign_in_with_sms_mfa
     desc: 'Resumable sign in with SMS MFA flow'
@@ -629,6 +637,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: sign-in-resumable-mfa
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: resum-signin
@@ -837,6 +846,7 @@ tests:
     category: storage
     sample_name: [storage-gen2]
     spec: storage-gen2
+    retry_count: 10
     browser: *minimal_browser_list
   - test_name: integ_react_storage_internal
     desc: 'React Storage Gen2 Internal APIs'
@@ -844,6 +854,7 @@ tests:
     category: storage
     sample_name: [storage-gen2-internal]
     spec: storage-gen2-internal
+    retry_count: 10
     browser: *minimal_browser_list
   - test_name: integ_next_storage
     desc: 'Next Storage Auth'
@@ -851,6 +862,7 @@ tests:
     category: storage
     sample_name: [storage-auth]
     spec: storage-client-server
+    retry_count: 10
     browser: [chrome] # firefox issues with secure cookies in cypress, manual testing works fine
 
   # INAPPMESSAGING
@@ -913,6 +925,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-email
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-email
@@ -922,6 +935,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-req-phone
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-phone
@@ -931,6 +945,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-email
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-email
@@ -940,6 +955,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-opt-phone
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-phone
@@ -949,6 +965,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: mfa-setup
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup
@@ -958,6 +975,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/auto-sign-in
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-autosignin
@@ -985,6 +1003,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/sign-up
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-signup
@@ -994,6 +1013,7 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: passwordless/miscellaneous
+    retry_count: 15
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: pwl-misc
@@ -1014,6 +1034,8 @@ tests:
     category: auth
     sample_name: [mfa]
     spec: refresh-token-auth
+    retry_count: 15
+    timeout_minutes: 90
     browser: *minimal_browser_list
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: misc-tokenref

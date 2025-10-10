@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.89...@aws-amplify/datastore-storage-adapter@2.2.0) (2025-09-29)
+
+### Features
+
+- **datastore:** add 'in' and 'notIn' operators for multi-value filtering ([#14544](https://github.com/aws-amplify/amplify-js/issues/14544)) ([8399513](https://github.com/aws-amplify/amplify-js/commit/8399513f93f476f01b4ef84c853e87096d3eca4b))
+
+## [2.1.89](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.88...@aws-amplify/datastore-storage-adapter@2.1.89) (2025-09-11)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## [2.1.88](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.87...@aws-amplify/datastore-storage-adapter@2.1.88) (2025-08-06)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
 ## [2.1.87](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.86...@aws-amplify/datastore-storage-adapter@2.1.87) (2025-07-23)
 
 **Note:** Version bump only for package @aws-amplify/datastore-storage-adapter

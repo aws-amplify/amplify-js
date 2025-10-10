@@ -12,7 +12,10 @@ import {
 
 import '../utils/oauth/enableOAuthListener';
 import { cognitoHostedUIIdentityProviderMap } from '../types/models';
-import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
+import {
+	openAuthSession as _openAuthSession,
+	getAuthUserAgentValue,
+} from '../../../utils';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import {
@@ -25,6 +28,7 @@ import {
 } from '../utils/oauth';
 import { createOAuthError } from '../utils/oauth/createOAuthError';
 import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
+import { OpenAuthSession } from '../../../utils/types';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -66,6 +70,7 @@ export async function signInWithRedirect(
 			nonce: input?.options?.nonce,
 			prompt: input?.options?.prompt,
 		},
+		authSessionOpener: input?.options?.authSessionOpener,
 	});
 }
 
@@ -76,6 +81,7 @@ const oauthSignIn = async ({
 	customState,
 	preferPrivateSession,
 	options,
+	authSessionOpener,
 }: {
 	oauthConfig: OAuthConfig;
 	provider: string;
@@ -83,10 +89,12 @@ const oauthSignIn = async ({
 	customState?: string;
 	preferPrivateSession?: boolean;
 	options?: SignInWithRedirectInput['options'];
+	authSessionOpener?: OpenAuthSession;
 }) => {
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const { loginHint, lang, nonce, prompt } = options ?? {};
 	const randomState = generateState();
+	const openAuthSession = authSessionOpener || _openAuthSession;
 
 	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito
 	single-encodes/decodes url on first sign in and double-encodes/decodes url
@@ -105,28 +113,27 @@ const oauthSignIn = async ({
 	oAuthStore.storeOAuthState(state);
 	oAuthStore.storePKCE(value);
 
-	const queryString = Object.entries({
-		redirect_uri: redirectUri,
-		response_type: responseType,
-		client_id: clientId,
-		identity_provider: provider,
-		scope: scopes.join(' '),
-		// eslint-disable-next-line camelcase
-		...(loginHint && { login_hint: loginHint }),
-		...(lang && { lang }),
-		...(nonce && { nonce }),
-		...(prompt && { prompt: prompt.toLowerCase() }), // Cognito expects lowercase prompt values
-		state,
-		...(responseType === 'code' && {
-			code_challenge: toCodeChallenge(),
-			code_challenge_method: method,
-		}),
-	})
-		.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-		.join('&');
+	const params = new URLSearchParams([
+		['redirect_uri', redirectUri],
+		['response_type', responseType],
+		['client_id', clientId],
+		['identity_provider', provider],
+		['scope', scopes.join(' ')],
+	]);
 
-	// TODO(v6): use URL object instead
-	const oAuthUrl = `https://${domain}/oauth2/authorize?${queryString}`;
+	loginHint && params.append('login_hint', loginHint);
+	lang && params.append('lang', lang);
+	nonce && params.append('nonce', nonce);
+	prompt && params.append('prompt', prompt.toLowerCase());
+	params.append('state', state);
+	if (responseType === 'code') {
+		params.append('code_challenge', toCodeChallenge());
+		params.append('code_challenge_method', method);
+	}
+
+	// Using URL object is not supported in React Native as the `search` property is read-only
+	// See: https://github.com/facebook/react-native/blob/main/packages/react-native/Libraries/Blob/URL.js
+	const oAuthUrl = `https://${domain}/oauth2/authorize?${params.toString()}`;
 
 	// this will only take effect in the following scenarios:
 	// 1. the user cancels the OAuth flow on web via back button, and
@@ -141,6 +148,9 @@ const oauthSignIn = async ({
 	try {
 		if (type === 'error') {
 			throw createOAuthError(String(error));
+		}
+		if (type === 'canceled') {
+			throw createOAuthError(String(type));
 		}
 		if (type === 'success' && url) {
 			await completeOAuthFlow({
