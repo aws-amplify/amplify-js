@@ -13,7 +13,7 @@
 	"scripts": {
 		"prepare:ios": "cd example && npx pod-install",
 		"prepare:android": "echo 'no-op'",
-		"test": "echo 'no-op'",
+		"test": "jest",
 		"test:ios": "echo 'no-op'",
 		"test:android": "cd ./example/android && ./gradlew test -i",
 		"build-with-test": "npm run clean && npm test && tsc",
