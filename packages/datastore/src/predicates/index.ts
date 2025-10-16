@@ -67,6 +67,8 @@ export const comparisonKeys = new Set([
 	'notContains',
 	'beginsWith',
 	'between',
+	'in',
+	'notIn',
 ]);
 
 /**

@@ -150,52 +150,55 @@ export function modelCreateTableStatement(
 	// implicitly defined auth fields, e.g., `owner`, `groupsField`, etc.
 	const implicitAuthFields = implicitAuthFieldsForModel(model);
 
-	let fields = Object.values(model.fields).reduce((acc, field: ModelField) => {
-		if (isGraphQLScalarType(field.type)) {
-			if (field.name === 'id') {
-				return [...acc, '"id" PRIMARY KEY NOT NULL'];
+	let fields: string[] = Object.values(model.fields).reduce<string[]>(
+		(acc, field: ModelField) => {
+			if (isGraphQLScalarType(field.type)) {
+				if (field.name === 'id') {
+					return [...acc, '"id" PRIMARY KEY NOT NULL'];
+				}
+
+				let columnParam = `"${field.name}" ${getSQLiteType(field.type)}`;
+
+				if (field.isRequired) {
+					columnParam += ' NOT NULL';
+				}
+
+				return [...acc, `${columnParam}`];
 			}
 
-			let columnParam = `"${field.name}" ${getSQLiteType(field.type)}`;
+			if (isModelFieldType(field.type)) {
+				let columnParam = `"${field.name}" TEXT`;
+
+				// add targetName as well as field name for BELONGS_TO relations
+				if (isTargetNameAssociation(field.association)) {
+					// check if this field has been explicitly defined in the model
+					const fkDefinedInModel = Object.values(model.fields).find(
+						(f: ModelField) => f.name === field?.association?.targetName,
+					);
+
+					// if the FK is not explicitly defined in the model, we have to add it here
+					if (!fkDefinedInModel) {
+						const required = field.isRequired ? ' NOT NULL' : '';
+						columnParam += `, "${field.association.targetName}" TEXT${required}`;
+					}
+				}
+
+				// ignore isRequired param for model fields, since they will not contain
+				// the related data locally
+				return [...acc, `${columnParam}`];
+			}
+
+			// default to TEXT
+			let columnParam = `"${field.name}" TEXT`;
 
 			if (field.isRequired) {
 				columnParam += ' NOT NULL';
 			}
 
 			return [...acc, `${columnParam}`];
-		}
-
-		if (isModelFieldType(field.type)) {
-			let columnParam = `"${field.name}" TEXT`;
-
-			// add targetName as well as field name for BELONGS_TO relations
-			if (isTargetNameAssociation(field.association)) {
-				// check if this field has been explicitly defined in the model
-				const fkDefinedInModel = Object.values(model.fields).find(
-					(f: ModelField) => f.name === field?.association?.targetName,
-				);
-
-				// if the FK is not explicitly defined in the model, we have to add it here
-				if (!fkDefinedInModel) {
-					const required = field.isRequired ? ' NOT NULL' : '';
-					columnParam += `, "${field.association.targetName}" TEXT${required}`;
-				}
-			}
-
-			// ignore isRequired param for model fields, since they will not contain
-			// the related data locally
-			return [...acc, `${columnParam}`];
-		}
-
-		// default to TEXT
-		let columnParam = `"${field.name}" TEXT`;
-
-		if (field.isRequired) {
-			columnParam += ' NOT NULL';
-		}
-
-		return [...acc, `${columnParam}`];
-	}, [] as string[]);
+		},
+		[] as string[],
+	);
 
 	implicitAuthFields.forEach((authField: string) => {
 		fields.push(`${authField} TEXT`);
@@ -271,6 +274,11 @@ const logicalOperatorMap = {
 	between: 'BETWEEN',
 };
 
+const arrayOperatorMap = {
+	in: 'IN',
+	notIn: 'NOT IN',
+};
+
 /**
  * If the given (operator, operand) indicate the need for a special `NULL` comparison,
  * that `WHERE` clause condition will be returned. If not special `NULL` handling is
@@ -295,6 +303,22 @@ function buildSpecialNullComparison(field, operator, operand) {
 	return null;
 }
 
+/**
+ * Builds a special SQL clause that always evaluates to true or false.
+ * Used for edge cases like empty arrays in 'in'/'notIn' operators.
+ *
+ * @param operator The operator ('in' or 'notIn')
+ * @returns A ParameterizedStatement that always evaluates to true or false
+ */
+function buildSpecialAlwaysStatement(
+	operator: 'in' | 'notIn',
+): ParameterizedStatement {
+	// Empty array: nothing can be IN or NOT IN an empty set
+	// For 'in': always false (nothing matches)
+	// For 'notIn': always true (everything doesn't match)
+	return operator === 'in' ? ['1 = 0', []] : ['1 = 1', []];
+}
+
 export const whereConditionFromPredicateObject = ({
 	field,
 	operator,
@@ -303,7 +327,8 @@ export const whereConditionFromPredicateObject = ({
 	field: string;
 	operator:
 		| keyof typeof logicalOperatorMap
-		| keyof typeof comparisonOperatorMap;
+		| keyof typeof comparisonOperatorMap
+		| keyof typeof arrayOperatorMap;
 	operand: any;
 }): ParameterizedStatement => {
 	const specialNullClause = buildSpecialNullComparison(
@@ -318,6 +343,23 @@ export const whereConditionFromPredicateObject = ({
 	const comparisonOperator = comparisonOperatorMap[operator];
 	if (comparisonOperator) {
 		return [`"${field}" ${comparisonOperator} ?`, [operand]];
+	}
+
+	// Handle array operators ('in' and 'notIn')
+	const arrayOperator = arrayOperatorMap[operator];
+	if (arrayOperator) {
+		if (!Array.isArray(operand)) {
+			throw new Error(`Operand for ${operator} must be an array`);
+		}
+		if (operand.length === 0) {
+			return buildSpecialAlwaysStatement(operator as 'in' | 'notIn');
+		}
+
+		// Prepare values for SQL (handle complex types)
+		const preparedValues = operand.map(prepareValueForDML);
+		const placeholders = preparedValues.map(() => '?').join(', ');
+
+		return [`"${field}" ${arrayOperator} (${placeholders})`, preparedValues];
 	}
 
 	const logicalOperatorKey = operator as keyof typeof logicalOperatorMap;
@@ -352,6 +394,9 @@ export const whereConditionFromPredicateObject = ({
 
 		return statement;
 	}
+
+	// Incorrect WHERE clause can result in data loss
+	throw new Error('Cannot map predicate to a valid WHERE clause');
 };
 
 export function whereClauseFromPredicate<T extends PersistentModel>(
