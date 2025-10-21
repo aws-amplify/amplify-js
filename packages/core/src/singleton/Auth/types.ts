@@ -4,6 +4,16 @@
 import { StrictUnion } from '../../types';
 import { AtLeastOne } from '../types';
 
+/**
+ * Arbitrary key/value pairs that may be passed as part of certain Cognito requests
+ */
+export type ClientMetadata = Record<string, string>;
+
+/**
+ * Function type for providing client metadata for Cognito operations
+ */
+export type ClientMetadataProvider = () => Promise<ClientMetadata>;
+
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/safe-json-parse.ts
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/jwt-model.ts
 interface JwtPayloadStandardFields {
@@ -66,6 +76,7 @@ export interface TokenProvider {
 
 export interface FetchAuthSessionOptions {
 	forceRefresh?: boolean;
+	clientMetadata?: ClientMetadata;
 }
 
 export interface AuthTokens {
