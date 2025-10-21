@@ -181,6 +181,11 @@ export type GetUrlOptions = CommonOptions & {
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
 	 */
 	contentType?: string;
+	/**
+	 * The cache-control header value of the file when downloading it.
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+	 */
+	cacheControl?: string;
 };
 
 /** @deprecated Use {@link GetUrlWithPathOptions} instead. */
@@ -192,7 +197,13 @@ export type GetUrlWithPathOptions = GetUrlOptions;
  */
 export type DownloadDataOptions = CommonOptions &
 	TransferOptions &
-	BytesRangeOptions;
+	BytesRangeOptions & {
+		/**
+		 * The cache-control header value of the file when downloading it.
+		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+		 */
+		cacheControl?: string;
+	};
 
 /** @deprecated Use {@link DownloadDataWithPathOptions} instead. */
 export type DownloadDataWithKeyOptions = ReadOptions & DownloadDataOptions;
@@ -236,6 +247,11 @@ export type UploadDataOptions = CommonOptions &
 		 * @default undefined
 		 */
 		checksumAlgorithm?: UploadDataChecksumAlgorithm;
+		/**
+		 * The cache-control header value of the file when downloading it.
+		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+		 */
+		cacheControl?: string;
 	};
 
 /** @deprecated Use {@link UploadDataWithPathOptions} instead. */

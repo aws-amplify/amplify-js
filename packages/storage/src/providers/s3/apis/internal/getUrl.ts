@@ -82,6 +82,7 @@ export const getUrl = async (
 				...(getUrlOptions?.contentType && {
 					ResponseContentType: getUrlOptions.contentType,
 				}),
+				ResponseCacheControl: getUrlOptions?.cacheControl,
 				ExpectedBucketOwner: getUrlOptions?.expectedBucketOwner,
 			},
 		),

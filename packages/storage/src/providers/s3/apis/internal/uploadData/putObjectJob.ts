@@ -69,6 +69,7 @@ export const putObjectJob =
 			checksumAlgorithm,
 			onProgress,
 			expectedBucketOwner,
+			cacheControl,
 		} = uploadDataOptions ?? {};
 
 		const checksumCRC32 =
@@ -96,6 +97,7 @@ export const putObjectJob =
 				ContentType: contentType,
 				ContentDisposition: constructContentDisposition(contentDisposition),
 				ContentEncoding: contentEncoding,
+				CacheControl: cacheControl,
 				Metadata: metadata,
 				ContentMD5: contentMD5,
 				ChecksumCRC32: checksumCRC32,
