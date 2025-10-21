@@ -617,5 +617,83 @@ describe('public APIs', () => {
 				expect(result).toEqual({ retryable: false });
 			});
 		});
+
+		describe('defaultAuthMode option', () => {
+			it('should skip credential resolution when defaultAuthMode is "none"', async () => {
+				mockFetchAuthSession.mockClear();
+
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/public',
+					options: {
+						defaultAuthMode: 'none',
+					},
+				}).response;
+
+				expect(mockFetchAuthSession).not.toHaveBeenCalled();
+				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
+				expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
+			});
+
+			it('should resolve credentials when defaultAuthMode is "iam"', async () => {
+				mockFetchAuthSession.mockResolvedValue({
+					credentials: {
+						accessKeyId: 'test-key',
+						secretAccessKey: 'test-secret',
+					},
+				});
+
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/private',
+					options: {
+						defaultAuthMode: 'iam',
+					},
+				}).response;
+
+				expect(mockFetchAuthSession).toHaveBeenCalled();
+				expect(mockAuthenticatedHandler).toHaveBeenCalled();
+			});
+
+			it('should maintain default behavior when no defaultAuthMode specified', async () => {
+				mockFetchAuthSession.mockResolvedValue({
+					credentials: null,
+				});
+
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/endpoint',
+				}).response;
+
+				expect(mockFetchAuthSession).toHaveBeenCalled();
+				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
+			});
+
+			it('should use global defaultAuthMode configuration when no local defaultAuthMode is specified', async () => {
+				const mockAmplifyWithGlobalConfig = {
+					...mockAmplifyInstance,
+					libraryOptions: {
+						...mockAmplifyInstance.libraryOptions,
+						API: {
+							...mockAmplifyInstance.libraryOptions?.API,
+							REST: {
+								defaultAuthMode: 'none' as const,
+							},
+						},
+					},
+				} as any as AmplifyClassV6;
+
+				mockFetchAuthSession.mockClear();
+
+				await fn(mockAmplifyWithGlobalConfig, {
+					apiName: 'restApi1',
+					path: '/public',
+				}).response;
+
+				expect(mockFetchAuthSession).not.toHaveBeenCalled();
+				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
+				expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
+			});
+		});
 	});
 });
