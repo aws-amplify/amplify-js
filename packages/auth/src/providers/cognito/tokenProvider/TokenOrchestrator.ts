@@ -9,7 +9,6 @@ import {
 } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
-	AmplifyErrorCode,
 	assertTokenProviderConfig,
 	isBrowser,
 	isTokenExpired,
@@ -170,10 +169,15 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	private handleErrors(err: unknown) {
 		assertServiceError(err);
-		if (err.name !== AmplifyErrorCode.NetworkError) {
-			// TODO(v6): Check errors on client
+
+		// Only clear tokens for definitive authentication failures
+		// Do NOT clear tokens for transient errors like service issues, rate limits, etc.
+		const shouldClearTokens = this.isAuthenticationError(err);
+
+		if (shouldClearTokens) {
 			this.clearTokens();
 		}
+
 		Hub.dispatch(
 			'auth',
 			{
@@ -188,6 +192,22 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			return null;
 		}
 		throw err;
+	}
+
+	private isAuthenticationError(err: any): boolean {
+		// Only clear tokens for errors that definitively indicate the tokens are invalid
+		// and re-authentication is required. All other errors (service errors, rate limits, etc.)
+		// should preserve the tokens to allow for retry.
+		// See: https://github.com/aws-amplify/amplify-js/issues/14534
+		const authErrorNames = [
+			'NotAuthorizedException', // Refresh token is expired or invalid
+			'TokenRevokedException', // Token was revoked by admin
+			'UserNotFoundException', // User no longer exists
+			'PasswordResetRequiredException', // User must reset password
+			'UserNotConfirmedException', // User account is not confirmed
+		];
+
+		return authErrorNames.some(errorName => err.name?.startsWith(errorName));
 	}
 
 	async setTokens({ tokens }: { tokens: CognitoAuthTokens }) {
