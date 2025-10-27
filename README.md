@@ -52,6 +52,14 @@ AWS Amplify is available as `aws-amplify` on [npm](https://www.npmjs.com/package
 
 To get started pick your platform from our [**Getting Started** home page](https://docs.amplify.aws/javascript/)
 
+## Version Support
+AWS Amplify JavaScript library v4 and below will end support on **April 13, 2026**, as documented in our [AWS Amplify JavaScript library version support calendar](https://github.com/aws-amplify/amplify-js/issues/14580).
+
+Effective immediately, the AWS Amplify JavaScript library v4 and below will enter **Maintenance Mode** until April 13, 2026 after which it will receive no more updates. While in Maintenance Mode, the libraries will only receive updates for **critical bug fixes and security vulnerabilities**. Refer to [Amplify Documentation](https://docs.amplify.aws/reference/maintenance-policy) for more information on the maintenance policy.
+
+If you are using AWS Amplify JavaScript library v4 and below, we strongly recommend upgrading to the AWS Amplify JavaScript Library v6 before April 13, 2026.
+
+
 ## Notice:
 
 ### Amplify 6.x.x has breaking changes. Please see the breaking changes on our [migration guide](https://docs.amplify.aws/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/)
