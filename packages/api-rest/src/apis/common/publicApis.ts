@@ -33,49 +33,63 @@ const publicHandler = (
 	amplify: AmplifyClassV6,
 	options: ApiInput<RestApiOptionsBase>,
 	method: string,
-) =>
-	createCancellableOperation(async abortSignal => {
-		const { apiName, options: apiOptions = {}, path: apiPath } = options;
-		const url = resolveApiUrl(
-			amplify,
-			apiName,
-			apiPath,
-			apiOptions?.queryParams,
-		);
-		const libraryConfigHeaders =
-			await amplify.libraryOptions?.API?.REST?.headers?.({
+) => {
+	const { apiName, options: apiOptions = {}, path: apiPath } = options;
+	const libraryConfigTimeout = amplify.libraryOptions?.API?.REST?.timeout?.({
+		apiName,
+		method,
+	});
+	const timeout = apiOptions?.timeout || libraryConfigTimeout || undefined;
+	const publicApisAbortController = new AbortController();
+	const abortSignal = publicApisAbortController.signal;
+
+	return createCancellableOperation(
+		async () => {
+			const url = resolveApiUrl(
+				amplify,
+				apiName,
+				apiPath,
+				apiOptions?.queryParams,
+			);
+			const libraryConfigHeaders =
+				await amplify.libraryOptions?.API?.REST?.headers?.({
+					apiName,
+				});
+			const { headers: invocationHeaders = {} } = apiOptions;
+			const headers = {
+				// custom headers from invocation options should precede library options
+				...libraryConfigHeaders,
+				...invocationHeaders,
+			};
+			const signingServiceInfo = parseSigningInfo(url, {
+				amplify,
 				apiName,
 			});
-		const { headers: invocationHeaders = {} } = apiOptions;
-		const headers = {
-			// custom headers from invocation options should precede library options
-			...libraryConfigHeaders,
-			...invocationHeaders,
-		};
-		const signingServiceInfo = parseSigningInfo(url, {
-			amplify,
-			apiName,
-		});
-		logger.debug(
-			method,
-			url,
-			headers,
-			`IAM signing options: ${JSON.stringify(signingServiceInfo)}`,
-		);
-
-		return transferHandler(
-			amplify,
-			{
-				...apiOptions,
-				url,
+			logger.debug(
 				method,
+				url,
 				headers,
-				abortSignal,
-			},
-			isIamAuthApplicableForRest,
-			signingServiceInfo,
-		);
-	});
+				`IAM signing options: ${JSON.stringify(signingServiceInfo)}`,
+			);
+
+			return transferHandler(
+				amplify,
+				{
+					...apiOptions,
+					url,
+					method,
+					headers,
+					abortSignal,
+				},
+				isIamAuthApplicableForRest,
+				signingServiceInfo,
+			);
+		},
+		publicApisAbortController,
+		'public', // operation Type
+		timeout,
+	);
+};
 
 export const get = (amplify: AmplifyClassV6, input: GetInput): GetOperation =>
 	publicHandler(amplify, input, 'GET');
