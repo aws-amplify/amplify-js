@@ -20,6 +20,12 @@ jobs:
           path: amplify-js
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
+      - name: Clear dependency cache and reinstall
+        working-directory: ./amplify-js
+        run: |
+          rm -rf node_modules
+          yarn install
+        shell: bash
       - name: Run tests
         working-directory: ./amplify-js
         env:
