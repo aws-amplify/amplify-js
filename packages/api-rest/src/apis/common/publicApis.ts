@@ -80,7 +80,7 @@ const publicHandler = (
 					method,
 					headers,
 					abortSignal,
-          defaultAuthMode: apiOptions.defaultAuthMode,
+					defaultAuthMode: apiOptions.defaultAuthMode,
 				},
 				isIamAuthApplicableForRest,
 				signingServiceInfo,
