@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.15.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.6...aws-amplify@6.15.7) (2025-09-29)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.15.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.5...aws-amplify@6.15.6) (2025-09-11)
+
+### Bug Fixes
+
+- **storage:** add correct contentType ([#14536](https://github.com/aws-amplify/amplify-js/issues/14536)) ([0f5e997](https://github.com/aws-amplify/amplify-js/commit/0f5e997fa9a641a459b8fd3392e0f6fc4de5ad94))
+
 ## [6.15.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.4...aws-amplify@6.15.5) (2025-08-06)
 
 **Note:** Version bump only for package aws-amplify

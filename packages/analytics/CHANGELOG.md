@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.0.88](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@7.0.87...@aws-amplify/analytics@7.0.88) (2025-09-29)
+
+### Bug Fixes
+
+- use options instead of this.options in PageViewTracker constructor ([#14549](https://github.com/aws-amplify/amplify-js/issues/14549)) ([3ea1c8e](https://github.com/aws-amplify/amplify-js/commit/3ea1c8e75ce9b03be24803184d912f8f2dee87ad))
+
+## [7.0.87](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@7.0.86...@aws-amplify/analytics@7.0.87) (2025-09-11)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
 ## [7.0.86](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@7.0.85...@aws-amplify/analytics@7.0.86) (2025-08-06)
 
 **Note:** Version bump only for package @aws-amplify/analytics

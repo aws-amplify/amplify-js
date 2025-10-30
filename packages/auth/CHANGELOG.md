@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.16.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.15.1...@aws-amplify/auth@6.16.0) (2025-09-29)
+
+### Bug Fixes
+
+- implemented cancel scenario in oauthSignIn for signInWithRedirect ([#14434](https://github.com/aws-amplify/amplify-js/issues/14434)) ([f8f2904](https://github.com/aws-amplify/amplify-js/commit/f8f29048ce806e6ae17d3493432fdae29cc4c2c9))
+
+### Features
+
+- **rtn-passkeys:** add rtn passkeys ([#14489](https://github.com/aws-amplify/amplify-js/issues/14489)) ([ac06885](https://github.com/aws-amplify/amplify-js/commit/ac06885a8f2a13365fe1ff26bfd54891f9ad4a45)), closes [#14390](https://github.com/aws-amplify/amplify-js/issues/14390) [#14391](https://github.com/aws-amplify/amplify-js/issues/14391)
+
+## [6.15.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.15.0...@aws-amplify/auth@6.15.1) (2025-09-11)
+
+### Bug Fixes
+
+- device attributes type ([#14520](https://github.com/aws-amplify/amplify-js/issues/14520)) ([4c872d1](https://github.com/aws-amplify/amplify-js/commit/4c872d1b4c68ffdb61aafb8ff210f9d2c73b4368))
+- replace URL object with string concatenation for React Native compatibility ([#14516](https://github.com/aws-amplify/amplify-js/issues/14516)) ([5089bef](https://github.com/aws-amplify/amplify-js/commit/5089bef67dec9e4a7072538c5c4b5b69e4452946))
+
 # [6.15.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.14.0...@aws-amplify/auth@6.15.0) (2025-08-06)
 
 ### Features

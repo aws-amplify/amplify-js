@@ -46,6 +46,10 @@ export interface RestApiOptionsBase {
 	 */
 	retryStrategy?: RetryStrategy;
 	defaultAuthMode?: RESTAuthMode;
+	/**
+	 * custom timeout in milliseconds.
+	 */
+	timeout?: number;
 }
 
 type Headers = Record<string, string>;

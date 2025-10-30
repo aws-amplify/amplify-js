@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import {
 	PasskeyCreateOptionsJson,
 	PasskeyCreateResultJson,
@@ -423,3 +426,7 @@ export const mockUserCredentials = [
 		CreatedAt: 1582939425,
 	},
 ];
+
+export class MockNativeError extends Error {
+	code?: string;
+}

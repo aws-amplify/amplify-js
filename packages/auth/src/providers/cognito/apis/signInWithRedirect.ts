@@ -51,17 +51,21 @@ export async function signInWithRedirect(
 	}
 
 	let provider = 'COGNITO'; // Default
+	let idpIdentifier: string | undefined;
 
 	if (typeof input?.provider === 'string') {
 		provider = cognitoHostedUIIdentityProviderMap[input.provider];
 	} else if (input?.provider?.custom) {
 		provider = input.provider.custom;
+	} else if (input?.provider?.idpIdentifier) {
+		({ idpIdentifier } = input.provider);
 	}
 
 	return oauthSignIn({
 		oauthConfig: authConfig.loginWith.oauth,
 		clientId: authConfig.userPoolClientId,
 		provider,
+		idpIdentifier,
 		customState: input?.customState,
 		preferPrivateSession: input?.options?.preferPrivateSession,
 		options: {
@@ -77,6 +81,7 @@ export async function signInWithRedirect(
 const oauthSignIn = async ({
 	oauthConfig,
 	provider,
+	idpIdentifier,
 	clientId,
 	customState,
 	preferPrivateSession,
@@ -85,6 +90,7 @@ const oauthSignIn = async ({
 }: {
 	oauthConfig: OAuthConfig;
 	provider: string;
+	idpIdentifier?: string;
 	clientId: string;
 	customState?: string;
 	preferPrivateSession?: boolean;
@@ -117,9 +123,16 @@ const oauthSignIn = async ({
 		['redirect_uri', redirectUri],
 		['response_type', responseType],
 		['client_id', clientId],
-		['identity_provider', provider],
-		['scope', scopes.join(' ')],
 	]);
+
+	// Add either identity_provider or idp_identifier, but not both
+	if (idpIdentifier) {
+		params.append('idp_identifier', idpIdentifier);
+	} else {
+		params.append('identity_provider', provider);
+	}
+
+	params.append('scope', scopes.join(' '));
 
 	loginHint && params.append('login_hint', loginHint);
 	lang && params.append('lang', lang);
@@ -148,6 +161,9 @@ const oauthSignIn = async ({
 	try {
 		if (type === 'error') {
 			throw createOAuthError(String(error));
+		}
+		if (type === 'canceled') {
+			throw createOAuthError(String(type));
 		}
 		if (type === 'success' && url) {
 			await completeOAuthFlow({
