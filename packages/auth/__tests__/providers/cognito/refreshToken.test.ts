@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { refreshAuthTokens } from '../../../src/providers/cognito/utils/refreshAuthTokens';
@@ -60,6 +63,7 @@ describe('refreshToken', () => {
 		});
 
 		it('should refresh token', async () => {
+			const clientMetadata = { 'app-version': '1.0.0' };
 			const expectedOutput = {
 				accessToken: decodeJWT(mockAccessToken),
 				idToken: decodeJWT(mockAccessToken),
@@ -82,6 +86,7 @@ describe('refreshToken', () => {
 					},
 				},
 				username: mockedUsername,
+				clientMetadata,
 			});
 
 			// stringify and re-parse for JWT equality
@@ -93,6 +98,7 @@ describe('refreshToken', () => {
 				expect.objectContaining({
 					ClientId: 'aaaaaaaaaaaa',
 					RefreshToken: mockedRefreshToken,
+					ClientMetadata: clientMetadata,
 				}),
 			);
 		});
