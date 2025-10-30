@@ -19,6 +19,7 @@ import {
 	logger,
 	parseRestApiServiceError,
 	parseSigningInfo,
+	resolveLibraryOptions,
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
 import { RestApiResponse, SigningServiceInfo } from '../../types';
@@ -77,18 +78,20 @@ export const transferHandler = async (
 		method,
 		body: resolvedBody,
 	};
+	const {
+		retryStrategy: libraryRetryStrategy,
+		defaultAuthMode: libraryDefaultAuthMode,
+	} = resolveLibraryOptions(amplify);
 	const baseOptions = {
 		retryDecider: getRetryDeciderFromStrategy(
-			retryStrategy ?? amplify?.libraryOptions?.API?.REST?.retryStrategy,
+			retryStrategy ?? libraryRetryStrategy,
 		),
 		computeDelay: jitteredBackoff,
 		withCrossDomainCredentials: withCredentials,
 		abortSignal,
 	};
 
-	const defaultAuthMode =
-		options.defaultAuthMode ??
-		amplify?.libraryOptions?.API?.REST?.defaultAuthMode;
+	const defaultAuthMode = options.defaultAuthMode ?? libraryDefaultAuthMode;
 
 	let credentials: AWSCredentials | null = null;
 	if (defaultAuthMode !== 'none') {
