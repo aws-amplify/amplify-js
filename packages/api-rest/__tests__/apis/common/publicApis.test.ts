@@ -694,6 +694,36 @@ describe('public APIs', () => {
 				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
 				expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 			});
+
+			it('should override global defaultAuthMode with local defaultAuthMode configuration', async () => {
+				const mockAmplifyWithGlobalConfig = {
+					...mockAmplifyInstance,
+					libraryOptions: {
+						...mockAmplifyInstance.libraryOptions,
+						API: {
+							...mockAmplifyInstance.libraryOptions?.API,
+							REST: {
+								defaultAuthMode: 'none' as const,
+							},
+						},
+					},
+				} as any as AmplifyClassV6;
+
+				mockFetchAuthSession.mockClear();
+				mockFetchAuthSession.mockResolvedValue({ credentials });
+
+				await fn(mockAmplifyWithGlobalConfig, {
+					apiName: 'restApi1',
+					path: '/private',
+					options: {
+						defaultAuthMode: 'iam',
+					},
+				}).response;
+
+				expect(mockFetchAuthSession).toHaveBeenCalled();
+				expect(mockAuthenticatedHandler).toHaveBeenCalled();
+				expect(mockUnauthenticatedHandler).not.toHaveBeenCalled();
+			});
 		});
 	});
 });
