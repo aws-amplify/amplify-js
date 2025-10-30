@@ -29,6 +29,7 @@ export interface LibraryAPIOptions {
 		 * Default auth mode for REST API calls when no explicit auth is provided.
 		 */
 		defaultAuthMode?: RESTAuthMode;
+		/**
 		 * custom timeout in milliseconds configurable for given REST service, or/and method.
 		 */
 		timeout?(options: { apiName: string; method: string }): number;
