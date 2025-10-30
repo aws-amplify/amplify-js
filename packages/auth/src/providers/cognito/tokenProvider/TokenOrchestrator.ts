@@ -3,6 +3,7 @@
 import {
 	AuthConfig,
 	AuthTokens,
+	ClientMetadataProvider,
 	CognitoUserPoolConfig,
 	FetchAuthSessionOptions,
 	Hub,
@@ -18,7 +19,7 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { oAuthStore } from '../utils/oauth/oAuthStore';
 import { addInflightPromise } from '../utils/oauth/inflightPromise';
-import { CognitoAuthSignInDetails } from '../types';
+import { ClientMetadata, CognitoAuthSignInDetails } from '../types';
 
 import {
 	AuthTokenOrchestrator,
@@ -31,6 +32,7 @@ import {
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
+	clientMetadataProvider?: ClientMetadataProvider;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
 	inflightPromise: Promise<void> | undefined;
@@ -93,6 +95,12 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		return this.tokenRefresher;
 	}
 
+	setClientMetadataProvider(
+		clientMetadataProvider: ClientMetadataProvider,
+	): void {
+		this.clientMetadataProvider = clientMetadataProvider;
+	}
+
 	async getTokens(
 		options?: FetchAuthSessionOptions,
 	): Promise<
@@ -129,6 +137,8 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			tokens = await this.refreshTokens({
 				tokens,
 				username,
+				clientMetadata:
+					options?.clientMetadata ?? (await this.clientMetadataProvider?.()),
 			});
 
 			if (tokens === null) {
@@ -146,9 +156,11 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private async refreshTokens({
 		tokens,
 		username,
+		clientMetadata,
 	}: {
 		tokens: CognitoAuthTokens;
 		username: string;
+		clientMetadata?: ClientMetadata;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
 			const { signInDetails } = tokens;
@@ -156,6 +168,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				tokens,
 				authConfig: this.authConfig,
 				username,
+				clientMetadata,
 			});
 			newTokens.signInDetails = signInDetails;
 			await this.setTokens({ tokens: newTokens });
