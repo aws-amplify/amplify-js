@@ -10,7 +10,6 @@ import {
 } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
-	AmplifyErrorCode,
 	assertTokenProviderConfig,
 	isBrowser,
 	isTokenExpired,
@@ -183,10 +182,21 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	private handleErrors(err: unknown) {
 		assertServiceError(err);
-		if (err.name !== AmplifyErrorCode.NetworkError) {
-			// TODO(v6): Check errors on client
+
+		// Only clear tokens for errors that definitively indicate invalid authentication
+		// This prevents random logouts from transient errors like rate limiting
+		const shouldClearTokens =
+			err.name === 'NotAuthorizedException' ||
+			err.name === 'TokenRevokedException' ||
+			err.name === 'UserNotFoundException' ||
+			err.name === 'PasswordResetRequiredException' ||
+			err.name === 'UserNotConfirmedException';
+
+		if (shouldClearTokens) {
+			// Only clear tokens for definitive auth failures
 			this.clearTokens();
 		}
+
 		Hub.dispatch(
 			'auth',
 			{
