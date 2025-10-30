@@ -29,10 +29,8 @@ export class CognitoUserPoolsTokenProvider
 		this.tokenOrchestrator.setTokenRefresher(refreshAuthTokens);
 	}
 
-	getTokens(
-		{ forceRefresh }: FetchAuthSessionOptions = { forceRefresh: false },
-	): Promise<AuthTokens | null> {
-		return this.tokenOrchestrator.getTokens({ forceRefresh });
+	getTokens(options: FetchAuthSessionOptions = {}): Promise<AuthTokens | null> {
+		return this.tokenOrchestrator.getTokens(options);
 	}
 
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void {
