@@ -218,6 +218,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			'UserNotFoundException', // User no longer exists
 			'PasswordResetRequiredException', // User must reset password
 			'UserNotConfirmedException', // User account is not confirmed
+			'RefreshTokenReuseException', // Refresh token invalidated by rotation
 		];
 
 		return authErrorNames.some(errorName => err?.name?.startsWith?.(errorName));

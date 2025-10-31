@@ -141,6 +141,20 @@ describe('tokenOrchestrator', () => {
 			expect(clearTokensSpy).toHaveBeenCalled();
 		});
 
+		it('calls clearTokens() for RefreshTokenReuseException', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: 'RefreshTokenReuseException',
+				message: 'Refresh token has been invalidated by rotation',
+			});
+
+			expect(() => {
+				(tokenOrchestrator as any).handleErrors(error);
+			}).toThrow(error);
+
+			expect(clearTokensSpy).toHaveBeenCalled();
+		});
+
 		it('calls clearTokens() for UserNotFoundException', () => {
 			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
 			const error = new AmplifyError({
