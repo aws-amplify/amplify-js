@@ -220,7 +220,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			'UserNotConfirmedException', // User account is not confirmed
 		];
 
-		return authErrorNames.some(errorName => err.name?.startsWith(errorName));
+		return authErrorNames.some(errorName => err?.name?.startsWith?.(errorName));
 	}
 
 	async setTokens({ tokens }: { tokens: CognitoAuthTokens }) {
