@@ -44,9 +44,30 @@ jobs:
           cd ios && pod install
         working-directory: ${{ inputs.working_directory }}
         shell: bash
-      - name: Start iOS simulator (background)
+      - name: Setup iOS Simulator
         run: |
-          xcrun simctl boot "iPhone 15" &
+          # Check if iPhone 15 device exists
+          if ! xcrun simctl list devices | grep -q "iPhone 15"; then
+            echo "iPhone 15 device not found, creating one..."
+            
+            # Get the latest available iOS runtime
+            RUNTIME=$(xcrun simctl list runtimes | grep iOS | tail -1 | awk '{print $NF}')
+            echo "Using runtime: $RUNTIME"
+            
+            # Create iPhone 15 device with available runtime
+            xcrun simctl create "iPhone 15" "com.apple.CoreSimulator.SimDeviceType.iPhone-15" "$RUNTIME" || \
+            xcrun simctl create "iPhone 15" "iPhone 15" "$RUNTIME" || \
+            echo "Could not create iPhone 15, will use available device"
+          fi
+          
+          # Boot iPhone 15 if it exists, otherwise use first available iPhone
+          if xcrun simctl list devices | grep -q "iPhone 15"; then
+            xcrun simctl boot "iPhone 15" &
+          else
+            DEVICE=$(xcrun simctl list devices available | grep "iPhone" | head -1 | sed 's/.*\(iPhone[^(]*\).*/\1/' | xargs)
+            echo "Using fallback device: $DEVICE"
+            xcrun simctl boot "$DEVICE" &
+          fi
         shell: bash
       - name: Start Metro Packager (background)
         run: |
