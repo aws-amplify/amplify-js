@@ -1,0 +1,15 @@
+name: Temporary - E2E Verification
+
+concurrency:
+  group: temp-e2e-test-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - fix/v5-e2e-testing
+
+jobs:
+  e2e:
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
