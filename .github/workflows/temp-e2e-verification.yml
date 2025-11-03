@@ -10,21 +10,6 @@ on:
       - fix/v5-e2e-testing
 
 jobs:
-  prebuild-ubuntu:
-    uses: ./.github/workflows/callable-prebuild-amplify-js.yml
-    with:
-      runs_on: ubuntu-latest
-  prebuild-macos:
-    uses: ./.github/workflows/callable-prebuild-amplify-js.yml
-    with:
-      runs_on: macos-latest
-  prebuild-samples-staging:
-    secrets: inherit
-    uses: ./.github/workflows/callable-prebuild-samples-staging.yml
   e2e:
-    needs:
-      - prebuild-macos
-      - prebuild-ubuntu
-      - prebuild-samples-staging
     secrets: inherit
-    uses: ./.github/workflows/callable-e2e-tests.yml
+    uses: ./.github/workflows/callable-release-verification.yml
