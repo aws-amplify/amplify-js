@@ -2,6 +2,11 @@ name: Release Verification Tests
 
 on: workflow_call
 
+env:
+  CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
+  CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
+  CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
+
 jobs:
   prebuild-ubuntu:
     uses: ./.github/workflows/callable-prebuild-amplify-js.yml
