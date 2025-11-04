@@ -8,18 +8,9 @@ concurrency:
 on:
   push:
     branches:
-      - v5-stable
+      - fix/v5-e2e-testing
 
 jobs:
   e2e:
     secrets: inherit
     uses: ./.github/workflows/callable-release-verification.yml
-  release:
-    needs:
-      - e2e
-    permissions:
-      contents: write
-    secrets: inherit
-    uses: ./.github/workflows/callable-npm-publish-lts-release.yml
-    with:
-      target: v5-stable # TODO Update this to support other LTS branches in the future
