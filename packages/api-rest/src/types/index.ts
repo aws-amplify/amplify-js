@@ -41,6 +41,10 @@ export interface RestApiOptionsBase {
 	 * @default ` { strategy: 'jittered-exponential-backoff' } `
 	 */
 	retryStrategy?: RetryStrategy;
+	/**
+	 * custom timeout in milliseconds.
+	 */
+	timeout?: number;
 }
 
 type Headers = Record<string, string>;
