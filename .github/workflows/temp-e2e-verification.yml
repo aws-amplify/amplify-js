@@ -1,5 +1,5 @@
 name: Temporary - E2E Verification
-# concurrency comment three two one firefox
+# concurrency comment three two one firefox fix
 concurrency:
   group: temp-e2e-test-${{ github.ref }}
   cancel-in-progress: true
