@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.13.3...@aws-amplify/core@6.14.0) (2025-11-06)
+
+### Features
+
+- **api-rest:** support timeout configuration for rest api. ([#14578](https://github.com/aws-amplify/amplify-js/issues/14578)) ([0cf2160](https://github.com/aws-amplify/amplify-js/commit/0cf2160930feb22dac6028b3fa7cb968467c9cfa))
+- **auth:** support clientmetadata for token refresh ([#14556](https://github.com/aws-amplify/amplify-js/issues/14556)) ([5bf5685](https://github.com/aws-amplify/amplify-js/commit/5bf5685e1876bbb16550678bda9cfa3953831685))
+
 ## [6.13.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.13.2...@aws-amplify/core@6.13.3) (2025-09-29)
 
 **Note:** Version bump only for package @aws-amplify/core

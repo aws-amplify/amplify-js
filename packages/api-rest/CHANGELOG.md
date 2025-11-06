@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.4.1...@aws-amplify/api-rest@4.5.0) (2025-11-06)
+
+### Features
+
+- **api-rest:** support timeout configuration for rest api. ([#14578](https://github.com/aws-amplify/amplify-js/issues/14578)) ([0cf2160](https://github.com/aws-amplify/amplify-js/commit/0cf2160930feb22dac6028b3fa7cb968467c9cfa))
+
 ## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.4.0...@aws-amplify/api-rest@4.4.1) (2025-09-29)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

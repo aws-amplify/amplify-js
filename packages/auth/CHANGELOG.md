@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.17.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.16.0...@aws-amplify/auth@6.17.0) (2025-11-06)
+
+### Bug Fixes
+
+- **auth:** prevent random logouts by fixing overly aggressive token clearing ([76dd23c](https://github.com/aws-amplify/amplify-js/commit/76dd23cb3ee05d77e72a4f2038ed3f41ec07f37f)), closes [#14534](https://github.com/aws-amplify/amplify-js/issues/14534)
+
+### Features
+
+- add support for idp_identifier query parameter when going through OAuth using signInWithRedirect function ([#14573](https://github.com/aws-amplify/amplify-js/issues/14573)) ([24ab070](https://github.com/aws-amplify/amplify-js/commit/24ab070f89f25f02fb271e9027b8cf1def19a47b))
+- **auth:** support clientmetadata for token refresh ([#14556](https://github.com/aws-amplify/amplify-js/issues/14556)) ([5bf5685](https://github.com/aws-amplify/amplify-js/commit/5bf5685e1876bbb16550678bda9cfa3953831685))
+
 # [6.16.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.15.1...@aws-amplify/auth@6.16.0) (2025-09-29)
 
 ### Bug Fixes
