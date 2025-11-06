@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.2.0...@aws-amplify/react-native@1.3.0) (2025-11-06)
+
+### Features
+
+- add react-native unit test coverage ([#14567](https://github.com/aws-amplify/amplify-js/issues/14567)) ([defd1d3](https://github.com/aws-amplify/amplify-js/commit/defd1d39b153d2b8494903ab8672ef9e8badd8cd))
+
 # [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.1.10...@aws-amplify/react-native@1.2.0) (2025-09-29)
 
 ### Features
