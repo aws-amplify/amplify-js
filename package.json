@@ -136,7 +136,7 @@
 		"webpack-cli": "^5.0.0"
 	},
 	"resolutions": {
-		"@react-native-community/cli": "^18.0.0",
+		"@react-native-community/cli": "^18.0.1",
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
