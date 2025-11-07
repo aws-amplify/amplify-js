@@ -23,7 +23,7 @@
 		"@babel/core": "^7.25.2",
 		"@babel/preset-env": "^7.25.3",
 		"@babel/runtime": "^7.25.0",
-		"@react-native-community/cli": "18.0.1",
+		"@react-native-community/cli": "19.1.2",
 		"@react-native-community/cli-platform-android": "18.0.0",
 		"@react-native-community/cli-platform-ios": "18.0.0",
 		"@react-native/babel-preset": "0.79.2",
