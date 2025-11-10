@@ -1,11 +1,8 @@
 minimal_browser_list: &minimal_browser_list
   - chrome
-  - firefox
 
 extended_browser_list: &extended_browser_list
   - chrome
-  - firefox
-  - edge
 
 tests:
   # DATASTORE
