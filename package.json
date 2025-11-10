@@ -58,6 +58,8 @@
 			"packages/rtn-web-browser",
 			"packages/react-native",
 			"packages/react-native/example",
+			"packages/rtn-passkeys",
+			"packages/rtn-passkeys/example",
 			"scripts/tsc-compliance-test"
 		],
 		"nohoist": [
@@ -82,7 +84,7 @@
 		"@babel/preset-react": "^7.0.0",
 		"@eslint/compat": "^1.2.0",
 		"@lerna/legacy-package-management": "^8.2.1",
-		"@rollup/plugin-commonjs": "^28.0.1",    
+		"@rollup/plugin-commonjs": "^28.0.1",
 		"@rollup/plugin-typescript": "^11.1.6",
 		"@size-limit/dual-publish": "^8.1.0",
 		"@size-limit/file": "^8.1.0",
@@ -134,17 +136,24 @@
 		"webpack-cli": "^5.0.0"
 	},
 	"resolutions": {
+		"@react-native-community/cli": "^18.0.1",
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
 		"nx": "16.7.0",
 		"xml2js": "0.5.0",
 		"tar": "6.2.1",
-		"**/cross-spawn": "7.0.5"
+		"**/cross-spawn": "7.0.5",
+		"**/brace-expansion": "1.1.12",
+		"**/on-headers": "1.1.0",
+		"**/form-data": "4.0.4",
+		"tmp": "^0.2.4"
 	},
 	"overrides": {
 		"tar": "6.2.1",
-		"cross-spawn": "7.0.5"
+		"cross-spawn": "7.0.5",
+		"brace-expansion": "1.1.12",
+		"tmp": "^0.2.4"
 	},
 	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

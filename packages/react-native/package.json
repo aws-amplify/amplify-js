@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/react-native",
-	"version": "1.1.10",
+	"version": "1.3.0",
 	"description": "React Native core module for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -11,8 +11,11 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "echo 'no-op'",
-		"test:android": "./android/gradlew test -p ./android",
+		"prepare:ios": "cd example && npx pod-install",
+		"prepare:android": "echo 'no-op'",
+		"test": "jest",
+		"test:ios": "echo 'no-op'",
+		"test:android": "cd ./example/android && ./gradlew test -i",
 		"build-with-test": "npm run clean && npm test && tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
@@ -29,12 +32,19 @@
 		"react-native-url-polyfill": "^2.0.0"
 	},
 	"peerDependencies": {
+		"@aws-amplify/rtn-passkeys": "^1.0.0",
 		"react-native": ">=0.70",
 		"react-native-get-random-values": ">=1.8.0"
 	},
+	"peerDependenciesMeta": {
+		"@aws-amplify/rtn-passkeys": {
+			"optional": true
+		}
+	},
 	"devDependencies": {
-		"@aws-amplify/rtn-push-notification": "1.2.35",
-		"@aws-amplify/rtn-web-browser": "1.1.4",
+		"@aws-amplify/rtn-passkeys": "1.1.0",
+		"@aws-amplify/rtn-push-notification": "1.3.0",
+		"@aws-amplify/rtn-web-browser": "1.2.0",
 		"@react-native-async-storage/async-storage": "^1.17.12",
 		"@react-native-community/netinfo": "4.7.0",
 		"@types/base-64": "1.0.0",

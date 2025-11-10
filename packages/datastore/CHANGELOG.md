@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.1.0...@aws-amplify/datastore@5.1.1) (2025-11-06)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+# [5.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.89...@aws-amplify/datastore@5.1.0) (2025-09-29)
+
+### Features
+
+- **datastore:** add 'in' and 'notIn' operators for multi-value filtering ([#14544](https://github.com/aws-amplify/amplify-js/issues/14544)) ([8399513](https://github.com/aws-amplify/amplify-js/commit/8399513f93f476f01b4ef84c853e87096d3eca4b))
+
+## [5.0.89](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.88...@aws-amplify/datastore@5.0.89) (2025-09-11)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [5.0.88](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.87...@aws-amplify/datastore@5.0.88) (2025-08-06)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [5.0.87](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.86...@aws-amplify/datastore@5.0.87) (2025-07-23)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [5.0.86](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.85...@aws-amplify/datastore@5.0.86) (2025-07-03)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [5.0.85](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.84...@aws-amplify/datastore@5.0.85) (2025-07-02)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [5.0.84](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.83...@aws-amplify/datastore@5.0.84) (2025-06-17)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
 ## [5.0.83](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.82...@aws-amplify/datastore@5.0.83) (2025-05-27)
 
 **Note:** Version bump only for package @aws-amplify/datastore

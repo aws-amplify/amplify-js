@@ -6,6 +6,9 @@ on:
       packages:
         description: The json encoded package list
         value: ${{ jobs.get-package-list.outputs.packages }}
+      nativePackages:
+        description: The json encoded native package list
+        value: ${{ jobs.get-package-list.outputs.nativePackages }}
 jobs:
   get-package-list:
     name: Get packages list
@@ -31,11 +34,14 @@ jobs:
       - name: Dump Package List
         if: steps.cache-package-list.outputs.cache-hit != 'true'
         run: |
-          echo "packages=$(yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({name: split(" ")[0], path: split(" ")[-1]})')" > package-list.json
+          yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({name: split(" ")[0], path: split(" ")[-1]})' > package-list.json
       - name: Get Package List
         id: get_package_list
         run: |
-          cat package-list.json >> $GITHUB_OUTPUT
-          cat package-list.json
+          echo "packages=$(cat package-list.json)" >> $GITHUB_OUTPUT
+          # temporarily filter to only packages with runnable tests
+          echo "nativePackages=$(jq -c 'map(select(.name | test("rtn-passkeys|react-native")))' package-list.json)" >> $GITHUB_OUTPUT
     outputs:
       packages: ${{ steps.get_package_list.outputs.packages }}
+      # todo: expand native package list as other tests are made runnable
+      nativePackages: ${{ steps.get_package_list.outputs.nativePackages }}

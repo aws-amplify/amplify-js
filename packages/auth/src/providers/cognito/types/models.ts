@@ -10,7 +10,6 @@ import {
 	AWSAuthUser,
 	AuthCodeDeliveryDetails,
 	AuthDevice,
-	AuthUserAttribute,
 } from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
 
@@ -39,7 +38,7 @@ export const cognitoHostedUIIdentityProviderMap: Record<AuthProvider, string> =
 /**
  * Arbitrary key/value pairs that may be passed as part of certain Cognito requests
  */
-export type ClientMetadata = Record<string, string>;
+export type { ClientMetadata } from '@aws-amplify/core';
 
 /**
  * Allowed values for preferredChallenge
@@ -89,11 +88,15 @@ export type AutoSignInEventData =
 	| {
 			event: 'autoSignIn';
 	  };
+
+type DeviceAttributeKey = 'device_status' | 'device_name' | 'last_ip_used';
+
 /**
  * Holds the device specific information along with it's id and name.
  */
 export type AWSAuthDevice = AuthDevice & {
-	attributes: AuthUserAttribute<UserAttributeKey>;
+	attributes: Partial<Record<DeviceAttributeKey, string>> &
+		Record<string, string>;
 	createDate?: Date;
 	lastAuthenticatedDate?: Date;
 	lastModifiedDate?: Date;

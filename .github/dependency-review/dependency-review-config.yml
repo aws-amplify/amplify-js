@@ -1,7 +1,6 @@
 allow-licenses:
   - '0BSD'
   - 'Apache-2.0'
-  - 'Apache-2.0 AND MIT'
   - 'BlueOak-1.0.0'
   - 'BSD-1-Clause'
   - 'BSD-2-Clause-FreeBSD'
@@ -14,9 +13,9 @@ allow-licenses:
   - 'CC0-1.0'
   - 'curl'
   - 'ISC'
-  - 'ISC AND MIT'
   - 'JSON'
   - 'MIT'
+  - 'MIT-0'
   - 'OpenSSL'
   - 'PDDL-1.0'
   - 'PostgreSQL'

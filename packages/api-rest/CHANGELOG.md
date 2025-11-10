@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.4.1...@aws-amplify/api-rest@4.5.0) (2025-11-06)
+
+### Features
+
+- **api-rest:** support timeout configuration for rest api. ([#14578](https://github.com/aws-amplify/amplify-js/issues/14578)) ([0cf2160](https://github.com/aws-amplify/amplify-js/commit/0cf2160930feb22dac6028b3fa7cb968467c9cfa))
+
+## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.4.0...@aws-amplify/api-rest@4.4.1) (2025-09-29)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.3.0...@aws-amplify/api-rest@4.4.0) (2025-09-11)
+
+### Features
+
+- **api-rest:** allow relative URL's ([6d2b4de](https://github.com/aws-amplify/amplify-js/commit/6d2b4de998e49c86397541cac588363edfcff832))
+
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.2.0...@aws-amplify/api-rest@4.3.0) (2025-08-06)
+
+### Features
+
+- allow setting json compatible content types ([#14488](https://github.com/aws-amplify/amplify-js/issues/14488)) ([2212704](https://github.com/aws-amplify/amplify-js/commit/2212704a2a35b40e60984a0a79770a4b59aae52d))
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.8...@aws-amplify/api-rest@4.2.0) (2025-07-23)
+
+### Features
+
+- **api-rest:** support "body" in delete API ([#14462](https://github.com/aws-amplify/amplify-js/issues/14462)) ([d6f1422](https://github.com/aws-amplify/amplify-js/commit/d6f14227f2d42b6b170e8e114952c97d2928f5e6))
+
+## [4.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.7...@aws-amplify/api-rest@4.1.8) (2025-07-03)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.6...@aws-amplify/api-rest@4.1.7) (2025-07-02)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+## [4.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.5...@aws-amplify/api-rest@4.1.6) (2025-06-17)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
 ## [4.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.1.4...@aws-amplify/api-rest@4.1.5) (2025-05-27)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

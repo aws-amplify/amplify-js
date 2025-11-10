@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.17.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.16.0...@aws-amplify/auth@6.17.0) (2025-11-06)
+
+### Bug Fixes
+
+- **auth:** prevent random logouts by fixing overly aggressive token clearing ([76dd23c](https://github.com/aws-amplify/amplify-js/commit/76dd23cb3ee05d77e72a4f2038ed3f41ec07f37f)), closes [#14534](https://github.com/aws-amplify/amplify-js/issues/14534)
+
+### Features
+
+- add support for idp_identifier query parameter when going through OAuth using signInWithRedirect function ([#14573](https://github.com/aws-amplify/amplify-js/issues/14573)) ([24ab070](https://github.com/aws-amplify/amplify-js/commit/24ab070f89f25f02fb271e9027b8cf1def19a47b))
+- **auth:** support clientmetadata for token refresh ([#14556](https://github.com/aws-amplify/amplify-js/issues/14556)) ([5bf5685](https://github.com/aws-amplify/amplify-js/commit/5bf5685e1876bbb16550678bda9cfa3953831685))
+
+# [6.16.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.15.1...@aws-amplify/auth@6.16.0) (2025-09-29)
+
+### Bug Fixes
+
+- implemented cancel scenario in oauthSignIn for signInWithRedirect ([#14434](https://github.com/aws-amplify/amplify-js/issues/14434)) ([f8f2904](https://github.com/aws-amplify/amplify-js/commit/f8f29048ce806e6ae17d3493432fdae29cc4c2c9))
+
+### Features
+
+- **rtn-passkeys:** add rtn passkeys ([#14489](https://github.com/aws-amplify/amplify-js/issues/14489)) ([ac06885](https://github.com/aws-amplify/amplify-js/commit/ac06885a8f2a13365fe1ff26bfd54891f9ad4a45)), closes [#14390](https://github.com/aws-amplify/amplify-js/issues/14390) [#14391](https://github.com/aws-amplify/amplify-js/issues/14391)
+
+## [6.15.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.15.0...@aws-amplify/auth@6.15.1) (2025-09-11)
+
+### Bug Fixes
+
+- device attributes type ([#14520](https://github.com/aws-amplify/amplify-js/issues/14520)) ([4c872d1](https://github.com/aws-amplify/amplify-js/commit/4c872d1b4c68ffdb61aafb8ff210f9d2c73b4368))
+- replace URL object with string concatenation for React Native compatibility ([#14516](https://github.com/aws-amplify/amplify-js/issues/14516)) ([5089bef](https://github.com/aws-amplify/amplify-js/commit/5089bef67dec9e4a7072538c5c4b5b69e4452946))
+
+# [6.15.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.14.0...@aws-amplify/auth@6.15.0) (2025-08-06)
+
+### Features
+
+- **auth:** add prompt parameter to signInWithRedirect ([#14464](https://github.com/aws-amplify/amplify-js/issues/14464)) ([76548ca](https://github.com/aws-amplify/amplify-js/commit/76548ca51f2df7b5faac3233a1cc1d54d176b2ac))
+- make authSessionOpener configurable ([1d6c320](https://github.com/aws-amplify/amplify-js/commit/1d6c3206d517967cd28214c3c648da08f65b75dd))
+
+# [6.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.3...@aws-amplify/auth@6.14.0) (2025-07-23)
+
+### Features
+
+- refresh token rotation ([#14427](https://github.com/aws-amplify/amplify-js/issues/14427)) ([e5a8569](https://github.com/aws-amplify/amplify-js/commit/e5a85697101735c21548e397832fab12d001a5dc))
+
+## [6.13.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.2...@aws-amplify/auth@6.13.3) (2025-07-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.13.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.1...@aws-amplify/auth@6.13.2) (2025-07-02)
+
+### Bug Fixes
+
+- remove import side effects for getAmplifyUserAgent() ([#14433](https://github.com/aws-amplify/amplify-js/issues/14433)) ([f94a30b](https://github.com/aws-amplify/amplify-js/commit/f94a30b71e4e5abbce1ad8c215fbb67386721bff))
+
+## [6.13.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.13.0...@aws-amplify/auth@6.13.1) (2025-06-17)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 # [6.13.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.12.4...@aws-amplify/auth@6.13.0) (2025-05-27)
 
 ### Features

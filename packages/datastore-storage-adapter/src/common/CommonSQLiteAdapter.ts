@@ -16,6 +16,7 @@ import {
 	PredicateObject,
 	PredicatesGroup,
 	QueryOne,
+	SchemaModel,
 	StorageAdapter,
 	isPredicateObj,
 	utils,
@@ -86,9 +87,9 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 		try {
 			const usesCPKCodegen = Object.values(
-				this.schema.namespaces.user.models,
+				this.schema.namespaces.user?.models || {},
 			).some(model =>
-				Object.values(model.fields).some(field =>
+				Object.values((model as SchemaModel).fields).some((field: any) =>
 					// eslint-disable-next-line no-prototype-builtins
 					field.association?.hasOwnProperty('targetNames'),
 				),

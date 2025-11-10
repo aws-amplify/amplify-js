@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.8.0...@aws-amplify/api-graphql@4.8.1) (2025-11-06)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+# [4.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.22...@aws-amplify/api-graphql@4.8.0) (2025-09-29)
+
+### Features
+
+- **rtn-passkeys:** add rtn passkeys ([#14489](https://github.com/aws-amplify/amplify-js/issues/14489)) ([ac06885](https://github.com/aws-amplify/amplify-js/commit/ac06885a8f2a13365fe1ff26bfd54891f9ad4a45)), closes [#14390](https://github.com/aws-amplify/amplify-js/issues/14390) [#14391](https://github.com/aws-amplify/amplify-js/issues/14391)
+
+## [4.7.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.21...@aws-amplify/api-graphql@4.7.22) (2025-09-11)
+
+### Bug Fixes
+
+- account for EVENT_SUBSCRIBE_ERROR in AppSync ([#14491](https://github.com/aws-amplify/amplify-js/issues/14491)) ([95b9ae0](https://github.com/aws-amplify/amplify-js/commit/95b9ae075382dcedb6d1e1e39a973dfbb0016eae))
+
+## [4.7.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.20...@aws-amplify/api-graphql@4.7.21) (2025-08-06)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.19...@aws-amplify/api-graphql@4.7.20) (2025-07-23)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.7.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.18...@aws-amplify/api-graphql@4.7.19) (2025-07-03)
+
+### Bug Fixes
+
+- error building expo application ([#14436](https://github.com/aws-amplify/amplify-js/issues/14436)) ([f14dc87](https://github.com/aws-amplify/amplify-js/commit/f14dc873a05030fd3e98400451a82bf7d509c3d4))
+
+## [4.7.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.17...@aws-amplify/api-graphql@4.7.18) (2025-07-02)
+
+### Bug Fixes
+
+- await AppSyncEvent WebSocket connection establishment ([0f4ab3c](https://github.com/aws-amplify/amplify-js/commit/0f4ab3c8a436e29e89964c0d8452558cf0a0744c))
+- verify the socket status to be CONNECTING in test ([c946cf7](https://github.com/aws-amplify/amplify-js/commit/c946cf7a09d47a9e74f5d81743d36a2ebbc82207))
+
+## [4.7.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.16...@aws-amplify/api-graphql@4.7.17) (2025-06-17)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
 ## [4.7.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.7.15...@aws-amplify/api-graphql@4.7.16) (2025-05-27)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

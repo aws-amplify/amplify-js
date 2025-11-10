@@ -6,14 +6,14 @@ export type GetInput = ApiInput<RestApiOptionsBase>;
 export type PostInput = ApiInput<RestApiOptionsBase>;
 export type PutInput = ApiInput<RestApiOptionsBase>;
 export type PatchInput = ApiInput<RestApiOptionsBase>;
-export type DeleteInput = ApiInput<Omit<RestApiOptionsBase, 'body'>>;
+export type DeleteInput = ApiInput<RestApiOptionsBase>;
 export type HeadInput = ApiInput<Omit<RestApiOptionsBase, 'body'>>;
 
 export type GetOperation = Operation<RestApiResponse>;
 export type PostOperation = Operation<RestApiResponse>;
 export type PutOperation = Operation<RestApiResponse>;
 export type PatchOperation = Operation<RestApiResponse>;
-export type DeleteOperation = Operation<Omit<RestApiResponse, 'body'>>;
+export type DeleteOperation = Operation<RestApiResponse>;
 export type HeadOperation = Operation<Omit<RestApiResponse, 'body'>>;
 
 /**
@@ -41,6 +41,10 @@ export interface RestApiOptionsBase {
 	 * @default ` { strategy: 'jittered-exponential-backoff' } `
 	 */
 	retryStrategy?: RetryStrategy;
+	/**
+	 * custom timeout in milliseconds.
+	 */
+	timeout?: number;
 }
 
 type Headers = Record<string, string>;

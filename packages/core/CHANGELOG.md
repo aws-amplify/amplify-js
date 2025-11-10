@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.13.3...@aws-amplify/core@6.14.0) (2025-11-06)
+
+### Features
+
+- **api-rest:** support timeout configuration for rest api. ([#14578](https://github.com/aws-amplify/amplify-js/issues/14578)) ([0cf2160](https://github.com/aws-amplify/amplify-js/commit/0cf2160930feb22dac6028b3fa7cb968467c9cfa))
+- **auth:** support clientmetadata for token refresh ([#14556](https://github.com/aws-amplify/amplify-js/issues/14556)) ([5bf5685](https://github.com/aws-amplify/amplify-js/commit/5bf5685e1876bbb16550678bda9cfa3953831685))
+
+## [6.13.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.13.2...@aws-amplify/core@6.13.3) (2025-09-29)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.13.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.13.1...@aws-amplify/core@6.13.2) (2025-09-11)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.13.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.13.0...@aws-amplify/core@6.13.1) (2025-08-06)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+# [6.13.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.12.3...@aws-amplify/core@6.13.0) (2025-07-23)
+
+### Features
+
+- **api-rest:** support "body" in delete API ([#14462](https://github.com/aws-amplify/amplify-js/issues/14462)) ([d6f1422](https://github.com/aws-amplify/amplify-js/commit/d6f14227f2d42b6b170e8e114952c97d2928f5e6))
+
+## [6.12.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.12.2...@aws-amplify/core@6.12.3) (2025-07-03)
+
+### Bug Fixes
+
+- error building expo application ([#14436](https://github.com/aws-amplify/amplify-js/issues/14436)) ([f14dc87](https://github.com/aws-amplify/amplify-js/commit/f14dc873a05030fd3e98400451a82bf7d509c3d4))
+
+## [6.12.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.12.1...@aws-amplify/core@6.12.2) (2025-07-02)
+
+### Bug Fixes
+
+- remove import side effects for getAmplifyUserAgent() ([#14433](https://github.com/aws-amplify/amplify-js/issues/14433)) ([f94a30b](https://github.com/aws-amplify/amplify-js/commit/f94a30b71e4e5abbce1ad8c215fbb67386721bff))
+
+## [6.12.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.12.0...@aws-amplify/core@6.12.1) (2025-06-17)
+
+### Bug Fixes
+
+- recreate event buffer in pinpoint if the credentials has changed ([#14403](https://github.com/aws-amplify/amplify-js/issues/14403)) ([2b4282a](https://github.com/aws-amplify/amplify-js/commit/2b4282a4042529ad073b7e2435df82fbb416070a))
+
 # [6.12.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.11.4...@aws-amplify/core@6.12.0) (2025-05-27)
 
 ### Features

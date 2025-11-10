@@ -41,7 +41,7 @@ const mockConfig = {
 				region: 'us-west-2',
 			},
 			invalidEndpoint: {
-				endpoint: '123',
+				endpoint: '',
 			},
 		},
 	},
@@ -93,23 +93,112 @@ describe('public APIs', () => {
 		mockGetConfig.mockReturnValue(mockConfig);
 		mockGetRetryDecider.mockReturnValue(mockRetryDeciderResponse);
 	});
-	const APIs = [
+
+	describe.each([
 		{ name: 'get', fn: get, method: 'GET' },
 		{ name: 'post', fn: post, method: 'POST' },
 		{ name: 'put', fn: put, method: 'PUT' },
 		{ name: 'del', fn: del, method: 'DELETE' },
 		{ name: 'head', fn: head, method: 'HEAD' },
 		{ name: 'patch', fn: patch, method: 'PATCH' },
-	];
-	// TODO: use describe.each after upgrading Jest
-	APIs.forEach(({ name, fn, method }) => {
-		describe(name, () => {
-			it('should call authenticatedHandler with specified region from signingServiceInfo', async () => {
-				const response = await fn(mockAmplifyInstance, {
+	])(`$name`, ({ fn, method }) => {
+		it('should call authenticatedHandler with specified region from signingServiceInfo', async () => {
+			const response = await fn(mockAmplifyInstance, {
+				apiName: 'restApi1',
+				path: '/items',
+				options: {
+					withCredentials: true,
+				},
+			}).response;
+			expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+				{
+					url: new URL(
+						'https://123.execute-api.us-west-2.amazonaws.com/development/items',
+					),
+					method,
+					headers: {},
+					body: undefined,
+				},
+				expect.objectContaining({
+					region: 'us-west-2',
+					service: 'execute-api',
+					withCrossDomainCredentials: true,
+				}),
+			);
+			expect(response.headers).toEqual({
+				'response-header': 'response-header-value',
+			});
+			expect(response.statusCode).toBe(200);
+			if (fn !== head && fn !== del) {
+				expect(await (response as RestApiResponse).body.json()).toEqual({
+					foo: 'bar',
+				});
+			}
+		});
+
+		it('should support custom headers from library options', async () => {
+			mockRestHeaders.mockResolvedValue({
+				'custom-header': 'custom-value',
+			});
+			await fn(mockAmplifyInstance, {
+				apiName: 'restApi1',
+				path: '/items',
+			}).response;
+			expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+				{
+					url: new URL(
+						'https://123.execute-api.us-west-2.amazonaws.com/development/items',
+					),
+					method,
+					headers: {
+						'custom-header': 'custom-value',
+					},
+					body: undefined,
+				},
+				expect.objectContaining({
+					region: 'us-west-2',
+					service: 'execute-api',
+				}),
+			);
+		});
+
+		it('should support headers options', async () => {
+			await fn(mockAmplifyInstance, {
+				apiName: 'restApi1',
+				path: '/items',
+				options: {
+					headers: {
+						'custom-header': 'custom-value',
+					},
+				},
+			}).response;
+			expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+				{
+					url: new URL(
+						'https://123.execute-api.us-west-2.amazonaws.com/development/items',
+					),
+					method,
+					headers: {
+						'custom-header': 'custom-value',
+					},
+					body: undefined,
+				},
+				expect.objectContaining({
+					region: 'us-west-2',
+					service: 'execute-api',
+				}),
+			);
+		});
+
+		if (!['HEAD'].includes(method.toUpperCase())) {
+			it('should support body', async () => {
+				await fn(mockAmplifyInstance, {
 					apiName: 'restApi1',
 					path: '/items',
 					options: {
-						withCredentials: true,
+						body: {
+							message: 'body',
+						},
 					},
 				}).response;
 				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
@@ -118,476 +207,478 @@ describe('public APIs', () => {
 							'https://123.execute-api.us-west-2.amazonaws.com/development/items',
 						),
 						method,
-						headers: {},
-						body: undefined,
+						headers: {
+							'content-type': 'application/json; charset=UTF-8',
+						},
+						body: '{"message":"body"}',
 					},
 					expect.objectContaining({
 						region: 'us-west-2',
 						service: 'execute-api',
-						withCrossDomainCredentials: true,
 					}),
 				);
-				expect(response.headers).toEqual({
-					'response-header': 'response-header-value',
-				});
-				expect(response.statusCode).toBe(200);
-				if (fn !== head && fn !== del) {
-					expect(await (response as RestApiResponse).body.json()).toEqual({
+			});
+		}
+
+		it('should support path parameters', async () => {
+			await fn(mockAmplifyInstance, {
+				apiName: 'restApi1',
+				path: '/items/123',
+			}).response;
+			expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: new URL(
+						'https://123.execute-api.us-west-2.amazonaws.com/development/items/123',
+					),
+				}),
+				expect.anything(),
+			);
+		});
+
+		it('should support queryParams options', async () => {
+			await fn(mockAmplifyInstance, {
+				apiName: 'restApi1',
+				path: '/items',
+				options: {
+					queryParams: {
+						param1: 'value1',
+					},
+				},
+			}).response;
+			expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: expect.objectContaining({
+						href: 'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1',
+					}),
+				}),
+				expect.anything(),
+			);
+		});
+
+		it('should support query parameters in path', async () => {
+			await fn(mockAmplifyInstance, {
+				apiName: 'restApi1',
+				path: '/items?param1=value1',
+				options: {
+					queryParams: {
 						foo: 'bar',
-					});
-				}
-			});
+					},
+				},
+			}).response;
+			expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: expect.objectContaining({
+						href: 'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1&foo=bar',
+					}),
+				}),
+				expect.anything(),
+			);
+		});
 
-			it('should support custom headers from library options', async () => {
-				mockRestHeaders.mockResolvedValue({
-					'custom-header': 'custom-value',
+		it('should throw if apiName is not configured', async () => {
+			expect.assertions(2);
+			try {
+				await fn(mockAmplifyInstance, {
+					apiName: 'nonExistentApi',
+					path: '/items',
+				}).response;
+			} catch (error) {
+				expect(error).toBeInstanceOf(RestApiError);
+				expect(error).toMatchObject(
+					validationErrorMap[RestApiValidationErrorCode.InvalidApiName],
+				);
+			}
+		});
+
+		it('should throw if resolve URL is not valid', async () => {
+			expect.assertions(2);
+			try {
+				await fn(mockAmplifyInstance, {
+					apiName: 'invalidEndpoint',
+					path: '/items',
+				}).response;
+			} catch (error) {
+				expect(error).toBeInstanceOf(RestApiError);
+				expect(error).toMatchObject({
+					...validationErrorMap[RestApiValidationErrorCode.InvalidApiName],
+					recoverySuggestion: expect.stringContaining(
+						'Check if the API name matches the one in your configuration or `aws-exports.js`',
+					),
 				});
+			}
+		});
+
+		it('should use unauthenticated request if credentials are not available', async () => {
+			expect.assertions(1);
+			mockFetchAuthSession.mockResolvedValueOnce({});
+			await fn(mockAmplifyInstance, {
+				apiName: 'restApi1',
+				path: '/items',
+			}).response;
+			expect(mockUnauthenticatedHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: new URL(
+						'https://123.execute-api.us-west-2.amazonaws.com/development/items',
+					),
+				}),
+				expect.anything(),
+			);
+		});
+
+		it('should throw when error response conforms to AWS service errors', async () => {
+			expect.assertions(4);
+			const errorResponseObj = { message: 'fooMessage', name: 'badRequest' };
+			const errorResponse = {
+				statusCode: 400,
+				headers: {},
+				body: {
+					blob: jest.fn(),
+					json: jest.fn(),
+					text: jest.fn().mockResolvedValue(JSON.stringify(errorResponseObj)),
+				},
+			};
+			mockParseJsonError.mockImplementationOnce(async response => {
+				const errorResponsePayload = await response.body?.json();
+				const error = new Error(errorResponsePayload.message);
+
+				return Object.assign(error, {
+					name: errorResponsePayload.name,
+				});
+			});
+			mockAuthenticatedHandler.mockResolvedValueOnce(errorResponse);
+			try {
 				await fn(mockAmplifyInstance, {
 					apiName: 'restApi1',
 					path: '/items',
 				}).response;
-				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-					{
-						url: new URL(
-							'https://123.execute-api.us-west-2.amazonaws.com/development/items',
-						),
-						method,
-						headers: {
-							'custom-header': 'custom-value',
-						},
-						body: undefined,
+				fail('should throw RestApiError');
+			} catch (error) {
+				expect(mockParseJsonError).toHaveBeenCalledWith({
+					...errorResponse,
+					body: {
+						json: expect.any(Function),
+						blob: expect.any(Function),
+						text: expect.any(Function),
 					},
-					expect.objectContaining({
-						region: 'us-west-2',
-						service: 'execute-api',
-					}),
-				);
-			});
-
-			it('should support headers options', async () => {
-				await fn(mockAmplifyInstance, {
-					apiName: 'restApi1',
-					path: '/items',
-					options: {
-						headers: {
-							'custom-header': 'custom-value',
-						},
-					},
-				}).response;
-				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-					{
-						url: new URL(
-							'https://123.execute-api.us-west-2.amazonaws.com/development/items',
-						),
-						method,
-						headers: {
-							'custom-header': 'custom-value',
-						},
-						body: undefined,
-					},
-					expect.objectContaining({
-						region: 'us-west-2',
-						service: 'execute-api',
-					}),
-				);
-			});
-
-			it('should support path parameters', async () => {
-				await fn(mockAmplifyInstance, {
-					apiName: 'restApi1',
-					path: '/items/123',
-				}).response;
-				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-					expect.objectContaining({
-						url: new URL(
-							'https://123.execute-api.us-west-2.amazonaws.com/development/items/123',
-						),
-					}),
-					expect.anything(),
-				);
-			});
-
-			it('should support queryParams options', async () => {
-				await fn(mockAmplifyInstance, {
-					apiName: 'restApi1',
-					path: '/items',
-					options: {
-						queryParams: {
-							param1: 'value1',
-						},
-					},
-				}).response;
-				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-					expect.objectContaining({
-						url: expect.objectContaining({
-							href: 'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1',
-						}),
-					}),
-					expect.anything(),
-				);
-			});
-
-			it('should support query parameters in path', async () => {
-				await fn(mockAmplifyInstance, {
-					apiName: 'restApi1',
-					path: '/items?param1=value1',
-					options: {
-						queryParams: {
-							foo: 'bar',
-						},
-					},
-				}).response;
-				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-					expect.objectContaining({
-						url: expect.objectContaining({
-							href: 'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1&foo=bar',
-						}),
-					}),
-					expect.anything(),
-				);
-			});
-
-			it('should throw if apiName is not configured', async () => {
-				expect.assertions(2);
-				try {
-					await fn(mockAmplifyInstance, {
-						apiName: 'nonExistentApi',
-						path: '/items',
-					}).response;
-				} catch (error) {
-					expect(error).toBeInstanceOf(RestApiError);
-					expect(error).toMatchObject(
-						validationErrorMap[RestApiValidationErrorCode.InvalidApiName],
-					);
-				}
-			});
-
-			it('should throw if resolve URL is not valid', async () => {
-				expect.assertions(2);
-				try {
-					await fn(mockAmplifyInstance, {
-						apiName: 'invalidEndpoint',
-						path: '/items',
-					}).response;
-				} catch (error) {
-					expect(error).toBeInstanceOf(RestApiError);
-					expect(error).toMatchObject({
-						...validationErrorMap[RestApiValidationErrorCode.InvalidApiName],
-						recoverySuggestion: expect.stringContaining(
-							'Please make sure the REST endpoint URL is a valid URL string.',
-						),
-					});
-				}
-			});
-
-			it('should use unauthenticated request if credentials are not available', async () => {
-				expect.assertions(1);
-				mockFetchAuthSession.mockResolvedValueOnce({});
-				await fn(mockAmplifyInstance, {
-					apiName: 'restApi1',
-					path: '/items',
-				}).response;
-				expect(mockUnauthenticatedHandler).toHaveBeenCalledWith(
-					expect.objectContaining({
-						url: new URL(
-							'https://123.execute-api.us-west-2.amazonaws.com/development/items/123',
-						),
-					}),
-					expect.anything(),
-				);
-			});
-
-			it('should throw when error response conforms to AWS service errors', async () => {
-				expect.assertions(4);
-				const errorResponseObj = { message: 'fooMessage', name: 'badRequest' };
-				const errorResponse = {
+				});
+				expect(error).toEqual(expect.any(RestApiError));
+				expect(error).toEqual(expect.any(ApiError));
+				expect((error as ApiError).response).toEqual({
 					statusCode: 400,
 					headers: {},
-					body: {
-						blob: jest.fn(),
-						json: jest.fn(),
-						text: jest.fn().mockResolvedValue(JSON.stringify(errorResponseObj)),
-					},
-				};
-				mockParseJsonError.mockImplementationOnce(async response => {
-					const errorResponsePayload = await response.body?.json();
-					const error = new Error(errorResponsePayload.message);
-
-					return Object.assign(error, {
-						name: errorResponsePayload.name,
-					});
+					body: JSON.stringify(errorResponseObj),
 				});
-				mockAuthenticatedHandler.mockResolvedValueOnce(errorResponse);
-				try {
-					await fn(mockAmplifyInstance, {
-						apiName: 'restApi1',
-						path: '/items',
-					}).response;
-					fail('should throw RestApiError');
-				} catch (error) {
-					expect(mockParseJsonError).toHaveBeenCalledWith({
-						...errorResponse,
-						body: {
-							json: expect.any(Function),
-							blob: expect.any(Function),
-							text: expect.any(Function),
-						},
-					});
-					expect(error).toEqual(expect.any(RestApiError));
-					expect(error).toEqual(expect.any(ApiError));
-					expect((error as ApiError).response).toEqual({
-						statusCode: 400,
-						headers: {},
-						body: JSON.stringify(errorResponseObj),
-					});
-				}
+			}
+		});
+
+		it('should throw when error response has custom payload', async () => {
+			expect.assertions(4);
+			const errorResponseStr = 'custom error message';
+			const errorResponse = {
+				statusCode: 400,
+				headers: {},
+				body: {
+					blob: jest.fn(),
+					json: jest.fn(),
+					text: jest.fn().mockResolvedValue(errorResponseStr),
+				},
+			};
+			mockParseJsonError.mockImplementationOnce(async response => {
+				const errorResponsePayload = await response.body?.json();
+				const error = new Error(errorResponsePayload.message);
+
+				return Object.assign(error, {
+					name: errorResponsePayload.name,
+				});
 			});
-
-			it('should throw when error response has custom payload', async () => {
-				expect.assertions(4);
-				const errorResponseStr = 'custom error message';
-				const errorResponse = {
-					statusCode: 400,
-					headers: {},
-					body: {
-						blob: jest.fn(),
-						json: jest.fn(),
-						text: jest.fn().mockResolvedValue(errorResponseStr),
-					},
-				};
-				mockParseJsonError.mockImplementationOnce(async response => {
-					const errorResponsePayload = await response.body?.json();
-					const error = new Error(errorResponsePayload.message);
-
-					return Object.assign(error, {
-						name: errorResponsePayload.name,
-					});
-				});
-				mockAuthenticatedHandler.mockResolvedValueOnce(errorResponse);
-				try {
-					await fn(mockAmplifyInstance, {
-						apiName: 'restApi1',
-						path: '/items',
-					}).response;
-					fail('should throw RestApiError');
-				} catch (error) {
-					expect(mockParseJsonError).toHaveBeenCalledWith({
-						...errorResponse,
-						body: {
-							json: expect.any(Function),
-							blob: expect.any(Function),
-							text: expect.any(Function),
-						},
-					});
-					expect(error).toEqual(expect.any(RestApiError));
-					expect(error).toEqual(expect.any(ApiError));
-					expect((error as ApiError).response).toEqual({
-						statusCode: 400,
-						headers: {},
-						body: errorResponseStr,
-					});
-				}
-			});
-
-			it('should support cancel', async () => {
-				expect.assertions(2);
-				const abortSpy = jest.spyOn(AbortController.prototype, 'abort');
-				let underLyingHandlerReject;
-				mockAuthenticatedHandler.mockReset();
-				mockAuthenticatedHandler.mockReturnValue(
-					new Promise((_resolve, reject) => {
-						underLyingHandlerReject = reject;
-					}),
-				);
-				abortSpy.mockImplementation(() => {
-					const mockAbortError = new Error('AbortError');
-					mockAbortError.name = 'AbortError';
-					underLyingHandlerReject(mockAbortError);
-				});
-
-				const { response, cancel } = fn(mockAmplifyInstance, {
+			mockAuthenticatedHandler.mockResolvedValueOnce(errorResponse);
+			try {
+				await fn(mockAmplifyInstance, {
 					apiName: 'restApi1',
 					path: '/items',
+				}).response;
+				fail('should throw RestApiError');
+			} catch (error) {
+				expect(mockParseJsonError).toHaveBeenCalledWith({
+					...errorResponse,
+					body: {
+						json: expect.any(Function),
+						blob: expect.any(Function),
+						text: expect.any(Function),
+					},
 				});
-				const cancelMessage = 'cancelMessage';
-				try {
+				expect(error).toEqual(expect.any(RestApiError));
+				expect(error).toEqual(expect.any(ApiError));
+				expect((error as ApiError).response).toEqual({
+					statusCode: 400,
+					headers: {},
+					body: errorResponseStr,
+				});
+			}
+		});
+
+		it('should support cancel', async () => {
+			expect.assertions(2);
+			const abortSpy = jest.spyOn(AbortController.prototype, 'abort');
+			let underLyingHandlerReject: (reason: any) => void;
+			mockAuthenticatedHandler.mockReset();
+			mockAuthenticatedHandler.mockReturnValue(
+				new Promise((_resolve, reject) => {
+					underLyingHandlerReject = reject;
+				}),
+			);
+			abortSpy.mockImplementation(() => {
+				const mockAbortError = new Error('AbortError');
+				mockAbortError.name = 'AbortError';
+				underLyingHandlerReject(mockAbortError);
+			});
+
+			const { response, cancel } = fn(mockAmplifyInstance, {
+				apiName: 'restApi1',
+				path: '/items',
+			});
+			const cancelMessage = 'cancelMessage';
+			try {
+				setTimeout(() => {
+					cancel(cancelMessage);
+				});
+				await response;
+				fail('should throw cancel error');
+			} catch (error: any) {
+				expect(isCancelError(error)).toBe(true);
+				expect(error.message).toBe(cancelMessage);
+			}
+		});
+
+		it('should support timeout configuration at request level', async () => {
+			expect.assertions(3);
+			const timeoutSpy = jest.spyOn(global, 'setTimeout');
+			mockAuthenticatedHandler.mockImplementation(() => {
+				return new Promise((_resolve, reject) => {
 					setTimeout(() => {
-						cancel(cancelMessage);
-					});
-					await response;
-					fail('should throw cancel error');
-				} catch (error: any) {
-					expect(isCancelError(error)).toBe(true);
-					expect(error.message).toBe(cancelMessage);
-				}
+						const abortError = new Error('AbortError');
+						abortError.name = 'AbortError';
+						reject(abortError);
+					}, 300);
+				});
+			});
+			try {
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/items',
+					options: {
+						timeout: 100,
+					},
+				}).response;
+			} catch (error: any) {
+				expect(timeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
+				expect(error.name).toBe('TimeoutError');
+				expect(error.message).toBe('Request timeout after 100ms');
+				timeoutSpy.mockRestore();
+			}
+		});
+
+		it('should support timeout configuration at library options level', async () => {
+			expect.assertions(3);
+			const timeoutSpy = jest.spyOn(global, 'setTimeout');
+			const mockTimeoutFunction = jest.fn().mockReturnValue(100);
+			const mockAmplifyInstanceWithTimeout = {
+				...mockAmplifyInstance,
+				libraryOptions: {
+					API: {
+						REST: {
+							timeout: mockTimeoutFunction,
+						},
+					},
+				},
+			} as any as AmplifyClassV6;
+			mockAuthenticatedHandler.mockImplementation(() => {
+				return new Promise((_resolve, reject) => {
+					setTimeout(() => {
+						const abortError = new Error('AbortError');
+						abortError.name = 'AbortError';
+						reject(abortError);
+					}, 300);
+				});
+			});
+			try {
+				await fn(mockAmplifyInstanceWithTimeout, {
+					apiName: 'restApi1',
+					path: '/items',
+				}).response;
+			} catch (error: any) {
+				expect(timeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
+				expect(error.name).toBe('TimeoutError');
+				expect(error.message).toBe('Request timeout after 100ms');
+				timeoutSpy.mockRestore();
+			}
+		});
+
+		describe('retry strategy', () => {
+			beforeEach(() => {
+				mockAuthenticatedHandler.mockReset();
+				mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 			});
 
-			describe('retry strategy', () => {
-				beforeEach(() => {
-					mockAuthenticatedHandler.mockReset();
-					mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
-				});
-
-				it('should not retry when retry is set to "no-retry"', async () => {
-					expect.assertions(3);
-					await fn(mockAmplifyInstance, {
-						apiName: 'restApi1',
-						path: '/items',
-						options: {
-							retryStrategy: {
-								strategy: 'no-retry',
-							},
+			it('should not retry when retry is set to "no-retry"', async () => {
+				expect.assertions(3);
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/items',
+					options: {
+						retryStrategy: {
+							strategy: 'no-retry',
 						},
-					}).response;
-					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-						expect.any(Object),
-						expect.objectContaining({ retryDecider: expect.any(Function) }),
-					);
-					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(mockGetRetryDecider).not.toHaveBeenCalled();
-					const { retryDecider } = callArgs[1];
-					const result = await retryDecider();
-					expect(result).toEqual({ retryable: false });
-				});
+					},
+				}).response;
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+					expect.any(Object),
+					expect.objectContaining({ retryDecider: expect.any(Function) }),
+				);
+				const callArgs = mockAuthenticatedHandler.mock.calls[0];
+				expect(mockGetRetryDecider).not.toHaveBeenCalled();
+				const { retryDecider } = callArgs[1];
+				const result = await retryDecider();
+				expect(result).toEqual({ retryable: false });
+			});
 
-				it('should retry when retry is set to "jittered-exponential-backoff"', async () => {
-					expect.assertions(3);
-					await fn(mockAmplifyInstance, {
-						apiName: 'restApi1',
-						path: '/items',
-						options: {
-							retryStrategy: {
-								strategy: 'jittered-exponential-backoff',
-							},
+			it('should retry when retry is set to "jittered-exponential-backoff"', async () => {
+				expect.assertions(3);
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/items',
+					options: {
+						retryStrategy: {
+							strategy: 'jittered-exponential-backoff',
 						},
-					}).response;
-					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-						expect.any(Object),
-						expect.objectContaining({ retryDecider: expect.any(Function) }),
-					);
-					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(mockGetRetryDecider).toHaveBeenCalled();
-					const { retryDecider } = callArgs[1];
-					const result = await retryDecider();
-					expect(result).toEqual({ retryable: true });
-				});
+					},
+				}).response;
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+					expect.any(Object),
+					expect.objectContaining({ retryDecider: expect.any(Function) }),
+				);
+				const callArgs = mockAuthenticatedHandler.mock.calls[0];
+				expect(mockGetRetryDecider).toHaveBeenCalled();
+				const { retryDecider } = callArgs[1];
+				const result = await retryDecider();
+				expect(result).toEqual({ retryable: true });
+			});
 
-				it('should retry when retry strategy is not provided', async () => {
-					expect.assertions(3);
-					await fn(mockAmplifyInstance, {
-						apiName: 'restApi1',
-						path: '/items',
-					}).response;
-					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-						expect.any(Object),
-						expect.objectContaining({ retryDecider: expect.any(Function) }),
-					);
-					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(mockGetRetryDecider).toHaveBeenCalled();
-					const { retryDecider } = callArgs[1];
-					const result = await retryDecider();
-					expect(result).toEqual({ retryable: true });
-				});
+			it('should retry when retry strategy is not provided', async () => {
+				expect.assertions(3);
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/items',
+				}).response;
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+					expect.any(Object),
+					expect.objectContaining({ retryDecider: expect.any(Function) }),
+				);
+				const callArgs = mockAuthenticatedHandler.mock.calls[0];
+				expect(mockGetRetryDecider).toHaveBeenCalled();
+				const { retryDecider } = callArgs[1];
+				const result = await retryDecider();
+				expect(result).toEqual({ retryable: true });
+			});
 
-				it('should retry and prefer the individual retry strategy over the library options', async () => {
-					expect.assertions(3);
-					const mockAmplifyInstanceWithNoRetry = {
-						...mockAmplifyInstance,
-						libraryOptions: {
-							API: {
-								REST: {
-									retryStrategy: {
-										strategy: 'no-retry',
-									},
+			it('should retry and prefer the individual retry strategy over the library options', async () => {
+				expect.assertions(3);
+				const mockAmplifyInstanceWithNoRetry = {
+					...mockAmplifyInstance,
+					libraryOptions: {
+						API: {
+							REST: {
+								retryStrategy: {
+									strategy: 'no-retry',
 								},
 							},
 						},
-					} as any as AmplifyClassV6;
-					await fn(mockAmplifyInstanceWithNoRetry, {
-						apiName: 'restApi1',
-						path: 'items',
-						options: {
-							retryStrategy: {
-								strategy: 'jittered-exponential-backoff',
-							},
+					},
+				} as any as AmplifyClassV6;
+				await fn(mockAmplifyInstanceWithNoRetry, {
+					apiName: 'restApi1',
+					path: 'items',
+					options: {
+						retryStrategy: {
+							strategy: 'jittered-exponential-backoff',
 						},
-					}).response;
+					},
+				}).response;
 
-					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-						expect.any(Object),
-						expect.objectContaining({ retryDecider: expect.any(Function) }),
-					);
-					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(mockGetRetryDecider).toHaveBeenCalled();
-					const { retryDecider } = callArgs[1];
-					const result = await retryDecider();
-					expect(result).toEqual({ retryable: true });
-				});
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+					expect.any(Object),
+					expect.objectContaining({ retryDecider: expect.any(Function) }),
+				);
+				const callArgs = mockAuthenticatedHandler.mock.calls[0];
+				expect(mockGetRetryDecider).toHaveBeenCalled();
+				const { retryDecider } = callArgs[1];
+				const result = await retryDecider();
+				expect(result).toEqual({ retryable: true });
+			});
 
-				it('should not retry and prefer the individual retry strategy over the library options', async () => {
-					expect.assertions(3);
-					const mockAmplifyInstanceWithRetry = {
-						...mockAmplifyInstance,
-						libraryOptions: {
-							API: {
-								REST: {
-									retryStrategy: {
-										strategy: 'jittered-exponential-backoff',
-									},
+			it('should not retry and prefer the individual retry strategy over the library options', async () => {
+				expect.assertions(3);
+				const mockAmplifyInstanceWithRetry = {
+					...mockAmplifyInstance,
+					libraryOptions: {
+						API: {
+							REST: {
+								retryStrategy: {
+									strategy: 'jittered-exponential-backoff',
 								},
 							},
 						},
-					} as any as AmplifyClassV6;
-					await fn(mockAmplifyInstanceWithRetry, {
-						apiName: 'restApi1',
-						path: 'items',
-						options: {
-							retryStrategy: {
-								strategy: 'no-retry',
-							},
+					},
+				} as any as AmplifyClassV6;
+				await fn(mockAmplifyInstanceWithRetry, {
+					apiName: 'restApi1',
+					path: 'items',
+					options: {
+						retryStrategy: {
+							strategy: 'no-retry',
 						},
-					}).response;
+					},
+				}).response;
 
-					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-						expect.any(Object),
-						expect.objectContaining({ retryDecider: expect.any(Function) }),
-					);
-					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(mockGetRetryDecider).not.toHaveBeenCalled();
-					const { retryDecider } = callArgs[1];
-					const result = await retryDecider();
-					expect(result).toEqual({ retryable: false });
-				});
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+					expect.any(Object),
+					expect.objectContaining({ retryDecider: expect.any(Function) }),
+				);
+				const callArgs = mockAuthenticatedHandler.mock.calls[0];
+				expect(mockGetRetryDecider).not.toHaveBeenCalled();
+				const { retryDecider } = callArgs[1];
+				const result = await retryDecider();
+				expect(result).toEqual({ retryable: false });
+			});
 
-				it('should not retry when configured through library options', async () => {
-					expect.assertions(3);
-					const mockAmplifyInstanceWithRetry = {
-						...mockAmplifyInstance,
-						libraryOptions: {
-							API: {
-								REST: {
-									retryStrategy: {
-										strategy: 'no-retry',
-									},
+			it('should not retry when configured through library options', async () => {
+				expect.assertions(3);
+				const mockAmplifyInstanceWithRetry = {
+					...mockAmplifyInstance,
+					libraryOptions: {
+						API: {
+							REST: {
+								retryStrategy: {
+									strategy: 'no-retry',
 								},
 							},
 						},
-					} as any as AmplifyClassV6;
-					await fn(mockAmplifyInstanceWithRetry, {
-						apiName: 'restApi1',
-						path: 'items',
-					}).response;
+					},
+				} as any as AmplifyClassV6;
+				await fn(mockAmplifyInstanceWithRetry, {
+					apiName: 'restApi1',
+					path: 'items',
+				}).response;
 
-					expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-						expect.any(Object),
-						expect.objectContaining({ retryDecider: expect.any(Function) }),
-					);
-					const callArgs = mockAuthenticatedHandler.mock.calls[0];
-					expect(mockGetRetryDecider).not.toHaveBeenCalled();
-					const { retryDecider } = callArgs[1];
-					const result = await retryDecider();
-					expect(result).toEqual({ retryable: false });
-				});
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+					expect.any(Object),
+					expect.objectContaining({ retryDecider: expect.any(Function) }),
+				);
+				const callArgs = mockAuthenticatedHandler.mock.calls[0];
+				expect(mockGetRetryDecider).not.toHaveBeenCalled();
+				const { retryDecider } = callArgs[1];
+				const result = await retryDecider();
+				expect(result).toEqual({ retryable: false });
 			});
 		});
 	});
