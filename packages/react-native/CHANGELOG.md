@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.2.0...@aws-amplify/react-native@1.3.0) (2025-11-06)
+
+### Features
+
+- add react-native unit test coverage ([#14567](https://github.com/aws-amplify/amplify-js/issues/14567)) ([defd1d3](https://github.com/aws-amplify/amplify-js/commit/defd1d39b153d2b8494903ab8672ef9e8badd8cd))
+
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.1.10...@aws-amplify/react-native@1.2.0) (2025-09-29)
+
+### Features
+
+- **rtn-passkeys:** add rtn passkeys ([#14489](https://github.com/aws-amplify/amplify-js/issues/14489)) ([ac06885](https://github.com/aws-amplify/amplify-js/commit/ac06885a8f2a13365fe1ff26bfd54891f9ad4a45)), closes [#14390](https://github.com/aws-amplify/amplify-js/issues/14390) [#14391](https://github.com/aws-amplify/amplify-js/issues/14391)
+
 ## [1.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.1.9...@aws-amplify/react-native@1.1.10) (2025-05-27)
 
 **Note:** Version bump only for package @aws-amplify/react-native
