@@ -192,6 +192,17 @@ describe('signInWithRedirect', () => {
 		);
 	});
 
+	it('uses idpIdentifier when specified', async () => {
+		const expectedIdpIdentifier = 'example.com';
+		await signInWithRedirect({
+			provider: { idpIdentifier: expectedIdpIdentifier },
+		});
+		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
+		expect(oauthUrl).toStrictEqual(
+			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&idp_identifier=${expectedIdpIdentifier}&scope=phone+email+openid+profile+aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
+		);
+	});
+
 	it('uses custom state if specified', async () => {
 		const expectedCustomState = 'verify_me';
 		await signInWithRedirect({ customState: expectedCustomState });

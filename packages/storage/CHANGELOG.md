@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.10.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.10.0...@aws-amplify/storage@6.10.1) (2025-11-06)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [6.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.9.6...@aws-amplify/storage@6.10.0) (2025-09-29)
+
+### Features
+
+- **storage:** support tagging directive in copy ([#14527](https://github.com/aws-amplify/amplify-js/issues/14527)) ([11d4190](https://github.com/aws-amplify/amplify-js/commit/11d4190e5304a58da9fda211c7f5196c86c7f5d7))
+
 ## [6.9.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.9.5...@aws-amplify/storage@6.9.6) (2025-09-11)
 
 ### Bug Fixes
