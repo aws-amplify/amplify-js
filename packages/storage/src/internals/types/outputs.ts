@@ -8,6 +8,7 @@ import {
 	GetUrlWithPathOutput,
 	ListAllWithPathOutput,
 	ListPaginateWithPathOutput,
+	RemoveObjectsOutput as RemoveObjectsWithPathOutput,
 	RemoveWithPathOutput,
 	UploadDataWithPathOutput,
 } from '../../providers/s3/types';
@@ -43,6 +44,11 @@ export type GetUrlOutput = GetUrlWithPathOutput;
  * @internal
  */
 export type RemoveOutput = RemoveWithPathOutput;
+
+/**
+ * @internal
+ */
+export type RemoveObjectsOutput = RemoveObjectsWithPathOutput;
 
 /**
  * @internal

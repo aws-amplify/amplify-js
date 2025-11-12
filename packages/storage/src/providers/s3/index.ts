@@ -9,6 +9,7 @@ export {
 	getProperties,
 	copy,
 	getUrl,
+	removeObjects,
 } from './apis';
 
 export {
@@ -18,6 +19,7 @@ export {
 	DownloadDataWithPathInput,
 	RemoveInput,
 	RemoveWithPathInput,
+	RemoveObjectsInput,
 	ListAllInput,
 	ListAllWithPathInput,
 	ListPaginateInput,
@@ -37,6 +39,7 @@ export {
 	DownloadDataWithPathOutput,
 	RemoveOutput,
 	RemoveWithPathOutput,
+	RemoveObjectsOutput,
 	ListAllOutput,
 	ListAllWithPathOutput,
 	ListPaginateOutput,

@@ -111,6 +111,16 @@ export type RemoveWithPathInput = StorageRemoveInputWithPath<
 >;
 
 /**
+ * Input type for S3 removeObjects API to delete multiple objects.
+ */
+export interface RemoveObjectsInput {
+	paths: string[];
+	options?: {
+		expectedBucketOwner?: string;
+	};
+}
+
+/**
  * @deprecated Use {@link DownloadDataWithPathInput} instead.
  * Input type for S3 downloadData API.
  */

@@ -18,6 +18,7 @@ export {
 	ListAllInput,
 	ListPaginateInput,
 	RemoveInput,
+	RemoveObjectsInput,
 	UploadDataInput,
 	DownloadDataInput,
 } from './types/inputs';
@@ -27,6 +28,7 @@ export {
 	GetPropertiesOutput,
 	GetUrlOutput,
 	RemoveOutput,
+	RemoveObjectsOutput,
 	UploadDataOutput,
 	DownloadDataOutput,
 	ListOutput,
@@ -39,6 +41,7 @@ export { list } from './apis/list';
 export { getProperties } from './apis/getProperties';
 export { getUrl } from './apis/getUrl';
 export { remove } from './apis/remove';
+export { removeObjects } from './apis/removeObjects';
 export { uploadData } from './apis/uploadData';
 export { downloadData } from './apis/downloadData';
 export { copy } from './apis/copy';

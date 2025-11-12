@@ -143,3 +143,15 @@ export type RemoveOutput = Pick<ItemWithKey, 'key'>;
  * Output type with path for S3 remove API.
  */
 export type RemoveWithPathOutput = Pick<ItemWithPath, 'path'>;
+
+/**
+ * Output type for S3 removeObjects API.
+ */
+export interface RemoveObjectsOutput {
+	deleted: { path: string }[];
+	errors: {
+		path: string;
+		code: string;
+		message: string;
+	}[];
+}

@@ -13,6 +13,7 @@ import {
 	GetUrlWithPathInput,
 	ListAllWithPathInput,
 	ListPaginateWithPathInput,
+	RemoveObjectsInput as RemoveObjectsWithPathInput,
 	RemoveWithPathInput,
 	UploadDataWithPathInput,
 } from '../../providers/s3';
@@ -76,6 +77,14 @@ export type ListInput = ListAllInput | ListPaginateInput;
  */
 export type RemoveInput = ExtendInputWithAdvancedOptions<
 	RemoveWithPathInput,
+	AdvancedOptions
+>;
+
+/**
+ * @internal
+ */
+export type RemoveObjectsInput = ExtendInputWithAdvancedOptions<
+	RemoveObjectsWithPathInput,
 	AdvancedOptions
 >;
 

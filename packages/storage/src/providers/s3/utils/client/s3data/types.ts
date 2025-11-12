@@ -5452,4 +5452,24 @@ export type StorageClass = (typeof StorageClass)[keyof typeof StorageClass];
 export type TaggingDirective =
 	(typeof TaggingDirective)[keyof typeof TaggingDirective];
 
+/**
+ * @public
+ */
+export interface DeleteObjectsCommandInput {
+	Bucket: string;
+	Delete: {
+		Objects: Array<{ Key: string; VersionId?: string }>;
+		Quiet?: boolean;
+	};
+	ExpectedBucketOwner?: string;
+}
+
+/**
+ * @public
+ */
+export interface DeleteObjectsCommandOutput extends __MetadataBearer {
+	Deleted?: Array<{ Key?: string; VersionId?: string }>;
+	Errors?: Array<{ Key?: string; Code?: string; Message?: string }>;
+}
+
 export {};
