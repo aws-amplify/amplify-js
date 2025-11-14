@@ -9,6 +9,7 @@ import {
 	signIn,
 } from '../../../src/providers/cognito/';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
+import { handleDeviceSRPAuth } from '../../../src/providers/cognito/utils/handleDeviceSRPAuth';
 import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
@@ -27,6 +28,7 @@ jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
+jest.mock('../../../src/providers/cognito/utils/handleDeviceSRPAuth');
 
 const authConfig = {
 	Cognito: {
@@ -446,6 +448,69 @@ describe('confirmSignIn API happy path cases', () => {
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			options,
 		);
+	});
+
+	test('device metadata is retrieved and handled during MFA challenge', async () => {
+		const mockGetDeviceMetadata = jest
+			.spyOn(tokenOrchestrator, 'getDeviceMetadata')
+			.mockResolvedValue({
+				deviceKey: 'device-123',
+				deviceGroupKey: 'group-456',
+				randomPassword: 'random-password',
+			});
+
+		const mockHandleDeviceSRPAuth = jest.mocked(handleDeviceSRPAuth);
+		mockHandleDeviceSRPAuth.mockResolvedValue({
+			ChallengeName: undefined,
+			$metadata: {},
+			AuthenticationResult: {
+				AccessToken: 'access-token',
+				IdToken: 'id-token',
+				RefreshToken: 'refresh-token',
+			},
+		});
+
+		const mockRespondToAuthChallenge = jest.fn().mockResolvedValue({
+			ChallengeName: 'DEVICE_SRP_AUTH',
+			Session: 'device-session',
+			$metadata: {},
+		});
+
+		const mockCreateRespondToAuthChallengeClient = jest.mocked(
+			createRespondToAuthChallengeClient,
+		);
+		mockCreateRespondToAuthChallengeClient.mockReturnValueOnce(
+			mockRespondToAuthChallenge,
+		);
+
+		await signInHelpers.handleMFAChallenge({
+			challengeName: 'SOFTWARE_TOKEN_MFA',
+			challengeResponse: '123456',
+			clientMetadata: undefined,
+			session: 'test-session',
+			username,
+			config: authConfig.Cognito,
+			tokenOrchestrator,
+		});
+
+		expect(mockGetDeviceMetadata).toHaveBeenCalledWith(username);
+		expect(mockRespondToAuthChallenge).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				ChallengeResponses: expect.objectContaining({
+					DEVICE_KEY: 'device-123',
+					SOFTWARE_TOKEN_MFA_CODE: '123456',
+					USERNAME: username,
+				}),
+			}),
+		);
+		expect(mockHandleDeviceSRPAuth).toHaveBeenCalledWith({
+			username,
+			config: authConfig.Cognito,
+			clientMetadata: undefined,
+			session: 'device-session',
+			tokenOrchestrator,
+		});
 	});
 });
 
