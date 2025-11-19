@@ -18,5 +18,8 @@ class WebBrowserPackage : ReactPackage {
 
     override fun createNativeModules(
         reactContext: ReactApplicationContext
-    ): MutableList<NativeModule> = listOf(WebBrowserModule(reactContext)).toMutableList()
+    ): MutableList<NativeModule> = listOf(
+        WebBrowserModule(reactContext),
+        ChromeOSModule(reactContext)
+    ).toMutableList()
 }
