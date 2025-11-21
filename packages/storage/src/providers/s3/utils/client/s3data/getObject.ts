@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	EMPTY_SHA256_HASH,
 	Endpoint,
 	HttpRequest,
 	HttpResponse,
 	PresignUrlOptions,
+	UNSIGNED_PAYLOAD,
 	UserAgentOptions,
 	parseMetadata,
 	presignUrl,
@@ -172,10 +172,7 @@ export const getPresignedGetObjectUrl = async (
 	const endpoint = defaultConfig.endpointResolver(config, input);
 	const { url, headers, method } = await getObjectSerializer(input, endpoint);
 
-	// TODO: set content sha256 query parameter with value of UNSIGNED-PAYLOAD instead of empty hash.
-	// It requires changes in presignUrl. Without this change, the generated url still works,
-	// but not the same as other tools like AWS SDK and CLI.
-	url.searchParams.append(CONTENT_SHA256_HEADER, EMPTY_SHA256_HASH);
+	url.searchParams.append(CONTENT_SHA256_HEADER, UNSIGNED_PAYLOAD);
 	if (config.userAgentValue) {
 		url.searchParams.append(
 			config.userAgentHeader ?? USER_AGENT_HEADER,
