@@ -13,6 +13,7 @@ import {
 	GetUrlWithPathInput,
 	ListAllWithPathInput,
 	ListPaginateWithPathInput,
+	RemoveMultipleInput as RemoveMultipleWithPathInput,
 	RemoveObjectsInput as RemoveObjectsWithPathInput,
 	RemoveWithPathInput,
 	UploadDataWithPathInput,
@@ -87,6 +88,33 @@ export type RemoveObjectsInput = ExtendInputWithAdvancedOptions<
 	RemoveObjectsWithPathInput,
 	AdvancedOptions
 >;
+
+/**
+ * @internal
+ */
+export type RemoveMultipleInput = ExtendInputWithAdvancedOptions<
+	RemoveMultipleWithPathInput,
+	AdvancedOptions
+>;
+
+/**
+ * @internal
+ */
+export interface ProgressInfo {
+	batchNumber: number;
+	processedCount: number;
+	totalCount: number;
+	successCount: number;
+	failureCount: number;
+	currentBatch: {
+		successful: { key: string; versionId?: string }[];
+		failed: {
+			key: string;
+			versionId?: string;
+			error: string;
+		}[];
+	};
+}
 
 /**
  * @internal

@@ -121,6 +121,48 @@ export interface RemoveObjectsInput {
 }
 
 /**
+ * Input type for S3 removeMultiple API to delete multiple objects with advanced options.
+ */
+export interface RemoveMultipleInput {
+	keys: {
+		key: string;
+		versionId?: string;
+	}[];
+	options?: {
+		batchSize?: number;
+		batchStrategy?: 'sequential' | 'parallel';
+		delayBetweenBatchesMs?: number;
+		maxConcurrency?: number;
+		errorHandling?: 'throw' | 'failEarly' | 'continue';
+		retry?: {
+			maxAttempts?: number;
+			delayMs?: number;
+		};
+		onProgress?(progress: ProgressInfo): void;
+		expectedBucketOwner?: string;
+	};
+}
+
+/**
+ * Progress information for removeMultiple API.
+ */
+export interface ProgressInfo {
+	batchNumber: number;
+	processedCount: number;
+	totalCount: number;
+	successCount: number;
+	failureCount: number;
+	currentBatch: {
+		successful: { key: string; versionId?: string }[];
+		failed: {
+			key: string;
+			versionId?: string;
+			error: string;
+		}[];
+	};
+}
+
+/**
  * @deprecated Use {@link DownloadDataWithPathInput} instead.
  * Input type for S3 downloadData API.
  */

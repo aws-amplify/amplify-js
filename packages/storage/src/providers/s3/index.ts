@@ -10,6 +10,7 @@ export {
 	copy,
 	getUrl,
 	removeObjects,
+	removeMultiple,
 } from './apis';
 
 export {
@@ -20,6 +21,8 @@ export {
 	RemoveInput,
 	RemoveWithPathInput,
 	RemoveObjectsInput,
+	RemoveMultipleInput,
+	ProgressInfo,
 	ListAllInput,
 	ListAllWithPathInput,
 	ListPaginateInput,
@@ -40,6 +43,8 @@ export {
 	RemoveOutput,
 	RemoveWithPathOutput,
 	RemoveObjectsOutput,
+	RemoveMultipleOutput,
+	RemoveMultipleOperation,
 	ListAllOutput,
 	ListAllWithPathOutput,
 	ListPaginateOutput,

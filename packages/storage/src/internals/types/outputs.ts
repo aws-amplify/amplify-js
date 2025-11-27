@@ -53,6 +53,50 @@ export type RemoveObjectsOutput = RemoveObjectsWithPathOutput;
 /**
  * @internal
  */
+export interface RemoveMultipleOutput {
+	summary: {
+		totalRequested: number;
+		successCount: number;
+		failureCount: number;
+		cancelledCount: number;
+		batchesProcessed: number;
+		batchesFailed: number;
+		wasCancelled: boolean;
+	};
+	deleted: {
+		key: string;
+		versionId?: string;
+		deletedAt?: Date;
+	}[];
+	failed: {
+		key: string;
+		versionId?: string;
+		error: {
+			code: string;
+			message: string;
+			batchNumber: number;
+			retryAttempts: number;
+		};
+	}[];
+	cancelled?: {
+		key: string;
+		versionId?: string;
+		batchNumber: number;
+	}[];
+}
+
+/**
+ * @internal
+ */
+export interface RemoveMultipleOperation {
+	result: Promise<RemoveMultipleOutput>;
+	cancel(): void;
+	isCancelled(): boolean;
+}
+
+/**
+ * @internal
+ */
 export type ListOutput = ListAllWithPathOutput | ListPaginateWithPathOutput;
 
 /**
