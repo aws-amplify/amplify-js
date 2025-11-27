@@ -48,29 +48,37 @@ export const removeObjects = async (
 	// Calculate Content-MD5 (required for DeleteObjects)
 	const contentMd5 = await calculateContentMd5(xmlBody);
 
-	const result = await deleteObjects(
-		{
-			...s3Config,
-			userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
+	const deleteObjectsInput = {
+		Bucket: bucket,
+		Delete: {
+			Objects: input.paths.map(path => ({ Key: path })),
+			Quiet: false,
 		},
-		{
-			Bucket: bucket,
-			Delete: {
-				Objects: input.paths.map(path => ({ Key: path })),
-				Quiet: false,
-			},
-			ExpectedBucketOwner: input.options?.expectedBucketOwner,
-			ContentMD5: contentMd5,
-		},
-	);
-
-	return {
-		deleted: result.Deleted?.map(item => ({ path: item.Key! })) || [],
-		errors:
-			result.Errors?.map(error => ({
-				path: error.Key!,
-				code: error.Code!,
-				message: error.Message!,
-			})) || [],
+		ExpectedBucketOwner: input.options?.expectedBucketOwner,
+		ContentMD5: contentMd5,
 	};
+
+	try {
+		const result = await deleteObjects(
+			{
+				...s3Config,
+				userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
+			},
+			deleteObjectsInput,
+		);
+
+		const output = {
+			deleted: result.Deleted?.map(item => ({ path: item.Key! })) || [],
+			errors:
+				result.Errors?.map(error => ({
+					path: error.Key!,
+					code: error.Code!,
+					message: error.Message!,
+				})) || [],
+		};
+
+		return output;
+	} catch (error) {
+		throw error;
+	}
 };

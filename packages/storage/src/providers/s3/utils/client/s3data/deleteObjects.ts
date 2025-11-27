@@ -52,7 +52,7 @@ const deleteObjectsSerializer = (
 
 	const body = `<?xml version="1.0" encoding="UTF-8"?>
 <Delete xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
-	<Quiet>${input.Delete!.Quiet || false}</Quiet>
+	<Quiet>${input.Delete!.Quiet === true ? 'true' : 'false'}</Quiet>
 	${objects}
 </Delete>`;
 
@@ -62,22 +62,26 @@ const deleteObjectsSerializer = (
 		'content-md5': input.ContentMD5,
 	});
 
-	return {
+	const request = {
 		method: 'POST',
 		headers,
 		url,
 		body,
 	};
+
+	return request;
 };
 
 const deleteObjectsDeserializer = async (
 	response: HttpResponse,
 ): Promise<DeleteObjectsOutput> => {
 	if (response.statusCode >= 300) {
-		throw buildStorageServiceError((await parseXmlError(response))!);
+		const error = await parseXmlError(response);
+		throw buildStorageServiceError(error!);
 	}
 
 	const text = await response.body.text();
+
 	const deleted: { Key?: string }[] = [];
 	const errors: { Key?: string; Code?: string; Message?: string }[] = [];
 
@@ -104,11 +108,13 @@ const deleteObjectsDeserializer = async (
 		});
 	}
 
-	return {
+	const result = {
 		Deleted: deleted,
 		Errors: errors,
 		$metadata: parseMetadata(response),
 	};
+
+	return result;
 };
 
 export const deleteObjects = composeServiceApi(
