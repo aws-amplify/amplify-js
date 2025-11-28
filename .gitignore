@@ -11,6 +11,7 @@ packages/**/esm/
 packages/**/cjs/
 **/.DS_Store
 .vscode
+.kiro
 .idea
 *.log
 .npm/
