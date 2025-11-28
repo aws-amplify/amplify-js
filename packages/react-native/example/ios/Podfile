@@ -22,7 +22,7 @@ target 'AmplifyRTNCoreExample' do
     :path => config[:reactNativePath],
     :hermes_enabled => flags[:hermes_enabled],
     :fabric_enabled => false,
-	:new_arch_enabled => false,
+    :new_arch_enabled => false,
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
