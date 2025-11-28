@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getHashedPayload } from '../../../../../../../src/clients/middleware/signing/signer/signatureV4/utils/getHashedPayload';
+import { UNSIGNED_PAYLOAD } from '../../../../../../../src/clients/middleware/signing/signer/signatureV4/constants';
 
 describe('getHashedPayload', () => {
 	test('returns empty hash if nullish', () => {
@@ -33,5 +34,11 @@ describe('getHashedPayload', () => {
 		for (const scalar of [123.234, true, new Blob()]) {
 			expect(getHashedPayload(scalar as any)).toStrictEqual('UNSIGNED-PAYLOAD');
 		}
+	});
+
+	test('returns UNSIGNED_PAYLOAD constant without hashing when passed as body', () => {
+		expect(getHashedPayload(UNSIGNED_PAYLOAD as any)).toStrictEqual(
+			'UNSIGNED-PAYLOAD',
+		);
 	});
 });
