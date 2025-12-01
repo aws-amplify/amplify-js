@@ -56,10 +56,13 @@ const deleteObjectsSerializer = (
 	${objects}
 </Delete>`;
 
+	// Always calculate MD5 for the body
+	const contentMd5 = input.ContentMD5;
+
 	const headers = assignStringVariables({
 		'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		'content-type': 'application/xml',
-		'content-md5': input.ContentMD5,
+		'content-md5': contentMd5,
 	});
 
 	const request = {

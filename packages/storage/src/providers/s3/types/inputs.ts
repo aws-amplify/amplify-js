@@ -107,8 +107,32 @@ export type RemoveInput = StorageRemoveInputWithKey<RemoveOptions>;
  * Input type with path for S3 remove API.
  */
 export type RemoveWithPathInput = StorageRemoveInputWithPath<
-	Omit<RemoveOptions, 'accessLevel'>
+	Omit<RemoveOptions, 'accessLevel'> & FolderDeletionOptions
 >;
+
+/**
+ * Folder deletion options for remove API
+ */
+export interface FolderDeletionOptions {
+	recursive?: boolean;
+	batchSize?: number;
+	errorHandling?: 'throw' | 'continue';
+	listingStrategy?: 'list-all-first' | 'stream';
+	confirmLargeDeletion?: boolean;
+	expectedFileCount?: number;
+	onProgress?(progress: FolderDeletionProgress): void;
+}
+
+/**
+ * Progress information for folder deletion
+ */
+export interface FolderDeletionProgress {
+	totalFiles: number;
+	deletedCount: number;
+	failedCount: number;
+	currentBatch: number;
+	totalBatches: number;
+}
 
 /**
  * Input type for S3 removeObjects API to delete multiple objects.

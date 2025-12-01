@@ -142,7 +142,30 @@ export type RemoveOutput = Pick<ItemWithKey, 'key'>;
 /**
  * Output type with path for S3 remove API.
  */
-export type RemoveWithPathOutput = Pick<ItemWithPath, 'path'>;
+export interface RemoveWithPathOutput {
+	path: string;
+	key?: string;
+	isFolder?: boolean;
+	summary?: {
+		totalFiles: number;
+		deletedCount: number;
+		failedCount: number;
+	};
+	failed?: {
+		key: string;
+		error: string;
+	}[];
+}
+
+/**
+ * Operation handle for remove API with cancellation support
+ */
+export interface RemoveOperation<T = RemoveOutput | RemoveWithPathOutput> {
+	result: Promise<T>;
+	cancel(): void;
+	then: Promise<T>['then'];
+	catch: Promise<T>['catch'];
+}
 
 /**
  * Output type for S3 removeObjects API.

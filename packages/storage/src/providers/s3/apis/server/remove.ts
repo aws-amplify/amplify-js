@@ -8,11 +8,12 @@ import {
 
 import {
 	RemoveInput,
-	RemoveOutput,
+	RemoveOperation,
 	RemoveWithPathInput,
 	RemoveWithPathOutput,
 } from '../../types';
 import { remove as removeInternal } from '../internal/remove';
+import { RemoveOutput } from '../../../../internals';
 
 /**
  * Remove a file from your S3 bucket.
@@ -26,7 +27,7 @@ import { remove as removeInternal } from '../internal/remove';
 export function remove(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: RemoveWithPathInput,
-): Promise<RemoveWithPathOutput>;
+): RemoveOperation<RemoveWithPathOutput>;
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/remove | path} instead.
@@ -42,7 +43,7 @@ export function remove(
 export function remove(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: RemoveInput,
-): Promise<RemoveOutput>;
+): RemoveOperation<RemoveOutput>;
 
 export function remove(
 	contextSpec: AmplifyServer.ContextSpec,
