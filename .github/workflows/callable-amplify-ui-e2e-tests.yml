@@ -127,23 +127,23 @@ jobs:
       - name: Link amplify-js packages to amplify-ui
         run: |
           # Create yarn links for amplify-js packages
-          cd amplify-js/packages/aws-amplify && yarn link
-          cd ../../../amplify-js/packages/core && yarn link
-          cd ../../../amplify-js/packages/auth && yarn link
-          cd ../../../amplify-js/packages/storage && yarn link
-          cd ../../../amplify-js/packages/api && yarn link
-          cd ../../../amplify-js/packages/api-graphql && yarn link
-          cd ../../../amplify-js/packages/api-rest && yarn link
-          cd ../../../amplify-js/packages/geo && yarn link
-          cd ../../../amplify-js/packages/analytics && yarn link
-          cd ../../../amplify-js/packages/interactions && yarn link
-          cd ../../../amplify-js/packages/notifications && yarn link
-          cd ../../../amplify-js/packages/predictions && yarn link
-          cd ../../../amplify-js/packages/pubsub && yarn link
-          cd ../../../amplify-js/packages/datastore && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/aws-amplify && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/core && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/auth && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/storage && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/api && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/api-graphql && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/api-rest && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/geo && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/analytics && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/interactions && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/notifications && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/predictions && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/pubsub && yarn link
+          cd $GITHUB_WORKSPACE/amplify-js/packages/datastore && yarn link
           
           # Link them in amplify-ui
-          cd amplify-ui
+          cd $GITHUB_WORKSPACE/amplify-ui
           yarn link aws-amplify
           yarn link @aws-amplify/core
           yarn link @aws-amplify/auth
