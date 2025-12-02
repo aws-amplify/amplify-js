@@ -29,7 +29,7 @@
 	"dependencies": {
 		"base-64": "^1.0.0",
 		"buffer": "^6.0.3",
-		"react-native-url-polyfill": "^2.0.0"
+		"react-native-url-polyfill": "^3.0.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/rtn-passkeys": "^1.0.0",
