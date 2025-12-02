@@ -1,0 +1,357 @@
+name: Amplify UI E2E Tests
+
+on:
+  workflow_call:
+    inputs:
+      commit:
+        required: false
+        type: string
+        default: ''
+      repository:
+        required: false
+        type: string
+        default: ''
+    secrets:
+      AUTH_E2E_ROLE_ARN:
+        required: true
+      GEO_E2E_ROLE_ARN:
+        required: true
+      STORAGE_E2E_ROLE_ARN:
+        required: true
+      DATASTORE_E2E_ROLE_ARN:
+        required: true
+      IN_APP_MESSAGING_E2E_ROLE_ARN:
+        required: true
+      LIVENESS_E2E_ROLE_ARN:
+        required: true
+      AI_E2E_ROLE_ARN:
+        required: true
+      DOMAIN:
+        required: true
+      PHONE_NUMBER:
+        required: true
+      USERNAME:
+        required: true
+      NEW_PASSWORD:
+        required: true
+      VALID_PASSWORD:
+        required: true
+
+jobs:
+  amplify-ui-e2e-react:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - example: next
+            package: react
+            resource-path: ui/components/authenticator/sign-in-with-username
+            tags: '@react and not @todo-react'
+
+          - example: react-router
+            package: react
+            tags: '@react-router and not @todo-react-router'
+
+          - example: next-app-router
+            package: react
+            tags: '@next-app-router and not @todo-next-app-router'
+
+    steps:
+      - name: Checkout Amplify UI
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          repository: aws-amplify/amplify-ui
+          ref: main
+          path: amplify-ui
+          persist-credentials: false
+
+      - name: Checkout Amplify JS
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ inputs.commit || github.sha }}
+          repository: ${{ inputs.repository || github.repository }}
+          path: amplify-js
+          persist-credentials: false
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: 20
+          cache: 'yarn'
+          cache-dependency-path: |
+            amplify-ui/yarn.lock
+            amplify-js/yarn.lock
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+
+      - name: Restore cypress runner cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        id: restore-cypress-cache
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('amplify-ui/yarn.lock') }}
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
+
+      - name: Restore amplify-ui node_modules cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        id: restore-ui-cache
+        with:
+          path: |
+            amplify-ui/node_modules
+            amplify-ui/**/node_modules
+          key: ${{ runner.os }}-amplify-ui-nodemodules-${{ hashFiles('amplify-ui/yarn.lock') }}
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 3
+
+      - name: Install amplify-ui packages
+        if: steps.restore-ui-cache.outputs.cache-hit != 'true' || steps.restore-cypress-cache.outputs.cache-hit != 'true'
+        working-directory: ./amplify-ui
+        run: yarn install --frozen-lockfile
+
+      - name: Install Cypress binary
+        if: steps.restore-cypress-cache.outputs.cache-hit != 'true'
+        working-directory: ./amplify-ui
+        run: npx cypress install
+
+      - name: Build amplify-js packages
+        working-directory: ./amplify-js
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+
+      - name: Link amplify-js packages to amplify-ui
+        run: |
+          # Create yarn links for amplify-js packages
+          cd amplify-js/packages/aws-amplify && yarn link
+          cd ../../../amplify-js/packages/core && yarn link
+          cd ../../../amplify-js/packages/auth && yarn link
+          cd ../../../amplify-js/packages/storage && yarn link
+          cd ../../../amplify-js/packages/api && yarn link
+          cd ../../../amplify-js/packages/api-graphql && yarn link
+          cd ../../../amplify-js/packages/api-rest && yarn link
+          cd ../../../amplify-js/packages/geo && yarn link
+          cd ../../../amplify-js/packages/analytics && yarn link
+          cd ../../../amplify-js/packages/interactions && yarn link
+          cd ../../../amplify-js/packages/notifications && yarn link
+          cd ../../../amplify-js/packages/predictions && yarn link
+          cd ../../../amplify-js/packages/pubsub && yarn link
+          cd ../../../amplify-js/packages/datastore && yarn link
+          
+          # Link them in amplify-ui
+          cd amplify-ui
+          yarn link aws-amplify
+          yarn link @aws-amplify/core
+          yarn link @aws-amplify/auth
+          yarn link @aws-amplify/storage
+          yarn link @aws-amplify/api
+          yarn link @aws-amplify/api-graphql
+          yarn link @aws-amplify/api-rest
+          yarn link @aws-amplify/geo
+          yarn link @aws-amplify/analytics
+          yarn link @aws-amplify/interactions
+          yarn link @aws-amplify/notifications
+          yarn link @aws-amplify/predictions
+          yarn link @aws-amplify/pubsub
+          yarn link @aws-amplify/datastore
+
+      - name: Build amplify-ui @aws-amplify/ui package
+        working-directory: ./amplify-ui
+        run: yarn ui build
+
+      - name: Build amplify-ui react-core package
+        working-directory: ./amplify-ui
+        run: yarn react-core build
+
+      - name: Build amplify-ui react-core-notifications package
+        working-directory: ./amplify-ui
+        run: yarn react-core-notifications build
+
+      - name: Build amplify-ui ${{ matrix.package }} package
+        working-directory: ./amplify-ui
+        run: yarn ${{ matrix.package }} build
+
+      - name: Build amplify-ui react-notifications package
+        working-directory: ./amplify-ui
+        run: yarn react-notifications build
+
+      - name: Build amplify-ui react-geo package
+        working-directory: ./amplify-ui
+        run: yarn react-geo build
+
+      - name: Build amplify-ui react-storage package
+        working-directory: ./amplify-ui
+        run: yarn react-storage build
+
+      - name: Build amplify-ui react-liveness package
+        working-directory: ./amplify-ui
+        run: yarn react-liveness build
+
+      - name: Build amplify-ui react-ai package
+        working-directory: ./amplify-ui
+        run: yarn react-ai build
+
+      - name: Build amplify-ui test-utils package
+        working-directory: ./amplify-ui
+        run: yarn test-utils build
+
+      - name: Add Amplify CLI
+        run: yarn global add @aws-amplify/cli
+
+      - name: Configure auth credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.AUTH_E2E_ROLE_ARN }}
+
+      - name: Create temp AWS Profile
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && \
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && \
+          aws configure set aws_session_token $AWS_SESSION_TOKEN && \
+          aws configure set default.region $AWS_REGION
+
+      - name: Pull down Auth AWS environments
+        working-directory: ./amplify-ui
+        run: yarn environments auth pull
+
+      - name: Configure geo credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.GEO_E2E_ROLE_ARN }}
+
+      - name: Create temp AWS profile
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && \
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && \
+          aws configure set aws_session_token $AWS_SESSION_TOKEN && \
+          aws configure set default.region $AWS_REGION
+
+      - name: Pull down Geo AWS environments
+        working-directory: ./amplify-ui
+        run: yarn environments geo pull
+
+      - name: Configure storage credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.STORAGE_E2E_ROLE_ARN }}
+
+      - name: Create temp AWS profile
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && \
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && \
+          aws configure set aws_session_token $AWS_SESSION_TOKEN && \
+          aws configure set default.region $AWS_REGION
+
+      - name: Pull down Storage AWS environments
+        working-directory: ./amplify-ui
+        run: yarn environments storage pull
+
+      - name: Configure datastore credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.DATASTORE_E2E_ROLE_ARN }}
+
+      - name: Create temp AWS profile
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && \
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && \
+          aws configure set aws_session_token $AWS_SESSION_TOKEN && \
+          aws configure set default.region $AWS_REGION
+
+      - name: Pull down Datastore AWS environments
+        working-directory: ./amplify-ui
+        run: yarn environments datastore pull
+
+      - name: Configure liveness credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.LIVENESS_E2E_ROLE_ARN }}
+
+      - name: Create temp AWS profile
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && \
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && \
+          aws configure set aws_session_token $AWS_SESSION_TOKEN && \
+          aws configure set default.region $AWS_REGION
+
+      - name: Pull down Liveness AWS environments
+        working-directory: ./amplify-ui
+        run: yarn environments liveness pull
+
+      - name: Configure in-app-messaging credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.IN_APP_MESSAGING_E2E_ROLE_ARN }}
+
+      - name: Create temp AWS Profile
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && \
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && \
+          aws configure set aws_session_token $AWS_SESSION_TOKEN && \
+          aws configure set default.region $AWS_REGION
+
+      - name: Pull down In-app-messaging AWS environments
+        working-directory: ./amplify-ui
+        run: yarn environments in-app-messaging pull
+
+      - name: Configure ai credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          aws-region: us-west-2
+          role-to-assume: ${{ secrets.AI_E2E_ROLE_ARN }}
+
+      - name: Create temp AWS profile
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && \
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && \
+          aws configure set aws_session_token $AWS_SESSION_TOKEN && \
+          aws configure set default.region $AWS_REGION
+
+      - name: Pull down AI AWS environments
+        working-directory: ./amplify-ui
+        run: yarn environments ai pull
+
+      - name: Delete AWS profile
+        run: rm -rf ~/.aws
+
+      - name: Build ${{ matrix.example }} example
+        working-directory: ./amplify-ui
+        run: yarn ${{ matrix.example }}-example build
+
+      - name: Start ${{ matrix.example }} example
+        working-directory: ./amplify-ui
+        run: yarn ${{ matrix.example }}-example start & npx wait-on -c waitOnConfig.json -t 20000 http-get://localhost:3000/${{ matrix.resource-path || '' }}
+        env:
+          NEXT_PUBLIC_STREAMING_API_URL: wss://streaming-rekognition-gamma.us-east-1.amazonaws.com
+
+      - name: Run E2E tests against ${{ matrix.example }} example
+        id: e2e
+        working-directory: ./amplify-ui
+        run: yarn e2e test:examples
+        env:
+          TAGS: '${{ matrix.tags }}'
+          DOMAIN: ${{ secrets.DOMAIN }}
+          PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
+          USERNAME: ${{ secrets.USERNAME }}
+          NEW_PASSWORD: ${{ secrets.NEW_PASSWORD }}
+          VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
+
+      - name: Upload failure screenshots and errors
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.5.0
+        if: ${{ failure() && steps.e2e.outcome != 'success' }}
+        with:
+          name: amplify-ui-e2e-cypress-error-${{ matrix.example }}
+          path: |
+            amplify-ui/packages/e2e/cypress/videos/**
+            amplify-ui/packages/e2e/cypress/screenshots/**
+          retention-days: 5

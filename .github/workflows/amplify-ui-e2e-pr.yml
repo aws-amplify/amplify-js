@@ -1,0 +1,33 @@
+name: Amplify UI E2E Tests
+
+# Runs only on ci/ui-e2e branch for testing
+concurrency:
+  group: amplify-ui-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ci/ui-e2e]
+
+jobs:
+  amplify-ui-e2e:
+    uses: ./.github/workflows/callable-amplify-ui-e2e-tests.yml
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      commit: ${{ github.sha }}
+      repository: ${{ github.repository }}
+    secrets:
+      AUTH_E2E_ROLE_ARN: ${{ secrets.AUTH_E2E_ROLE_ARN }}
+      DATASTORE_E2E_ROLE_ARN: ${{ secrets.DATASTORE_E2E_ROLE_ARN }}
+      GEO_E2E_ROLE_ARN: ${{ secrets.GEO_E2E_ROLE_ARN }}
+      STORAGE_E2E_ROLE_ARN: ${{ secrets.STORAGE_E2E_ROLE_ARN }}
+      LIVENESS_E2E_ROLE_ARN: ${{ secrets.LIVENESS_E2E_ROLE_ARN }}
+      IN_APP_MESSAGING_E2E_ROLE_ARN: ${{ secrets.IN_APP_MESSAGING_E2E_ROLE_ARN }}
+      AI_E2E_ROLE_ARN: ${{ secrets.AI_E2E_ROLE_ARN }}
+      DOMAIN: ${{ secrets.DOMAIN }}
+      PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
+      USERNAME: ${{ secrets.USERNAME }}
+      NEW_PASSWORD: ${{ secrets.NEW_PASSWORD }}
+      VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
