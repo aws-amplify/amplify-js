@@ -1,6 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { DocumentType, RetryStrategy } from '@aws-amplify/core/internals/utils';
+import {
+	DocumentType,
+	RESTAuthMode,
+	RetryStrategy,
+} from '@aws-amplify/core/internals/utils';
 
 export type GetInput = ApiInput<RestApiOptionsBase>;
 export type PostInput = ApiInput<RestApiOptionsBase>;
@@ -41,6 +45,11 @@ export interface RestApiOptionsBase {
 	 * @default ` { strategy: 'jittered-exponential-backoff' } `
 	 */
 	retryStrategy?: RetryStrategy;
+	defaultAuthMode?: RESTAuthMode;
+	/**
+	 * custom timeout in milliseconds.
+	 */
+	timeout?: number;
 }
 
 type Headers = Record<string, string>;

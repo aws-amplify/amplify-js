@@ -11,6 +11,7 @@ import {
 import {
 	AWSCredentials,
 	DocumentType,
+	RESTAuthMode,
 	RetryStrategy,
 } from '@aws-amplify/core/internals/utils';
 
@@ -18,6 +19,7 @@ import {
 	logger,
 	parseRestApiServiceError,
 	parseSigningInfo,
+	resolveLibraryOptions,
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
 import { RestApiResponse, SigningServiceInfo } from '../../types';
@@ -30,6 +32,7 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	headers?: Headers;
 	withCredentials?: boolean;
 	retryStrategy?: RetryStrategy;
+	defaultAuthMode?: RESTAuthMode;
 };
 
 type RetryDecider = RetryOptions['retryDecider'];
@@ -75,19 +78,29 @@ export const transferHandler = async (
 		method,
 		body: resolvedBody,
 	};
+	const {
+		retryStrategy: libraryRetryStrategy,
+		defaultAuthMode: libraryDefaultAuthMode,
+	} = resolveLibraryOptions(amplify);
 	const baseOptions = {
 		retryDecider: getRetryDeciderFromStrategy(
-			retryStrategy ?? amplify?.libraryOptions?.API?.REST?.retryStrategy,
+			retryStrategy ?? libraryRetryStrategy,
 		),
 		computeDelay: jitteredBackoff,
 		withCrossDomainCredentials: withCredentials,
 		abortSignal,
 	};
 
-	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+	const defaultAuthMode = options.defaultAuthMode ?? libraryDefaultAuthMode;
+
+	let credentials: AWSCredentials | null = null;
+	if (defaultAuthMode !== 'none') {
+		credentials = await resolveCredentials(amplify);
+	}
 
 	let response: RestApiResponse;
-	const credentials = await resolveCredentials(amplify);
+	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+
 	if (isIamAuthApplicable && credentials) {
 		const signingInfoFromUrl = parseSigningInfo(url);
 		const signingService =

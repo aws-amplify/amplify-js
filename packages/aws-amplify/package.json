@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.15.7",
+	"version": "6.15.8",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -293,13 +293,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.88",
-		"@aws-amplify/api": "6.3.19",
-		"@aws-amplify/auth": "6.16.0",
-		"@aws-amplify/core": "6.13.3",
-		"@aws-amplify/datastore": "5.1.0",
-		"@aws-amplify/notifications": "2.0.88",
-		"@aws-amplify/storage": "6.10.0",
+		"@aws-amplify/analytics": "7.0.89",
+		"@aws-amplify/api": "6.3.20",
+		"@aws-amplify/auth": "6.17.0",
+		"@aws-amplify/core": "6.14.0",
+		"@aws-amplify/datastore": "5.1.1",
+		"@aws-amplify/notifications": "2.0.89",
+		"@aws-amplify/storage": "6.10.1",
 		"tslib": "^2.5.0"
 	},
 	"size-limit": [

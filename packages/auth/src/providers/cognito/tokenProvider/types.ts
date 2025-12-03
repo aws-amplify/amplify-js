@@ -3,21 +3,24 @@
 import {
 	AuthConfig,
 	AuthTokens,
+	ClientMetadataProvider,
 	FetchAuthSessionOptions,
 	KeyValueStorageInterface,
 	TokenProvider,
 } from '@aws-amplify/core';
 
-import { CognitoAuthSignInDetails } from '../types';
+import { ClientMetadata, CognitoAuthSignInDetails } from '../types';
 
 export type TokenRefresher = ({
 	tokens,
 	authConfig,
 	username,
+	clientMetadata,
 }: {
 	tokens: CognitoAuthTokens;
 	authConfig?: AuthConfig;
 	username: string;
+	clientMetadata?: ClientMetadata;
 }) => Promise<CognitoAuthTokens>;
 
 export type AuthKeys<AuthKey extends string> = Record<AuthKey, string>;
@@ -66,6 +69,9 @@ export interface AuthTokenOrchestrator {
 export interface CognitoUserPoolTokenProviderType extends TokenProvider {
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
 	setAuthConfig(authConfig: AuthConfig): void;
+	setClientMetadataProvider(
+		clientMetadataProvider: ClientMetadataProvider,
+	): void;
 }
 
 export type CognitoAuthTokens = AuthTokens & {
