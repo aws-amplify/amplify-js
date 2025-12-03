@@ -80,11 +80,26 @@ jobs:
             tags: '@svelte and not @todo-svelte'
 
     steps:
+      - name: Get latest release commit
+        id: amplify-ui-release
+        run: |
+          # Get the latest "Version Packages" commit SHA from main branch (check last 200 commits)
+          LATEST_COMMIT=$(curl -s "https://api.github.com/repos/aws-amplify/amplify-ui/commits?sha=main&per_page=100" | \
+            jq -r '.[] | select(.commit.message | startswith("Version Packages")) | .sha' | head -1)
+
+          if [ -z "$LATEST_COMMIT" ]; then
+            echo "No Version Packages commit found, falling back to current main branch"
+            LATEST_COMMIT="main"
+          fi
+          
+          echo "commit=$LATEST_COMMIT" >> $GITHUB_OUTPUT
+          echo "Using Amplify UI commit: $LATEST_COMMIT"
+
       - name: Checkout Amplify UI
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: aws-amplify/amplify-ui
-          ref: main
+          ref: ${{ steps.amplify-ui-release.outputs.commit }}
           path: amplify-ui
           persist-credentials: false
 
