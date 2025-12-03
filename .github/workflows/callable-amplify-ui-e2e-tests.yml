@@ -116,27 +116,6 @@ jobs:
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
 
-      - name: Restore amplify-ui node_modules cache
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-        id: restore-ui-cache
-        with:
-          path: |
-            amplify-ui/node_modules
-            amplify-ui/**/node_modules
-          key: ${{ runner.os }}-amplify-ui-nodemodules-${{ hashFiles('amplify-ui/yarn.lock') }}
-        env:
-          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 3
-
-      - name: Install amplify-ui packages
-        if: steps.restore-ui-cache.outputs.cache-hit != 'true' || steps.restore-cypress-cache.outputs.cache-hit != 'true'
-        working-directory: ./amplify-ui
-        run: yarn install --frozen-lockfile
-
-      - name: Install Cypress binary
-        if: steps.restore-cypress-cache.outputs.cache-hit != 'true'
-        working-directory: ./amplify-ui
-        run: npx cypress install
-
       - name: Build amplify-js packages
         working-directory: ./amplify-js
         run: |
@@ -171,9 +150,15 @@ jobs:
           
           fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
           "
-          
-          # Reinstall to apply resolutions
-          yarn install --force
+
+      - name: Install amplify-ui packages with local amplify-js
+        working-directory: ./amplify-ui
+        run: yarn install
+
+      - name: Install Cypress binary
+        if: steps.restore-cypress-cache.outputs.cache-hit != 'true'
+        working-directory: ./amplify-ui
+        run: npx cypress install
 
       - name: Build amplify-ui @aws-amplify/ui package
         working-directory: ./amplify-ui
