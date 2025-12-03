@@ -17,7 +17,7 @@ const config = {
 	// We need to make sure that only one version is loaded for peerDependencies
 	// So we block them at the root, and alias them to the versions in example's node_modules
 	resolver: {
-		blacklistRE: exclusionList(
+		blockList: exclusionList(
 			modules.map(
 				m => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`),
 			),
@@ -27,19 +27,8 @@ const config = {
 
 			return acc;
 		}, {}),
-		// eslint-disable-next-line camelcase
 		unstable_enableSymlinks: true,
 	},
-	transformer: {
-		getTransformOptions: async () => ({
-			transform: {
-				experimentalImportSupport: false,
-				inlineRequires: true,
-			},
-		}),
-	},
 };
-
-config.resetCache = true;
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

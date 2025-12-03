@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { presignUrl } from '@aws-amplify/core/internals/aws-client-utils';
+import {
+	UNSIGNED_PAYLOAD,
+	presignUrl,
+} from '@aws-amplify/core/internals/aws-client-utils';
 
 import { getPresignedGetObjectUrl } from '../../../../../../src/providers/s3/utils/client/s3data';
 
@@ -42,9 +45,6 @@ describe('serializeGetObjectRequest', () => {
 		);
 		expect(actualUrl.pathname).toEqual('/key');
 		expect(actualUrl.searchParams.get('X-Amz-Expires')).toEqual('900');
-		expect(actualUrl.searchParams.get('x-amz-content-sha256')).toEqual(
-			expect.any(String),
-		);
 		expect(actualUrl.searchParams.get('x-amz-user-agent')).toEqual('UA');
 	});
 
@@ -99,9 +99,6 @@ describe('serializeGetObjectRequest', () => {
 		);
 
 		expect(actual.searchParams.get('X-Amz-Expires')).toBe('900');
-		expect(actual.searchParams.get('x-amz-content-sha256')).toEqual(
-			expect.any(String),
-		);
 		expect(actual.searchParams.get('response-content-disposition')).toBe(
 			'attachment; filename="filename.jpg"',
 		);
@@ -109,5 +106,33 @@ describe('serializeGetObjectRequest', () => {
 			'application/pdf',
 		);
 		expect(actual.searchParams.get('x-amz-user-agent')).toBe('UA');
+	});
+
+	it('should use UNSIGNED-PAYLOAD for presigned URLs', async () => {
+		mockPresignUrl.mockClear();
+
+		const result = await getPresignedGetObjectUrl(
+			{
+				...defaultConfigWithStaticCredentials,
+				signingRegion: defaultConfigWithStaticCredentials.region,
+				signingService: 's3',
+				expiration: 900,
+			},
+			{
+				Bucket: 'bucket',
+				Key: 'key',
+			},
+		);
+
+		// Verify UNSIGNED-PAYLOAD is used in the signature calculation
+		expect(mockPresignUrl).toHaveBeenCalledWith(
+			expect.objectContaining({
+				body: UNSIGNED_PAYLOAD,
+			}),
+			expect.anything(),
+		);
+
+		// Verify x-amz-content-sha256 is NOT in the presigned URL query parameters
+		expect(result.searchParams.get('x-amz-content-sha256')).toBeNull();
 	});
 });

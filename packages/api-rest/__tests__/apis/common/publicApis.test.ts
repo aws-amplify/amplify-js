@@ -450,6 +450,70 @@ describe('public APIs', () => {
 			}
 		});
 
+		it('should support timeout configuration at request level', async () => {
+			expect.assertions(3);
+			const timeoutSpy = jest.spyOn(global, 'setTimeout');
+			mockAuthenticatedHandler.mockImplementation(() => {
+				return new Promise((_resolve, reject) => {
+					setTimeout(() => {
+						const abortError = new Error('AbortError');
+						abortError.name = 'AbortError';
+						reject(abortError);
+					}, 300);
+				});
+			});
+			try {
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/items',
+					options: {
+						timeout: 100,
+					},
+				}).response;
+			} catch (error: any) {
+				expect(timeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
+				expect(error.name).toBe('TimeoutError');
+				expect(error.message).toBe('Request timeout after 100ms');
+				timeoutSpy.mockRestore();
+			}
+		});
+
+		it('should support timeout configuration at library options level', async () => {
+			expect.assertions(3);
+			const timeoutSpy = jest.spyOn(global, 'setTimeout');
+			const mockTimeoutFunction = jest.fn().mockReturnValue(100);
+			const mockAmplifyInstanceWithTimeout = {
+				...mockAmplifyInstance,
+				libraryOptions: {
+					API: {
+						REST: {
+							timeout: mockTimeoutFunction,
+						},
+					},
+				},
+			} as any as AmplifyClassV6;
+			mockAuthenticatedHandler.mockImplementation(() => {
+				return new Promise((_resolve, reject) => {
+					setTimeout(() => {
+						const abortError = new Error('AbortError');
+						abortError.name = 'AbortError';
+						reject(abortError);
+					}, 300);
+				});
+			});
+			try {
+				await fn(mockAmplifyInstanceWithTimeout, {
+					apiName: 'restApi1',
+					path: '/items',
+				}).response;
+			} catch (error: any) {
+				expect(timeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
+				expect(error.name).toBe('TimeoutError');
+				expect(error.message).toBe('Request timeout after 100ms');
+				timeoutSpy.mockRestore();
+			}
+		});
+
 		describe('retry strategy', () => {
 			beforeEach(() => {
 				mockAuthenticatedHandler.mockReset();
@@ -615,6 +679,114 @@ describe('public APIs', () => {
 				const { retryDecider } = callArgs[1];
 				const result = await retryDecider();
 				expect(result).toEqual({ retryable: false });
+			});
+		});
+
+		describe('defaultAuthMode option', () => {
+			it('should skip credential resolution when defaultAuthMode is "none"', async () => {
+				mockFetchAuthSession.mockClear();
+
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/public',
+					options: {
+						defaultAuthMode: 'none',
+					},
+				}).response;
+
+				expect(mockFetchAuthSession).not.toHaveBeenCalled();
+				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
+				expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
+			});
+
+			it('should resolve credentials when defaultAuthMode is "iam"', async () => {
+				mockFetchAuthSession.mockResolvedValue({
+					credentials: {
+						accessKeyId: 'test-key',
+						secretAccessKey: 'test-secret',
+					},
+				});
+
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/private',
+					options: {
+						defaultAuthMode: 'iam',
+					},
+				}).response;
+
+				expect(mockFetchAuthSession).toHaveBeenCalled();
+				expect(mockAuthenticatedHandler).toHaveBeenCalled();
+			});
+
+			it('should maintain default behavior when no defaultAuthMode specified', async () => {
+				mockFetchAuthSession.mockResolvedValue({
+					credentials: null,
+				});
+
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/endpoint',
+				}).response;
+
+				expect(mockFetchAuthSession).toHaveBeenCalled();
+				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
+			});
+
+			it('should use global defaultAuthMode configuration when no local defaultAuthMode is specified', async () => {
+				const mockAmplifyWithGlobalConfig = {
+					...mockAmplifyInstance,
+					libraryOptions: {
+						...mockAmplifyInstance.libraryOptions,
+						API: {
+							...mockAmplifyInstance.libraryOptions?.API,
+							REST: {
+								defaultAuthMode: 'none' as const,
+							},
+						},
+					},
+				} as any as AmplifyClassV6;
+
+				mockFetchAuthSession.mockClear();
+
+				await fn(mockAmplifyWithGlobalConfig, {
+					apiName: 'restApi1',
+					path: '/public',
+				}).response;
+
+				expect(mockFetchAuthSession).not.toHaveBeenCalled();
+				expect(mockUnauthenticatedHandler).toHaveBeenCalled();
+				expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
+			});
+
+			it('should override global defaultAuthMode with local defaultAuthMode configuration', async () => {
+				const mockAmplifyWithGlobalConfig = {
+					...mockAmplifyInstance,
+					libraryOptions: {
+						...mockAmplifyInstance.libraryOptions,
+						API: {
+							...mockAmplifyInstance.libraryOptions?.API,
+							REST: {
+								defaultAuthMode: 'none' as const,
+							},
+						},
+					},
+				} as any as AmplifyClassV6;
+
+				mockFetchAuthSession.mockClear();
+				mockFetchAuthSession.mockResolvedValue({ credentials });
+
+				await fn(mockAmplifyWithGlobalConfig, {
+					apiName: 'restApi1',
+					path: '/private',
+					options: {
+						defaultAuthMode: 'iam',
+					},
+				}).response;
+
+				expect(mockFetchAuthSession).toHaveBeenCalled();
+				expect(mockAuthenticatedHandler).toHaveBeenCalled();
+				expect(mockUnauthenticatedHandler).not.toHaveBeenCalled();
 			});
 		});
 	});

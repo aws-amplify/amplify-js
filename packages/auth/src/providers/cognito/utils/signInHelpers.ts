@@ -71,6 +71,7 @@ interface HandleAuthChallengeRequest {
 	deviceName?: string;
 	requiredAttributes?: AuthUserAttributes;
 	config: CognitoUserPoolConfig;
+	tokenOrchestrator: AuthTokenOrchestrator;
 }
 
 function isWebAuthnResultAuthSignInOutput(
@@ -834,6 +835,7 @@ export async function handleChallengeName(
 				session,
 				username,
 				config,
+				tokenOrchestrator,
 			});
 		case 'MFA_SETUP':
 			return handleMFASetupChallenge({
@@ -843,6 +845,7 @@ export async function handleChallengeName(
 				username,
 				deviceName,
 				config,
+				tokenOrchestrator,
 			});
 		case 'NEW_PASSWORD_REQUIRED':
 			return handleCompleteNewPasswordChallenge({
@@ -852,6 +855,7 @@ export async function handleChallengeName(
 				username,
 				requiredAttributes: userAttributes,
 				config,
+				tokenOrchestrator,
 			});
 		case 'CUSTOM_CHALLENGE':
 			return retryOnResourceNotFoundException(
@@ -880,6 +884,7 @@ export async function handleChallengeName(
 				session,
 				username,
 				config,
+				tokenOrchestrator,
 			});
 		case 'PASSWORD':
 			return handleSelectChallengeWithPassword(
@@ -967,6 +972,7 @@ export async function handleMFAChallenge({
 	session,
 	username,
 	config,
+	tokenOrchestrator,
 }: HandleAuthChallengeRequest & {
 	challengeName: Extract<
 		ChallengeName,
@@ -995,6 +1001,11 @@ export async function handleMFAChallenge({
 		challengeResponses.SOFTWARE_TOKEN_MFA_CODE = challengeResponse;
 	}
 
+	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
+	if (deviceMetadata && deviceMetadata.deviceKey) {
+		challengeResponses.DEVICE_KEY = deviceMetadata.deviceKey;
+	}
+
 	const userContextData = getUserContextData({
 		username,
 		userPoolId,
@@ -1016,11 +1027,22 @@ export async function handleMFAChallenge({
 		}),
 	});
 
-	return respondToAuthChallenge(
+	const response = await respondToAuthChallenge(
 		{
 			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
 		jsonReq,
 	);
+	if (response.ChallengeName === 'DEVICE_SRP_AUTH') {
+		return handleDeviceSRPAuth({
+			username,
+			config,
+			clientMetadata,
+			session: response.Session,
+			tokenOrchestrator,
+		});
+	}
+
+	return response;
 }

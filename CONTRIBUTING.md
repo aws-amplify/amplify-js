@@ -8,6 +8,7 @@ Whether it's a bug report, new feature, correction, or additional documentation,
 - [Our Design](#our-design)
 - [Development Process](#development-process)
   - [Setting up for local development](#setting-up-for-local-development)
+  - [Setting up git-secrets](#setting-up-git-secrets)
   - [Architecture of the codebase](#architecture-of-the-codebase)
   - [Steps towards contributions](#steps-towards-contributions)
 - [Bug Reports](#bug-reports)
@@ -67,6 +68,74 @@ yarn build
 ```
 
 > Note: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with main branch of `amplify-js`
+
+## Setting up git-secrets
+
+This repository uses [git-secrets](https://github.com/awslabs/git-secrets) to prevent accidentally pushing AWS credentials or other secrets. A pre-push hook will scan your commits before pushing to the remote repository.
+
+### Installing git-secrets
+
+**macOS (using Homebrew):**
+
+```bash
+brew install git-secrets
+```
+
+**Linux (Debian/Ubuntu):**
+
+```bash
+sudo apt-get install git-secrets
+```
+
+**Linux (manual installation):**
+
+```bash
+git clone https://github.com/awslabs/git-secrets.git
+cd git-secrets
+sudo make install
+```
+
+**Windows (manual installation):**
+
+1. Clone the repository: `git clone https://github.com/awslabs/git-secrets.git`
+2. Add the `git-secrets` directory to your PATH
+3. Alternatively, copy `git-secrets` to a directory already in your PATH
+
+### Registering AWS patterns
+
+After installing git-secrets, register the AWS secret patterns in your local repository:
+
+```bash
+git secrets --register-aws
+```
+
+This registers patterns to detect:
+
+- AWS Access Key IDs (e.g., `AKIAIOSFODNN7EXAMPLE`)
+- AWS Secret Access Keys
+- AWS Session Tokens
+
+You can verify the registered patterns with:
+
+```bash
+git secrets --list
+```
+
+### Handling false positives
+
+If git-secrets flags a legitimate string as a potential secret (false positive), you can add an allowed pattern:
+
+```bash
+# Allow a specific pattern
+git secrets --add --allowed 'AKIAIOSFODNN7EXAMPLE'
+
+# Allow patterns matching a regex
+git secrets --add --allowed 'my-test-pattern.*'
+```
+
+Allowed patterns are stored in `.git/config` and apply only to your local repository.
+
+> **Note:** The pre-push hook will block pushes if git-secrets is not installed. Please install and configure git-secrets before contributing.
 
 ## Architecture of the codebase
 

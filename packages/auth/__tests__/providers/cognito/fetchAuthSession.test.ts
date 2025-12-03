@@ -75,8 +75,10 @@ describe('fetchAuthSession behavior for IdentityPools only', () => {
 });
 
 describe('fetchAuthSession behavior for UserPools only', () => {
+	let getTokensSpy: jest.SpyInstance;
+
 	beforeAll(() => {
-		jest
+		getTokensSpy = jest
 			.spyOn(cognitoUserPoolsTokenProvider, 'getTokens')
 			.mockImplementation(async () => {
 				return {
@@ -135,5 +137,29 @@ describe('fetchAuthSession behavior for UserPools only', () => {
 			},
 			userSub: '1234567890',
 		});
+	});
+
+	test('should pass clientMetadata option to token provider', async () => {
+		Amplify.configure(
+			{
+				Auth: {
+					Cognito: {
+						userPoolClientId: 'userPoolCliendIdValue',
+						userPoolId: 'userpoolIdvalue',
+					},
+				},
+			},
+			{
+				Auth: {
+					credentialsProvider: cognitoCredentialsProvider,
+					tokenProvider: cognitoUserPoolsTokenProvider,
+				},
+			},
+		);
+
+		const clientMetadata = { 'app-version': '1.0.0' };
+		await fetchAuthSession({ clientMetadata });
+
+		expect(getTokensSpy).toHaveBeenCalledWith({ clientMetadata });
 	});
 });

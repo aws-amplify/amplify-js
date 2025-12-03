@@ -125,7 +125,7 @@ jobs:
         run: npm install
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
       - name: Install latest stable amplify version
-        run: npm install aws-amplify@latest @aws-amplify/adapter-nextjs@latest
+        run: npm install aws-amplify@latest @aws-amplify/adapter-nextjs@latest @aws-amplify/auth@latest
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
       - name: Start application and run test
         run: |

@@ -34,7 +34,9 @@ export const getHashedPayload = (body: HttpRequest['body']): string => {
 };
 
 const isSourceData = (body: HttpRequest['body']): body is SourceData =>
-	typeof body === 'string' || ArrayBuffer.isView(body) || isArrayBuffer(body);
+	// Exclude UNSIGNED_PAYLOAD constant to prevent it from being hashed as a string
+	body !== UNSIGNED_PAYLOAD &&
+	(typeof body === 'string' || ArrayBuffer.isView(body) || isArrayBuffer(body));
 
 const isArrayBuffer = (arg: any): arg is ArrayBuffer =>
 	(typeof ArrayBuffer === 'function' && arg instanceof ArrayBuffer) ||

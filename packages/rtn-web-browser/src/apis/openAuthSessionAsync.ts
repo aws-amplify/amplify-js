@@ -37,14 +37,16 @@ export const openAuthSessionAsync = async (
 	if (Platform.OS === 'android') {
 		try {
 			const isChromebookRes = await isChromebook();
-			if (isChromebookRes) {
-				return openAuthSessionChromeOs(httpsUrl, redirectUrls);
+			if (!isChromebookRes) {
+				// If it is not a Chromebook, it probably supports custom tabs
+				return await openAuthSessionAndroid(httpsUrl, redirectUrls);
 			}
 		} catch {
 			// ignore and fallback to android
 		}
 
-		return openAuthSessionAndroid(httpsUrl, redirectUrls);
+		// The ChromeOS way without custom tabs works everywhere
+		return openAuthSessionChromeOs(httpsUrl, redirectUrls);
 	}
 };
 

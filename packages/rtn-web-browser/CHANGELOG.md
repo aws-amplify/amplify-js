@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.1.4...@aws-amplify/rtn-web-browser@1.2.0) (2025-09-29)
+
+### Bug Fixes
+
+- remove failing expo check ([#14560](https://github.com/aws-amplify/amplify-js/issues/14560)) ([96fdd13](https://github.com/aws-amplify/amplify-js/commit/96fdd134f138b004a3073260c1edc5b43f3ad495))
+
+### Features
+
+- **rtn-passkeys:** add rtn passkeys ([#14489](https://github.com/aws-amplify/amplify-js/issues/14489)) ([ac06885](https://github.com/aws-amplify/amplify-js/commit/ac06885a8f2a13365fe1ff26bfd54891f9ad4a45)), closes [#14390](https://github.com/aws-amplify/amplify-js/issues/14390) [#14391](https://github.com/aws-amplify/amplify-js/issues/14391)
+- **rtn-web-browser:** add auth support for chromebook ([#14523](https://github.com/aws-amplify/amplify-js/issues/14523)) ([5b68510](https://github.com/aws-amplify/amplify-js/commit/5b685100773337528e9ecce27bc5011b361ca023))
+
 ## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.1.3...@aws-amplify/rtn-web-browser@1.1.4) (2025-05-27)
 
 **Note:** Version bump only for package @aws-amplify/rtn-web-browser
