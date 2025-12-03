@@ -137,6 +137,14 @@ jobs:
           yarn install --frozen-lockfile
           yarn build
 
+      - name: Clean up amplify-js node_modules to free disk space
+        run: |
+          echo "Disk space before cleanup:"
+          df -h
+          rm -rf amplify-js/node_modules
+          echo "Disk space after cleanup:"
+          df -h
+
       - name: Patch amplify-ui to use local amplify-js packages
         run: |
           cd amplify-ui
