@@ -38,7 +38,7 @@ on:
         required: true
 
 jobs:
-  amplify-ui-e2e-react:
+  amplify-ui-e2e:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
@@ -47,6 +47,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # React frameworks
           - example: next
             package: react
             resource-path: ui/components/authenticator/sign-in-with-username
@@ -59,6 +60,24 @@ jobs:
           - example: next-app-router
             package: react
             tags: '@next-app-router and not @todo-next-app-router'
+
+          # Angular
+          - example: angular
+            package: angular
+            resource-path: ui/components/authenticator/sign-in-with-username
+            tags: '@angular and not @todo-angular'
+
+          # Vue
+          - example: vue
+            package: vue
+            resource-path: ui/components/authenticator/sign-in-with-username
+            tags: '@vue and not @todo-vue'
+
+          # Svelte
+          - example: svelte
+            package: svelte
+            resource-path: ui/components/authenticator/sign-in-with-username
+            tags: '@svelte and not @todo-svelte'
 
     steps:
       - name: Checkout Amplify UI
@@ -161,10 +180,12 @@ jobs:
         run: yarn ui build
 
       - name: Build amplify-ui react-core package
+        if: matrix.package == 'react'
         working-directory: ./amplify-ui
         run: yarn react-core build
 
       - name: Build amplify-ui react-core-notifications package
+        if: matrix.package == 'react'
         working-directory: ./amplify-ui
         run: yarn react-core-notifications build
 
@@ -173,22 +194,27 @@ jobs:
         run: yarn ${{ matrix.package }} build
 
       - name: Build amplify-ui react-notifications package
+        if: matrix.package == 'react'
         working-directory: ./amplify-ui
         run: yarn react-notifications build
 
       - name: Build amplify-ui react-geo package
+        if: matrix.package == 'react'
         working-directory: ./amplify-ui
         run: yarn react-geo build
 
       - name: Build amplify-ui react-storage package
+        if: matrix.package == 'react'
         working-directory: ./amplify-ui
         run: yarn react-storage build
 
       - name: Build amplify-ui react-liveness package
+        if: matrix.package == 'react'
         working-directory: ./amplify-ui
         run: yarn react-liveness build
 
       - name: Build amplify-ui react-ai package
+        if: matrix.package == 'react'
         working-directory: ./amplify-ui
         run: yarn react-ai build
 
