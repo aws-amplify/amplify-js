@@ -1,2 +1,4 @@
-# The only AWS account number allowed to be used in tests (used by git-secrets)
-account = '123456789012';
+# The following regexes are exceptions for git-secrets - https://github.com/awslabs/git-secrets
+
+# The only AWS account number allowed to be used in tests
+ACCOUNT_ID = '123456789012';
