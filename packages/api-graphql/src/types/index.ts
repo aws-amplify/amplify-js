@@ -527,8 +527,10 @@ export type GenerateServerClientParams = {
 export interface WebSocketHealthState {
 	isHealthy: boolean;
 	connectionState: import('./PubSub').ConnectionState;
-	lastKeepAliveTime?: number;
-	timeSinceLastKeepAlive?: number;
+	/** Timestamp of last keep-alive message (0 if never received) */
+	lastKeepAliveTime: number;
+	/** Time in milliseconds since last keep-alive (Infinity if never received) */
+	timeSinceLastKeepAlive: number;
 }
 
 export interface WebSocketControl {
