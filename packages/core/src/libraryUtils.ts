@@ -48,6 +48,7 @@ export {
 	AssociationHasOne,
 	DocumentType,
 	GraphQLAuthMode,
+	RESTAuthMode,
 	ModelFieldType,
 	NonModelFieldType,
 	ModelIntrospectionSchema,
