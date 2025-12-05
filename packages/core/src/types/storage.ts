@@ -6,6 +6,8 @@ export interface KeyValueStorageInterface {
 	getItem(key: string): Promise<string | null>;
 	removeItem(key: string): Promise<void>;
 	clear(): Promise<void>;
+	addListener?(listener: (ev: KeyValueStorageEvent) => Promise<void>): void;
+	rmListener?(listener: (ev: KeyValueStorageEvent) => Promise<void>): void;
 }
 
 export type SameSite = 'strict' | 'lax' | 'none';
@@ -27,4 +29,10 @@ export interface SyncStorage {
 	getItem(key: string): string | null;
 	removeItem(key: string): void;
 	clear(): void;
+}
+
+export interface KeyValueStorageEvent {
+	readonly key: string | null;
+	readonly oldValue: any;
+	readonly newValue: any;
 }
