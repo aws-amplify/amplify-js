@@ -43,6 +43,8 @@ jobs:
   dependency-review:
     needs: prebuild
     uses: ./.github/workflows/callable-dependency-review.yml
+  git-secrets-check:
+    uses: ./.github/workflows/callable-git-secrets-check.yml
   all-unit-tests-pass:
     name: Unit and Bundle tests have passed
     needs:
@@ -52,6 +54,7 @@ jobs:
       - github-actions-test
       - tsc-compliance-test
       - dependency-review
+      - git-secrets-check
     runs-on: ubuntu-latest
     if: success() # only run when all checks have passed
     # store success output flag for ci job

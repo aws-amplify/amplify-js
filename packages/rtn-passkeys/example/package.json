@@ -15,7 +15,7 @@
 		"@aws-amplify/rtn-passkeys": "1.1.0",
 		"@react-native-async-storage/async-storage": "^2.1.2",
 		"aws-amplify": "6.15.8",
-		"react": "19.0.0",
+		"react": "19.2.1",
 		"react-native": "0.79.2",
 		"react-native-get-random-values": "^1.11.0"
 	},
@@ -27,11 +27,18 @@
 		"@react-native-community/cli-platform-android": "18.0.0",
 		"@react-native-community/cli-platform-ios": "18.0.0",
 		"@react-native/babel-preset": "0.79.2",
+		"@react-native/codegen": "0.79.2",
 		"@react-native/eslint-config": "0.79.2",
 		"@react-native/metro-config": "0.79.2",
 		"@react-native/typescript-config": "0.79.2"
 	},
 	"engines": {
 		"node": ">=18"
+	},
+	"workspaces": {
+		"nohoist": [
+			"**/@react-native/codegen",
+			"**/@react-native/codegen/**"
+		]
 	}
 }
