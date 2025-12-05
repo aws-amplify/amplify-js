@@ -15,7 +15,7 @@
 		"@aws-amplify/rtn-passkeys": "1.1.0",
 		"@react-native-async-storage/async-storage": "^2.1.2",
 		"aws-amplify": "6.15.8",
-		"react": "19.0.0",
+		"react": "19.2.1",
 		"react-native": "0.79.2",
 		"react-native-get-random-values": "^1.11.0"
 	},
