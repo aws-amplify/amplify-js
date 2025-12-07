@@ -402,52 +402,7 @@ class SubscriptionProcessor {
 											: undefined;
 
 										if (customVars) {
-											// Check for reserved keys that would conflict
-											const reservedKeys = [
-												'filter',
-												'owner',
-												'limit',
-												'nextToken',
-												'sortDirection',
-											];
-
-											const safeVars: Record<string, any> = {};
-											let hasConflicts = false;
-
-											// Safe iteration that handles Object.create(null)
-											try {
-												for (const [key, value] of Object.entries(customVars)) {
-													if (reservedKeys.includes(key)) {
-														hasConflicts = true;
-													} else {
-														safeVars[key] = value;
-													}
-												}
-											} catch (entriesError) {
-												// Fallback for objects without prototype
-												for (const key in customVars) {
-													if (
-														Object.prototype.hasOwnProperty.call(
-															customVars,
-															key,
-														)
-													) {
-														if (reservedKeys.includes(key)) {
-															hasConflicts = true;
-														} else {
-															safeVars[key] = customVars[key];
-														}
-													}
-												}
-											}
-
-											if (hasConflicts) {
-												logger.warn(
-													`subscriptionVariables for ${modelDefinition.name} contains reserved keys that were filtered out`,
-												);
-											}
-
-											Object.assign(variables, safeVars);
+											Object.assign(variables, customVars);
 										}
 
 										if (addFilter && predicatesGroup) {
