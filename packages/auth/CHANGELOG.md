@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.17.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.17.0...@aws-amplify/auth@6.17.1) (2025-12-10)
+
+### Bug Fixes
+
+- device tracking for MFA ([#14626](https://github.com/aws-amplify/amplify-js/issues/14626)) ([91c2933](https://github.com/aws-amplify/amplify-js/commit/91c2933d33ed307e0f53577f6291896275d9696b))
+
 # [6.17.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.16.0...@aws-amplify/auth@6.17.0) (2025-11-06)
 
 ### Bug Fixes
