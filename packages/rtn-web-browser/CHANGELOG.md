@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.2.0...@aws-amplify/rtn-web-browser@1.3.0) (2025-12-10)
+
+### Bug Fixes
+
+- **rtn-web-browser:** Don't use custom tabs on default and fallback to normal tabs ([913c533](https://github.com/aws-amplify/amplify-js/commit/913c53304758dd4b846c268c3b3c2e47af643e99))
+
+### Features
+
+- **rtn-web-browser:** Add missing `NativeModule` for ChromeOS detection ([8940dc3](https://github.com/aws-amplify/amplify-js/commit/8940dc377c6fe61b54dac83fd181a51b9a190f2c))
+
 # [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.1.4...@aws-amplify/rtn-web-browser@1.2.0) (2025-09-29)
 
 ### Bug Fixes
