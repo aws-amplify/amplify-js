@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.15.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.14.0...@aws-amplify/core@6.15.0) (2025-12-10)
+
+### Bug Fixes
+
+- **storage:** use unsigned payload for pre-signed urls ([#14636](https://github.com/aws-amplify/amplify-js/issues/14636)) ([1fe3c5d](https://github.com/aws-amplify/amplify-js/commit/1fe3c5dbea26a7394c43a97af05e3fa8cec95a92))
+
+### Features
+
+- **api-rest:** add rest default auth mode ([#14525](https://github.com/aws-amplify/amplify-js/issues/14525)) ([b2a3f25](https://github.com/aws-amplify/amplify-js/commit/b2a3f258120e691ac7a3f23a0597ba07bf246008))
+
 # [6.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.13.3...@aws-amplify/core@6.14.0) (2025-11-06)
 
 ### Features

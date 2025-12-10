@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.11.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.10.1...@aws-amplify/storage@6.11.0) (2025-12-10)
+
+### Bug Fixes
+
+- **storage:** use unsigned payload for pre-signed urls ([#14636](https://github.com/aws-amplify/amplify-js/issues/14636)) ([1fe3c5d](https://github.com/aws-amplify/amplify-js/commit/1fe3c5dbea26a7394c43a97af05e3fa8cec95a92))
+
+### Features
+
+- **storage:** add cacheControl header to uploadData, downloadData and getUrl ([#14410](https://github.com/aws-amplify/amplify-js/issues/14410)) ([4189c66](https://github.com/aws-amplify/amplify-js/commit/4189c66ac674073d330ef29ebf0df4580e4db047))
+
 ## [6.10.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.10.0...@aws-amplify/storage@6.10.1) (2025-11-06)
 
 **Note:** Version bump only for package @aws-amplify/storage
