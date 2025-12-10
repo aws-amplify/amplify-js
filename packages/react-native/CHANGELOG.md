@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.3.0...@aws-amplify/react-native@1.3.1) (2025-12-10)
+
+### Bug Fixes
+
+- missing polyfill for url canParse ([#14628](https://github.com/aws-amplify/amplify-js/issues/14628)) ([f59a4f7](https://github.com/aws-amplify/amplify-js/commit/f59a4f73a0ab824a71cc0e1ab51356ebb1cdd876))
+
 # [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.2.0...@aws-amplify/react-native@1.3.0) (2025-11-06)
 
 ### Features
