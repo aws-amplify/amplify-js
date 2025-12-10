@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	EMPTY_SHA256_HASH,
 	Endpoint,
 	HttpRequest,
 	HttpResponse,
 	PresignUrlOptions,
+	UNSIGNED_PAYLOAD,
 	UserAgentOptions,
 	parseMetadata,
 	presignUrl,
@@ -18,7 +18,6 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import {
-	CONTENT_SHA256_HEADER,
 	assignStringVariables,
 	buildStorageServiceError,
 	deserializeBoolean,
@@ -53,6 +52,7 @@ export type GetObjectInput = Pick<
 	| 'ResponseContentDisposition'
 	| 'ResponseContentType'
 	| 'ExpectedBucketOwner'
+	| 'ResponseCacheControl'
 >;
 
 export type GetObjectOutput = GetObjectCommandOutput;
@@ -66,6 +66,9 @@ const getObjectSerializer = async (
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = new AmplifyUrlSearchParams({
 		'x-id': 'GetObject',
+		...(input.ResponseCacheControl && {
+			'response-cache-control': input.ResponseCacheControl,
+		}),
 	}).toString();
 	validateObjectUrl({
 		bucketName: input.Bucket,
@@ -172,10 +175,6 @@ export const getPresignedGetObjectUrl = async (
 	const endpoint = defaultConfig.endpointResolver(config, input);
 	const { url, headers, method } = await getObjectSerializer(input, endpoint);
 
-	// TODO: set content sha256 query parameter with value of UNSIGNED-PAYLOAD instead of empty hash.
-	// It requires changes in presignUrl. Without this change, the generated url still works,
-	// but not the same as other tools like AWS SDK and CLI.
-	url.searchParams.append(CONTENT_SHA256_HEADER, EMPTY_SHA256_HASH);
 	if (config.userAgentValue) {
 		url.searchParams.append(
 			config.userAgentHeader ?? USER_AGENT_HEADER,
@@ -199,7 +198,7 @@ export const getPresignedGetObjectUrl = async (
 	}
 
 	return presignUrl(
-		{ method, url, body: undefined },
+		{ method, url, body: UNSIGNED_PAYLOAD },
 		{
 			signingService: defaultConfig.service,
 			signingRegion: config.region,
