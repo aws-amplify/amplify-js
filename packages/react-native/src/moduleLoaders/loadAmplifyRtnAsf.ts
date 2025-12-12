@@ -11,6 +11,8 @@ export const loadAmplifyRtnAsf = (): AmplifyRtnAsfModule | undefined => {
 
 		return module as AmplifyRtnAsfModule | undefined;
 	} catch {
+		// Module not installed or linking failed - return undefined for graceful degradation.
+		// If @aws-amplify/rtn-asf is expected, ensure it is installed and linked.
 		return undefined;
 	}
 };
