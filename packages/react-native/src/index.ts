@@ -9,6 +9,7 @@ export {
 	getIsNativeError,
 } from './apis';
 export {
+	loadAmplifyRtnAsf,
 	loadAmplifyRtnPasskeys,
 	loadAmplifyPushNotification,
 	loadAmplifyWebBrowser,
