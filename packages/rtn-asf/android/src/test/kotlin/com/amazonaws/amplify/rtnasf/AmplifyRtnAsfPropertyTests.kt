@@ -18,8 +18,8 @@ import org.robolectric.annotation.Config
 import kotlin.random.Random
 
 /**
- * Property-based tests for AmplifyRtnAsf module
- * These tests verify correctness properties across many randomly generated inputs
+ * **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
+ * **Validates: Requirements 2.4**
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
@@ -47,16 +47,6 @@ class AmplifyRtnAsfPropertyTests {
         unmockkStatic(UserContextDataProvider::class)
     }
 
-    // MARK: - Property 2: Invalid Input Returns Null
-    // **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
-    // **Validates: Requirements 2.4**
-    //
-    // *For any* empty string or whitespace-only string passed as userPoolId or clientId,
-    // when `getContextData` is called, the function SHALL return null.
-
-    /**
-     * Generates a list of invalid input strings (empty or whitespace-only)
-     */
     private fun generateInvalidInputs(): List<String> {
         val inputs = mutableListOf<String>()
 
@@ -99,9 +89,6 @@ class AmplifyRtnAsfPropertyTests {
         return inputs
     }
 
-    /**
-     * Generates valid non-empty, non-whitespace strings for testing
-     */
     private fun generateValidInputs(): List<String> {
         return listOf(
             "us-east-1_abc123",
@@ -116,15 +103,6 @@ class AmplifyRtnAsfPropertyTests {
         )
     }
 
-    // MARK: - Property Test: Empty userPoolId returns null
-
-    /**
-     * **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
-     * **Validates: Requirements 2.4**
-     *
-     * For any empty or whitespace-only userPoolId with any valid clientId,
-     * getContextData should return null.
-     */
     @Test
     fun testGetContextDataWithEmptyUserPoolIdReturnsNull() {
         val validClientIds = generateValidInputs()
@@ -150,15 +128,6 @@ class AmplifyRtnAsfPropertyTests {
         println("Property 2 (empty userPoolId): Ran $testCount test iterations")
     }
 
-    // MARK: - Property Test: Empty clientId returns null
-
-    /**
-     * **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
-     * **Validates: Requirements 2.4**
-     *
-     * For any valid userPoolId with any empty or whitespace-only clientId,
-     * getContextData should return null.
-     */
     @Test
     fun testGetContextDataWithEmptyClientIdReturnsNull() {
         val validUserPoolIds = generateValidInputs()
@@ -184,15 +153,6 @@ class AmplifyRtnAsfPropertyTests {
         println("Property 2 (empty clientId): Ran $testCount test iterations")
     }
 
-    // MARK: - Property Test: Both parameters empty returns null
-
-    /**
-     * **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
-     * **Validates: Requirements 2.4**
-     *
-     * For any combination of empty/whitespace-only inputs for both parameters,
-     * getContextData should return null.
-     */
     @Test
     fun testGetContextDataWithBothParametersEmptyReturnsNull() {
         val invalidInputs = generateInvalidInputs()
@@ -217,9 +177,6 @@ class AmplifyRtnAsfPropertyTests {
         println("Property 2 (both empty): Ran $testCount test iterations")
     }
 
-    /**
-     * Helper extension function to escape special characters for readable error messages
-     */
     private fun String.escape(): String {
         return this
             .replace("\n", "\\n")

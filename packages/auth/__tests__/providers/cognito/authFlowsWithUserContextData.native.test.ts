@@ -1,14 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-/**
- * Integration tests for auth flows with UserContextData on React Native.
- * These tests verify that signIn, signUp, and forgotPassword (resetPassword)
- * include UserContextData when the native ASF module is available.
- *
- * Requirements: 4.1, 4.2, 4.3, 4.4
- */
-
 import { Amplify } from '@aws-amplify/core';
 
 import { resetPassword, signIn, signUp } from '../../../src/providers/cognito';
@@ -109,10 +101,8 @@ describe('Auth flows with UserContextData (React Native)', () => {
 		});
 
 		it('should include UserContextData when native module returns data', async () => {
-			// Given: getUserContextData returns encoded data (simulating native module available)
 			getUserContextDataSpy.mockReturnValue({ EncodedData: mockEncodedData });
 
-			// When: signIn is called
 			try {
 				await signIn({
 					username: authAPITestParams.user1.username,
@@ -122,7 +112,6 @@ describe('Auth flows with UserContextData (React Native)', () => {
 				// We only care about the request contents
 			}
 
-			// Then: InitiateAuth should be called with UserContextData
 			expect(mockInitiateAuth).toHaveBeenCalledWith(
 				expect.objectContaining({
 					region: 'us-west-2',
@@ -136,30 +125,24 @@ describe('Auth flows with UserContextData (React Native)', () => {
 		});
 
 		it('should proceed without UserContextData when native module is unavailable', async () => {
-			// Given: getUserContextData returns undefined (simulating native module unavailable)
 			getUserContextDataSpy.mockReturnValue(undefined);
 
-			// When: signIn is called
 			const result = await signIn({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
 			});
 
-			// Then: signIn should complete successfully
 			expect(result).toEqual(authAPITestParams.signInResult());
 		});
 
 		it('should proceed without UserContextData when native module returns null', async () => {
-			// Given: getUserContextData returns undefined (native module returns null)
 			getUserContextDataSpy.mockReturnValue(undefined);
 
-			// When: signIn is called
 			const result = await signIn({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
 			});
 
-			// Then: signIn should complete successfully
 			expect(result).toEqual(authAPITestParams.signInResult());
 		});
 	});
@@ -179,10 +162,8 @@ describe('Auth flows with UserContextData (React Native)', () => {
 		});
 
 		it('should include UserContextData when native module returns data', async () => {
-			// Given: getUserContextData returns encoded data (simulating native module available)
 			getUserContextDataSpy.mockReturnValue({ EncodedData: mockEncodedData });
 
-			// When: signUp is called
 			await signUp({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
@@ -191,7 +172,6 @@ describe('Auth flows with UserContextData (React Native)', () => {
 				},
 			});
 
-			// Then: SignUp should be called with UserContextData
 			expect(mockSignUp).toHaveBeenCalledWith(
 				expect.objectContaining({
 					region: 'us-west-2',
@@ -205,10 +185,8 @@ describe('Auth flows with UserContextData (React Native)', () => {
 		});
 
 		it('should proceed without UserContextData when native module is unavailable', async () => {
-			// Given: getUserContextData returns undefined (simulating native module unavailable)
 			getUserContextDataSpy.mockReturnValue(undefined);
 
-			// When: signUp is called
 			const result = await signUp({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
@@ -217,16 +195,13 @@ describe('Auth flows with UserContextData (React Native)', () => {
 				},
 			});
 
-			// Then: signUp should complete successfully
 			expect(result.isSignUpComplete).toBe(false);
 			expect(result.nextStep.signUpStep).toBe('CONFIRM_SIGN_UP');
 		});
 
 		it('should proceed without UserContextData when native module returns null', async () => {
-			// Given: getUserContextData returns undefined (native module returns null)
 			getUserContextDataSpy.mockReturnValue(undefined);
 
-			// When: signUp is called
 			const result = await signUp({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
@@ -235,7 +210,6 @@ describe('Auth flows with UserContextData (React Native)', () => {
 				},
 			});
 
-			// Then: signUp should complete successfully
 			expect(result.isSignUpComplete).toBe(false);
 			expect(result.nextStep.signUpStep).toBe('CONFIRM_SIGN_UP');
 		});
@@ -260,15 +234,12 @@ describe('Auth flows with UserContextData (React Native)', () => {
 		});
 
 		it('should include UserContextData when native module returns data', async () => {
-			// Given: getUserContextData returns encoded data (simulating native module available)
 			getUserContextDataSpy.mockReturnValue({ EncodedData: mockEncodedData });
 
-			// When: resetPassword is called
 			await resetPassword({
 				username: authAPITestParams.user1.username,
 			});
 
-			// Then: ForgotPassword should be called with UserContextData
 			expect(mockForgotPassword).toHaveBeenCalledWith(
 				expect.objectContaining({
 					region: 'us-west-2',
@@ -282,28 +253,22 @@ describe('Auth flows with UserContextData (React Native)', () => {
 		});
 
 		it('should proceed without UserContextData when native module is unavailable', async () => {
-			// Given: getUserContextData returns undefined (simulating native module unavailable)
 			getUserContextDataSpy.mockReturnValue(undefined);
 
-			// When: resetPassword is called
 			const result = await resetPassword({
 				username: authAPITestParams.user1.username,
 			});
 
-			// Then: resetPassword should complete successfully
 			expect(result).toEqual(authAPITestParams.resetPasswordResult);
 		});
 
 		it('should proceed without UserContextData when native module returns null', async () => {
-			// Given: getUserContextData returns undefined (native module returns null)
 			getUserContextDataSpy.mockReturnValue(undefined);
 
-			// When: resetPassword is called
 			const result = await resetPassword({
 				username: authAPITestParams.user1.username,
 			});
 
-			// Then: resetPassword should complete successfully
 			expect(result).toEqual(authAPITestParams.resetPasswordResult);
 		});
 	});

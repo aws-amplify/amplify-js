@@ -16,12 +16,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/**
- * Unit tests for AmplifyRtnAsfModule
- * These tests verify specific examples and edge cases for the native module.
- * 
- * Requirements: 7.5 - Integration tests on Android verify the native module returns encoded data
- */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
 class AmplifyRtnAsfModuleTest {
@@ -55,12 +49,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test valid input returns non-null string
-     * When getContextData is called with valid userPoolId and clientId parameters,
-     * the Android module SHALL return encoded context data as a string.
-     * Requirements: 2.2
-     */
     @Test
     fun getContextData_withValidInputs_returnsEncodedData() {
         val userPoolId = "us-east-1_testPool123"
@@ -78,12 +66,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test empty userPoolId returns null
-     * When getContextData is called with empty userPoolId,
-     * the Android module SHALL return null.
-     * Requirements: 2.4
-     */
     @Test
     fun getContextData_withEmptyUserPoolId_returnsNull() {
         val result = module.getContextData("", "validClientId")
@@ -93,10 +75,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test whitespace-only userPoolId returns null
-     * Requirements: 2.4
-     */
     @Test
     fun getContextData_withWhitespaceUserPoolId_returnsNull() {
         val result = module.getContextData("   ", "validClientId")
@@ -106,12 +84,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test empty clientId returns null
-     * When getContextData is called with empty clientId,
-     * the Android module SHALL return null.
-     * Requirements: 2.4
-     */
     @Test
     fun getContextData_withEmptyClientId_returnsNull() {
         val result = module.getContextData("us-east-1_validPool", "")
@@ -121,10 +93,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test whitespace-only clientId returns null
-     * Requirements: 2.4
-     */
     @Test
     fun getContextData_withWhitespaceClientId_returnsNull() {
         val result = module.getContextData("us-east-1_validPool", "\t\n")
@@ -134,12 +102,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test exception handling returns null
-     * When the ASF SDK throws an exception,
-     * the Android module SHALL return null without throwing an exception.
-     * Requirements: 2.3
-     */
     @Test
     fun getContextData_whenSdkThrowsException_returnsNull() {
         val userPoolId = "us-east-1_testPool"
@@ -156,10 +118,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test exception handling with different exception types
-     * Requirements: 2.3
-     */
     @Test
     fun getContextData_whenSdkThrowsIllegalStateException_returnsNull() {
         val userPoolId = "us-east-1_testPool"
@@ -176,10 +134,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test exception handling with NullPointerException
-     * Requirements: 2.3
-     */
     @Test
     fun getContextData_whenSdkThrowsNullPointerException_returnsNull() {
         val userPoolId = "us-east-1_testPool"
@@ -196,10 +150,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test SDK returning null is handled correctly
-     * Requirements: 2.3
-     */
     @Test
     fun getContextData_whenSdkReturnsNull_returnsNull() {
         val userPoolId = "us-east-1_testPool"
@@ -216,10 +166,6 @@ class AmplifyRtnAsfModuleTest {
         }
     }
 
-    /**
-     * Test with different valid userPoolId formats
-     * Requirements: 2.2
-     */
     @Test
     fun getContextData_withDifferentRegionFormats_returnsEncodedData() {
         val testCases = listOf(

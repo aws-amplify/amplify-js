@@ -5,8 +5,10 @@ import XCTest
 
 @testable import AmplifyRtnAsf
 
-/// Property-based tests for AmplifyRtnAsf module
-/// These tests verify correctness properties across many randomly generated inputs
+/**
+ * **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
+ * **Validates: Requirements 1.4**
+ */
 class AmplifyRtnAsfPropertyTests: XCTestCase {
     
     private var sut: AmplifyRtnAsf!
@@ -21,14 +23,6 @@ class AmplifyRtnAsfPropertyTests: XCTestCase {
         super.tearDown()
     }
     
-    // MARK: - Property 2: Invalid Input Returns Null
-    // **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
-    // **Validates: Requirements 1.4**
-    //
-    // *For any* empty string or whitespace-only string passed as userPoolId or clientId,
-    // when `getContextData` is called, the function SHALL return null.
-    
-    /// Generates an array of invalid input strings (empty or whitespace-only)
     private func generateInvalidInputs() -> [String] {
         var inputs: [String] = []
         
@@ -71,7 +65,6 @@ class AmplifyRtnAsfPropertyTests: XCTestCase {
         return inputs
     }
     
-    /// Generates valid non-empty, non-whitespace strings for testing
     private func generateValidInputs() -> [String] {
         return [
             "us-east-1_abc123",
@@ -86,12 +79,7 @@ class AmplifyRtnAsfPropertyTests: XCTestCase {
         ]
     }
     
-    // MARK: - Property Test: Empty userPoolId returns nil
-    
     func testGetContextDataWithEmptyUserPoolIdReturnsNil() {
-        // **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
-        // **Validates: Requirements 1.4**
-        
         let validClientIds = generateValidInputs()
         let invalidUserPoolIds = generateInvalidInputs()
         
@@ -116,12 +104,7 @@ class AmplifyRtnAsfPropertyTests: XCTestCase {
         print("Property 2 (empty userPoolId): Ran \(testCount) test iterations")
     }
     
-    // MARK: - Property Test: Empty clientId returns nil
-    
     func testGetContextDataWithEmptyClientIdReturnsNil() {
-        // **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
-        // **Validates: Requirements 1.4**
-        
         let validUserPoolIds = generateValidInputs()
         let invalidClientIds = generateInvalidInputs()
         
@@ -146,12 +129,7 @@ class AmplifyRtnAsfPropertyTests: XCTestCase {
         print("Property 2 (empty clientId): Ran \(testCount) test iterations")
     }
     
-    // MARK: - Property Test: Both parameters empty returns nil
-    
     func testGetContextDataWithBothParametersEmptyReturnsNil() {
-        // **Feature: native-asf-context-data, Property 2: Invalid Input Returns Null**
-        // **Validates: Requirements 1.4**
-        
         let invalidInputs = generateInvalidInputs()
         
         var testCount = 0

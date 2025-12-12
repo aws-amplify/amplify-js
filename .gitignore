@@ -72,6 +72,9 @@ coverage-ts/
 **/.rollup.cache
 **/buildMeta
 
+# TypeScript build cache
+*.tsbuildinfo
+
 # ruby
 vendor/
 Gemfile.lock
