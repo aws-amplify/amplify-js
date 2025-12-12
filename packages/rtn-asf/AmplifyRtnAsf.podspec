@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => '13.0' }
+  s.platforms    = { :ios => '15.1' }
   s.source       = { :git => "https://github.com/aws-amplify/amplify-js.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,cpp,swift}"
@@ -22,7 +22,13 @@ Pod::Spec.new do |s|
   s.private_header_files = "ios/generated/**/*.h"
 
   # ASF SDK dependency for device context data collection
+  # Note: AWSCognitoIdentityProviderASF is an Objective-C pod without module maps,
+  # so we need to enable modular headers for Swift interop
   s.dependency 'AWSCognitoIdentityProviderASF', '~> 2.0'
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES'
+  }
 
   install_modules_dependencies(s)
 

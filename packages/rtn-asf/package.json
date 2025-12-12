@@ -31,7 +31,11 @@
 		"!**/.*"
 	],
 	"scripts": {
+		"prepare:ios": "cd ./example && npx pod-install",
+		"prepare:android": "cd ./example && echo 'Android example ready'",
 		"test": "echo 'no-op'",
+		"test:ios": "xcodebuild test -quiet -workspace example/ios/AmplifyRtnAsfExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16' -scheme AmplifyRtnAsf-Unit-tests",
+		"test:android": "cd ./example/android && ./gradlew test -i",
 		"typecheck": "tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build": "yarn clean && yarn build:esm-cjs && yarn codegen",
@@ -39,7 +43,7 @@
 		"codegen:ios": "react-native codegen --platform ios --outputPath ios/generated --source library",
 		"codegen:android": "react-native codegen --platform android --outputPath android/generated --source library",
 		"codegen": "yarn codegen:ios && yarn codegen:android",
-		"clean": "rimraf android/build dist"
+		"clean": "rimraf android/build example/android/build example/android/app/.cxx example/android/app/debug example/android/app/build example/ios/build example/ios/Pods example/ios/Podfile.lock dist"
 	},
 	"repository": {
 		"type": "git",

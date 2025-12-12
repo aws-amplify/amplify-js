@@ -22,9 +22,14 @@ public class AmplifyRtnAsf: NSObject {
         }
 
         // Use the AWSCognitoIdentityProviderASF SDK to collect device context data
+        // The SDK requires userPoolId, username (optional), deviceId (optional), and userPoolClientId
+        // For device fingerprinting, username and deviceId are not critical - the important data
+        // is the device fingerprint itself
         return AWSCognitoIdentityProviderASF.userContextData(
-            forUserPool: userPoolId,
-            clientId: clientId
+            userPoolId,
+            username: nil,
+            deviceId: nil,
+            userPoolClientId: clientId
         )
     }
 }
