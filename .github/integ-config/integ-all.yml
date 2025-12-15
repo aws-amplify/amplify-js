@@ -451,6 +451,13 @@ tests:
     browser: *minimal_browser_list
 
   # AUTH
+  - test_name: integ_next_auth_user_management
+    desc: 'User Management'
+    framework: next
+    category: auth
+    sample_name: [misc]
+    spec: user-management
+    browser: *minimal_browser_list
   - test_name: integ_react_javascript_authentication
     desc: 'React Authentication'
     framework: react
