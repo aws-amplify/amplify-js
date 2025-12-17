@@ -1,0 +1,90 @@
+buildscript {
+	ext.getExtOrDefault = { name ->
+		return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['AmplifyRtnAsf_' + name]
+	}
+
+	repositories {
+		google()
+		mavenCentral()
+	}
+
+	dependencies {
+		classpath "com.android.tools.build:gradle:8.7.3"
+		// noinspection DifferentKotlinGradleVersion
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
+	}
+}
+
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+apply plugin: "com.facebook.react"
+
+def getExtOrIntegerDefault(name) {
+	return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["AmplifyRtnAsf_" + name]).toInteger()
+}
+
+
+android {
+	namespace "com.amazonaws.amplify.rtnasf"
+
+	compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+
+	defaultConfig {
+		minSdkVersion getExtOrIntegerDefault("minSdkVersion")
+		targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+	}
+
+	buildFeatures {
+		buildConfig true
+	}
+
+	buildTypes {
+		release {
+			minifyEnabled false
+		}
+	}
+
+	lintOptions {
+		disable "GradleCompatible"
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+
+	sourceSets {
+		main {
+			java.srcDirs += [
+				"generated/java",
+				"generated/jni"
+			]
+		}
+	}
+}
+
+repositories {
+	mavenCentral()
+	google()
+}
+
+def kotlin_version = getExtOrDefault("kotlinVersion")
+
+dependencies {
+	implementation "com.facebook.react:react-android"
+	implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+	// AWS Cognito ASF SDK for device context data collection
+	implementation "com.amazonaws:aws-android-sdk-cognitoidentityprovider-asf:2.77.0"
+
+	testImplementation "junit:junit:4.13.2"
+	testImplementation "org.robolectric:robolectric:4.14.1"
+	testImplementation "io.mockk:mockk:1.14.2"
+}
+
+react {
+	jsRootDir = file("../src/")
+	libraryName = "AmplifyRtnAsf"
+	codegenJavaPackageName = "com.amazonaws.amplify.rtnasf"
+}
