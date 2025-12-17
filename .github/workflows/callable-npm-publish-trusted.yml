@@ -1,0 +1,60 @@
+name: Trusted npm publisher with OIDC authentication
+
+on:
+  workflow_call:
+    inputs:
+      github_user:
+        description: The git user to make commits with
+        required: true
+        type: string
+      github_email:
+        description: The git email to make commits with
+        required: true
+        type: string
+      target:
+        description: The release process target (either release or preid)
+        required: true
+        type: string
+      preid:
+        description: The preid to release to when the target is preid
+        required: false
+        type: string
+
+jobs:
+  publish:
+    name: Publish to npm with trusted authentication
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required for npm trusted publishers
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+          token: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
+          # Minimal depth 0 so we can fetch all git tags.
+          fetch-depth: 0
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Authenticate with npm (trusted publishers)
+        id: npm-auth
+        run: |
+          if [ -n "$NPM_TOKEN" ]; then
+            echo "Using npm trusted publishers authentication"
+            echo "auth_token=$NPM_TOKEN" >> "$GITHUB_OUTPUT"
+          else
+            echo "Error: NPM_TOKEN not provided by trusted publishers"
+            exit 1
+          fi
+
+      - name: Run npm publish
+        uses: ./amplify-js/.github/actions/npm-publish
+        with:
+          target: ${{ inputs.target }}
+          preid: ${{ inputs.preid }}
+          npm_token: ${{ steps.npm-auth.outputs.auth_token }}
+          github_user: ${{ inputs.github_user }}
+          github_email: ${{ inputs.github_email }}
