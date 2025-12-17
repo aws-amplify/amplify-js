@@ -41,6 +41,7 @@ import {
 	getTokenForCustomAuth,
 	getUserGroupsFromToken,
 	predicateToGraphQLFilter,
+	processSubscriptionVariables,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
@@ -75,6 +76,12 @@ class SubscriptionProcessor {
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
 
+	// Cache for subscription variables to avoid repeated function calls
+	private variablesCache = new WeakMap<
+		SchemaModel,
+		Map<TransformerMutationType, Record<string, any> | null>
+	>();
+
 	private dataObserver!: Observer<any>;
 
 	private runningProcesses = new BackgroundProcessManager();
@@ -91,6 +98,7 @@ class SubscriptionProcessor {
 		private readonly amplifyContext: AmplifyContext = {
 			InternalAPI,
 		},
+		private readonly datastoreConfig?: Record<string, any>,
 	) {}
 
 	private buildSubscription(
@@ -120,6 +128,16 @@ class SubscriptionProcessor {
 				authMode,
 			) || {};
 
+		// Get custom subscription variables from DataStore config
+		const customVariables = this.datastoreConfig?.subscriptionVariables
+			? processSubscriptionVariables(
+					model,
+					transformerMutationType,
+					this.datastoreConfig.subscriptionVariables[model.name],
+					this.variablesCache,
+				)
+			: undefined;
+
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
 			namespace,
 			model,
@@ -127,6 +145,7 @@ class SubscriptionProcessor {
 			isOwner,
 			ownerField!,
 			filterArg,
+			customVariables,
 		);
 
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
@@ -368,6 +387,23 @@ class SubscriptionProcessor {
 											category: Category.DataStore,
 											action: DataStoreAction.Subscribe,
 										};
+
+										// Add custom subscription variables from DataStore config
+										const customVars = this.datastoreConfig
+											?.subscriptionVariables
+											? processSubscriptionVariables(
+													modelDefinition,
+													operation,
+													this.datastoreConfig.subscriptionVariables[
+														modelDefinition.name
+													],
+													this.variablesCache,
+												)
+											: undefined;
+
+										if (customVars) {
+											Object.assign(variables, customVars);
+										}
 
 										if (addFilter && predicatesGroup) {
 											(variables as any).filter =
@@ -657,6 +693,8 @@ class SubscriptionProcessor {
 	public async stop() {
 		await this.runningProcesses.close();
 		await this.runningProcesses.open();
+		// Clear cache on stop
+		this.variablesCache = new WeakMap();
 	}
 
 	private passesPredicateValidation(
