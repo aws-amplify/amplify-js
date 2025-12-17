@@ -116,7 +116,7 @@ class PushNotificationModule(
         "NativeHeadlessTaskKey" to PushNotificationHeadlessTaskService.HEADLESS_TASK_KEY
     )
 
-    override fun onActivityResult(p0: Activity?, p1: Int, p2: Int, p3: Intent?) {
+    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         // noop - only overridden as this class implements ActivityEventListener
     }
 
@@ -157,15 +157,19 @@ class PushNotificationModule(
                     params
                 )
             })
-            currentActivity?.intent?.let {
-                val payload = NotificationPayload.fromIntent(it)
-                if (payload != null) {
-                    launchNotification = payload.toWritableMap()
-                    // Launch notification opened event is emitted for internal use only
-                    PushNotificationEventManager.sendEvent(
-                        PushNotificationEventType.LAUNCH_NOTIFICATION_OPENED,
-                        payload.toWritableMap()
-                    )
+            val activity = reactApplicationContext.getCurrentActivity()
+            if (activity != null) {
+                val activityIntent = activity.intent
+                if (activityIntent != null) {
+                    val payload = NotificationPayload.fromIntent(activityIntent)
+                    if (payload != null) {
+                        launchNotification = payload.toWritableMap()
+                        // Launch notification opened event is emitted for internal use only
+                        PushNotificationEventManager.sendEvent(
+                            PushNotificationEventType.LAUNCH_NOTIFICATION_OPENED,
+                            payload.toWritableMap()
+                        )
+                    }
                 }
             }
         } else {
@@ -183,6 +187,7 @@ class PushNotificationModule(
     }
 
     private fun shouldShowRequestPermissionRationale(): Boolean {
-        return ActivityCompat.shouldShowRequestPermissionRationale(currentActivity!!, PERMISSION)
+        val activity = reactApplicationContext.getCurrentActivity() ?: return false
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, PERMISSION)
     }
 }
