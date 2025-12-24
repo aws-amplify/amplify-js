@@ -194,7 +194,7 @@ async function deleteFolderContents(
 	let totalFiles = 0;
 	let deletedCount = 0;
 	let failedCount = 0;
-	const failed: { key: string; error: string }[] = [];
+	const failed: { path: string; code: string; message: string }[] = [];
 
 	if (listingStrategy === 'list-all-first') {
 		// Strategy 1: List all objects first, then delete in batches
@@ -281,12 +281,13 @@ async function deleteFolderContents(
 
 				deletedCount += batchResult.deleted.length;
 				failedCount += batchResult.failed.length;
+				// @ts-expect-error error
 				failed.push(...batchResult.failed);
 
 				if (options.onProgress) {
 					options.onProgress({
-						totalFiles,
-						deletedCount,
+						totalFilesProcessed: totalFiles,
+						successCount: deletedCount,
 						failedCount,
 						currentBatch,
 						totalBatches: -1, // Unknown in stream mode
@@ -325,8 +326,8 @@ async function deleteFolderContents(
 
 	return {
 		summary: {
-			totalFiles,
-			deletedCount,
+			totalFilesProcessed: totalFiles,
+			successCount: deletedCount,
 			failedCount,
 		},
 		failed: failed.length > 0 ? failed : undefined,

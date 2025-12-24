@@ -146,14 +146,11 @@ export interface RemoveWithPathOutput {
 	path: string;
 	key?: string;
 	isFolder?: boolean;
-	summary?: {
-		totalFiles: number;
-		deletedCount: number;
-		failedCount: number;
-	};
+	deleted?: { path: string }[];
 	failed?: {
-		key: string;
-		error: string;
+		path: string;
+		code: string;
+		message: string;
 	}[];
 }
 

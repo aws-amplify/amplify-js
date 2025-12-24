@@ -124,6 +124,27 @@ export interface FolderDeletionOptions {
 }
 
 /**
+ * Input type with path for S3 remove API.
+ */
+export interface RemoveWithPathInput2 {
+	path: string;
+	options?: {
+		useAccelerateEndpoint?: boolean;
+		expectedBucketOwner?: string;
+
+		// New options for folder deletion
+		/** Number of files to process per batch. Default: 1000 (S3 maximum). */
+		batchSize?: number;
+
+		/** Error handling strategy. 'failEarly' stops on first error, 'continue' processes all batches regardless of errors. Default: 'failEarly'. */
+		errorHandling?: 'failEarly' | 'continue';
+
+		/** Callback function invoked after each batch completes, providing progress updates with file counts and error details. */
+		onProgress?(progress: ProgressInfo): void;
+	};
+}
+
+/**
  * Progress information for folder deletion
  */
 export interface FolderDeletionProgress {
@@ -171,19 +192,12 @@ export interface RemoveMultipleInput {
  * Progress information for removeMultiple API.
  */
 export interface ProgressInfo {
-	batchNumber: number;
-	processedCount: number;
-	totalCount: number;
-	successCount: number;
-	failureCount: number;
-	currentBatch: {
-		successful: { key: string; versionId?: string }[];
-		failed: {
-			key: string;
-			versionId?: string;
-			error: string;
-		}[];
-	};
+	deleted?: { path: string }[];
+	failed?: {
+		path: string;
+		code: string;
+		message: string;
+	}[];
 }
 
 /**
