@@ -237,4 +237,40 @@ describe('Module Loaders', () => {
 			);
 		});
 	});
+
+	describe('loadAmplifyRtnAsf', () => {
+		it('should return module when package is installed', () => {
+			const mockModule = { getContextData: jest.fn() };
+			jest.doMock('@aws-amplify/rtn-asf', () => ({
+				module: mockModule,
+			}));
+
+			const {
+				loadAmplifyRtnAsf,
+			} = require('../src/moduleLoaders/loadAmplifyRtnAsf');
+			expect(loadAmplifyRtnAsf()).toBe(mockModule);
+		});
+
+		it('should return undefined when package is not installed', () => {
+			jest.doMock('@aws-amplify/rtn-asf', () => {
+				throw new Error('Cannot find module');
+			});
+
+			const {
+				loadAmplifyRtnAsf,
+			} = require('../src/moduleLoaders/loadAmplifyRtnAsf');
+			expect(loadAmplifyRtnAsf()).toBeUndefined();
+		});
+
+		it('should return undefined when require throws', () => {
+			jest.doMock('@aws-amplify/rtn-asf', () => {
+				throw new Error('Cannot resolve module undefined');
+			});
+
+			const {
+				loadAmplifyRtnAsf,
+			} = require('../src/moduleLoaders/loadAmplifyRtnAsf');
+			expect(loadAmplifyRtnAsf()).toBeUndefined();
+		});
+	});
 });
