@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/react-native-example",
-	"version": "0.0.29",
+	"version": "0.0.30",
 	"private": true,
 	"scripts": {
 		"android": "react-native run-android",
@@ -10,7 +10,7 @@
 		"build:ios": "cd ios && xcodebuild -workspace AmplifyRTNCoreExample.xcworkspace -scheme AmplifyRTNCoreExample -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO"
 	},
 	"dependencies": {
-		"react": "19.0.0",
+		"react": "19.2.1",
 		"react-native": "0.79.2"
 	},
 	"devDependencies": {

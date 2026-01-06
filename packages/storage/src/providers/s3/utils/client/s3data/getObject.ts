@@ -52,6 +52,7 @@ export type GetObjectInput = Pick<
 	| 'ResponseContentDisposition'
 	| 'ResponseContentType'
 	| 'ExpectedBucketOwner'
+	| 'ResponseCacheControl'
 >;
 
 export type GetObjectOutput = GetObjectCommandOutput;
@@ -65,6 +66,9 @@ const getObjectSerializer = async (
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = new AmplifyUrlSearchParams({
 		'x-id': 'GetObject',
+		...(input.ResponseCacheControl && {
+			'response-cache-control': input.ResponseCacheControl,
+		}),
 	}).toString();
 	validateObjectUrl({
 		bucketName: input.Bucket,

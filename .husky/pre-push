@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+# Pre-push hook to scan for secrets using git-secrets
+# This prevents accidentally pushing AWS credentials or other secrets
+
+# Check if git-secrets is installed
+if ! command -v git-secrets >/dev/null 2>&1; then
+  echo ""
+  echo "ERROR: git-secrets is not installed."
+  echo ""
+  echo "Please install git-secrets to continue:"
+  echo ""
+  echo "  macOS:   brew install git-secrets"
+  echo "  Linux:   See https://github.com/awslabs/git-secrets#installing-git-secrets"
+  echo "  Windows: See https://github.com/awslabs/git-secrets#installing-git-secrets"
+  echo ""
+  echo "After installation, register AWS patterns:"
+  echo "  git secrets --register-aws"
+  echo ""
+  exit 1
+fi
+
+# Run git-secrets scan and propagate exit code
+git secrets --scan

@@ -34,7 +34,7 @@
 		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",
 		"generate-metadata": "git rev-parse --short HEAD > packages/core/metadata && git commit -am 'chore(release): Set core metadata [skip release]'",
 		"ts-coverage": "lerna run ts-coverage",
-		"prepare": "husky && ./scripts/set-preid-versions.sh"
+		"prepare": "husky && ./scripts/setup-git-secrets.sh && ./scripts/set-preid-versions.sh"
 	},
 	"workspaces": {
 		"packages": [
@@ -148,6 +148,7 @@
 		"**/on-headers": "1.1.0",
 		"**/form-data": "4.0.4",
 		"tmp": "^0.2.4",
+		"qs": "^6.14.1",
 		"js-yaml": "4.1.1"
 	},
 	"overrides": {
