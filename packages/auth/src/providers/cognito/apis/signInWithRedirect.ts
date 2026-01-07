@@ -119,11 +119,10 @@ const oauthSignIn = async ({
 	oAuthStore.storeOAuthState(state);
 	oAuthStore.storePKCE(value);
 
-	const params = new URLSearchParams([
-		['redirect_uri', redirectUri],
-		['response_type', responseType],
-		['client_id', clientId],
-	]);
+	const params = new URLSearchParams();
+	params.append('redirect_uri', redirectUri);
+	params.append('response_type', responseType);
+	params.append('client_id', clientId);
 
 	// Add either identity_provider or idp_identifier, but not both
 	if (idpIdentifier) {
