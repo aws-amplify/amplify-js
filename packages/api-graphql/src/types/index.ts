@@ -522,3 +522,24 @@ export interface AuthModeParams extends Record<string, unknown> {
 export type GenerateServerClientParams = {
 	config: ResourcesConfig;
 } & CommonPublicClientOptions;
+
+// WebSocket health and control types
+export interface WebSocketHealthState {
+	isHealthy: boolean;
+	connectionState: import('./PubSub').ConnectionState;
+	/** Timestamp of last keep-alive message (0 if never received) */
+	lastKeepAliveTime: number;
+	/** Time in milliseconds since last keep-alive (Infinity if never received) */
+	timeSinceLastKeepAlive: number;
+}
+
+export interface WebSocketControl {
+	reconnect(): Promise<void>;
+	disconnect(): void;
+	isConnected(): boolean;
+	getConnectionHealth(): WebSocketHealthState;
+	getPersistentConnectionHealth(): Promise<WebSocketHealthState>;
+	onConnectionStateChange(
+		callback: (state: import('./PubSub').ConnectionState) => void,
+	): () => void;
+}
