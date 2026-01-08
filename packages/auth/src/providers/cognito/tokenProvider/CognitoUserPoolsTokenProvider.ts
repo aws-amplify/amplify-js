@@ -4,6 +4,7 @@
 import {
 	AuthConfig,
 	AuthTokens,
+	ClientMetadataProvider,
 	FetchAuthSessionOptions,
 	KeyValueStorageInterface,
 	defaultStorage,
@@ -28,14 +29,18 @@ export class CognitoUserPoolsTokenProvider
 		this.tokenOrchestrator.setTokenRefresher(refreshAuthTokens);
 	}
 
-	getTokens(
-		{ forceRefresh }: FetchAuthSessionOptions = { forceRefresh: false },
-	): Promise<AuthTokens | null> {
-		return this.tokenOrchestrator.getTokens({ forceRefresh });
+	getTokens(options: FetchAuthSessionOptions = {}): Promise<AuthTokens | null> {
+		return this.tokenOrchestrator.getTokens(options);
 	}
 
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void {
 		this.authTokenStore.setKeyValueStorage(keyValueStorage);
+	}
+
+	setClientMetadataProvider(
+		clientMetadataProvider: ClientMetadataProvider,
+	): void {
+		this.tokenOrchestrator.setClientMetadataProvider(clientMetadataProvider);
 	}
 
 	setAuthConfig(authConfig: AuthConfig) {

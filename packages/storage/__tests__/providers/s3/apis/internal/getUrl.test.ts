@@ -182,6 +182,49 @@ describe('getUrl test with key', () => {
 				);
 			});
 		});
+
+		describe('cacheControl passed in options', () => {
+			it('should include ResponseCacheControl header', async () => {
+				const cacheControl = 'no-store';
+				await getUrlWrapper({
+					key: 'key',
+					options: {
+						cacheControl,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucket,
+						Key: 'public/key',
+						ResponseCacheControl: cacheControl,
+					},
+				);
+			});
+
+			it('should NOT include ResponseCacheControl header', async () => {
+				await getUrlWrapper({
+					key: 'key',
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucket,
+						Key: 'public/key',
+					},
+				);
+			});
+		});
 	});
 	describe('Error cases :  With key', () => {
 		afterAll(() => {
@@ -315,6 +358,51 @@ describe('getUrl test with path', () => {
 					options: {
 						bucket: 'default-bucket',
 					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucket,
+						Key: inputPath,
+					},
+				);
+			});
+		});
+
+		describe('cacheControl passed in options', () => {
+			it('should include ResponseCacheControl header', async () => {
+				const inputPath = 'path/';
+				const cacheControl = 'no-store';
+				await getUrlWrapper({
+					path: inputPath,
+					options: {
+						cacheControl,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucket,
+						Key: inputPath,
+						ResponseCacheControl: cacheControl,
+					},
+				);
+			});
+
+			it('should not include ResponseCacheControl header', async () => {
+				const inputPath = 'path/';
+				await getUrlWrapper({
+					path: inputPath,
 				});
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(

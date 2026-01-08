@@ -10,6 +10,7 @@ allow-licenses:
   - 'BSL-1.0'
   - 'CC-BY-3.0'
   - 'CC-BY-4.0'
+  - 'CC-BY-SA-4.0'
   - 'CC0-1.0'
   - 'curl'
   - 'ISC'
@@ -23,3 +24,24 @@ allow-licenses:
   - 'Unlicense'
   - 'WTFPL'
   - 'Zlib'
+allow-dependencies-licenses:
+  # These packages are needed for nextjs (more detailed sharp)
+  # they are dynamic libraries and thus do not ship the underlying library
+  # which means they are not under LGPL strictly speaking.
+  # so an exception is valid here
+  # ALSO: none of these are shipped to the customer. they're only used as dev dependencies.
+  - 'pkg:npm/%2540img/sharp-libvips-darwin-arm64@1.2.4'
+  - 'pkg:npm/%2540img/sharp-libvips-darwin-x64@1.2.4'
+  - 'pkg:npm/%2540img/sharp-libvips-linux-arm@1.2.4'
+  - 'pkg:npm/%2540img/sharp-libvips-linux-arm64@1.2.4'
+  - 'pkg:npm/%2540img/sharp-libvips-linux-ppc64@1.2.4'
+  - 'pkg:npm/%2540img/sharp-libvips-linux-riscv64@1.2.4'
+  - 'pkg:npm/%2540img/sharp-libvips-linux-s390x@1.2.4'
+  - 'pkg:npm/%2540img/sharp-libvips-linux-x64@1.2.4'
+  - 'pkg:npm/%2540img/sharp-libvips-linuxmusl-arm64@1.2.4'
+  - 'pkg:npm/%2540img/sharp-libvips-linuxmusl-x64@1.2.4'
+  - 'pkg:npm/%2540img/sharp-wasm32'
+  - 'pkg:npm/%2540img/sharp-win32-arm64'
+  - 'pkg:npm/%2540img/sharp-win32-ia32'
+  - 'pkg:npm/%2540img/sharp-win32-x64'
+  - 'pkg:npm/unicode-match-property-value-ecmascript@2.2.1'

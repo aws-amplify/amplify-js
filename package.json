@@ -34,7 +34,7 @@
 		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",
 		"generate-metadata": "git rev-parse --short HEAD > packages/core/metadata && git commit -am 'chore(release): Set core metadata [skip release]'",
 		"ts-coverage": "lerna run ts-coverage",
-		"prepare": "husky && ./scripts/set-preid-versions.sh"
+		"prepare": "husky && ./scripts/setup-git-secrets.sh && ./scripts/set-preid-versions.sh"
 	},
 	"workspaces": {
 		"packages": [
@@ -136,6 +136,7 @@
 		"webpack-cli": "^5.0.0"
 	},
 	"resolutions": {
+		"@react-native-community/cli": "^18.0.1",
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
@@ -146,9 +147,12 @@
 		"**/brace-expansion": "1.1.12",
 		"**/on-headers": "1.1.0",
 		"**/form-data": "4.0.4",
-		"tmp": "^0.2.4"
+		"tmp": "^0.2.4",
+		"qs": "^6.14.1",
+		"js-yaml": "4.1.1"
 	},
 	"overrides": {
+		"js-yaml": "4.1.1",
 		"tar": "6.2.1",
 		"cross-spawn": "7.0.5",
 		"brace-expansion": "1.1.12",
