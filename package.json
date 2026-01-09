@@ -60,6 +60,8 @@
 			"packages/react-native/example",
 			"packages/rtn-passkeys",
 			"packages/rtn-passkeys/example",
+			"packages/rtn-asf",
+			"packages/rtn-asf/example",
 			"scripts/tsc-compliance-test"
 		],
 		"nohoist": [
