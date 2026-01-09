@@ -24,4 +24,38 @@ describe('appendSetCookieHeaders', () => {
 			].join(', '),
 		);
 	});
+
+	it('properly encodes cookie names for js-cookie compatibility', () => {
+		const headers = new Headers();
+		const cookies = [
+			{ name: 'cookie name', value: 'value1' }, // space should be encoded
+			{ name: 'cookie=name', value: 'value2' }, // equals should be encoded
+			{ name: 'cookie&name', value: 'value3' }, // ampersand should be decoded per js-cookie
+		];
+
+		appendSetCookieHeaders(headers, cookies);
+
+		const setCookieHeaders = headers.get('Set-Cookie')?.split(', ') || [];
+
+		expect(setCookieHeaders[0]).toContain('cookie%20name=value1;'); // space encoded
+		expect(setCookieHeaders[1]).toContain('cookie%3Dname=value2;'); // equals encoded
+		expect(setCookieHeaders[2]).toContain('cookie&name=value3;'); // ampersand decoded
+	});
+
+	it('handles complex cookie names with mixed special characters', () => {
+		const headers = new Headers();
+		const cookies = [
+			{ name: 'amplify.auth.token', value: 'token1' },
+			{ name: 'amplify auth token', value: 'token2' },
+			{ name: 'amplify=auth&token', value: 'token3' },
+		];
+
+		appendSetCookieHeaders(headers, cookies);
+
+		const setCookieHeaders = headers.get('Set-Cookie')?.split(', ') || [];
+
+		expect(setCookieHeaders[0]).toContain('amplify.auth.token=token1;');
+		expect(setCookieHeaders[1]).toContain('amplify%20auth%20token=token2;');
+		expect(setCookieHeaders[2]).toContain('amplify%3Dauth&token=token3;');
+	});
 });
