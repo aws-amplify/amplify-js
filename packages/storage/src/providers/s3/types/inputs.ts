@@ -107,8 +107,42 @@ export type RemoveInput = StorageRemoveInputWithKey<RemoveOptions>;
  * Input type with path for S3 remove API.
  */
 export type RemoveWithPathInput = StorageRemoveInputWithPath<
-	Omit<RemoveOptions, 'accessLevel'>
+	Omit<RemoveOptions, 'accessLevel'> & {
+		/** Callback function invoked after each batch completes, providing progress updates with file counts and error details. */
+		onProgress?(progress: ProgressInfo): void;
+	}
 >;
+
+/**
+ * Represents the current state of a remove operation
+ */
+export type RemoveTaskState = 'IN_PROGRESS' | 'CANCELED' | 'SUCCESS' | 'ERROR';
+
+/**
+ * Represents an ongoing remove operation with cancellation and state tracking capabilities
+ * @template T - The type of the result (RemoveWithPathOutput | RemoveOutput)
+ */
+export interface RemoveOperation<T> {
+	/** Promise that resolves when the operation completes with the final deletion result */
+	result: Promise<T>;
+
+	/** Cancels the ongoing operation. For batch operations, batches already in flight will complete, but no new batches will be started. */
+	cancel(): void;
+
+	/** Current state of the operation. One of: "IN_PROGRESS", "CANCELED", "SUCCESS", or "ERROR" */
+	readonly state: RemoveTaskState;
+	then: Promise<T>['then'];
+	catch: Promise<T>['catch'];
+}
+
+export interface ProgressInfo {
+	deleted?: { path: string }[];
+	failed?: {
+		path: string;
+		code: string;
+		message: string;
+	}[];
+}
 
 /**
  * @deprecated Use {@link DownloadDataWithPathInput} instead.

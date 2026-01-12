@@ -1,0 +1,121 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { StorageAction } from '@aws-amplify/core/internals/utils';
+
+import { CanceledError } from '../../../errors/CanceledError';
+import { ProgressInfo, RemoveWithPathOutput } from '../types';
+
+import { deleteObjects, listObjectsV2 } from './client/s3data';
+import { getStorageUserAgentValue } from './userAgent';
+import { CancellationToken } from './CancellationToken';
+import { generateDeleteObjectsXml } from './generateDeleteObjectsXml';
+import { calculateContentMd5 } from './md5';
+
+const MAX_KEYS_PER_BATCH = 1000;
+
+export interface DeleteFolderContentsParams {
+	s3Config: any;
+	bucket: string;
+	folderKey: string;
+	expectedBucketOwner?: string;
+	onProgress?(progress: ProgressInfo): void;
+	cancellationToken?: CancellationToken;
+}
+
+/**
+ * Deletes all contents of a folder in S3 using batch operations
+ *
+ * @param params - Configuration object for the delete operation
+ * @returns Promise that resolves to the removal result
+ */
+export const deleteFolderContents = async (
+	params: DeleteFolderContentsParams,
+): Promise<RemoveWithPathOutput> => {
+	const {
+		s3Config,
+		bucket,
+		folderKey,
+		expectedBucketOwner,
+		onProgress,
+		cancellationToken,
+	} = params;
+
+	try {
+		const prefix = folderKey.endsWith('/') ? folderKey : `${folderKey}/`;
+		const progressCallback =
+			onProgress ??
+			(() => {
+				// no-op
+			});
+
+		let continuationToken: string | undefined;
+
+		do {
+			if (cancellationToken?.isCancelled()) {
+				throw new CanceledError({ message: 'Operation was cancelled' });
+			}
+
+			const listResult = await listObjectsV2(
+				{
+					...s3Config,
+					userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
+				},
+				{
+					Bucket: bucket,
+					Prefix: prefix,
+					MaxKeys: MAX_KEYS_PER_BATCH,
+					ContinuationToken: continuationToken,
+					ExpectedBucketOwner: expectedBucketOwner,
+				},
+			);
+
+			if (!listResult.Contents || listResult.Contents.length === 0) {
+				break;
+			}
+
+			if (cancellationToken?.isCancelled()) {
+				throw new CanceledError({ message: 'Operation was cancelled' });
+			}
+
+			const batch = listResult.Contents.map(obj => ({ Key: obj.Key! }));
+			const xmlBody = generateDeleteObjectsXml(batch, false);
+
+			const deleteResult = await deleteObjects(
+				{
+					...s3Config,
+					userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
+				},
+				{
+					Bucket: bucket,
+					Delete: {
+						Objects: batch,
+						Quiet: false,
+					},
+					ExpectedBucketOwner: expectedBucketOwner,
+					ContentMD5: await calculateContentMd5(xmlBody),
+				},
+			);
+
+			const deleted =
+				deleteResult.Deleted?.map(obj => ({ path: obj.Key! })) || [];
+			const failed =
+				deleteResult.Errors?.map(err => ({
+					path: err.Key!,
+					code: err.Code!,
+					message: err.Message!,
+				})) || [];
+
+			progressCallback({ deleted, failed });
+
+			continuationToken = listResult.NextContinuationToken;
+		} while (continuationToken);
+
+		return { path: folderKey };
+	} catch (error) {
+		if (cancellationToken?.isCancelled()) {
+			throw new CanceledError({ message: 'Operation was cancelled' });
+		}
+		throw error;
+	}
+};
