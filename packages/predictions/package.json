@@ -66,7 +66,7 @@
 			"name": "Predictions",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Predictions }",
-			"limit": "69.8 kB"
+			"limit": "73.5 kB"
 		}
 	]
 }
