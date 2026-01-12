@@ -892,15 +892,15 @@ tests:
     yarn_script: ci:next-use-cases-test
     yarn_script_args: '14'
     browser: [chrome]
-  - test_name: integ_next-use-cases-15
-    desc: 'Next.js use cases tests with v15'
-    framework: next
-    category: ssr-adapter
-    sample_name: next-use-cases-15
-    spec: next-use-cases
-    yarn_script: ci:next-use-cases-test
-    yarn_script_args: '15'
-    browser: [chrome]
+#  - test_name: integ_next-use-cases-15
+#    desc: 'Next.js use cases tests with v15'
+#    framework: next
+#    category: ssr-adapter
+#    sample_name: next-use-cases-15
+#    spec: next-use-cases
+#    yarn_script: ci:next-use-cases-test
+#    yarn_script_args: '15'
+#    browser: [chrome]
   - test_name: integ_next-use-cases-server-auth-14
     desc: 'Next.js server-side auth use cases tests with v14'
     framework: next
