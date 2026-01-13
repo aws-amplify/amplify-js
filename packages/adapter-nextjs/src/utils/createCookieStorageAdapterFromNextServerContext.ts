@@ -225,7 +225,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 
 			response.appendHeader(
 				'Set-Cookie',
-				serializeCookie(encodedName, value, options),
+				serializeCookie(name, value, options),
 			);
 		},
 		delete(name) {
@@ -259,10 +259,7 @@ const createMutableCookieStoreFromHeaders = (
 			return;
 		}
 
-		headers.append(
-			'Set-Cookie',
-			serializeCookie(ensureEncodedForJSCookie(name), value, options),
-		);
+		headers.append('Set-Cookie', serializeCookie(name, value, options));
 	};
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
 		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
