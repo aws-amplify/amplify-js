@@ -11,18 +11,18 @@ describe('CancellationToken', () => {
 	});
 
 	describe('initial state', () => {
-		it('should not be cancelled initially', () => {
+		it('should not be canceled initially', () => {
 			expect(cancellationToken.isCancelled()).toBe(false);
 		});
 	});
 
 	describe('cancel', () => {
-		it('should set cancelled state to true', () => {
+		it('should set canceled state to true', () => {
 			cancellationToken.cancel();
 			expect(cancellationToken.isCancelled()).toBe(true);
 		});
 
-		it('should remain cancelled after multiple cancel calls', () => {
+		it('should remain canceled after multiple cancel calls', () => {
 			cancellationToken.cancel();
 			cancellationToken.cancel();
 			expect(cancellationToken.isCancelled()).toBe(true);
@@ -30,10 +30,6 @@ describe('CancellationToken', () => {
 	});
 
 	describe('isCancelled', () => {
-		it('should return false before cancellation', () => {
-			expect(cancellationToken.isCancelled()).toBe(false);
-		});
-
 		it('should return true after cancellation', () => {
 			cancellationToken.cancel();
 			expect(cancellationToken.isCancelled()).toBe(true);

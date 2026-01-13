@@ -133,6 +133,7 @@ export interface RemoveOperation<T> {
 	readonly state: RemoveTaskState;
 	then: Promise<T>['then'];
 	catch: Promise<T>['catch'];
+	finally: Promise<T>['finally'];
 }
 
 export interface ProgressInfo {

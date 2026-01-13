@@ -43,7 +43,8 @@ export function remove(
 	const cancellationToken = new CancellationToken();
 	let state: RemoveTaskState = 'IN_PROGRESS';
 
-	const resultPromise = executeRemove(amplify, input, cancellationToken)
+	const resultPromise = executeRemove(amplify, input, cancellationToken);
+	const wrappedPromise = resultPromise
 		.then(result => {
 			state = 'SUCCESS';
 
@@ -55,7 +56,7 @@ export function remove(
 		});
 
 	const operation = {
-		result: resultPromise,
+		result: wrappedPromise,
 		cancel: () => {
 			cancellationToken.cancel();
 			state = 'CANCELED';
@@ -63,11 +64,12 @@ export function remove(
 		get state() {
 			return state;
 		},
-		then: resultPromise.then.bind(resultPromise),
-		catch: resultPromise.catch.bind(resultPromise),
+		then: wrappedPromise.then.bind(wrappedPromise),
+		catch: wrappedPromise.catch.bind(wrappedPromise),
+		finally: wrappedPromise.finally.bind(wrappedPromise),
 	};
 
-	return operation;
+	return operation as RemoveOperation<RemoveOutput | RemoveWithPathOutput>;
 }
 
 async function executeRemove(

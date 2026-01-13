@@ -37,7 +37,7 @@ describe('validateRemovePath', () => {
 			}).toThrow('Cannot delete root or bucket-wide paths');
 		});
 
-		it('should throw for path with leading slash', () => {
+		it('should not throw for path with leading slash', () => {
 			expect(() => {
 				validateRemovePath('/public/file.txt');
 			}).not.toThrow();

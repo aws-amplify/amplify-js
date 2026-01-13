@@ -189,7 +189,7 @@ describe('deleteFolderContents', () => {
 	});
 
 	describe('cancellation', () => {
-		it('should throw CanceledError when cancelled', async () => {
+		it('should throw CanceledError when canceled', async () => {
 			const cancellationToken = new CancellationToken();
 			cancellationToken.cancel();
 
@@ -203,7 +203,7 @@ describe('deleteFolderContents', () => {
 			).rejects.toThrow(CanceledError);
 		});
 
-		it('should complete successfully when not cancelled', async () => {
+		it('should complete successfully when not canceled', async () => {
 			const cancellationToken = new CancellationToken();
 
 			mockListObjectsV2.mockResolvedValue({

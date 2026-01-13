@@ -75,6 +75,27 @@ describe('generateDeleteObjectsXml', () => {
 				'<Object><Key>file_with_underscores.txt</Key></Object>',
 			);
 		});
+
+		it('should escape XML special characters in keys', () => {
+			const objects = [
+				{ Key: 'file&name.txt' },
+				{ Key: 'file<name>.txt' },
+				{ Key: 'file"name".txt' },
+				{ Key: "file'name'.txt" },
+			];
+			const result = generateDeleteObjectsXml(objects, false);
+
+			expect(result).toContain('<Object><Key>file&amp;name.txt</Key></Object>');
+			expect(result).toContain(
+				'<Object><Key>file&lt;name&gt;.txt</Key></Object>',
+			);
+			expect(result).toContain(
+				'<Object><Key>file&quot;name&quot;.txt</Key></Object>',
+			);
+			expect(result).toContain(
+				'<Object><Key>file&apos;name&apos;.txt</Key></Object>',
+			);
+		});
 	});
 
 	describe('XML structure', () => {

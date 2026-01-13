@@ -53,7 +53,7 @@ export const deleteFolderContents = async (
 
 		do {
 			if (cancellationToken?.isCancelled()) {
-				throw new CanceledError({ message: 'Operation was cancelled' });
+				throw new CanceledError({ message: 'Operation was canceled' });
 			}
 
 			const listResult = await listObjectsV2(
@@ -75,7 +75,7 @@ export const deleteFolderContents = async (
 			}
 
 			if (cancellationToken?.isCancelled()) {
-				throw new CanceledError({ message: 'Operation was cancelled' });
+				throw new CanceledError({ message: 'Operation was canceled' });
 			}
 
 			const batch = listResult.Contents.map(obj => ({ Key: obj.Key! }));
@@ -114,7 +114,7 @@ export const deleteFolderContents = async (
 		return { path: folderKey };
 	} catch (error) {
 		if (cancellationToken?.isCancelled()) {
-			throw new CanceledError({ message: 'Operation was cancelled' });
+			throw new CanceledError({ message: 'Operation was canceled' });
 		}
 		throw error;
 	}
