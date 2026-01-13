@@ -1,0 +1,39 @@
+{
+	"name": "@aws-amplify/rtn-asf-example",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"android": "react-native run-android",
+		"ios": "react-native run-ios",
+		"start": "react-native start",
+		"build:android": "react-native build-android --extra-params \"--no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a\"",
+		"build:ios": "react-native build-ios --scheme AmplifyRtnAsfExample --mode Debug --extra-params \"-sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO\""
+	},
+	"dependencies": {
+		"@aws-amplify/rtn-asf": "1.0.0",
+		"react": "19.2.1",
+		"react-native": "0.79.2"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.25.2",
+		"@babel/preset-env": "^7.25.3",
+		"@babel/runtime": "^7.25.0",
+		"@react-native-community/cli": "18.0.1",
+		"@react-native-community/cli-platform-android": "18.0.0",
+		"@react-native-community/cli-platform-ios": "18.0.0",
+		"@react-native/babel-preset": "0.79.2",
+		"@react-native/codegen": "0.79.2",
+		"@react-native/eslint-config": "0.79.2",
+		"@react-native/metro-config": "0.79.2",
+		"@react-native/typescript-config": "0.79.2"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"workspaces": {
+		"nohoist": [
+			"**/@react-native/codegen",
+			"**/@react-native/codegen/**"
+		]
+	}
+}

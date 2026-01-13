@@ -1,0 +1,10 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"jsx": "react-native",
+		"paths": {
+			"@aws-amplify/rtn-asf": ["../src/index"]
+		}
+	},
+	"include": ["src"]
+}
