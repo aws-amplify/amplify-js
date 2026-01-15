@@ -6,7 +6,6 @@ import {
 	deleteObjects,
 	listObjectsV2,
 } from '../../../../src/providers/s3/utils/client/s3data';
-import { CancellationToken } from '../../../../src/providers/s3/utils/CancellationToken';
 import { CanceledError } from '../../../../src/errors/CanceledError';
 import { calculateContentMd5 } from '../../../../src/providers/s3/utils/md5';
 
@@ -190,21 +189,21 @@ describe('deleteFolderContents', () => {
 
 	describe('cancellation', () => {
 		it('should throw CanceledError when canceled', async () => {
-			const cancellationToken = new CancellationToken();
-			cancellationToken.cancel();
+			const abortController = new AbortController();
+			abortController.abort();
 
 			await expect(
 				deleteFolderContents({
 					s3Config: mockS3Config,
 					bucket: mockBucket,
 					folderKey: mockFolderKey,
-					cancellationToken,
+					abortSignal: abortController.signal,
 				}),
 			).rejects.toThrow(CanceledError);
 		});
 
 		it('should complete successfully when not canceled', async () => {
-			const cancellationToken = new CancellationToken();
+			const abortController = new AbortController();
 
 			mockListObjectsV2.mockResolvedValue({
 				Contents: [],
@@ -215,7 +214,7 @@ describe('deleteFolderContents', () => {
 				s3Config: mockS3Config,
 				bucket: mockBucket,
 				folderKey: mockFolderKey,
-				cancellationToken,
+				abortSignal: abortController.signal,
 			});
 
 			expect(result.path).toBe(mockFolderKey);

@@ -12,7 +12,6 @@ import {
 	RemoveWithPathOutput,
 } from '../../types';
 import {
-	CancellationToken,
 	deleteFolderContents,
 	isPathFolder,
 	resolveFinalKey,
@@ -40,10 +39,10 @@ export function remove(
 	amplify: AmplifyClassV6,
 	input: RemoveInput | RemoveWithPathInputWithAdvancedOptions,
 ): RemoveOperation<RemoveOutput | RemoveWithPathOutput> {
-	const cancellationToken = new CancellationToken();
+	const abortController = new AbortController();
 	let state: RemoveTaskState = 'IN_PROGRESS';
 
-	const resultPromise = executeRemove(amplify, input, cancellationToken);
+	const resultPromise = executeRemove(amplify, input, abortController);
 	const wrappedPromise = resultPromise
 		.then(result => {
 			state = 'SUCCESS';
@@ -51,14 +50,15 @@ export function remove(
 			return result;
 		})
 		.catch(error => {
-			state = cancellationToken.isCancelled() ? 'CANCELED' : 'ERROR';
+			state = abortController.signal.aborted ? 'CANCELED' : 'ERROR';
+
 			throw error;
 		});
 
 	const operation = {
 		result: wrappedPromise,
 		cancel: () => {
-			cancellationToken.cancel();
+			abortController.abort();
 			state = 'CANCELED';
 		},
 		get state() {
@@ -75,7 +75,7 @@ export function remove(
 async function executeRemove(
 	amplify: AmplifyClassV6,
 	input: RemoveInput | RemoveWithPathInputWithAdvancedOptions,
-	cancellationToken: CancellationToken,
+	abortController: AbortController,
 ) {
 	try {
 		const { s3Config, keyPrefix, bucket, identityId } =
@@ -108,10 +108,10 @@ async function executeRemove(
 				folderKey: finalKey,
 				expectedBucketOwner: input.options?.expectedBucketOwner,
 				onProgress: (input as any).options?.onProgress,
-				cancellationToken,
+				abortSignal: abortController.signal,
 			});
 		} else {
-			if (cancellationToken.isCancelled()) {
+			if (abortController.signal.aborted) {
 				throw new CanceledError({ message: 'Operation was cancelled' });
 			}
 
@@ -119,6 +119,7 @@ async function executeRemove(
 				{
 					...s3Config,
 					userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
+					abortSignal: abortController.signal,
 				},
 				{
 					Bucket: bucket,
@@ -135,7 +136,7 @@ async function executeRemove(
 			return result;
 		}
 	} catch (error) {
-		if (cancellationToken.isCancelled()) {
+		if (abortController.signal.aborted) {
 			throw new CanceledError({ message: 'Operation was cancelled' });
 		}
 

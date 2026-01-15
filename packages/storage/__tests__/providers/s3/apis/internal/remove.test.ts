@@ -55,6 +55,7 @@ const deleteObjectClientConfig = {
 	credentials,
 	region,
 	userAgentValue: expect.any(String),
+	abortSignal: expect.any(Object),
 };
 
 describe('remove API', () => {
@@ -159,6 +160,7 @@ describe('remove API', () => {
 							credentials,
 							region: mockRegion,
 							userAgentValue: expect.any(String),
+							abortSignal: expect.any(Object),
 						},
 						{
 							Bucket: mockBucketName,
@@ -180,6 +182,7 @@ describe('remove API', () => {
 							credentials,
 							region,
 							userAgentValue: expect.any(String),
+							abortSignal: expect.any(Object),
 						},
 						{
 							Bucket: bucket,
@@ -326,7 +329,6 @@ describe('remove API', () => {
 								],
 								Quiet: false,
 							},
-							ContentMD5: expect.any(String),
 							ExpectedBucketOwner: undefined,
 						},
 					);

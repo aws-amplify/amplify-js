@@ -8,7 +8,6 @@ import { ProgressInfo, RemoveWithPathOutput } from '../types';
 
 import { deleteObjects, listObjectsV2 } from './client/s3data';
 import { getStorageUserAgentValue } from './userAgent';
-import { CancellationToken } from './CancellationToken';
 
 const MAX_KEYS_PER_BATCH = 1000;
 
@@ -18,7 +17,7 @@ export interface DeleteFolderContentsParams {
 	folderKey: string;
 	expectedBucketOwner?: string;
 	onProgress?(progress: ProgressInfo): void;
-	cancellationToken?: CancellationToken;
+	abortSignal?: AbortSignal;
 }
 
 /**
@@ -36,7 +35,7 @@ export const deleteFolderContents = async (
 		folderKey,
 		expectedBucketOwner,
 		onProgress,
-		cancellationToken,
+		abortSignal,
 	} = params;
 
 	try {
@@ -50,7 +49,7 @@ export const deleteFolderContents = async (
 		let continuationToken: string | undefined;
 
 		do {
-			if (cancellationToken?.isCancelled()) {
+			if (abortSignal?.aborted) {
 				throw new CanceledError({ message: 'Operation was canceled' });
 			}
 
@@ -58,6 +57,7 @@ export const deleteFolderContents = async (
 				{
 					...s3Config,
 					userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
+					abortSignal,
 				},
 				{
 					Bucket: bucket,
@@ -72,7 +72,7 @@ export const deleteFolderContents = async (
 				break;
 			}
 
-			if (cancellationToken?.isCancelled()) {
+			if (abortSignal?.aborted) {
 				throw new CanceledError({ message: 'Operation was canceled' });
 			}
 
@@ -82,6 +82,7 @@ export const deleteFolderContents = async (
 				{
 					...s3Config,
 					userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
+					abortSignal,
 				},
 				{
 					Bucket: bucket,
@@ -109,7 +110,7 @@ export const deleteFolderContents = async (
 
 		return { path: folderKey };
 	} catch (error) {
-		if (cancellationToken?.isCancelled()) {
+		if (abortSignal?.aborted) {
 			throw new CanceledError({ message: 'Operation was canceled' });
 		}
 		throw error;
