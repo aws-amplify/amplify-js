@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.1.31...@aws-amplify/interactions@6.1.32) (2026-01-15)
+
+### Bug Fixes
+
+- update AWS SDK packages to resolve @smithy/config-resolver ([#14667](https://github.com/aws-amplify/amplify-js/issues/14667)) ([fb5e0bc](https://github.com/aws-amplify/amplify-js/commit/fb5e0bc706bb05ac374f456a27a650af49f87c40))
+
 ## [6.1.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.1.30...@aws-amplify/interactions@6.1.31) (2025-12-10)
 
 **Note:** Version bump only for package @aws-amplify/interactions
