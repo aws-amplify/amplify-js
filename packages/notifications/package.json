@@ -91,7 +91,7 @@
 		"push-notifications"
 	],
 	"dependencies": {
-		"@aws-sdk/types": "3.398.0",
+		"@aws-sdk/types": "3.723.0",
 		"lodash": "^4.17.21",
 		"tslib": "^2.5.0"
 	},

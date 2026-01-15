@@ -3,12 +3,14 @@
 
 import { CookieStorage } from 'aws-amplify/adapter-core';
 
+import { ensureEncodedForJSCookie } from './ensureEncodedForJSCookie';
+
 export const serializeCookie = (
 	name: string,
 	value: string,
 	options?: CookieStorage.SetCookieOptions,
 ): string =>
-	`${name}=${value};${options ? serializeSetCookieOptions(options) : ''}`;
+	`${ensureEncodedForJSCookie(name)}=${value};${options ? serializeSetCookieOptions(options) : ''}`;
 
 const serializeSetCookieOptions = (
 	options: CookieStorage.SetCookieOptions,
