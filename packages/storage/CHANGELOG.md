@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.11.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.11.0...@aws-amplify/storage@6.11.1) (2026-01-15)
+
+### Bug Fixes
+
+- update AWS SDK packages to resolve @smithy/config-resolver ([#14667](https://github.com/aws-amplify/amplify-js/issues/14667)) ([fb5e0bc](https://github.com/aws-amplify/amplify-js/commit/fb5e0bc706bb05ac374f456a27a650af49f87c40))
+
 # [6.11.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.10.1...@aws-amplify/storage@6.11.0) (2025-12-10)
 
 ### Bug Fixes
