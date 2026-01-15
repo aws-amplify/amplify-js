@@ -19,6 +19,8 @@ import {
 	s3TransferHandler,
 	validateS3RequiredParameter,
 } from '../utils';
+import { generateDeleteObjectsXml } from '../../generateDeleteObjectsXml';
+import { calculateContentMd5 } from '../../md5';
 
 import type {
 	DeleteObjectsCommandInput,
@@ -35,10 +37,10 @@ export type DeleteObjectsInput = Pick<
 
 export type DeleteObjectsOutput = DeleteObjectsCommandOutput;
 
-const deleteObjectsSerializer = (
+const deleteObjectsSerializer = async (
 	input: DeleteObjectsInput,
 	endpoint: Endpoint,
-): HttpRequest => {
+): Promise<HttpRequest> => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Delete, 'Delete');
 	url.pathname = '/';
@@ -46,17 +48,12 @@ const deleteObjectsSerializer = (
 		delete: '',
 	}).toString();
 
-	const objects = input
-		.Delete!.Objects?.map(obj => `<Object><Key>${obj.Key}</Key></Object>`)
-		.join('');
+	const body = generateDeleteObjectsXml(
+		input.Delete!.Objects,
+		input.Delete!.Quiet ?? false,
+	);
 
-	const body = `<?xml version="1.0" encoding="UTF-8"?>
-<Delete xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
-	<Quiet>${input.Delete!.Quiet === true ? 'true' : 'false'}</Quiet>
-	${objects}
-</Delete>`;
-
-	const contentMd5 = input.ContentMD5;
+	const contentMd5 = input.ContentMD5 ?? (await calculateContentMd5(body));
 
 	const headers = assignStringVariables({
 		'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,

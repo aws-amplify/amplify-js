@@ -9,8 +9,6 @@ import { ProgressInfo, RemoveWithPathOutput } from '../types';
 import { deleteObjects, listObjectsV2 } from './client/s3data';
 import { getStorageUserAgentValue } from './userAgent';
 import { CancellationToken } from './CancellationToken';
-import { generateDeleteObjectsXml } from './generateDeleteObjectsXml';
-import { calculateContentMd5 } from './md5';
 
 const MAX_KEYS_PER_BATCH = 1000;
 
@@ -79,7 +77,6 @@ export const deleteFolderContents = async (
 			}
 
 			const batch = listResult.Contents.map(obj => ({ Key: obj.Key! }));
-			const xmlBody = generateDeleteObjectsXml(batch, false);
 
 			const deleteResult = await deleteObjects(
 				{
@@ -93,7 +90,6 @@ export const deleteFolderContents = async (
 						Quiet: false,
 					},
 					ExpectedBucketOwner: expectedBucketOwner,
-					ContentMD5: await calculateContentMd5(xmlBody),
 				},
 			);
 

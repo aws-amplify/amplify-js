@@ -5458,7 +5458,7 @@ export type TaggingDirective =
 export interface DeleteObjectsCommandInput {
 	Bucket: string;
 	Delete: {
-		Objects: Array<{ Key: string; VersionId?: string }>;
+		Objects: Array<{ Key: string }>;
 		Quiet?: boolean;
 	};
 	ExpectedBucketOwner?: string;
@@ -5468,7 +5468,7 @@ export interface DeleteObjectsCommandInput {
  * @public
  */
 export interface DeleteObjectsCommandOutput extends __MetadataBearer {
-	Deleted?: Array<{ Key?: string; VersionId?: string }>;
+	Deleted?: Array<{ Key?: string }>;
 	Errors?: Array<{ Key?: string; Code?: string; Message?: string }>;
 }
 
