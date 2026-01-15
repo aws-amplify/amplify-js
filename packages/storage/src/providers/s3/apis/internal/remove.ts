@@ -8,7 +8,6 @@ import {
 	RemoveInput,
 	RemoveOperation,
 	RemoveOutput,
-	RemoveTaskState,
 	RemoveWithPathOutput,
 } from '../../types';
 import {
@@ -23,9 +22,10 @@ import {
 import { deleteObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
-import { CanceledError } from '../../../../errors/CanceledError';
+import { createAbortableTask } from '../../utils/createAbortableTask';
 // TODO: Remove this interface when we move to public advanced APIs.
 import { RemoveInput as RemoveWithPathInputWithAdvancedOptions } from '../../../../internals';
+import { CanceledError } from '../../../../errors/CanceledError';
 
 export function remove(
 	amplify: AmplifyClassV6,
@@ -39,107 +39,78 @@ export function remove(
 	amplify: AmplifyClassV6,
 	input: RemoveInput | RemoveWithPathInputWithAdvancedOptions,
 ): RemoveOperation<RemoveOutput | RemoveWithPathOutput> {
-	const abortController = new AbortController();
-	let state: RemoveTaskState = 'IN_PROGRESS';
-
-	const resultPromise = executeRemove(amplify, input, abortController);
-	const wrappedPromise = resultPromise
-		.then(result => {
-			state = 'SUCCESS';
-
-			return result;
-		})
-		.catch(error => {
-			state = abortController.signal.aborted ? 'CANCELED' : 'ERROR';
-
-			throw error;
-		});
-
-	const operation = {
-		result: wrappedPromise,
-		cancel: () => {
-			abortController.abort();
-			state = 'CANCELED';
-		},
-		get state() {
-			return state;
-		},
-		then: wrappedPromise.then.bind(wrappedPromise),
-		catch: wrappedPromise.catch.bind(wrappedPromise),
-		finally: wrappedPromise.finally.bind(wrappedPromise),
-	};
-
-	return operation as RemoveOperation<RemoveOutput | RemoveWithPathOutput>;
+	return createAbortableTask(executeRemove(amplify, input));
 }
 
-async function executeRemove(
-	amplify: AmplifyClassV6,
-	input: RemoveInput | RemoveWithPathInputWithAdvancedOptions,
-	abortController: AbortController,
-) {
-	try {
-		const { s3Config, keyPrefix, bucket, identityId } =
-			await resolveS3ConfigAndInput(amplify, input);
+const executeRemove =
+	(
+		amplify: AmplifyClassV6,
+		input: RemoveInput | RemoveWithPathInputWithAdvancedOptions,
+	) =>
+	async (abortController: AbortController) => {
+		try {
+			const { s3Config, keyPrefix, bucket, identityId } =
+				await resolveS3ConfigAndInput(amplify, input);
 
-		const { inputType, objectKey } = validateStorageOperationInput(
-			input,
-			identityId,
-		);
+			const { inputType, objectKey } = validateStorageOperationInput(
+				input,
+				identityId,
+			);
 
-		validateBucketOwnerID(input.options?.expectedBucketOwner);
+			validateBucketOwnerID(input.options?.expectedBucketOwner);
 
-		const finalKey = resolveFinalKey(inputType, objectKey, keyPrefix);
+			const finalKey = resolveFinalKey(inputType, objectKey, keyPrefix);
 
-		validateRemovePath(finalKey);
+			validateRemovePath(finalKey);
 
-		const isFolder =
-			finalKey.endsWith('/') ||
-			(await isPathFolder({
-				s3Config,
-				bucket,
-				key: finalKey,
-				expectedBucketOwner: input.options?.expectedBucketOwner,
-			}));
+			const isFolder =
+				finalKey.endsWith('/') ||
+				(await isPathFolder({
+					s3Config,
+					bucket,
+					key: finalKey,
+					expectedBucketOwner: input.options?.expectedBucketOwner,
+				}));
 
-		if (isFolder) {
-			return deleteFolderContents({
-				s3Config,
-				bucket,
-				folderKey: finalKey,
-				expectedBucketOwner: input.options?.expectedBucketOwner,
-				onProgress: (input as any).options?.onProgress,
-				abortSignal: abortController.signal,
-			});
-		} else {
+			if (isFolder) {
+				return deleteFolderContents({
+					s3Config,
+					bucket,
+					folderKey: finalKey,
+					expectedBucketOwner: input.options?.expectedBucketOwner,
+					onProgress: (input as any).options?.onProgress,
+					abortSignal: abortController.signal,
+				});
+			} else {
+				if (abortController.signal.aborted) {
+					throw new CanceledError({ message: 'Operation was cancelled' });
+				}
+
+				await deleteObject(
+					{
+						...s3Config,
+						userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
+						abortSignal: abortController.signal,
+					},
+					{
+						Bucket: bucket,
+						Key: finalKey,
+						ExpectedBucketOwner: input.options?.expectedBucketOwner,
+					},
+				);
+
+				const result =
+					inputType === STORAGE_INPUT_KEY
+						? { key: objectKey }
+						: { path: objectKey };
+
+				return result;
+			}
+		} catch (error) {
 			if (abortController.signal.aborted) {
 				throw new CanceledError({ message: 'Operation was cancelled' });
 			}
 
-			await deleteObject(
-				{
-					...s3Config,
-					userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
-					abortSignal: abortController.signal,
-				},
-				{
-					Bucket: bucket,
-					Key: finalKey,
-					ExpectedBucketOwner: input.options?.expectedBucketOwner,
-				},
-			);
-
-			const result =
-				inputType === STORAGE_INPUT_KEY
-					? { key: objectKey }
-					: { path: objectKey };
-
-			return result;
+			throw error;
 		}
-	} catch (error) {
-		if (abortController.signal.aborted) {
-			throw new CanceledError({ message: 'Operation was cancelled' });
-		}
-
-		throw error;
-	}
-}
+	};

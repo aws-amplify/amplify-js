@@ -14,3 +14,4 @@ export { validateStorageOperationInputWithPrefix } from './validateStorageOperat
 export { isInputWithPath } from './isInputWithPath';
 export { isPathFolder } from './isPathFolder';
 export { urlDecode } from './urlDecoder';
+export { createAbortableTask } from './createAbortableTask';
