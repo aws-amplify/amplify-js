@@ -16,6 +16,8 @@ jobs:
 
   deploy:
     name: Publish to Amplify Package
+    env:
+      CI: ${{ vars.CI }}
     runs-on: ubuntu-latest
     needs: deploy-prep
     steps:

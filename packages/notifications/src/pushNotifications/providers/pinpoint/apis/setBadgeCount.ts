@@ -10,6 +10,8 @@ import { SetBadgeCount } from '../types';
  * to 0 (zero) will remove the badge from your app's icon. This function is safe to call (but will be ignored) even
  * when your React Native app is running on platforms where badges are not supported.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @throws platform: {@link PlatformNotSupportedError} - Thrown if called against an unsupported platform. Currently,
  * only React Native is supported by this API.
  * @example
