@@ -14,6 +14,8 @@ import {
  *   1. On every app launch, including the first install
  *   2. When a token changes (this may happen if the service invalidates the token for any reason)
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @param {OnTokenReceivedInput} input - A callback handler to be invoked with the token.
  * @returns {OnTokenReceivedOutput} - An object with a remove function to remove the listener.
  * @example

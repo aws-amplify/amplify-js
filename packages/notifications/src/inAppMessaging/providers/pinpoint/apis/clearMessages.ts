@@ -10,6 +10,8 @@ import { assertIsInitialized } from '../../../utils';
 /**
  * Clear locally cached messages.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown if In App messaging hasn't been initialized.
  * @returns A promise that will resolve when the operation is complete.
  * @example
