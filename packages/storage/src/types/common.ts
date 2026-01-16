@@ -49,6 +49,11 @@ export interface TransferTask<Result> {
 	result: Promise<Result>;
 }
 
+export interface NonPausableTransferTask<T>
+	extends Omit<TransferTask<T>, 'pause' | 'resume' | 'state'> {
+	state: Omit<TransferTask<T>['state'], 'PAUSED'>;
+}
+
 export type DownloadTask<Result> = Omit<
 	TransferTask<Result>,
 	'pause' | 'resume'

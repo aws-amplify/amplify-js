@@ -8,6 +8,7 @@ import {
 
 import {
 	RemoveInput,
+	RemoveOperation,
 	RemoveOutput,
 	RemoveWithPathInput,
 	RemoveWithPathOutput,
@@ -15,10 +16,10 @@ import {
 import { remove as removeInternal } from '../internal/remove';
 
 /**
- * Remove a file from your S3 bucket.
+ * Remove a file or folder from your S3 bucket.
  * @param input - The `RemoveWithPathInput` object.
  * @param contextSpec - The context spec used to get the Amplify server context.
- * @return Output containing the removed object path.
+ * @return Operation handle with result promise and cancellation capability.
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object.
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
  * when there is no path or path is empty or path has a leading slash.
@@ -26,7 +27,7 @@ import { remove as removeInternal } from '../internal/remove';
 export function remove(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: RemoveWithPathInput,
-): Promise<RemoveWithPathOutput>;
+): RemoveOperation<RemoveWithPathOutput>;
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/remove | path} instead.
@@ -34,7 +35,7 @@ export function remove(
  * Remove a file from your S3 bucket.
  * @param input - The `RemoveInput` object.
  * @param contextSpec - The context spec used to get the Amplify server context.
- * @return Output containing the removed object key
+ * @return Operation handle with result promise and cancellation capability.
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
  * when there is no key or its empty.
@@ -42,11 +43,15 @@ export function remove(
 export function remove(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: RemoveInput,
-): Promise<RemoveOutput>;
+): RemoveOperation<RemoveOutput>;
 
 export function remove(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: RemoveInput | RemoveWithPathInput,
 ) {
-	return removeInternal(getAmplifyServerContext(contextSpec).amplify, input);
+	if ('key' in input) {
+		return removeInternal(getAmplifyServerContext(contextSpec).amplify, input);
+	} else {
+		return removeInternal(getAmplifyServerContext(contextSpec).amplify, input);
+	}
 }
