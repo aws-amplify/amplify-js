@@ -10,6 +10,8 @@ import { setConflictHandler as setConflictHandlerInteral } from '../utils';
  * Set a conflict handler that will be used to resolve conflicts that may emerge
  * when matching events with synced messages.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @remark
  * The conflict handler is not persisted across app restarts and so must be set again before dispatching an event for
  * any custom handling to take effect.

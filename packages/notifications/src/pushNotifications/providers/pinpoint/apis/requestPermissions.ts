@@ -17,6 +17,8 @@ import { RequestPermissions } from '../types';
  *
  *   * `badge`: When set to true, requests the ability to update the app's badge.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @throws platform: {@link PlatformNotSupportedError} - Thrown if called against an unsupported platform. Currently,
  * only React Native is supported by this API.
  * @returns A promise that resolves to true if requested permissions are granted or have already previously been

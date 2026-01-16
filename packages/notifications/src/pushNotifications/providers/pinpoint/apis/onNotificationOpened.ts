@@ -13,6 +13,8 @@ import {
 /**
  * Registers a listener that will be triggered when a notification is opened by user.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @param {OnNotificationOpenedInput} input - A callback handler to be invoked with the opened
  * {@link PushNotificationMessage}.
  * @returns {OnNotificationOpenedOutput} - An object with a remove function to remove the listener.
