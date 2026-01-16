@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.6.0...@aws-amplify/api-rest@4.6.1) (2026-01-15)
+
+### Bug Fixes
+
+- update AWS SDK packages to resolve @smithy/config-resolver ([#14667](https://github.com/aws-amplify/amplify-js/issues/14667)) ([fb5e0bc](https://github.com/aws-amplify/amplify-js/commit/fb5e0bc706bb05ac374f456a27a650af49f87c40))
+
 # [4.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@4.5.0...@aws-amplify/api-rest@4.6.0) (2025-12-10)
 
 ### Features
