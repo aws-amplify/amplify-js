@@ -13,6 +13,8 @@ const logger = new ConsoleLogger('Analytics');
 /**
  * Flushes all buffered Pinpoint events to the service.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @note
  * This API will make a best-effort attempt to flush events from the buffer. Events recorded immediately after invoking
  * this API may not be included in the flush.

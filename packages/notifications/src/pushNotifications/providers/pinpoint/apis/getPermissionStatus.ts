@@ -22,6 +22,8 @@ import { GetPermissionStatus, GetPermissionStatusOutput } from '../types';
  *   trigger a permission dialog. Your app should now either degrade gracefully or prompt your user to grant the
  *   permissions needed in their device settings.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @throws platform: {@link PlatformNotSupportedError} - Thrown if called against an unsupported platform. Currently,
  * only React Native is supported by this API.
  * @return {Promise<GetPermissionStatusOutput>} a promise resolving to a string representing the current status of user
