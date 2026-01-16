@@ -767,6 +767,24 @@ tests:
     # Temp fix:
     browser: *minimal_browser_list
 
+  - test_name: integ_react_analytics_kinesis__auth
+    desc: 'Test record API for Kinesis with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-test]
+    spec: kinesis
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_kinesis__unauth
+    desc: 'Test record API for Kinesis with guest user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-test]
+    spec: kinesis-unauth
+    # Temp fix:
+    browser: *minimal_browser_list
+
   # GEO
   - test_name: integ_react_geo_display_map
     desc: 'Display Map'
