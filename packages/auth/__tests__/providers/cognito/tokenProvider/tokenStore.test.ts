@@ -1,10 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { KeyValueStorageInterface } from '@aws-amplify/core';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
+import { Hub, KeyValueStorageInterface } from '@aws-amplify/core';
+import { AMPLIFY_SYMBOL, decodeJWT } from '@aws-amplify/core/internals/utils';
 
-import { DefaultTokenStore } from '../../../../src/providers/cognito/tokenProvider';
+import {
+	AUTH_KEY_PREFIX,
+	DefaultTokenStore,
+} from '../../../../src/providers/cognito/tokenProvider';
 
 const userPoolId = 'us-west-1:0000523';
 const userPoolClientId = 'mockCognitoUserPoolsId';
@@ -21,6 +24,9 @@ jest.mock(
 		TokenProviderErrorCode: 'mockErrorCode',
 	}),
 );
+jest.mock('../../../../src/providers/cognito/apis/getCurrentUser', () => ({
+	getCurrentUser: () => Promise.resolve({}),
+}));
 
 const mockedDecodeJWT = jest.mocked(decodeJWT);
 mockedDecodeJWT.mockReturnValue({
@@ -72,6 +78,7 @@ const mockKeyValueStorage: jest.Mocked<KeyValueStorageInterface> = {
 	getItem: jest.fn(),
 	removeItem: jest.fn(),
 	clear: jest.fn(),
+	addListener: jest.fn(),
 };
 
 describe('TokenStore', () => {
@@ -401,6 +408,85 @@ describe('TokenStore', () => {
 
 			const finalTokens = await tokenStore.loadTokens();
 			expect(finalTokens?.refreshToken).toBe(newMockAuthToken.refreshToken);
+		});
+	});
+
+	describe('setupNotify', () => {
+		it('should setup a KeyValueStorageEvent listener', async () => {
+			tokenStore.setupNotify();
+
+			const spy = jest.spyOn(keyValStorage, 'addListener');
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+
+			expect(spy).toHaveBeenCalledWith(expect.any(Function));
+
+			const listener = spy.mock.calls[0][0];
+
+			// does nothing if key does not match
+			await listener({
+				key: 'foo.bar',
+				oldValue: null,
+				newValue: null,
+			});
+
+			expect(hubSpy).not.toHaveBeenCalled();
+
+			// does nothing if both values are null
+			await listener({
+				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
+				oldValue: null,
+				newValue: null,
+			});
+
+			expect(hubSpy).not.toHaveBeenCalled();
+
+			// dispatches signedIn on new value
+			await listener({
+				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
+				newValue: '123',
+				oldValue: null,
+			});
+
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ event: 'signedIn', data: {} },
+				'Auth',
+				AMPLIFY_SYMBOL,
+				true,
+			);
+			hubSpy.mockClear();
+
+			// dispatches signedOut on null newValue
+			await listener({
+				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
+				newValue: null,
+				oldValue: '123',
+			});
+
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ event: 'signedOut' },
+				'Auth',
+				AMPLIFY_SYMBOL,
+				true,
+			);
+			hubSpy.mockClear();
+
+			// dispatches tokenRefresh for changed value
+			await listener({
+				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
+				newValue: '456',
+				oldValue: '123',
+			});
+
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ event: 'tokenRefresh' },
+				'Auth',
+				AMPLIFY_SYMBOL,
+				true,
+			);
+			hubSpy.mockClear();
 		});
 	});
 });
