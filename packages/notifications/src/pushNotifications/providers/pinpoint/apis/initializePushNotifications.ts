@@ -9,6 +9,8 @@ import { InitializePushNotifications } from '../types';
  * Initialize and set up the push notification category. The category must be first initialized before all other
  * functionalities become available.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @throws platform: {@link PlatformNotSupportedError} - Thrown if called against an unsupported platform. Currently,
  * only React Native is supported by this API.
  * @remarks

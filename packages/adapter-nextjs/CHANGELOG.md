@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.6.12...@aws-amplify/adapter-nextjs@1.7.0) (2026-01-15)
+
+### Bug Fixes
+
+- **adapter-nextjs:** encode the cookie names when writing to cookie store ([#14668](https://github.com/aws-amplify/amplify-js/issues/14668)) ([fb2c88e](https://github.com/aws-amplify/amplify-js/commit/fb2c88e3f4644cd7552fef0f188663dc6a96404a))
+
+### Features
+
+- add next16 support ([b0738e6](https://github.com/aws-amplify/amplify-js/commit/b0738e68b5d787b18f2309ad310e0254b5d2b2a6))
+
 ## [1.6.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.6.11...@aws-amplify/adapter-nextjs@1.6.12) (2025-12-10)
 
 **Note:** Version bump only for package @aws-amplify/adapter-nextjs

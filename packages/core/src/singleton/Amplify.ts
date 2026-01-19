@@ -67,6 +67,21 @@ export class AmplifyClass {
 
 		this.Auth.configure(this.resourcesConfig.Auth!, this.libraryOptions.Auth);
 
+		// Warn if Pinpoint is configured
+		if (
+			this.resourcesConfig.Analytics?.Pinpoint ||
+			this.resourcesConfig.Notifications?.InAppMessaging?.Pinpoint ||
+			this.resourcesConfig.Notifications?.PushNotification?.Pinpoint
+		) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				'AWS will end support for Amazon Pinpoint on October 30, 2026. ' +
+					'The guidance is to use AWS End User Messaging for push notifications and SMS, ' +
+					'Amazon Simple Email Service for sending emails, Amazon Connect for campaigns, journeys, endpoints, and engagement analytics. ' +
+					'Pinpoint recommends Amazon Kinesis for event collection and mobile analytics.',
+			);
+		}
+
 		Hub.dispatch(
 			'core',
 			{

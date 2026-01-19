@@ -13,6 +13,8 @@ import {
 /**
  * Registers a listener that will be triggered when a notification is received while app is in a background state.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @throws platform: {@link PlatformNotSupportedError} - Thrown if called against an unsupported platform. Currently,
  * only React Native is supported by this API.
  * @param {OnNotificationReceivedInBackgroundInput} input - A callback handler to be invoked with the received

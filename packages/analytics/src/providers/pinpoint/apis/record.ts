@@ -24,6 +24,8 @@ const logger = new ConsoleLogger('Analytics');
 /**
  * Records an Analytic event to Pinpoint. Events will be buffered and periodically sent to Pinpoint.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @param params The input object used to construct the request.
  *
  * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library
