@@ -62,6 +62,32 @@ export async function handleUserAuthFlow({
 	const authParameters: Record<string, string> = { USERNAME: username };
 
 	if (preferredChallenge) {
+		// Validate that the preferred challenge is enabled in the backend config
+		if (
+			preferredChallenge === 'EMAIL_OTP' &&
+			!config.passwordless?.emailOtpEnabled
+		) {
+			assertValidationError(
+				false,
+				AuthValidationErrorCode.InvalidPreferredChallenge,
+			);
+		}
+		if (
+			preferredChallenge === 'SMS_OTP' &&
+			!config.passwordless?.smsOtpEnabled
+		) {
+			assertValidationError(
+				false,
+				AuthValidationErrorCode.InvalidPreferredChallenge,
+			);
+		}
+		if (preferredChallenge === 'WEB_AUTHN' && !config.passwordless?.webAuthn) {
+			assertValidationError(
+				false,
+				AuthValidationErrorCode.InvalidPreferredChallenge,
+			);
+		}
+
 		if (preferredChallenge === 'PASSWORD_SRP') {
 			assertValidationError(
 				!!password,

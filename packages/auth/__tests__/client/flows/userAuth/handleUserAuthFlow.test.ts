@@ -113,10 +113,16 @@ describe('handleUserAuthFlow', () => {
 
 	test('should handle EMAIL_OTP preferred challenge', async () => {
 		const username = 'testuser';
+		const configWithPasswordless = {
+			...mockConfig,
+			passwordless: {
+				emailOtpEnabled: true,
+			},
+		};
 
 		await handleUserAuthFlow({
 			username,
-			config: mockConfig,
+			config: configWithPasswordless,
 			tokenOrchestrator: expect.anything(),
 			preferredChallenge: 'EMAIL_OTP',
 		});
@@ -195,6 +201,125 @@ describe('handleUserAuthFlow', () => {
 				// password is undefined
 			}),
 		).rejects.toThrow('password is required to signIn');
+	});
+
+	test('should throw validation error for EMAIL_OTP when not enabled', async () => {
+		await expect(
+			handleUserAuthFlow({
+				username: 'testuser',
+				config: mockConfig,
+				tokenOrchestrator: expect.anything(),
+				preferredChallenge: 'EMAIL_OTP',
+			}),
+		).rejects.toThrow(
+			'The preferred challenge is not enabled in your backend configuration',
+		);
+	});
+
+	test('should throw validation error for SMS_OTP when not enabled', async () => {
+		await expect(
+			handleUserAuthFlow({
+				username: 'testuser',
+				config: mockConfig,
+				tokenOrchestrator: expect.anything(),
+				preferredChallenge: 'SMS_OTP',
+			}),
+		).rejects.toThrow(
+			'The preferred challenge is not enabled in your backend configuration',
+		);
+	});
+
+	test('should throw validation error for WEB_AUTHN when not enabled', async () => {
+		await expect(
+			handleUserAuthFlow({
+				username: 'testuser',
+				config: mockConfig,
+				tokenOrchestrator: expect.anything(),
+				preferredChallenge: 'WEB_AUTHN',
+			}),
+		).rejects.toThrow(
+			'The preferred challenge is not enabled in your backend configuration',
+		);
+	});
+
+	test('should allow EMAIL_OTP when enabled in config', async () => {
+		const configWithPasswordless = {
+			...mockConfig,
+			passwordless: {
+				emailOtpEnabled: true,
+			},
+		};
+
+		await handleUserAuthFlow({
+			username: 'testuser',
+			config: configWithPasswordless,
+			tokenOrchestrator: expect.anything(),
+			preferredChallenge: 'EMAIL_OTP',
+		});
+
+		expect(mockInitiateAuth).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				AuthParameters: {
+					USERNAME: 'testuser',
+					PREFERRED_CHALLENGE: 'EMAIL_OTP',
+				},
+			}),
+		);
+	});
+
+	test('should allow SMS_OTP when enabled in config', async () => {
+		const configWithPasswordless = {
+			...mockConfig,
+			passwordless: {
+				smsOtpEnabled: true,
+			},
+		};
+
+		await handleUserAuthFlow({
+			username: 'testuser',
+			config: configWithPasswordless,
+			tokenOrchestrator: expect.anything(),
+			preferredChallenge: 'SMS_OTP',
+		});
+
+		expect(mockInitiateAuth).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				AuthParameters: {
+					USERNAME: 'testuser',
+					PREFERRED_CHALLENGE: 'SMS_OTP',
+				},
+			}),
+		);
+	});
+
+	test('should allow WEB_AUTHN when enabled in config', async () => {
+		const configWithPasswordless = {
+			...mockConfig,
+			passwordless: {
+				webAuthn: {
+					relyingPartyId: 'example.com',
+				},
+			},
+		};
+
+		await handleUserAuthFlow({
+			username: 'testuser',
+			config: configWithPasswordless,
+			tokenOrchestrator: expect.anything(),
+			preferredChallenge: 'WEB_AUTHN',
+		});
+
+		expect(mockInitiateAuth).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				AuthParameters: {
+					USERNAME: 'testuser',
+					PREFERRED_CHALLENGE: 'WEB_AUTHN',
+				},
+			}),
+		);
 	});
 
 	test('should throw error when initiateAuth fails', async () => {

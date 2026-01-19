@@ -141,6 +141,7 @@ export interface AuthIdentityPoolConfig {
 		mfa?: never;
 		passwordFormat?: never;
 		groups?: never;
+		passwordless?: never;
 	};
 }
 
@@ -191,6 +192,15 @@ export interface CognitoUserPoolConfig {
 		requireSpecialCharacters?: boolean;
 	};
 	groups?: Record<UserGroupName, UserGroupPrecedence>[];
+	passwordless?: {
+		emailOtpEnabled?: boolean;
+		smsOtpEnabled?: boolean;
+		webAuthn?: {
+			relyingPartyId?: string;
+			userVerification?: string;
+		};
+		preferredChallenge?: 'EMAIL_OTP' | 'SMS_OTP' | 'WEB_AUTHN';
+	};
 }
 
 export interface OAuthConfig {
