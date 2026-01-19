@@ -13,6 +13,8 @@ import { GetLaunchNotification, GetLaunchNotificationOutput } from '../types';
  *   2. Another notification was opened while your app was running (either in foreground or background)
  *   3. Your app was brought back to the foreground by some other means (e.g. user tapped the app icon)
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @throws platform: {@link PlatformNotSupportedError} - Thrown if called against an unsupported platform. Currently,
  * only React Native is supported by this API.
  * @returns {Promise<GetLaunchNotificationOutput>} - a promise resolving to {@link PushNotificationMessage} if there is
