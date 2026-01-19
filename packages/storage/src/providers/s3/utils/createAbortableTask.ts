@@ -3,8 +3,6 @@
 
 import { NonPausableTransferTask } from '../../../types/common';
 
-export type TaskState = 'IN_PROGRESS' | 'CANCELED' | 'SUCCESS' | 'ERROR';
-
 export function createAbortableTask<T>(
 	executor: (abortController: AbortController) => Promise<T>,
 ): NonPausableTransferTask<T> & {
@@ -13,7 +11,7 @@ export function createAbortableTask<T>(
 	finally: Promise<T>['finally'];
 } {
 	const abortController = new AbortController();
-	let state: TaskState = 'IN_PROGRESS';
+	let state: NonPausableTransferTask<T>['state'] = 'IN_PROGRESS';
 
 	const resultPromise = executor(abortController);
 

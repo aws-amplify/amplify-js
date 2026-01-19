@@ -48,7 +48,6 @@ export {
 	RemoveWithPathInput,
 	RemoveInput,
 	RemoveOperation,
-	RemoveTaskState,
 	ProgressInfo,
 	DownloadDataInput,
 	DownloadDataWithPathInput,

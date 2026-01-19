@@ -115,11 +115,6 @@ export type RemoveWithPathInput = StorageRemoveInputWithPath<
 >;
 
 /**
- * Represents the current state of a remove operation
- */
-export type RemoveTaskState = 'IN_PROGRESS' | 'CANCELED' | 'SUCCESS' | 'ERROR';
-
-/**
  * Represents an ongoing remove operation with cancellation and state tracking capabilities
  * @template T - The type of the result (RemoveWithPathOutput | RemoveOutput)
  */
