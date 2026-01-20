@@ -204,10 +204,17 @@ describe('handleUserAuthFlow', () => {
 	});
 
 	test('should throw validation error for EMAIL_OTP when not enabled', async () => {
+		const configWithPasswordless = {
+			...mockConfig,
+			passwordless: {
+				emailOtpEnabled: false,
+			},
+		};
+
 		await expect(
 			handleUserAuthFlow({
 				username: 'testuser',
-				config: mockConfig,
+				config: configWithPasswordless,
 				tokenOrchestrator: expect.anything(),
 				preferredChallenge: 'EMAIL_OTP',
 			}),
@@ -217,10 +224,17 @@ describe('handleUserAuthFlow', () => {
 	});
 
 	test('should throw validation error for SMS_OTP when not enabled', async () => {
+		const configWithPasswordless = {
+			...mockConfig,
+			passwordless: {
+				smsOtpEnabled: false,
+			},
+		};
+
 		await expect(
 			handleUserAuthFlow({
 				username: 'testuser',
-				config: mockConfig,
+				config: configWithPasswordless,
 				tokenOrchestrator: expect.anything(),
 				preferredChallenge: 'SMS_OTP',
 			}),
@@ -230,10 +244,17 @@ describe('handleUserAuthFlow', () => {
 	});
 
 	test('should throw validation error for WEB_AUTHN when not enabled', async () => {
+		const configWithPasswordless = {
+			...mockConfig,
+			passwordless: {
+				webAuthn: undefined,
+			},
+		};
+
 		await expect(
 			handleUserAuthFlow({
 				username: 'testuser',
-				config: mockConfig,
+				config: configWithPasswordless,
 				tokenOrchestrator: expect.anything(),
 				preferredChallenge: 'WEB_AUTHN',
 			}),
