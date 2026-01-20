@@ -16,6 +16,7 @@ import {
 import {
 	CognitoUserPoolConfigMfaStatus,
 	OAuthProvider,
+	PreferredChallenge,
 } from './singleton/Auth/types';
 import { NotificationsConfig } from './singleton/Notifications/types';
 import {
@@ -169,11 +170,8 @@ function parseAuth(
 						userVerification: passwordless_options.web_authn.user_verification,
 					}
 				: undefined,
-			preferredChallenge: passwordless_options.preferred_challenge as
-				| 'EMAIL_OTP'
-				| 'SMS_OTP'
-				| 'WEB_AUTHN'
-				| undefined,
+			preferredChallenge:
+				passwordless_options.preferred_challenge as PreferredChallenge,
 		};
 	}
 

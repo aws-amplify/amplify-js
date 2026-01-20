@@ -164,6 +164,12 @@ export interface AuthUserPoolConfig {
 
 export type CognitoUserPoolConfigMfaStatus = 'on' | 'off' | 'optional';
 
+export type PreferredChallenge =
+	| 'EMAIL_OTP'
+	| 'SMS_OTP'
+	| 'WEB_AUTHN'
+	| undefined;
+
 export interface CognitoUserPoolConfig {
 	userPoolClientId: string;
 	userPoolId: string;
@@ -199,7 +205,7 @@ export interface CognitoUserPoolConfig {
 			relyingPartyId?: string;
 			userVerification?: string;
 		};
-		preferredChallenge?: 'EMAIL_OTP' | 'SMS_OTP' | 'WEB_AUTHN';
+		preferredChallenge?: PreferredChallenge;
 	};
 }
 
