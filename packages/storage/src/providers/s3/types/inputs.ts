@@ -17,6 +17,7 @@ import {
 	StorageUploadDataInputWithKey,
 	StorageUploadDataInputWithPath,
 } from '../../../types';
+import { NonPausableTransferTask } from '../../../types/common';
 import {
 	CopyDestinationWithKeyOptions,
 	CopySourceWithKeyOptions,
@@ -107,8 +108,30 @@ export type RemoveInput = StorageRemoveInputWithKey<RemoveOptions>;
  * Input type with path for S3 remove API.
  */
 export type RemoveWithPathInput = StorageRemoveInputWithPath<
-	Omit<RemoveOptions, 'accessLevel'>
+	Omit<RemoveOptions, 'accessLevel'> & {
+		/** Callback function invoked after each batch completes, providing progress updates with file counts and error details. */
+		onProgress?(progress: ProgressInfo): void;
+	}
 >;
+
+/**
+ * Represents an ongoing remove operation with cancellation and state tracking capabilities
+ * @template T - The type of the result (RemoveWithPathOutput | RemoveOutput)
+ */
+export interface RemoveOperation<T> extends NonPausableTransferTask<T> {
+	then: Promise<T>['then'];
+	catch: Promise<T>['catch'];
+	finally: Promise<T>['finally'];
+}
+
+export interface ProgressInfo {
+	deleted?: { path: string }[];
+	failed?: {
+		path: string;
+		code: string;
+		message: string;
+	}[];
+}
 
 /**
  * @deprecated Use {@link DownloadDataWithPathInput} instead.
