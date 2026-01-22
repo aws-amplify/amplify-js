@@ -4,7 +4,12 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
-import { deleteObject } from '../../../../../src/providers/s3/utils/client/s3data';
+import {
+	deleteObject,
+	deleteObjects,
+	headObject,
+	listObjectsV2,
+} from '../../../../../src/providers/s3/utils/client/s3data';
 import { remove } from '../../../../../src/providers/s3/apis/internal/remove';
 import { StorageValidationErrorCode } from '../../../../../src/errors/types/validation';
 import {
@@ -13,6 +18,7 @@ import {
 	RemoveWithPathInput,
 	RemoveWithPathOutput,
 } from '../../../../../src/providers/s3/types';
+import { CanceledError } from '../../../../../src/errors/CanceledError';
 import './testUtils';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
@@ -27,9 +33,14 @@ jest.mock('@aws-amplify/core', () => ({
 		},
 	},
 }));
+
 const mockDeleteObject = deleteObject as jest.Mock;
+const mockDeleteObjects = deleteObjects as jest.Mock;
+const mockListObjectsV2 = listObjectsV2 as jest.Mock;
+const mockHeadObject = headObject as jest.Mock;
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = jest.mocked(Amplify.getConfig);
+
 const inputKey = 'key';
 const bucket = 'bucket';
 const region = 'region';
@@ -44,6 +55,7 @@ const deleteObjectClientConfig = {
 	credentials,
 	region,
 	userAgentValue: expect.any(String),
+	abortSignal: expect.any(Object),
 };
 
 describe('remove API', () => {
@@ -62,6 +74,7 @@ describe('remove API', () => {
 			},
 		});
 	});
+
 	describe('Happy Cases', () => {
 		describe('With Key', () => {
 			const removeWrapper = (input: RemoveInput) => remove(Amplify, input);
@@ -72,10 +85,24 @@ describe('remove API', () => {
 						Metadata: { key: 'value' },
 					};
 				});
+				mockListObjectsV2.mockResolvedValue({
+					Contents: [],
+					CommonPrefixes: [],
+				});
+				mockDeleteObjects.mockResolvedValue({
+					Deleted: [],
+					Errors: [],
+				});
+				mockHeadObject.mockRejectedValue({
+					name: 'NotFound',
+					$metadata: { httpStatusCode: 404 },
+				});
 			});
+
 			afterEach(() => {
 				jest.clearAllMocks();
 			});
+
 			const testCases: {
 				expectedKey: string;
 				options?: { accessLevel?: StorageAccessLevel };
@@ -133,6 +160,7 @@ describe('remove API', () => {
 							credentials,
 							region: mockRegion,
 							userAgentValue: expect.any(String),
+							abortSignal: expect.any(Object),
 						},
 						{
 							Bucket: mockBucketName,
@@ -140,6 +168,7 @@ describe('remove API', () => {
 						},
 					);
 				});
+
 				it('should override bucket in deleteObject call when bucket is string', async () => {
 					await removeWrapper({
 						key: inputKey,
@@ -153,6 +182,7 @@ describe('remove API', () => {
 							credentials,
 							region,
 							userAgentValue: expect.any(String),
+							abortSignal: expect.any(Object),
 						},
 						{
 							Bucket: bucket,
@@ -161,6 +191,7 @@ describe('remove API', () => {
 					);
 				});
 			});
+
 			describe('ExpectedBucketOwner passed in options', () => {
 				it('should include expectedBucketOwner in headers when provided', async () => {
 					const mockKey = 'test-path';
@@ -184,93 +215,297 @@ describe('remove API', () => {
 				});
 			});
 		});
+
 		describe('With Path', () => {
 			const removeWrapper = (input: RemoveWithPathInput) =>
 				remove(Amplify, input);
+
 			beforeEach(() => {
 				mockDeleteObject.mockImplementation(() => {
 					return {
 						Metadata: { key: 'value' },
 					};
 				});
+				mockListObjectsV2.mockResolvedValue({
+					Contents: [],
+					CommonPrefixes: [],
+				});
+				mockDeleteObjects.mockResolvedValue({
+					Deleted: [],
+					Errors: [],
+				});
+				mockHeadObject.mockRejectedValue({
+					name: 'NotFound',
+					$metadata: { httpStatusCode: 404 },
+				});
 			});
+
 			afterEach(() => {
 				jest.clearAllMocks();
 			});
-			[
-				{
-					path: `public/${inputKey}`,
-				},
-				{
-					path: ({ identityId }: { identityId?: string }) =>
-						`protected/${identityId}/${inputKey}`,
-				},
-			].forEach(({ path: inputPath }) => {
-				const resolvedPath =
-					typeof inputPath === 'string'
-						? inputPath
-						: inputPath({ identityId: defaultIdentityId });
 
-				it(`should remove object for the given path`, async () => {
+			describe('single file deletion', () => {
+				[
+					{
+						path: `public/${inputKey}`,
+					},
+					{
+						path: ({ identityId }: { identityId?: string }) =>
+							`protected/${identityId}/${inputKey}`,
+					},
+				].forEach(({ path: inputPath }) => {
+					const resolvedPath =
+						typeof inputPath === 'string'
+							? inputPath
+							: inputPath({ identityId: defaultIdentityId });
+
+					it(`should remove object for the given path`, async () => {
+						const { path } = (await removeWrapper({
+							path: inputPath,
+						})) as RemoveWithPathOutput;
+						expect(path).toEqual(resolvedPath);
+						expect(deleteObject).toHaveBeenCalledTimes(1);
+						await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+							deleteObjectClientConfig,
+							{
+								Bucket: bucket,
+								Key: resolvedPath,
+							},
+						);
+					});
+				});
+			});
+
+			describe('folder deletion', () => {
+				it('should delete folder contents when path ends with slash', async () => {
+					const folderPath = 'public/folder/';
+					const mockObjects = [
+						{ Key: 'public/folder/file1.txt', Size: 100 },
+						{ Key: 'public/folder/file2.txt', Size: 200 },
+					];
+
+					mockListObjectsV2.mockResolvedValue({
+						Contents: mockObjects,
+						IsTruncated: false,
+					});
+
+					mockDeleteObjects.mockResolvedValue({
+						Deleted: [
+							{ Key: 'public/folder/file1.txt' },
+							{ Key: 'public/folder/file2.txt' },
+						],
+						Errors: [],
+					});
+
 					const { path } = (await removeWrapper({
-						path: inputPath,
+						path: folderPath,
 					})) as RemoveWithPathOutput;
-					expect(path).toEqual(resolvedPath);
-					expect(deleteObject).toHaveBeenCalledTimes(1);
-					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
-						deleteObjectClientConfig,
+
+					expect(path).toEqual(folderPath);
+					expect(mockListObjectsV2).toHaveBeenCalledWith(
+						expect.objectContaining({
+							credentials: expect.any(Function),
+							userAgentValue: expect.any(String),
+						}),
 						{
 							Bucket: bucket,
-							Key: resolvedPath,
+							Prefix: folderPath,
+							MaxKeys: 1000,
+							ContinuationToken: undefined,
+							ExpectedBucketOwner: undefined,
 						},
 					);
+					expect(mockDeleteObjects).toHaveBeenCalledWith(
+						expect.objectContaining({
+							credentials: expect.any(Function),
+							userAgentValue: expect.any(String),
+						}),
+						{
+							Bucket: bucket,
+							Delete: {
+								Objects: [
+									{ Key: 'public/folder/file1.txt' },
+									{ Key: 'public/folder/file2.txt' },
+								],
+								Quiet: false,
+							},
+							ExpectedBucketOwner: undefined,
+						},
+					);
+				});
+
+				it('should delete folder contents when headObject indicates folder', async () => {
+					const folderPath = 'public/folder';
+					const mockObjects = [{ Key: 'public/folder/file1.txt', Size: 100 }];
+
+					mockHeadObject.mockRejectedValue({
+						name: 'NotFound',
+						$metadata: { httpStatusCode: 404 },
+					});
+
+					mockListObjectsV2.mockResolvedValue({
+						Contents: mockObjects,
+						IsTruncated: false,
+					});
+
+					mockDeleteObjects.mockResolvedValue({
+						Deleted: [{ Key: 'public/folder/file1.txt' }],
+						Errors: [],
+					});
+
+					const { path } = (await removeWrapper({
+						path: folderPath,
+					})) as RemoveWithPathOutput;
+
+					expect(path).toEqual(folderPath);
+					expect(mockListObjectsV2).toHaveBeenCalled();
+					expect(mockDeleteObjects).toHaveBeenCalled();
+				});
+
+				it('should handle empty folder', async () => {
+					const folderPath = 'public/empty-folder/';
+
+					mockListObjectsV2.mockResolvedValue({
+						Contents: [],
+						IsTruncated: false,
+					});
+
+					const { path } = (await removeWrapper({
+						path: folderPath,
+					})) as RemoveWithPathOutput;
+
+					expect(path).toEqual(folderPath);
+					expect(mockDeleteObjects).not.toHaveBeenCalled();
+				});
+
+				it('should handle folder deletion with progress callback', async () => {
+					const folderPath = 'public/folder/';
+					const mockOnProgress = jest.fn();
+					const mockObjects = [
+						{ Key: 'public/folder/file1.txt', Size: 100 },
+						{ Key: 'public/folder/file2.txt', Size: 200 },
+					];
+
+					mockListObjectsV2.mockResolvedValue({
+						Contents: mockObjects,
+						IsTruncated: false,
+					});
+
+					mockDeleteObjects.mockResolvedValue({
+						Deleted: [
+							{ Key: 'public/folder/file1.txt' },
+							{ Key: 'public/folder/file2.txt' },
+						],
+						Errors: [],
+					});
+
+					await removeWrapper({
+						path: folderPath,
+						options: {
+							onProgress: mockOnProgress,
+						},
+					});
+
+					expect(mockOnProgress).toHaveBeenCalledWith({
+						deleted: [
+							{ path: 'public/folder/file1.txt' },
+							{ path: 'public/folder/file2.txt' },
+						],
+						failed: [],
+					});
+				});
+			});
+
+			describe('cancellation', () => {
+				it('should support cancellation during folder deletion', async () => {
+					const folderPath = 'public/folder/';
+					const operation = removeWrapper({
+						path: folderPath,
+					});
+
+					operation.cancel();
+
+					await expect(operation.result).rejects.toThrow(CanceledError);
+					expect(operation.state).toBe('CANCELED');
+				});
+
+				it('should update operation state correctly', async () => {
+					const operation = removeWrapper({
+						path: 'public/file.txt',
+					});
+
+					expect(operation.state).toBe('IN_PROGRESS');
+
+					await operation.result;
+
+					expect(operation.state).toBe('SUCCESS');
 				});
 			});
 
 			describe('bucket passed in options', () => {
-				it('should override bucket in deleteObject call when bucket is object', async () => {
+				it('should override bucket in folder deletion when bucket is object', async () => {
 					const mockBucketName = 'bucket-1';
 					const mockRegion = 'region-1';
+					const folderPath = 'path/';
+
+					mockListObjectsV2.mockResolvedValue({
+						Contents: [{ Key: 'path/file.txt', Size: 100 }],
+						IsTruncated: false,
+					});
+
+					mockDeleteObjects.mockResolvedValue({
+						Deleted: [{ Key: 'path/file.txt' }],
+						Errors: [],
+					});
+
 					await removeWrapper({
-						path: 'path/',
+						path: folderPath,
 						options: {
 							bucket: { bucketName: mockBucketName, region: mockRegion },
 						},
 					});
-					expect(deleteObject).toHaveBeenCalledTimes(1);
-					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
-						{
-							credentials,
+
+					expect(mockListObjectsV2).toHaveBeenCalledWith(
+						expect.objectContaining({
 							region: mockRegion,
-							userAgentValue: expect.any(String),
-						},
-						{
+						}),
+						expect.objectContaining({
 							Bucket: mockBucketName,
-							Key: 'path/',
-						},
+						}),
 					);
 				});
-				it('should override bucket in deleteObject call when bucket is string', async () => {
+
+				it('should override bucket in folder deletion when bucket is string', async () => {
+					const folderPath = 'path/';
+
+					mockListObjectsV2.mockResolvedValue({
+						Contents: [{ Key: 'path/file.txt', Size: 100 }],
+						IsTruncated: false,
+					});
+
+					mockDeleteObjects.mockResolvedValue({
+						Deleted: [{ Key: 'path/file.txt' }],
+						Errors: [],
+					});
+
 					await removeWrapper({
-						path: 'path/',
+						path: folderPath,
 						options: {
 							bucket: 'default-bucket',
 						},
 					});
-					expect(deleteObject).toHaveBeenCalledTimes(1);
-					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
-						{
-							credentials,
+
+					expect(mockListObjectsV2).toHaveBeenCalledWith(
+						expect.objectContaining({
 							region,
-							userAgentValue: expect.any(String),
-						},
-						{
+						}),
+						expect.objectContaining({
 							Bucket: bucket,
-							Key: 'path/',
-						},
+						}),
 					);
 				});
 			});
+
 			describe('ExpectedBucketOwner passed in options', () => {
 				it('should include expectedBucketOwner in headers when provided', async () => {
 					const mockPath = 'public/test-path';
@@ -300,6 +535,7 @@ describe('remove API', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
+
 		it('should return a not found error', async () => {
 			mockDeleteObject.mockRejectedValueOnce(
 				Object.assign(new Error(), {
@@ -323,6 +559,7 @@ describe('remove API', () => {
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
 		});
+
 		it('should throw InvalidStorageOperationInput error when the path is empty', async () => {
 			expect.assertions(1);
 			try {
@@ -331,6 +568,15 @@ describe('remove API', () => {
 				expect(error.name).toBe(
 					StorageValidationErrorCode.InvalidStorageOperationInput,
 				);
+			}
+		});
+
+		it('should throw InvalidStoragePathInput error when the path has leading slash', async () => {
+			expect.assertions(1);
+			try {
+				await remove(Amplify, { path: '/invalid/path' });
+			} catch (error: any) {
+				expect(error.name).toBe('InvalidStoragePathInput');
 			}
 		});
 	});
