@@ -63,7 +63,8 @@ export async function signInWithUserAuth(
 	};
 	assertTokenProviderConfig(authConfig);
 	const clientMetaData = options?.clientMetadata;
-	const preferredChallenge = options?.preferredChallenge;
+	const preferredChallenge =
+		options?.preferredChallenge ?? authConfig?.passwordless?.preferredChallenge;
 
 	assertValidationError(
 		!!username,

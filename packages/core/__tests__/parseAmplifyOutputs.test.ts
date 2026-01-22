@@ -182,6 +182,65 @@ describe('parseAmplifyOutputs tests', () => {
 		});
 	});
 
+	it('should parse passwordless configuration', () => {
+		const amplifyOutputs = {
+			version: '1',
+			auth: {
+				user_pool_id: 'us-east-1:test',
+				user_pool_client_id: 'xxxx',
+				aws_region: 'us-east-1',
+				passwordless_options: {
+					email_otp_enabled: true,
+					sms_otp_enabled: true,
+					web_authn: {
+						relying_party_id: 'example.com',
+						user_verification: 'preferred',
+					},
+					preferred_challenge: 'EMAIL_OTP',
+				},
+			},
+		};
+
+		const result = parseAmplifyOutputs(amplifyOutputs);
+
+		expect(result.Auth?.Cognito).toHaveProperty('passwordless');
+		expect(result.Auth?.Cognito?.passwordless)?.toEqual({
+			emailOtpEnabled: true,
+			smsOtpEnabled: true,
+			webAuthn: {
+				relyingPartyId: 'example.com',
+				userVerification: 'preferred',
+			},
+			preferredChallenge: 'EMAIL_OTP',
+		});
+	});
+
+	it('should parse passwordless configuration without webAuthn', () => {
+		const amplifyOutputs = {
+			version: '1',
+			auth: {
+				user_pool_id: 'us-east-1:test',
+				user_pool_client_id: 'xxxx',
+				aws_region: 'us-east-1',
+				passwordless_options: {
+					email_otp_enabled: true,
+					sms_otp_enabled: false,
+					preferred_challenge: 'EMAIL_OTP',
+				},
+			},
+		};
+
+		const result = parseAmplifyOutputs(amplifyOutputs);
+
+		expect(result.Auth?.Cognito).toHaveProperty('passwordless');
+		expect(result.Auth?.Cognito?.passwordless)?.toEqual({
+			emailOtpEnabled: true,
+			smsOtpEnabled: false,
+			webAuthn: undefined,
+			preferredChallenge: 'EMAIL_OTP',
+		});
+	});
+
 	it('should correctly set loginWith options', () => {
 		const testAmplifyOutputs = JSON.parse(JSON.stringify(mockAmplifyOutputs));
 
