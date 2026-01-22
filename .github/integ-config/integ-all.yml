@@ -451,6 +451,41 @@ tests:
     browser: *minimal_browser_list
 
   # AUTH
+  - test_name: integ_next_auth_user_management
+    desc: 'User Management'
+    framework: next
+    category: auth
+    sample_name: [misc]
+    spec: user-management
+    browser: *minimal_browser_list
+  - test_name: integ_next_auth_password_reset
+    desc: 'Password Reset'
+    framework: next
+    category: auth
+    sample_name: [misc]
+    spec: password-reset
+    browser: *minimal_browser_list
+  - test_name: integ_next_auth_functions
+    desc: 'Auth Functions'
+    framework: next
+    category: auth
+    sample_name: [misc]
+    spec: auth-functions
+    browser: *minimal_browser_list
+  - test_name: integ_next_auth_totp
+    desc: 'TOTP Setup'
+    framework: next
+    category: auth
+    sample_name: [misc]
+    spec: totp-setup
+    browser: *minimal_browser_list
+  - test_name: integ_next_core_utils
+    desc: 'Core Utilities'
+    framework: next
+    category: auth
+    sample_name: [misc]
+    spec: core-utilities
+    browser: *minimal_browser_list
   - test_name: integ_react_javascript_authentication
     desc: 'React Authentication'
     framework: react
@@ -732,6 +767,24 @@ tests:
     # Temp fix:
     browser: *minimal_browser_list
 
+  - test_name: integ_react_analytics_kinesis__auth
+    desc: 'Test record API for Kinesis with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-test]
+    spec: kinesis
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_kinesis__unauth
+    desc: 'Test record API for Kinesis with guest user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-test]
+    spec: kinesis-unauth
+    # Temp fix:
+    browser: *minimal_browser_list
+
   # GEO
   - test_name: integ_react_geo_display_map
     desc: 'Display Map'
@@ -767,13 +820,15 @@ tests:
   #   amplifyjs_dir: true
 
   # INTERACTIONS
-  - test_name: integ_react_interactions_chatbot_v1
-    desc: 'Chatbot V1'
-    framework: react
-    category: interactions
-    sample_name: [lex-test-component]
-    spec: chatbot-v1
-    browser: *minimal_browser_list
+  # Skipping chatbot_v1 test due to persistent AWS Lex V1 rate limiting issues
+  # TODO: Re-enable after investigating bot configuration
+  # - test_name: integ_react_interactions_chatbot_v1
+  #   desc: 'Chatbot V1'
+  #   framework: react
+  #   category: interactions
+  #   sample_name: [lex-test-component]
+  #   spec: chatbot-v1
+  #   browser: *minimal_browser_list
   - test_name: integ_react_interactions_chatbot_v2
     desc: 'Chatbot V2'
     framework: react

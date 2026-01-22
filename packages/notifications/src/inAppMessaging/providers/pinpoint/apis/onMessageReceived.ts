@@ -10,6 +10,8 @@ import { OnMessageReceivedOutput } from '../types/outputs';
 /**
  * Registers a callback that will be invoked on `messageReceived` events.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @param {OnMessageReceivedInput} input - The input object that holds the callback handler.
  * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
  * configuration is incorrect, or if In App messaging hasn't been initialized.

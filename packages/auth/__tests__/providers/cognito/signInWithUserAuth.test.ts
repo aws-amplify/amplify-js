@@ -175,6 +175,92 @@ describe('signInWithUserAuth API tests', () => {
 		});
 	});
 
+	test('should use config preferredChallenge when not provided by user', async () => {
+		const authConfigWithPasswordless = {
+			Cognito: {
+				...authConfig.Cognito,
+				passwordless: {
+					emailOtpEnabled: true,
+					preferredChallenge: 'EMAIL_OTP' as const,
+				},
+			},
+		};
+
+		Amplify.configure({
+			Auth: authConfigWithPasswordless,
+		});
+
+		const mockResponse: InitiateAuthCommandOutput = {
+			ChallengeName: 'EMAIL_OTP',
+			Session: 'mockSession',
+			ChallengeParameters: {},
+			$metadata: {},
+		};
+		handleUserAuthFlow.mockResolvedValue(mockResponse);
+
+		await signInWithUserAuth({
+			username: 'testuser',
+		});
+
+		expect(handleUserAuthFlow).toHaveBeenCalledWith({
+			username: 'testuser',
+			clientMetadata: undefined,
+			config: authConfigWithPasswordless.Cognito,
+			tokenOrchestrator: expect.anything(),
+			preferredChallenge: 'EMAIL_OTP',
+			password: undefined,
+		});
+
+		// Reset config
+		Amplify.configure({
+			Auth: authConfig,
+		});
+	});
+
+	test('should prioritize user-provided preferredChallenge over config', async () => {
+		const authConfigWithPasswordless = {
+			Cognito: {
+				...authConfig.Cognito,
+				passwordless: {
+					emailOtpEnabled: true,
+					smsOtpEnabled: true,
+					preferredChallenge: 'EMAIL_OTP' as const,
+				},
+			},
+		};
+
+		Amplify.configure({
+			Auth: authConfigWithPasswordless,
+		});
+
+		const mockResponse: InitiateAuthCommandOutput = {
+			ChallengeName: 'SMS_OTP',
+			Session: 'mockSession',
+			ChallengeParameters: {},
+			$metadata: {},
+		};
+		handleUserAuthFlow.mockResolvedValue(mockResponse);
+
+		await signInWithUserAuth({
+			username: 'testuser',
+			options: { preferredChallenge: 'SMS_OTP' },
+		});
+
+		expect(handleUserAuthFlow).toHaveBeenCalledWith({
+			username: 'testuser',
+			clientMetadata: undefined,
+			config: authConfigWithPasswordless.Cognito,
+			tokenOrchestrator: expect.anything(),
+			preferredChallenge: 'SMS_OTP',
+			password: undefined,
+		});
+
+		// Reset config
+		Amplify.configure({
+			Auth: authConfig,
+		});
+	});
+
 	test('should throw error when service error has no sign in result', async () => {
 		const error = new Error('Unknown error');
 		error.name = 'UnknownError';
