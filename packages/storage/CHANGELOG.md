@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.12.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.11.1...@aws-amplify/storage@6.12.0) (2026-01-22)
+
+### Features
+
+- **storage:** add folder deletion support to remove API ([63d77aa](https://github.com/aws-amplify/amplify-js/commit/63d77aae5a3f70e98d92e01743aa4b46c22c9ec6))
+
 ## [6.11.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.11.0...@aws-amplify/storage@6.11.1) (2026-01-15)
 
 ### Bug Fixes
