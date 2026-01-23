@@ -825,7 +825,7 @@ tests:
     framework: react
     category: interactions
     sample_name: [lex-test-component]
-    spec: chatbot-v1
+    spec: chatbot-v1*
     browser: *minimal_browser_list
   - test_name: integ_react_interactions_chatbot_v2
     desc: 'Chatbot V2'
