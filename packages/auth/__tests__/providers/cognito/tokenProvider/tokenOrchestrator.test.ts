@@ -450,5 +450,115 @@ describe('tokenOrchestrator', () => {
 				}),
 			);
 		});
+
+		describe('clockDrift edge cases', () => {
+			it('should trigger refresh when clockDrift is NaN and token is expired', async () => {
+				const now = Math.floor(Date.now() / 1000);
+				const pastExp = now - 3600; // 1 hour ago
+				const expiredTokensWithNaNClockDrift: CognitoAuthTokens = {
+					accessToken: {
+						payload: {
+							exp: pastExp,
+							iat: pastExp - 3600,
+						},
+						toString: () => 'mock-expired-access-token',
+					},
+					idToken: {
+						payload: {
+							exp: pastExp,
+							iat: pastExp - 3600,
+						},
+						toString: () => 'mock-expired-id-token',
+					},
+					refreshToken: 'mock-refresh-token',
+					clockDrift: NaN,
+					username: 'testuser',
+				};
+				const newTokens = createTokens();
+				mockTokenStore.loadTokens.mockResolvedValue(
+					expiredTokensWithNaNClockDrift,
+				);
+				mockTokenStore.getLastAuthUser.mockResolvedValue('testuser');
+				mockTokenRefresher.mockResolvedValue(newTokens);
+
+				const result = await tokenOrchestrator.getTokens();
+
+				expect(mockTokenRefresher).toHaveBeenCalledWith(
+					expect.objectContaining({
+						tokens: expiredTokensWithNaNClockDrift,
+						username: 'testuser',
+					}),
+				);
+				expect(result?.accessToken).toEqual(newTokens.accessToken);
+			});
+
+			it('should not trigger refresh when clockDrift is NaN but token is still valid', async () => {
+				const now = Math.floor(Date.now() / 1000);
+				const futureExp = now + 3600; // 1 hour from now
+				const validTokensWithNaNClockDrift: CognitoAuthTokens = {
+					accessToken: {
+						payload: {
+							exp: futureExp,
+							iat: now,
+						},
+						toString: () => 'mock-access-token',
+					},
+					idToken: {
+						payload: {
+							exp: futureExp,
+							iat: now,
+						},
+						toString: () => 'mock-id-token',
+					},
+					refreshToken: 'mock-refresh-token',
+					clockDrift: NaN,
+					username: 'testuser',
+				};
+				mockTokenStore.loadTokens.mockResolvedValue(
+					validTokensWithNaNClockDrift,
+				);
+				mockTokenStore.getLastAuthUser.mockResolvedValue('testuser');
+
+				const result = await tokenOrchestrator.getTokens();
+
+				expect(mockTokenRefresher).not.toHaveBeenCalled();
+				expect(result?.accessToken).toBeDefined();
+			});
+
+			it('should trigger refresh when clockDrift is undefined and token is expired', async () => {
+				const now = Math.floor(Date.now() / 1000);
+				const pastExp = now - 3600; // 1 hour ago
+				const expiredTokensWithUndefinedClockDrift = {
+					accessToken: {
+						payload: {
+							exp: pastExp,
+							iat: pastExp - 3600,
+						},
+						toString: () => 'mock-expired-access-token',
+					},
+					idToken: {
+						payload: {
+							exp: pastExp,
+							iat: pastExp - 3600,
+						},
+						toString: () => 'mock-expired-id-token',
+					},
+					refreshToken: 'mock-refresh-token',
+					clockDrift: undefined,
+					username: 'testuser',
+				} as unknown as CognitoAuthTokens;
+				const newTokens = createTokens();
+				mockTokenStore.loadTokens.mockResolvedValue(
+					expiredTokensWithUndefinedClockDrift,
+				);
+				mockTokenStore.getLastAuthUser.mockResolvedValue('testuser');
+				mockTokenRefresher.mockResolvedValue(newTokens);
+
+				const result = await tokenOrchestrator.getTokens();
+
+				expect(mockTokenRefresher).toHaveBeenCalled();
+				expect(result?.accessToken).toEqual(newTokens.accessToken);
+			});
+		});
 	});
 });
