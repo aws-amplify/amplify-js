@@ -70,7 +70,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 			const clockDriftString =
 				(await this.getKeyValueStorage().getItem(authKeys.clockDrift)) ?? '0';
-			const clockDrift = Number.parseInt(clockDriftString);
+			const parsedClockDrift = Number.parseInt(clockDriftString);
+			const clockDrift = Number.isNaN(parsedClockDrift) ? 0 : parsedClockDrift;
 
 			const signInDetails = await this.getKeyValueStorage().getItem(
 				authKeys.signInDetails,
