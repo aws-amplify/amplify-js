@@ -7,5 +7,9 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "@aws-amplify/react-native-example",
+    "@aws-amplify/rtn-passkeys-example",
+    "tsc-compliance-test"
+  ]
 }
