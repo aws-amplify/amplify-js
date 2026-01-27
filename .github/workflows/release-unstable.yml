@@ -1,0 +1,60 @@
+name: Release Unstable
+
+# Concurrency control to prevent multiple unstable releases running simultaneously
+# Cancels in-progress releases when new commits are pushed
+concurrency:
+  group: push-release-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Job 1: Run release verification tests before publishing
+  # We skip the release if the commit message contains [skip release] to prevent unnecessary builds, e.g., docs commits
+  release-verification:
+    if: "!contains(github.event.head_commit.message, '[skip release]')"
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
+
+  # Job 2: Publish unstable packages after tests pass
+  unstable-release:
+    needs: release-verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Add changeset preset for all packages
+        working-directory: ./amplify-js
+        run: |
+          # Copy the preset changeset to ensure all packages get versioned
+          cp .github/changeset-presets/bump-all-packages.md .changeset/
+          echo "✅ Added changeset preset for unstable release"
+
+      - name: Create snapshot versions
+        working-directory: ./amplify-js
+        run: |
+          # Create snapshot versions with git hash like 0.0.0-unstable-a71ee35
+          GIT_HASH=$(git rev-parse --short=7 HEAD)
+          yarn changeset version --snapshot unstable-${GIT_HASH}
+          
+          echo "✅ Snapshot versions created with unstable-${GIT_HASH} identifier"
+
+      - name: Publish to npm
+        working-directory: ./amplify-js
+        run: |
+          # Configure npm authentication
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          
+          # Publish with unstable dist-tag
+          yarn changeset publish --tag unstable --no-git-tag
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
