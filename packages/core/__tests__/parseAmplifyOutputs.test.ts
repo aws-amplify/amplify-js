@@ -189,7 +189,7 @@ describe('parseAmplifyOutputs tests', () => {
 				user_pool_id: 'us-east-1:test',
 				user_pool_client_id: 'xxxx',
 				aws_region: 'us-east-1',
-				passwordless_options: {
+				passwordless: {
 					email_otp_enabled: true,
 					sms_otp_enabled: true,
 					web_authn: {
@@ -222,7 +222,7 @@ describe('parseAmplifyOutputs tests', () => {
 				user_pool_id: 'us-east-1:test',
 				user_pool_client_id: 'xxxx',
 				aws_region: 'us-east-1',
-				passwordless_options: {
+				passwordless: {
 					email_otp_enabled: true,
 					sms_otp_enabled: false,
 					preferred_challenge: 'EMAIL_OTP',
