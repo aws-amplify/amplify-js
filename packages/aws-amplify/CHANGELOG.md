@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.16.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.10...aws-amplify@6.16.0) (2026-01-22)
+
+### Features
+
+- **auth:** add passwordless configuration parsing and validation ([#14679](https://github.com/aws-amplify/amplify-js/issues/14679)) ([b6d4c7a](https://github.com/aws-amplify/amplify-js/commit/b6d4c7ac976855f530b41e95f678e96867832a11))
+
 ## [6.15.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.9...aws-amplify@6.15.10) (2026-01-15)
 
 ### Bug Fixes
