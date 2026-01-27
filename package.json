@@ -82,6 +82,7 @@
 		"@babel/core": "7.17.2",
 		"@babel/preset-env": "^7.0.0",
 		"@babel/preset-react": "^7.0.0",
+		"@changesets/cli": "^2.27.1",
 		"@eslint/compat": "^1.2.0",
 		"@lerna/legacy-package-management": "^8.2.1",
 		"@rollup/plugin-commonjs": "^28.0.1",
