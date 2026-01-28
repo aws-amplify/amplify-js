@@ -1,5 +1,11 @@
 # Change Log
 
+## 6.18.1
+
+### Patch Changes
+
+- 59c630d: Test
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
