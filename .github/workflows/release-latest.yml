@@ -72,7 +72,7 @@ jobs:
 
   # Job 4: Update local API documentation after successful publish
   update-local-docs:
-    needs: publish
+    #needs: publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -86,7 +86,9 @@ jobs:
 
       - name: Generate API documentation
         working-directory: ./amplify-js
-        run: yarn run docs
+        run: | 
+         yarn run docs
+         git status
 
       - name: Set github commit user
         working-directory: ./amplify-js
