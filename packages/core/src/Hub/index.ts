@@ -211,3 +211,17 @@ export const Hub = new HubClass('__default__');
  *
  */
 export const HubInternal = new HubClass('internal-hub');
+
+/**
+ * Returns the version identifier for the Hub module.
+ *
+ * @returns A string representing the Hub module version
+ * @example
+ * ```typescript
+ * const version = getHubVersion();
+ * console.log(version); // "1.0.0"
+ * ```
+ */
+export function getHubVersion(): string {
+	return '1.0.0';
+}

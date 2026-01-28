@@ -5,7 +5,7 @@
 This file maps top-level exports from `@aws-amplify/core`. These are intended to be potentially customer-facing exports.
 */
 // Hub exports
-export { Hub } from './Hub';
+export { Hub, getHubVersion } from './Hub';
 export { HubCapsule, HubCallback, HubPayload } from './Hub/types';
 
 // Singleton exports
