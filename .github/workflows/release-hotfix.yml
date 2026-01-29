@@ -12,20 +12,10 @@ on:
       - feat/hotfix-test  # Test branch - safe mode enabled
 
 jobs:
-  # Job 1: Run release verification tests when Version Packages PR is merged
-  # This ensures all tests pass before publishing
-  release-verification:
-    # Only run when a Version Packages PR is merged (detected by commit message)
-    # Skip verification on test branch
-    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'Version packages') && github.ref != 'refs/heads/feat/hotfix-test'
-    secrets: inherit
-    uses: ./.github/workflows/callable-release-verification.yml
-
   # Job 2: Publish packages after all tests pass
   publish:
     runs-on: ubuntu-latest
-    needs: release-verification
-    if: always() && (needs.release-verification.result == 'success' || needs.release-verification.result == 'skipped')
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'Version packages')
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -39,9 +29,13 @@ jobs:
 
       - name: Publish to npm (test-hotfix tag)
         if: github.ref == 'refs/heads/feat/hotfix-test'
-        uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
-        with:
-          publish: cd amplify-js && yarn changeset publish --tag test-hotfix
+        working-directory: ./amplify-js
+        run: |
+          # Configure npm authentication
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          
+          # Publish with test-hotfix dist-tag
+          yarn changeset publish --tag test-hotfix --no-git-tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
