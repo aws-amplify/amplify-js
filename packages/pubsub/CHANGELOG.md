@@ -1,5 +1,12 @@
 # Change Log
 
+## 6.1.68
+
+### Patch Changes
+
+- Updated dependencies [577757e]
+  - @aws-amplify/auth@6.19.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
