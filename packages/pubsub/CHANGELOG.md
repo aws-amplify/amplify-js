@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.0.0-test-hotfix-20260129152029
+
+### Patch Changes
+
+- Updated dependencies [a210f8c]
+  - @aws-amplify/auth@0.0.0-test-hotfix-20260129152029
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

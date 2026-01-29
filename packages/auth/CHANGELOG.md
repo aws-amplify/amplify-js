@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.0.0-test-hotfix-20260129152029
+
+### Patch Changes
+
+- a210f8c: Test
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
