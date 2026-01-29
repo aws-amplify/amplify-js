@@ -24,7 +24,7 @@ jobs:
         working-directory: ./amplify-js
         env:
           TEST_PACKAGE: ${{ matrix.package.name }}
-        run: npx lerna exec --scope $TEST_PACKAGE yarn test
+        run: yarn workspace $TEST_PACKAGE test
   # disable temporarily
   #   - name: Check coverage report existence
   #     id: check-report

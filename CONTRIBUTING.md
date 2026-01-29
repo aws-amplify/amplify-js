@@ -53,9 +53,6 @@ This section should get you running with **Amplify JS** and get you familiar wit
 
 The recommended version of Node JS to work with this project is [`18.18.0`](https://nodejs.org/en/blog/release/v18.18.0/) with Yarn version [`1.22.x`](https://github.com/yarnpkg/yarn/blob/master/CHANGELOG.md).
 
-> Note: newer versions of Yarn (2+) remove support for lerna's `--mutex` flag
-> so be sure to use Yarn v1.22.x
-
 Start by [forking](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the main branch of [amplify-js](https://github.com/aws-amplify/amplify-js).
 
 ```
@@ -63,7 +60,6 @@ git clone git@github.com:[username]/amplify-js.git
 cd amplify-js
 
 yarn
-yarn bootstrap
 yarn build
 ```
 
@@ -139,7 +135,7 @@ Allowed patterns are stored in `.git/config` and apply only to your local reposi
 
 ## Architecture of the codebase
 
-Amplify JS is a monorepo built with `Yarn` and `Lerna`. All the categories of Amplify live within the `packages` directory in the root. Each category inside packages has its own `src/` and `package.json`.
+Amplify JS is a monorepo built with `Yarn` and `Turborepo`. All the categories of Amplify live within the `packages` directory in the root. Each category inside packages has its own `src/` and `package.json`.
 
 [**Packages inside Amplify JS Monorepo**](https://github.com/aws-amplify/amplify-js/tree/main/packages)
 
@@ -170,15 +166,15 @@ yarn run test --scope @aws-amplify/auth
 #### Test in a local sample app
 
 **Yarn Linking**
-The best way to develop locally and test is to link the individual package you’re working on and run lerna in watch mode.
+The best way to develop locally and test is to link the individual package you’re working on and run it in watch mode.
 
 Note: to test using the react-native framework you will need to use [Verdaccio](#verdaccio)
 
 Run watch mode while editing (auth for example):
 
 ```
-npx lerna exec --scope @aws-amplify/auth yarn link
-npx lerna exec --scope @aws-amplify/auth yarn build:watch
+yarn workspace @aws-amplify/auth link
+yarn workspace @aws-amplify/auth build:watch
 ```
 
 Or run the whole library in watch mode if you are working on multiple packages
@@ -280,7 +276,7 @@ _[Skip step 1 to 3 if you have already done this]_
 
 1. Fork [`aws-amplify/amplify-js`](https://github.com/aws-amplify/amplify-js)
 2. Clone your fork locally: `git clone git@github.com:YOUR_GITHUB_USERNAME/amplify-js.git`
-3. Run `yarn && yarn bootstrap` in the repository root
+3. Run `yarn` in the repository root
 4. Within your fork, create a new branch based on the issue (e.g. Issue #123) you're addressing - `git checkout -b "group-token/short-token-[branch-name]"` or `git checkout -b "short-token/[branch-name]"`
    - Use grouping tokens at the beginning of the branch names. For e.g, if you are working on changes specific to `amplify-ui-components`, then you could start the branch name as `ui-components/...`
    - short token
