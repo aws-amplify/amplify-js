@@ -33,12 +33,7 @@
 		"publish:verdaccio": "cp .github/changeset-presets/bump-all-packages.md .changeset/ && yarn changeset version --snapshot unstable && yarn changeset publish --tag unstable --no-git-tag",
 		"generate-metadata": "git rev-parse --short HEAD > packages/core/metadata && git commit -am 'chore(release): Set core metadata [skip release]'",
 		"ts-coverage": "lerna run ts-coverage",
-		"prepare": "husky && ./scripts/setup-git-secrets.sh && ./scripts/set-preid-versions.sh",
-		"changeset": "changeset",
-		"changeset:add": "changeset add",
-		"changeset:version": "changeset version",
-		"changeset:publish": "changeset publish",
-		"changeset:status": "changeset status"
+		"prepare": "husky && ./scripts/setup-git-secrets.sh && ./scripts/set-preid-versions.sh"
 	},
 	"workspaces": {
 		"packages": [
