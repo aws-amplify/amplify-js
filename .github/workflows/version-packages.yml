@@ -10,6 +10,7 @@ on:
     branches:
       - main
       - hotfix
+      - feat/hotfix-test  # Test branch - uses snapshot releases
 
 jobs:
   # Create or update "Version Packages" PR
@@ -35,11 +36,21 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Create Version Packages PR
-        if: steps.has-changesets.outputs.has-changesets == 'true'
+        if: steps.has-changesets.outputs.has-changesets == 'true' && github.ref != 'refs/heads/feat/hotfix-test'
         uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
         with:
           version: yarn changeset version
           commit: "chore(release): Version packages"
           title: 'Version Packages (${{ github.ref_name }})'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Snapshot Release PR (test branch)
+        if: steps.has-changesets.outputs.has-changesets == 'true' && github.ref == 'refs/heads/feat/hotfix-test'
+        uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
+        with:
+          version: yarn changeset version --snapshot test-hotfix
+          commit: "chore(release): Version packages (snapshot)"
+          title: '[TEST] Version Packages (${{ github.ref_name }}) - Snapshot'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
