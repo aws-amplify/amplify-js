@@ -42,11 +42,10 @@ jobs:
 
   # Job 3: Create PR to merge hotfix back into main
   create-pr-to-main:
-    needs: publish
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BASE_BRANCH: ${{ github.ref == 'refs/heads/hotfix' && 'main' || 'feat/hotfix-test-target' }}
+      BASE_BRANCH: 'main'
       HEAD_BRANCH: ${{ github.ref == 'refs/heads/hotfix' && 'hotfix' || 'feat/hotfix-test' }}
     steps:
       - name: Checkout repository
