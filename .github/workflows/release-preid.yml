@@ -9,7 +9,7 @@ on:
     branches:
       # Branch naming pattern: feat/{PREID}/whatever
       # Example: feat/alpha/main, feat/beta/my-feature, feat/rc/test
-      - feat/changesets-preid
+      - feat/preid/whatever
 
 jobs:
   # Job 1: Parse preid from branch name
