@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - main
+      - hotfix
 
 jobs:
   # Create or update "Version Packages" PR
