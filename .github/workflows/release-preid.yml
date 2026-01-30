@@ -69,13 +69,12 @@ jobs:
       - name: Create snapshot versions
         working-directory: ./amplify-js
         env:
-          PREID: ${{ needs.parse-preid.outputs.preid }}
+          PREID_PREFIX: ${{ needs.parse-preid.outputs.preid }}
+          SHA: ${{ github.sha }}
         run: |
-          # Create snapshot versions with git hash like 0.0.0-alpha-a71ee35
-          GIT_HASH=$(git rev-parse --short=7 HEAD)
-          yarn changeset version --snapshot ${PREID}-${GIT_HASH}
-          
-          echo "✅ Snapshot versions created with ${PREID}-${GIT_HASH} identifier"
+          export PREID_HASH_SUFFIX=$(echo $SHA | cut -c -7)
+          yarn publish:preid
+          echo "✅ Snapshot versions created with ${PREID_PREFIX}.${PREID_HASH_SUFFIX} identifier"
 
       - name: Publish to npm
         working-directory: ./amplify-js

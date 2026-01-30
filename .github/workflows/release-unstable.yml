@@ -41,13 +41,13 @@ jobs:
 
       - name: Create snapshot versions
         working-directory: ./amplify-js
+        env:
+          SHA: ${{ github.sha }}
+          PREID_PREFIX: unstable
         run: |
-          # Create snapshot versions with git hash like 0.0.0-unstable-a71ee35
-          GIT_HASH=$(git rev-parse --short=7 HEAD)
-          yarn changeset version --snapshot unstable-${GIT_HASH}
-          
-          echo "✅ Snapshot versions created with unstable-${GIT_HASH} identifier"
-
+          export PREID_HASH_SUFFIX=$(echo $SHA | cut -c -7)
+          yarn publish:preid
+          echo "✅ Snapshot versions created with ${PREID_PREFIX}.${PREID_HASH_SUFFIX} identifier"
       - name: Publish to npm
         working-directory: ./amplify-js
         run: |

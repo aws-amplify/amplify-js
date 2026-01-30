@@ -27,10 +27,8 @@
 		"lint:license": "license-check-and-add add -f license_config.json",
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
-		"publish:preid": "./scripts/preid-env-vars-exist.sh && cp .github/changeset-presets/bump-all-packages.md .changeset/ && yarn changeset version --snapshot ${PREID_PREFIX}-${PREID_HASH_SUFFIX} && yarn changeset publish --tag ${PREID_PREFIX} --no-git-tag",
-		"publish:main": "cp .github/changeset-presets/bump-all-packages.md .changeset/ && yarn changeset version --snapshot unstable-${PREID_HASH_SUFFIX} && yarn changeset publish --tag unstable --no-git-tag",
-		"publish:release": "yarn generate-metadata && yarn changeset publish",
-		"publish:verdaccio": "cp .github/changeset-presets/bump-all-packages.md .changeset/ && yarn changeset version --snapshot unstable && yarn changeset publish --tag unstable --no-git-tag",
+		"publish:preid": "./scripts/preid-env-vars-exist.sh && cp .github/changeset-presets/bump-all-packages.md .changeset/ && yarn changeset pre enter ${PREID_PREFIX}.${PREID_HASH_SUFFIX} && yarn changeset version && yarn changeset publish --tag ${PREID_PREFIX} --no-git-tag",
+		"publish:verdaccio": "cp .github/changeset-presets/bump-all-packages.md .changeset/ && yarn changeset pre enter unstable && yarn changeset version && yarn changeset publish",
 		"generate-metadata": "git rev-parse --short HEAD > packages/core/metadata && git commit -am 'chore(release): Set core metadata [skip release]'",
 		"ts-coverage": "lerna run ts-coverage",
 		"prepare": "husky && ./scripts/setup-git-secrets.sh && ./scripts/set-preid-versions.sh"
