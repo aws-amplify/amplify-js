@@ -26,6 +26,13 @@ const awsAuthTokenHeader = async ({ host }: AWSAppSyncRealTimeAuthInput) => {
 	};
 };
 
+const oidcAuthTokenHeader = async ({ host, additionalCustomHeaders }: AWSAppSyncRealTimeAuthInput) => {
+	return {
+		Authorization: additionalCustomHeaders.Authorization,
+		host,
+	};
+};
+
 const awsRealTimeApiKeyHeader = async ({
 	apiKey,
 	host,
@@ -110,7 +117,7 @@ export const awsRealTimeHeaderBasedAuth = async ({
 	const headerHandler = {
 		apiKey: awsRealTimeApiKeyHeader,
 		iam: awsRealTimeIAMHeader,
-		oidc: awsAuthTokenHeader,
+		oidc: oidcAuthTokenHeader,
 		userPool: awsAuthTokenHeader,
 		lambda: customAuthHeader,
 		none: customAuthHeader,
