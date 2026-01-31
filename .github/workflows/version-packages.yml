@@ -1,0 +1,45 @@
+name: Version Packages
+
+# Permissions required for creating pull requests
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  push:
+    branches:
+      - main
+      - hotfix
+
+jobs:
+  # Create or update "Version Packages" PR
+  # This job runs on every push to the branches specified above and creates/updates a PR with version bumps
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Check for changesets
+        id: has-changesets
+        uses: ./.github/actions/has-changesets
+
+      - name: Setup Node.js
+        if: steps.has-changesets.outputs.has-changesets == 'true'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        if: steps.has-changesets.outputs.has-changesets == 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Create Version Packages PR
+        if: steps.has-changesets.outputs.has-changesets == 'true'
+        uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
+        with:
+          version: yarn changeset version
+          commit: "chore(release): Version packages"
+          title: 'Version Packages (${{ github.ref_name }})'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
