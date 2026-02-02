@@ -66,24 +66,16 @@ jobs:
           cp .github/changeset-presets/bump-all-packages.md .changeset/
           echo "✅ Added changeset preset for preid release"
 
-      - name: Create snapshot versions
-        working-directory: ./amplify-js
-        env:
-          PREID_PREFIX: ${{ needs.parse-preid.outputs.preid }}
-          SHA: ${{ github.sha }}
-        run: |
-          export PREID_HASH_SUFFIX=$(echo $SHA | cut -c -7)
-          yarn publish:preid
-          echo "✅ Snapshot versions created with ${PREID_PREFIX}.${PREID_HASH_SUFFIX} identifier"
-
       - name: Publish to npm
         working-directory: ./amplify-js
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          PREID: ${{ needs.parse-preid.outputs.preid }}
+          PREID_PREFIX: ${{ needs.parse-preid.outputs.preid }}
+          SHA: ${{ github.sha }}
         run: |
           # Configure npm authentication
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          
-          # Publish with preid dist-tag
-          yarn changeset publish --tag ${PREID} --no-git-tag
+          # Create short hash
+          export PREID_HASH_SUFFIX=$(echo $SHA | cut -c -7)
+          # Publish to ${PREID_PREFIX}.${PREID_HASH_SUFFIX}, e.g., 6.16.1-preid.61cc23b.0
+          yarn publish:preid

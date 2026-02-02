@@ -39,22 +39,16 @@ jobs:
           cp .github/changeset-presets/bump-all-packages.md .changeset/
           echo "✅ Added changeset preset for unstable release"
 
-      - name: Create snapshot versions
+      - name: Publish to npm
         working-directory: ./amplify-js
         env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           SHA: ${{ github.sha }}
           PREID_PREFIX: unstable
         run: |
-          export PREID_HASH_SUFFIX=$(echo $SHA | cut -c -7)
-          yarn publish:preid
-          echo "✅ Snapshot versions created with ${PREID_PREFIX}.${PREID_HASH_SUFFIX} identifier"
-      - name: Publish to npm
-        working-directory: ./amplify-js
-        run: |
           # Configure npm authentication
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          
-          # Publish with unstable dist-tag
-          yarn changeset publish --tag unstable --no-git-tag
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Create short hash
+          export PREID_HASH_SUFFIX=$(echo $SHA | cut -c -7)
+          # Publish to unstable.${PREID_HASH_SUFFIX}, e.g., 6.16.1-unstable.61cc23b.0
+          yarn publish:preid
