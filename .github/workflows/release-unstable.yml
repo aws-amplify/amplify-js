@@ -32,23 +32,10 @@ jobs:
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
 
-      - name: Add changeset preset for all packages
-        working-directory: ./amplify-js
-        run: |
-          # Copy the preset changeset to ensure all packages get versioned
-          cp .github/changeset-presets/bump-all-packages.md .changeset/
-          echo "✅ Added changeset preset for unstable release"
-
-      - name: Publish to npm
-        working-directory: ./amplify-js
+      - name: Publish to @unstable
+        uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
+        with:
+          publish: yarn publish:unstable
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          SHA: ${{ github.sha }}
-          PREID_PREFIX: unstable
-        run: |
-          # Configure npm authentication
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          # Create short hash
-          export PREID_HASH_SUFFIX=$(echo $SHA | cut -c -7)
-          # Publish to unstable.${PREID_HASH_SUFFIX}, e.g., 6.16.1-unstable.61cc23b.0
-          yarn publish:preid
