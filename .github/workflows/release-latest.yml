@@ -37,6 +37,7 @@ jobs:
       - name: Publish to @latest
         uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
         with:
+          cwd: ./amplify-js
           publish: yarn publish:latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

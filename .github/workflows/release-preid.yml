@@ -1,5 +1,11 @@
 name: Release Preid
 
+# Concurrency control to prevent multiple preid releases running simultaneously
+# Cancels in-progress releases when new commits are pushed
+concurrency:
+  group: push-release-${{ github.ref }}
+  cancel-in-progress: true
+
 # Permissions required for publishing packages
 permissions:
   contents: write

@@ -6,6 +6,10 @@ concurrency:
   group: push-release-${{ github.ref }}
   cancel-in-progress: true
 
+# Permissions required for publishing packages
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -35,6 +39,7 @@ jobs:
       - name: Publish to @unstable
         uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
         with:
+          cwd: ./amplify-js
           publish: yarn publish:unstable
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
