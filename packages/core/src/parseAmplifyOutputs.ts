@@ -90,7 +90,7 @@ function parseAuth(
 		username_attributes,
 		standard_required_attributes,
 		groups,
-		passwordless_options,
+		passwordless,
 	} = amplifyOutputsAuthProperties;
 
 	const authConfig = {
@@ -160,18 +160,18 @@ function parseAuth(
 		);
 	}
 
-	if (passwordless_options) {
+	if (passwordless) {
 		authConfig.Cognito.passwordless = {
-			emailOtpEnabled: passwordless_options.email_otp_enabled,
-			smsOtpEnabled: passwordless_options.sms_otp_enabled,
-			webAuthn: passwordless_options.web_authn
+			emailOtpEnabled: passwordless.email_otp_enabled,
+			smsOtpEnabled: passwordless.sms_otp_enabled,
+			webAuthn: passwordless.web_authn
 				? {
-						relyingPartyId: passwordless_options.web_authn.relying_party_id,
-						userVerification: passwordless_options.web_authn.user_verification,
+						relyingPartyId: passwordless.web_authn.relying_party_id,
+						userVerification: passwordless.web_authn.user_verification,
 					}
 				: undefined,
 			preferredChallenge:
-				passwordless_options.preferred_challenge as PreferredChallenge,
+				passwordless.preferred_challenge as PreferredChallenge,
 		};
 	}
 

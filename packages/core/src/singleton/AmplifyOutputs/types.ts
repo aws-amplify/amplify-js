@@ -43,7 +43,7 @@ export interface AmplifyOutputsAuthProperties {
 	mfa_configuration?: string;
 	mfa_methods?: string[];
 	groups?: Partial<Record<UserGroupName, UserGroupPrecedence>>[];
-	passwordless_options?: {
+	passwordless?: {
 		email_otp_enabled?: boolean;
 		sms_otp_enabled?: boolean;
 		web_authn?: {
