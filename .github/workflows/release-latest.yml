@@ -11,15 +11,36 @@ on:
       - main
 
 jobs:
-  # Job 1: Run release verification tests when Version Packages PR is merged
+  # Job 1: Check if there are unconsumed changesets
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      has-changesets: ${{ steps.has-changesets.outputs.has-changesets }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0
+      - name: Check if repo has unconsumed changesets
+        id: has-changesets
+        uses: ./.github/actions/has-changesets
+      # Note: if there are no changesets, that means either
+      #         (1) "Version Packages" PR was just merged, or
+      #         (2) no commits with changesets have been merged after packages were last published.
+      #
+      #       In either case, we'll attempt to publish the packages. In case of (1), publish will succeed. In
+      #       case of (2), `@changesets/action` will know that packages have already been published and will
+      #       skip publish.
+
+  # Job 2: Run release verification tests when Version Packages PR is merged
   # This ensures all tests pass before publishing
   release-verification:
-    # Only run when a Version Packages PR is merged (detected by commit message)
-    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'Version packages')
+    needs: setup
+    if: needs.setup.outputs.has-changesets != 'true'
     secrets: inherit
     uses: ./.github/workflows/callable-release-verification.yml
 
-  # Job 2: Publish packages after all tests pass
+  # Job 3: Publish packages after all tests pass
   publish:
     runs-on: ubuntu-latest
     needs: release-verification
@@ -46,7 +67,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  # Job 3: Update local API documentation after successful publish
+  # Job 4: Update local API documentation after successful publish
   update-local-docs:
     if: needs.publish.outputs.published == 'true'
     needs: publish
@@ -81,7 +102,7 @@ jobs:
           git commit -m "chore(release): Update API docs [skip release]" || echo "No changes to commit"
           git push origin main
 
-  # Job 4: Update external documentation repository
+  # Job 5: Update external documentation repository
   update-external-docs:
     needs: update-local-docs
     secrets: inherit
