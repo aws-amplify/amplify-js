@@ -10,6 +10,7 @@ on:
     branches:
       - main
       - hotfix
+      - feat/test-hotfix-release
 
 jobs:
   # Create or update "Version Packages" PR

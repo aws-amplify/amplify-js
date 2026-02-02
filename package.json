@@ -27,7 +27,7 @@
 		"lint:license": "license-check-and-add add -f license_config.json",
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
-		"publish:latest": "changeset publish",
+		"publish:latest": "changeset publish --tag hotfix-test-release --no-git-tag",
 		"publish:unstable": "cp .github/changeset-presets/bump-all-packages.md .changeset/ && changeset version --snapshot unstable-$(git rev-parse --short=7 HEAD) && changeset publish --tag unstable --no-git-tag",
 		"publish:preid": "./scripts/preid-env-vars-exist.sh && cp .github/changeset-presets/bump-all-packages.md .changeset/ && changeset version --snapshot ${PREID}-$(git rev-parse --short=7 HEAD) && changeset version && changeset publish --tag ${PREID} --no-git-tag",
 		"publish:verdaccio": "yarn publish:unstable",

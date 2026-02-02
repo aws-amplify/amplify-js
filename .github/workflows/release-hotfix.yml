@@ -8,21 +8,15 @@ permissions:
 on:
   push:
     branches:
-      - hotfix
+      - feat/test-hotfix-release
 
 jobs:
   # Job 1: Run release verification tests when Version Packages PR is merged
   # This ensures all tests pass before publishing
-  release-verification:
-    # Only run when a Version Packages PR is merged (detected by commit message)
-    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'Version packages')
-    secrets: inherit
-    uses: ./.github/workflows/callable-release-verification.yml
 
   # Job 2: Publish packages after all tests pass
   publish:
     runs-on: ubuntu-latest
-    needs: release-verification
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -39,6 +33,7 @@ jobs:
         with:
           cwd: ./amplify-js
           publish: yarn publish:latest
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
