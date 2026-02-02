@@ -14,8 +14,11 @@ jobs:
   # Job 1: Run release verification tests when Version Packages PR is merged
   # This ensures all tests pass before publishing
 
+  # Skip release verification for this test run
+
   # Job 2: Publish packages after all tests pass
   publish:
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'Version packages')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
