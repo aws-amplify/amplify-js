@@ -26,8 +26,10 @@
 		"lint:license": "license-check-and-add add -f license_config.json",
 		"link-all": "yarn unlink-all && yarn workspaces foreach --parallel --no-private run link",
 		"unlink-all": "yarn workspaces foreach --parallel --no-private run unlink || true",
-		"publish:preid": "./scripts/preid-env-vars-exist.sh && cp .github/changeset-presets/bump-all-packages.md .changeset/ && yarn changeset pre enter ${PREID_PREFIX}.${PREID_HASH_SUFFIX} && yarn changeset version && yarn changeset publish --tag ${PREID_PREFIX} --no-git-tag",
-		"publish:verdaccio": "cp .github/changeset-presets/bump-all-packages.md .changeset/ && yarn changeset pre enter unstable && yarn changeset version && yarn changeset publish",
+		"publish:latest": "changeset publish",
+		"publish:unstable": "cp .github/changeset-presets/bump-all-packages.md .changeset/ && changeset version --snapshot unstable-$(git rev-parse --short=7 HEAD) && changeset publish --tag unstable --no-git-tag",
+		"publish:preid": "./scripts/preid-env-vars-exist.sh && cp .github/changeset-presets/bump-all-packages.md .changeset/ && changeset version --snapshot ${PREID}-$(git rev-parse --short=7 HEAD) && changeset version && changeset publish --tag ${PREID} --no-git-tag",
+		"publish:verdaccio": "yarn publish:unstable",
 		"generate-metadata": "git rev-parse --short HEAD > packages/core/metadata && git commit -am 'chore(release): Set core metadata [skip release]'",
 		"ts-coverage": "turbo run ts-coverage",
 		"prepare": "husky && ./scripts/setup-git-secrets.sh && ./scripts/set-preid-versions.sh"

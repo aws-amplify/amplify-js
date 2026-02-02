@@ -4,6 +4,9 @@
     "@changesets/changelog-github",
     { "repo": "aws-amplify/amplify-js" }
   ],
+  "snapshot": {
+      "useCalculatedVersion": true
+  },
   "commit": false,
   "fixed": [],
   "linked": [],

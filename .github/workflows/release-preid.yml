@@ -1,8 +1,14 @@
 name: Release Preid
 
+# Concurrency control to prevent multiple preid releases running simultaneously
+# Cancels in-progress releases when new commits are pushed
+concurrency:
+  group: push-release-${{ github.ref }}
+  cancel-in-progress: true
+
 # Permissions required for publishing packages
 permissions:
-  contents: read
+  contents: write
 
 on:
   push:
@@ -59,31 +65,13 @@ jobs:
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
 
-      - name: Add changeset preset for all packages
-        working-directory: ./amplify-js
-        run: |
-          # Copy the preset changeset to ensure all packages get versioned
-          cp .github/changeset-presets/bump-all-packages.md .changeset/
-          echo "✅ Added changeset preset for preid release"
-
-      - name: Create snapshot versions
-        working-directory: ./amplify-js
+      - name: Publish to @preid
+        uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
+        with:
+          cwd: ./amplify-js
+          publish: yarn publish:preid
+          createGithubReleases: false
         env:
-          PREID_PREFIX: ${{ needs.parse-preid.outputs.preid }}
-          SHA: ${{ github.sha }}
-        run: |
-          export PREID_HASH_SUFFIX=$(echo $SHA | cut -c -7)
-          yarn publish:preid
-          echo "✅ Snapshot versions created with ${PREID_PREFIX}.${PREID_HASH_SUFFIX} identifier"
-
-      - name: Publish to npm
-        working-directory: ./amplify-js
-        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           PREID: ${{ needs.parse-preid.outputs.preid }}
-        run: |
-          # Configure npm authentication
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          
-          # Publish with preid dist-tag
-          yarn changeset publish --tag ${PREID} --no-git-tag
