@@ -13,7 +13,7 @@ permissions:
 on:
   push:
     branches:
-      - main
+      - feat/test-unstable-release
 
 jobs:
   # Job 1: Run release verification tests before publishing
