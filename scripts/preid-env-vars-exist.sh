@@ -1,4 +1,4 @@
 if [ -z "$PREID" ]; then
-  echo >&2 "Fatal error: PREID_PREFIX not set"
+  echo >&2 "Fatal error: PREID not set"
   exit 2
-f
+fi
