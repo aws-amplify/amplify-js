@@ -68,7 +68,7 @@
 	],
 	"dependencies": {
 		"@aws-sdk/client-location": "3.982.0",
-		"@aws-sdk/types": "3.973.1",
+		"@aws-sdk/types": "3.723.0",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2",
 		"tslib": "^2.5.0"
