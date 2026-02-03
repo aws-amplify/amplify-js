@@ -1,7 +1,22 @@
 # Change Log
 
+## 6.1.68
+
+### Patch Changes
+
+- Updated dependencies [[`85016ca`](https://github.com/aws-amplify/amplify-js/commit/85016ca4c286157de41a4466238cbe24af30a5d5)]:
+  - @aws-amplify/auth@6.19.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [6.1.67](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.66...@aws-amplify/pubsub@6.1.67) (2026-01-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.66](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.65...@aws-amplify/pubsub@6.1.66) (2026-01-15)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
 
 ## [6.1.65](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.64...@aws-amplify/pubsub@6.1.65) (2025-12-10)
 

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.0.92](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@7.0.91...@aws-amplify/analytics@7.0.92) (2026-01-22)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [7.0.91](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@7.0.90...@aws-amplify/analytics@7.0.91) (2026-01-15)
+
+### Bug Fixes
+
+- update AWS SDK packages to resolve @smithy/config-resolver ([#14667](https://github.com/aws-amplify/amplify-js/issues/14667)) ([fb5e0bc](https://github.com/aws-amplify/amplify-js/commit/fb5e0bc706bb05ac374f456a27a650af49f87c40))
+
 ## [7.0.90](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@7.0.89...@aws-amplify/analytics@7.0.90) (2025-12-10)
 
 **Note:** Version bump only for package @aws-amplify/analytics

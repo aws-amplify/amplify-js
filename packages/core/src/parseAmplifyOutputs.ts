@@ -16,6 +16,7 @@ import {
 import {
 	CognitoUserPoolConfigMfaStatus,
 	OAuthProvider,
+	PreferredChallenge,
 } from './singleton/Auth/types';
 import { NotificationsConfig } from './singleton/Notifications/types';
 import {
@@ -89,6 +90,7 @@ function parseAuth(
 		username_attributes,
 		standard_required_attributes,
 		groups,
+		passwordless,
 	} = amplifyOutputsAuthProperties;
 
 	const authConfig = {
@@ -156,6 +158,21 @@ function parseAuth(
 			(acc, curr) => ({ ...acc, [curr]: { required: true } }),
 			{},
 		);
+	}
+
+	if (passwordless) {
+		authConfig.Cognito.passwordless = {
+			emailOtpEnabled: passwordless.email_otp_enabled,
+			smsOtpEnabled: passwordless.sms_otp_enabled,
+			webAuthn: passwordless.web_authn
+				? {
+						relyingPartyId: passwordless.web_authn.relying_party_id,
+						userVerification: passwordless.web_authn.user_verification,
+					}
+				: undefined,
+			preferredChallenge:
+				passwordless.preferred_challenge as PreferredChallenge,
+		};
 	}
 
 	return authConfig;

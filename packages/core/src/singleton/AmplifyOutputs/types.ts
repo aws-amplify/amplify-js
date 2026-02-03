@@ -43,6 +43,15 @@ export interface AmplifyOutputsAuthProperties {
 	mfa_configuration?: string;
 	mfa_methods?: string[];
 	groups?: Partial<Record<UserGroupName, UserGroupPrecedence>>[];
+	passwordless?: {
+		email_otp_enabled?: boolean;
+		sms_otp_enabled?: boolean;
+		web_authn?: {
+			relying_party_id?: string;
+			user_verification?: string;
+		};
+		preferred_challenge?: string;
+	};
 }
 
 export interface AmplifyOutputsStorageBucketProperties {

@@ -47,6 +47,8 @@ export {
 	GetUrlWithPathInput,
 	RemoveWithPathInput,
 	RemoveInput,
+	RemoveOperation,
+	ProgressInfo,
 	DownloadDataInput,
 	DownloadDataWithPathInput,
 	UploadDataInput,

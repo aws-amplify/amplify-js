@@ -16,6 +16,8 @@ import { dispatchEvent } from './dispatchEvent';
 /**
  * Initialize and set up in-app messaging category. This API needs to be called to enable other InAppMessaging APIs.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @remarks
  * Make sure to call this early in your app at the root entry point after configuring Amplify.
  * @example

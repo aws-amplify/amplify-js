@@ -29,6 +29,8 @@ import { assertIsInitialized } from '../../../utils';
  * Fetch and persist messages from Pinpoint campaigns.
  * Calling this API is necessary to trigger InApp messages on the device.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
  * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
  * configuration is incorrect, or if In App messaging hasn't been initialized.

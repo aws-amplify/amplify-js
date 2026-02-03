@@ -1,7 +1,25 @@
 # Change Log
 
+## 6.13.0
+
+### Minor Changes
+
+- [`85016ca`](https://github.com/aws-amplify/amplify-js/commit/85016ca4c286157de41a4466238cbe24af30a5d5) Thanks [@soberm](https://github.com/soberm)! - Test change
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [6.12.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.11.1...@aws-amplify/storage@6.12.0) (2026-01-22)
+
+### Features
+
+- **storage:** add folder deletion support to remove API ([63d77aa](https://github.com/aws-amplify/amplify-js/commit/63d77aae5a3f70e98d92e01743aa4b46c22c9ec6))
+
+## [6.11.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.11.0...@aws-amplify/storage@6.11.1) (2026-01-15)
+
+### Bug Fixes
+
+- update AWS SDK packages to resolve @smithy/config-resolver ([#14667](https://github.com/aws-amplify/amplify-js/issues/14667)) ([fb5e0bc](https://github.com/aws-amplify/amplify-js/commit/fb5e0bc706bb05ac374f456a27a650af49f87c40))
 
 # [6.11.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.10.1...@aws-amplify/storage@6.11.0) (2025-12-10)
 

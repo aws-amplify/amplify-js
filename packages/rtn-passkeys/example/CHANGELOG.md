@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-passkeys-example@0.1.3...@aws-amplify/rtn-passkeys-example@0.1.4) (2026-01-22)
+
+**Note:** Version bump only for package @aws-amplify/rtn-passkeys-example
+
+## [0.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-passkeys-example@0.1.2...@aws-amplify/rtn-passkeys-example@0.1.3) (2026-01-15)
+
+**Note:** Version bump only for package @aws-amplify/rtn-passkeys-example
+
 ## [0.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-passkeys-example@0.1.1...@aws-amplify/rtn-passkeys-example@0.1.2) (2025-12-10)
 
 **Note:** Version bump only for package @aws-amplify/rtn-passkeys-example

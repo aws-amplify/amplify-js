@@ -1,7 +1,27 @@
 # Change Log
 
+## 6.16.1
+
+### Patch Changes
+
+- Updated dependencies [[`85016ca`](https://github.com/aws-amplify/amplify-js/commit/85016ca4c286157de41a4466238cbe24af30a5d5)]:
+  - @aws-amplify/auth@6.19.0
+  - @aws-amplify/storage@6.13.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [6.16.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.10...aws-amplify@6.16.0) (2026-01-22)
+
+### Features
+
+- **auth:** add passwordless configuration parsing and validation ([#14679](https://github.com/aws-amplify/amplify-js/issues/14679)) ([b6d4c7a](https://github.com/aws-amplify/amplify-js/commit/b6d4c7ac976855f530b41e95f678e96867832a11))
+
+## [6.15.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.9...aws-amplify@6.15.10) (2026-01-15)
+
+### Bug Fixes
+
+- update AWS SDK packages to resolve @smithy/config-resolver ([#14667](https://github.com/aws-amplify/amplify-js/issues/14667)) ([fb5e0bc](https://github.com/aws-amplify/amplify-js/commit/fb5e0bc706bb05ac374f456a27a650af49f87c40))
 
 ## [6.15.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.15.8...aws-amplify@6.15.9) (2025-12-10)
 

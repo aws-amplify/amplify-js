@@ -13,6 +13,8 @@ import {
 /**
  * Registers a listener that will be triggered when a notification is received while app is in a foreground state.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @param {OnNotificationReceivedInForegroundInput} input - A callback handler to be invoked with the received
  * {@link PushNotificationMessage}.
  * @returns {OnNotificationReceivedInForegroundOutput} - An object with a remove function to remove the listener.

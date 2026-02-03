@@ -1,7 +1,25 @@
 # Change Log
 
+## 6.19.0
+
+### Minor Changes
+
+- [`85016ca`](https://github.com/aws-amplify/amplify-js/commit/85016ca4c286157de41a4466238cbe24af30a5d5) Thanks [@soberm](https://github.com/soberm)! - Test change
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [6.18.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.17.2...@aws-amplify/auth@6.18.0) (2026-01-22)
+
+### Features
+
+- **auth:** add passwordless configuration parsing and validation ([#14679](https://github.com/aws-amplify/amplify-js/issues/14679)) ([b6d4c7a](https://github.com/aws-amplify/amplify-js/commit/b6d4c7ac976855f530b41e95f678e96867832a11))
+
+## [6.17.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.17.1...@aws-amplify/auth@6.17.2) (2026-01-15)
+
+### Bug Fixes
+
+- append params instead of constructor ([f78e64b](https://github.com/aws-amplify/amplify-js/commit/f78e64ba46a39241340f743f34664fed7c6824f6))
 
 ## [6.17.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.17.0...@aws-amplify/auth@6.17.1) (2025-12-10)
 
