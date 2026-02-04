@@ -49,6 +49,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs: release-verification
+    if: github.repository_owner == 'aws-amplify'
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
