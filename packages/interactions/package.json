@@ -72,8 +72,8 @@
 		"lex-v2"
 	],
 	"dependencies": {
-		"@aws-sdk/client-lex-runtime-service": "3.723.0",
-		"@aws-sdk/client-lex-runtime-v2": "3.723.0",
+		"@aws-sdk/client-lex-runtime-service": "3.982.0",
+		"@aws-sdk/client-lex-runtime-v2": "3.982.0",
 		"base-64": "1.0.0",
 		"fflate": "0.7.3",
 		"pako": "2.0.4",
@@ -88,19 +88,19 @@
 			"name": "Interactions (default to Lex v2)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Interactions }",
-			"limit": "54.05 kB"
+			"limit": "57 kB"
 		},
 		{
 			"name": "Interactions (Lex v2)",
 			"path": "./dist/esm/lex-v2/index.mjs",
 			"import": "{ Interactions }",
-			"limit": "54.05 kB"
+			"limit": "57 kB"
 		},
 		{
 			"name": "Interactions (Lex v1)",
 			"path": "./dist/esm/lex-v1/index.mjs",
 			"import": "{ Interactions }",
-			"limit": "47.46 kB"
+			"limit": "49 kB"
 		}
 	]
 }
