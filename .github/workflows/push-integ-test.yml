@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - chore/update-sdk-deps
+      - replace-with-your-branch
 
 jobs:
   e2e:
