@@ -82,7 +82,7 @@
 		"@aws-amplify/api-rest": "4.6.2",
 		"@aws-amplify/core": "6.16.0",
 		"@aws-amplify/data-schema": "^1.7.0",
-		"@aws-sdk/types": "3.723.0",
+		"@aws-sdk/types": "3.973.1",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
 		"tslib": "^2.5.0",

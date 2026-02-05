@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "6.1.67",
+	"version": "6.1.68",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -43,12 +43,12 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/storage": "6.12.0",
-		"@aws-sdk/client-comprehend": "3.723.0",
-		"@aws-sdk/client-polly": "3.723.0",
-		"@aws-sdk/client-rekognition": "3.723.0",
-		"@aws-sdk/client-textract": "3.723.0",
-		"@aws-sdk/client-translate": "3.723.0",
+		"@aws-amplify/storage": "6.13.0",
+		"@aws-sdk/client-comprehend": "3.982.0",
+		"@aws-sdk/client-polly": "3.982.0",
+		"@aws-sdk/client-rekognition": "3.982.0",
+		"@aws-sdk/client-textract": "3.982.0",
+		"@aws-sdk/client-translate": "3.982.0",
 		"@smithy/eventstream-codec": "2.0.9",
 		"@smithy/util-utf8": "2.0.0",
 		"buffer": "4.9.2",
@@ -66,7 +66,7 @@
 			"name": "Predictions",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Predictions }",
-			"limit": "73.5 kB"
+			"limit": "77 kB"
 		}
 	]
 }
