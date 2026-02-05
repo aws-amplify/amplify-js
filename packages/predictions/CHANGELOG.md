@@ -1,14 +1,11 @@
 # Change Log
 
-## 6.1.68
-
-### Patch Changes
-
-- Updated dependencies [[`85016ca`](https://github.com/aws-amplify/amplify-js/commit/85016ca4c286157de41a4466238cbe24af30a5d5)]:
-  - @aws-amplify/storage@6.13.0
-
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [6.1.69](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.67...@aws-amplify/predictions@6.1.69) (2026-02-05)
+
+**Note:** Version bump only for package @aws-amplify/predictions
 
 ## [6.1.67](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.66...@aws-amplify/predictions@6.1.67) (2026-01-22)
 
