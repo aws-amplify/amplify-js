@@ -1,11 +1,11 @@
 {
 	"name": "tsc-compliance-test",
-	"version": "0.1.97",
+	"version": "0.1.98",
 	"license": "MIT",
 	"private": true,
 	"devDependencies": {
 		"@types/node": "16.18.82",
-		"aws-amplify": "6.16.1",
+		"aws-amplify": "6.16.2",
 		"typescript": "4.5.x"
 	},
 	"scripts": {
