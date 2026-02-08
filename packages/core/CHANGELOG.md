@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.16.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.16.0...@aws-amplify/core@6.16.1) (2026-02-05)
+
+### Bug Fixes
+
+- **auth:** rename passwordless_options to passwordless ([#14691](https://github.com/aws-amplify/amplify-js/issues/14691)) ([6754ce3](https://github.com/aws-amplify/amplify-js/commit/6754ce3da44e8babdb1ca0926bdd382118b49bda))
+
 # [6.16.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.15.1...@aws-amplify/core@6.16.0) (2026-01-22)
 
 ### Features

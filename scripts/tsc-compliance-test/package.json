@@ -1,16 +1,16 @@
 {
 	"name": "tsc-compliance-test",
-	"version": "0.1.97",
+	"version": "0.1.98",
 	"license": "MIT",
 	"private": true,
 	"devDependencies": {
 		"@types/node": "16.18.82",
-		"aws-amplify": "6.16.1",
-		"typescript": "4.2.x"
+		"aws-amplify": "6.16.2",
+		"typescript": "4.5.x"
 	},
 	"scripts": {
-		"test:compliance": "yarn test:compliance:ts4.2 && yarn test:compliance:skipLibCheck",
-		"test:compliance:ts4.2": "tsc -p tsconfig.ts4_2.json",
+		"test:compliance": "yarn test:compliance:ts4.5 && yarn test:compliance:skipLibCheck",
+		"test:compliance:ts4.5": "tsc -p tsconfig.ts4_5.json",
 		"test:compliance:skipLibCheck": "tsc -p tsconfig.skipLibCheck.json"
 	}
 }
