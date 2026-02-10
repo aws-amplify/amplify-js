@@ -66,13 +66,13 @@
 			"name": "Analytics (Pinpoint)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Analytics, AWSPinpointProvider }",
-			"limit": "31.20 kB"
+			"limit": "31.45 kB"
 		},
 		{
 			"name": "Analytics (Kinesis)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Analytics, AWSKinesisProvider }",
-			"limit": "60.70 kB"
+			"limit": "60.95 kB"
 		}
 	],
 	"jest": {

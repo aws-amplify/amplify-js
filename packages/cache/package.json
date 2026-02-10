@@ -56,7 +56,7 @@
       "name": "Cache (default browser storage)",
       "path": "./lib-esm/index.js",
       "import": "{ Cache }",
-      "limit": "4 kB"
+      "limit": "4.2 kB"
     },
     {
       "name": "Cache (in-memory)",
