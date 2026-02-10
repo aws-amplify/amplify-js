@@ -3,11 +3,17 @@
 
 import { UserInfo } from '../../types';
 
+/**
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ */
 export interface AWSPinpointProviderConfig {
 	appId: string;
 	region: string;
 }
 
+/**
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ */
 export interface AWSPinpointUserInfo extends UserInfo {
 	address?: string;
 	optOut?: 'ALL' | 'NONE';

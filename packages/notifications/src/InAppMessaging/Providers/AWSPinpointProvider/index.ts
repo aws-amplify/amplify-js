@@ -44,6 +44,9 @@ import {
 const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
 
+/**
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ */
 export default class AWSPinpointProvider
 	extends AWSPinpointProviderCommon
 	implements InAppMessagingProvider

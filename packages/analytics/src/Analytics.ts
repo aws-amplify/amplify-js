@@ -254,6 +254,12 @@ export class AnalyticsClass {
 		return this._sendEvent(params);
 	}
 
+	/**
+	 * Update endpoint attributes
+	 * @param attrs - Endpoint attributes
+	 * @param provider - Provider name
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	public async updateEndpoint(
 		attrs: { [key: string]: any },
 		provider?: string

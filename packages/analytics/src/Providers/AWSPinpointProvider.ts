@@ -65,6 +65,9 @@ const FLUSH_INTERVAL = 5 * 1000; // 5s
 const RESEND_LIMIT = 5;
 
 // params: { event: {name: , .... }, timeStamp, config, resendLimits }
+/**
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ */
 export class AWSPinpointProvider implements AnalyticsProvider {
 	static category = 'Analytics';
 	static providerName = 'AWSPinpoint';
@@ -91,6 +94,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 	/**
 	 * get the category of the plugin
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	getCategory(): string {
 		return AWSPinpointProvider.category;
@@ -98,6 +102,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 	/**
 	 * get provider name of the plugin
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	getProviderName(): string {
 		return AWSPinpointProvider.providerName;
@@ -106,6 +111,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	/**
 	 * configure the plugin
 	 * @param {Object} config - configuration
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	public configure(config): object {
 		logger.debug('configure Analytics', config);
@@ -140,6 +146,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	/**
 	 * record an event
 	 * @param {Object} params - the params of an event
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	public async record(params: EventParams, handlers: PromiseHandlers) {
 		logger.debug('_public record', params);

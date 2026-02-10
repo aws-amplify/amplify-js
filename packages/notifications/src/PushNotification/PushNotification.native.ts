@@ -72,6 +72,7 @@ export default class PushNotification implements PushNotificationInterface {
 	/**
 	 * Configure PushNotification
 	 * @param {Object} config - PushNotification configuration object
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	configure = (config: PushNotificationConfig = {}): PushNotificationConfig => {
 		this.config = { ...this.config, ...config };
@@ -100,6 +101,7 @@ export default class PushNotification implements PushNotificationInterface {
 	/**
 	 * Get a plugin from added plugins
 	 * @param {string} providerName - the name of the plugin to get
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	getPluggable = (providerName: string): PushNotificationProvider => {
 		const pluggable =
@@ -117,6 +119,7 @@ export default class PushNotification implements PushNotificationInterface {
 	/**
 	 * Add plugin into PushNotification
 	 * @param {PushNotificationProvider} pluggable - an instance of the plugin
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	addPluggable = (pluggable: PushNotificationProvider): void => {
 		if (
@@ -137,6 +140,7 @@ export default class PushNotification implements PushNotificationInterface {
 	/**
 	 * Remove a plugin from added plugins
 	 * @param {string} providerName - the name of the plugin to remove
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	removePluggable = (providerName: string): void => {
 		const index = this.pluggables.findIndex(
@@ -237,7 +241,7 @@ export default class PushNotification implements PushNotificationInterface {
 						// once we are done with it we can remove the listener
 						launchNotificationOpenedListener?.remove();
 					}
-			  )
+				)
 			: null;
 
 		this.nativeEventEmitter.addListener(
@@ -271,6 +275,9 @@ export default class PushNotification implements PushNotificationInterface {
 		this.isEnabled = true;
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> => {
 		this.assertIsEnabled();
 		return Promise.all<void>(
@@ -285,6 +292,9 @@ export default class PushNotification implements PushNotificationInterface {
 		);
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	getLaunchNotification = async (): Promise<PushNotificationMessage | null> => {
 		this.assertIsEnabled();
 		return normalizeNativeMessage(
@@ -292,16 +302,25 @@ export default class PushNotification implements PushNotificationInterface {
 		);
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	getBadgeCount = async (): Promise<number | null> => {
 		this.assertIsEnabled();
 		return this.nativeModule.getBadgeCount?.();
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	setBadgeCount = (count: number): void => {
 		this.assertIsEnabled();
 		return this.nativeModule.setBadgeCount?.(count);
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> => {
 		this.assertIsEnabled();
 		return normalizeNativePermissionStatus(
@@ -309,6 +328,9 @@ export default class PushNotification implements PushNotificationInterface {
 		);
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	requestPermissions = async (
 		permissions: PushNotificationPermissions = {
 			alert: true,
@@ -330,6 +352,7 @@ export default class PushNotification implements PushNotificationInterface {
 	 *
 	 * @param handler a function to be run when a BACKGROUND_MESSAGE_RECEIVED event is received
 	 * @returns an event listener which should be removed when no longer needed
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	onNotificationReceivedInBackground = (
 		handler: OnPushNotificationMessageHandler
@@ -341,6 +364,9 @@ export default class PushNotification implements PushNotificationInterface {
 		);
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	onNotificationReceivedInForeground = (
 		handler: OnPushNotificationMessageHandler
 	): EventListener<OnPushNotificationMessageHandler> => {
@@ -351,6 +377,9 @@ export default class PushNotification implements PushNotificationInterface {
 		);
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	onNotificationOpened = (
 		handler: OnPushNotificationMessageHandler
 	): EventListener<OnPushNotificationMessageHandler> => {
@@ -358,6 +387,9 @@ export default class PushNotification implements PushNotificationInterface {
 		return addEventListener(PushNotificationEvent.NOTIFICATION_OPENED, handler);
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	onTokenReceived = (
 		handler: OnTokenReceivedHandler
 	): EventListener<OnTokenReceivedHandler> => {

@@ -59,6 +59,22 @@ export class AmplifyClass {
 		this._config = Object.assign(this._config, config);
 		logger.debug('amplify config', this._config);
 
+		// Warn if Pinpoint is configured
+		if (
+			(this._config['Analytics'] && (this._config['Analytics']['AWSPinpoint'] || this._config['Analytics']['appId'])) ||
+			(this._config['Notifications'] && this._config['Notifications']['InAppMessaging'] && this._config['Notifications']['InAppMessaging']['AWSPinpoint']) ||
+			(this._config['Notifications'] && this._config['Notifications']['Push'] && this._config['Notifications']['Push']['AWSPinpoint']) ||
+			(this._config['PushNotification'] && this._config['PushNotification']['appId'])
+		) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				'AWS will end support for Amazon Pinpoint on October 30, 2026. ' +
+					'The guidance is to use AWS End User Messaging for push notifications and SMS, ' +
+					'Amazon Simple Email Service for sending emails, Amazon Connect for campaigns, journeys, endpoints, and engagement analytics. ' +
+					'Pinpoint recommends Amazon Kinesis for event collection and mobile analytics.'
+			);
+		}
+
 		// Dependency Injection via property-setting.
 		// This avoids introducing a public method/interface/setter that's difficult to remove later.
 		// Plus, it reduces `if` statements within the `constructor` and `configure` of each module
