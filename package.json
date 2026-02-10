@@ -63,7 +63,7 @@
 	"devDependencies": {
 		"@babel/cli": "7.17.0",
 		"@babel/core": "7.17.2",
-		"@babel/preset-env": "^7.0.0",
+		"@babel/preset-env": "7.17.10",
 		"@babel/preset-react": "^7.0.0",
 		"@size-limit/dual-publish": "^8.1.0",
 		"@size-limit/file": "^8.1.0",
@@ -112,12 +112,10 @@
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
-		"fast-xml-parser": "4.4.1",
-		"@aws-sdk/types": "3.186.0"
+		"fast-xml-parser": "4.4.1"
 	},
 	"jest": {
 		"resetMocks": true,
 		"verbose": true
-	},
-	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+	}
 }
