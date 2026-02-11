@@ -5,7 +5,11 @@ import {
 	Endpoint,
 	HttpRequest,
 	HttpResponse,
+	PresignUrlOptions,
+	UNSIGNED_PAYLOAD,
+	UserAgentOptions,
 	parseMetadata,
+	presignUrl,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	AmplifyUrl,
@@ -26,6 +30,9 @@ import { validateObjectUrl } from '../../validateObjectUrl';
 
 import { defaultConfig, parseXmlError } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
+import type { S3EndpointResolverOptions } from './base';
+
+const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 export type PutObjectInput = Pick<
 	PutObjectCommandInput,
@@ -112,3 +119,50 @@ export const putObject = composeServiceApi(
 	putObjectDeserializer,
 	{ ...defaultConfig, responseType: 'text' },
 );
+
+type S3PutObjectPresignedUrlConfig = Omit<
+	UserAgentOptions & PresignUrlOptions & S3EndpointResolverOptions,
+	'signingService' | 'signingRegion'
+> & {
+	signingService?: string;
+	signingRegion?: string;
+};
+
+/**
+ * Get a presigned URL for the `putObject` API.
+ *
+ * @internal
+ */
+export const getPresignedPutObjectUrl = async (
+	config: S3PutObjectPresignedUrlConfig,
+	input: Omit<PutObjectInput, 'Body'>,
+): Promise<URL> => {
+	const endpoint = defaultConfig.endpointResolver(config, input);
+	const { url, headers, method } = await putObjectSerializer(
+		{ ...input, Body: undefined },
+		endpoint,
+	);
+
+	if (config.userAgentValue) {
+		url.searchParams.append(
+			config.userAgentHeader ?? USER_AGENT_HEADER,
+			config.userAgentValue,
+		);
+	}
+
+	for (const [headerName, value] of Object.entries(headers).sort(
+		([key1], [key2]) => key1.localeCompare(key2),
+	)) {
+		url.searchParams.append(headerName, value);
+	}
+
+	return presignUrl(
+		{ method, url, body: UNSIGNED_PAYLOAD },
+		{
+			signingService: defaultConfig.service,
+			signingRegion: config.region,
+			...defaultConfig,
+			...config,
+		},
+	);
+};
