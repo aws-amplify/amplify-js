@@ -25,6 +25,7 @@ export const getUrl = (input: GetUrlInput) =>
 			// Advanced options
 			locationCredentialsProvider: input?.options?.locationCredentialsProvider,
 			customEndpoint: input?.options?.customEndpoint,
+			operation: input?.options?.operation,
 		},
 		// Type casting is necessary because `getPropertiesInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.

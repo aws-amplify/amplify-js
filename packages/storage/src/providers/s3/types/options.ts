@@ -159,6 +159,11 @@ export type ListPaginateWithPathOptions = Omit<
  */
 export type GetUrlOptions = CommonOptions & {
 	/**
+	 * The operation type for the presigned URL.
+	 * @default 'download'
+	 */
+	operation?: 'download' | 'upload';
+	/**
 	 * Whether to head object to make sure the object existence before downloading.
 	 * @default false
 	 */
