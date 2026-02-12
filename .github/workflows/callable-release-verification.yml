@@ -1,6 +1,16 @@
 name: Release Verification Tests
 
-on: workflow_call
+on:
+  workflow_call:
+    secrets:
+      GH_TOKEN_STAGING_READ:
+        required: true
+      CYPRESS_GOOGLE_CLIENTID:
+        required: true
+      CYPRESS_GOOGLE_CLIENT_SECRET:
+        required: true
+      CYPRESS_GOOGLE_REFRESH_TOKEN:
+        required: true
 
 jobs:
   prebuild-ubuntu:
