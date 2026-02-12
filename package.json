@@ -47,7 +47,11 @@
 			"**/@types/react-native",
 			"**/@types/react-native/**",
 			"aws-amplify-react-native/prettier",
-			"aws-amplify-react-native/eslint-plugin-prettier"
+			"aws-amplify-react-native/eslint-plugin-prettier",
+			"**/@aws-sdk/types",
+			"**/@aws-sdk/types/**",
+			"**/@smithy/types",
+			"**/@smithy/types/**"
 		]
 	},
 	"repository": {
@@ -114,7 +118,8 @@
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
 		"fast-xml-parser": "4.4.1",
-		"@aws-sdk/types": "3.186.0"
+		"@aws-sdk/types": "3.186.0",
+		"@smithy/types": "4.0.0"
 	},
 	"jest": {
 		"resetMocks": true,
