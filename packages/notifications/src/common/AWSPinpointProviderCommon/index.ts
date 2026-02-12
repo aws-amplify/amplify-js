@@ -31,6 +31,9 @@ import {
 } from '../../types';
 import { AWSPinpointUserInfo } from './types';
 
+/**
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ */
 export default abstract class AWSPinpointProviderCommon
 	implements NotificationsProvider
 {

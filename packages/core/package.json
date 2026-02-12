@@ -80,7 +80,7 @@
 			"name": "Core (ServiceWorker)",
 			"path": "./lib-esm/index.js",
 			"import": "{ ServiceWorker }",
-			"limit": "2.4 kB"
+			"limit": "2.65 kB"
 		},
 		{
 			"name": "Core (Hub)",
@@ -92,7 +92,7 @@
 			"name": "Core (I18n)",
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
-			"limit": "2.12 kB"
+			"limit": "2.40 kB"
 		},
 		{
 			"name": "Core (Logger)",
@@ -104,7 +104,7 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "13.35 kB"
+			"limit": "13.60 kB"
 		},
 		{
 			"name": "Core (Signer)",

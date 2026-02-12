@@ -48,6 +48,7 @@ export default class InAppMessaging implements InAppMessagingInterface {
 	/**
 	 * Configure InAppMessaging
 	 * @param {Object} config - InAppMessaging configuration object
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	configure = ({
 		listenForAnalyticsEvents = true,
@@ -137,6 +138,7 @@ export default class InAppMessaging implements InAppMessagingInterface {
 	 * Get the map resources that are currently available through the provider
 	 * @param {string} provider
 	 * @returns - Array of available map resources
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
 	 */
 	syncMessages = (): Promise<void[]> =>
 		Promise.all<void>(
@@ -152,6 +154,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 			})
 		);
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	clearMessages = (): Promise<void[]> =>
 		Promise.all<void>(
 			this.pluggables.map(async pluggable => {
@@ -160,6 +165,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 			})
 		);
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	dispatchEvent = async (event: InAppMessagingEvent): Promise<void> => {
 		const messages: InAppMessage[][] = await Promise.all<InAppMessage[]>(
 			this.pluggables.map(async pluggable => {
@@ -179,6 +187,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 		}
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> =>
 		Promise.all<void>(
 			this.pluggables.map(async pluggable => {
@@ -191,21 +202,33 @@ export default class InAppMessaging implements InAppMessagingInterface {
 			})
 		);
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	onMessageReceived = (
 		handler: OnMessageInteractionEventHandler
 	): EventListener<OnMessageInteractionEventHandler> =>
 		addEventListener(InAppMessageInteractionEvent.MESSAGE_RECEIVED, handler);
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	onMessageDisplayed = (
 		handler: OnMessageInteractionEventHandler
 	): EventListener<OnMessageInteractionEventHandler> =>
 		addEventListener(InAppMessageInteractionEvent.MESSAGE_DISPLAYED, handler);
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	onMessageDismissed = (
 		handler: OnMessageInteractionEventHandler
 	): EventListener<OnMessageInteractionEventHandler> =>
 		addEventListener(InAppMessageInteractionEvent.MESSAGE_DISMISSED, handler);
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	onMessageActionTaken = (
 		handler: OnMessageInteractionEventHandler
 	): EventListener<OnMessageInteractionEventHandler> =>
@@ -214,6 +237,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 			handler
 		);
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	notifyMessageInteraction = (
 		message: InAppMessage,
 		type: InAppMessageInteractionEvent
@@ -221,6 +247,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 		notifyEventListeners(type, message);
 	};
 
+	/**
+	 * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+	 */
 	setConflictHandler = (handler: InAppMessageConflictHandler): void => {
 		this.conflictHandler = handler;
 	};

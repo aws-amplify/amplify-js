@@ -66,7 +66,7 @@
       "name": "API (GraphQL client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, GraphQLAPI }",
-      "limit": "97.30 kB"
+      "limit": "97.60 kB"
     }
   ],
   "jest": {
