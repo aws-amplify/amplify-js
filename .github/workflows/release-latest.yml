@@ -32,11 +32,8 @@ jobs:
       #       case of (2), `@changesets/action` will know that packages have already been published and will
       #       skip publish.
 
-  # Job 2: Run release verification tests when Version Packages PR is merged
-  # This ensures all tests pass before publishing
+  # Job 2: Run release verification tests on every commit
   release-verification:
-    needs: setup
-    if: needs.setup.outputs.has-changesets != 'true'
     secrets:
       GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
       CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
@@ -44,11 +41,11 @@ jobs:
       CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
     uses: ./.github/workflows/callable-release-verification.yml
 
-  # Job 3: Publish packages after all tests pass
+  # Job 3: Publish packages after all tests pass (only when there are no changesets)
   publish:
     runs-on: ubuntu-latest
-    needs: release-verification
-    if: github.repository_owner == 'aws-amplify'
+    needs: [setup, release-verification]
+    if: github.repository_owner == 'aws-amplify' && needs.setup.outputs.has-changesets != 'true'
     outputs:
       published: ${{ steps.changesets.outputs.published }}
     steps:
