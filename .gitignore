@@ -23,6 +23,9 @@ docs/reference.json
 ### Version file - core build artifact
 packages/core/src/Platform/version.ts
 
+### TSC compliance test build artifact
+scripts/tsc-compliance-test/publicPaths.js
+
 # BUCK
 buck-out/
 \.buckd/

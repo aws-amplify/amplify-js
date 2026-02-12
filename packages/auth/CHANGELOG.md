@@ -1,13 +1,11 @@
 # Change Log
 
-## 6.19.0
-
-### Minor Changes
-
-- [`85016ca`](https://github.com/aws-amplify/amplify-js/commit/85016ca4c286157de41a4466238cbe24af30a5d5) Thanks [@soberm](https://github.com/soberm)! - Test change
-
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [6.19.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.18.0...@aws-amplify/auth@6.19.1) (2026-02-05)
+
+**Note:** Version bump only for package @aws-amplify/auth
 
 # [6.18.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.17.2...@aws-amplify/auth@6.18.0) (2026-01-22)
 

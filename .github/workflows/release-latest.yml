@@ -37,13 +37,18 @@ jobs:
   release-verification:
     needs: setup
     if: needs.setup.outputs.has-changesets != 'true'
-    secrets: inherit
+    secrets:
+      GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
+      CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
+      CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
+      CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
     uses: ./.github/workflows/callable-release-verification.yml
 
   # Job 3: Publish packages after all tests pass
   publish:
     runs-on: ubuntu-latest
     needs: release-verification
+    if: github.repository_owner == 'aws-amplify'
     outputs:
       published: ${{ steps.changesets.outputs.published }}
     steps:
@@ -105,5 +110,6 @@ jobs:
   # Job 5: Update external documentation repository
   update-external-docs:
     needs: update-local-docs
-    secrets: inherit
+    secrets:
+      GH_TOKEN_AMPLIFY_JS_WRITE: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
     uses: ./.github/workflows/callable-docs-update.yml

@@ -44,8 +44,10 @@ jobs:
           FORBIDDEN_PREIDS: latest next unstable stable-5 stable-4
         run: |
           echo "Testing to see if $PREID is in the forbidden list ($FORBIDDEN_PREIDS)"
+          # Convert to lowercase for case-insensitive comparison (npm tags are case-insensitive)
+          PREID_LOWER=$(echo "$PREID" | tr '[:upper:]' '[:lower:]')
           for e in $FORBIDDEN_PREIDS; do 
-            [[ $PREID == $e ]] && echo "ERROR: $PREID is forbidden from preid release" && exit 1
+            [[ "$PREID_LOWER" == "$e" ]] && echo "ERROR: $PREID is forbidden from preid release" && exit 1
           done
           
           echo "SUCCESS: $PREID is allowed for preid release"
@@ -56,6 +58,7 @@ jobs:
     needs: 
       - parse-preid
       - validate-preid
+    if: github.repository_owner == 'aws-amplify'
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1

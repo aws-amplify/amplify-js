@@ -20,13 +20,18 @@ jobs:
   # We skip the release if the commit message contains [skip release] to prevent unnecessary builds, e.g., docs commits
   release-verification:
     if: "!contains(github.event.head_commit.message, '[skip release]')"
-    secrets: inherit
+    secrets:
+      GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
+      CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
+      CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
+      CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
     uses: ./.github/workflows/callable-release-verification.yml
 
   # Job 2: Publish unstable packages after tests pass
   unstable-release:
     needs: release-verification
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'aws-amplify'
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
