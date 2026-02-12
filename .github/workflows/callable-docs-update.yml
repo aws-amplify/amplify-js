@@ -1,6 +1,10 @@
 name: Build the API References and open a docs PR
 
-on: workflow_call
+on:
+  workflow_call:
+    secrets:
+      GH_TOKEN_AMPLIFY_JS_WRITE:
+        required: true
 
 jobs:
   docs-update-prep:
