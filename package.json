@@ -65,6 +65,7 @@
 		"@babel/core": "7.17.2",
 		"@babel/preset-env": "7.17.10",
 		"@babel/preset-react": "^7.0.0",
+		"@smithy/types": "4.0.0",
 		"@size-limit/dual-publish": "^8.1.0",
 		"@size-limit/file": "^8.1.0",
 		"@size-limit/webpack": "^8.1.0",

@@ -4628,6 +4628,13 @@
     nanoid "^3.3.6"
     webpack "^5.88.0"
 
+"@smithy/types@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@smithy/types/-/types-4.0.0.tgz#7458c1c4dde3c6cf23221370acf5acd03215de6e"
+  integrity sha512-aNwIGSOgDOhtTRY/rrn2aeuQeKw/IFrQ998yK5l6Ah853WeWIEmFPs/EO4OpfADEdcK+igWnZytm/oUgkLgUYg==
+  dependencies:
+    tslib "^2.6.2"
+
 "@stardust-ui/react-component-event-listener@~0.38.0":
   version "0.38.0"
   resolved "https://registry.yarnpkg.com/@stardust-ui/react-component-event-listener/-/react-component-event-listener-0.38.0.tgz#1787faded94b40ad41226e6289baf13e701c6e7f"
