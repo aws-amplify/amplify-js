@@ -1,6 +1,5 @@
 build
 Config
-lerna-debug.log
 node_modules
 packages/*/node_modules/**
 packages/**/lib/
@@ -74,6 +73,9 @@ coverage-ts/
 # rollup
 **/.rollup.cache
 **/buildMeta
+
+# Turborepo
+.turbo
 
 # ruby
 vendor/

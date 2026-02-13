@@ -25,12 +25,12 @@ jobs:
         env:
           TEST_PACKAGE: ${{ matrix.package.name }}
         run: |
-          npx lerna exec --scope $TEST_PACKAGE yarn prepare:ios
-          npx lerna exec --scope $TEST_PACKAGE yarn test:ios
+          yarn workspace $TEST_PACKAGE prepare:ios
+          yarn workspace $TEST_PACKAGE test:ios
       - name: Run Android Tests
         working-directory: ./amplify-js
         env:
           TEST_PACKAGE: ${{ matrix.package.name }}
         run: |
-          npx lerna exec --scope $TEST_PACKAGE yarn prepare:android
-          npx lerna exec --scope $TEST_PACKAGE yarn test:android
+          yarn workspace $TEST_PACKAGE prepare:android
+          yarn workspace $TEST_PACKAGE test:android

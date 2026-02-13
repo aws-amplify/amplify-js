@@ -69,10 +69,6 @@ jobs:
         run: yarn
         shell: bash
         working-directory: ./amplify-js
-      - name: Bootstrap
-        run: yarn bootstrap
-        shell: bash
-        working-directory: ./amplify-js
       - name: Build packages
         run: yarn build
         shell: bash
