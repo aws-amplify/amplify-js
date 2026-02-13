@@ -218,6 +218,7 @@ class MutationEventOutbox {
 			mutationEventModelDefinition,
 			{
 				and: [
+					{ model: { eq: head.model } },
 					{ modelId: { eq: recordId } },
 					{ id: { ne: this.inProgressMutationEventId } },
 				],
