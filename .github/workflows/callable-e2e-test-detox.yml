@@ -45,13 +45,31 @@ jobs:
           GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
       - name: Load Verdaccio with AmplifyJs
         uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
+      - name: Get AmplifyJS native modules package bump
+        env:
+          GH_WORKSPACE: ${{ github.workspace }}
+        working-directory: ./amplify-js/
+        run: |
+          npx lerna version --conventional-commits --no-git-tag-version --no-push --json --yes | \
+          jq -c '[ .[] | select(.name | IN("@aws-amplify/react-native", "@aws-amplify/rtn-push-notification", "@aws-amplify/rtn-web-browser")) | {name, newVersion} ]' \
+          > $GH_WORKSPACE/amplify_native_pkg_versions.json
+      - name: Cache All Dependencies
+        id: cache_paths
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: |
+            ${{ inputs.working_directory }}/ios/Pods
+            ${{ inputs.working_directory }}/ios/build
+          key: ${{ inputs.test_name }}-detox-cache-${{ hashFiles(format('{0}/yarn.lock', inputs.working_directory), format('{0}/ios/Podfile.lock', inputs.working_directory), format('{0}/amplify_native_pkg_versions.json', github.workspace)) }}
       - name: Yarn Install
         working-directory: ${{ inputs.working_directory }}
         run: |
+          rm -rf yarn.lock
           echo "Current NPM registry: " $(yarn config get registry)
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --non-interactive' -n 3
         shell: bash
       - name: Install CocoaPods
+        if: steps.cache_paths.outputs.cache-hit != 'true'
         run: |
           cd ios && pod install
         working-directory: ${{ inputs.working_directory }}
@@ -75,6 +93,7 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Detox Build
+        if: steps.cache_paths.outputs.cache-hit != 'true'
         run: |
           detox build -c ios.sim.debug
         env:
