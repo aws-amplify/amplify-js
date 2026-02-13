@@ -3,6 +3,7 @@
 import { Observable, Subscription, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
 import { ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
+import type { KeyValueStorageInterface } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
 	DocumentType,
@@ -18,6 +19,7 @@ import {
 	ConnectionState,
 	PubSubContentObserver,
 } from '../../types/PubSub';
+import type { WebSocketHealthState } from '../../types';
 import {
 	AMPLIFY_SYMBOL,
 	CONNECTION_INIT_TIMEOUT,
@@ -48,6 +50,44 @@ import {
 	realtimeUrlWithQueryString,
 } from './appsyncUrl';
 import { awsRealTimeHeaderBasedAuth } from './authHeaders';
+
+// Storage key for persistent keep-alive tracking
+const KEEP_ALIVE_STORAGE_KEY = 'AWS_AMPLIFY_LAST_KEEP_ALIVE';
+
+/**
+ * Initialize platform-specific storage for keep-alive persistence
+ * Tries AsyncStorage for React Native, falls back to localStorage for web
+ */
+function initializePlatformStorage(): Pick<
+	KeyValueStorageInterface,
+	'setItem' | 'getItem'
+> | null {
+	// Try React Native AsyncStorage first (optional peer dependency)
+	try {
+		const AsyncStorage =
+			// eslint-disable-next-line import/no-extraneous-dependencies
+			require('@react-native-async-storage/async-storage').default;
+
+		return AsyncStorage;
+	} catch {
+		// Fallback to localStorage for web platforms
+		if (typeof localStorage !== 'undefined') {
+			return {
+				setItem: (key: string, value: string) => {
+					localStorage.setItem(key, value);
+
+					return Promise.resolve();
+				},
+				getItem: (key: string) => Promise.resolve(localStorage.getItem(key)),
+			};
+		}
+	}
+
+	return null;
+}
+
+// Platform-safe storage implementation
+const platformStorage = initializePlatformStorage();
 
 const dispatchApiEvent = (payload: HubPayload) => {
 	Hub.dispatch('api', payload, 'PubSub', AMPLIFY_SYMBOL);
@@ -93,6 +133,7 @@ export abstract class AWSWebSocketProvider {
 	private connectionStateMonitorSubscription: SubscriptionLike;
 	private readonly wsProtocolName: string;
 	private readonly wsConnectUri: string;
+	private isReconnecting = false;
 
 	constructor(args: AWSWebSocketProviderArgs) {
 		this.logger = new ConsoleLogger(args.providerName);
@@ -106,6 +147,7 @@ export abstract class AWSWebSocketProvider {
 	/**
 	 * Mark the socket closed and release all active listeners
 	 */
+
 	close() {
 		// Mark the socket closed both in status and the connection monitor
 		this.socketStatus = SOCKET_STATUS.CLOSED;
@@ -681,6 +723,9 @@ export abstract class AWSWebSocketProvider {
 		if (type === MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE) {
 			this.maintainKeepAlive();
 
+			// Persist keep-alive timestamp for cross-session tracking
+			this.persistKeepAliveTimestamp(Date.now());
+
 			return;
 		}
 
@@ -1025,4 +1070,140 @@ export abstract class AWSWebSocketProvider {
 			}
 		}
 	};
+
+	// WebSocket Health & Control API
+
+	/**
+	 * Calculate health state based on connection state and keep-alive timing
+	 * @private
+	 */
+	private calculateHealthState(timeSinceLastKeepAlive: number): boolean {
+		return (
+			this.connectionState === ConnectionState.Connected &&
+			timeSinceLastKeepAlive < DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT
+		);
+	}
+
+	/**
+	 * Retrieve persisted keep-alive timestamp from storage
+	 * @private
+	 */
+	private async getPersistedKeepAliveTimestamp(): Promise<number> {
+		if (!platformStorage) return 0;
+
+		try {
+			const persistentKeepAlive = await platformStorage.getItem(
+				KEEP_ALIVE_STORAGE_KEY,
+			);
+
+			return persistentKeepAlive ? Number(persistentKeepAlive) || 0 : 0;
+		} catch (error) {
+			this.logger.warn(
+				'Failed to retrieve persistent keep-alive timestamp:',
+				error,
+			);
+
+			return 0;
+		}
+	}
+
+	/**
+	 * Persist keep-alive timestamp to storage
+	 * @private
+	 */
+	private async persistKeepAliveTimestamp(timestamp: number): Promise<void> {
+		if (!platformStorage) return;
+
+		try {
+			await platformStorage.setItem(KEEP_ALIVE_STORAGE_KEY, `${timestamp}`);
+		} catch (error) {
+			this.logger.warn('Failed to persist keep-alive timestamp:', error);
+		}
+	}
+
+	/**
+	 * Get current WebSocket health state
+	 */
+	getConnectionHealth(): WebSocketHealthState {
+		const timeSinceLastKeepAlive = Date.now() - this.keepAliveTimestamp;
+		const isHealthy = this.calculateHealthState(timeSinceLastKeepAlive);
+
+		return {
+			isHealthy,
+			connectionState: this.connectionState || ConnectionState.Disconnected,
+			lastKeepAliveTime: this.keepAliveTimestamp || 0,
+			timeSinceLastKeepAlive,
+		};
+	}
+
+	/**
+	 * Get persistent WebSocket health state (survives app restarts)
+	 */
+	async getPersistentConnectionHealth(): Promise<WebSocketHealthState> {
+		const persistentKeepAliveTime = await this.getPersistedKeepAliveTimestamp();
+
+		// Use the more recent timestamp (in-memory vs persistent)
+		const lastKeepAliveTime = Math.max(
+			this.keepAliveTimestamp || 0,
+			persistentKeepAliveTime,
+		);
+
+		// If no keep-alive has ever been received, use Infinity to indicate unhealthy
+		const timeSinceLastKeepAlive =
+			lastKeepAliveTime > 0 ? Date.now() - lastKeepAliveTime : Infinity;
+
+		const isHealthy = this.calculateHealthState(timeSinceLastKeepAlive);
+
+		return {
+			isHealthy,
+			connectionState: this.connectionState || ConnectionState.Disconnected,
+			lastKeepAliveTime,
+			timeSinceLastKeepAlive,
+		};
+	}
+
+	/**
+	 * Check if WebSocket is currently connected
+	 */
+	isConnected(): boolean {
+		return this.awsRealTimeSocket?.readyState === WebSocket.OPEN;
+	}
+
+	/**
+	 * Manually reconnect WebSocket
+	 * @returns Promise that resolves when reconnection is initiated
+	 * @throws Error if reconnection is already in progress
+	 */
+	async reconnect(): Promise<void> {
+		this.logger.info('Manual WebSocket reconnection requested');
+
+		// Guard against concurrent reconnection attempts
+		if (this.isReconnecting) {
+			const error = new Error('Reconnection already in progress');
+			this.logger.warn(error.message);
+			throw error;
+		}
+
+		try {
+			this.isReconnecting = true;
+
+			// Close existing connection if any
+			if (this.isConnected()) {
+				await this.close();
+			}
+
+			// Trigger reconnection through the reconnection monitor
+			this.reconnectionMonitor.record(ReconnectEvent.START_RECONNECT);
+
+			this.logger.info('WebSocket reconnection initiated successfully');
+		} catch (error) {
+			this.logger.error('Failed to initiate WebSocket reconnection:', error);
+			throw error;
+		} finally {
+			// Reset reconnection flag after a brief delay to allow reconnection to start
+			setTimeout(() => {
+				this.isReconnecting = false;
+			}, 1000);
+		}
+	}
 }
