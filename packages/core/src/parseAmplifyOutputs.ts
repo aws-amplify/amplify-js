@@ -149,7 +149,7 @@ function parseAuth(
 			email: username_attributes.includes('email'),
 			phone: username_attributes.includes('phone_number'),
 			// Signing in with a username is not currently supported in Gen2, this should always evaluate to false
-			username: username_attributes.includes('username'),
+			username: username_attributes.length === 0,
 		};
 	}
 
