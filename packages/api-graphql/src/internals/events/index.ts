@@ -54,6 +54,10 @@ async function connect(
 	providerOptions.apiKey = options?.apiKey || providerOptions.apiKey;
 	providerOptions.authToken = options?.authToken || providerOptions.authToken;
 
+	if (options?.authToken) {
+		providerOptions.authToken = options.authToken
+	}
+
 	await eventProvider.connect(providerOptions);
 
 	const channelId = amplifyUuid();
@@ -76,6 +80,10 @@ async function connect(
 		subscribeOptions.apiKey = subOptions?.apiKey || subscribeOptions.apiKey;
 		subscribeOptions.authToken =
 			subOptions?.authToken || subscribeOptions.authToken;
+
+		if (subOptions?.authToken) {
+			subscribeOptions.authToken = subOptions.authToken
+		}
 
 		_subscription = eventProvider
 			.subscribe(subscribeOptions)
