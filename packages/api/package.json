@@ -15,6 +15,9 @@
 	},
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
+		"test:integration": "vitest run --config __integration__/vitest.config.ts",
+		"test:integration:watch": "vitest --config __integration__/vitest.config.ts",
+		"test:integration:coverage": "vitest run --coverage --config __integration__/vitest.config.ts",
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
@@ -69,7 +72,9 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
 		"@aws-amplify/core": "6.16.1",
-		"jest-fetch-mock": "3.0.3"
+		"jest-fetch-mock": "3.0.3",
+		"msw": "^2.6.8",
+		"vitest": "^1.0.0"
 	},
 	"files": [
 		"dist/cjs",
