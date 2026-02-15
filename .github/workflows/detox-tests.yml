@@ -1,0 +1,52 @@
+name: Detox E2E Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ci/v5-stable-node-20
+
+permissions: read-all
+
+jobs:
+  prebuild-macos:
+    uses: ./.github/workflows/callable-prebuild-amplify-js.yml
+    with:
+      runs_on: macos-latest
+
+  prebuild-samples-staging:
+    secrets: inherit
+    uses: ./.github/workflows/callable-prebuild-samples-staging.yml
+
+  detox-prep:
+    needs:
+      - prebuild-macos
+      - prebuild-samples-staging
+    name: Load Detox test configurations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          path: amplify-js
+      - name: Read detox config file
+        id: load_config
+        run: |
+          echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_OUTPUT
+        working-directory: ./amplify-js
+    outputs:
+      detox-integ-config: ${{ steps.load_config.outputs.DETOX_INTEG_CONFIG }}
+
+  detox-e2e-test-runner:
+    name: Detox E2E - ${{ matrix.integ-config.test_name }}
+    needs: detox-prep
+    strategy:
+      matrix:
+        integ-config: ${{ fromJson(needs.detox-prep.outputs.detox-integ-config) }}
+      fail-fast: false
+    secrets: inherit
+    uses: ./.github/workflows/callable-e2e-test-detox.yml
+    with:
+      test_name: ${{ matrix.integ-config.test_name }}
+      working_directory: ${{ matrix.integ-config.working_directory }}
+      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 45 }}

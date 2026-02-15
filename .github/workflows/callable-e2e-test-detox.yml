@@ -17,16 +17,19 @@ on:
 jobs:
   e2e-test:
     name: E2E-Detox ${{ inputs.test_name }}
-    runs-on: macos-latest
+    runs-on: macos-latest-large
     timeout-minutes: ${{ inputs.timeout_minutes }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           path: amplify-js
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
+      - name: Set Xcode version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_16.4.app
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
@@ -44,30 +47,9 @@ jobs:
           cd ios && pod install
         working-directory: ${{ inputs.working_directory }}
         shell: bash
-      - name: Setup iOS Simulator
+      - name: Start iOS simulator (background)
         run: |
-          # Check if iPhone 15 device exists
-          if ! xcrun simctl list devices | grep -q "iPhone 15"; then
-            echo "iPhone 15 device not found, creating one..."
-            
-            # Get the latest available iOS runtime
-            RUNTIME=$(xcrun simctl list runtimes | grep iOS | tail -1 | awk '{print $NF}')
-            echo "Using runtime: $RUNTIME"
-            
-            # Create iPhone 15 device with available runtime
-            xcrun simctl create "iPhone 15" "com.apple.CoreSimulator.SimDeviceType.iPhone-15" "$RUNTIME" || \
-            xcrun simctl create "iPhone 15" "iPhone 15" "$RUNTIME" || \
-            echo "Could not create iPhone 15, will use available device"
-          fi
-          
-          # Boot iPhone 15 if it exists, otherwise use first available iPhone
-          if xcrun simctl list devices | grep -q "iPhone 15"; then
-            xcrun simctl boot "iPhone 15" &
-          else
-            DEVICE=$(xcrun simctl list devices available | grep "iPhone" | head -1 | sed 's/.*\(iPhone[^(]*\).*/\1/' | xargs)
-            echo "Using fallback device: $DEVICE"
-            xcrun simctl boot "$DEVICE" &
-          fi
+          xcrun simctl boot "iPhone 16" &
         shell: bash
       - name: Start Metro Packager (background)
         run: |
@@ -96,3 +78,11 @@ jobs:
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detox-screenshots-${{ inputs.test_name }}
+          path: ${{ inputs.working_directory }}/screenshots/
+          retention-days: 7
+          if-no-files-found: ignore
