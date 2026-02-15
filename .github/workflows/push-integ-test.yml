@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - feat/example-integ-test-branch/main
+      - ci/v5-stable-node-20
 
 jobs:
   e2e:

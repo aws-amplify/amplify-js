@@ -47,7 +47,7 @@
   ],
   "dependencies": {
     "@aws-amplify/core": "5.8.14",
-    "axios": "^1.6.5",
+    "axios": "1.13.2",
     "tslib": "^1.8.0",
     "url": "0.11.0"
   },
@@ -59,7 +59,7 @@
       "name": "API (rest client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, RestAPI }",
-      "limit": "39.40 kB"
+      "limit": "39.90 kB"
     }
   ],
   "jest": {
