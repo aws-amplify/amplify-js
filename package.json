@@ -112,8 +112,14 @@
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
-		"fast-xml-parser": "4.4.1",
-		"node-gyp": "^10.0.0"
+		"fast-xml-parser": "^5.3.4",
+		"node-gyp": "^10.0.0",
+		"qs": "^6.14.1",
+		"js-yaml": "4.1.1",
+		"tmp": "^0.2.4",
+		"**/brace-expansion": "1.1.12",
+		"tar": "6.2.1",
+		"cross-spawn": "7.0.5"
 	},
 	"jest": {
 		"resetMocks": true,
