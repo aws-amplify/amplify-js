@@ -19,6 +19,7 @@ import {
 	STORAGE_INPUT_KEY,
 } from '../../utils/constants';
 import { constructContentDisposition } from '../../utils/constructContentDisposition';
+import { constructPublicUrl } from '../../utils/constructPublicUrl';
 // TODO: Remove this interface when we move to public advanced APIs.
 import { GetUrlInput as GetUrlWithPathInputWithAdvancedOptions } from '../../../../internals';
 
@@ -62,6 +63,14 @@ export const getUrl = async (
 		urlExpirationInSec <= maxUrlExpirationInSec,
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed,
 	);
+
+	// Handle public URL request
+	if (getUrlOptions?.usePublicUrl) {
+		return {
+			url: constructPublicUrl(bucket, finalKey, s3Config.region),
+			expiresAt: undefined, // Public URLs don't expire
+		};
+	}
 
 	// expiresAt is the minimum of credential expiration and url expiration
 	return {

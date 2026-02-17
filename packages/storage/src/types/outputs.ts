@@ -59,8 +59,9 @@ export interface StorageGetUrlOutput {
 	url: URL;
 	/**
 	 * expiresAt is date in which generated URL expires.
+	 * Undefined for public URLs that don't expire.
 	 */
-	expiresAt: Date;
+	expiresAt: Date | undefined;
 }
 
 export type StorageUploadOutput<Item extends StorageItem> = Item;

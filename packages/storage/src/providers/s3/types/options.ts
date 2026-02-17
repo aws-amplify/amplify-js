@@ -169,6 +169,12 @@ export type GetUrlOptions = CommonOptions & {
 	 */
 	expiresIn?: number;
 	/**
+	 * Whether to return a public URL instead of a presigned URL.
+	 * Only works for objects with public read access.
+	 * @default false
+	 */
+	usePublicUrl?: boolean;
+	/**
 	 * The default content-disposition header value of the file when downloading it.
 	 *   If a string is provided, it will be used as-is.
 	 *   If an object is provided, it will be used to construct the header value
