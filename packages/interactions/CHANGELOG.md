@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.22...@aws-amplify/interactions@5.2.23) (2026-02-17)
+
+### Bug Fixes
+
+- unintentional @aws-sdk/types change in lock file ([#14715](https://github.com/aws-amplify/amplify-js/issues/14715)) ([98b9994](https://github.com/aws-amplify/amplify-js/commit/98b999441f4c7d1e255ecbbcecde0f5e6a148c66))
+
 ## [5.2.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.21...@aws-amplify/interactions@5.2.22) (2025-02-05)
 
 ### Bug Fixes
