@@ -127,7 +127,11 @@
 		"@babel/runtime": "^7.26.10",
 		"@babel/helpers": "^7.26.10",
 		"webpack": "^5.104.1",
-		"diff": "^4.0.4"
+		"diff": "^4.0.4",
+		"tough-cookie": "^4.1.3",
+		"node-notifier": "^8.0.1",
+		"marked": "^4.0.10",
+		"yargs-parser": "^21.1.1"
 	},
 	"jest": {
 		"resetMocks": true,
