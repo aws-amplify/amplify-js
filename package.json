@@ -138,7 +138,7 @@
 	},
 	"resolutions": {
 		"@react-native-community/cli": "^18.0.1",
-		"fast-xml-parser": "^5.3.4",
+		"fast-xml-parser": "^5.3.6",
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",

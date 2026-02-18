@@ -74,7 +74,7 @@
 		"@smithy/md5-js": "2.0.7",
 		"buffer": "4.9.2",
 		"crc-32": "1.2.2",
-		"fast-xml-parser": "^5.3.4",
+		"fast-xml-parser": "^5.3.6",
 		"tslib": "^2.5.0"
 	},
 	"exports": {
