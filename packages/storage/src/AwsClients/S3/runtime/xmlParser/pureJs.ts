@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { XMLParser } from 'fast-xml-parser';
-
+// Use require to avoid all ESM/Metro issues
+const XMLParser = require('fast-xml-parser/src/xmlparser/XMLParser.js');
 /**
  * Pure JS XML parser that can be used in Non-browser environments, like React Native and Node.js. This is the same
  * XML parser implementation as used in AWS SDK S3 client. It depends on pure JavaScript XML parser library
