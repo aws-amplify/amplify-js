@@ -73,7 +73,7 @@
       }
     },
     "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+        "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "testPathIgnorePatterns": [
@@ -81,6 +81,12 @@
       "testUtils",
       "cases"
     ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(fast-xml-parser)/)"
+    ],
+    "moduleNameMapper": {
+      "fast-xml-parser/src/xmlparser/XMLParser.js": "<rootDir>/../../__mocks__/fast-xml-parser.js"
+    },
     "moduleFileExtensions": [
       "ts",
       "tsx",

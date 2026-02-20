@@ -47,8 +47,12 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
+      "axios": "axios/dist/node/axios.cjs",
+      "fast-xml-parser/src/xmlparser/XMLParser.js": "<rootDir>/../../__mocks__/fast-xml-parser.js"
     },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(fast-xml-parser)/)"
+    ],
     "globals": {
       "ts-jest": {
         "diagnostics": false,
