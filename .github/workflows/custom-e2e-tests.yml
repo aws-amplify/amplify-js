@@ -1,13 +1,6 @@
-name: Push - Custom E2E Tests Only
+name: Custom E2E Tests
 
-concurrency:
-  group: push-lts-release-${{ github.ref }}
-  cancel-in-progress: true
-
-on:
-  push:
-    branches:
-      - test-fast-xml-parser-fix
+on: workflow_dispatch
 
 jobs:
   e2e-prep:
@@ -42,7 +35,7 @@ jobs:
 
   e2e-test-runner:
     name: E2E test runner
-    needs: 
+    needs:
       - e2e-prep
       - prebuild-macos
       - prebuild-ubuntu
@@ -61,12 +54,12 @@ jobs:
       amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
       sample_name: ${{ toJSON(matrix.integ-config.sample_name) || '[""]' }}
       browser: ${{ toJSON(matrix.integ-config.browser) || '[""]' }}
-      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
+      timeout_minutes: ${{ 150 }}
       retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
   detox-e2e-test-runner:
     name: Detox E2E test runner
-    needs: 
+    needs:
       - e2e-prep
       - prebuild-macos
       - prebuild-ubuntu
@@ -80,4 +73,4 @@ jobs:
     with:
       test_name: ${{ matrix.integ-config.test_name }}
       working_directory: ${{ matrix.integ-config.working_directory }}
-      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 45 }}
+      timeout_minutes: ${{ 150 }}

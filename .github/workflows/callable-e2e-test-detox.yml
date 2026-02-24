@@ -78,3 +78,6 @@ jobs:
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
+      - name: Show debug logs
+        if: always()
+        run: cat /tmp/pureJs-debug.log || echo "No   debug log found at /tmp/pureJs-debug.log. "
