@@ -5,6 +5,11 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
+  "react-native": {
+    "./lib/index": "./src/index.ts",
+    "fast-xml-parser": "fast-xml-parser",
+    "buffer": "buffer"
+  },
   "browser": {
     "./lib-esm/AwsClients/S3/runtime/index.js": "./lib-esm/AwsClients/S3/runtime/index.browser.js",
     "./lib/AwsClients/S3/runtime/index.js": "./lib/AwsClients/S3/runtime/index.browser.js"
@@ -84,9 +89,6 @@
     "transformIgnorePatterns": [
       "node_modules/(?!(fast-xml-parser)/)"
     ],
-    "moduleNameMapper": {
-      "fast-xml-parser/src/xmlparser/XMLParser.js": "<rootDir>/../../__mocks__/fast-xml-parser.js"
-    },
     "moduleFileExtensions": [
       "ts",
       "tsx",
