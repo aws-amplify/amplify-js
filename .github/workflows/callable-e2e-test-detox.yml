@@ -80,4 +80,4 @@ jobs:
         shell: bash
       - name: Show debug logs
         if: always()
-        run: cat /tmp/pureJs-debug.log || echo "No   debug log found at /tmp/pureJs-debug.log. "
+        run: cat /tmp/pureJs-debug.log || echo "No debug log found at /tmp/pureJs-debug.log. "
