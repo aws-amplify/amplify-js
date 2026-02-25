@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-let XMLParser: any;
+import { XMLParser } from 'fast-xml-parser';
+
 /**
  * Pure JS XML parser that can be used in Non-browser environments, like React Native and Node.js. This is the same
  * XML parser implementation as used in AWS SDK S3 client. It depends on pure JavaScript XML parser library
@@ -9,17 +10,9 @@ let XMLParser: any;
  *
  * Ref: https://github.com/aws/aws-sdk-js-v3/blob/1e806ba3f4a83c9e3eb0b41a3a7092da93826b8f/clients/client-s3/src/protocols/Aws_restXml.ts#L12938-L12959
  */
-
-// Use require to avoid all ESM/Metro issues
-try {
-	XMLParser = require('fast-xml-parser/src/xmlparser/XMLParser.js');
-} catch (e) {
-	XMLParser = require('fast-xml-parser').XMLParser;
-}
-
 export const parser = {
 	parse: (xmlStr: string): any => {
-		const parser = new XMLParser({
+		const xmlParser = new XMLParser({
 			attributeNamePrefix: '',
 			htmlEntities: true,
 			ignoreAttributes: false,
@@ -30,9 +23,9 @@ export const parser = {
 			tagValueProcessor: (_, val) =>
 				val.trim() === '' && val.includes('\n') ? '' : undefined,
 		});
-		parser.addEntity('#xD', '\r');
-		parser.addEntity('#10', '\n');
-		const parsedObj = parser.parse(xmlStr);
+		xmlParser.addEntity('#xD', '\r');
+		xmlParser.addEntity('#10', '\n');
+		const parsedObj = xmlParser.parse(xmlStr);
 		const textNodeName = '#text';
 		const key = Object.keys(parsedObj)[0];
 		const parsedObjToReturn = parsedObj[key];
