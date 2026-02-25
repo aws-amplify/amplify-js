@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.9.17...@aws-amplify/storage@5.9.18) (2026-02-25)
+
+### Bug Fixes
+
+- **storage:** resolve XMLParser import issue with fast-xml-parser in React Native ([9b38b3f](https://github.com/aws-amplify/amplify-js/commit/9b38b3fe002841bcbc1c41636e04d472a4741456))
+- **storage:** update import to handle node and react-native. ([08d31c1](https://github.com/aws-amplify/amplify-js/commit/08d31c162092d361bfef243e3904708dccb7a7ce))
+- **storage:** use standard fast-xml-parser import in v5 ([#14731](https://github.com/aws-amplify/amplify-js/issues/14731)) ([7ce064f](https://github.com/aws-amplify/amplify-js/commit/7ce064f532daf34171bb6fd55d48477d9799dcce))
+
 ## [5.9.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.9.16...@aws-amplify/storage@5.9.17) (2026-02-17)
 
 **Note:** Version bump only for package @aws-amplify/storage
