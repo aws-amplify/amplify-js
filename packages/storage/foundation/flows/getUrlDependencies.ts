@@ -7,13 +7,13 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { GetUrlInput, GetUrlWithPathInput } from '../../src/providers/s3/types';
 import {
+	assertValidationError,
 	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../assertions';
 import { resolveS3ConfigAndInput } from '../../src/providers/s3/utils';
 import { getPresignedGetObjectUrl } from '../../src/providers/s3/utils/client/s3data';
 import { getProperties } from '../../src/providers/s3/apis/internal/getProperties';
-import { assertValidationError } from '../../src/errors/utils/assertValidationError';
 
 import {
 	GetUrlDependencies,

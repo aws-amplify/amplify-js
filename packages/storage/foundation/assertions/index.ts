@@ -7,3 +7,4 @@ export { validateBucketOwnerID } from './validateBucketOwnerID';
 export { validateRemovePath } from './validateRemovePath';
 export { validateObjectUrl } from './validateObjectUrl';
 export { validateMultipartUploadXML } from './validateMultipartUploadXML';
+export { assertValidationError } from './assertValidationError';
