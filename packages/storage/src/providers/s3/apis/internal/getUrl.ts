@@ -28,6 +28,7 @@ export const getUrl = async (
 	amplify: AmplifyClassV6,
 	input: GetUrlInput | GetUrlWithPathInputWithAdvancedOptions,
 ): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
+	console.log("🔄 Using ORIGINAL getUrl implementation");
 	const { options: getUrlOptions } = input;
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify, input);

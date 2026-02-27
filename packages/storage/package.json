@@ -37,6 +37,9 @@
 	},
 	"typesVersions": {
 		">=4.2": {
+			"client": [
+				"./dist/esm/client.d.ts"
+			],
 			"s3": [
 				"./dist/esm/providers/s3/index.d.ts"
 			],
@@ -83,6 +86,11 @@
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js"
+		},
+		"./client": {
+			"types": "./dist/esm/client.d.ts",
+			"import": "./dist/esm/client.mjs",
+			"require": "./dist/cjs/client.js"
 		},
 		"./internals": {
 			"types": "./dist/esm/internals/index.d.ts",

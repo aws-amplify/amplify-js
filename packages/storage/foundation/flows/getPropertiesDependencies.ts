@@ -5,18 +5,20 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { GetPropertiesInput } from '../../src/providers/s3/types';
-import { validateBucketOwnerID, validateStorageOperationInput } from '../assertions';
+import {
+	validateBucketOwnerID,
+	validateStorageOperationInput,
+} from '../assertions';
 import { resolveS3ConfigAndInput } from '../../src/providers/s3/utils';
 import { headObject } from '../../src/providers/s3/utils/client/s3data';
 import { getStorageUserAgentValue } from '../../src/providers/s3/utils/userAgent';
-
 import {
 	GetPropertiesDependencies,
 	IdentityProvider,
 	S3ConfigProvider,
 	S3ServiceClient,
 	ValidationProvider,
-} from './getProperties';
+} from '../types/dependencies';
 
 export const resolveGetPropertiesDependencies = async (
 	amplify: AmplifyClassV6,
@@ -48,10 +50,15 @@ export const resolveGetPropertiesDependencies = async (
 
 	const s3ServiceClient: S3ServiceClient = {
 		headObject: async (config: any, params: any) => {
-			return headObject({
-				...config,
-				userAgentValue: getStorageUserAgentValue(action ?? StorageAction.GetProperties),
-			}, params);
+			return headObject(
+				{
+					...config,
+					userAgentValue: getStorageUserAgentValue(
+						action ?? StorageAction.GetProperties,
+					),
+				},
+				params,
+			);
 		},
 	};
 

@@ -48,8 +48,8 @@ export const getUrlFlow = async (
 		{
 			Bucket: s3Config.bucket,
 			Key: finalKey,
-			ResponseContentDisposition: input.options?.responseContentDisposition,
-			ResponseContentType: input.options?.responseContentType,
+			ResponseContentDisposition: input.options?.contentDisposition,
+			ResponseContentType: input.options?.contentType,
 			ExpectedBucketOwner: input.options?.expectedBucketOwner,
 		},
 	);
@@ -59,7 +59,5 @@ export const getUrlFlow = async (
 		expiresAt: new Date(Date.now() + (input.options?.expiresIn ?? 900) * 1000),
 	};
 
-	return inputType === STORAGE_INPUT_KEY
-		? { key: objectKey, ...result }
-		: { path: objectKey, ...result };
+	return result as any;
 };

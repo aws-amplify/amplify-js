@@ -16,7 +16,10 @@ export interface IdentityProvider {
 }
 
 export interface ValidationProvider {
-	validateStorageInput(inputData: any, userIdentityId?: string): { inputType: string; objectKey: string };
+	validateStorageInput(
+		inputData: any,
+		userIdentityId?: string,
+	): { inputType: string; objectKey: string };
 	validateBucketOwner(bucketOwner?: string): void;
 	assertValidation?(condition: boolean, errorCode: string): void;
 }
@@ -27,6 +30,13 @@ export interface S3ServiceClient {
 }
 
 export interface GetUrlDependencies {
+	s3Config: S3ConfigProvider;
+	identity: IdentityProvider;
+	validator: ValidationProvider;
+	s3Client: S3ServiceClient;
+}
+
+export interface GetPropertiesDependencies {
 	s3Config: S3ConfigProvider;
 	identity: IdentityProvider;
 	validator: ValidationProvider;

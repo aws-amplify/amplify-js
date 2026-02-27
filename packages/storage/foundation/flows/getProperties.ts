@@ -9,19 +9,7 @@ import {
 	GetPropertiesWithPathOutput,
 } from '../../src/providers/s3/types';
 import { STORAGE_INPUT_KEY } from '../../src/providers/s3/utils/constants';
-import {
-	IdentityProvider,
-	S3ConfigProvider,
-	S3ServiceClient,
-	ValidationProvider,
-} from '../types/dependencies';
-
-export interface GetPropertiesDependencies {
-	s3Config: S3ConfigProvider;
-	identity: IdentityProvider;
-	validator: ValidationProvider;
-	s3Client: S3ServiceClient;
-}
+import { GetPropertiesDependencies } from '../types/dependencies';
 
 /**
  * Pure business logic for getting object properties
