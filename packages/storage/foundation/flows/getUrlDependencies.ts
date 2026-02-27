@@ -1,7 +1,4 @@
-/* eslint-disable @stylistic/padding-line-between-statements */
 /* eslint-disable @typescript-eslint/no-confusing-void-expression */
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable import/no-relative-packages */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,33 +7,32 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { GetUrlInput, GetUrlWithPathInput } from '../../src/providers/s3/types';
 import {
-	GetUrlDependencies,
-	IdentityProvider,
-	S3ConfigProvider,
-	S3ServiceClient,
-	ValidationProvider,
-} from '../../foundation/flows/getUrl';
-import {
 	validateBucketOwnerID,
 	validateStorageOperationInput,
-} from '../../foundation';
+} from '../assertions';
 import { resolveS3ConfigAndInput } from '../../src/providers/s3/utils';
 import { getPresignedGetObjectUrl } from '../../src/providers/s3/utils/client/s3data';
 import { getProperties } from '../../src/providers/s3/apis/internal/getProperties';
 import { assertValidationError } from '../../src/errors/utils/assertValidationError';
 
+import {
+	GetUrlDependencies,
+	IdentityProvider,
+	S3ConfigProvider,
+	S3ServiceClient,
+	ValidationProvider,
+} from './getUrl';
+
 /**
- * Resolve all dependencies needed by the foundation layer from isolated server context
+ * Resolve all dependencies needed by the foundation layer from Amplify instance
  */
 export const resolveGetUrlDependencies = async (
 	amplify: AmplifyClassV6,
 	input: GetUrlInput | GetUrlWithPathInput,
 ): Promise<GetUrlDependencies> => {
-	// Resolve S3 config and input from isolated Amplify context
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify, input);
 
-	// Create S3 config provider
 	const s3ConfigProvider: S3ConfigProvider = {
 		bucket,
 		region: s3Config.region,
@@ -45,13 +41,11 @@ export const resolveGetUrlDependencies = async (
 		forcePathStyle: s3Config.forcePathStyle,
 	};
 
-	// Create identity provider
 	const identityProvider: IdentityProvider = {
 		identityId,
 		keyPrefix,
 	};
 
-	// Create validation provider
 	const validationProvider: ValidationProvider = {
 		validateStorageInput: (inputData: any, userIdentityId?: string) =>
 			validateStorageOperationInput(inputData, userIdentityId),
@@ -62,14 +56,13 @@ export const resolveGetUrlDependencies = async (
 		},
 	};
 
-	// Create S3 service client
 	const s3ServiceClient: S3ServiceClient = {
-		getPresignedGetObjectUrl: async (_config: any, _params: any) => {
-			const url = await getPresignedGetObjectUrl(_config, _params);
+		getPresignedGetObjectUrl: async (config: any, params: any) => {
+			const url = await getPresignedGetObjectUrl(config, params);
+
 			return url.toString();
 		},
-		headObject: async (_config: any, _params: any) => {
-			// Use existing getProperties for object existence validation
+		headObject: async () => {
 			await getProperties(amplify, input, StorageAction.GetUrl);
 		},
 	};

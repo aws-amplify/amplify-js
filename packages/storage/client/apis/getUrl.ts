@@ -9,8 +9,7 @@ import {
 	GetUrlWithPathInput,
 	GetUrlWithPathOutput,
 } from '../../src';
-import { resolveGetUrlDependencies } from '../flows/getUrlDependencies';
-import { getUrlFlow } from '../../foundation';
+import { getUrlFlow, resolveGetUrlDependencies } from '../../foundation';
 
 /**
  * Get a temporary presigned URL to download the specified S3 object.

@@ -4,3 +4,4 @@
 export * from './assertions';
 export * from './utils';
 export * from './flows/getUrl';
+export * from './flows/getUrlDependencies';
