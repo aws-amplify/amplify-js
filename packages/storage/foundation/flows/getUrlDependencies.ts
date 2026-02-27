@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-confusing-void-expression */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
@@ -29,8 +30,16 @@ export const resolveGetUrlDependencies = async (
 	amplify: AmplifyClassV6,
 	input: GetUrlInput | GetUrlWithPathInput,
 ): Promise<GetUrlDependencies> => {
+	console.log('🔍 resolveGetUrlDependencies - Starting resolution');
+
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify, input);
+
+	console.log('🔍 resolveGetUrlDependencies - S3 Config:', {
+		bucket,
+		keyPrefix,
+		identityId,
+	});
 
 	const s3ConfigProvider: S3ConfigProvider = {
 		bucket,
@@ -65,6 +74,10 @@ export const resolveGetUrlDependencies = async (
 			await getProperties(amplify, input, StorageAction.GetUrl);
 		},
 	};
+
+	console.log(
+		'🔍 resolveGetUrlDependencies - Dependencies created successfully',
+	);
 
 	return {
 		s3Config: s3ConfigProvider,

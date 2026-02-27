@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -19,6 +20,9 @@ export const getUrlFlow = async (
 	input: GetUrlInput | GetUrlWithPathInput,
 	dependencies: GetUrlDependencies,
 ): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
+	console.log('🔍 Foundation getUrlFlow - Input:', input);
+	console.log('🔍 Foundation getUrlFlow - Dependencies:', dependencies);
+
 	const { s3Config, identity, validator, s3Client } = dependencies;
 
 	const { inputType, objectKey } = validator.validateStorageInput(

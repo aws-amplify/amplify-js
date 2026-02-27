@@ -7,7 +7,10 @@ import { GetUrlInput, GetUrlWithPathInput } from '../../src/providers/s3/types';
 import { getUrlFlow, resolveGetUrlDependencies } from '../../foundation';
 
 export const getUrl = async (input: GetUrlInput | GetUrlWithPathInput) => {
+	console.log('🔍 Client getUrl - Input:', input);
+	
 	const dependencies = await resolveGetUrlDependencies(Amplify, input);
+	console.log('🔍 Client getUrl - Dependencies resolved');
 
 	return getUrlFlow(input, dependencies);
 };
