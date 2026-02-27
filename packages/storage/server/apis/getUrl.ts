@@ -1,22 +1,17 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 /* eslint-disable import/no-relative-packages */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/order */
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
-
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import {
 	GetUrlInput,
 	GetUrlOutput,
 	GetUrlWithPathInput,
 	GetUrlWithPathOutput,
 } from '../../src';
-
-import { getUrlFlow, resolveGetUrlDependencies } from '../../foundation';
+import { getUrl as getUrlFlow } from '../flows/getUrl';
 
 /**
  * Get a temporary presigned URL to download the specified S3 object.
@@ -68,11 +63,5 @@ export async function getUrl(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: GetUrlInput | GetUrlWithPathInput,
 ) {
-	const amplifyServerContext = getAmplifyServerContext(contextSpec);
-	const dependencies = await resolveGetUrlDependencies(
-		amplifyServerContext.amplify,
-		input,
-	);
-
-	return getUrlFlow(input, dependencies);
+	return getUrlFlow(contextSpec, input);
 }

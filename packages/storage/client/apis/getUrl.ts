@@ -1,15 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import {
 	GetUrlInput,
 	GetUrlOutput,
 	GetUrlWithPathInput,
 	GetUrlWithPathOutput,
 } from '../../src';
-import { getUrlFlow, resolveGetUrlDependencies } from '../../foundation';
+import { getUrl as getUrlFlow } from '../flows/getUrl';
 
 /**
  * Get a temporary presigned URL to download the specified S3 object.
@@ -52,7 +50,5 @@ export function getUrl(
 export function getUrl(input: GetUrlInput): Promise<GetUrlOutput>;
 
 export async function getUrl(input: GetUrlInput | GetUrlWithPathInput) {
-	const dependencies = await resolveGetUrlDependencies(Amplify, input);
-
-	return getUrlFlow(input, dependencies);
+	return getUrlFlow(input);
 }
