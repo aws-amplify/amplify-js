@@ -14,14 +14,13 @@ import {
 import { resolveS3ConfigAndInput } from '../../src/providers/s3/utils';
 import { getPresignedGetObjectUrl } from '../../src/providers/s3/utils/client/s3data';
 import { getProperties } from '../../src/providers/s3/apis/internal/getProperties';
-
 import {
 	GetUrlDependencies,
 	IdentityProvider,
 	S3ConfigProvider,
 	S3ServiceClient,
 	ValidationProvider,
-} from './getUrl';
+} from '../types/dependencies';
 
 /**
  * Resolve all dependencies needed by the foundation layer from Amplify instance
@@ -62,7 +61,7 @@ export const resolveGetUrlDependencies = async (
 
 			return url.toString();
 		},
-		headObject: async () => {
+		headObject: async (config: any, params: any) => {
 			await getProperties(amplify, input, StorageAction.GetUrl);
 		},
 	};

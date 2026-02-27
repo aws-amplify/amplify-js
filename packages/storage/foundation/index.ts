@@ -3,6 +3,7 @@
 
 export * from './assertions';
 export * from './utils';
+export * from './types/dependencies';
 export * from './flows/getUrl';
 export * from './flows/getUrlDependencies';
 export * from './flows/getProperties';

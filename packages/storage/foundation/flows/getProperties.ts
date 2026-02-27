@@ -9,32 +9,12 @@ import {
 	GetPropertiesWithPathOutput,
 } from '../../src/providers/s3/types';
 import { STORAGE_INPUT_KEY } from '../../src/providers/s3/utils/constants';
-
-// Dependency injection interfaces
-export interface S3ConfigProvider {
-	bucket: string;
-	region: string;
-	credentials: any;
-	customEndpoint?: string;
-	forcePathStyle?: boolean;
-}
-
-export interface IdentityProvider {
-	identityId?: string;
-	keyPrefix: string;
-}
-
-export interface ValidationProvider {
-	validateStorageInput(
-		inputData: any,
-		userIdentityId?: string,
-	): { inputType: string; objectKey: string };
-	validateBucketOwner(bucketOwner?: string): void;
-}
-
-export interface S3ServiceClient {
-	headObject(config: any, params: any): Promise<any>;
-}
+import {
+	IdentityProvider,
+	S3ConfigProvider,
+	S3ServiceClient,
+	ValidationProvider,
+} from '../types/dependencies';
 
 export interface GetPropertiesDependencies {
 	s3Config: S3ConfigProvider;
@@ -57,14 +37,14 @@ export const getPropertiesFlow = async (
 		input,
 		identity.identityId,
 	);
-	validator.validateBucketOwner(input.options?.expectedBucketOwner);
+	validator.validateBucketOwner?.(input.options?.expectedBucketOwner);
 
 	const finalKey =
 		inputType === STORAGE_INPUT_KEY
 			? identity.keyPrefix + objectKey
 			: objectKey;
 
-	const response = await s3Client.headObject(
+	const response = await s3Client.headObject?.(
 		{
 			...s3Config,
 			userAgentValue: `aws-amplify/storage/${action ?? StorageAction.GetProperties}`,
@@ -77,12 +57,12 @@ export const getPropertiesFlow = async (
 	);
 
 	const result = {
-		contentType: response.ContentType,
-		size: response.ContentLength,
-		eTag: response.ETag,
-		lastModified: response.LastModified,
-		metadata: response.Metadata,
-		versionId: response.VersionId,
+		contentType: response?.ContentType,
+		size: response?.ContentLength,
+		eTag: response?.ETag,
+		lastModified: response?.LastModified,
+		metadata: response?.Metadata,
+		versionId: response?.VersionId,
 	};
 
 	return inputType === STORAGE_INPUT_KEY
