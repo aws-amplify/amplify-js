@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -20,15 +21,15 @@ import {
 	deserializeNumber,
 	deserializeTimestamp,
 	map,
-	s3TransferHandler,
+} from '../utils/deserializeHelpers';
+import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from '../../src/providers/s3/utils/client/utils';
-import { validateObjectUrl } from '../../src/providers/s3/utils/validateObjectUrl';
-import {
-	defaultConfig,
-	parseXmlError,
-} from '../../src/providers/s3/utils/client/s3data/base';
+} from '../utils/serializeHelpers';
+import { s3TransferHandler } from '../utils/s3TransferHandler';
+import { validateObjectUrl } from '../assertions/validateObjectUrl';
+
+import { defaultConfig, parseXmlError } from '../utils/base';
 import type {
 	HeadObjectCommandInput,
 	HeadObjectCommandOutput,

@@ -9,9 +9,8 @@ import {
 	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../assertions';
-import { resolveS3ConfigAndInput } from '../../src/providers/s3/utils';
-import { headObject } from '../../src/providers/s3/utils/client/s3data';
-import { getStorageUserAgentValue } from '../../src/providers/s3/utils/userAgent';
+import { headObject } from '../serviceClients/headObject';
+import { getStorageUserAgentValue } from '../utils/userAgent';
 import {
 	GetPropertiesDependencies,
 	IdentityProvider,
@@ -19,6 +18,7 @@ import {
 	S3ServiceClient,
 	ValidationProvider,
 } from '../types/dependencies';
+import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 
 export const resolveGetPropertiesDependencies = async (
 	amplify: AmplifyClassV6,
@@ -44,8 +44,9 @@ export const resolveGetPropertiesDependencies = async (
 	const validationProvider: ValidationProvider = {
 		validateStorageInput: (inputData: any, userIdentityId?: string) =>
 			validateStorageOperationInput(inputData, userIdentityId),
-		validateBucketOwner: (bucketOwner?: string) =>
-			validateBucketOwnerID(bucketOwner),
+		validateBucketOwner: (bucketOwner?: string) => {
+			validateBucketOwnerID(bucketOwner);
+		},
 	};
 
 	const s3ServiceClient: S3ServiceClient = {
