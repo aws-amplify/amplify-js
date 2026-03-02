@@ -8,8 +8,8 @@ import {
 	GetPropertiesOutput,
 	GetPropertiesWithPathOutput,
 } from '../../src/providers/s3/types';
-import { STORAGE_INPUT_KEY } from '../../src/providers/s3/utils/constants';
 import { GetPropertiesDependencies } from '../types/dependencies';
+import { STORAGE_INPUT_KEY } from '../utils';
 
 /**
  * Pure business logic for getting object properties
