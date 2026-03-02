@@ -210,8 +210,8 @@ const isInputWithCopySourceOrDestination = (
 	input?: StorageInput,
 ): input is CopyInput => {
 	return !!(
-		typeof (input as CopyInput).source?.key === 'string' ||
-		typeof (input as CopyInput).destination?.key === 'string'
+		typeof (input as any)?.source?.key === 'string' ||
+		typeof (input as any)?.destination?.key === 'string'
 	);
 };
 const resolveBucketConfig = (

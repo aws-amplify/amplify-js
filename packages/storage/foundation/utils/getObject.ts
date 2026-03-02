@@ -146,7 +146,7 @@ const getObjectDeserializer = async (
 			// @ts-expect-error The body is a CompatibleHttpResponse type because the lower-level handler is XHR instead of
 			// fetch, which represents payload in Blob instread of ReadableStream.
 			Body: response.body as CompatibleHttpResponse,
-		};
+		} as GetObjectOutput;
 	}
 };
 
