@@ -3,7 +3,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { GetUrlInput, GetUrlWithPathInput } from '../../src/providers/s3/types';
 import {
@@ -71,7 +71,7 @@ export const resolveGetUrlDependencies = async (
 		},
 		headObject: async () => {
 			const dependencies = await resolveGetPropertiesDependencies(
-				Amplify,
+				amplify,
 				input,
 			);
 			console.log(
