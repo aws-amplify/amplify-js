@@ -1,12 +1,13 @@
+/* eslint-disable import/order */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageOperationInput as Input } from '../../src/types/inputs';
-import { assertValidationError } from '../../src/errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../src/errors/types/validation';
 import { isInputWithPath } from '../utils/isInputWithPath';
 import { STORAGE_INPUT_KEY, STORAGE_INPUT_PATH } from '../utils/constants';
 import { resolveIdentityId } from '../utils/resolveIdentityId';
+import { assertValidationError } from './assertValidationError';
 
 export const validateStorageOperationInput = (
 	input: Input,

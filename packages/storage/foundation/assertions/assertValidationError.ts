@@ -5,7 +5,7 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../src/errors/types/validation';
-import { StorageError } from '../../src/errors/StorageError';
+import { StorageError } from '../factories/StorageError';
 
 export function assertValidationError(
 	assertion: boolean,

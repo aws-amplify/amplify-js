@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageValidationErrorCode } from '../../src/errors/types/validation';
-import { assertValidationError } from '../../src/errors/utils/assertValidationError';
+
+import { assertValidationError } from './assertValidationError';
 
 const VALID_AWS_ACCOUNT_ID_PATTERN = /^\d{12}/;
 

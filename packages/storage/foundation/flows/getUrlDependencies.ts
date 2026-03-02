@@ -3,8 +3,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
-import { StorageAction } from '@aws-amplify/core/internals/utils';
+import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 
 import { GetUrlInput, GetUrlWithPathInput } from '../../src/providers/s3/types';
 import {
@@ -12,9 +11,8 @@ import {
 	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../assertions';
-import { resolveS3ConfigAndInput } from '../../src/providers/s3/utils';
-import { getPresignedGetObjectUrl } from '../../src/providers/s3/utils/client/s3data';
-import { getProperties } from '../../src/providers/s3/apis/internal/getProperties';
+import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
+import { getPresignedGetObjectUrl } from '../utils/getObject';
 import {
 	GetUrlDependencies,
 	IdentityProvider,
@@ -22,6 +20,7 @@ import {
 	S3ServiceClient,
 	ValidationProvider,
 } from '../types/dependencies';
+import { getPropertiesFlow, resolveGetPropertiesDependencies } from '..';
 
 /**
  * Resolve all dependencies needed by the foundation layer from Amplify instance
@@ -70,8 +69,16 @@ export const resolveGetUrlDependencies = async (
 
 			return url.toString();
 		},
-		headObject: async (config: any, params: any) => {
-			await getProperties(amplify, input, StorageAction.GetUrl);
+		headObject: async () => {
+			const dependencies = await resolveGetPropertiesDependencies(
+				Amplify,
+				input,
+			);
+			console.log(
+				'🔍 Client getProperties - Dependencies resolved inside getURL ',
+			);
+
+			return getPropertiesFlow(input, dependencies);
 		},
 	};
 
