@@ -10,8 +10,8 @@ import {
 	GetUrlWithPathInput,
 	GetUrlWithPathOutput,
 } from '../../src/providers/s3/types';
-import { STORAGE_INPUT_KEY } from '../../src/providers/s3/utils/constants';
 import { GetUrlDependencies } from '../types/dependencies';
+import { STORAGE_INPUT_KEY } from '../utils';
 
 /**
  * Pure business logic for getting presigned URL
