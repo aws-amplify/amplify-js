@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable import/order */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
@@ -105,15 +106,29 @@ export const resolveS3ConfigAndInput = async (
 		return credentials;
 	};
 
+	const amplifyConfig = amplify.getConfig();
+	console.log('🔍 resolveS3ConfigAndInput - Amplify config:', amplifyConfig);
+
 	const {
 		bucket: defaultBucket,
 		region: defaultRegion,
 		dangerouslyConnectToHttpEndpointForTesting,
 		buckets,
-	} = amplify.getConfig()?.Storage?.S3 ?? {};
+	} = amplifyConfig?.Storage?.S3 ?? {};
+
+	console.log('🔍 resolveS3ConfigAndInput - S3 config from Amplify:', {
+		defaultBucket,
+		defaultRegion,
+		buckets,
+	});
 
 	const { bucket = defaultBucket, region = defaultRegion } =
 		(apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets)) || {};
+
+	console.log('🔍 resolveS3ConfigAndInput - Final bucket/region:', {
+		bucket,
+		region,
+	});
 
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);

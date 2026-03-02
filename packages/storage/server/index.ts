@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export * from './apis/getUrl';
-export * from './flows/getUrlDependencies';
+export * from './apis/getProperties';

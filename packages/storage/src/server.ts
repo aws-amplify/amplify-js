@@ -2,3 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export * from './providers/s3/apis/server';
+export { getUrl, getProperties } from '../server';

@@ -11,7 +11,7 @@ export const getUrl = async (input: GetUrlInput | GetUrlWithPathInput) => {
 	console.log('🔍 Client getUrl - Input:', input);
 
 	const dependencies = await resolveGetUrlDependencies(Amplify, input);
-	console.log('🔍 Client getUrl - Dependencies resolved');
+	console.log('🔍 Client getUrl - Dependencies resolved', dependencies);
 
 	return getUrlFlow(input, dependencies);
 };
