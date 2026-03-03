@@ -13,7 +13,7 @@ import {
 import { getUrl as getUrlInternal } from './internal/getUrl';
 
 /**
- * Get a temporary presigned URL to download the specified S3 object.
+ * Get a temporary presigned URL to download or upload the specified S3 object.
  * The presigned URL expires when the associated role used to sign the request expires or
  * the option  `expiresIn` is reached. The `expiresAt` property in the output object indicates when the URL MAY expire.
  *
