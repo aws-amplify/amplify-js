@@ -136,7 +136,7 @@
 	},
 	"resolutions": {
 		"@react-native-community/cli": "^18.0.1",
-		"fast-xml-parser": "^5.3.4",
+		"fast-xml-parser": "^5.3.6",
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
@@ -149,7 +149,8 @@
 		"**/form-data": "4.0.4",
 		"tmp": "^0.2.4",
 		"qs": "^6.14.1",
-		"js-yaml": "4.1.1"
+		"js-yaml": "4.1.1",
+		"serialize-javascript": "^7.0.3"
 	},
 	"overrides": {
 		"js-yaml": "4.1.1",
