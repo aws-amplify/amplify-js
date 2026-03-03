@@ -31,6 +31,9 @@
 	},
 	"typesVersions": {
 		">=4.2": {
+			"client": [
+				"./dist/esm/client.d.ts"
+			],
 			"cognito": [
 				"./dist/esm/providers/cognito/index.d.ts"
 			],
@@ -48,6 +51,11 @@
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js"
+		},
+		"./client": {
+			"types": "./dist/esm/client.d.ts",
+			"import": "./dist/esm/client.mjs",
+			"require": "./dist/cjs/client.js"
 		},
 		"./cognito": {
 			"react-native": "./dist/cjs/providers/cognito/index.js",
