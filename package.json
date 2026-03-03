@@ -140,6 +140,7 @@
 		"**/glob/minipass": "6.0.2",
 		"**/glob/minimatch": "10.2.4",
 		"@nx/devkit/**/minimatch": "9.0.7",
+		"nx/minimatch": "3.1.5",
 		"nx": "16.7.0",
 		"xml2js": "0.5.0",
 		"tar": "6.2.1",
