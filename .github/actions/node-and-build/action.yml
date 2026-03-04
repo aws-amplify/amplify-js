@@ -30,7 +30,7 @@ runs:
           ${{ runner.os }}-build-artifacts-
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
-    # TODO We should be able to skip yarn / bootstrap if we cache enough things. Leaving because skipping causes issues.
+    # TODO We should be able to skip yarn install if we cache enough things. Leaving because skipping causes issues.
     - name: Install
       if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
       shell: bash
@@ -42,11 +42,6 @@ runs:
           echo "Attempt $i failed."
           sleep 5
         done
-    - name: Bootstrap
-      if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
-      run: yarn bootstrap
-      shell: bash
-      working-directory: ./amplify-js
     - name: Build packages
       if: steps.cache-build-artifacts.outputs.cache-hit != 'true'
       run: yarn build

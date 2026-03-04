@@ -34,7 +34,13 @@ jobs:
       - name: Dump Package List
         if: steps.cache-package-list.outputs.cache-hit != 'true'
         run: |
-          yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({name: split(" ")[0], path: split(" ")[-1]})' > package-list.json
+          # Get all workspaces and filter out private packages (examples and scripts)
+          # This matches Lerna's behavior with "command.run.private: false"
+          yarn workspaces info --json 2>&1 | sed -n '/^{/,/^}/p' | jq -c '
+            to_entries | 
+            map({name: .key, path: .value.location}) | 
+            map(select(.path | (contains("/example") or startswith("scripts/")) | not))
+          ' > package-list.json
       - name: Get Package List
         id: get_package_list
         run: |
