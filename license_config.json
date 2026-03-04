@@ -40,8 +40,10 @@
 		"**/rollup.config.mjs",
 		"rollup",
 		".husky",
+		".turbo",
 		"eslint.config.mjs",
-		"packages/core/metadata"
+		"packages/core/metadata",
+		"packages/react-native/example/.bundle/config"
 	],
 	"ignoreFile": ".gitignore",
 	"license": "license_header.txt",
