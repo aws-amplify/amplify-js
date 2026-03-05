@@ -139,7 +139,6 @@
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
 		"xml2js": "0.5.0",
-		"tar": "6.2.1",
 		"**/cross-spawn": "7.0.5",
 		"**/on-headers": "1.1.0",
 		"**/form-data": "4.0.4",
