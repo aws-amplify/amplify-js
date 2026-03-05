@@ -5029,7 +5029,7 @@
   dependencies:
     tslib "^2.8.0"
 
-"@tootallnate/once@1", "@tootallnate/once@2", "@tootallnate/once@>=3.0.1":
+"@tootallnate/once@1", "@tootallnate/once@2", "@tootallnate/once@3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-3.0.1.tgz#d580decb59cb41a15856387a86800838102daf44"
   integrity sha512-VyMVKRrpHTT8PnotUeV8L/mDaMwD5DaAKCFLP73zAqAtvF0FCqky+Ki7BYbFCYQmqFyTe9316Ed5zS70QUR9eg==
