@@ -18,6 +18,7 @@ import {
 	ConnectionState,
 	PubSubContentObserver,
 } from '../../types/PubSub';
+import type { WebSocketHealthState } from '../../types';
 import {
 	AMPLIFY_SYMBOL,
 	CONNECTION_INIT_TIMEOUT,
@@ -1025,4 +1026,28 @@ export abstract class AWSWebSocketProvider {
 			}
 		}
 	};
+
+	/**
+	 * Get current WebSocket health state
+	 */
+	getConnectionHealth(): WebSocketHealthState {
+		const timeSinceLastKeepAlive = Date.now() - this.keepAliveTimestamp;
+		const isHealthy =
+			this.connectionState === ConnectionState.Connected &&
+			timeSinceLastKeepAlive < DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT;
+
+		return {
+			isHealthy,
+			connectionState: this.connectionState || ConnectionState.Disconnected,
+			lastKeepAliveTime: this.keepAliveTimestamp,
+			timeSinceLastKeepAlive,
+		};
+	}
+
+	/**
+	 * Check if WebSocket is currently connected
+	 */
+	isConnected(): boolean {
+		return this.awsRealTimeSocket?.readyState === WebSocket.OPEN;
+	}
 }
