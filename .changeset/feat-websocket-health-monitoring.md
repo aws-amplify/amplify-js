@@ -1,5 +1,5 @@
 ---
-'@aws-amplify/api-graphql': minor
+'@aws-amplify/api-graphql': patch
 ---
 
 feat(api-graphql): add WebSocket connection health monitoring
