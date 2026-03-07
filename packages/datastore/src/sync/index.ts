@@ -154,6 +154,7 @@ export class SyncEngine {
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly amplifyContext: AmplifyContext,
 		private readonly connectivityMonitor?: DataStoreConnectivity,
+		private readonly datastoreConfig?: Record<string, any>,
 	) {
 		this.runningProcesses = new BackgroundProcessManager();
 		this.waitForSleepState = new Promise(resolve => {
@@ -188,6 +189,7 @@ export class SyncEngine {
 			this.authModeStrategy,
 			errorHandler,
 			this.amplifyContext,
+			this.datastoreConfig,
 		);
 
 		this.mutationsProcessor = new MutationProcessor(
