@@ -46,6 +46,7 @@ class MutationEventOutbox {
 				mutationEventModelDefinition,
 				{
 					and: [
+						{ model: { eq: mutationEvent.model } },
 						{ modelId: { eq: mutationEvent.modelId } },
 						{ id: { ne: this.inProgressMutationEventId } },
 					],
@@ -148,7 +149,10 @@ class MutationEventOutbox {
 		const mutationEvents = await storage.query(
 			this._MutationEvent,
 			ModelPredicateCreator.createFromAST(mutationEventModelDefinition, {
-				and: { modelId: { eq: modelId } },
+				and: [
+					{ model: { eq: userModelDefinition.name } },
+					{ modelId: { eq: modelId } },
+				],
 			}),
 		);
 
@@ -218,6 +222,7 @@ class MutationEventOutbox {
 			mutationEventModelDefinition,
 			{
 				and: [
+					{ model: { eq: head.model } },
 					{ modelId: { eq: recordId } },
 					{ id: { ne: this.inProgressMutationEventId } },
 				],
