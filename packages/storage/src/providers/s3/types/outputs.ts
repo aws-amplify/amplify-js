@@ -80,6 +80,15 @@ export type UploadDataOutput = UploadTask<ItemWithKey>;
  * */
 export type UploadDataWithPathOutput = UploadTask<ItemWithPath>;
 
+// Server Upload Output Types
+export interface ServerUploadDataOutput {
+	path: string;
+	eTag?: string;
+	contentType?: string;
+	metadata?: Record<string, string>;
+	size?: number;
+}
+
 /**
  * Output type for S3 getProperties API.
  * @deprecated Use {@link GetPropertiesWithPathOutput} instead.

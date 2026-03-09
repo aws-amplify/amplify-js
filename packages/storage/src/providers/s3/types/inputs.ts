@@ -158,3 +158,10 @@ export type UploadDataInput =
  */
 export type UploadDataWithPathInput =
 	StorageUploadDataInputWithPath<UploadDataWithPathOptions>;
+
+// Server Upload Input Types
+export interface ServerUploadDataWithPathInput {
+	path: string;
+	data: BodyInit;
+	options?: UploadDataWithPathOptions;
+}
