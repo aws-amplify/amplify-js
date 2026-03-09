@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "4.7.20",
+	"version": "4.7.21",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -55,7 +55,7 @@
 		"ssr"
 	],
 	"dependencies": {
-		"@aws-amplify/api": "5.4.19",
+		"@aws-amplify/api": "5.4.20",
 		"@aws-amplify/auth": "5.6.18",
 		"@aws-amplify/core": "5.8.15",
 		"@aws-amplify/pubsub": "5.6.5",
