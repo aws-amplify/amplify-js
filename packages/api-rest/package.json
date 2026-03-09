@@ -47,7 +47,7 @@
   ],
   "dependencies": {
     "@aws-amplify/core": "5.8.15",
-    "axios": "1.13.2",
+    "axios": "1.13.6",
     "tslib": "^1.8.0",
     "url": "0.11.0"
   },

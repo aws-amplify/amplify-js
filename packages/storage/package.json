@@ -57,7 +57,7 @@
     "@aws-sdk/types": "3.6.1",
     "buffer": "4.9.2",
     "events": "^3.1.0",
-    "fast-xml-parser": "^5.3.6",
+    "fast-xml-parser": "^5.3.8",
     "tslib": "^1.8.0"
   },
   "size-limit": [
