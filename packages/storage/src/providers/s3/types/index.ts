@@ -37,6 +37,7 @@ export {
 	GetUrlWithPathOutput,
 	ListOutputItem,
 	ListOutputItemWithPath,
+	ServerUploadDataOutput,
 } from './outputs';
 export {
 	CopyInput,
@@ -57,4 +58,5 @@ export {
 	ListPaginateInput,
 	ListAllWithPathInput,
 	ListPaginateWithPathInput,
+	ServerUploadDataWithPathInput,
 } from './inputs';
