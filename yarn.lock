@@ -7858,9 +7858,6 @@ __metadata:
     webpack: "npm:^5.75.0"
     webpack-bundle-analyzer: "npm:^4.7.0"
     webpack-cli: "npm:^5.0.0"
-  dependenciesMeta:
-    better-sqlite3:
-      built: false
   languageName: unknown
   linkType: soft
 
