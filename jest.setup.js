@@ -19,6 +19,7 @@ global['__DEV__'] = true;
 	import { loadUrlPolyfill } from '@aws-amplify/react-native';
  */
 Object.defineProperty(URL, 'parse', {
+	configurable: true,
 	value: (path, origin) => {
 		try {
 			return new URL(path, origin);
@@ -29,6 +30,7 @@ Object.defineProperty(URL, 'parse', {
 });
 
 Object.defineProperty(URL, 'canParse', {
+	configurable: true,
 	value: (path, origin) => {
 		const out = URL.parse(path, origin);
 		return null !== out;

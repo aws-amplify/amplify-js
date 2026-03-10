@@ -41,6 +41,7 @@
 		"rollup",
 		".husky",
 		".turbo",
+		".yarn",
 		"eslint.config.mjs",
 		"packages/core/metadata",
 		"packages/react-native/example/.bundle/config"

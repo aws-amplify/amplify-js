@@ -2,10 +2,10 @@
 
 # This script detects duplicated Amplify dependencies in the dependency graph (with Yarn)
 duplicatedDependencies=$(
-	yarn list --pattern amplify | 
-	grep -o -e '@\?aws-amplify[^ ]*' | 
-	sort | uniq | 
-	sed -E 's/^(@?[^@]+).*$/\1/g' | 
+	yarn info -AR --name-only 2>/dev/null |
+	grep -o -e '@\?aws-amplify[^ ]*' |
+	sort | uniq |
+	sed -E 's/^(@?[^@]+).*$/\1/g' |
 	uniq -d
 )
 

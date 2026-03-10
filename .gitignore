@@ -77,6 +77,14 @@ coverage-ts/
 # Turborepo
 .turbo
 
+# Yarn v4 (Berry)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # ruby
 vendor/
 Gemfile.lock

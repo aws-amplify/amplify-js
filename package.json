@@ -24,8 +24,8 @@
 		"lint": "turbo run lint",
 		"lint:fix": "turbo run lint:fix",
 		"lint:license": "license-check-and-add add -f license_config.json",
-		"link-all": "yarn unlink-all && yarn workspaces foreach --parallel --no-private run link",
-		"unlink-all": "yarn workspaces foreach --parallel --no-private run unlink || true",
+		"link-all": "yarn unlink-all && yarn workspaces foreach --all --parallel --no-private run link",
+		"unlink-all": "yarn workspaces foreach --all --parallel --no-private run unlink || true",
 		"publish:latest": "changeset publish",
 		"publish:unstable": "cp .github/changeset-presets/bump-all-packages.md .changeset/ && changeset version --snapshot unstable-$(git rev-parse --short=7 HEAD) && changeset publish --tag unstable --no-git-tag",
 		"publish:preid": "./scripts/preid-env-vars-exist.sh && cp .github/changeset-presets/bump-all-packages.md .changeset/ && changeset version --snapshot \"${PREID}\"-$(git rev-parse --short=7 HEAD) && changeset publish --tag \"${PREID}\" --no-git-tag",
@@ -34,37 +34,31 @@
 		"ts-coverage": "turbo run ts-coverage",
 		"prepare": "husky && ./scripts/setup-git-secrets.sh && ./scripts/set-preid-versions.sh"
 	},
-	"workspaces": {
-		"packages": [
-			"packages/core",
-			"packages/auth",
-			"packages/analytics",
-			"packages/predictions",
-			"packages/storage",
-			"packages/adapter-nextjs",
-			"packages/geo",
-			"packages/api-rest",
-			"packages/api-graphql",
-			"packages/api",
-			"packages/datastore",
-			"packages/datastore-storage-adapter",
-			"packages/interactions",
-			"packages/pubsub",
-			"packages/notifications",
-			"packages/rtn-push-notification",
-			"packages/aws-amplify",
-			"packages/rtn-web-browser",
-			"packages/react-native",
-			"packages/react-native/example",
-			"packages/rtn-passkeys",
-			"packages/rtn-passkeys/example",
-			"scripts/tsc-compliance-test"
-		],
-		"nohoist": [
-			"**/@types/react-native",
-			"**/@types/react-native/**"
-		]
-	},
+	"workspaces": [
+		"packages/core",
+		"packages/auth",
+		"packages/analytics",
+		"packages/predictions",
+		"packages/storage",
+		"packages/adapter-nextjs",
+		"packages/geo",
+		"packages/api-rest",
+		"packages/api-graphql",
+		"packages/api",
+		"packages/datastore",
+		"packages/datastore-storage-adapter",
+		"packages/interactions",
+		"packages/pubsub",
+		"packages/notifications",
+		"packages/rtn-push-notification",
+		"packages/aws-amplify",
+		"packages/rtn-web-browser",
+		"packages/react-native",
+		"packages/react-native/example",
+		"packages/rtn-passkeys",
+		"packages/rtn-passkeys/example",
+		"scripts/tsc-compliance-test"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"
@@ -114,7 +108,7 @@
 		"license-check-and-add": "^4.0.5",
 		"lint-staged": "^15.2.2",
 		"mkdirp": "^3.0.1",
-		"prettier": "^3.2.5",
+		"prettier": "3.6.2",
 		"rimraf": "^6.1.3",
 		"rollup": "^4.9.6",
 		"size-limit": "^8.1.0",
@@ -125,27 +119,31 @@
 		"typedoc": "^0.28.17",
 		"typedoc-plugin-extras": "^4.0.0",
 		"typedoc-plugin-missing-exports": "^2.2.0",
-		"typescript": "^5.3.0",
+		"typescript": "5.8.3",
 		"typescript-coverage-report": "^0.6.4",
 		"uuid-validate": "^0.0.3",
 		"webpack": "^5.75.0",
 		"webpack-bundle-analyzer": "^4.7.0",
 		"webpack-cli": "^5.0.0"
 	},
+	"dependenciesMeta": {
+		"better-sqlite3": {
+			"built": false
+		}
+	},
 	"resolutions": {
 		"@react-native-community/cli": "^18.0.1",
 		"fast-xml-parser": "^5.3.6",
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
-		"**/glob/minipass": "6.0.2",
+		"glob/minipass": "6.0.2",
 		"xml2js": "0.5.0",
-		"**/cross-spawn": "7.0.5",
-		"**/on-headers": "1.1.0",
-		"**/form-data": "4.0.4",
+		"cross-spawn": "7.0.5",
+		"on-headers": "1.1.0",
+		"form-data": "4.0.4",
 		"qs": "^6.14.1",
 		"js-yaml": "4.1.1",
-		"serialize-javascript": "^7.0.3",
-		"@tootallnate/once": "3.0.1"
+		"serialize-javascript": "^7.0.3"
 	},
-	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+	"packageManager": "yarn@4.13.0"
 }
