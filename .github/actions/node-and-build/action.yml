@@ -31,6 +31,9 @@ runs:
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
     # TODO We should be able to skip yarn install if we cache enough things. Leaving because skipping causes issues.
+    - name: Enable Corepack
+      shell: bash
+      run: corepack enable
     - name: Install
       if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
       shell: bash

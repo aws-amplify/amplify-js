@@ -30,9 +30,13 @@ jobs:
         with:
           node-version: 22
 
+      - name: Enable Corepack
+        if: steps.has-changesets.outputs.has-changesets == 'true'
+        run: corepack enable
+
       - name: Install dependencies
         if: steps.has-changesets.outputs.has-changesets == 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Create Version Packages PR
         if: steps.has-changesets.outputs.has-changesets == 'true'

@@ -26,6 +26,9 @@ jobs:
             ${{ runner.os }}-package-list-
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+      - name: Enable Corepack
+        run: corepack enable
+        shell: bash
       - name: Install
         if: steps.cache-package-list.outputs.cache-hit != 'true'
         run: yarn
@@ -36,10 +39,9 @@ jobs:
         run: |
           # Get all workspaces and filter out private packages (examples and scripts)
           # This matches Lerna's behavior with "command.run.private: false"
-          yarn workspaces info --json 2>&1 | sed -n '/^{/,/^}/p' | jq -c '
-            to_entries | 
-            map({name: .key, path: .value.location}) | 
-            map(select(.path | (contains("/example") or startswith("scripts/")) | not))
+          yarn workspaces list --json | jq -sc '
+            map({name: .name, path: .location}) |
+            map(select(.path | (contains("/example") or startswith("scripts/") or . == ".") | not))
           ' > package-list.json
       - name: Get Package List
         id: get_package_list

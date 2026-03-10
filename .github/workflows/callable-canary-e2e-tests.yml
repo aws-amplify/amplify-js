@@ -65,6 +65,9 @@ jobs:
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
 
+      - name: Enable Corepack
+        run: corepack enable
+        shell: bash
       - name: Install
         run: yarn
         shell: bash
