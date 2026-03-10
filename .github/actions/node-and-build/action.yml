@@ -25,9 +25,9 @@ runs:
           **/esm/
           **/cjs/
           **/packages/core/src/Platform/version.ts
-        key: ${{ runner.os }}-build-artifacts-${{ github.sha }}
+        key: ${{ runner.os }}-build-artifacts-${{ hashFiles('**/yarn.lock') }}-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-build-artifacts-
+          ${{ runner.os }}-build-artifacts-${{ hashFiles('**/yarn.lock') }}-
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
     # TODO We should be able to skip yarn install if we cache enough things. Leaving because skipping causes issues.
