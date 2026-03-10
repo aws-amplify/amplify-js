@@ -24,7 +24,7 @@ jobs:
         working-directory: ./amplify-js
         env:
           TEST_PACKAGE: ${{ matrix.package.name }}
-        run: yarn workspace $TEST_PACKAGE test
+        run: yarn turbo run test --filter=$TEST_PACKAGE
   # disable temporarily
   #   - name: Check coverage report existence
   #     id: check-report
