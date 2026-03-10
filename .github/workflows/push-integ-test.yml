@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - chore/yarn-v4-migration
 
 jobs:
   e2e:
