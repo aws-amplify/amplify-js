@@ -1,5 +1,4 @@
-import sqlite3 from 'sqlite3';
-sqlite3.verbose();
+import Database from 'better-sqlite3';
 import {
 	ModelInit,
 	MutableModel,
@@ -923,7 +922,7 @@ export class InnerSQLiteDatabase {
 	public sqlog;
 
 	constructor() {
-		this.innerDB = new sqlite3.Database(':memory:');
+		this.innerDB = new Database(':memory:');
 		this.sqlog = [];
 	}
 
@@ -933,10 +932,20 @@ export class InnerSQLiteDatabase {
 		callback: ((...args) => Promise<any>) | undefined = undefined,
 		logger = undefined,
 	) {
-		this.sqlog.push(`${statement}; ${JSON.stringify(params)}`);
+		// better-sqlite3 only accepts numbers, strings, bigints, buffers, and null
+		const sanitizedParams = params.map(p => {
+			if (p === undefined) return null;
+			if (typeof p === 'boolean') return p ? 1 : 0;
+			if (Array.isArray(p)) return JSON.stringify(p);
+			if (typeof p === 'object' && p !== null && !Buffer.isBuffer(p))
+				return JSON.stringify(p);
+
+			return p;
+		});
+		this.sqlog.push(`${statement}; ${JSON.stringify(sanitizedParams)}`);
 		if (statement.trim().toLowerCase().startsWith('select')) {
-			return new Promise(async resolve => {
-				const rows: any[] = [];
+			try {
+				const rows = this.innerDB.prepare(statement).all(...sanitizedParams);
 				const resultSet = {
 					rows: {
 						get length() {
@@ -946,42 +955,44 @@ export class InnerSQLiteDatabase {
 					},
 				};
 
-				await this.innerDB.each(
-					statement,
-					params,
-					async (err, row) => {
-						if (err) {
-							console.error('SQLite ERROR', new Error(err));
-							console.warn(statement, params);
-						}
-						rows.push(row);
-					},
-					() => {
-						resolve([resultSet]);
-					},
-				);
-
 				if (typeof callback === 'function') await callback(this, resultSet);
-			});
+
+				return [resultSet];
+			} catch (err) {
+				console.error('SQLite ERROR', err);
+				console.warn(statement, sanitizedParams);
+
+				return [{ rows: { length: 0, raw: () => [] } }];
+			}
 		} else {
-			return await this.innerDB.run(statement, params, err => {
+			try {
+				this.innerDB.prepare(statement).run(...sanitizedParams);
 				if (typeof callback === 'function') {
-					callback(err);
-				} else if (err) {
-					console.error('calback', err);
+					await callback(null);
+				}
+			} catch (err) {
+				if (typeof callback === 'function') {
+					await callback(err);
+				} else {
+					console.error('callback', err);
 					throw err;
 				}
-			});
+			}
 		}
 	}
 
 	async transaction(fn) {
-		return this.innerDB.serialize(await fn(this));
+		const operations = await fn(this);
+
+		return operations;
 	}
 
 	async readTransaction(fn) {
-		return this.innerDB.serialize(await fn(this));
+		const operations = await fn(this);
+
+		return operations;
 	}
 
 	async close() {}
 }
+
