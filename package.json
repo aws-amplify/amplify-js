@@ -126,11 +126,6 @@
 		"webpack-bundle-analyzer": "^4.7.0",
 		"webpack-cli": "^5.0.0"
 	},
-	"dependenciesMeta": {
-		"better-sqlite3": {
-			"built": false
-		}
-	},
 	"resolutions": {
 		"@react-native-community/cli": "^18.0.1",
 		"fast-xml-parser": "^5.3.6",
