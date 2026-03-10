@@ -40,7 +40,7 @@ runs:
         NPM_PASS: verdaccio
         NPM_EMAIL: verdaccio@amplify.js
       run: |
-        yarn config set registry $NPM_REGISTRY
+        yarn config set npmRegistryServer $NPM_REGISTRY
         npm set registry $NPM_REGISTRY
         git config --global user.email $NPM_EMAIL
         git config --global user.name $NPM_USER
