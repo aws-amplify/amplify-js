@@ -68,6 +68,7 @@
         }
       }
     },
+    "resolver": "<rootDir>/../../scripts/jest-node-resolver.js",
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
