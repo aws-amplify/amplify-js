@@ -97,6 +97,8 @@ export const DefaultAmplify = {
 				authLibraryOptions.credentialsProvider = resolvedCredentialsProvider;
 			}
 
+			cognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
+
 			Amplify.configure(resolvedResourceConfig, {
 				Auth: authLibraryOptions,
 				...libraryOptions,
@@ -107,6 +109,7 @@ export const DefaultAmplify = {
 
 		// Finally, if there were no libraryOptions given at all, we should simply not touch the currently
 		// configured libraryOptions.
+		cognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
 		Amplify.configure(resolvedResourceConfig);
 	},
 	/**

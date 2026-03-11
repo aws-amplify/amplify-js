@@ -328,7 +328,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig,
-					).not.toHaveBeenCalled();
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(MockCookieStorage).toHaveBeenCalledWith({ sameSite: 'lax' });
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
@@ -348,7 +348,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig,
-					).not.toHaveBeenCalled();
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).toHaveBeenCalledWith(defaultStorage);
@@ -369,7 +369,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig,
-					).not.toHaveBeenCalled();
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).not.toHaveBeenCalled();
@@ -382,12 +382,38 @@ describe('initSingleton (DefaultAmplify)', () => {
 					);
 				});
 
-				it('should just configure without touching libraryOptions', () => {
+				it('should update auth config and configure without touching libraryOptions', () => {
 					Amplify.configure(mockResourceConfig);
 
+					expect(
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 					);
+				});
+
+				it('should update token provider auth config when userPoolClientId changes on reconfigure', () => {
+					// First configure
+					Amplify.configure(mockResourceConfig);
+
+					mockCognitoUserPoolsTokenProviderSetAuthConfig.mockClear();
+
+					// Reconfigure with different userPoolClientId
+					const newConfig: ResourcesConfig = {
+						...mockResourceConfig,
+						Auth: {
+							Cognito: {
+								userPoolClientId: 'newUserPoolClientId',
+								userPoolId: 'userPoolId',
+							},
+						},
+					};
+					Amplify.configure(newConfig);
+
+					expect(
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
+					).toHaveBeenCalledWith(newConfig.Auth);
 				});
 			});
 
