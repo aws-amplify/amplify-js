@@ -1,5 +1,12 @@
 # Change Log
 
+## 6.16.3
+
+### Patch Changes
+
+- Updated dependencies [[`e2b77fa`](https://github.com/aws-amplify/amplify-js/commit/e2b77fa89b17251da6df8c51959e5253c7614f09)]:
+  - @aws-amplify/storage@6.13.2
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
