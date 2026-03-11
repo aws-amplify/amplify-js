@@ -522,3 +522,10 @@ export interface AuthModeParams extends Record<string, unknown> {
 export type GenerateServerClientParams = {
 	config: ResourcesConfig;
 } & CommonPublicClientOptions;
+
+export interface WebSocketHealthState {
+	isHealthy: boolean;
+	connectionState: import('./PubSub').ConnectionState;
+	lastKeepAliveTime: number;
+	timeSinceLastKeepAlive: number;
+}
