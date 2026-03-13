@@ -58,10 +58,10 @@ jobs:
           # Minimal depth 2 so we can checkout the commit before possible merge commit.
           fetch-depth: 2
           path: amplify-js
-      - name: Setup Node.js 20
+      - name: Setup Node.js
         uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
         with:
-          node-version: 20
+          node-version: 24
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
 
