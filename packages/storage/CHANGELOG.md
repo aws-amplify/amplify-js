@@ -1,5 +1,11 @@
 # Change Log
 
+## 6.13.2
+
+### Patch Changes
+
+- [#14747](https://github.com/aws-amplify/amplify-js/pull/14747) [`e2b77fa`](https://github.com/aws-amplify/amplify-js/commit/e2b77fa89b17251da6df8c51959e5253c7614f09) Thanks [@osama-rizk](https://github.com/osama-rizk)! - chore(deps): bump fast-xml-parser from 5.3.4 to 5.3.6
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
