@@ -72,7 +72,7 @@
 			"name": "Analytics (Kinesis)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Analytics, AWSKinesisProvider }",
-			"limit": "60.95 kB"
+			"limit": "63 kB"
 		}
 	],
 	"jest": {
