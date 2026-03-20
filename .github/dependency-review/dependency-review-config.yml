@@ -1,6 +1,7 @@
 allow-licenses:
   - '0BSD'
   - 'Apache-2.0'
+  - 'Artistic-2.0'
   - 'BlueOak-1.0.0'
   - 'BSD-1-Clause'
   - 'BSD-2-Clause-FreeBSD'
@@ -24,6 +25,7 @@ allow-licenses:
   - 'Unlicense'
   - 'WTFPL'
   - 'Zlib'
+
 allow-dependencies-licenses:
   # These packages are needed for nextjs (more detailed sharp)
   # they are dynamic libraries and thus do not ship the underlying library
