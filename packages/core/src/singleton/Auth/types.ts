@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Headers } from '../../clients';
 import { StrictUnion } from '../../types';
 import { AtLeastOne } from '../types';
 
@@ -56,6 +57,7 @@ export interface AuthSession {
 export interface LibraryAuthOptions {
 	tokenProvider?: TokenProvider;
 	credentialsProvider?: CredentialsAndIdentityIdProvider;
+	headers?(): Promise<Headers>;
 }
 
 export interface Identity {
