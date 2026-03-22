@@ -3,8 +3,8 @@ import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-u
 
 import { cognitoUserPoolTransferHandler } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/handler';
 
-jest.mock('@aws-amplify/core/internals/aws-client-utils/composers');
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
+jest.mock('@aws-amplify/core/internals/aws-client-utils/composers');
 
 const mockComposeTransferHandler = jest.mocked(composeTransferHandler);
 const mockUnauthenticatedHandler = jest.mocked(unauthenticatedHandler);
