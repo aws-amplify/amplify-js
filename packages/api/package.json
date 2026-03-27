@@ -40,20 +40,12 @@
 			"import": "./dist/esm/internals/index.mjs",
 			"require": "./dist/cjs/internals/index.js"
 		},
-		"./server": {
-			"types": "./dist/esm/server.d.ts",
-			"import": "./dist/esm/server.mjs",
-			"require": "./dist/cjs/server.js"
-		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
 		">=4.2": {
 			"internals": [
 				"./dist/esm/internals/index.d.ts"
-			],
-			"server": [
-				"./dist/esm/server.d.ts"
 			]
 		}
 	},
@@ -76,8 +68,7 @@
 		"dist/esm",
 		"src",
 		"index.*.d.ts",
-		"internals",
-		"server"
+		"internals"
 	],
 	"dependencies": {
 		"@aws-amplify/api-graphql": "4.8.5",

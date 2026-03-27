@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export {
-	createAmplifyServerContext,
-	getAmplifyServerContext,
-	destroyAmplifyServerContext,
 	AmplifyServer,
 	CookieStorage,
 	KeyValueStorageMethodValidator,

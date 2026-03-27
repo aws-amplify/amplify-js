@@ -1,10 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	V6ClientSSRCookies,
-	V6ClientSSRRequest,
-} from 'aws-amplify/api/internals';
+import { V6Client, V6ClientSSRCookies } from 'aws-amplify/api/internals';
 
 export {
 	generateServerClientUsingReqRes,
@@ -17,7 +14,6 @@ export {
 type ClientUsingSSRCookies<T extends Record<any, any> = never> =
 	V6ClientSSRCookies<T>;
 
-type ClientUsingSSRReq<T extends Record<any, any> = never> =
-	V6ClientSSRRequest<T>;
+type ClientUsingSSRReq<T extends Record<any, any> = never> = V6Client<T>;
 
 export { ClientUsingSSRCookies, ClientUsingSSRReq };

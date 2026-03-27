@@ -3,8 +3,6 @@
 
 import { AmplifyServer } from './amplifyServer';
 
-type AmplifyServerContextSpec = AmplifyServer.ContextSpec;
-
-export { AmplifyServerContextSpec, AmplifyServer };
+export { AmplifyServer };
 export { CookieStorage } from './cookieStorage';
 export { KeyValueStorageMethodValidator } from './KeyValueStorageMethodValidator';

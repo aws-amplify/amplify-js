@@ -32,34 +32,18 @@
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js"
 		},
-		"./server": {
-			"types": "./dist/esm/server.d.ts",
-			"import": "./dist/esm/server.mjs",
-			"require": "./dist/cjs/server.js"
-		},
 		"./internals": {
 			"react-native": "./dist/cjs/internals/index.js",
 			"types": "./dist/esm/internals/index.d.ts",
 			"import": "./dist/esm/internals/index.mjs",
 			"require": "./dist/cjs/internals/index.js"
 		},
-		"./internals/server": {
-			"types": "./dist/esm/internals/server.d.ts",
-			"import": "./dist/esm/internals/server.mjs",
-			"require": "./dist/cjs/internals/server.js"
-		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
 		">=4.2": {
-			"server": [
-				"./dist/esm/server.d.ts"
-			],
 			"internals": [
 				"./dist/esm/internals/index.d.ts"
-			],
-			"internals/server": [
-				"./dist/esm/internals/server.d.ts"
 			]
 		}
 	},
@@ -77,8 +61,7 @@
 		"dist/cjs",
 		"dist/esm",
 		"src",
-		"internals",
-		"server"
+		"internals"
 	],
 	"dependencies": {
 		"tslib": "^2.5.0"

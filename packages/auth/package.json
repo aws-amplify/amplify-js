@@ -33,12 +33,6 @@
 		">=4.2": {
 			"cognito": [
 				"./dist/esm/providers/cognito/index.d.ts"
-			],
-			"cognito/server": [
-				"./dist/esm/providers/cognito/apis/server/index.d.ts"
-			],
-			"server": [
-				"./dist/esm/server.d.ts"
 			]
 		}
 	},
@@ -54,16 +48,6 @@
 			"types": "./dist/esm/providers/cognito/index.d.ts",
 			"import": "./dist/esm/providers/cognito/index.mjs",
 			"require": "./dist/cjs/providers/cognito/index.js"
-		},
-		"./cognito/server": {
-			"types": "./dist/esm/providers/cognito/apis/server/index.d.ts",
-			"import": "./dist/esm/providers/cognito/apis/server/index.mjs",
-			"require": "./dist/cjs/providers/cognito/apis/server/index.js"
-		},
-		"./server": {
-			"types": "./dist/esm/server.d.ts",
-			"import": "./dist/esm/server.mjs",
-			"require": "./dist/cjs/server.js"
 		},
 		"./enable-oauth-listener": {
 			"types": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.d.ts",
@@ -87,7 +71,6 @@
 		"dist/esm",
 		"src",
 		"cognito",
-		"server",
 		"enable-oauth-listener"
 	],
 	"dependencies": {

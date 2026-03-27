@@ -4,15 +4,12 @@
 import {
 	CommonPublicClientOptions,
 	DefaultCommonClientOptions,
+	V6Client,
 	V6ClientSSRCookies,
-	V6ClientSSRRequest,
+	generateClient,
 	generateClientWithAmplifyInstance,
 } from 'aws-amplify/api/internals';
-import { generateClient } from 'aws-amplify/api/server';
-import {
-	AmplifyServerContextError,
-	getAmplifyServerContext,
-} from 'aws-amplify/adapter-core/internals';
+import { AmplifyServerContextError } from 'aws-amplify/adapter-core/internals';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
 
 import { NextServer } from '../types';
@@ -46,7 +43,6 @@ export function generateServerClientUsingCookies<
 		throw new AmplifyServerContextError({
 			message:
 				'generateServerClientUsingCookies is only compatible with the `cookies` Dynamic Function available in Server Components.',
-			// TODO: link to docs
 			recoverySuggestion:
 				'use `generateServerClient` inside of `runWithAmplifyServerContext` with the `request` object.',
 		});
@@ -55,14 +51,10 @@ export function generateServerClientUsingCookies<
 	const { runWithAmplifyServerContext, resourcesConfig } =
 		createServerRunnerForAPI({ config: options.config });
 
-	// This function reference gets passed down to InternalGraphQLAPI.ts.graphql
-	// where this._graphql is passed in as the `fn` argument
-	// causing it to always get invoked inside `runWithAmplifyServerContext`
 	const getAmplify = (fn: (amplify: any) => Promise<any>) =>
 		runWithAmplifyServerContext({
 			nextServerContext: { cookies: options.cookies },
-			operation: contextSpec =>
-				fn(getAmplifyServerContext(contextSpec).amplify),
+			operation: amplifyContext => fn(amplifyContext),
 		});
 
 	const { cookies: _cookies, config: _config, ...params } = options;
@@ -71,36 +63,34 @@ export function generateServerClientUsingCookies<
 		amplify: getAmplify,
 		config: resourcesConfig,
 		...params,
-	} as any); // TS can't narrow the type here.
+	} as any);
 }
 
 /**
- * Generates an API client that can be used with both Pages Router and App Router
+ * Generates an API client that can be used with both Pages Router and App Router.
+ * Create the client inside `runWithAmplifyServerContext` where the `AmplifyContext` is available.
  *
  * @example
- * import config from './amplifyconfiguration.json';
- * import { listPosts } from './graphql/queries';
- *
  * const client = generateServerClientUsingReqRes({ config });
  *
  * const result = await runWithAmplifyServerContext({
  *   nextServerContext: { request, response },
- *   operation: (contextSpec) => client.graphql(contextSpec, {
- *     query: listPosts,
- *   }),
+ *   operation: (ctx) => client.graphql({ query: listPosts }),
  * });
  */
 export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never,
 	Options extends CommonPublicClientOptions &
 		ReqClientParams = DefaultCommonClientOptions & ReqClientParams,
->(options: Options): V6ClientSSRRequest<T, Options> {
+>(options: Options): V6Client<T, Options> {
 	const amplifyConfig = parseAmplifyConfig(options.config);
 
 	const { config: _config, ...params } = options;
 
+	// Use the regular client generateClient — the AmplifyContext will be
+	// provided per-request via runWithAmplifyServerContext
 	return generateClient<T>({
 		config: amplifyConfig,
 		...params,
-	}) as any;
+	} as any) as any;
 }
