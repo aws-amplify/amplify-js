@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Signer } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { MqttOptions, MqttOverWS } from './MqttOverWS';
 
@@ -13,8 +13,11 @@ export interface AWSIoTOptions extends MqttOptions {
 }
 
 export class AWSIoT extends MqttOverWS {
-	constructor(options: AWSIoTOptions = {}) {
+	private ctx: AmplifyContext;
+
+	constructor(ctx: AmplifyContext, options: AWSIoTOptions = {}) {
 		super(options);
+		this.ctx = ctx;
 	}
 
 	protected get region(): string | undefined {
@@ -29,7 +32,7 @@ export class AWSIoT extends MqttOverWS {
 				service: SERVICE_NAME,
 				region: this.region,
 			};
-			const session = await fetchAuthSession();
+			const session = await this.ctx.fetchAuthSession();
 
 			if (!session.credentials) {
 				throw new Error('No auth session credentials');

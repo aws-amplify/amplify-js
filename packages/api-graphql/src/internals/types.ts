@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
@@ -10,7 +10,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
  * The knobs available for configuring `generateClient` internally.
  */
 export type ClientGenerationParams = {
-	amplify: AmplifyClassV6;
+	amplify: AmplifyContext;
 } & CommonPublicClientOptions;
 
 export interface DefaultCommonClientOptions {

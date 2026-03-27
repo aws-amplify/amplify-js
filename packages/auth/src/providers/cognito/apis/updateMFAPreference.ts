@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
@@ -25,13 +25,14 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updateMFAPreference(
+	ctx: AmplifyContext,
 	input: UpdateMFAPreferenceInput,
 ): Promise<void> {
 	const { sms, totp, email } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await ctx.fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const setUserMFAPreference = createSetUserMFAPreferenceClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({

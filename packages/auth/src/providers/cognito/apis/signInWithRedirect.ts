@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, OAuthConfig } from '@aws-amplify/core';
+import { AmplifyContext, OAuthConfig } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertOAuthConfig,
@@ -39,15 +39,16 @@ import { OpenAuthSession } from '../../../utils/types';
  * @throws OAuthNotConfigureException - Thrown when the oauth config is invalid.
  */
 export async function signInWithRedirect(
+	ctx: AmplifyContext,
 	input?: SignInWithRedirectInput,
 ): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	oAuthStore.setAuthConfig(authConfig);
 
 	if (!input?.options?.prompt) {
-		await assertUserNotAuthenticated();
+		await assertUserNotAuthenticated(ctx);
 	}
 
 	let provider = 'COGNITO'; // Default
@@ -61,7 +62,7 @@ export async function signInWithRedirect(
 		({ idpIdentifier } = input.provider);
 	}
 
-	return oauthSignIn({
+	return oauthSignIn(ctx, {
 		oauthConfig: authConfig.loginWith.oauth,
 		clientId: authConfig.userPoolClientId,
 		provider,
@@ -78,7 +79,7 @@ export async function signInWithRedirect(
 	});
 }
 
-const oauthSignIn = async ({
+const oauthSignIn = async (ctx: AmplifyContext, {
 	oauthConfig,
 	provider,
 	idpIdentifier,
@@ -165,7 +166,7 @@ const oauthSignIn = async ({
 			throw createOAuthError(String(type));
 		}
 		if (type === 'success' && url) {
-			await completeOAuthFlow({
+			await completeOAuthFlow(ctx, {
 				currentUrl: url,
 				clientId,
 				domain,

@@ -15,17 +15,18 @@ import {
 } from '../../../utils';
 import { ConfigureAutoTrackInput } from '../types';
 
+import { AmplifyContext } from '@aws-amplify/core';
 import { record } from './record';
 
 // Configured Tracker instances for Pinpoint
 const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
 
 // Callback that will emit an appropriate event to Pinpoint when required by the Tracker
-const emitTrackingEvent = (
+const emitTrackingEvent = (ctx: AmplifyContext, 
 	eventName: string,
 	attributes: TrackerAttributes,
 ) => {
-	record({
+	record(ctx, {
 		name: eventName,
 		attributes,
 	});
@@ -46,9 +47,9 @@ const emitTrackingEvent = (
  * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library
  *  configuration is incorrect.
  */
-export const configureAutoTrack = (input: ConfigureAutoTrackInput): void => {
+export const configureAutoTrack = (ctx: AmplifyContext, input: ConfigureAutoTrackInput): void => {
 	validateTrackerConfiguration(input);
 
 	// Initialize or update this provider's trackers
-	updateProviderTrackers(input, emitTrackingEvent, configuredTrackers);
+	updateProviderTrackers(input, emitTrackingEvent.bind(null, ctx), configuredTrackers);
 };

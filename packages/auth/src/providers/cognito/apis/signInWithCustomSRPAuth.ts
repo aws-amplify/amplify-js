@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -47,6 +47,7 @@ import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomSRPAuth(
+	ctx: AmplifyContext,
 	input: SignInWithCustomSRPAuthInput,
 ): Promise<SignInWithCustomSRPAuthOutput> {
 	const { username, password, options } = input;
@@ -54,7 +55,7 @@ export async function signInWithCustomSRPAuth(
 		loginId: username,
 		authFlowType: 'CUSTOM_WITH_SRP',
 	};
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const metadata = options?.clientMetadata;
 	assertValidationError(
@@ -102,7 +103,7 @@ export async function signInWithCustomSRPAuth(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(ctx);
 
 			return {
 				isSignedIn: true,
@@ -110,7 +111,7 @@ export async function signInWithCustomSRPAuth(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: handledChallengeName as ChallengeName,
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});

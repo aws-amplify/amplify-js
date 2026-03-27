@@ -6,6 +6,7 @@ import { Hub, HubCapsule } from '@aws-amplify/core';
 
 import { InAppMessage, InAppMessagingEvent } from '../../../types';
 import { addEventListener } from '../../../../eventListeners';
+import { AmplifyContext } from '@aws-amplify/core';
 import { recordAnalyticsEvent } from '../utils/helpers';
 import { PinpointMessageEvent } from '../types';
 import { incrementMessageCounts, sessionStateChangeHandler } from '../utils';
@@ -26,7 +27,7 @@ import { dispatchEvent } from './dispatchEvent';
  * initializeInAppMessaging();
  * ```
  */
-export function initializeInAppMessaging(): void {
+export function initializeInAppMessaging(ctx: AmplifyContext): void {
 	if (isInitialized()) {
 		return;
 	}
@@ -35,14 +36,14 @@ export function initializeInAppMessaging(): void {
 
 	// wire up default Pinpoint message event handling
 	addEventListener('messageDisplayed', (message: InAppMessage) => {
-		recordAnalyticsEvent(PinpointMessageEvent.MESSAGE_DISPLAYED, message);
+		recordAnalyticsEvent(ctx, PinpointMessageEvent.MESSAGE_DISPLAYED, message);
 		incrementMessageCounts(message.id);
 	});
 	addEventListener('messageDismissed', (message: InAppMessage) => {
-		recordAnalyticsEvent(PinpointMessageEvent.MESSAGE_DISMISSED, message);
+		recordAnalyticsEvent(ctx, PinpointMessageEvent.MESSAGE_DISMISSED, message);
 	});
 	addEventListener('messageActionTaken', (message: InAppMessage) => {
-		recordAnalyticsEvent(PinpointMessageEvent.MESSAGE_ACTION_TAKEN, message);
+		recordAnalyticsEvent(ctx, PinpointMessageEvent.MESSAGE_ACTION_TAKEN, message);
 	});
 
 	// listen to analytics hub events

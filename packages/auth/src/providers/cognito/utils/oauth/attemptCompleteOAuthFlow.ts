@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthConfig } from '@aws-amplify/core';
+import { AmplifyContext, AuthConfig } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertOAuthConfig,
@@ -16,6 +16,7 @@ import { getRedirectUrl } from './getRedirectUrl';
 import { handleFailure } from './handleFailure';
 
 export const attemptCompleteOAuthFlow = async (
+	ctx: AmplifyContext,
 	authConfig: AuthConfig['Cognito'],
 ): Promise<void> => {
 	try {
@@ -40,7 +41,7 @@ export const attemptCompleteOAuthFlow = async (
 		const { domain, redirectSignIn, responseType } = loginWith.oauth;
 		const redirectUri = getRedirectUrl(redirectSignIn);
 
-		await completeOAuthFlow({
+		await completeOAuthFlow(ctx, {
 			currentUrl,
 			clientId: userPoolClientId,
 			domain,

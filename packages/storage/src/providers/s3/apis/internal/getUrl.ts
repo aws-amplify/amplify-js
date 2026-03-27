@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { GetUrlInput, GetUrlOutput, GetUrlWithPathOutput } from '../../types';
@@ -25,7 +25,7 @@ import { GetUrlInput as GetUrlWithPathInputWithAdvancedOptions } from '../../../
 import { getProperties } from './getProperties';
 
 export const getUrl = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: GetUrlInput | GetUrlWithPathInputWithAdvancedOptions,
 ): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
 	const { options: getUrlOptions } = input;

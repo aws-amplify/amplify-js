@@ -7,7 +7,7 @@ import {
 	USER_AGENT_HEADER,
 	urlSafeDecode,
 } from '@aws-amplify/core/internals/utils';
-import { Hub, decodeJWT } from '@aws-amplify/core';
+import { AmplifyContext, Hub, decodeJWT } from '@aws-amplify/core';
 
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../dispatchSignedInHubEvent';
@@ -18,7 +18,7 @@ import { resolveAndClearInflightPromises } from './inflightPromise';
 import { validateState } from './validateState';
 import { oAuthStore } from './oAuthStore';
 
-export const completeOAuthFlow = async ({
+export const completeOAuthFlow = async (ctx: AmplifyContext, {
 	currentUrl,
 	userAgentValue,
 	clientId,
@@ -44,7 +44,7 @@ export const completeOAuthFlow = async ({
 	}
 
 	if (responseType === 'code') {
-		return handleCodeFlow({
+		return handleCodeFlow(ctx, {
 			currentUrl,
 			userAgentValue,
 			clientId,
@@ -54,14 +54,14 @@ export const completeOAuthFlow = async ({
 		});
 	}
 
-	return handleImplicitFlow({
+	return handleImplicitFlow(ctx, {
 		currentUrl,
 		redirectUri,
 		preferPrivateSession,
 	});
 };
 
-const handleCodeFlow = async ({
+const handleCodeFlow = async (ctx: AmplifyContext, {
 	currentUrl,
 	userAgentValue,
 	clientId,
@@ -150,14 +150,14 @@ const handleCodeFlow = async ({
 		ExpiresIn: expires_in,
 	});
 
-	return completeFlow({
+	return completeFlow(ctx, {
 		redirectUri,
 		state: validatedState,
 		preferPrivateSession,
 	});
 };
 
-const handleImplicitFlow = async ({
+const handleImplicitFlow = async (ctx: AmplifyContext, {
 	currentUrl,
 	redirectUri,
 	preferPrivateSession,
@@ -212,14 +212,14 @@ const handleImplicitFlow = async ({
 		ExpiresIn: expires_in,
 	});
 
-	return completeFlow({
+	return completeFlow(ctx, {
 		redirectUri,
 		state: validatedState,
 		preferPrivateSession,
 	});
 };
 
-const completeFlow = async ({
+const completeFlow = async (ctx: AmplifyContext, {
 	redirectUri,
 	state,
 	preferPrivateSession,
@@ -254,7 +254,7 @@ const completeFlow = async ({
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	await dispatchSignedInHubEvent();
+	await dispatchSignedInHubEvent(ctx);
 };
 
 const isCustomState = (state: string): boolean => {

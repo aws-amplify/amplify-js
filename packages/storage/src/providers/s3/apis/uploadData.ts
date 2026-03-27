@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { defaultStorage } from '@aws-amplify/core';
+import { AmplifyContext, defaultStorage } from '@aws-amplify/core';
 
 import {
 	UploadDataInput,
@@ -64,6 +64,7 @@ import { uploadData as uploadDataInternal } from './internal/uploadData';
  * ```
  */
 export function uploadData(
+	ctx: AmplifyContext,
 	input: UploadDataWithPathInput,
 ): UploadDataWithPathOutput;
 
@@ -120,10 +121,10 @@ export function uploadData(
  * await uploadTask.result;
  * ```
  */
-export function uploadData(input: UploadDataInput): UploadDataOutput;
+export function uploadData(ctx: AmplifyContext, input: UploadDataInput): UploadDataOutput;
 
-export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
-	return uploadDataInternal({
+export function uploadData(ctx: AmplifyContext, input: UploadDataInput | UploadDataWithPathInput) {
+	return uploadDataInternal(ctx, {
 		...input,
 		options: {
 			...input?.options,

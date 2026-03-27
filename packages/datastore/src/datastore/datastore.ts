@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { InternalAPI } from '@aws-amplify/api/internals';
-import { Amplify, Cache, ConsoleLogger, Hub } from '@aws-amplify/core';
+import { InternalAPIClass as InternalAPI } from '@aws-amplify/api/internals';
+import { AmplifyContext as CoreAmplifyContext, Cache, ConsoleLogger, Hub } from '@aws-amplify/core';
 import {
 	Draft,
 	Patch,
@@ -2471,7 +2471,7 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
-		const currentAppSyncConfig = Amplify.getConfig().API?.GraphQL;
+		const currentAppSyncConfig = (this.amplifyContext as any).resourcesConfig.API?.GraphQL;
 
 		const appSyncConfig = {
 			aws_appsync_graphqlEndpoint: currentAppSyncConfig?.endpoint,
@@ -2496,7 +2496,7 @@ class DataStore {
 
 		switch (authModeStrategyType) {
 			case AuthModeStrategyType.MULTI_AUTH:
-				this.authModeStrategy = multiAuthStrategy(this.amplifyContext);
+				this.authModeStrategy = multiAuthStrategy(this.amplifyContext as any);
 				break;
 			case AuthModeStrategyType.DEFAULT:
 				this.authModeStrategy = defaultAuthStrategy;

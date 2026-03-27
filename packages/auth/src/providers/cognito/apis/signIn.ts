@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
@@ -27,7 +28,7 @@ import { resetAutoSignIn } from './autoSignIn';
  *  are not defined.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signIn(input: SignInInput): Promise<SignInOutput> {
+export async function signIn(ctx: AmplifyContext, input: SignInInput): Promise<SignInOutput> {
 	// Here we want to reset the store but not reassign the callback.
 	// The callback is reset when the underlying promise resolves or rejects.
 	// With the advent of session based sign in, this guarantees that the signIn API initiates a new auth flow,
@@ -35,19 +36,19 @@ export async function signIn(input: SignInInput): Promise<SignInOutput> {
 	resetAutoSignIn(false);
 
 	const authFlowType = input.options?.authFlowType;
-	await assertUserNotAuthenticated();
+	await assertUserNotAuthenticated(ctx);
 	switch (authFlowType) {
 		case 'USER_SRP_AUTH':
-			return signInWithSRP(input);
+			return signInWithSRP(ctx, input);
 		case 'USER_PASSWORD_AUTH':
-			return signInWithUserPassword(input);
+			return signInWithUserPassword(ctx, input);
 		case 'CUSTOM_WITHOUT_SRP':
-			return signInWithCustomAuth(input);
+			return signInWithCustomAuth(ctx, input);
 		case 'CUSTOM_WITH_SRP':
-			return signInWithCustomSRPAuth(input);
+			return signInWithCustomSRPAuth(ctx, input);
 		case 'USER_AUTH':
-			return signInWithUserAuth(input);
+			return signInWithUserAuth(ctx, input);
 		default:
-			return signInWithSRP(input);
+			return signInWithSRP(ctx, input);
 	}
 }

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	DeleteInput,
@@ -67,7 +67,7 @@ import {
  * }
  * ```
  */
-export const get = (input: GetInput): GetOperation => commonGet(Amplify, input);
+export const get = (ctx: AmplifyContext, input: GetInput): GetOperation => commonGet(ctx, input);
 
 /**
  * POST HTTP request
@@ -108,8 +108,8 @@ export const get = (input: GetInput): GetOperation => commonGet(Amplify, input);
  * }
  * ```
  */
-export const post = (input: PostInput): PostOperation =>
-	commonPost(Amplify, input);
+export const post = (ctx: AmplifyContext, input: PostInput): PostOperation =>
+	commonPost(ctx, input);
 
 /**
  * PUT HTTP request
@@ -149,7 +149,7 @@ export const post = (input: PostInput): PostOperation =>
  * }
  * ```
  */
-export const put = (input: PutInput): PutOperation => commonPut(Amplify, input);
+export const put = (ctx: AmplifyContext, input: PutInput): PutOperation => commonPut(ctx, input);
 
 /**
  * DELETE HTTP request
@@ -171,8 +171,8 @@ export const put = (input: PutInput): PutOperation => commonPut(Amplify, input);
  * }).response;
  * ```
  */
-export const del = (input: DeleteInput): DeleteOperation =>
-	commonDel(Amplify, input);
+export const del = (ctx: AmplifyContext, input: DeleteInput): DeleteOperation =>
+	commonDel(ctx, input);
 
 /**
  * HEAD HTTP request
@@ -195,8 +195,8 @@ export const del = (input: DeleteInput): DeleteOperation =>
  * ```
  *
  */
-export const head = (input: HeadInput): HeadOperation =>
-	commonHead(Amplify, input);
+export const head = (ctx: AmplifyContext, input: HeadInput): HeadOperation =>
+	commonHead(ctx, input);
 
 /**
  * PATCH HTTP request
@@ -237,5 +237,5 @@ export const head = (input: HeadInput): HeadOperation =>
  * }
  * ```
  */
-export const patch = (input: PatchInput): PatchOperation =>
-	commonPatch(Amplify, input);
+export const patch = (ctx: AmplifyContext, input: PatchInput): PatchOperation =>
+	commonPatch(ctx, input);

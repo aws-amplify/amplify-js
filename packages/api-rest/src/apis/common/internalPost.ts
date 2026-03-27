@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { InternalPostInput, RestApiResponse } from '../../types';
 import { createCancellableOperation } from '../../utils';
@@ -39,7 +39,7 @@ const cancelTokenMap = new WeakMap<Promise<any>, AbortController>();
  * To make the internal post cancellable, you must also call `updateRequestToBeCancellable()` with the promise from
  * internal post call and the abort controller supplied to the internal post call.
  *
- * @param amplify the AmplifyClassV6 instance - it may be the singleton used on Web, or an instance created within
+ * @param amplify the AmplifyContext instance - it may be the singleton used on Web, or an instance created within
  * a context created by `runWithAmplifyServerContext`
  * @param postInput an object of {@link InternalPostInput}
  * @param postInput.url The URL that the POST request sends to
@@ -54,7 +54,7 @@ const cancelTokenMap = new WeakMap<Promise<any>, AbortController>();
  * @throws a {@link CanceledError} when the ongoing POST request get cancelled
  */
 export const post = (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	{ url, options, abortController }: InternalPostInput,
 ): Promise<RestApiResponse> => {
 	const controller = abortController ?? new AbortController();

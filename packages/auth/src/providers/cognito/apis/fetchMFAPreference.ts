@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
@@ -24,11 +24,11 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * and settings.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function fetchMFAPreference(): Promise<FetchMFAPreferenceOutput> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+export async function fetchMFAPreference(ctx: AmplifyContext): Promise<FetchMFAPreferenceOutput> {
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await ctx.fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const getUser = createGetUserClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({

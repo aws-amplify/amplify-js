@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
+import { AmplifyContext, ResourcesConfig } from '@aws-amplify/core';
 import {
 	BaseClient,
 	ClientExtensions,
@@ -500,7 +500,7 @@ export interface ServerClientGenerationParams {
 	amplify:
 		| null // null expected when used with `generateServerClient`
 		// closure expected with `generateServerClientUsingCookies`
-		| ((fn: (amplify: AmplifyClassV6) => Promise<any>) => Promise<any>);
+		| ((fn: (amplify: AmplifyContext) => Promise<any>) => Promise<any>);
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
 }

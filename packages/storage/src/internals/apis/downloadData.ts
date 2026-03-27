@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import { downloadData as downloadDataInternal } from '../../providers/s3/apis/internal/downloadData';
 import { DownloadDataInput } from '../types/inputs';
 import { DownloadDataOutput } from '../types/outputs';
@@ -8,8 +10,8 @@ import { DownloadDataOutput } from '../types/outputs';
 /**
  * @internal
  */
-export const downloadData = (input: DownloadDataInput): DownloadDataOutput =>
-	downloadDataInternal({
+export const downloadData = (ctx: AmplifyContext, input: DownloadDataInput): DownloadDataOutput =>
+	downloadDataInternal(ctx, {
 		path: input.path,
 		options: {
 			useAccelerateEndpoint: input?.options?.useAccelerateEndpoint,

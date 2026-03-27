@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
 	DocumentType,
@@ -47,8 +49,8 @@ const WS_PROTOCOL_NAME = 'aws-appsync-event-ws';
 const CONNECT_URI = ''; // events does not expect a connect uri
 
 export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
-	constructor() {
-		super({
+	constructor(ctx: AmplifyContext) {
+		super(ctx, {
 			providerName: PROVIDER_NAME,
 			wsProtocolName: WS_PROTOCOL_NAME,
 			connectUri: CONNECT_URI,
@@ -113,7 +115,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		const serializedData = JSON.stringify(data);
 
 		const headers = {
-			...(await awsRealTimeHeaderBasedAuth({
+			...(await awsRealTimeHeaderBasedAuth(this.ctx, {
 				apiKey,
 				appSyncGraphqlEndpoint,
 				authenticationType,
@@ -215,4 +217,5 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	}
 }
 
-export const AppSyncEventProvider = new AWSAppSyncEventProvider();
+export const createAppSyncEventProvider = (ctx: AmplifyContext) =>
+	new AWSAppSyncEventProvider(ctx);

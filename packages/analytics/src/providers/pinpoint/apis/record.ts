@@ -1,3 +1,4 @@
+import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -51,9 +52,9 @@ const logger = new ConsoleLogger('Analytics');
  * })
  * ```
  */
-export const record = (input: RecordInput): void => {
+export const record = (ctx: AmplifyContext, input: RecordInput): void => {
 	const { appId, region, bufferSize, flushSize, flushInterval, resendLimit } =
-		resolveConfig();
+		resolveConfig(ctx);
 
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
@@ -63,7 +64,7 @@ export const record = (input: RecordInput): void => {
 
 	assertValidationError(!!input.name, AnalyticsValidationErrorCode.NoEventName);
 
-	resolveCredentials()
+	resolveCredentials(ctx)
 		.then(({ credentials, identityId }) => {
 			Hub.dispatch(
 				'analytics',

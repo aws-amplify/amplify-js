@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	GetPropertiesInput,
@@ -22,6 +22,7 @@ import { getProperties as getPropertiesInternal } from './internal/getProperties
  * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
  */
 export function getProperties(
+	ctx: AmplifyContext,
 	input: GetPropertiesWithPathInput,
 ): Promise<GetPropertiesWithPathOutput>;
 /**
@@ -37,11 +38,13 @@ export function getProperties(
  * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
  */
 export function getProperties(
+	ctx: AmplifyContext,
 	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput>;
 
 export function getProperties(
+	ctx: AmplifyContext,
 	input: GetPropertiesInput | GetPropertiesWithPathInput,
 ) {
-	return getPropertiesInternal(Amplify, input);
+	return getPropertiesInternal(ctx, input);
 }

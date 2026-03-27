@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	IntentState,
 	LexRuntimeV2Client,
@@ -11,7 +12,7 @@ import {
 	RecognizeUtteranceCommandOutput,
 } from '@aws-sdk/client-lex-runtime-v2';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
+import { ConsoleLogger} from '@aws-amplify/core';
 import { v4 as uuid } from 'uuid';
 
 import { convert, unGzipBase64AsJson } from '../utils';
@@ -53,12 +54,17 @@ interface lexV2BaseReqParams {
 }
 
 class AWSLexV2Provider {
+	private ctx: AmplifyContext;
 	private readonly _botsCompleteCallback: Record<
 		string,
 		InteractionsOnCompleteCallback
 	> = {};
 
 	private defaultSessionId: string = uuid();
+
+	constructor(ctx: AmplifyContext) {
+		this.ctx = ctx;
+	}
 
 	/**
 	 * Send a message to a bot
@@ -74,7 +80,7 @@ class AWSLexV2Provider {
 		// check if credentials are present
 		let session;
 		try {
-			session = await fetchAuthSession();
+			session = await this.ctx.fetchAuthSession();
 		} catch (error) {
 			return Promise.reject(new Error('No credentials'));
 		}
@@ -266,4 +272,4 @@ class AWSLexV2Provider {
 	}
 }
 
-export const lexProvider = new AWSLexV2Provider();
+export const createLexV2Provider = (ctx: AmplifyContext) => new AWSLexV2Provider(ctx);

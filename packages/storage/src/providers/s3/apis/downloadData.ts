@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import {
 	DownloadDataInput,
 	DownloadDataOutput,
@@ -41,6 +43,7 @@ import { downloadData as downloadDataInternal } from './internal/downloadData';
  *```
  */
 export function downloadData(
+	ctx: AmplifyContext,
 	input: DownloadDataWithPathInput,
 ): DownloadDataWithPathOutput;
 /**
@@ -76,9 +79,10 @@ export function downloadData(
  * }
  *```
  */
-export function downloadData(input: DownloadDataInput): DownloadDataOutput;
+export function downloadData(ctx: AmplifyContext, input: DownloadDataInput): DownloadDataOutput;
 export function downloadData(
+	ctx: AmplifyContext,
 	input: DownloadDataInput | DownloadDataWithPathInput,
 ) {
-	return downloadDataInternal(input);
+	return downloadDataInternal(ctx, input);
 }

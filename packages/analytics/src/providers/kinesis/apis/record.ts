@@ -1,3 +1,4 @@
+import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -38,7 +39,7 @@ const logger = new ConsoleLogger('Kinesis');
  *
  * @returns void
  */
-export const record = ({
+export const record = (ctx: AmplifyContext, {
 	streamName,
 	partitionKey,
 	data,
@@ -51,9 +52,9 @@ export const record = ({
 
 	const timestamp = Date.now();
 	const { region, bufferSize, flushSize, flushInterval, resendLimit } =
-		resolveConfig();
+		resolveConfig(ctx);
 
-	resolveCredentials()
+	resolveCredentials(ctx)
 		.then(({ credentials, identityId }) => {
 			const buffer = getEventBuffer({
 				region,

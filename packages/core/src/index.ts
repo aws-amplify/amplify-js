@@ -38,12 +38,16 @@ export {
 	AnalyticsConfig,
 	GeoConfig,
 } from './singleton/types';
+
+// AmplifyContext — the singleton-free contract for category APIs
+export { AmplifyContext } from './singleton/AmplifyContext';
+
+// Configuration Builder
+export { createConfigurationBuilder } from './configurationBuilder';
 export {
-	Amplify,
-	fetchAuthSession,
-	AmplifyClass as AmplifyClassV6,
-	clearCredentials,
-} from './singleton';
+	ConfigurationBuilder,
+	AmplifyOutputsConfig,
+} from './configurationBuilder/createConfigurationBuilder';
 
 // Cognito Identity service client factories
 export {

@@ -1,3 +1,4 @@
+import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -23,12 +24,13 @@ const logger = new ConsoleLogger('PushNotification.recordMessageEvent');
  */
 export const createMessageEventRecorder =
 	(
+		ctx: AmplifyContext,
 		event: PinpointMessageEvent,
 		callback?: () => void,
 	): OnPushNotificationMessageHandler =>
 	async message => {
-		const { credentials } = await resolveCredentials();
-		const { appId, region } = resolveConfig();
+		const { credentials } = await resolveCredentials(ctx);
+		const { appId, region } = resolveConfig(ctx);
 		await recordMessageEvent({
 			appId,
 			credentials,

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
@@ -27,9 +27,10 @@ import { getRegionFromUserPoolId } from '../../../foundation/parsers';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmResetPassword(
+	ctx: AmplifyContext,
 	input: ConfirmResetPasswordInput,
 ): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolClientId, userPoolId, userPoolEndpoint } = authConfig;
 	const { username, newPassword } = input;

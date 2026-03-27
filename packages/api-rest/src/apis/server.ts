@@ -59,7 +59,7 @@ export const get = (
 	contextSpec: AmplifyServer.ContextSpec,
 	input: GetInput,
 ): GetOperation =>
-	commonGet(getAmplifyServerContext(contextSpec).amplify, input);
+	commonGet(getAmplifyServerContext(contextSpec).amplify as any, input);
 
 /**
  * POST HTTP request (server-side)
@@ -89,7 +89,7 @@ export const post = (
 	contextSpec: AmplifyServer.ContextSpec,
 	input: PostInput,
 ): PostOperation =>
-	commonPost(getAmplifyServerContext(contextSpec).amplify, input);
+	commonPost(getAmplifyServerContext(contextSpec).amplify as any, input);
 
 /**
  * PUT HTTP request (server-side)
@@ -119,7 +119,7 @@ export const put = (
 	contextSpec: AmplifyServer.ContextSpec,
 	input: PutInput,
 ): PutOperation =>
-	commonPut(getAmplifyServerContext(contextSpec).amplify, input);
+	commonPut(getAmplifyServerContext(contextSpec).amplify as any, input);
 
 /**
  * DELETE HTTP request (server-side)
@@ -148,7 +148,7 @@ export const del = (
 	contextSpec: AmplifyServer.ContextSpec,
 	input: DeleteInput,
 ): DeleteOperation =>
-	commonDel(getAmplifyServerContext(contextSpec).amplify, input);
+	commonDel(getAmplifyServerContext(contextSpec).amplify as any, input);
 
 /**
  * HEAD HTTP request (server-side)
@@ -177,7 +177,7 @@ export const head = (
 	contextSpec: AmplifyServer.ContextSpec,
 	input: HeadInput,
 ): HeadOperation =>
-	commonHead(getAmplifyServerContext(contextSpec).amplify, input);
+	commonHead(getAmplifyServerContext(contextSpec).amplify as any, input);
 
 /**
  * PATCH HTTP request (server-side)
@@ -207,4 +207,4 @@ export const patch = (
 	contextSpec: AmplifyServer.ContextSpec,
 	input: PatchInput,
 ): PatchOperation =>
-	commonPatch(getAmplifyServerContext(contextSpec).amplify, input);
+	commonPatch(getAmplifyServerContext(contextSpec).amplify as any, input);
