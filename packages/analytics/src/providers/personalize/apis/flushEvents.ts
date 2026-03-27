@@ -1,3 +1,4 @@
+import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -19,9 +20,9 @@ const logger = new ConsoleLogger('Personalize');
  * This API will make a best-effort attempt to flush events from the buffer. Events recorded immediately after invoking
  * this API may not be included in the flush.
  */
-export const flushEvents = () => {
-	const { region, flushSize, bufferSize, flushInterval } = resolveConfig();
-	resolveCredentials()
+export const flushEvents = (ctx: AmplifyContext) => {
+	const { region, flushSize, bufferSize, flushInterval } = resolveConfig(ctx);
+	resolveCredentials(ctx)
 		.then(({ credentials, identityId }) =>
 			getEventBuffer({
 				region,

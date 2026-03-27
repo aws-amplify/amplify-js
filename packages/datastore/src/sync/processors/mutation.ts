@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLResult } from '@aws-amplify/api';
-import { InternalAPI } from '@aws-amplify/api/internals';
+import { InternalAPIClass as InternalAPI } from '@aws-amplify/api/internals';
 import {
 	BackgroundProcessManager,
 	Category,

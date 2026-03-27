@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClass } from '../../singleton';
+import { AmplifyContext } from '../../singleton/AmplifyContext';
 import { LibraryOptions, ResourcesConfig } from '../../singleton/types';
+import { AuthClass } from '../../singleton/Auth';
 import { AmplifyServerContextError } from '../error';
 
 import { serverContextRegistry } from './serverContextRegistry';
@@ -18,8 +19,18 @@ export const createAmplifyServerContext = (
 	amplifyConfig: ResourcesConfig,
 	libraryOptions: LibraryOptions,
 ): AmplifyServer.ContextSpec => {
-	const amplify = new AmplifyClass();
-	amplify.configure(amplifyConfig, libraryOptions);
+	const auth = new AuthClass();
+	if (amplifyConfig.Auth) {
+		auth.configure(amplifyConfig.Auth, libraryOptions.Auth);
+	}
+
+	const amplify: AmplifyContext = {
+		resourcesConfig: amplifyConfig,
+		libraryOptions,
+		fetchAuthSession: (options) => auth.fetchAuthSession(options ?? {}),
+		clearCredentials: () => auth.clearCredentials(),
+		getTokens: (options) => auth.getTokens(options),
+	};
 
 	return serverContextRegistry.register({
 		amplify,

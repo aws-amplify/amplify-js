@@ -28,7 +28,7 @@ export const post = (
 	contextSpec: AmplifyServer.ContextSpec,
 	input: InternalPostInput,
 ) => {
-	return internalPost(getAmplifyServerContext(contextSpec).amplify, input);
+	return internalPost(getAmplifyServerContext(contextSpec).amplify as any, input);
 };
 
 export {

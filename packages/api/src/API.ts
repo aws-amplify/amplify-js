@@ -6,7 +6,7 @@ import {
 	DefaultCommonClientOptions,
 	generateClient as internalGenerateClient,
 } from '@aws-amplify/api-graphql/internals';
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 /**
  * Generates an API client that can work with models or raw GraphQL
@@ -17,9 +17,9 @@ import { Amplify } from '@aws-amplify/core';
 export function generateClient<
 	T extends Record<any, any> = never,
 	Options extends CommonPublicClientOptions = DefaultCommonClientOptions,
->(options?: Options): V6Client<T, Options> {
+>(ctx: AmplifyContext, options?: Options): V6Client<T, Options> {
 	return internalGenerateClient({
 		...(options || ({} as any)),
-		amplify: Amplify,
+		amplify: ctx,
 	}) as unknown as V6Client<T, Options>;
 }

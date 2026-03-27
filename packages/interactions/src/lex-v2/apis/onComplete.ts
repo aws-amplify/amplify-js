@@ -1,21 +1,24 @@
+
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import { OnCompleteInput } from '../types';
 import { resolveBotConfig } from '../utils';
-import { lexProvider } from '../AWSLexV2Provider';
+import { createLexV2Provider } from '../AWSLexV2Provider';
 import {
 	InteractionsValidationErrorCode,
 	assertValidationError,
 } from '../../errors';
 
-export const onComplete = (input: OnCompleteInput): void => {
+export const onComplete = (ctx: AmplifyContext, input: OnCompleteInput): void => {
 	const { botName, callback } = input;
-	const botConfig = resolveBotConfig(botName);
+	const botConfig = resolveBotConfig(ctx, botName);
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
 		`Bot ${botName} does not exist.`,
 	);
-	lexProvider.onComplete(botConfig, callback);
+	createLexV2Provider(ctx).onComplete(botConfig, callback);
 };

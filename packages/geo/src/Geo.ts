@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify, ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
 import { validateCoordinates } from './util';
@@ -34,15 +34,17 @@ export class GeoClass {
 	 */
 	private _config?: GeoConfig;
 	private _pluggables: GeoProvider[];
+	private ctx: AmplifyContext;
 
-	constructor() {
+	constructor(ctx: AmplifyContext) {
+		this.ctx = ctx;
 		this._config = undefined;
 		this._pluggables = [];
 
-		const amplifyConfig = Amplify.getConfig() ?? {};
+		const amplifyConfig = this.ctx.resourcesConfig ?? {};
 		this._config = Object.assign({}, this._config, amplifyConfig.Geo);
 
-		const locationProvider = new AmazonLocationServiceProvider(
+		const locationProvider = new AmazonLocationServiceProvider(ctx, 
 			amplifyConfig.Geo,
 		);
 		this._pluggables.push(locationProvider);
@@ -307,4 +309,3 @@ export class GeoClass {
 	}
 }
 
-export const Geo = new GeoClass();

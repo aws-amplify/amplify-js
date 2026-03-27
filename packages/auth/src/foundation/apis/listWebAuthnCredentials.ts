@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
@@ -19,14 +19,14 @@ import {
 } from '../types';
 
 export async function listWebAuthnCredentials(
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input?: ListWebAuthnCredentialsInput,
 ): Promise<ListWebAuthnCredentialsOutput> {
-	const authConfig = amplify.getConfig().Auth?.Cognito;
+	const authConfig = amplify.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
 
-	const { tokens } = await amplify.Auth.fetchAuthSession();
+	const { tokens } = await amplify.fetchAuthSession();
 	assertAuthTokens(tokens);
 
 	const listWebAuthnCredentialsResult = createListWebAuthnCredentialsClient({

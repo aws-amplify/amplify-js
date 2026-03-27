@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify, ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger} from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
@@ -64,6 +64,12 @@ const logger = new ConsoleLogger('AmazonAIIdentifyPredictionsProvider');
 
 export class AmazonAIIdentifyPredictionsProvider {
 	private rekognitionClient?: RekognitionClient;
+	private ctx: AmplifyContext;
+
+	constructor(ctx: AmplifyContext) {
+		this.ctx = ctx;
+	}
+
 	private textractClient?: TextractClient;
 
 	getProviderName() {
@@ -110,7 +116,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 					targetIdentityId: source.identityId,
 				};
 
-				getUrl({ key: source.key, options: storageConfig })
+				getUrl(this.ctx, { key: source.key, options: storageConfig })
 					.then(value => {
 						const parser =
 							/https:\/\/([a-zA-Z0-9%\-_.]+)\.s3\.[A-Za-z0-9%\-._~]+\/([a-zA-Z0-9%\-._~/]+)\?/;
@@ -166,14 +172,14 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyText(
 		input: IdentifyTextInput,
 	): Promise<IdentifyTextOutput> {
-		const { credentials } = await fetchAuthSession();
+		const { credentials } = await this.ctx.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyText = {} } =
-			Amplify.getConfig().Predictions?.identify ?? {};
+			this.ctx.resourcesConfig.Predictions?.identify ?? {};
 		const { region = '', defaults = {} } = identifyText;
 		const { format: configFormat = 'PLAIN' } = defaults;
 
@@ -258,14 +264,14 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyLabels(
 		input: IdentifyLabelsInput,
 	): Promise<IdentifyLabelsOutput> {
-		const { credentials } = await fetchAuthSession();
+		const { credentials } = await this.ctx.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyLabels = {} } =
-			Amplify.getConfig().Predictions?.identify ?? {};
+			this.ctx.resourcesConfig.Predictions?.identify ?? {};
 		const { region = '', defaults = {} } = identifyLabels;
 		const { type = 'LABELS' } = defaults;
 
@@ -360,14 +366,14 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyEntities(
 		input: IdentifyEntitiesInput,
 	): Promise<IdentifyEntitiesOutput> {
-		const { credentials } = await fetchAuthSession();
+		const { credentials } = await this.ctx.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyEntities = {} } =
-			Amplify.getConfig().Predictions?.identify ?? {};
+			this.ctx.resourcesConfig.Predictions?.identify ?? {};
 		const {
 			region = '',
 			celebrityDetectionEnabled = false,

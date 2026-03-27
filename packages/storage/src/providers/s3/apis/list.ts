@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	ListAllInput,
@@ -24,6 +24,7 @@ import { list as listInternal } from './internal/list';
  * @throws validation: `StorageValidationErrorCode` - thrown when there are issues with credentials
  */
 export function list(
+	ctx: AmplifyContext,
 	input: ListPaginateWithPathInput,
 ): Promise<ListPaginateWithPathOutput>;
 /**
@@ -34,6 +35,7 @@ export function list(
  * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
  */
 export function list(
+	ctx: AmplifyContext,
 	input: ListAllWithPathInput,
 ): Promise<ListAllWithPathOutput>;
 /**
@@ -46,7 +48,7 @@ export function list(
  * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
  * @throws validation: `StorageValidationErrorCode` - thrown when there are issues with credentials
  */
-export function list(input?: ListPaginateInput): Promise<ListPaginateOutput>;
+export function list(ctx: AmplifyContext, input?: ListPaginateInput): Promise<ListPaginateOutput>;
 /**
  * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
@@ -56,14 +58,15 @@ export function list(input?: ListPaginateInput): Promise<ListPaginateOutput>;
  * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
  * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
  */
-export function list(input?: ListAllInput): Promise<ListAllOutput>;
+export function list(ctx: AmplifyContext, input?: ListAllInput): Promise<ListAllOutput>;
 
 export function list(
+	ctx: AmplifyContext,
 	input?:
 		| ListAllInput
 		| ListPaginateInput
 		| ListAllWithPathInput
 		| ListPaginateWithPathInput,
 ) {
-	return listInternal(Amplify, input ?? {});
+	return listInternal(ctx, input ?? {});
 }

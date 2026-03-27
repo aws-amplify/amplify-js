@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	RemoveInput,
@@ -22,6 +22,7 @@ import { remove as removeInternal } from './internal/remove';
  * when there is no path or path is empty or path has a leading slash.
  */
 export function remove(
+	ctx: AmplifyContext,
 	input: RemoveWithPathInput,
 ): RemoveOperation<RemoveWithPathOutput>;
 /**
@@ -35,12 +36,12 @@ export function remove(
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
  * when there is no key or its empty.
  */
-export function remove(input: RemoveInput): RemoveOperation<RemoveOutput>;
+export function remove(ctx: AmplifyContext, input: RemoveInput): RemoveOperation<RemoveOutput>;
 
-export function remove(input: RemoveInput | RemoveWithPathInput) {
+export function remove(ctx: AmplifyContext, input: RemoveInput | RemoveWithPathInput) {
 	if ('key' in input) {
-		return removeInternal(Amplify, input);
+		return removeInternal(ctx, input);
 	} else {
-		return removeInternal(Amplify, input);
+		return removeInternal(ctx, input);
 	}
 }

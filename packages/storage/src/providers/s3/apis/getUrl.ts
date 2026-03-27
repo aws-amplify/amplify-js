@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	GetUrlInput,
@@ -29,6 +29,7 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  *
  */
 export function getUrl(
+	ctx: AmplifyContext,
 	input: GetUrlWithPathInput,
 ): Promise<GetUrlWithPathOutput>;
 /**
@@ -50,8 +51,8 @@ export function getUrl(
  * thrown either username or key are not defined.
  *
  */
-export function getUrl(input: GetUrlInput): Promise<GetUrlOutput>;
+export function getUrl(ctx: AmplifyContext, input: GetUrlInput): Promise<GetUrlOutput>;
 
-export function getUrl(input: GetUrlInput | GetUrlWithPathInput) {
-	return getUrlInternal(Amplify, input);
+export function getUrl(ctx: AmplifyContext, input: GetUrlInput | GetUrlWithPathInput) {
+	return getUrlInternal(ctx, input);
 }

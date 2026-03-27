@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	CopyInput,
@@ -21,7 +21,7 @@ import { copy as copyInternal } from './internal/copy';
  * @throws validation: `StorageValidationErrorCode` - Thrown when
  * source or destination path is not defined.
  */
-export function copy(input: CopyWithPathInput): Promise<CopyWithPathOutput>;
+export function copy(ctx: AmplifyContext, input: CopyWithPathInput): Promise<CopyWithPathOutput>;
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/copy | path} instead.
@@ -35,8 +35,8 @@ export function copy(input: CopyWithPathInput): Promise<CopyWithPathOutput>;
  * @throws validation: `StorageValidationErrorCode` - Thrown when
  * source or destination key is not defined.
  */
-export function copy(input: CopyInput): Promise<CopyOutput>;
+export function copy(ctx: AmplifyContext, input: CopyInput): Promise<CopyOutput>;
 
-export function copy(input: CopyInput | CopyWithPathInput) {
-	return copyInternal(Amplify, input);
+export function copy(ctx: AmplifyContext, input: CopyInput | CopyWithPathInput) {
+	return copyInternal(ctx, input);
 }

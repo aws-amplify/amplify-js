@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, Subscription, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
-import { ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
 	DocumentType,
@@ -78,6 +78,7 @@ interface AWSWebSocketProviderArgs {
 }
 
 export abstract class AWSWebSocketProvider {
+	protected ctx: AmplifyContext;
 	protected logger: ConsoleLogger;
 	protected subscriptionObserverMap = new Map<string, ObserverQuery>();
 	protected allowNoSubscriptions = false;
@@ -94,7 +95,8 @@ export abstract class AWSWebSocketProvider {
 	private readonly wsProtocolName: string;
 	private readonly wsConnectUri: string;
 
-	constructor(args: AWSWebSocketProviderArgs) {
+	constructor(ctx: AmplifyContext, args: AWSWebSocketProviderArgs) {
+		this.ctx = ctx;
 		this.logger = new ConsoleLogger(args.providerName);
 		this.wsProtocolName = args.wsProtocolName;
 		this.wsConnectUri = args.connectUri;
@@ -829,7 +831,7 @@ export abstract class AWSWebSocketProvider {
 					// Empty payload on connect
 					const payloadString = '{}';
 
-					const authHeader = await awsRealTimeHeaderBasedAuth({
+					const authHeader = await awsRealTimeHeaderBasedAuth(this.ctx, {
 						authenticationType,
 						payload: payloadString,
 						canonicalUri: this.wsConnectUri,

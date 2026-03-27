@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -47,7 +47,7 @@ const storageBucketAssertion = (
 };
 
 export const copy = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: CopyInput | CopyWithPathInputWithAdvancedOptions,
 ): Promise<CopyOutput | CopyWithPathOutput> => {
 	return isCopyInputWithPath(input)
@@ -56,7 +56,7 @@ export const copy = async (
 };
 
 const copyWithPath = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: CopyWithPathInputWithAdvancedOptions,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
@@ -123,7 +123,7 @@ const copyWithPath = async (
 
 /** @deprecated Use {@link copyWithPath} instead. */
 export const copyWithKey = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: CopyInput,
 ): Promise<CopyOutput> => {
 	const { source, destination } = input;

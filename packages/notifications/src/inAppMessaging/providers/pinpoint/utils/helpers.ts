@@ -1,3 +1,4 @@
+import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -38,13 +39,14 @@ let eventMetricsMemo: Record<string, boolean> = {};
 export const logger = new ConsoleLogger('InAppMessaging.Pinpoint.Utils');
 
 export const recordAnalyticsEvent = (
+	ctx: AmplifyContext,
 	event: PinpointMessageEvent,
 	message: InAppMessage,
 ) => {
-	const { appId, region } = resolveConfig();
+	const { appId, region } = resolveConfig(ctx);
 
 	const { id, metadata } = message;
-	resolveCredentials()
+	resolveCredentials(ctx)
 		.then(({ credentials, identityId }) => {
 			recordCore({
 				appId,

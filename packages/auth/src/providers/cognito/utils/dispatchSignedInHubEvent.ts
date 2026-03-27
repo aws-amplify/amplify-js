@@ -4,6 +4,7 @@
 import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
+import { AmplifyContext } from '@aws-amplify/core';
 import { getCurrentUser } from '../apis/getCurrentUser';
 import {
 	UNEXPECTED_SIGN_IN_INTERRUPTION_EXCEPTION,
@@ -14,13 +15,13 @@ import { AuthError } from '../../../errors/AuthError';
 export const ERROR_MESSAGE =
 	'Unable to get user session following successful sign-in.';
 
-export const dispatchSignedInHubEvent = async () => {
+export const dispatchSignedInHubEvent = async (ctx: AmplifyContext) => {
 	try {
 		Hub.dispatch(
 			'auth',
 			{
 				event: 'signedIn',
-				data: await getCurrentUser(),
+				data: await getCurrentUser(ctx),
 			},
 			'Auth',
 			AMPLIFY_SYMBOL,

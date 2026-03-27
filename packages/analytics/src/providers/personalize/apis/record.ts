@@ -1,3 +1,4 @@
+import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -50,7 +51,7 @@ const logger = new ConsoleLogger('Personalize');
  *
  * @returns void
  */
-export const record = ({
+export const record = (ctx: AmplifyContext, {
 	userId,
 	eventId,
 	eventType,
@@ -63,8 +64,8 @@ export const record = ({
 	}
 
 	const { region, trackingId, bufferSize, flushSize, flushInterval } =
-		resolveConfig();
-	resolveCredentials()
+		resolveConfig(ctx);
+	resolveCredentials(ctx)
 		.then(async ({ credentials, identityId }) => {
 			const timestamp = Date.now();
 			const { sessionId: cachedSessionId, userId: cachedUserId } =

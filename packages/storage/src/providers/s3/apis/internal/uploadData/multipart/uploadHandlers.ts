@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	AmplifyClassV6,
+	AmplifyContext,
 	KeyValueStorageInterface,
 	StorageAccessLevel,
 } from '@aws-amplify/core';
@@ -86,7 +86,7 @@ export type MultipartUploadDataInput = WithResumableCacheConfig<
  * @internal
  */
 export const getMultipartUploadHandlers = (
-	amplify: AmplifyClassV6,
+	ctx: AmplifyContext,
 	uploadDataInput: MultipartUploadDataInput,
 	size: number,
 ) => {
@@ -120,7 +120,7 @@ export const getMultipartUploadHandlers = (
 	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const resolvedS3Options = await resolveS3ConfigAndInput(
-			amplify,
+			ctx,
 			uploadDataInput,
 		);
 
@@ -156,7 +156,7 @@ export const getMultipartUploadHandlers = (
 
 			resolvedKeyPrefix = resolvedS3Options.keyPrefix;
 			finalKey = resolvedKeyPrefix + objectKey;
-			resolvedAccessLevel = resolveAccessLevel(amplify, accessLevel);
+			resolvedAccessLevel = resolveAccessLevel(ctx, accessLevel);
 		}
 
 		const optionsHash = await calculateContentCRC32(
@@ -365,12 +365,9 @@ export const getMultipartUploadHandlers = (
 	};
 };
 
-const resolveAccessLevel = (
-	amplify: AmplifyClassV6,
-	accessLevel?: StorageAccessLevel,
-) =>
+const resolveAccessLevel = (ctx: AmplifyContext, accessLevel?: StorageAccessLevel) =>
 	accessLevel ??
-	amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
+	ctx.libraryOptions.Storage?.S3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;
 
 const validateCompletedParts = (completedParts: Part[], size: number) => {

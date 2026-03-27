@@ -29,7 +29,7 @@ import { ClientGenerationParams } from './types';
 /**
  * @private
  *
- * Creates a client that can be used to make GraphQL requests, using a provided `AmplifyClassV6`
+ * Creates a client that can be used to make GraphQL requests, using a provided `AmplifyContext`
  * compatible context object for config and auth fetching.
  *
  * @param params
@@ -56,7 +56,7 @@ export function generateClient<
 		subscriptions: emptyProperty as CustomSubscriptions<never>,
 	} as any;
 
-	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
+	const apiGraphqlConfig = params.amplify.resourcesConfig.API?.GraphQL;
 
 	if (client[__endpoint]) {
 		if (!client[__authMode]) {

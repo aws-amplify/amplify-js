@@ -27,7 +27,8 @@ export type GetLaunchNotification = () => Promise<GetLaunchNotificationOutput>;
 
 export type GetPermissionStatus = () => Promise<GetPermissionStatusOutput>;
 
-export type IdentifyUser = (input: IdentifyUserInput) => Promise<void>;
+import { AmplifyContext } from '@aws-amplify/core';
+export type IdentifyUser = (ctx: AmplifyContext, input: IdentifyUserInput) => Promise<void>;
 
 export type InitializePushNotifications = () => void;
 

@@ -24,7 +24,7 @@ import { cancel, graphql, isCancelError } from '..';
  *
  * Used internally by `adapter-nextjs` package.
  *
- * Creates a client that can be used to make GraphQL requests, using a provided `AmplifyClassV6`
+ * Creates a client that can be used to make GraphQL requests, using a provided `AmplifyContext`
  * compatible context object for config and auth fetching.
  *
  * @param params

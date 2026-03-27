@@ -1,12 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLResult } from '@aws-amplify/api';
-import { InternalAPI } from '@aws-amplify/api/internals';
+import { InternalAPIClass as InternalAPI } from '@aws-amplify/api/internals';
 import {
 	ConsoleLogger,
 	Hub,
 	HubCapsule,
-	fetchAuthSession,
 } from '@aws-amplify/core';
 import {
 	BackgroundProcessManager,
@@ -270,7 +269,7 @@ class SubscriptionProcessor {
 			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials
-					const credentials = (await fetchAuthSession()).tokens?.accessToken;
+					const credentials = (await (this.amplifyContext as any).fetchAuthSession()).tokens?.accessToken;
 					userCredentials = credentials
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;
@@ -280,7 +279,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
-					const session = await fetchAuthSession();
+					const session = await (this.amplifyContext as any).fetchAuthSession();
 					oidcTokenPayload = session.tokens?.idToken?.payload;
 				} catch (err) {
 					// best effort to get jwt from Cognito

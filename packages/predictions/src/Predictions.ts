@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import {
 	AmazonAIConvertPredictionsProvider,
 	AmazonAIIdentifyPredictionsProvider,
@@ -24,9 +26,18 @@ import {
 } from './types';
 
 export class PredictionsClass {
-	private convertProvider = new AmazonAIConvertPredictionsProvider();
-	private identifyProvider = new AmazonAIIdentifyPredictionsProvider();
-	private interpretProvider = new AmazonAIInterpretPredictionsProvider();
+	private ctx: AmplifyContext;
+
+	private convertProvider: AmazonAIConvertPredictionsProvider;
+	private identifyProvider: AmazonAIIdentifyPredictionsProvider;
+	private interpretProvider: AmazonAIInterpretPredictionsProvider;
+
+	constructor(ctx: AmplifyContext) {
+		this.ctx = ctx;
+		this.convertProvider = new AmazonAIConvertPredictionsProvider(ctx);
+		this.identifyProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
+		this.interpretProvider = new AmazonAIInterpretPredictionsProvider(ctx);
+	}
 
 	public getModuleName() {
 		return 'Predictions';
@@ -60,4 +71,4 @@ export class PredictionsClass {
 	}
 }
 
-export const Predictions = new PredictionsClass();
+export const createPredictions = (ctx: AmplifyContext) => new PredictionsClass(ctx);

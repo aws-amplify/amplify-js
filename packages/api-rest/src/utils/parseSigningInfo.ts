@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	APIG_HOSTNAME_PATTERN,
@@ -18,7 +18,7 @@ import {
 export const parseSigningInfo = (
 	url: URL,
 	restApiOptions?: {
-		amplify: AmplifyClassV6;
+		amplify: AmplifyContext;
 		apiName: string;
 	},
 ) => {
@@ -26,7 +26,7 @@ export const parseSigningInfo = (
 		service: signingService = DEFAULT_REST_IAM_SIGNING_SERVICE,
 		region: signingRegion = DEFAULT_IAM_SIGNING_REGION,
 	} =
-		restApiOptions?.amplify.getConfig()?.API?.REST?.[restApiOptions?.apiName] ??
+		restApiOptions?.amplify.resourcesConfig?.API?.REST?.[restApiOptions?.apiName] ??
 		{};
 	const { hostname } = url;
 	const [, service, region] = APIG_HOSTNAME_PATTERN.exec(hostname) ?? [];

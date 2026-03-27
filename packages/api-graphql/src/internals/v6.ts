@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
-import { GraphQLAPI } from '../GraphQLAPI';
+import { createGraphQLAPI } from '../GraphQLAPI';
+import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
+import { cancel as cancelREST } from '@aws-amplify/api-rest/internals';
 import {
 	CommonPublicClientOptions,
 	GraphQLOptions,
@@ -151,7 +153,7 @@ export function graphql<
 	 * Neither of these can actually be validated at runtime. Hence, we don't perform
 	 * any validation or type-guarding here.
 	 */
-	const result = GraphQLAPI.graphql(
+	const result = createGraphQLAPI(internals.amplify as any).graphql(
 		// TODO: move V6Client back into this package?
 		internals.amplify as any,
 		{
@@ -174,7 +176,7 @@ export function cancel(
 	promise: Promise<any>,
 	message?: string,
 ): boolean {
-	return GraphQLAPI.cancel(promise, message);
+	return cancelREST(promise, message);
 }
 
 /**
@@ -183,7 +185,7 @@ export function cancel(
  * @returns - A boolean indicating if the error was from an api request cancellation
  */
 export function isCancelError(this: V6Client, error: any): boolean {
-	return GraphQLAPI.isCancelError(error);
+	return isCancelErrorREST(error);
 }
 
 export { GraphQLOptionsV6, GraphQLResponseV6 };

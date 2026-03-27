@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	Headers,
 	HttpRequest,
@@ -49,7 +49,7 @@ type RetryDecider = RetryOptions['retryDecider'];
  * @internal
  */
 export const transferHandler = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	options: HandlerOptions & { abortSignal: AbortSignal },
 	iamAuthApplicable: (
 		{ headers }: HttpRequest,
@@ -139,10 +139,10 @@ const getRetryDeciderFromStrategy = (
 };
 
 const resolveCredentials = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 ): Promise<AWSCredentials | null> => {
 	try {
-		const { credentials } = await amplify.Auth.fetchAuthSession();
+		const { credentials } = await amplify.fetchAuthSession();
 		if (credentials) {
 			return credentials;
 		}

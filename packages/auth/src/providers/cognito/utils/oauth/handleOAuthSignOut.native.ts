@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import { CognitoUserPoolConfig } from '@aws-amplify/core';
 
 import { OpenAuthSessionResult } from '../../../../utils/types';
@@ -11,6 +13,7 @@ import { completeOAuthSignOut } from './completeOAuthSignOut';
 import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 
 export const handleOAuthSignOut = async (
+	ctx: AmplifyContext,
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
 	// No-op here as it's only used in the non-native implementation
@@ -29,11 +32,11 @@ export const handleOAuthSignOut = async (
 		const shouldCompleteSignOut =
 			preferPrivateSession || result?.type === 'success';
 		if (shouldCompleteSignOut) {
-			await completeOAuthSignOut(store);
+			await completeOAuthSignOut(ctx, store);
 		}
 
 		return result;
 	}
 
-	return completeOAuthSignOut(store);
+	return completeOAuthSignOut(ctx, store);
 };

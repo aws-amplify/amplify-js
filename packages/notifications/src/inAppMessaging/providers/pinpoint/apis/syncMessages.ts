@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import { resolveEndpointId } from '@aws-amplify/core/internals/providers/pinpoint';
 import { defaultStorage } from '@aws-amplify/core';
@@ -42,9 +44,9 @@ import { assertIsInitialized } from '../../../utils';
  *
  * ```
  */
-export async function syncMessages(): Promise<void> {
+export async function syncMessages(ctx: AmplifyContext): Promise<void> {
 	assertIsInitialized();
-	const messages = await fetchInAppMessages();
+	const messages = await fetchInAppMessages(ctx);
 	if (!messages || messages.length === 0) {
 		return;
 	}
@@ -57,10 +59,10 @@ export async function syncMessages(): Promise<void> {
 	}
 }
 
-async function fetchInAppMessages() {
+async function fetchInAppMessages(ctx: AmplifyContext) {
 	try {
-		const { credentials, identityId } = await resolveCredentials();
-		const { appId, region } = resolveConfig();
+		const { credentials, identityId } = await resolveCredentials(ctx);
+		const { appId, region } = resolveConfig(ctx);
 		const endpointId = await resolveEndpointId({
 			appId,
 			category: CATEGORY,

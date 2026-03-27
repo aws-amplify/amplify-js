@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext as CoreAmplifyContext } from '@aws-amplify/core';
+import { fetchAuthSession } from '@aws-amplify/core/internals/utils';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -139,13 +140,13 @@ function getAuthRules({
  * @returns A sorted array of auth modes to attempt.
  */
 export const multiAuthStrategy: (
-	amplifyContext: AmplifyContext,
+	amplifyContext: CoreAmplifyContext,
 ) => AuthModeStrategy =
-	() =>
+	amplifyContext =>
 	async ({ schema, modelName }) => {
 		let currentUser;
 		try {
-			const authSession = await fetchAuthSession();
+			const authSession = await fetchAuthSession(amplifyContext);
 			if (authSession.tokens.accessToken) {
 				// the user is authenticated
 				currentUser = authSession;

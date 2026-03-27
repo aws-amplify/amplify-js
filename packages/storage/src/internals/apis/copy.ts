@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { copy as copyInternal } from '../../providers/s3/apis/internal/copy';
 import { CopyInput } from '../types/inputs';
@@ -10,8 +10,8 @@ import { CopyOutput } from '../types/outputs';
 /**
  * @internal
  */
-export const copy = (input: CopyInput) =>
-	copyInternal(Amplify, {
+export const copy = (ctx: AmplifyContext, input: CopyInput) =>
+	copyInternal(ctx, {
 		source: {
 			path: input.source.path,
 			bucket: input.source.bucket,

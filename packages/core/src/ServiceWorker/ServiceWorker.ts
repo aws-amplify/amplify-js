@@ -5,7 +5,6 @@ import { ConsoleLogger } from '../Logger';
 import { isBrowser } from '../utils';
 import { AmplifyError } from '../errors';
 import { record } from '../providers/pinpoint';
-import { Amplify, fetchAuthSession } from '../singleton';
 
 import { ServiceWorkerErrorCode, assert } from './errorHelpers';
 
@@ -223,8 +222,8 @@ export class ServiceWorkerClass {
 				flushInterval,
 				flushSize,
 				resendLimit,
-			} = Amplify.getConfig().Analytics?.Pinpoint ?? {};
-			const { credentials } = await fetchAuthSession();
+			} = ({} as any).Analytics?.Pinpoint ?? {};
+			const credentials = undefined; // TODO: ServiceWorker needs AmplifyContext
 
 			if (appId && region && credentials) {
 				// Pinpoint is configured, record an event

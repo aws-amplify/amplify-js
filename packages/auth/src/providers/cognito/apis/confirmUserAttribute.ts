@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
@@ -27,9 +27,10 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmUserAttribute(
+	ctx: AmplifyContext,
 	input: ConfirmUserAttributeInput,
 ): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { confirmationCode, userAttributeKey } = input;
@@ -37,7 +38,7 @@ export async function confirmUserAttribute(
 		!!confirmationCode,
 		AuthValidationErrorCode.EmptyConfirmUserAttributeCode,
 	);
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await ctx.fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const verifyUserAttribute = createVerifyUserAttributeClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({

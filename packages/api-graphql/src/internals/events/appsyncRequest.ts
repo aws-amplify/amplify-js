@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	CustomUserAgentDetails,
@@ -35,7 +35,7 @@ interface GqlRequestOptions {
 // and extend _graphql() without having to change a bunch of tests as well... which in turn reduces confidence
 // that this feature will _not affect_ GQL behavior.
 export async function appsyncRequest<T = any>(
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	options: GqlRequestOptions,
 	additionalHeaders: CustomHeaders = {},
 	abortController: AbortController,
@@ -74,7 +74,7 @@ export async function appsyncRequest<T = any>(
 				region,
 			};
 
-	const { body: responseBody } = await post(amplify, {
+	const { body: responseBody } = await post(amplify as any, {
 		url: new AmplifyUrl(endpoint),
 		options: {
 			headers,
@@ -103,7 +103,7 @@ export async function appsyncRequest<T = any>(
  * @returns HTTP request headers key/value
  */
 async function requestHeaders(
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	options: GqlRequestOptions,
 	additionalHeaders: CustomHeaders,
 	customUserAgentDetails?: CustomUserAgentDetails,
