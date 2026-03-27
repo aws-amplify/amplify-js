@@ -43,11 +43,9 @@ const createUrlObjectOrUndefined = (
 		return undefined;
 	}
 
-	// we don't allow format such as `https://localhost:` (without the port number) which is valid in URL constructor
 	if (!originRegex.test(url)) {
 		return undefined;
 	}
 
-	// the `originRegex` ensured a string that can be parsed by URL constructor
 	return new URL(url);
 };

@@ -36,7 +36,7 @@ export {
 	hasActiveUserSessionWithPagesRouter,
 } from './hasActiveUserSession';
 export { isSupportedAuthApiRoutePath } from './isSupportedAuthApiRoutePath';
-export { isValidOrigin, isSSLOrigin } from './origin';
+export { isValidOrigin, isSSLOrigin } from 'aws-amplify/adapter-core';
 export { parseSignInCallbackUrl } from './parseSignInCallbackUrl';
 export { resolveIdentityProviderFromUrl } from './resolveIdentityProviderFromUrl';
 export {

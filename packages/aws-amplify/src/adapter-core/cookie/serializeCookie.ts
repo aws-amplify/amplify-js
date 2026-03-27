@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CookieStorage } from 'aws-amplify/adapter-core';
+import { CookieStorage } from '@aws-amplify/core/internals/adapter-core';
 
 import { ensureEncodedForJSCookie } from './ensureEncodedForJSCookie';
 

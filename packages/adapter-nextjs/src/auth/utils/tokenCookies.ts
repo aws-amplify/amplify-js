@@ -15,7 +15,7 @@ import {
 } from '../constant';
 
 import { getAccessTokenUsername } from './getAccessTokenUsername';
-import { isSSLOrigin } from './origin';
+import { isSSLOrigin } from 'aws-amplify/adapter-core';
 
 export const createTokenCookies = ({
 	tokensPayload,

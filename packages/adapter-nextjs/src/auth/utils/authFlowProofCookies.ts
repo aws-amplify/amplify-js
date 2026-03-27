@@ -12,7 +12,7 @@ import {
 	STATE_COOKIE_NAME,
 } from '../constant';
 
-import { isSSLOrigin } from './origin';
+import { isSSLOrigin } from 'aws-amplify/adapter-core';
 
 export const createSignInFlowProofCookies = ({
 	state,

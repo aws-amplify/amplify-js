@@ -2,26 +2,36 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig } from 'aws-amplify';
+import { createServerRunner as createGenericServerRunner } from 'aws-amplify/adapter-core';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
 
-import { createRunWithAmplifyServerContext, globalSettings } from '../utils';
 import { NextServer } from '../types';
+import { createCookieStorageAdapterFromNextServerContext } from '../utils/createCookieStorageAdapterFromNextServerContext';
 
 export const createServerRunnerForAPI = ({
 	config,
-}: NextServer.CreateServerRunnerInput): Omit<
-	NextServer.CreateServerRunnerOutput,
-	'createAuthRouteHandlers'
-> & {
+}: NextServer.CreateServerRunnerInput): {
+	runWithAmplifyServerContext: NextServer.RunOperationWithContext;
 	resourcesConfig: ResourcesConfig;
 } => {
 	const amplifyConfig = parseAmplifyConfig(config);
 
-	return {
-		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
+	const { runWithAmplifyServerContext: runGeneric, globalSettings } =
+		createGenericServerRunner({
 			config: amplifyConfig,
-			globalSettings,
-		}),
+			createCookieStorageAdapter: (serverContext) =>
+				createCookieStorageAdapterFromNextServerContext(
+					serverContext as NextServer.Context,
+					globalSettings.isServerSideAuthEnabled(),
+				),
+		});
+
+	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
+		async ({ nextServerContext, operation }) =>
+			runGeneric({ serverContext: nextServerContext, operation });
+
+	return {
+		runWithAmplifyServerContext,
 		resourcesConfig: amplifyConfig,
 	};
 };

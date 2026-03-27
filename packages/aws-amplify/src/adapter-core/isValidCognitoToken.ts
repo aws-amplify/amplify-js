@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { JwtExpiredError } from 'aws-jwt-verify/error';
+import { CognitoJwtVerifier } from 'aws-jwt-verify';
 
-import { JwtVerifier } from '../types';
+type JwtVerifier = ReturnType<typeof CognitoJwtVerifier.create>;
 
 /**
  * Verifies a Cognito JWT token for its validity.

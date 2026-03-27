@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { KeyValueStorageMethodValidator } from 'aws-amplify/adapter-core/internals';
+import { KeyValueStorageMethodValidator } from '@aws-amplify/core/internals/adapter-core';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 
-import { JwtVerifier } from '../types';
-
 import { isValidCognitoToken } from './isValidCognitoToken';
+
+type JwtVerifier = ReturnType<typeof CognitoJwtVerifier.create>;
 
 interface CreateTokenValidatorInput {
 	userPoolId?: string;

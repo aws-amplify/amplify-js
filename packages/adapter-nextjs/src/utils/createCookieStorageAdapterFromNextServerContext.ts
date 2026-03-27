@@ -10,7 +10,7 @@ import {
 import { NextServer } from '../types';
 import { isServerSideAuthAllowedCookie } from '../auth/utils';
 
-import { ensureEncodedForJSCookie, serializeCookie } from './cookie';
+import { ensureEncodedForJSCookie, serializeCookie } from 'aws-amplify/adapter-core';
 
 export const DATE_IN_THE_PAST = new Date(0);
 

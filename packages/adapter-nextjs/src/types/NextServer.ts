@@ -10,6 +10,7 @@ import {
 	LegacyConfig,
 } from 'aws-amplify/adapter-core/internals';
 import { AmplifyContext, ResourcesConfig } from 'aws-amplify';
+import { GlobalSettings as CoreGlobalSettings } from 'aws-amplify/adapter-core';
 
 import { CreateAuthRouteHandlers } from '../auth/types';
 
@@ -68,7 +69,7 @@ export declare namespace NextServer {
 		| GetServerSidePropsContext;
 
 	export interface RunWithContextInput<OperationResult> {
-		nextServerContext: Context | null;
+		serverContext: Context | null;
 		operation(
 			amplifyContext: AmplifyContext,
 		): OperationResult | Promise<OperationResult>;
@@ -177,12 +178,7 @@ export declare namespace NextServer {
 		input: CreateServerRunnerInput,
 	) => CreateServerRunnerOutput;
 
-	export interface GlobalSettings {
-		isServerSideAuthEnabled(): boolean;
-		enableServerSideAuth(): void;
-		setRuntimeOptions(runtimeOptions: CreateServerRunnerRuntimeOptions): void;
+	export interface GlobalSettings extends CoreGlobalSettings {
 		getRuntimeOptions(): CreateServerRunnerRuntimeOptions;
-		setIsSSLOrigin(isSSLOrigin: boolean): void;
-		isSSLOrigin(): boolean;
 	}
 }
