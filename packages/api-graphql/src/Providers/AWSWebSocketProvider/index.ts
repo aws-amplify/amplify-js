@@ -701,16 +701,49 @@ export abstract class AWSWebSocketProvider {
 				});
 
 				let errorMessage = JSON.stringify(payload ?? data);
+				let isAuthError = false;
+
+				const AUTH_ERROR_TYPES = [
+					'UnauthorizedException',
+					'Unauthorized',
+					'NotAuthorizedException',
+				];
 
 				if (type === MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR) {
 					const { errors } = JSON.parse(String(message.data));
 					if (Array.isArray(errors) && errors.length > 0) {
 						const error = errors[0];
 						errorMessage = `${error.errorType}: ${error.message}`;
+						isAuthError =
+							AUTH_ERROR_TYPES.includes(error.errorType) ||
+							error.message?.includes('Token expired');
+					}
+				} else if (
+					type === MESSAGE_TYPES.GQL_ERROR &&
+					payload &&
+					typeof payload === 'object'
+				) {
+					const { errors } = payload as Record<string, unknown>;
+					if (Array.isArray(errors) && errors.length > 0) {
+						const error = errors[0] as Record<string, string>;
+						isAuthError =
+							AUTH_ERROR_TYPES.includes(error.errorType) ||
+							error.message?.includes('Token expired');
 					}
 				}
 
 				this.logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${errorMessage}`);
+
+				// On auth errors, close the socket to trigger reconnection with fresh tokens.
+				// The onclose handler fires _errorDisconnect → CONNECTION_CLOSED, which the
+				// ConnectionStateMonitor picks up as ConnectionDisrupted and the
+				// ReconnectionMonitor reconnects with refreshed credentials.
+				if (isAuthError && this.awsRealTimeSocket) {
+					this.logger.warn(
+						'Subscription failed due to auth error, closing WebSocket to trigger reconnection with fresh tokens',
+					);
+					this.awsRealTimeSocket.close(1000, 'Auth error - reconnecting');
+				}
 
 				observer.error({
 					errors: [
