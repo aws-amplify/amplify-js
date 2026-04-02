@@ -7,7 +7,6 @@ import {
 	V6Client,
 	V6ClientSSRCookies,
 	generateClient,
-	generateClientWithAmplifyInstance,
 } from 'aws-amplify/api/internals';
 import { AmplifyServerContextError } from 'aws-amplify/adapter-core/internals';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
@@ -48,22 +47,16 @@ export function generateServerClientUsingCookies<
 		});
 	}
 
-	const { runWithAmplifyServerContext, resourcesConfig } =
-		createServerRunnerForAPI({ config: options.config });
-
-	const getAmplify = (fn: (amplify: any) => Promise<any>) =>
-		runWithAmplifyServerContext({
-			nextServerContext: { cookies: options.cookies },
-			operation: amplifyContext => fn(amplifyContext),
-		});
+	const { resourcesConfig } = createServerRunnerForAPI({
+		config: options.config,
+	});
 
 	const { cookies: _cookies, config: _config, ...params } = options;
 
-	return generateClientWithAmplifyInstance<T, V6ClientSSRCookies<T, Options>>({
-		amplify: getAmplify,
+	return generateClient<T>({
 		config: resourcesConfig,
 		...params,
-	} as any);
+	} as any) as any;
 }
 
 /**
@@ -87,8 +80,6 @@ export function generateServerClientUsingReqRes<
 
 	const { config: _config, ...params } = options;
 
-	// Use the regular client generateClient — the AmplifyContext will be
-	// provided per-request via runWithAmplifyServerContext
 	return generateClient<T>({
 		config: amplifyConfig,
 		...params,

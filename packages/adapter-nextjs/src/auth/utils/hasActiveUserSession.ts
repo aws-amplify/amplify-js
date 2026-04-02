@@ -18,7 +18,7 @@ export const hasActiveUserSessionWithAppRouter = async ({
 
 	try {
 		await runWithAmplifyServerContext({
-			nextServerContext: { request, response: dummyResponse },
+			serverContext: { request, response: dummyResponse },
 			operation(ctx) {
 				return getCurrentUser(ctx);
 			},
@@ -42,7 +42,7 @@ export const hasActiveUserSessionWithPagesRouter = async ({
 }): Promise<boolean> => {
 	try {
 		await runWithAmplifyServerContext({
-			nextServerContext: { request, response },
+			serverContext: { request, response },
 			operation(ctx) {
 				return getCurrentUser(ctx);
 			},

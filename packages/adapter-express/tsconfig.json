@@ -1,0 +1,14 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"alwaysStrict": true,
+		"lib": [
+			"esnext"
+		]
+	},
+	"include": [
+		"./src",
+		"__tests__"
+	]
+}

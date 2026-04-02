@@ -19,7 +19,7 @@ export const createServerRunnerForAPI = ({
 	const { runWithAmplifyServerContext: runGeneric, globalSettings } =
 		createGenericServerRunner({
 			config: amplifyConfig,
-			createCookieStorageAdapter: (serverContext) =>
+			createCookieStorageAdapter: serverContext =>
 				createCookieStorageAdapterFromNextServerContext(
 					serverContext as NextServer.Context,
 					globalSettings.isServerSideAuthEnabled(),
@@ -27,8 +27,8 @@ export const createServerRunnerForAPI = ({
 		});
 
 	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
-		async ({ nextServerContext, operation }) =>
-			runGeneric({ serverContext: nextServerContext, operation });
+		async ({ serverContext, operation }) =>
+			runGeneric({ serverContext, operation });
 
 	return {
 		runWithAmplifyServerContext,

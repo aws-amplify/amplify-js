@@ -1,15 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext, ResourcesConfig } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	ResourcesConfig,
+	sharedInMemoryStorage,
+} from '@aws-amplify/core';
 import {
 	CookieStorage,
 	KeyValueStorageMethodValidator,
 } from '@aws-amplify/core/internals/adapter-core';
-import {
-	parseAmplifyConfig,
-	sharedInMemoryStorage,
-} from '@aws-amplify/core/internals/utils';
+import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
 
 import { configure } from '../configure';
 
@@ -19,7 +20,7 @@ import {
 } from './authProvidersFactories/cognito';
 import { createKeyValueStorageFromCookieStorageAdapter } from './storageFactories';
 import { createTokenValidator } from './createTokenValidator';
-import { createGlobalSettings, type GlobalSettings } from './globalSettings';
+import { createGlobalSettings } from './globalSettings';
 import { isSSLOrigin, isValidOrigin } from './origin';
 
 const DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS = {
@@ -40,14 +41,14 @@ export interface CreateServerRunnerInput {
 	 * from whatever server context the framework provides.
 	 * Return `null` for unauthenticated / static rendering.
 	 */
-	createCookieStorageAdapter: (
+	createCookieStorageAdapter(
 		serverContext: unknown,
-	) => CookieStorage.Adapter | Promise<CookieStorage.Adapter>;
+	): CookieStorage.Adapter | Promise<CookieStorage.Adapter>;
 }
 
 export interface RunWithContextInput<Result> {
 	serverContext: unknown | null;
-	operation: (ctx: AmplifyContext) => Result | Promise<Result>;
+	operation(ctx: AmplifyContext): Result | Promise<Result>;
 }
 
 export function createServerRunner({
@@ -80,7 +81,8 @@ export function createServerRunner({
 
 	const isServerSideAuthEnabled = globalSettings.isServerSideAuthEnabled();
 	const isSSL = globalSettings.isSSLOrigin();
-	const setCookieOptions = (runtimeOptions?.cookies as CookieStorage.SetCookieOptions) ?? {};
+	const setCookieOptions =
+		(runtimeOptions?.cookies as CookieStorage.SetCookieOptions) ?? {};
 
 	const mergedSetCookieOptions: CookieStorage.SetCookieOptions = {
 		...(isServerSideAuthEnabled && DEFAULT_SERVER_SIDE_AUTH_SET_COOKIE_OPTIONS),
