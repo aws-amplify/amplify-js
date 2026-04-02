@@ -16,7 +16,6 @@ import {
 	DocumentType,
 	GraphQLAuthMode,
 } from '@aws-amplify/core/internals/utils';
-import { AmplifyContext } from '@aws-amplify/core';
 
 import { CommonPublicClientOptions } from '../internals/types';
 

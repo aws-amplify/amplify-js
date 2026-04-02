@@ -1,7 +1,0 @@
-{
-	"name": "@aws-amplify/api-graphql/server",
-	"types": "../dist/esm/server/index.d.ts",
-	"main": "../dist/cjs/server/index.js",
-	"module": "../dist/esm/server/index.mjs",
-	"sideEffects": false
-}
