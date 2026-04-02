@@ -12,7 +12,6 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { createRetryDecider, createXmlErrorParser } from '../utils';
-import { LOCAL_TESTING_S3_ENDPOINT } from '../../constants';
 import { assertValidationError } from '../../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../../errors/types/validation';
 
@@ -72,14 +71,18 @@ const endpointResolver = (
 	let endpoint: URL;
 	// 1. get base endpoint
 	if (customEndpoint) {
-		if (customEndpoint === LOCAL_TESTING_S3_ENDPOINT) {
+		if (
+			customEndpoint.startsWith('http://') ||
+			customEndpoint.startsWith('https://')
+		) {
 			endpoint = new AmplifyUrl(customEndpoint);
+		} else {
+			assertValidationError(
+				!customEndpoint.includes('://'),
+				StorageValidationErrorCode.InvalidCustomEndpoint,
+			);
+			endpoint = new AmplifyUrl(`https://${customEndpoint}`);
 		}
-		assertValidationError(
-			!customEndpoint.includes('://'),
-			StorageValidationErrorCode.InvalidCustomEndpoint,
-		);
-		endpoint = new AmplifyUrl(`https://${customEndpoint}`);
 	} else if (useAccelerateEndpoint) {
 		// this ErrorCode isn't expose yet since forcePathStyle param isn't publicly exposed
 		assertValidationError(

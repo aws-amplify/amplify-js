@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-/* eslint-disable camelcase */
-
 import {
 	AmplifyOutputsAnalyticsProperties,
 	AmplifyOutputsAuthProperties,
@@ -36,6 +34,18 @@ export interface AmplifyOutputsConfig {
 }
 
 export interface ConfigurationBuilder {
+	/**
+	 * Merge an existing config into this builder. Last write wins —
+	 * subsequent `.auth()`, `.storage()`, etc. calls override values set by `from()`.
+	 *
+	 * @example
+	 * ```ts
+	 * const authConfig = createConfigurationBuilder().auth({...}).build();
+	 * const fullConfig = createConfigurationBuilder().from(authConfig).storage({...}).build();
+	 * // fullConfig has both auth and storage
+	 * ```
+	 */
+	from(existing: Partial<AmplifyOutputsConfig>): ConfigurationBuilder;
 	auth(config: AmplifyOutputsAuthProperties): ConfigurationBuilder;
 	storage(config: AmplifyOutputsStorageProperties): ConfigurationBuilder;
 	data(config: AmplifyOutputsDataProperties): ConfigurationBuilder;
@@ -66,6 +76,17 @@ export function createConfigurationBuilder(): ConfigurationBuilder {
 	const config: Omit<AmplifyOutputsConfig, 'version'> = {};
 
 	const builder: ConfigurationBuilder = {
+		from(existing) {
+			if (existing.auth) config.auth = existing.auth;
+			if (existing.storage) config.storage = existing.storage;
+			if (existing.data) config.data = existing.data;
+			if (existing.analytics) config.analytics = existing.analytics;
+			if (existing.geo) config.geo = existing.geo;
+			if (existing.notifications) config.notifications = existing.notifications;
+			if (existing.custom) config.custom = existing.custom;
+
+			return builder;
+		},
 		auth(value) {
 			config.auth = value;
 
