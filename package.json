@@ -42,6 +42,7 @@
 			"packages/predictions",
 			"packages/storage",
 			"packages/adapter-nextjs",
+			"packages/adapter-express",
 			"packages/geo",
 			"packages/api-rest",
 			"packages/api-graphql",
