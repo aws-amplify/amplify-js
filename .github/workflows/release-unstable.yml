@@ -30,11 +30,7 @@ jobs:
         uses: ./amplify-js/.github/actions/node-and-build
 
       - name: Publish to @unstable
-        uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
-        with:
-          cwd: ./amplify-js
-          publish: yarn publish:unstable
-          createGithubReleases: false
+        working-directory: ./amplify-js
+        run: yarn publish:unstable
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
