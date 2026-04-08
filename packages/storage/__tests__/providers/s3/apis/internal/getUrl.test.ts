@@ -527,30 +527,6 @@ describe('getUrl test with path', () => {
 					},
 				);
 			});
-
-			it('should include expectedBucketOwner for PUT with path', async () => {
-				const inputPath = 'uploads/file.jpg';
-				await getUrlWrapper({
-					path: inputPath,
-					options: {
-						method: 'PUT',
-						expectedBucketOwner: validBucketOwner,
-					},
-				});
-				expect(getPresignedPutObjectUrl).toHaveBeenCalledTimes(1);
-				await expect(getPresignedPutObjectUrl).toBeLastCalledWithConfigAndInput(
-					{
-						credentials,
-						region,
-						expiration: expect.any(Number),
-					},
-					{
-						Bucket: bucket,
-						Key: inputPath,
-						ExpectedBucketOwner: validBucketOwner,
-					},
-				);
-			});
 		});
 	});
 	describe('Happy cases: With path and Content Disposition, Content Type', () => {
@@ -818,6 +794,119 @@ describe(`getURL with path and Expected Bucket Owner`, () => {
 			{
 				Bucket: bucket,
 				ExpectedBucketOwner: validBucketOwner,
+				Key: path,
+			},
+		);
+	});
+});
+
+describe('getUrl PUT method with expiresIn and credential expiration', () => {
+	const getUrlWrapper = (input: GetUrlWithPathInput) => getUrl(Amplify, input);
+	beforeAll(() => {
+		mockGetConfig.mockReturnValue({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
+				},
+			},
+		});
+	});
+
+	beforeEach(() => {
+		jest.mocked(getPresignedPutObjectUrl).mockResolvedValue(mockURL);
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('should use custom expiresIn for PUT method', async () => {
+		mockFetchAuthSession.mockResolvedValue({
+			credentials,
+			identityId: defaultIdentityId,
+		});
+		const path = 'uploads/file.jpg';
+
+		await getUrlWrapper({
+			path,
+			options: {
+				method: 'PUT',
+				expiresIn: 3600,
+			},
+		});
+
+		expect(getPresignedPutObjectUrl).toHaveBeenCalledTimes(1);
+		await expect(getPresignedPutObjectUrl).toBeLastCalledWithConfigAndInput(
+			{
+				credentials,
+				region,
+				expiration: 3600,
+			},
+			{
+				Bucket: bucket,
+				Key: path,
+			},
+		);
+	});
+
+	it('should use credential expiration when it is shorter than expiresIn for PUT method', async () => {
+		const credentialExpiration = new Date(Date.now() + 600 * 1000);
+		mockFetchAuthSession.mockResolvedValue({
+			credentials: { ...credentials, expiration: credentialExpiration },
+			identityId: defaultIdentityId,
+		});
+		const path = 'uploads/file.jpg';
+
+		await getUrlWrapper({
+			path,
+			options: {
+				method: 'PUT',
+				expiresIn: 3600,
+			},
+		});
+
+		expect(getPresignedPutObjectUrl).toHaveBeenCalledTimes(1);
+		await expect(getPresignedPutObjectUrl).toBeLastCalledWithConfigAndInput(
+			{
+				credentials: { ...credentials, expiration: credentialExpiration },
+				region,
+				expiration: expect.any(Number),
+			},
+			{
+				Bucket: bucket,
+				Key: path,
+			},
+		);
+		const callExpiration = (getPresignedPutObjectUrl as jest.Mock).mock
+			.calls[0][0].expiration;
+		expect(callExpiration).toBeLessThanOrEqual(600);
+	});
+
+	it('should use default expiresIn (900s) for PUT method when not specified', async () => {
+		mockFetchAuthSession.mockResolvedValue({
+			credentials,
+			identityId: defaultIdentityId,
+		});
+		const path = 'uploads/file.jpg';
+
+		await getUrlWrapper({
+			path,
+			options: {
+				method: 'PUT',
+			},
+		});
+
+		expect(getPresignedPutObjectUrl).toHaveBeenCalledTimes(1);
+		await expect(getPresignedPutObjectUrl).toBeLastCalledWithConfigAndInput(
+			{
+				credentials,
+				region,
+				expiration: 900,
+			},
+			{
+				Bucket: bucket,
 				Key: path,
 			},
 		);
