@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
 import { DEFAULT_KINESIS_CONFIG } from '../../../../src/providers/kinesis/utils/constants';
+
+const mockCtx = createMockAmplifyContext();
 
 describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 	const kinesisConfig = {
@@ -15,18 +16,12 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 		resendLimit: 3,
 	};
 
-	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
-
-	beforeEach(() => {
-		getConfigSpy.mockReset();
-	});
-
 	it('returns required config', () => {
-		getConfigSpy.mockReturnValue({
+		(mockCtx as any).resourcesConfig = {
 			Analytics: { Kinesis: kinesisConfig },
-		});
+		};
 
-		expect(resolveConfig()).toStrictEqual(kinesisConfig);
+		expect(resolveConfig(mockCtx)).toStrictEqual(kinesisConfig);
 	});
 
 	it('use default config for optional fields', () => {
@@ -35,11 +30,11 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 			bufferSize: undefined,
 			resendLimit: undefined,
 		};
-		getConfigSpy.mockReturnValue({
+		(mockCtx as any).resourcesConfig = {
 			Analytics: { Kinesis: requiredFields },
-		});
+		};
 
-		expect(resolveConfig()).toStrictEqual({
+		expect(resolveConfig(mockCtx)).toStrictEqual({
 			...DEFAULT_KINESIS_CONFIG,
 			region: requiredFields.region,
 			resendLimit: requiredFields.resendLimit,
@@ -47,20 +42,20 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 	});
 
 	it('throws if region is missing', () => {
-		getConfigSpy.mockReturnValue({
+		(mockCtx as any).resourcesConfig = {
 			Analytics: { Kinesis: { ...kinesisConfig, region: undefined as any } },
-		});
+		};
 
-		expect(resolveConfig).toThrow();
+		expect(() => resolveConfig(mockCtx)).toThrow();
 	});
 
 	it('throws if flushSize is larger than bufferSize', () => {
-		getConfigSpy.mockReturnValue({
+		(mockCtx as any).resourcesConfig = {
 			Analytics: {
 				Kinesis: { ...kinesisConfig, flushSize: kinesisConfig.bufferSize + 1 },
 			},
-		});
+		};
 
-		expect(resolveConfig).toThrow();
+		expect(() => resolveConfig(mockCtx)).toThrow();
 	});
 });

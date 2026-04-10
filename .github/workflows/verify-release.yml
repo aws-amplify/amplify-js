@@ -1,0 +1,37 @@
+name: V7 Verification CI
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v7/update-unit-tests
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      has-changesets: ${{ steps.has-changesets.outputs.has-changesets }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+      - name: Check if repo has unconsumed changesets
+        id: has-changesets
+        uses: ./.github/actions/has-changesets
+
+  release-verification:
+    secrets:
+      GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
+      CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
+      CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
+      CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
+    uses: ./.github/workflows/callable-release-verification.yml

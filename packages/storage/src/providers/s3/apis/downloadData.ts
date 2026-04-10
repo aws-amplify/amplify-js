@@ -79,7 +79,10 @@ export function downloadData(
  * }
  *```
  */
-export function downloadData(ctx: AmplifyContext, input: DownloadDataInput): DownloadDataOutput;
+export function downloadData(
+	ctx: AmplifyContext,
+	input: DownloadDataInput,
+): DownloadDataOutput;
 export function downloadData(
 	ctx: AmplifyContext,
 	input: DownloadDataInput | DownloadDataWithPathInput,

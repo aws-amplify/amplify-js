@@ -71,4 +71,5 @@ export class PredictionsClass {
 	}
 }
 
-export const createPredictions = (ctx: AmplifyContext) => new PredictionsClass(ctx);
+export const createPredictions = (ctx: AmplifyContext) =>
+	new PredictionsClass(ctx);

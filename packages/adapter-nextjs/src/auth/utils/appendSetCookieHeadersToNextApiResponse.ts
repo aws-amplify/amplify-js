@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextApiResponse } from 'next';
-import { CookieStorage } from 'aws-amplify/adapter-core';
-
-import { serializeCookie } from 'aws-amplify/adapter-core';
+import { CookieStorage, serializeCookie } from 'aws-amplify/adapter-core';
 
 export const appendSetCookieHeadersToNextApiResponse = (
 	response: NextApiResponse,

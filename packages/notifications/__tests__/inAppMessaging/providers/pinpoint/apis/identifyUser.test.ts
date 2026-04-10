@@ -15,9 +15,12 @@ import {
 	resolveCredentials,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import { IdentifyUserInput } from '../../../../../src/inAppMessaging/providers/pinpoint/types';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
+
+const mockCtx = createMockAmplifyContext();
 
 describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 	const credentials = {
@@ -37,7 +40,7 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 
 	beforeAll(() => {
-		initializeInAppMessaging();
+		initializeInAppMessaging(mockCtx);
 		mockgetInAppMessagingUserAgentString.mockReturnValue(userAgentValue);
 		mockResolveConfig.mockReturnValue(config);
 		mockResolveCredentials.mockResolvedValue(credentials);
@@ -59,7 +62,7 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 				plan: 'plan',
 			},
 		};
-		await identifyUser(input);
+		await identifyUser(mockCtx, input);
 		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
@@ -81,7 +84,7 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 			optOut: 'NONE',
 			userAttributes,
 		};
-		await identifyUser({ ...input, options });
+		await identifyUser(mockCtx, { ...input, options });
 		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...options,
@@ -100,6 +103,6 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 			userId: 'user-id',
 			userProfile: {},
 		};
-		await expect(identifyUser(input)).rejects.toBeDefined();
+		await expect(identifyUser(mockCtx, input)).rejects.toBeDefined();
 	});
 });

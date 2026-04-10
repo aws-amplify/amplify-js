@@ -1,31 +1,31 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
-
 import { resolveCredentials } from '../../../src/pushNotifications/utils';
 import { credentials } from '../../testUtils/data';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core');
 
+const mockCtx = createMockAmplifyContext();
+
 describe('resolveCredentials', () => {
 	// assert mocks
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 
 	beforeEach(() => {
-		mockFetchAuthSession.mockReset();
+		(mockCtx.fetchAuthSession as jest.Mock).mockReset();
 	});
 
 	it('resolves required credentials', async () => {
-		mockFetchAuthSession.mockResolvedValue(credentials);
-		expect(await resolveCredentials()).toStrictEqual(credentials);
+		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue(credentials);
+		expect(await resolveCredentials(mockCtx)).toStrictEqual(credentials);
 	});
 
 	it('throws if credentials are missing', async () => {
-		mockFetchAuthSession.mockReturnValue({
+		(mockCtx.fetchAuthSession as jest.Mock).mockReturnValue({
 			...credentials,
 			credentials: undefined,
 		});
-		await expect(resolveCredentials()).rejects.toThrow();
+		await expect(resolveCredentials(mockCtx)).rejects.toThrow();
 	});
 });

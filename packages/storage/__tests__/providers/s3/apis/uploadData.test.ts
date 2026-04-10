@@ -3,12 +3,14 @@
 
 import { defaultStorage } from '@aws-amplify/core';
 
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 import { uploadData } from '../../../../src/providers/s3/apis';
 import { uploadData as internalUploadDataImpl } from '../../../../src/providers/s3/apis/internal/uploadData';
 
 jest.mock('../../../../src/providers/s3/apis/internal/uploadData');
 
 const mockInternalUploadDataImpl = jest.mocked(internalUploadDataImpl);
+const mockCtx = createMockAmplifyContext();
 
 describe('client-side uploadData', () => {
 	beforeEach(() => {
@@ -25,8 +27,8 @@ describe('client-side uploadData', () => {
 				accessLevel: 'protected' as const,
 			},
 		};
-		expect(uploadData(input)).toEqual(mockInternalResult);
-		expect(mockInternalUploadDataImpl).toBeCalledWith({
+		expect(uploadData(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalUploadDataImpl).toBeCalledWith(mockCtx, {
 			...input,
 			options: {
 				...input.options,
@@ -45,8 +47,8 @@ describe('client-side uploadData', () => {
 				preventOverwrite: true,
 			},
 		};
-		expect(uploadData(input)).toEqual(mockInternalResult);
-		expect(mockInternalUploadDataImpl).toBeCalledWith({
+		expect(uploadData(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalUploadDataImpl).toBeCalledWith(mockCtx, {
 			...input,
 			options: {
 				...input.options,

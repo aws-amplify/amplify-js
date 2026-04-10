@@ -24,7 +24,10 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * forgetting device with invalid device key
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function forgetDevice(ctx: AmplifyContext, input?: ForgetDeviceInput): Promise<void> {
+export async function forgetDevice(
+	ctx: AmplifyContext,
+	input?: ForgetDeviceInput,
+): Promise<void> {
 	const { device: { id: externalDeviceKey } = { id: undefined } } = input ?? {};
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);

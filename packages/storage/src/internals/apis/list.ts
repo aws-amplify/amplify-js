@@ -14,7 +14,10 @@ import { ListOutput } from '../types/outputs';
 /**
  * @internal
  */
-export function list(ctx: AmplifyContext, input: ListAllInput): Promise<ListAllWithPathOutput>;
+export function list(
+	ctx: AmplifyContext,
+	input: ListAllInput,
+): Promise<ListAllWithPathOutput>;
 /**
  * @internal
  */
@@ -25,7 +28,10 @@ export function list(
 /**
  * @internal
  */
-export function list(ctx: AmplifyContext, input: ListInput): Promise<ListOutput> {
+export function list(
+	ctx: AmplifyContext,
+	input: ListInput,
+): Promise<ListOutput> {
 	return listInternal(ctx, {
 		path: input.path,
 		options: {

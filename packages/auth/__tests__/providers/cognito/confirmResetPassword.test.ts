@@ -1,18 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { confirmResetPassword } from '../../../src/providers/cognito';
 import { ConfirmForgotPasswordException } from '../../../src/providers/cognito/types/errors';
 import { createConfirmForgotPasswordClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
+
+const mockCtx = createMockAmplifyContext();
+const { Amplify } = jest.requireMock('@aws-amplify/core');
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -39,6 +41,15 @@ describe('confirmResetPassword', () => {
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
+		(mockCtx as any).resourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+				},
+			},
+		};
 	});
 
 	beforeEach(() => {
@@ -58,13 +69,26 @@ describe('confirmResetPassword', () => {
 
 	it('should call the confirmForgotPassword and return void', async () => {
 		await expect(
-			confirmResetPassword(authAPITestParams.confirmResetPasswordRequest),
+			confirmResetPassword(
+				mockCtx,
+				authAPITestParams.confirmResetPasswordRequest,
+			),
 		).resolves.toBeUndefined();
 		expect(mockConfirmForgotPassword).toHaveBeenCalled();
 	});
 
 	it('invokes createCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
 		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+		(mockCtx as any).resourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+					userPoolEndpoint: expectedUserPoolEndpoint,
+				},
+			},
+		};
 		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
 			Auth: {
 				Cognito: {
@@ -76,7 +100,10 @@ describe('confirmResetPassword', () => {
 			},
 		});
 
-		await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest);
+		await confirmResetPassword(
+			mockCtx,
+			authAPITestParams.confirmResetPasswordRequest,
+		);
 
 		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
 			endpointOverride: expectedUserPoolEndpoint,
@@ -84,7 +111,7 @@ describe('confirmResetPassword', () => {
 	});
 
 	it('should contain clientMetadata from request', async () => {
-		await confirmResetPassword({
+		await confirmResetPassword(mockCtx, {
 			username: 'username',
 			newPassword: 'password',
 			confirmationCode: 'code',
@@ -107,7 +134,7 @@ describe('confirmResetPassword', () => {
 	it('should throw an error when username is empty', async () => {
 		expect.assertions(2);
 		try {
-			await confirmResetPassword({
+			await confirmResetPassword(mockCtx, {
 				username: '',
 				newPassword: 'password',
 				confirmationCode: 'code',
@@ -123,7 +150,7 @@ describe('confirmResetPassword', () => {
 	it('should throw an error when newPassword is empty', async () => {
 		expect.assertions(2);
 		try {
-			await confirmResetPassword({
+			await confirmResetPassword(mockCtx, {
 				username: 'username',
 				newPassword: '',
 				confirmationCode: 'code',
@@ -139,7 +166,7 @@ describe('confirmResetPassword', () => {
 	it('should throw an error when confirmationCode is empty', async () => {
 		expect.assertions(2);
 		try {
-			await confirmResetPassword({
+			await confirmResetPassword(mockCtx, {
 				username: 'username',
 				newPassword: 'password',
 				confirmationCode: '',
@@ -160,7 +187,10 @@ describe('confirmResetPassword', () => {
 			);
 		});
 		try {
-			await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest);
+			await confirmResetPassword(
+				mockCtx,
+				authAPITestParams.confirmResetPasswordRequest,
+			);
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
@@ -176,7 +206,7 @@ describe('confirmResetPassword', () => {
 			},
 		};
 
-		await confirmResetPassword({
+		await confirmResetPassword(mockCtx, {
 			username: 'username',
 			newPassword: 'password',
 			confirmationCode: 'code',

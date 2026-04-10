@@ -6,6 +6,7 @@ import { completeOAuthSignOut } from '../../../../../src/providers/cognito/utils
 import { handleOAuthSignOut } from '../../../../../src/providers/cognito/utils/oauth/handleOAuthSignOut';
 import { oAuthSignOutRedirect } from '../../../../../src/providers/cognito/utils/oauth/oAuthSignOutRedirect';
 import { DefaultOAuthStore } from '../../../../../src/providers/cognito/utils/signInWithRedirectStore';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock(
 	'../../../../../src/providers/cognito/utils/oauth/completeOAuthSignOut',
@@ -16,6 +17,7 @@ jest.mock(
 jest.mock('../../../../../src/providers/cognito/tokenProvider');
 
 describe('handleOAuthSignOut', () => {
+	const mockCtx = createMockAmplifyContext();
 	const region = 'us-west-2';
 	const cognitoConfig = {
 		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -46,13 +48,14 @@ describe('handleOAuthSignOut', () => {
 			preferPrivateSession: false,
 		});
 		await handleOAuthSignOut(
+			mockCtx,
 			cognitoConfig,
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
 		);
 
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockCtx, mockStore);
 		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 			cognitoConfig,
 			false,
@@ -69,13 +72,14 @@ describe('handleOAuthSignOut', () => {
 			preferPrivateSession: false,
 		});
 		await handleOAuthSignOut(
+			mockCtx,
 			cognitoConfig,
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
 		);
 
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockCtx, mockStore);
 		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 			cognitoConfig,
 			false,
@@ -89,13 +93,14 @@ describe('handleOAuthSignOut', () => {
 			preferPrivateSession: false,
 		});
 		await handleOAuthSignOut(
+			mockCtx,
 			cognitoConfig,
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
 		);
 
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockCtx, mockStore);
 		expect(mockOAuthSignOutRedirect).not.toHaveBeenCalled();
 	});
 });

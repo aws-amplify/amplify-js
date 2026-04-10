@@ -12,6 +12,7 @@ import {
 	STORAGE_KEY_SUFFIX,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('@aws-amplify/core');
@@ -20,6 +21,8 @@ jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
 
 const mockDefaultStorage = defaultStorage as jest.Mocked<typeof defaultStorage>;
+
+const mockCtx = createMockAmplifyContext();
 
 describe('clearMessages', () => {
 	afterEach(() => {
@@ -33,7 +36,7 @@ describe('clearMessages', () => {
 	});
 
 	it('Rejects if there is a failure storing messages', async () => {
-		initializeInAppMessaging();
+		initializeInAppMessaging(mockCtx);
 		mockDefaultStorage.removeItem.mockRejectedValueOnce(
 			new InAppMessagingError({
 				name: 'ItemCorrupted',
@@ -46,7 +49,7 @@ describe('clearMessages', () => {
 	});
 
 	it('Succeeds in calling the removeItem API of defaultStorage with the correct key', async () => {
-		initializeInAppMessaging();
+		initializeInAppMessaging(mockCtx);
 		await clearMessages();
 		expect(mockDefaultStorage.removeItem).toHaveBeenCalledWith(
 			`${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`,

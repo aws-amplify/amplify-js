@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CookieStorage } from 'aws-amplify/adapter-core';
+import { CookieStorage, isSSLOrigin } from 'aws-amplify/adapter-core';
 
 import {
 	AUTH_FLOW_PROOF_MAX_AGE,
@@ -11,8 +11,6 @@ import {
 	REMOVE_COOKIE_MAX_AGE,
 	STATE_COOKIE_NAME,
 } from '../constant';
-
-import { isSSLOrigin } from 'aws-amplify/adapter-core';
 
 export const createSignInFlowProofCookies = ({
 	state,

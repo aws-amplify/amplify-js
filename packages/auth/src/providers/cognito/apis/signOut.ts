@@ -42,7 +42,10 @@ const logger = new ConsoleLogger('Auth');
  * @param input - The SignOutInput object
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signOut(ctx: AmplifyContext, input?: SignOutInput): Promise<void> {
+export async function signOut(
+	ctx: AmplifyContext,
+	input?: SignOutInput,
+): Promise<void> {
 	const cognitoConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 
@@ -64,7 +67,8 @@ export async function signOut(ctx: AmplifyContext, input?: SignOutInput): Promis
 		const oAuthStore = new DefaultOAuthStore(defaultStorage);
 		oAuthStore.setAuthConfig(cognitoConfig);
 		const { type } =
-			(await handleOAuthSignOut(ctx, 
+			(await handleOAuthSignOut(
+				ctx,
 				cognitoConfig,
 				oAuthStore,
 				tokenOrchestrator,

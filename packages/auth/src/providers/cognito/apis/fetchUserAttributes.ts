@@ -14,6 +14,8 @@ import { fetchUserAttributes as fetchUserAttributesInternal } from './internal/f
  * @throws - {@link GetUserException} - Cognito service errors thrown when the service is not able to get the user.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const fetchUserAttributes = (ctx: AmplifyContext): Promise<FetchUserAttributesOutput> => {
+export const fetchUserAttributes = (
+	ctx: AmplifyContext,
+): Promise<FetchUserAttributesOutput> => {
 	return fetchUserAttributesInternal(ctx);
 };

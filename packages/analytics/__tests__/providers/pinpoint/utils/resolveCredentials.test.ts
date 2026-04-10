@@ -1,12 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
-
 import { AnalyticsError } from '../../../../src/errors';
 import { resolveCredentials } from '../../../../src/providers/pinpoint/utils';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
-jest.mock('@aws-amplify/core');
+const mockCtx = createMockAmplifyContext();
 
 describe('Analytics Pinpoint Provider Util: resolveCredentials', () => {
 	const credentials = {
@@ -17,22 +16,19 @@ describe('Analytics Pinpoint Provider Util: resolveCredentials', () => {
 		identityId: 'identity-id',
 	};
 	// assert mocks
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-
-	beforeEach(() => {
-		mockFetchAuthSession.mockReset();
-	});
 
 	it('resolves required credentials', async () => {
-		mockFetchAuthSession.mockResolvedValue(credentials);
-		expect(await resolveCredentials()).toStrictEqual(credentials);
+		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue(credentials);
+		expect(await resolveCredentials(mockCtx)).toStrictEqual(credentials);
 	});
 
 	it('throws if credentials are missing', async () => {
-		mockFetchAuthSession.mockReturnValue({
+		(mockCtx.fetchAuthSession as jest.Mock).mockReturnValue({
 			...credentials,
 			credentials: undefined,
 		});
-		await expect(resolveCredentials()).rejects.toBeInstanceOf(AnalyticsError);
+		await expect(resolveCredentials(mockCtx)).rejects.toBeInstanceOf(
+			AnalyticsError,
+		);
 	});
 });

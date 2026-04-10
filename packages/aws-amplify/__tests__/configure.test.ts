@@ -1,8 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { configure } from '../src/configure';
 import { createConfigurationBuilder } from '@aws-amplify/core';
+
+import { configure } from '../src/configure';
+
 import { amplifyOutputsFixture } from './fixtures/amplifyOutputs';
 
 describe('configure()', () => {
@@ -45,6 +47,7 @@ describe('configure()', () => {
 			...amplifyOutputsFixture,
 			auth: {
 				...amplifyOutputsFixture.auth,
+				// eslint-disable-next-line camelcase
 				user_pool_id: 'eu-north-1_NewPoolId',
 			},
 		});
@@ -87,6 +90,7 @@ describe('createConfigurationBuilder()', () => {
 			.auth(amplifyOutputsFixture.auth)
 			.auth({
 				...amplifyOutputsFixture.auth,
+				// eslint-disable-next-line camelcase
 				user_pool_id: 'eu-north-1_Replaced',
 			})
 			.build();
@@ -96,5 +100,34 @@ describe('createConfigurationBuilder()', () => {
 		expect(ctx.resourcesConfig.Auth?.Cognito.userPoolId).toBe(
 			'eu-north-1_Replaced',
 		);
+	});
+});
+
+describe('configure() branch coverage', () => {
+	it('works without Auth config', () => {
+		const ctx = configure({
+			Storage: { S3: { bucket: 'b', region: 'us-east-1' } },
+		});
+		expect(ctx.resourcesConfig.Storage?.S3?.bucket).toBe('b');
+		expect(ctx.resourcesConfig.Auth).toBeUndefined();
+	});
+
+	it('preserves custom Auth libraryOptions', () => {
+		const customTokenProvider = { getTokens: jest.fn() };
+		const ctx = configure(amplifyOutputsFixture, {
+			Auth: { tokenProvider: customTokenProvider } as any,
+		});
+		expect(ctx.libraryOptions.Auth?.tokenProvider).toBe(customTokenProvider);
+	});
+
+	it('uses CookieStorage when ssr is true', () => {
+		const ctx = configure(amplifyOutputsFixture, { ssr: true });
+		expect(ctx.libraryOptions.Auth).toBeDefined();
+		expect(ctx.libraryOptions.Auth?.tokenProvider).toBeDefined();
+	});
+
+	it('returns empty libraryOptions when no Auth and no options', () => {
+		const ctx = configure({ Storage: { S3: { bucket: 'b', region: 'r' } } });
+		expect(ctx.libraryOptions).toEqual({});
 	});
 });

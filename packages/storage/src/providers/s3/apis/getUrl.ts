@@ -51,8 +51,14 @@ export function getUrl(
  * thrown either username or key are not defined.
  *
  */
-export function getUrl(ctx: AmplifyContext, input: GetUrlInput): Promise<GetUrlOutput>;
+export function getUrl(
+	ctx: AmplifyContext,
+	input: GetUrlInput,
+): Promise<GetUrlOutput>;
 
-export function getUrl(ctx: AmplifyContext, input: GetUrlInput | GetUrlWithPathInput) {
+export function getUrl(
+	ctx: AmplifyContext,
+	input: GetUrlInput | GetUrlWithPathInput,
+) {
 	return getUrlInternal(ctx, input);
 }

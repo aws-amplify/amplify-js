@@ -48,7 +48,10 @@ export function list(
  * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
  * @throws validation: `StorageValidationErrorCode` - thrown when there are issues with credentials
  */
-export function list(ctx: AmplifyContext, input?: ListPaginateInput): Promise<ListPaginateOutput>;
+export function list(
+	ctx: AmplifyContext,
+	input?: ListPaginateInput,
+): Promise<ListPaginateOutput>;
 /**
  * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
@@ -58,7 +61,10 @@ export function list(ctx: AmplifyContext, input?: ListPaginateInput): Promise<Li
  * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
  * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
  */
-export function list(ctx: AmplifyContext, input?: ListAllInput): Promise<ListAllOutput>;
+export function list(
+	ctx: AmplifyContext,
+	input?: ListAllInput,
+): Promise<ListAllOutput>;
 
 export function list(
 	ctx: AmplifyContext,

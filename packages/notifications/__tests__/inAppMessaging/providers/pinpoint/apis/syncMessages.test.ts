@@ -20,6 +20,7 @@ import {
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import { simpleInAppMessages } from '../../../../testUtils/data';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('@aws-amplify/core');
@@ -54,9 +55,11 @@ const mockedEmptyMessages = {
 	},
 };
 
+const mockCtx = createMockAmplifyContext();
+
 describe('syncMessages', () => {
 	beforeAll(() => {
-		initializeInAppMessaging();
+		initializeInAppMessaging(mockCtx);
 		mockGetInAppMessagingUserAgentString.mockReturnValue(userAgentValue);
 		mockResolveConfig.mockReturnValue(config);
 		mockResolveCredentials.mockResolvedValue(credentials);
@@ -74,7 +77,7 @@ describe('syncMessages', () => {
 	});
 
 	it('Gets in-app messages and stores them', async () => {
-		await syncMessages();
+		await syncMessages(mockCtx);
 
 		expect(mockDefaultStorage.setItem).toHaveBeenCalledWith(
 			expect.stringContaining(STORAGE_KEY_SUFFIX),
@@ -84,7 +87,7 @@ describe('syncMessages', () => {
 
 	it('Only tries to store messages if there are messages to store', async () => {
 		mockGetInAppMessages.mockResolvedValueOnce(mockedEmptyMessages);
-		await syncMessages();
+		await syncMessages(mockCtx);
 
 		expect(mockDefaultStorage.setItem).not.toHaveBeenCalled();
 	});
@@ -93,7 +96,7 @@ describe('syncMessages', () => {
 		mockResolveEndpointId.mockImplementation(() => {
 			throw new Error();
 		});
-		await expect(syncMessages()).rejects.toStrictEqual(
+		await expect(syncMessages(mockCtx)).rejects.toStrictEqual(
 			expect.any(InAppMessagingError),
 		);
 
@@ -102,7 +105,7 @@ describe('syncMessages', () => {
 
 	it('Rejects if there is a failure getting messages', async () => {
 		mockGetInAppMessages.mockRejectedValueOnce(Error);
-		await expect(syncMessages()).rejects.toStrictEqual(
+		await expect(syncMessages(mockCtx)).rejects.toStrictEqual(
 			expect.any(InAppMessagingError),
 		);
 
@@ -111,7 +114,7 @@ describe('syncMessages', () => {
 
 	it('Rejects if there is a failure storing messages', async () => {
 		mockDefaultStorage.setItem.mockRejectedValueOnce(Error);
-		await expect(syncMessages()).rejects.toStrictEqual(
+		await expect(syncMessages(mockCtx)).rejects.toStrictEqual(
 			expect.any(InAppMessagingError),
 		);
 	});

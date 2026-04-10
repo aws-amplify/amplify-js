@@ -252,6 +252,7 @@
 		"@aws-amplify/datastore": "5.1.5",
 		"@aws-amplify/notifications": "2.0.93",
 		"@aws-amplify/storage": "6.13.2",
+		"aws-jwt-verify": "^4.0.1",
 		"tslib": "^2.5.0"
 	},
 	"size-limit": [

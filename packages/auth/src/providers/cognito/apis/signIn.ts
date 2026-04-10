@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
+
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
@@ -28,7 +29,10 @@ import { resetAutoSignIn } from './autoSignIn';
  *  are not defined.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signIn(ctx: AmplifyContext, input: SignInInput): Promise<SignInOutput> {
+export async function signIn(
+	ctx: AmplifyContext,
+	input: SignInInput,
+): Promise<SignInOutput> {
 	// Here we want to reset the store but not reassign the callback.
 	// The callback is reset when the underlying promise resolves or rejects.
 	// With the advent of session based sign in, this guarantees that the signIn API initiates a new auth flow,

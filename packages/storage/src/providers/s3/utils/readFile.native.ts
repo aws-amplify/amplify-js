@@ -26,7 +26,8 @@ export const readFile = (file: Blob): Promise<ArrayBuffer> =>
 				// reference: https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
 				// response from readAsDataURL is always prepended with "data:*/*;base64,"
 				const [, base64Data] = (reader.result as string).split(',');
-				const arrayBuffer = Buffer.from(base64Data, 'base64');
+				const arrayBuffer = new Uint8Array(Buffer.from(base64Data, 'base64'))
+					.buffer;
 				resolve(arrayBuffer);
 			};
 			reader.readAsDataURL(file);

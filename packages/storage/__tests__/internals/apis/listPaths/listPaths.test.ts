@@ -1,23 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AuthTokens, fetchAuthSession } from '@aws-amplify/core';
+import { AuthTokens } from '@aws-amplify/core';
 
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 import { resolveLocationsForCurrentSession } from '../../../../src/internals/apis/listPaths/resolveLocationsForCurrentSession';
 import { getHighestPrecedenceUserGroup } from '../../../../src/internals/apis/listPaths/getHighestPrecedenceUserGroup';
 import { listPaths } from '../../../../src/internals';
 
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn(),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			getConfig: jest.fn(),
-			fetchAuthSession: jest.fn(),
-		},
-	},
-	fetchAuthSession: jest.fn(),
-}));
 jest.mock(
 	'../../../../src/internals/apis/listPaths/resolveLocationsForCurrentSession',
 );
@@ -32,8 +22,6 @@ const credentials = {
 };
 const identityId = 'identityId';
 
-const mockGetConfig = jest.mocked(Amplify.getConfig);
-const mockFetchAuthSession = jest.mocked(fetchAuthSession);
 const mockResolveLocationsFromCurrentSession =
 	resolveLocationsForCurrentSession as jest.Mock;
 const mockGetHighestPrecedenceUserGroup = jest.mocked(
@@ -69,45 +57,28 @@ describe('listPaths', () => {
 		jest.clearAllMocks();
 	});
 
-	mockGetConfig.mockReturnValue({
-		...mockAuthConfig,
-		Storage: {
-			S3: {
-				bucket: 'bucket1',
-				region: 'region1',
-				buckets: {
-					'bucket-1': {
-						bucketName: 'bucket-1',
-						region: 'region1',
-						paths: {},
-					},
-				},
-			},
-		},
-	});
-	mockFetchAuthSession.mockResolvedValue({
-		credentials,
-		identityId,
-		tokens: {
-			accessToken: { payload: {} },
-		},
-	});
-
 	it('should return empty locations when buckets are not defined', async () => {
-		mockGetConfig.mockReturnValue({
+		const mockCtx = createMockAmplifyContext({
 			...mockAuthConfig,
 			Storage: { S3: { buckets: undefined } },
 		});
 
-		const result = await listPaths();
+		const result = await listPaths(mockCtx);
 
 		expect(result).toEqual({ locations: [] });
 	});
 
 	it('should generate locations correctly when buckets are defined', async () => {
-		mockGetConfig.mockReturnValue({
+		const mockCtx = createMockAmplifyContext({
 			...mockAuthConfig,
 			Storage: { S3: { buckets: mockBuckets } },
+		});
+		jest.mocked(mockCtx.fetchAuthSession).mockResolvedValue({
+			credentials,
+			identityId,
+			tokens: {
+				accessToken: { payload: {} },
+			},
 		});
 		mockResolveLocationsFromCurrentSession.mockReturnValue([
 			{
@@ -118,7 +89,7 @@ describe('listPaths', () => {
 			},
 		]);
 
-		const result = await listPaths();
+		const result = await listPaths(mockCtx);
 
 		expect(result).toEqual({
 			locations: [
@@ -133,7 +104,7 @@ describe('listPaths', () => {
 	});
 
 	it('should call resolveLocations with authenticated false for unauthenticated user', async () => {
-		mockGetConfig.mockReturnValue({
+		const mockCtx = createMockAmplifyContext({
 			Auth: {
 				Cognito: {
 					userPoolClientId: 'userPoolClientId',
@@ -142,10 +113,9 @@ describe('listPaths', () => {
 					groups: [{ admin: { precedence: 0 } }],
 				},
 			},
-
 			Storage: { S3: { buckets: mockBuckets } },
 		});
-		mockFetchAuthSession.mockResolvedValue({
+		jest.mocked(mockCtx.fetchAuthSession).mockResolvedValue({
 			tokens: undefined,
 			identityId: undefined,
 		});
@@ -157,7 +127,7 @@ describe('listPaths', () => {
 				prefix: '/path1',
 			},
 		});
-		await listPaths();
+		await listPaths(mockCtx);
 
 		expect(mockResolveLocationsFromCurrentSession).toHaveBeenCalled();
 		expect(mockResolveLocationsFromCurrentSession).toHaveBeenCalledWith({
@@ -169,7 +139,7 @@ describe('listPaths', () => {
 	});
 
 	it('should call resolveLocations with right userGroup when provided', async () => {
-		mockGetConfig.mockReturnValue({
+		const mockCtx = createMockAmplifyContext({
 			Auth: {
 				Cognito: {
 					userPoolClientId: 'userPoolClientId',
@@ -178,10 +148,9 @@ describe('listPaths', () => {
 					groups: [{ admin: { precedence: 0 } }],
 				},
 			},
-
 			Storage: { S3: { buckets: mockBuckets } },
 		});
-		mockFetchAuthSession.mockResolvedValue({
+		jest.mocked(mockCtx.fetchAuthSession).mockResolvedValue({
 			tokens: {
 				accessToken: { payload: {} },
 			} as AuthTokens,
@@ -189,7 +158,7 @@ describe('listPaths', () => {
 		});
 		mockGetHighestPrecedenceUserGroup.mockReturnValue('admin');
 
-		await listPaths();
+		await listPaths(mockCtx);
 
 		expect(mockResolveLocationsFromCurrentSession).toHaveBeenCalled();
 		expect(mockResolveLocationsFromCurrentSession).toHaveBeenCalledWith({

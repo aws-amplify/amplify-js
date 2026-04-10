@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAccessLevel } from '@aws-amplify/core';
 
 import { listObjectsV2 } from '../../../../../src/providers/s3/utils/client/s3data';
 import { list } from '../../../../../src/providers/s3/apis/internal/list';
@@ -17,21 +17,12 @@ import {
 } from '../../../../../src/providers/s3/types';
 import './testUtils';
 import { ListObjectsV2CommandInput } from '../../../../../src/providers/s3/utils/client/s3data/types';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
-		return { debug: jest.fn() };
-	}),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = jest.mocked(Amplify.getConfig);
+
+const mockCtx = createMockAmplifyContext();
+const mockFetchAuthSession = jest.mocked(mockCtx.fetchAuthSession);
 const mockListObject = listObjectsV2 as jest.Mock;
 const inputKey = 'path/itemsKey';
 const bucket = 'bucket';
@@ -97,7 +88,7 @@ describe('list API', () => {
 			credentials,
 			identityId: defaultIdentityId,
 		});
-		mockGetConfig.mockReturnValue({
+		mockCtx.resourcesConfig = {
 			Storage: {
 				S3: {
 					bucket,
@@ -105,12 +96,12 @@ describe('list API', () => {
 					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
-		});
+		};
 	});
 	describe('Prefix: Happy Cases:', () => {
-		const listAllWrapper = (input: ListAllInput) => list(Amplify, input);
+		const listAllWrapper = (input: ListAllInput) => list(mockCtx, input);
 		const listPaginatedWrapper = (input: ListPaginateInput) =>
-			list(Amplify, input);
+			list(mockCtx, input);
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
@@ -394,9 +385,9 @@ describe('list API', () => {
 
 	describe('Path: Happy Cases:', () => {
 		const listAllWrapper = (input: ListAllWithPathInput) =>
-			list(Amplify, input);
+			list(mockCtx, input);
 		const listPaginatedWrapper = (input: ListPaginateWithPathInput) =>
-			list(Amplify, input);
+			list(mockCtx, input);
 		const resolvePath = (
 			path: string | (({ identityId }: { identityId: string }) => string),
 		) =>
@@ -658,7 +649,7 @@ describe('list API', () => {
 				}),
 			);
 			try {
-				await list(Amplify, {});
+				await list(mockCtx, {});
 			} catch (error: any) {
 				expect.assertions(3);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
@@ -677,11 +668,11 @@ describe('list API', () => {
 		describe.each([
 			{
 				type: 'Prefix',
-				mockListFunction: () => list(Amplify, { prefix: 'test/' }),
+				mockListFunction: () => list(mockCtx, { prefix: 'test/' }),
 			},
 			{
 				type: 'Path',
-				mockListFunction: () => list(Amplify, { path: 'test/' }),
+				mockListFunction: () => list(mockCtx, { path: 'test/' }),
 			},
 		])('$type response validation check', ({ mockListFunction }) => {
 			it.each([
@@ -760,7 +751,7 @@ describe('list API', () => {
 		});
 
 		it('should return excludedSubpaths when "exclude" strategy is passed in the request', async () => {
-			const { items, excludedSubpaths } = (await list(Amplify, {
+			const { items, excludedSubpaths } = (await list(mockCtx, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: { strategy: 'exclude' },
@@ -794,7 +785,7 @@ describe('list API', () => {
 				};
 			});
 
-			const { items, excludedSubpaths } = (await list(Amplify, {
+			const { items, excludedSubpaths } = (await list(mockCtx, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: { strategy: 'exclude' },
@@ -816,7 +807,7 @@ describe('list API', () => {
 		});
 
 		it('should return excludedSubpaths when "exclude" strategy and pageSize are passed in the request', async () => {
-			const { items, excludedSubpaths } = (await list(Amplify, {
+			const { items, excludedSubpaths } = (await list(mockCtx, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: { strategy: 'exclude' },
@@ -838,7 +829,7 @@ describe('list API', () => {
 		});
 
 		it('should listObjectsV2 contain a custom Delimiter when "exclude" with delimiter is passed', async () => {
-			(await list(Amplify, {
+			(await list(mockCtx, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: {
@@ -860,7 +851,7 @@ describe('list API', () => {
 		});
 
 		it('should listObjectsV2 contain an undefined Delimiter when "include" strategy is passed', async () => {
-			await list(Amplify, {
+			await list(mockCtx, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: {
@@ -881,7 +872,7 @@ describe('list API', () => {
 		});
 
 		it('should listObjectsV2 contain an undefined Delimiter when no options are passed', async () => {
-			await list(Amplify, {
+			await list(mockCtx, {
 				path: mockedPath,
 			});
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
@@ -899,9 +890,9 @@ describe('list API', () => {
 
 	describe(`List with path and Expected Bucket Owner`, () => {
 		describe(`v1`, () => {
-			const listAllWrapper = (input: ListAllInput) => list(Amplify, input);
+			const listAllWrapper = (input: ListAllInput) => list(mockCtx, input);
 			const listPaginatedWrapper = (input: ListPaginateInput) =>
-				list(Amplify, input);
+				list(mockCtx, input);
 			const resolvePath = (
 				path: string | (({ identityId }: { identityId: string }) => string),
 			) =>
@@ -960,9 +951,9 @@ describe('list API', () => {
 
 		describe(`v2`, () => {
 			const listAllWrapper = (input: ListAllWithPathInput) =>
-				list(Amplify, input);
+				list(mockCtx, input);
 			const listPaginatedWrapper = (input: ListPaginateWithPathInput) =>
-				list(Amplify, input);
+				list(mockCtx, input);
 			const resolvePath = (
 				path: string | (({ identityId }: { identityId: string }) => string),
 			) =>
@@ -1029,7 +1020,7 @@ describe('list API', () => {
 		{
 			type: 'Prefix',
 			listFunction: (options?: any) =>
-				list(Amplify, {
+				list(mockCtx, {
 					prefix: 'some folder with  unprintable unicode/',
 					options,
 				}),
@@ -1038,7 +1029,7 @@ describe('list API', () => {
 		{
 			type: 'Path',
 			listFunction: (options?: any) =>
-				list(Amplify, {
+				list(mockCtx, {
 					path: 'public/some folder with  unprintable unicode/',
 					options,
 				}),

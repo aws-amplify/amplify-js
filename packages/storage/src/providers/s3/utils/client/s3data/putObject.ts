@@ -91,7 +91,7 @@ const putObjectSerializer = async (
 		method: 'PUT',
 		headers,
 		url,
-		body: input.Body,
+		body: input.Body as BodyInit | undefined,
 	};
 };
 

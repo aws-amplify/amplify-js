@@ -2,7 +2,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPIClass as InternalAPI } from '@aws-amplify/api/internals';
-import { AmplifyContext as CoreAmplifyContext, Cache, ConsoleLogger, Hub } from '@aws-amplify/core';
+import { Cache, ConsoleLogger, Hub } from '@aws-amplify/core';
 import {
 	Draft,
 	Patch,
@@ -2471,7 +2471,8 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
-		const currentAppSyncConfig = (this.amplifyContext as any).resourcesConfig.API?.GraphQL;
+		const currentAppSyncConfig = (this.amplifyContext as any).resourcesConfig
+			.API?.GraphQL;
 
 		const appSyncConfig = {
 			aws_appsync_graphqlEndpoint: currentAppSyncConfig?.endpoint,

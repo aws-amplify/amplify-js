@@ -1,5 +1,3 @@
-import { Amplify } from '@aws-amplify/core';
-
 import { createInitiateAuthClient } from '../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../../src/providers/cognito/factories';
 import { InitiateAuthCommandOutput } from '../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
@@ -23,17 +21,6 @@ jest.mock('../../../../src/providers/cognito/utils/signInHelpers', () => {
 	return jest.requireActual(
 		'../../../../src/providers/cognito/utils/signInHelpers',
 	);
-});
-
-const authConfig = {
-	Cognito: {
-		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-	},
-};
-
-Amplify.configure({
-	Auth: authConfig,
 });
 
 describe('handleUserAuthFlow', () => {

@@ -241,7 +241,7 @@ const getObjectErrorCaseInvalidCustomEndpoint: ApiFunctionalTestCase<
 	getObject,
 	{
 		...defaultConfig,
-		customEndpoint: 'http://custom.endpoint.com',
+		customEndpoint: 'ftp://custom.endpoint.com',
 		forcePathStyle: true,
 	},
 	{

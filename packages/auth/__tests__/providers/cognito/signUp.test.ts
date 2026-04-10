@@ -1,14 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import { signUp } from '../../../src/providers/cognito';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { SignUpException } from '../../../src/providers/cognito/types/errors';
 import { createSignUpClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
@@ -18,6 +17,9 @@ jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
 	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
+
+const mockCtx = createMockAmplifyContext();
+const { Amplify } = jest.requireMock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -40,6 +42,15 @@ describe('signUp', () => {
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
+		(mockCtx as any).resourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+				},
+			},
+		};
 	});
 
 	beforeEach(() => {
@@ -61,7 +72,7 @@ describe('signUp', () => {
 		});
 
 		it('should call SignUp service client with correct params', async () => {
-			await signUp({
+			await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -87,6 +98,16 @@ describe('signUp', () => {
 
 		it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
 			const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+			(mockCtx as any).resourcesConfig = {
+				Auth: {
+					Cognito: {
+						userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+						userPoolId: 'us-west-2_zzzzz',
+						identityPoolId: 'us-west-2:xxxxxx',
+						userPoolEndpoint: expectedUserPoolEndpoint,
+					},
+				},
+			};
 			jest.mocked(Amplify.getConfig).mockReturnValueOnce({
 				Auth: {
 					Cognito: {
@@ -97,7 +118,7 @@ describe('signUp', () => {
 					},
 				},
 			});
-			await signUp({
+			await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -111,7 +132,7 @@ describe('signUp', () => {
 		});
 
 		it('should return `CONFIRM_SIGN_UP` step when user isn`t confirmed yet', async () => {
-			const result = await signUp({
+			const result = await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -137,7 +158,7 @@ describe('signUp', () => {
 				UserConfirmed: true,
 				UserSub: userId,
 			});
-			const result = await signUp({
+			const result = await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -155,6 +176,16 @@ describe('signUp', () => {
 
 		it('should return `COMPLETE_AUTO_SIGN_IN` step with `isSignUpComplete` false when autoSignIn is enabled and user isn`t confirmed yet', async () => {
 			// set up signUpVerificationMethod as link in auth config
+			(mockCtx as any).resourcesConfig = {
+				Auth: {
+					Cognito: {
+						userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+						userPoolId: 'us-west-2_zzzzz',
+						identityPoolId: 'us-west-2:xxxxxx',
+						signUpVerificationMethod: 'link',
+					},
+				},
+			};
 			(Amplify.getConfig as any).mockReturnValue({
 				Auth: {
 					Cognito: {
@@ -166,7 +197,7 @@ describe('signUp', () => {
 				},
 			});
 
-			const result = await signUp({
+			const result = await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -195,7 +226,7 @@ describe('signUp', () => {
 				UserSub: userId,
 			});
 
-			const result = await signUp({
+			const result = await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -219,7 +250,7 @@ describe('signUp', () => {
 					return 'abcd';
 				},
 			};
-			await signUp({
+			await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -246,7 +277,7 @@ describe('signUp', () => {
 		});
 
 		it('should not throw an error when password is empty', async () => {
-			await signUp({ username: user1.username, password: '' });
+			await signUp(mockCtx, { username: user1.username, password: '' });
 			expect(mockSignUp).toHaveBeenCalledWith(
 				{
 					region: 'us-west-2',
@@ -277,7 +308,7 @@ describe('signUp', () => {
 		it('should throw an error when username is empty', async () => {
 			expect.assertions(2);
 			try {
-				await signUp({ username: '', password: user1.password });
+				await signUp(mockCtx, { username: '', password: user1.password });
 			} catch (error: any) {
 				expect(error).toBeInstanceOf(AuthError);
 				expect(error.name).toBe(AuthValidationErrorCode.EmptySignUpUsername);
@@ -290,7 +321,10 @@ describe('signUp', () => {
 				throw getMockError(SignUpException.InvalidParameterException);
 			});
 			try {
-				await signUp({ username: user1.username, password: user1.password });
+				await signUp(mockCtx, {
+					username: user1.username,
+					password: user1.password,
+				});
 			} catch (error: any) {
 				expect(error).toBeInstanceOf(AuthError);
 				expect(error.name).toBe(SignUpException.InvalidParameterException);

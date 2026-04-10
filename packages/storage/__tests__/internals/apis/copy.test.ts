@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
-
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { copy as advancedCopy } from '../../../src/internals';
 import { copy as copyInternal } from '../../../src/providers/s3/apis/internal/copy';
 
 jest.mock('../../../src/providers/s3/apis/internal/copy');
 const mockedCopyInternal = jest.mocked(copyInternal);
+
+const mockCtx = createMockAmplifyContext();
 
 describe('copy (internals)', () => {
 	beforeEach(() => {
@@ -44,10 +45,10 @@ describe('copy (internals)', () => {
 				customEndpoint,
 			},
 		};
-		const result = await advancedCopy(copyInputWithAdvancedOptions);
+		const result = await advancedCopy(mockCtx, copyInputWithAdvancedOptions);
 		expect(mockedCopyInternal).toHaveBeenCalledTimes(1);
 		expect(mockedCopyInternal).toHaveBeenCalledWith(
-			expect.any(AmplifyClassV6),
+			mockCtx,
 			copyInputWithAdvancedOptions,
 		);
 		expect(result).toEqual({

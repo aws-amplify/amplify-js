@@ -2,11 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPIClass as InternalAPI } from '@aws-amplify/api/internals';
-import {
-	ConsoleLogger,
-	Hub,
-	HubCapsule,
-} from '@aws-amplify/core';
+import { ConsoleLogger, Hub, HubCapsule } from '@aws-amplify/core';
 import {
 	BackgroundProcessManager,
 	Category,
@@ -269,7 +265,9 @@ class SubscriptionProcessor {
 			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials
-					const credentials = (await (this.amplifyContext as any).fetchAuthSession()).tokens?.accessToken;
+					const credentials = (
+						await (this.amplifyContext as any).fetchAuthSession()
+					).tokens?.accessToken;
 					userCredentials = credentials
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;

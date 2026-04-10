@@ -12,10 +12,13 @@ import {
 } from '../../../testUtils/mockConstants';
 import { record } from '../../../../src/providers/kinesis';
 import { RecordInput as KinesisRecordInput } from '../../../../src/providers/kinesis/types';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
 jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
+
+const mockCtx = createMockAmplifyContext();
 
 describe('Analytics Kinesis API: record', () => {
 	const mockRecordInput: KinesisRecordInput = {
@@ -52,7 +55,7 @@ describe('Analytics Kinesis API: record', () => {
 	});
 
 	it('append to event buffer if record provided', async () => {
-		record(mockRecordInput);
+		record(mockCtx, mockRecordInput);
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
 		expect(mockAppend).toHaveBeenCalledWith(
@@ -69,7 +72,7 @@ describe('Analytics Kinesis API: record', () => {
 	it('logs an error when credentials can not be fetched', async () => {
 		mockResolveCredentials.mockRejectedValue(new Error('Mock Error'));
 
-		record(mockRecordInput);
+		record(mockCtx, mockRecordInput);
 
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
@@ -80,7 +83,7 @@ describe('Analytics Kinesis API: record', () => {
 
 	it('logs and skip the event recoding if Analytics plugin is not enabled', async () => {
 		mockIsAnalyticsEnabled.mockReturnValue(false);
-		record(mockRecordInput);
+		record(mockCtx, mockRecordInput);
 		await new Promise(process.nextTick);
 		expect(loggerDebugSpy).toHaveBeenCalledWith(expect.any(String));
 		expect(mockGetEventBuffer).not.toHaveBeenCalled();

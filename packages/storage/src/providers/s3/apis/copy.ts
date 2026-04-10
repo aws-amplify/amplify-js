@@ -21,7 +21,10 @@ import { copy as copyInternal } from './internal/copy';
  * @throws validation: `StorageValidationErrorCode` - Thrown when
  * source or destination path is not defined.
  */
-export function copy(ctx: AmplifyContext, input: CopyWithPathInput): Promise<CopyWithPathOutput>;
+export function copy(
+	ctx: AmplifyContext,
+	input: CopyWithPathInput,
+): Promise<CopyWithPathOutput>;
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/copy | path} instead.
@@ -35,8 +38,14 @@ export function copy(ctx: AmplifyContext, input: CopyWithPathInput): Promise<Cop
  * @throws validation: `StorageValidationErrorCode` - Thrown when
  * source or destination key is not defined.
  */
-export function copy(ctx: AmplifyContext, input: CopyInput): Promise<CopyOutput>;
+export function copy(
+	ctx: AmplifyContext,
+	input: CopyInput,
+): Promise<CopyOutput>;
 
-export function copy(ctx: AmplifyContext, input: CopyInput | CopyWithPathInput) {
+export function copy(
+	ctx: AmplifyContext,
+	input: CopyInput | CopyWithPathInput,
+) {
 	return copyInternal(ctx, input);
 }

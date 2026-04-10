@@ -6,6 +6,7 @@ import {
 	CookieStorage,
 	DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE,
 	createKeysForAuthStorage,
+	isSSLOrigin,
 } from 'aws-amplify/adapter-core';
 
 import { OAuthTokenResponsePayload } from '../types';
@@ -15,7 +16,6 @@ import {
 } from '../constant';
 
 import { getAccessTokenUsername } from './getAccessTokenUsername';
-import { isSSLOrigin } from 'aws-amplify/adapter-core';
 
 export const createTokenCookies = ({
 	tokensPayload,

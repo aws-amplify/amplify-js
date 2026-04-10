@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../src/errors/AuthError';
@@ -10,14 +9,10 @@ import { UpdateUserAttributesException } from '../../../src/providers/cognito/ty
 import { toAttributeType } from '../../../src/providers/cognito/utils/apiHelpers';
 import { createUpdateUserAttributesClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -27,9 +22,11 @@ jest.mock(
 );
 jest.mock('../../../src/providers/cognito/factories');
 
+const mockCtx = createMockAmplifyContext();
+
 describe('updateUserAttributes', () => {
 	// assert mocks
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+	const mockFetchAuthSession = mockCtx.fetchAuthSession as jest.Mock;
 	const mockUpdateUserAttributes = jest.fn();
 	const mockCreateUpdateUserAttributesClient = jest.mocked(
 		createUpdateUserAttributesClient,
@@ -39,7 +36,15 @@ describe('updateUserAttributes', () => {
 	);
 
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
+		(mockCtx as any).resourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+				},
+			},
+		};
 		mockFetchAuthSession.mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
@@ -78,7 +83,7 @@ describe('updateUserAttributes', () => {
 			email: 'mockedEmail',
 			phone_number: 'mockedPhoneNumber',
 		};
-		const result = await updateUserAttributes({
+		const result = await updateUserAttributes(mockCtx, {
 			userAttributes,
 			options: {
 				clientMetadata: { foo: 'bar' },
@@ -135,7 +140,7 @@ describe('updateUserAttributes', () => {
 
 	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
 		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
-		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+		(mockCtx as any).resourcesConfig = {
 			Auth: {
 				Cognito: {
 					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -144,8 +149,8 @@ describe('updateUserAttributes', () => {
 					userPoolEndpoint: expectedUserPoolEndpoint,
 				},
 			},
-		});
-		await updateUserAttributes({
+		};
+		await updateUserAttributes(mockCtx, {
 			userAttributes: {},
 			options: {
 				clientMetadata: { foo: 'bar' },
@@ -163,7 +168,7 @@ describe('updateUserAttributes', () => {
 			address: 'mockedAddress',
 			name: 'mockedName',
 		};
-		const result = await updateUserAttributes({
+		const result = await updateUserAttributes(mockCtx, {
 			userAttributes,
 			options: {
 				clientMetadata: { foo: 'bar' },
@@ -213,7 +218,7 @@ describe('updateUserAttributes', () => {
 			email: 'mockedEmail',
 			phone_number: 'mockedPhoneNumber',
 		};
-		const result = await updateUserAttributes({
+		const result = await updateUserAttributes(mockCtx, {
 			userAttributes,
 			options: {
 				clientMetadata: { foo: 'bar' },
@@ -262,7 +267,7 @@ describe('updateUserAttributes', () => {
 			);
 		});
 		try {
-			await updateUserAttributes({
+			await updateUserAttributes(mockCtx, {
 				userAttributes: {
 					email: 'mockedEmail',
 				},

@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 import {
 	getRetryDecider,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import {
 	cancel,
 	post,
@@ -25,12 +26,8 @@ const mockAuthenticatedHandler = jest.mocked(authenticatedHandler);
 const mockUnauthenticatedHandler = jest.mocked(unauthenticatedHandler);
 const mockParseJsonError = jest.mocked(parseJsonError);
 const mockGetRetryDecider = jest.mocked(getRetryDecider);
-const mockFetchAuthSession = jest.fn();
-const mockAmplifyInstance = {
-	Auth: {
-		fetchAuthSession: mockFetchAuthSession,
-	},
-} as any as AmplifyClassV6;
+const mockAmplifyInstance = createMockAmplifyContext();
+const mockFetchAuthSession = mockAmplifyInstance.fetchAuthSession as jest.Mock;
 
 const successResponse = {
 	statusCode: 200,
@@ -438,7 +435,7 @@ describe('internal post', () => {
 					},
 				},
 			},
-		} as any as AmplifyClassV6;
+		} as any as AmplifyContext;
 		await post(mockAmplifyInstanceWithNoRetry, {
 			url: apiGatewayUrl,
 			options: {

@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify, syncSessionStorage } from '@aws-amplify/core';
+import { syncSessionStorage } from '@aws-amplify/core';
 
 import {
 	resetActiveSignInState,
@@ -14,6 +14,7 @@ import {
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signIn } from '../../../src/providers/cognito';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 import { authAPITestParams } from './testUtils/authApiTestParams';
@@ -40,6 +41,9 @@ jest.mock('@aws-amplify/core', () => ({
 		}),
 	},
 }));
+
+const mockCtx = createMockAmplifyContext();
+const { Amplify } = jest.requireMock('@aws-amplify/core');
 
 const signInStateKeys: Record<string, string> = {
 	username: 'CognitoSignInState.username',
@@ -114,6 +118,15 @@ describe('signInStore', () => {
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
+		(mockCtx as any).resourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+				},
+			},
+		};
 	});
 
 	afterEach(() => {
@@ -164,7 +177,7 @@ describe('signInStore', () => {
 				}),
 			);
 
-		await signIn({
+		await signIn(mockCtx, {
 			username,
 			password,
 		});

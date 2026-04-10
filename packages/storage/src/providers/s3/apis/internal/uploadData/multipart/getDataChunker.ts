@@ -25,7 +25,12 @@ export const getDataChunker = (
 	if (data instanceof Blob) {
 		return helper(data, 0, data.size, partSize);
 	} else if (ArrayBuffer.isView(data)) {
-		return helper(data.buffer, data.byteOffset, data.byteLength, partSize);
+		return helper(
+			data.buffer as ArrayBuffer,
+			data.byteOffset,
+			data.byteLength,
+			partSize,
+		);
 	} else if (data instanceof ArrayBuffer) {
 		return helper(data, 0, data.byteLength, partSize);
 	} else if (typeof data === 'string') {

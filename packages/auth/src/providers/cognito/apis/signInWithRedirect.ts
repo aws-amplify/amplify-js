@@ -79,25 +79,28 @@ export async function signInWithRedirect(
 	});
 }
 
-const oauthSignIn = async (ctx: AmplifyContext, {
-	oauthConfig,
-	provider,
-	idpIdentifier,
-	clientId,
-	customState,
-	preferPrivateSession,
-	options,
-	authSessionOpener,
-}: {
-	oauthConfig: OAuthConfig;
-	provider: string;
-	idpIdentifier?: string;
-	clientId: string;
-	customState?: string;
-	preferPrivateSession?: boolean;
-	options?: SignInWithRedirectInput['options'];
-	authSessionOpener?: OpenAuthSession;
-}) => {
+const oauthSignIn = async (
+	ctx: AmplifyContext,
+	{
+		oauthConfig,
+		provider,
+		idpIdentifier,
+		clientId,
+		customState,
+		preferPrivateSession,
+		options,
+		authSessionOpener,
+	}: {
+		oauthConfig: OAuthConfig;
+		provider: string;
+		idpIdentifier?: string;
+		clientId: string;
+		customState?: string;
+		preferPrivateSession?: boolean;
+		options?: SignInWithRedirectInput['options'];
+		authSessionOpener?: OpenAuthSession;
+	},
+) => {
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const { loginHint, lang, nonce, prompt } = options ?? {};
 	const randomState = generateState();

@@ -1,9 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
 import {
-	ADD_OAUTH_LISTENER,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	isBrowser,
@@ -19,12 +17,12 @@ import {
 	oAuthStore,
 } from '../../../src/providers/cognito/utils/oauth';
 import { getAuthUserAgentValue, openAuthSession } from '../../../src/utils';
-import { attemptCompleteOAuthFlow } from '../../../src/providers/cognito/utils/oauth/attemptCompleteOAuthFlow';
 import { createOAuthError } from '../../../src/providers/cognito/utils/oauth/createOAuthError';
 import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWithRedirect';
 import type { OAuthStore } from '../../../src/providers/cognito/utils/types';
 import { mockAuthConfigWithOAuth } from '../../mockData';
 import { type AuthPrompt } from '../../../src/types/inputs';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -102,6 +100,7 @@ const mockHandleFailure = handleFailure as jest.Mock;
 const mockCreateOAuthError = createOAuthError as jest.Mock;
 
 describe('signInWithRedirect', () => {
+	const mockCtx = createMockAmplifyContext(mockAuthConfigWithOAuth);
 	const mockState = 'oauth_state';
 	const mockCodeVerifierValue = 'code_verifier_value';
 	const mockCodeVerifierMethod = 'S256';
@@ -146,7 +145,7 @@ describe('signInWithRedirect', () => {
 	});
 
 	it('invokes dependent functions with expected parameters', async () => {
-		await signInWithRedirect({ provider: 'Google' });
+		await signInWithRedirect(mockCtx, { provider: 'Google' });
 
 		expect(mockAssertTokenProviderConfig).toHaveBeenCalledTimes(1);
 		expect(mockAssertOAuthConfig).toHaveBeenCalledTimes(1);
@@ -176,7 +175,7 @@ describe('signInWithRedirect', () => {
 
 	it('uses "Cognito" as the default provider if not specified', async () => {
 		const expectedDefaultProvider = 'COGNITO';
-		await signInWithRedirect();
+		await signInWithRedirect(mockCtx);
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
 			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedDefaultProvider}&scope=phone+email+openid+profile+aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
@@ -185,7 +184,9 @@ describe('signInWithRedirect', () => {
 
 	it('uses custom provider when specified', async () => {
 		const expectedCustomProvider = 'PieAuth';
-		await signInWithRedirect({ provider: { custom: expectedCustomProvider } });
+		await signInWithRedirect(mockCtx, {
+			provider: { custom: expectedCustomProvider },
+		});
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
 			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone+email+openid+profile+aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
@@ -194,7 +195,7 @@ describe('signInWithRedirect', () => {
 
 	it('uses idpIdentifier when specified', async () => {
 		const expectedIdpIdentifier = 'example.com';
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: { idpIdentifier: expectedIdpIdentifier },
 		});
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
@@ -205,14 +206,14 @@ describe('signInWithRedirect', () => {
 
 	it('uses custom state if specified', async () => {
 		const expectedCustomState = 'verify_me';
-		await signInWithRedirect({ customState: expectedCustomState });
+		await signInWithRedirect(mockCtx, { customState: expectedCustomState });
 		expect(mockUrlSafeEncode).toHaveBeenCalledWith(expectedCustomState);
 	});
 
 	it('includes prompt parameter in authorization URL', async () => {
 		for (const prompt of promptTypes) {
 			const expectedCustomProvider = 'PieAuth';
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: { custom: expectedCustomProvider },
 				options: { prompt },
 			});
@@ -228,7 +229,7 @@ describe('signInWithRedirect', () => {
 	it('calls assertUserNotAuthenticated based on prompt value', async () => {
 		for (const prompt of promptTypes) {
 			const expectedCustomProvider = 'PieAuth';
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: { custom: expectedCustomProvider },
 				options: { prompt },
 			});
@@ -240,14 +241,14 @@ describe('signInWithRedirect', () => {
 		}
 
 		// Test no options at all
-		await signInWithRedirect();
+		await signInWithRedirect(mockCtx);
 		expect(mockAssertUserNotAuthenticated).toHaveBeenCalled();
 		mockAssertUserNotAuthenticated.mockClear();
 	});
 
 	it('calls default openAuthSession if no override specified', async () => {
 		const mockAuthSessionOpener = jest.fn();
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: 'Google',
 		});
 
@@ -257,7 +258,7 @@ describe('signInWithRedirect', () => {
 
 	it('allows to override openAuthSession if specified', async () => {
 		const mockAuthSessionOpener = jest.fn();
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: 'Google',
 			options: {
 				authSessionOpener: mockAuthSessionOpener,
@@ -270,14 +271,13 @@ describe('signInWithRedirect', () => {
 
 	describe('specifications on Web', () => {
 		describe('side effect', () => {
-			it('attaches oauth listener to the Amplify singleton', async () => {
+			it('no longer attaches oauth listener (handled via AmplifyContext)', async () => {
 				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(
 					false,
 				);
 
-				expect(Amplify[ADD_OAUTH_LISTENER]).toHaveBeenCalledWith(
-					attemptCompleteOAuthFlow,
-				);
+				// OAuth listener registration was removed as part of singleton removal
+				// This is now a no-op
 			});
 		});
 
@@ -294,7 +294,7 @@ describe('signInWithRedirect', () => {
 				cb({ persisted: true });
 			});
 
-			await signInWithRedirect({ provider: 'Google' });
+			await signInWithRedirect(mockCtx, { provider: 'Google' });
 			expect(mockCreateOAuthError).toHaveBeenCalledTimes(1);
 			expect(mockHandleFailure).toHaveBeenCalledWith(error);
 
@@ -313,12 +313,13 @@ describe('signInWithRedirect', () => {
 			};
 			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
 
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: 'Google',
 				options: { preferPrivateSession: true },
 			});
 
 			expect(mockCompleteOAuthFlow).toHaveBeenCalledWith(
+				mockCtx,
 				expect.objectContaining({
 					currentUrl: mockOpenAuthSessionResult.url,
 					preferPrivateSession: true,
@@ -337,7 +338,7 @@ describe('signInWithRedirect', () => {
 			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
 
 			await expect(
-				signInWithRedirect({
+				signInWithRedirect(mockCtx, {
 					provider: 'Google',
 					options: { preferPrivateSession: true },
 				}),
@@ -361,13 +362,14 @@ describe('signInWithRedirect', () => {
 			mockCompleteOAuthFlow.mockRejectedValueOnce(expectedError);
 
 			await expect(
-				signInWithRedirect({
+				signInWithRedirect(mockCtx, {
 					provider: 'Google',
 					options: { preferPrivateSession: true },
 				}),
 			).rejects.toThrow(expectedError);
 
 			expect(mockCompleteOAuthFlow).toHaveBeenCalledWith(
+				mockCtx,
 				expect.objectContaining({
 					currentUrl: mockOpenAuthSessionResult.url,
 				}),
@@ -385,7 +387,7 @@ describe('signInWithRedirect', () => {
 			mockCreateOAuthError.mockReturnValueOnce(expectedError);
 
 			await expect(
-				signInWithRedirect({
+				signInWithRedirect(mockCtx, {
 					provider: 'Google',
 					options: { preferPrivateSession: true },
 				}),
@@ -404,7 +406,7 @@ describe('signInWithRedirect', () => {
 			};
 			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
 
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: 'Google',
 			});
 
@@ -412,7 +414,7 @@ describe('signInWithRedirect', () => {
 		});
 
 		it('should send the login_hint, lang and nonce in the query string if provided', async () => {
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: 'Google',
 				options: {
 					loginHint: 'someone@gmail.com',
@@ -441,7 +443,7 @@ describe('signInWithRedirect', () => {
 				throw mockError;
 			});
 
-			await expect(signInWithRedirect()).rejects.toThrow(mockError);
+			await expect(signInWithRedirect(mockCtx)).rejects.toThrow(mockError);
 		});
 
 		it('rethrows error thrown from `assertOAuthConfig`', async () => {
@@ -450,7 +452,7 @@ describe('signInWithRedirect', () => {
 				throw mockError;
 			});
 
-			await expect(signInWithRedirect()).rejects.toThrow(mockError);
+			await expect(signInWithRedirect(mockCtx)).rejects.toThrow(mockError);
 		});
 
 		it('rethrow error thrown from `assertUserNotAuthenticated`', async () => {
@@ -459,7 +461,7 @@ describe('signInWithRedirect', () => {
 				throw mockError;
 			});
 
-			await expect(signInWithRedirect()).rejects.toThrow(mockError);
+			await expect(signInWithRedirect(mockCtx)).rejects.toThrow(mockError);
 		});
 	});
 });

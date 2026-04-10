@@ -24,7 +24,9 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * and settings.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function fetchMFAPreference(ctx: AmplifyContext): Promise<FetchMFAPreferenceOutput> {
+export async function fetchMFAPreference(
+	ctx: AmplifyContext,
+): Promise<FetchMFAPreferenceOutput> {
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

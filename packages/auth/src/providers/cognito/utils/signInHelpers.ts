@@ -563,11 +563,14 @@ export async function handleCustomSRPAuthFlow(
 	);
 }
 
-export async function getSignInResult(ctx: AmplifyContext, params: {
-	challengeName: ChallengeName;
-	challengeParameters: ChallengeParameters;
-	availableChallenges?: ChallengeName[];
-}): Promise<AuthSignInOutput> {
+export async function getSignInResult(
+	ctx: AmplifyContext,
+	params: {
+		challengeName: ChallengeName;
+		challengeParameters: ChallengeParameters;
+		availableChallenges?: ChallengeName[];
+	},
+): Promise<AuthSignInOutput> {
 	const { challengeName, challengeParameters, availableChallenges } = params;
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);

@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import { getCurrentUser, signIn } from '../../../src/providers/cognito';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInStore } from '../../../src/client/utils/store/signInStore';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
@@ -16,6 +15,9 @@ jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 //  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
 // before returning an `AuthSignInResult`
 const mockedGetCurrentUser = getCurrentUser as jest.Mock;
+
+const mockCtx = createMockAmplifyContext();
+
 describe('local sign-in state management tests', () => {
 	const session = '1234234232';
 	const challengeName = 'SMS_MFA';
@@ -48,10 +50,10 @@ describe('local sign-in state management tests', () => {
 				}),
 			);
 
-		Amplify.configure({
+		(mockCtx as any).resourcesConfig = {
 			Auth: authConfig,
-		});
-		await signIn({
+		};
+		await signIn(mockCtx, {
 			username,
 			password,
 		});
@@ -80,10 +82,10 @@ describe('local sign-in state management tests', () => {
 					authAPITestParams.RespondToAuthChallengeCommandOutput,
 			);
 
-		Amplify.configure({
+		(mockCtx as any).resourcesConfig = {
 			Auth: authConfig,
-		});
-		await signIn({
+		};
+		await signIn(mockCtx, {
 			username,
 			password,
 		});

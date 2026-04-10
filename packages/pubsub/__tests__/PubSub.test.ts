@@ -27,6 +27,18 @@ import { PubSub as MqttPubSub } from '../src/clients/mqtt';
 import { HubConnectionListener } from './helpers';
 import { Observable, Observer } from 'rxjs';
 import * as constants from '../src/Providers/constants';
+import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
+
+const mockCtx = createMockAmplifyContext();
+(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+	credentials: {
+		accessKeyId: 'accessKeyId',
+		sessionToken: 'sessionToken',
+		secretAccessKey: 'secretAccessKey',
+		identityId: 'identityId',
+		authenticated: true,
+	},
+});
 
 const pahoClientMockCache = {};
 
@@ -111,13 +123,13 @@ describe('PubSub', () => {
 
 	describe('constructor test', () => {
 		test('happy case', () => {
-			const pubsub = new IotPubSub();
+			const pubsub = new IotPubSub(mockCtx);
 		});
 	});
 
 	describe('configure test', () => {
 		test('happy case', () => {
-			const pubsub = new IotPubSub();
+			const pubsub = new IotPubSub(mockCtx);
 
 			const options = {
 				key: 'value',
@@ -128,7 +140,7 @@ describe('PubSub', () => {
 		});
 
 		test('should accept PubSub key in configuration object', () => {
-			const pubsub = new IotPubSub();
+			const pubsub = new IotPubSub(mockCtx);
 
 			const options = {
 				PubSub: {
@@ -153,7 +165,7 @@ describe('PubSub', () => {
 					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				},
 			};
-			const pubsub = new IotPubSub(config.PubSub);
+			const pubsub = new IotPubSub(mockCtx, config.PubSub);
 
 			const expectedData = {
 				value: 'my message',
@@ -187,12 +199,12 @@ describe('PubSub', () => {
 		});
 
 		test('should remove AWSIoTProvider', () => {
-			const pubsubClient = new IotPubSub({
+			const pubsubClient = new IotPubSub(mockCtx, {
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 			jest.spyOn(pubsubClient, 'publish');
-			const newPubsubClient = new IotPubSub({
+			const newPubsubClient = new IotPubSub(mockCtx, {
 				region: 'new-region',
 				endpoint: 'wss://iot.newEndPoint.org:443/newEndPoint',
 			});
@@ -314,7 +326,7 @@ describe('PubSub', () => {
 			});
 
 			test('test happy case connect -> disconnect cycle', async () => {
-				const pubsub = new IotPubSub({
+				const pubsub = new IotPubSub(mockCtx, {
 					region: 'region',
 					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
@@ -343,7 +355,7 @@ describe('PubSub', () => {
 			});
 
 			test('test network disconnection and recovery', async () => {
-				const pubsub = new IotPubSub({
+				const pubsub = new IotPubSub(mockCtx, {
 					region: 'region',
 					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
@@ -378,7 +390,7 @@ describe('PubSub', () => {
 			});
 
 			test('test network disconnection followed by connection disruption', async () => {
-				const pubsub = new IotPubSub({
+				const pubsub = new IotPubSub(mockCtx, {
 					region: 'region',
 					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
@@ -438,7 +450,7 @@ describe('PubSub', () => {
 
 	describe('multiple providers', () => {
 		test('subscribe and publish to specific provider', async () => {
-			const iotClient = new IotPubSub({
+			const iotClient = new IotPubSub(mockCtx, {
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
@@ -471,7 +483,7 @@ describe('PubSub', () => {
 		});
 
 		test('throw a rejected promise when publish failed by any of the provider', () => {
-			const iotClient = new IotPubSub({
+			const iotClient = new IotPubSub(mockCtx, {
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});

@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import {
 	IdentifyUserInput,
 	OnNotificationOpenedInput,
@@ -26,9 +28,10 @@ export type GetBadgeCount = () => Promise<void | GetBadgeCountOutput>;
 export type GetLaunchNotification = () => Promise<GetLaunchNotificationOutput>;
 
 export type GetPermissionStatus = () => Promise<GetPermissionStatusOutput>;
-
-import { AmplifyContext } from '@aws-amplify/core';
-export type IdentifyUser = (ctx: AmplifyContext, input: IdentifyUserInput) => Promise<void>;
+export type IdentifyUser = (
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+) => Promise<void>;
 
 export type InitializePushNotifications = () => void;
 

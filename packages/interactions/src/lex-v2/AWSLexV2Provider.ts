@@ -12,7 +12,7 @@ import {
 	RecognizeUtteranceCommandOutput,
 } from '@aws-sdk/client-lex-runtime-v2';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger} from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { v4 as uuid } from 'uuid';
 
 import { convert, unGzipBase64AsJson } from '../utils';
@@ -272,4 +272,5 @@ class AWSLexV2Provider {
 	}
 }
 
-export const createLexV2Provider = (ctx: AmplifyContext) => new AWSLexV2Provider(ctx);
+export const createLexV2Provider = (ctx: AmplifyContext) =>
+	new AWSLexV2Provider(ctx);

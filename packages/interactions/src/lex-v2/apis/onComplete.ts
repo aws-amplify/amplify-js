@@ -1,4 +1,3 @@
-
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -12,7 +11,10 @@ import {
 	assertValidationError,
 } from '../../errors';
 
-export const onComplete = (ctx: AmplifyContext, input: OnCompleteInput): void => {
+export const onComplete = (
+	ctx: AmplifyContext,
+	input: OnCompleteInput,
+): void => {
 	const { botName, callback } = input;
 	const botConfig = resolveBotConfig(ctx, botName);
 	assertValidationError(

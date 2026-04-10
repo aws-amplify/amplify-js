@@ -121,9 +121,15 @@ export function uploadData(
  * await uploadTask.result;
  * ```
  */
-export function uploadData(ctx: AmplifyContext, input: UploadDataInput): UploadDataOutput;
+export function uploadData(
+	ctx: AmplifyContext,
+	input: UploadDataInput,
+): UploadDataOutput;
 
-export function uploadData(ctx: AmplifyContext, input: UploadDataInput | UploadDataWithPathInput) {
+export function uploadData(
+	ctx: AmplifyContext,
+	input: UploadDataInput | UploadDataWithPathInput,
+) {
 	return uploadDataInternal(ctx, {
 		...input,
 		options: {

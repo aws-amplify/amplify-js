@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyContext} from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
@@ -43,7 +43,6 @@ export class AmazonAIInterpretPredictionsProvider {
 	constructor(ctx: AmplifyContext) {
 		this.ctx = ctx;
 	}
-
 
 	getProviderName() {
 		return 'AmazonAIInterpretPredictionsProvider';

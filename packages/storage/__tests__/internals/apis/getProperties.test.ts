@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
-
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { getProperties as advancedGetProperties } from '../../../src/internals';
 import { getProperties as getPropertiesInternal } from '../../../src/providers/s3/apis/internal/getProperties';
 
 jest.mock('../../../src/providers/s3/apis/internal/getProperties');
 const mockedGetPropertiesInternal = jest.mocked(getPropertiesInternal);
+
+const mockCtx = createMockAmplifyContext();
 
 describe('getProperties (internal)', () => {
 	beforeEach(() => {
@@ -32,7 +33,7 @@ describe('getProperties (internal)', () => {
 				expiration: new Date(),
 			},
 		});
-		const result = await advancedGetProperties({
+		const result = await advancedGetProperties(mockCtx, {
 			path: 'input/path/to/mock/object',
 			options: {
 				customEndpoint,
@@ -43,19 +44,16 @@ describe('getProperties (internal)', () => {
 			},
 		});
 		expect(mockedGetPropertiesInternal).toHaveBeenCalledTimes(1);
-		expect(mockedGetPropertiesInternal).toHaveBeenCalledWith(
-			expect.any(AmplifyClassV6),
-			{
-				path: 'input/path/to/mock/object',
-				options: {
-					customEndpoint,
-					useAccelerateEndpoint,
-					bucket,
-					expectedBucketOwner,
-					locationCredentialsProvider,
-				},
+		expect(mockedGetPropertiesInternal).toHaveBeenCalledWith(mockCtx, {
+			path: 'input/path/to/mock/object',
+			options: {
+				customEndpoint,
+				useAccelerateEndpoint,
+				bucket,
+				expectedBucketOwner,
+				locationCredentialsProvider,
 			},
-		);
+		});
 		expect(result).toEqual({
 			path: 'output/path/to/mock/object',
 		});

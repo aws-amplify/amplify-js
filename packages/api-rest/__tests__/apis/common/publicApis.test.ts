@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	getRetryDecider,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { authenticatedHandler } from '../../../src/apis/common/baseHandlers/authenticatedHandler';
 import { unauthenticatedHandler } from '../../../src/apis/common/baseHandlers/unauthenticatedHandler';
 import {
@@ -32,7 +32,6 @@ jest.mock('../../../src/apis/common/baseHandlers/unauthenticatedHandler');
 
 const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
 const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;
-const mockFetchAuthSession = jest.fn();
 const mockConfig = {
 	API: {
 		REST: {
@@ -48,20 +47,14 @@ const mockConfig = {
 };
 const mockParseJsonError = parseJsonError as jest.Mock;
 const mockRestHeaders = jest.fn();
-const mockGetConfig = jest.fn();
-const mockAmplifyInstance = {
-	Auth: {
-		fetchAuthSession: mockFetchAuthSession,
-	},
-	getConfig: mockGetConfig,
-	libraryOptions: {
-		API: {
-			REST: {
-				headers: mockRestHeaders,
-			},
+const mockAmplifyInstance = createMockAmplifyContext(mockConfig, {
+	API: {
+		REST: {
+			headers: mockRestHeaders,
 		},
 	},
-} as any as AmplifyClassV6;
+});
+const mockFetchAuthSession = mockAmplifyInstance.fetchAuthSession as jest.Mock;
 const credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -90,7 +83,6 @@ describe('public APIs', () => {
 		mockSuccessResponse.body.json.mockResolvedValue({ foo: 'bar' });
 		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 		mockUnauthenticatedHandler.mockResolvedValue(mockSuccessResponse);
-		mockGetConfig.mockReturnValue(mockConfig);
 		mockGetRetryDecider.mockReturnValue(mockRetryDeciderResponse);
 	});
 
@@ -491,7 +483,7 @@ describe('public APIs', () => {
 						},
 					},
 				},
-			} as any as AmplifyClassV6;
+			} as any;
 			mockAuthenticatedHandler.mockImplementation(() => {
 				return new Promise((_resolve, reject) => {
 					setTimeout(() => {
@@ -594,7 +586,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as any;
 				await fn(mockAmplifyInstanceWithNoRetry, {
 					apiName: 'restApi1',
 					path: 'items',
@@ -629,7 +621,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as any;
 				await fn(mockAmplifyInstanceWithRetry, {
 					apiName: 'restApi1',
 					path: 'items',
@@ -664,7 +656,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as any;
 				await fn(mockAmplifyInstanceWithRetry, {
 					apiName: 'restApi1',
 					path: 'items',
@@ -745,7 +737,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as any;
 
 				mockFetchAuthSession.mockClear();
 
@@ -771,7 +763,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as any;
 
 				mockFetchAuthSession.mockClear();
 				mockFetchAuthSession.mockResolvedValue({ credentials });

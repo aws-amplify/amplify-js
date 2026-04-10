@@ -1,5 +1,4 @@
-import type { AmplifyClassV6 } from '@aws-amplify/core';
-
+import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 import { resolveApiUrl } from '../../src/utils';
 import {
 	RestApiError,
@@ -7,18 +6,14 @@ import {
 	validationErrorMap,
 } from '../../src/errors';
 
-const mkAmplify = (endpoint = 'https://example.com/api', apiName = 'myAPI') =>
-	({
-		getConfig: () => ({
-			API: {
-				REST: {
-					[apiName]: {
-						endpoint,
-					},
-				},
+const mkCtx = (endpoint = 'https://example.com/api', apiName = 'myAPI') =>
+	createMockAmplifyContext({
+		API: {
+			REST: {
+				[apiName]: { endpoint },
 			},
-		}),
-	}) as unknown as AmplifyClassV6;
+		},
+	});
 
 describe('resolveApiUrl', () => {
 	beforeEach(() => {
@@ -28,43 +23,43 @@ describe('resolveApiUrl', () => {
 	it.each([
 		{
 			test: "parse absolute URL's",
-			amplify: mkAmplify(),
+			ctx: mkCtx(),
 			expected: 'https://example.com/api/rest',
 			succeeds: true,
 		},
 		{
 			test: "parse relative URL's",
-			amplify: mkAmplify('/api'),
+			ctx: mkCtx('/api'),
 			expected: 'http://localhost/api/rest',
 			succeeds: true,
 		},
 		{
 			test: "parse URL's without protocol",
-			amplify: mkAmplify('//foo.bar.com/api'),
+			ctx: mkCtx('//foo.bar.com/api'),
 			expected: 'http://foo.bar.com/api/rest',
 			succeeds: true,
 		},
 		{
 			test: 'fail validation with empty endpoint',
-			amplify: mkAmplify(''),
+			ctx: mkCtx(''),
 			expected: 'Check if the API name matches the one in your configuration',
 			succeeds: false,
 		},
 		{
 			test: 'fail validation with non-existent api',
-			amplify: mkAmplify('https://example.com/api', 'otherAPI'),
+			ctx: mkCtx('https://example.com/api', 'otherAPI'),
 			expected: 'Check if the API name matches the one in your configuration',
 			succeeds: false,
 		},
-	])(`should $test`, ({ expected, amplify, succeeds }) => {
+	])(`should $test`, ({ expected, ctx, succeeds }) => {
 		if (succeeds) {
 			expect.assertions(1);
-			const url = resolveApiUrl(amplify, 'myAPI', '/rest');
+			const url = resolveApiUrl(ctx, 'myAPI', '/rest');
 			expect(url.toString()).toEqual(expected);
 		} else {
 			expect.assertions(2);
 			try {
-				resolveApiUrl(amplify, 'myAPI', '/rest');
+				resolveApiUrl(ctx, 'myAPI', '/rest');
 			} catch (error) {
 				expect(error).toBeInstanceOf(RestApiError);
 				expect(error).toMatchObject({
@@ -76,7 +71,7 @@ describe('resolveApiUrl', () => {
 	});
 
 	it('appends query parameters', () => {
-		const url = resolveApiUrl(mkAmplify(), 'myAPI', '/rest', {
+		const url = resolveApiUrl(mkCtx(), 'myAPI', '/rest', {
 			foo: 'bar',
 			baz: '1',
 		});
@@ -86,7 +81,7 @@ describe('resolveApiUrl', () => {
 	});
 
 	it('overrides query parameters', () => {
-		const url = resolveApiUrl(mkAmplify(), 'myAPI', '/rest?baz=1', {
+		const url = resolveApiUrl(mkCtx(), 'myAPI', '/rest?baz=1', {
 			foo: 'bar',
 			baz: '2',
 		});

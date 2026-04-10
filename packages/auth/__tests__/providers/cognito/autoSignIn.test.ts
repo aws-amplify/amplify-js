@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
-
 import {
 	cognitoUserPoolsTokenProvider,
 	confirmSignUp,
@@ -24,6 +22,7 @@ import { cacheCognitoTokens } from '../../../src/providers/cognito/tokenProvider
 import { dispatchSignedInHubEvent } from '../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
 import { handleUserAuthFlow } from '../../../src/client/flows/userAuth/handleUserAuthFlow';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../src/errors/constants';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
@@ -45,10 +44,12 @@ const authConfig = {
 		userPoolId: 'us-west-2_zzzzz',
 	},
 };
+const mockCtx = createMockAmplifyContext();
+
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-Amplify.configure({
+(mockCtx as any).resourcesConfig = {
 	Auth: authConfig,
-});
+};
 
 const { user1 } = authAPITestParams;
 
@@ -107,7 +108,7 @@ describe('autoSignIn()', () => {
 
 		it('signUp should enable autoSignIn and return COMPLETE_AUTO_SIGN_IN step', async () => {
 			expect(autoSignInStore.getState()).toMatchObject({ active: false });
-			const resp = await signUp({
+			const resp = await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -127,7 +128,7 @@ describe('autoSignIn()', () => {
 
 		it('autoSignIn() should resolve to a SignInOutput', async () => {
 			expect(autoSignInStore.getState()).toMatchObject({ active: false });
-			await signUp({
+			await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -188,7 +189,7 @@ describe('autoSignIn()', () => {
 		it('signUp() should begin autoSignIn flow and return CONFIRM_SIGN_UP next step', async () => {
 			expect(autoSignInStore.getState()).toMatchObject({ active: false });
 
-			const signUpResult = await signUp({
+			const signUpResult = await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -210,7 +211,7 @@ describe('autoSignIn()', () => {
 		it('signUp() & confirmSignUp() should populate autoSignIn flow state and return COMPLETE_AUTO_SIGN_IN next step', async () => {
 			expect(autoSignInStore.getState()).toMatchObject({ active: false });
 
-			await signUp({
+			await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -221,7 +222,7 @@ describe('autoSignIn()', () => {
 				},
 			});
 
-			const confirmSignUpResult = await confirmSignUp({
+			const confirmSignUpResult = await confirmSignUp(mockCtx, {
 				username: user1.username,
 				confirmationCode: '123456',
 			});
@@ -242,7 +243,7 @@ describe('autoSignIn()', () => {
 
 			expect(autoSignInStore.getState()).toMatchObject({ active: false });
 
-			await signUp({
+			await signUp(mockCtx, {
 				username: user1.username,
 				password: user1.password,
 				options: {
@@ -253,7 +254,7 @@ describe('autoSignIn()', () => {
 				},
 			});
 
-			await confirmSignUp({
+			await confirmSignUp(mockCtx, {
 				username: user1.username,
 				confirmationCode: '123456',
 			});

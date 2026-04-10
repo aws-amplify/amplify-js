@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
-
 import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInWithUserPassword } from '../../../src/providers/cognito/apis/signInWithUserPassword';
@@ -12,6 +10,7 @@ import {
 } from '../../../src/providers/cognito/tokenProvider';
 import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
@@ -23,6 +22,8 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
+
+const mockCtx = createMockAmplifyContext();
 
 const authConfig = {
 	Cognito: {
@@ -36,9 +37,9 @@ describe('signIn API happy path cases', () => {
 	let handleUserPasswordFlowSpy: jest.SpyInstance;
 
 	beforeAll(() => {
-		Amplify.configure({
+		(mockCtx as any).resourcesConfig = {
 			Auth: authConfig,
-		});
+		};
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 	});
 
@@ -56,7 +57,7 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signIn API invoked with authFlowType should return a SignInResult', async () => {
-		const result = await signIn({
+		const result = await signIn(mockCtx, {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 			options: {
@@ -70,7 +71,7 @@ describe('signIn API happy path cases', () => {
 	test('handleUserPasswordAuthFlow should be called with clientMetadata from request', async () => {
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithUserPassword({
+		await signInWithUserPassword(mockCtx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,
@@ -115,7 +116,7 @@ describe('Cognito ASF', () => {
 
 	test('signIn API should send UserContextData', async () => {
 		try {
-			await signIn({
+			await signIn(mockCtx, {
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
 				options: {

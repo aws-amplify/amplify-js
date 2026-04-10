@@ -12,6 +12,7 @@ import {
 import { ConnectionState as CS } from '../src/types/PubSub';
 
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
+import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 import { isCustomDomain } from '../src/Providers/AWSWebSocketProvider/appsyncUrl';
 
 // Mock all calls to signRequest
@@ -88,14 +89,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 	describe('getProviderName()', () => {
 		test('returns the provider name', () => {
-			const provider = new AWSAppSyncRealTimeProvider();
+			const provider = new AWSAppSyncRealTimeProvider(createMockAmplifyContext());
 			expect(provider.getProviderName()).toEqual('AWSAppSyncRealTimeProvider');
 		});
 	});
 
 	describe('subscribe()', () => {
 		test('returns an observable', () => {
-			const provider = new AWSAppSyncRealTimeProvider();
+			const provider = new AWSAppSyncRealTimeProvider(createMockAmplifyContext());
 			expect(provider.subscribe({})).toBeInstanceOf(Observable);
 		});
 
@@ -127,7 +128,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						});
 
 					fakeWebSocketInterface = new FakeWebSocketInterface();
-					provider = new AWSAppSyncRealTimeProvider();
+					provider = new AWSAppSyncRealTimeProvider(createMockAmplifyContext());
 
 					// Saving this spy and resetting it by hand causes badness
 					//     Saving it causes new websockets to be reachable across past tests that have not fully closed
@@ -210,7 +211,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					expect.assertions(2);
 					const mockError = jest.fn();
 
-					const provider = new AWSAppSyncRealTimeProvider();
+					const provider = new AWSAppSyncRealTimeProvider(createMockAmplifyContext());
 
 					await Promise.resolve(
 						provider.subscribe({}).subscribe({

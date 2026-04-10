@@ -39,7 +39,10 @@ import { setAutoSignIn } from './autoSignIn';
  *  are not defined.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signUp(ctx: AmplifyContext, input: SignUpInput): Promise<SignUpOutput> {
+export async function signUp(
+	ctx: AmplifyContext,
+	input: SignUpInput,
+): Promise<SignUpOutput> {
 	const { username, password, options } = input;
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const signUpVerificationMethod =

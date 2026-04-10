@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../src/errors/AuthError';
@@ -9,15 +8,11 @@ import { sendUserAttributeVerificationCode } from '../../../src/providers/cognit
 import { GetUserAttributeVerificationException } from '../../../src/providers/cognito/types/errors';
 import { createGetUserAttributeVerificationCodeClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError, mockAccessToken } from './testUtils/data';
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -27,9 +22,11 @@ jest.mock(
 );
 jest.mock('../../../src/providers/cognito/factories');
 
+const mockCtx = createMockAmplifyContext();
+
 describe('sendUserAttributeVerificationCode', () => {
 	// assert mocks
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+	const mockFetchAuthSession = mockCtx.fetchAuthSession as jest.Mock;
 	const mockGetUserAttributeVerificationCode = jest.fn();
 	const mockCreateGetUserAttributeVerificationCodeClient = jest.mocked(
 		createGetUserAttributeVerificationCodeClient,
@@ -39,7 +36,15 @@ describe('sendUserAttributeVerificationCode', () => {
 	);
 
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
+		(mockCtx as any).resourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+				},
+			},
+		};
 		mockFetchAuthSession.mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
@@ -61,7 +66,7 @@ describe('sendUserAttributeVerificationCode', () => {
 	});
 
 	it('should return a result', async () => {
-		const result = await sendUserAttributeVerificationCode({
+		const result = await sendUserAttributeVerificationCode(mockCtx, {
 			userAttributeKey: 'email',
 			options: {
 				clientMetadata: { foo: 'bar' },
@@ -82,7 +87,7 @@ describe('sendUserAttributeVerificationCode', () => {
 
 	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
 		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
-		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+		(mockCtx as any).resourcesConfig = {
 			Auth: {
 				Cognito: {
 					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -91,8 +96,8 @@ describe('sendUserAttributeVerificationCode', () => {
 					userPoolEndpoint: expectedUserPoolEndpoint,
 				},
 			},
-		});
-		await sendUserAttributeVerificationCode({
+		};
+		await sendUserAttributeVerificationCode(mockCtx, {
 			userAttributeKey: 'email',
 			options: {
 				clientMetadata: { foo: 'bar' },
@@ -112,7 +117,7 @@ describe('sendUserAttributeVerificationCode', () => {
 			);
 		});
 		try {
-			await sendUserAttributeVerificationCode({
+			await sendUserAttributeVerificationCode(mockCtx, {
 				userAttributeKey: 'email',
 				options: {
 					clientMetadata: { foo: 'bar' },

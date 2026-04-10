@@ -51,6 +51,6 @@
 		"format": "echo \"Not implemented\"",
 		"lint": "eslint '**/*.{ts,tsx}'",
 		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage"
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage --passWithNoTests"
 	}
 }

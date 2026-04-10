@@ -3,11 +3,14 @@
 
 import { identifyUser } from '../../../../../src/pushNotifications/providers/pinpoint/apis/identifyUser';
 import { expectNotSupportedAsync } from '../../../../testUtils/expectNotSupported';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
+
+const mockCtx = createMockAmplifyContext();
 
 describe('identifyUser', () => {
 	it('is only supported on React Native', async () => {
 		await expectNotSupportedAsync(
-			identifyUser({ userId: 'user-id', userProfile: {} }),
+			identifyUser(mockCtx, { userId: 'user-id', userProfile: {} }),
 		);
 	});
 });

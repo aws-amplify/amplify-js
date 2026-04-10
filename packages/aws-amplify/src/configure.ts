@@ -52,9 +52,9 @@ export function configure(
 	const ctx: AmplifyContext = {
 		resourcesConfig: Object.freeze(resolvedResourceConfig),
 		libraryOptions: resolvedLibraryOptions,
-		fetchAuthSession: (options) => auth.fetchAuthSession(options ?? {}),
+		fetchAuthSession: options => auth.fetchAuthSession(options ?? {}),
 		clearCredentials: () => auth.clearCredentials(),
-		getTokens: (options) => auth.getTokens(options),
+		getTokens: options => auth.getTokens(options),
 	};
 
 	return Object.freeze(ctx);

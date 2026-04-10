@@ -11,11 +11,14 @@ import {
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
 import { getAnalyticsUserAgentString } from '../../../../src/utils';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 import { config, credentials, identityId } from './testUtils/data';
 
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
+
+const mockCtx = createMockAmplifyContext();
 
 describe('Pinpoint API: flushEvents', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;
@@ -40,7 +43,7 @@ describe('Pinpoint API: flushEvents', () => {
 	});
 
 	it('invokes the core flushEvents implementation', async () => {
-		flushEvents();
+		flushEvents(mockCtx);
 
 		expect(mockResolveConfig).toHaveBeenCalledTimes(1);
 		expect(mockResolveCredentials).toHaveBeenCalledTimes(1);
@@ -57,7 +60,7 @@ describe('Pinpoint API: flushEvents', () => {
 	it('logs an error when credentials can not be fetched', async () => {
 		mockResolveCredentials.mockRejectedValue(new Error('Mock Error'));
 
-		flushEvents();
+		flushEvents(mockCtx);
 
 		await new Promise(process.nextTick);
 

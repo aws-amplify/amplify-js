@@ -26,8 +26,9 @@ export const parseSigningInfo = (
 		service: signingService = DEFAULT_REST_IAM_SIGNING_SERVICE,
 		region: signingRegion = DEFAULT_IAM_SIGNING_REGION,
 	} =
-		restApiOptions?.amplify.resourcesConfig?.API?.REST?.[restApiOptions?.apiName] ??
-		{};
+		restApiOptions?.amplify.resourcesConfig?.API?.REST?.[
+			restApiOptions?.apiName
+		] ?? {};
 	const { hostname } = url;
 	const [, service, region] = APIG_HOSTNAME_PATTERN.exec(hostname) ?? [];
 	if (service === DEFAULT_REST_IAM_SIGNING_SERVICE) {

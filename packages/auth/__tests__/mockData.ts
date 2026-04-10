@@ -244,29 +244,29 @@ export const passkeyRegistrationResult: PkcWithAuthenticatorAttestationResponse 
 		id: 'vJCit9S2cglAvvW3txQ-OWRBb-NyhxaLOvRRisnr1aE',
 		rawId: new Uint8Array([
 			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
-		]),
+		]).buffer,
 		getClientExtensionResults: () => ({}),
 		authenticatorAttachment: 'platform',
 		response: {
 			clientDataJSON: new Uint8Array([
 				188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
 				57,
-			]),
+			]).buffer,
 			attestationObject: new Uint8Array([
 				188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
 				57,
-			]),
+			]).buffer,
 			getPublicKey: () =>
 				new Uint8Array([
 					188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
 					57,
-				]),
+				]).buffer,
 			getPublicKeyAlgorithm: () => -7,
 			getAuthenticatorData: () =>
 				new Uint8Array([
 					188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
 					57,
-				]),
+				]).buffer,
 			getTransports: () => ['internal'],
 		},
 		toJSON() {
@@ -386,22 +386,22 @@ export const passkeyGetResult: PkcWithAuthenticatorAssertionResponse = {
 	id: 'vJCit9S2cglAvvW3txQ-OQ',
 	rawId: new Uint8Array([
 		188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
-	]),
+	]).buffer,
 	getClientExtensionResults: () => ({}),
 	authenticatorAttachment: 'platform',
 	response: {
 		authenticatorData: new Uint8Array([
 			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
-		]),
+		]).buffer,
 		clientDataJSON: new Uint8Array([
 			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
-		]),
+		]).buffer,
 		signature: new Uint8Array([
 			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
-		]),
+		]).buffer,
 		userHandle: new Uint8Array([
 			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
-		]),
+		]).buffer,
 	},
 	toJSON() {
 		return 'json';

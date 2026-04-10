@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 import { CopyInput, CopyWithPathInput } from '../../../../src';
 import { copy } from '../../../../src/providers/s3/apis';
 import { copy as internalCopyImpl } from '../../../../src/providers/s3/apis/internal/copy';
@@ -10,6 +9,7 @@ import { copy as internalCopyImpl } from '../../../../src/providers/s3/apis/inte
 jest.mock('../../../../src/providers/s3/apis/internal/copy');
 
 const mockInternalCopyImpl = jest.mocked(internalCopyImpl);
+const mockCtx = createMockAmplifyContext();
 
 describe('client-side copy', () => {
 	beforeEach(() => {
@@ -27,8 +27,8 @@ describe('client-side copy', () => {
 				key: 'destination-key',
 			},
 		};
-		expect(copy(input)).toEqual(mockInternalResult);
-		expect(mockInternalCopyImpl).toBeCalledWith(Amplify, input);
+		expect(copy(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalCopyImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through input with path and output to internal implementation', async () => {
@@ -38,7 +38,7 @@ describe('client-side copy', () => {
 			source: { path: 'abc' },
 			destination: { path: 'abc' },
 		};
-		expect(copy(input)).toEqual(mockInternalResult);
-		expect(mockInternalCopyImpl).toBeCalledWith(Amplify, input);
+		expect(copy(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalCopyImpl).toBeCalledWith(mockCtx, input);
 	});
 });

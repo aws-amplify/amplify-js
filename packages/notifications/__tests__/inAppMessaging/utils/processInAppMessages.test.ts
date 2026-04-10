@@ -18,6 +18,7 @@ import {
 	matchesMetrics,
 } from '../../../src/inAppMessaging/providers/pinpoint/utils/helpers';
 import { initializeInAppMessaging } from '../../../src/inAppMessaging/providers/pinpoint/apis';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/utils');
@@ -27,6 +28,8 @@ const mockIsBeforeEndDate = isBeforeEndDate as jest.Mock;
 const mockMatchesAttributes = matchesAttributes as jest.Mock;
 const mockMatchesEventType = matchesEventType as jest.Mock;
 const mockMatchesMetrics = matchesMetrics as jest.Mock;
+
+const mockCtx = createMockAmplifyContext();
 
 describe('processInAppMessages', () => {
 	const messages = [
@@ -46,7 +49,7 @@ describe('processInAppMessages', () => {
 		},
 	];
 	beforeAll(() => {
-		initializeInAppMessaging();
+		initializeInAppMessaging(mockCtx);
 	});
 	beforeEach(() => {
 		mockMatchesEventType.mockReturnValue(true);

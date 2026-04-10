@@ -12,6 +12,7 @@ import {
 	getAnalyticsUserAgentString,
 	isAnalyticsEnabled,
 } from '../../../../src/utils';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 import {
 	appId,
@@ -26,6 +27,8 @@ jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/pinpoint/utils');
+
+const mockCtx = createMockAmplifyContext();
 
 describe('Pinpoint API: record', () => {
 	// create spies
@@ -60,7 +63,7 @@ describe('Pinpoint API: record', () => {
 	});
 
 	it('invokes the core record implementation', async () => {
-		record(event);
+		record(mockCtx, event);
 
 		expect(mockResolveCredentials).toHaveBeenCalledTimes(1);
 		expect(mockResolveConfig).toHaveBeenCalledTimes(1);
@@ -82,7 +85,7 @@ describe('Pinpoint API: record', () => {
 	it('logs an error when credentials can not be fetched', async () => {
 		mockResolveCredentials.mockRejectedValue(new Error('Mock Error'));
 
-		record(event);
+		record(mockCtx, event);
 
 		await new Promise(process.nextTick);
 
@@ -97,7 +100,7 @@ describe('Pinpoint API: record', () => {
 		const mockParams = {};
 
 		try {
-			record(mockParams as RecordInput);
+			record(mockCtx, mockParams as RecordInput);
 		} catch (e: any) {
 			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoEventName);
 		}
@@ -108,7 +111,7 @@ describe('Pinpoint API: record', () => {
 	it('should not enqueue an event when Analytics has been disable', async () => {
 		mockIsAnalyticsEnabled.mockReturnValue(false);
 
-		record(event);
+		record(mockCtx, event);
 
 		await new Promise(process.nextTick);
 
@@ -116,7 +119,7 @@ describe('Pinpoint API: record', () => {
 	});
 
 	it('should dispatch a Hub event', async () => {
-		record(event);
+		record(mockCtx, event);
 
 		await new Promise(process.nextTick);
 

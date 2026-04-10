@@ -36,9 +36,15 @@ export function remove(
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
  * when there is no key or its empty.
  */
-export function remove(ctx: AmplifyContext, input: RemoveInput): RemoveOperation<RemoveOutput>;
+export function remove(
+	ctx: AmplifyContext,
+	input: RemoveInput,
+): RemoveOperation<RemoveOutput>;
 
-export function remove(ctx: AmplifyContext, input: RemoveInput | RemoveWithPathInput) {
+export function remove(
+	ctx: AmplifyContext,
+	input: RemoveInput | RemoveWithPathInput,
+) {
 	if ('key' in input) {
 		return removeInternal(ctx, input);
 	} else {

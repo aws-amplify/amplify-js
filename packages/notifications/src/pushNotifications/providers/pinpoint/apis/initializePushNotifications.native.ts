@@ -1,9 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext } from '@aws-amplify/core';
-
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
@@ -182,7 +180,8 @@ const addAnalyticsListeners = (ctx: AmplifyContext): void => {
 	);
 	launchNotificationOpenedListenerRemover = addEventListener(
 		'launchNotificationOpened',
-		createMessageEventRecorder(ctx,
+		createMessageEventRecorder(
+			ctx,
 			'opened_notification',
 			// once we are done with it we can remove the listener
 			() => {
@@ -193,7 +192,8 @@ const addAnalyticsListeners = (ctx: AmplifyContext): void => {
 	);
 	addEventListener(
 		'notificationOpened',
-		createMessageEventRecorder(ctx,
+		createMessageEventRecorder(
+			ctx,
 			'opened_notification',
 			// if we are in this state, we no longer need the listener as the app was launched via some other means
 			() => {
@@ -204,7 +204,10 @@ const addAnalyticsListeners = (ctx: AmplifyContext): void => {
 	);
 };
 
-const registerDevice = async (ctx: AmplifyContext, address: string): Promise<void> => {
+const registerDevice = async (
+	ctx: AmplifyContext,
+	address: string,
+): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials(ctx);
 	const { appId, region } = resolveConfig(ctx);
 	try {

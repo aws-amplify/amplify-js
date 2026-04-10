@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAccessLevel } from '@aws-amplify/core';
 
 import { getObject } from '../../../../../src/providers/s3/utils/client/s3data';
 import { downloadData } from '../../../../../src/providers/s3/apis/internal/downloadData';
@@ -25,20 +25,11 @@ import {
 } from '../../../../../src/providers/s3/types/outputs';
 import './testUtils';
 import { BucketInfo } from '../../../../../src/providers/s3/types/options';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../../src/providers/s3/utils');
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
-		return { debug: jest.fn() };
-	}),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
+const mockCtx = createMockAmplifyContext();
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -61,10 +52,9 @@ const mockDownloadResultBase = {
 	contentType: 'contentType',
 };
 
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
+const mockFetchAuthSession = jest.mocked(mockCtx.fetchAuthSession);
 const mockCreateDownloadTask = createDownloadTask as jest.Mock;
 const mockValidateStorageInput = validateStorageOperationInput as jest.Mock;
-const mockGetConfig = jest.mocked(Amplify.getConfig);
 
 describe('downloadData with key', () => {
 	beforeAll(() => {
@@ -72,7 +62,7 @@ describe('downloadData with key', () => {
 			credentials,
 			identityId: defaultIdentityId,
 		});
-		mockGetConfig.mockReturnValue({
+		mockCtx.resourcesConfig = {
 			Storage: {
 				S3: {
 					bucket,
@@ -80,7 +70,7 @@ describe('downloadData with key', () => {
 					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
-		});
+		};
 	});
 
 	beforeEach(() => {
@@ -98,7 +88,7 @@ describe('downloadData with key', () => {
 			key: inputKey,
 			options: { accessLevel: 'protected', targetIdentityId },
 		};
-		expect(downloadData(mockDownloadInput)).toBe('downloadTask');
+		expect(downloadData(mockCtx, mockDownloadInput)).toBe('downloadTask');
 	});
 
 	const testCases: {
@@ -131,7 +121,7 @@ describe('downloadData with key', () => {
 		async ({ options, expectedKey }) => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 			const onProgress = jest.fn();
-			downloadData({
+			downloadData(mockCtx, {
 				key: inputKey,
 				options: {
 					...options,
@@ -173,7 +163,7 @@ describe('downloadData with key', () => {
 			VersionId: 'versionId',
 			ContentType: 'contentType',
 		});
-		downloadData({ key: inputKey });
+		downloadData(mockCtx, { key: inputKey });
 		const { job } = mockCreateDownloadTask.mock.calls[0][0];
 		const {
 			key,
@@ -206,7 +196,7 @@ describe('downloadData with key', () => {
 		const end = 100;
 		(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 
-		downloadData({
+		downloadData(mockCtx, {
 			key: inputKey,
 			options: {
 				bytesRange: { start, end },
@@ -233,7 +223,7 @@ describe('downloadData with key', () => {
 				region: 'region-1',
 			};
 
-			downloadData({
+			downloadData(mockCtx, {
 				key: inputKey,
 				options: {
 					bucket: bucketInfo,
@@ -262,7 +252,7 @@ describe('downloadData with key', () => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 			const abortController = new AbortController();
 
-			downloadData({
+			downloadData(mockCtx, {
 				key: inputKey,
 				options: {
 					bucket: 'default-bucket',
@@ -291,7 +281,7 @@ describe('downloadData with key', () => {
 	describe('ExpectedBucketOwner passed in options', () => {
 		it('should include expectedBucketOwner in headers when provided', async () => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
-			downloadData({
+			downloadData(mockCtx, {
 				key: inputKey,
 				options: {
 					expectedBucketOwner: validBucketOwner,
@@ -314,7 +304,7 @@ describe('downloadData with key', () => {
 	describe('ResponseCacheControl passed in options', () => {
 		it('should include cacheControl in headers when provided', async () => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
-			downloadData({
+			downloadData(mockCtx, {
 				path: inputKey,
 				options: {
 					cacheControl: 'no-store',
@@ -335,7 +325,7 @@ describe('downloadData with key', () => {
 
 		it('should NOT include cacheControl in headers when not provided', async () => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
-			downloadData({
+			downloadData(mockCtx, {
 				path: inputKey,
 			});
 
@@ -360,7 +350,7 @@ describe('downloadData with path', () => {
 			credentials,
 			identityId: defaultIdentityId,
 		});
-		mockGetConfig.mockReturnValue({
+		mockCtx.resourcesConfig = {
 			Storage: {
 				S3: {
 					bucket,
@@ -368,7 +358,7 @@ describe('downloadData with path', () => {
 					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
-		});
+		};
 		mockCreateDownloadTask.mockReturnValue('downloadTask');
 		mockValidateStorageInput.mockReturnValue({
 			inputType: STORAGE_INPUT_PATH,
@@ -385,7 +375,7 @@ describe('downloadData with path', () => {
 			path: inputPath,
 			options: { useAccelerateEndpoint: true },
 		};
-		expect(downloadData(mockDownloadInput)).toBe('downloadTask');
+		expect(downloadData(mockCtx, mockDownloadInput)).toBe('downloadTask');
 	});
 
 	test.each([
@@ -402,7 +392,7 @@ describe('downloadData with path', () => {
 		async ({ path, expectedKey }) => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 			const onProgress = jest.fn();
-			downloadData({
+			downloadData(mockCtx, {
 				path,
 				options: {
 					useAccelerateEndpoint: true,
@@ -449,7 +439,7 @@ describe('downloadData with path', () => {
 			VersionId: 'versionId',
 			ContentType: 'contentType',
 		});
-		downloadData({ path: inputPath });
+		downloadData(mockCtx, { path: inputPath });
 		const { job } = mockCreateDownloadTask.mock.calls[0][0];
 		const {
 			path,
@@ -482,7 +472,7 @@ describe('downloadData with path', () => {
 		const end = 100;
 		(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 
-		downloadData({
+		downloadData(mockCtx, {
 			path: inputPath,
 			options: {
 				bytesRange: { start, end },
@@ -509,7 +499,7 @@ describe('downloadData with path', () => {
 				region: 'region-1',
 			};
 
-			downloadData({
+			downloadData(mockCtx, {
 				path: inputPath,
 				options: {
 					bucket: bucketInfo,
@@ -538,7 +528,7 @@ describe('downloadData with path', () => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 			const abortController = new AbortController();
 
-			downloadData({
+			downloadData(mockCtx, {
 				path: inputPath,
 				options: {
 					bucket: 'default-bucket',
@@ -567,7 +557,7 @@ describe('downloadData with path', () => {
 	describe('ExpectedBucketOwner passed in options', () => {
 		it('should include expectedBucketOwner in headers when provided', async () => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
-			downloadData({
+			downloadData(mockCtx, {
 				path: inputKey,
 				options: {
 					expectedBucketOwner: validBucketOwner,
@@ -590,7 +580,7 @@ describe('downloadData with path', () => {
 	describe('ResponseCacheControl passed in options', () => {
 		it('should include cacheControl in headers when provided', async () => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
-			downloadData({
+			downloadData(mockCtx, {
 				path: inputKey,
 				options: {
 					cacheControl: 'no-store',
@@ -611,7 +601,7 @@ describe('downloadData with path', () => {
 
 		it('should NOT include cacheControl in headers when not provided', async () => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
-			downloadData({
+			downloadData(mockCtx, {
 				path: inputKey,
 			});
 

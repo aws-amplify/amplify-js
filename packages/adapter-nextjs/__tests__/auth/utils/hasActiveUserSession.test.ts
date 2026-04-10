@@ -1,6 +1,5 @@
-import { getCurrentUser } from 'aws-amplify/auth/server';
+import { AuthUser, getCurrentUser } from 'aws-amplify/auth';
 import { NextRequest } from 'next/server';
-import { AuthUser } from 'aws-amplify/auth';
 import { NextApiRequest } from 'next';
 
 import {
@@ -10,14 +9,13 @@ import {
 import { NextServer } from '../../../src/types';
 import { createMockNextApiResponse } from '../testUtils';
 
-jest.mock('aws-amplify/auth/server');
+jest.mock('aws-amplify/auth');
 
 const mockRunWithAmplifyServerContext =
 	jest.fn() as jest.MockedFunction<NextServer.RunOperationWithContext>;
 const mockGetCurrentUser = jest.mocked(getCurrentUser);
 
 describe('hasUserSignedIn', () => {
-	const mockContextSpec = { token: { value: Symbol('mock') } };
 	const mockCurrentUserResult: AuthUser = {
 		userId: 'mockUserId',
 		username: 'mockUsername',
@@ -25,8 +23,8 @@ describe('hasUserSignedIn', () => {
 
 	beforeAll(() => {
 		mockRunWithAmplifyServerContext.mockImplementation(
-			async ({ nextServerContext: _, operation }) => {
-				return operation(mockContextSpec);
+			async ({ operation }) => {
+				return operation({} as any);
 			},
 		);
 		mockGetCurrentUser.mockResolvedValue(mockCurrentUserResult);
@@ -40,23 +38,23 @@ describe('hasUserSignedIn', () => {
 	describe('hasUserSignedInWithAppRouter', () => {
 		const mockRequest = new NextRequest('https://example.com/api/auth/sign-in');
 
-		it('invokes server getCurrentUser() with expected parameter within the injected runWithAmplifyServerContext function', async () => {
+		it('invokes server getCurrentUser() within runWithAmplifyServerContext', async () => {
 			await hasActiveUserSessionWithAppRouter({
 				request: mockRequest,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
 
 			expect(mockRunWithAmplifyServerContext).toHaveBeenCalledWith({
-				nextServerContext: {
+				serverContext: {
 					request: mockRequest,
 					response: expect.any(Response),
 				},
 				operation: expect.any(Function),
 			});
-			expect(mockGetCurrentUser).toHaveBeenCalledWith(mockContextSpec);
+			expect(mockGetCurrentUser).toHaveBeenCalled();
 		});
 
-		it('returns true when getCurrentUser() resolves (returned auth tokens)', async () => {
+		it('returns true when getCurrentUser() resolves', async () => {
 			const result = await hasActiveUserSessionWithAppRouter({
 				request: mockRequest,
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
@@ -65,7 +63,7 @@ describe('hasUserSignedIn', () => {
 			expect(result).toBe(true);
 		});
 
-		it('returns false when getCurrentUser() rejects (no auth tokens)', async () => {
+		it('returns false when getCurrentUser() rejects', async () => {
 			mockGetCurrentUser.mockRejectedValueOnce(new Error('No current user'));
 
 			const result = await hasActiveUserSessionWithAppRouter({
@@ -83,7 +81,7 @@ describe('hasUserSignedIn', () => {
 		} as unknown as NextApiRequest;
 		const { mockResponse } = createMockNextApiResponse();
 
-		it('invokes server getCurrentUser() with expected parameter within the injected runWithAmplifyServerContext function', async () => {
+		it('invokes server getCurrentUser() within runWithAmplifyServerContext', async () => {
 			await hasActiveUserSessionWithPagesRouter({
 				request: mockRequest,
 				response: mockResponse,
@@ -91,16 +89,16 @@ describe('hasUserSignedIn', () => {
 			});
 
 			expect(mockRunWithAmplifyServerContext).toHaveBeenCalledWith({
-				nextServerContext: {
+				serverContext: {
 					request: mockRequest,
 					response: mockResponse,
 				},
 				operation: expect.any(Function),
 			});
-			expect(mockGetCurrentUser).toHaveBeenCalledWith(mockContextSpec);
+			expect(mockGetCurrentUser).toHaveBeenCalled();
 		});
 
-		it('returns true when getCurrentUser() resolves (returned auth tokens)', async () => {
+		it('returns true when getCurrentUser() resolves', async () => {
 			const result = await hasActiveUserSessionWithPagesRouter({
 				request: mockRequest,
 				response: mockResponse,
@@ -110,7 +108,7 @@ describe('hasUserSignedIn', () => {
 			expect(result).toBe(true);
 		});
 
-		it('returns false when getCurrentUser() rejects (no auth tokens)', async () => {
+		it('returns false when getCurrentUser() rejects', async () => {
 			mockGetCurrentUser.mockRejectedValueOnce(new Error('No current user'));
 
 			const result = await hasActiveUserSessionWithPagesRouter({

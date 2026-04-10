@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 import {
 	ListAllInput,
 	ListAllWithPathInput,
@@ -15,6 +14,7 @@ import { list as internalListImpl } from '../../../../src/providers/s3/apis/inte
 jest.mock('../../../../src/providers/s3/apis/internal/list');
 
 const mockInternalListImpl = jest.mocked(internalListImpl);
+const mockCtx = createMockAmplifyContext();
 
 describe('client-side list', () => {
 	beforeEach(() => {
@@ -27,8 +27,8 @@ describe('client-side list', () => {
 		const input: ListAllInput = {
 			prefix: 'source-key',
 		};
-		expect(list(input)).toEqual(mockInternalResult);
-		expect(mockInternalListImpl).toBeCalledWith(Amplify, input);
+		expect(list(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalListImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through list paginate input with key and output to internal implementation', async () => {
@@ -41,8 +41,8 @@ describe('client-side list', () => {
 				pageSize: 10,
 			},
 		};
-		expect(list(input)).toEqual(mockInternalResult);
-		expect(mockInternalListImpl).toBeCalledWith(Amplify, input);
+		expect(list(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalListImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through list all input with path and output to internal implementation', async () => {
@@ -51,8 +51,8 @@ describe('client-side list', () => {
 		const input: ListAllWithPathInput = {
 			path: 'abc',
 		};
-		expect(list(input)).toEqual(mockInternalResult);
-		expect(mockInternalListImpl).toBeCalledWith(Amplify, input);
+		expect(list(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalListImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through list paginate input with path and output to internal implementation', async () => {
@@ -65,7 +65,7 @@ describe('client-side list', () => {
 				pageSize: 10,
 			},
 		};
-		expect(list(input)).toEqual(mockInternalResult);
-		expect(mockInternalListImpl).toBeCalledWith(Amplify, input);
+		expect(list(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalListImpl).toBeCalledWith(mockCtx, input);
 	});
 });

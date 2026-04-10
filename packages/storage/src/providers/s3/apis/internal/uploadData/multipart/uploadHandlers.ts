@@ -365,7 +365,10 @@ export const getMultipartUploadHandlers = (
 	};
 };
 
-const resolveAccessLevel = (ctx: AmplifyContext, accessLevel?: StorageAccessLevel) =>
+const resolveAccessLevel = (
+	ctx: AmplifyContext,
+	accessLevel?: StorageAccessLevel,
+) =>
 	accessLevel ??
 	ctx.libraryOptions.Storage?.S3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;

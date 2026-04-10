@@ -16,6 +16,8 @@ import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentU
  * @throws - {@link InitiateAuthException} - Thrown when the service fails to refresh the tokens.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const getCurrentUser = async (ctx: AmplifyContext): Promise<GetCurrentUserOutput> => {
+export const getCurrentUser = async (
+	ctx: AmplifyContext,
+): Promise<GetCurrentUserOutput> => {
 	return getCurrentUserInternal(ctx);
 };

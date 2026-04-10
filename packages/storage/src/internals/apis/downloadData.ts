@@ -10,7 +10,10 @@ import { DownloadDataOutput } from '../types/outputs';
 /**
  * @internal
  */
-export const downloadData = (ctx: AmplifyContext, input: DownloadDataInput): DownloadDataOutput =>
+export const downloadData = (
+	ctx: AmplifyContext,
+	input: DownloadDataInput,
+): DownloadDataOutput =>
 	downloadDataInternal(ctx, {
 		path: input.path,
 		options: {

@@ -1,10 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Hub } from '@aws-amplify/core';
+import { AmplifyContext, Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
-import { AmplifyContext } from '@aws-amplify/core';
 import { getCurrentUser } from '../apis/getCurrentUser';
 import {
 	UNEXPECTED_SIGN_IN_INTERRUPTION_EXCEPTION,

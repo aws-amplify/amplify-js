@@ -5,8 +5,10 @@ import { getHkdfKey } from '../../../../../src/providers/cognito/utils/srp/getHk
 
 describe('getHkdfKey', () => {
 	it('returns a length 16 hex string', () => {
-		const inputKey = Buffer.from('secretInputKey', 'ascii');
-		const salt = Buffer.from('7468697320697320612074c3a97374', 'hex');
+		const inputKey = new Uint8Array(Buffer.from('secretInputKey', 'ascii'));
+		const salt = new Uint8Array(
+			Buffer.from('7468697320697320612074c3a97374', 'hex'),
+		);
 		const context = Buffer.from('Caldera Derived Key', 'utf8');
 		const spacer = Buffer.from(String.fromCharCode(1), 'utf8');
 		const info = new Uint8Array(context.byteLength + spacer.byteLength);

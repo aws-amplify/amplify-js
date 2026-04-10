@@ -10,10 +10,13 @@ import {
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
 import { getAnalyticsUserAgentString } from '../../../../src/utils/userAgent';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('../../../../src/utils/userAgent');
+
+const mockCtx = createMockAmplifyContext();
 
 describe('Analytics Pinpoint Provider API: identifyUser', () => {
 	const credentials = {
@@ -54,7 +57,7 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 				plan: 'plan',
 			},
 		};
-		await identifyUser(input);
+		await identifyUser(mockCtx, input);
 		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
@@ -73,7 +76,7 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 		const options: IdentifyUserInput['options'] = {
 			userAttributes,
 		};
-		await identifyUser({ ...input, options });
+		await identifyUser(mockCtx, { ...input, options });
 		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
@@ -90,6 +93,6 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 			userId: 'user-id',
 			userProfile: {},
 		};
-		await expect(identifyUser(input)).rejects.toBeDefined();
+		await expect(identifyUser(mockCtx, input)).rejects.toBeDefined();
 	});
 });

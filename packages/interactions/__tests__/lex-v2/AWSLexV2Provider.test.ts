@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { fetchAuthSession } from '@aws-amplify/core';
 import {
 	IntentState,
 	LexRuntimeV2Client,
@@ -11,7 +10,8 @@ import {
 import { gzip, strToU8 } from 'fflate';
 import { encode } from 'base-64';
 import { v4 as uuid } from 'uuid';
-import { lexProvider } from '../../src/lex-v2/AWSLexV2Provider';
+import { createLexV2Provider } from '../../src/lex-v2/AWSLexV2Provider';
+import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core');
 
@@ -46,7 +46,6 @@ const credentials = {
 	identityId: 'identity-id',
 };
 
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 
 const arrayBufferToBase64 = (buffer: Uint8Array) => {
 	var binary = '';
@@ -219,17 +218,27 @@ afterEach(() => {
 	jest.restoreAllMocks();
 });
 
+const mockCtx = createMockAmplifyContext();
+(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+	credentials: {
+		accessKeyId: 'accessKeyId',
+		secretAccessKey: 'secretAccessKey',
+		sessionToken: 'sessionToken',
+	},
+});
+const lexProvider = createLexV2Provider(mockCtx);
+
 describe('Interactions', () => {
 	// Test 'send' API
 	describe('send API', () => {
 		let provider;
 
 		beforeEach(() => {
-			mockFetchAuthSession.mockReturnValue(credentials);
+			(mockCtx.fetchAuthSession as jest.Mock).mockReturnValue(credentials);
 			provider = lexProvider;
 		});
 
-		afterEach(() => mockFetchAuthSession.mockReset());
+		afterEach(() => (mockCtx.fetchAuthSession as jest.Mock).mockReset());
 
 		test('send simple text message to bot and fulfill', async () => {
 			let response = await provider.sendMessage(botConfig.BookTrip, 'hi');
@@ -339,7 +348,7 @@ describe('Interactions', () => {
 		});
 
 		test('send a text message bot But with no credentials', async () => {
-			mockFetchAuthSession.mockReturnValue(Promise.reject(new Error()));
+			(mockCtx.fetchAuthSession as jest.Mock).mockReturnValue(Promise.reject(new Error()));
 
 			await expect(
 				provider.sendMessage(botConfig.BookTrip, 'hi'),
@@ -376,11 +385,11 @@ describe('Interactions', () => {
 		let provider;
 
 		beforeEach(() => {
-			mockFetchAuthSession.mockReturnValue(credentials);
+			(mockCtx.fetchAuthSession as jest.Mock).mockReturnValue(credentials);
 			provider = lexProvider;
 		});
 
-		afterEach(() => mockFetchAuthSession.mockReset());
+		afterEach(() => (mockCtx.fetchAuthSession as jest.Mock).mockReset());
 
 		test('Configure onComplete callback for a configured bot successfully', () => {
 			expect(() =>
@@ -405,7 +414,7 @@ describe('Interactions', () => {
 		let mockResponseProvider;
 
 		beforeEach(async () => {
-			mockFetchAuthSession.mockReturnValue(credentials);
+			(mockCtx.fetchAuthSession as jest.Mock).mockReturnValue(credentials);
 			mockCallbackProvider = actionType => {
 				switch (actionType) {
 					case ACTION_TYPE.IN_PROGRESS:
@@ -461,7 +470,7 @@ describe('Interactions', () => {
 		});
 
 		afterEach(() => {
-			mockFetchAuthSession.mockReset();
+			(mockCtx.fetchAuthSession as jest.Mock).mockReset();
 		});
 
 		describe('onComplete callback from `Interactions.onComplete`', () => {

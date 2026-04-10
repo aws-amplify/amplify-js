@@ -1,10 +1,9 @@
-import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fromUtf8 } from '@smithy/util-utf8';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+import { fromUtf8 } from '@smithy/util-utf8';
 
 import { RecordInput } from '../types';
 import { getEventBuffer, resolveConfig } from '../utils';
@@ -34,7 +33,10 @@ const logger = new ConsoleLogger('KinesisFirehose');
  * });
  * ```
  */
-export const record = (ctx: AmplifyContext, { streamName, data }: RecordInput): void => {
+export const record = (
+	ctx: AmplifyContext,
+	{ streamName, data }: RecordInput,
+): void => {
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
 

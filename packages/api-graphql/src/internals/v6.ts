@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
-
-import { createGraphQLAPI } from '../GraphQLAPI';
 import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
 import { cancel as cancelREST } from '@aws-amplify/api-rest/internals';
+
+import { createGraphQLAPI } from '../GraphQLAPI';
 import {
 	CommonPublicClientOptions,
 	GraphQLOptions,

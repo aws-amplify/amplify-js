@@ -12,6 +12,7 @@ import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorTypes } from '../../../../../src/types/Auth';
 import { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/cognito/tokenProvider');
 jest.mock('@aws-amplify/core', () => ({
@@ -54,6 +55,7 @@ const mockHubDispatch = Hub.dispatch as jest.Mock;
 const mockDecodeJWT = decodeJWT as jest.Mock;
 
 describe('completeOAuthFlow', () => {
+	const mockCtx = createMockAmplifyContext();
 	const windowSpy = jest.spyOn(window, 'window', 'get');
 	const mockFetch = jest.fn();
 	const mockReplaceState = jest.fn();
@@ -88,7 +90,7 @@ describe('completeOAuthFlow', () => {
 		const expectedErrorMessage = 'some error message';
 
 		expect(
-			completeOAuthFlow({
+			completeOAuthFlow(mockCtx, {
 				currentUrl: `http://localhost:3000?error=true&error_description=${expectedErrorMessage}`,
 				userAgentValue: 'UserAgent',
 				clientId: 'clientId',
@@ -112,7 +114,7 @@ describe('completeOAuthFlow', () => {
 
 		it('throws when `code` is not presented in the redirect url', () => {
 			expect(
-				completeOAuthFlow({
+				completeOAuthFlow(mockCtx, {
 					...testInput,
 					currentUrl: `http://localhost:3000?state=someState123`,
 				}),
@@ -121,7 +123,7 @@ describe('completeOAuthFlow', () => {
 
 		it('throws when `state` is not presented in the redirect url', async () => {
 			expect(
-				completeOAuthFlow({
+				completeOAuthFlow(mockCtx, {
 					...testInput,
 					currentUrl: `http://localhost:3000?code=123`,
 				}),
@@ -137,7 +139,7 @@ describe('completeOAuthFlow', () => {
 				});
 			});
 
-			await expect(completeOAuthFlow(testInput)).rejects.toThrow(
+			await expect(completeOAuthFlow(mockCtx, testInput)).rejects.toThrow(
 				expectedErrorMessage,
 			);
 			expect(mockValidateState).toHaveBeenCalledWith(expectedState);
@@ -171,7 +173,7 @@ describe('completeOAuthFlow', () => {
 				executionOrder.push('hubDispatch'),
 			);
 
-			await completeOAuthFlow(testInput);
+			await completeOAuthFlow(mockCtx, testInput);
 
 			expect(mockFetch).toHaveBeenCalledWith(
 				'https://oauth.domain.com/oauth2/token',
@@ -221,7 +223,7 @@ describe('completeOAuthFlow', () => {
 				json: mockJsonMethod,
 			});
 
-			expect(completeOAuthFlow(testInput)).rejects.toThrow(
+			expect(completeOAuthFlow(mockCtx, testInput)).rejects.toThrow(
 				mockError.error_message,
 			);
 		});
@@ -240,7 +242,7 @@ describe('completeOAuthFlow', () => {
 		it('throws when error and error_description are presented in the redirect url', () => {
 			const expectedErrorMessage = 'invalid_scope';
 			expect(
-				completeOAuthFlow({
+				completeOAuthFlow(mockCtx, {
 					...testInput,
 					currentUrl: `http://localhost:3000#error_description=${expectedErrorMessage}&error=invalid_request`,
 				}),
@@ -249,7 +251,7 @@ describe('completeOAuthFlow', () => {
 
 		it('throws when access_token is not presented in the redirect url', () => {
 			expect(
-				completeOAuthFlow({
+				completeOAuthFlow(mockCtx, {
 					...testInput,
 					currentUrl: `http://localhost:3000#`,
 				}),
@@ -265,7 +267,7 @@ describe('completeOAuthFlow', () => {
 				});
 			});
 
-			await expect(completeOAuthFlow(testInput)).rejects.toThrow(
+			await expect(completeOAuthFlow(mockCtx, testInput)).rejects.toThrow(
 				expectedErrorMessage,
 			);
 		});
@@ -282,7 +284,7 @@ describe('completeOAuthFlow', () => {
 				},
 			});
 
-			await completeOAuthFlow({
+			await completeOAuthFlow(mockCtx, {
 				...testInput,
 				currentUrl: `http://localhost:3000#access_token=${expectedAccessToken}&id_token=${expectedIdToken}&token_type=${expectedTokenType}&expires_in=${expectedExpiresIn}`,
 			});

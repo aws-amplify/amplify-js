@@ -37,7 +37,9 @@ import { assertValidCredentialCreationOptions } from '../utils/passkey/types';
  * @throws - {@link CompleteWebAuthnRegistrationException}
  * - Thrown due to a service error when verifying WebAuthn registration result
  */
-export async function associateWebAuthnCredential(ctx: AmplifyContext): Promise<void> {
+export async function associateWebAuthnCredential(
+	ctx: AmplifyContext,
+): Promise<void> {
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 
 	assertTokenProviderConfig(authConfig);

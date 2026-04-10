@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 import {
 	DEFAULT_PERSONALIZE_CONFIG,
 	PERSONALIZE_FLUSH_SIZE_MAX,
 	resolveConfig,
 } from '../../../../src/providers/personalize/utils';
+
+const mockCtx = createMockAmplifyContext();
 
 describe('Analytics Personalize Provider Util: resolveConfig', () => {
 	const providedConfig = {
@@ -17,18 +18,12 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 		flushInterval: 1000,
 	};
 
-	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
-
-	beforeEach(() => {
-		getConfigSpy.mockReset();
-	});
-
 	it('returns required config', () => {
-		getConfigSpy.mockReturnValue({
+		(mockCtx as any).resourcesConfig = {
 			Analytics: { Personalize: providedConfig },
-		});
+		};
 
-		expect(resolveConfig()).toStrictEqual({
+		expect(resolveConfig(mockCtx)).toStrictEqual({
 			...providedConfig,
 			bufferSize: providedConfig.flushSize + 1,
 		});
@@ -39,11 +34,11 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 			region: 'us-east-1',
 			trackingId: 'trackingId1',
 		};
-		getConfigSpy.mockReturnValue({
+		(mockCtx as any).resourcesConfig = {
 			Analytics: { Personalize: requiredFields },
-		});
+		};
 
-		expect(resolveConfig()).toStrictEqual({
+		expect(resolveConfig(mockCtx)).toStrictEqual({
 			...DEFAULT_PERSONALIZE_CONFIG,
 			region: requiredFields.region,
 			trackingId: requiredFields.trackingId,
@@ -52,25 +47,25 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 	});
 
 	it('throws if region is missing', () => {
-		getConfigSpy.mockReturnValue({
+		(mockCtx as any).resourcesConfig = {
 			Analytics: {
 				Personalize: { ...providedConfig, region: undefined as any },
 			},
-		});
+		};
 
-		expect(resolveConfig).toThrow();
+		expect(() => resolveConfig(mockCtx)).toThrow();
 	});
 
 	it('throws if flushSize is larger than max', () => {
-		getConfigSpy.mockReturnValue({
+		(mockCtx as any).resourcesConfig = {
 			Analytics: {
 				Personalize: {
 					...providedConfig,
 					flushSize: PERSONALIZE_FLUSH_SIZE_MAX + 1,
 				},
 			},
-		});
+		};
 
-		expect(resolveConfig).toThrow();
+		expect(() => resolveConfig(mockCtx)).toThrow();
 	});
 });

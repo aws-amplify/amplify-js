@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
 
 import { putObject } from '../../../../../../src/providers/s3/utils/client/s3data';
 import { calculateContentMd5 } from '../../../../../../src/providers/s3/utils';
@@ -11,6 +10,7 @@ import { putObjectJob } from '../../../../../../src/providers/s3/apis/internal/u
 import '../testUtils';
 import { UploadDataChecksumAlgorithm } from '../../../../../../src/providers/s3/types/options';
 import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../../../src/providers/s3/utils/constants';
+import { createMockAmplifyContext } from '../../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../../../src/providers/s3/utils', () => {
@@ -21,16 +21,6 @@ jest.mock('../../../../../../src/providers/s3/utils', () => {
 		calculateContentMd5: jest.fn(),
 	};
 });
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn(),
-	fetchAuthSession: jest.fn(),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
 
 const testPath = 'testPath/object';
 const credentials: AWSCredentials = {
@@ -39,18 +29,13 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const identityId = 'identityId';
-const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
 const mockPutObject = jest.mocked(putObject);
 const bucket = 'bucket';
 const region = 'region';
 const data = 'data';
 const dataLength = data.length;
 
-mockFetchAuthSession.mockResolvedValue({
-	credentials,
-	identityId,
-});
-jest.mocked(Amplify.getConfig).mockReturnValue({
+const mockCtx = createMockAmplifyContext({
 	Storage: {
 		S3: {
 			bucket,
@@ -59,6 +44,11 @@ jest.mocked(Amplify.getConfig).mockReturnValue({
 		},
 	},
 });
+(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+	credentials,
+	identityId,
+});
+
 mockPutObject.mockResolvedValue({
 	ETag: 'eTag',
 	VersionId: 'versionId',
@@ -88,6 +78,7 @@ describe('putObjectJob with key', () => {
 			const useAccelerateEndpoint = true;
 
 			const job = putObjectJob(
+				mockCtx,
 				{
 					key: inputKey,
 					data,
@@ -147,7 +138,7 @@ describe('putObjectJob with key', () => {
 			.spyOn(CRC32, 'calculateContentCRC32')
 			.mockResolvedValue(undefined as any);
 
-		Amplify.libraryOptions = {
+		mockCtx.libraryOptions = {
 			Storage: {
 				S3: {
 					isObjectLockEnabled: true,
@@ -155,6 +146,7 @@ describe('putObjectJob with key', () => {
 			},
 		};
 		const job = putObjectJob(
+			mockCtx,
 			{
 				key: 'key',
 				data: 'data',
@@ -173,6 +165,7 @@ describe('putObjectJob with key', () => {
 			const mockRegion = 'region-1';
 
 			const job = putObjectJob(
+				mockCtx,
 				{
 					key: 'key',
 					data,
@@ -207,6 +200,7 @@ describe('putObjectJob with key', () => {
 		it('should override bucket in putObject call when bucket as string', async () => {
 			const abortController = new AbortController();
 			const job = putObjectJob(
+				mockCtx,
 				{
 					key: 'key',
 					data,
@@ -239,6 +233,7 @@ describe('putObjectJob with key', () => {
 	describe('cacheControl passed in option', () => {
 		it('should include CacheControl header', async () => {
 			const job = putObjectJob(
+				mockCtx,
 				{
 					path: testPath,
 					data,
@@ -309,6 +304,7 @@ describe('putObjectJob with path', () => {
 			const useAccelerateEndpoint = true;
 
 			const job = putObjectJob(
+				mockCtx,
 				{
 					path: inputPath,
 					data,
@@ -368,7 +364,7 @@ describe('putObjectJob with path', () => {
 			.spyOn(CRC32, 'calculateContentCRC32')
 			.mockResolvedValue(undefined as any);
 
-		Amplify.libraryOptions = {
+		mockCtx.libraryOptions = {
 			Storage: {
 				S3: {
 					isObjectLockEnabled: true,
@@ -376,6 +372,7 @@ describe('putObjectJob with path', () => {
 			},
 		};
 		const job = putObjectJob(
+			mockCtx,
 			{
 				path: testPath,
 				data,
@@ -390,6 +387,7 @@ describe('putObjectJob with path', () => {
 	describe('overwrite prevention', () => {
 		it('should include if-none-match header', async () => {
 			const job = putObjectJob(
+				mockCtx,
 				{
 					path: testPath,
 					data,
@@ -416,6 +414,7 @@ describe('putObjectJob with path', () => {
 			const mockRegion = 'region-1';
 
 			const job = putObjectJob(
+				mockCtx,
 				{
 					path: 'path/',
 					data,
@@ -450,6 +449,7 @@ describe('putObjectJob with path', () => {
 		it('should override bucket in putObject call when bucket as string', async () => {
 			const abortController = new AbortController();
 			const job = putObjectJob(
+				mockCtx,
 				{
 					path: 'path/',
 					data,
@@ -482,6 +482,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const testData = 'data';
 			const job = putObjectJob(
+				mockCtx,
 				{
 					key: 'image.jpg',
 					data: testData,
@@ -503,6 +504,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const file = new File(['content'], 'test.png', { type: 'image/png' });
 			const job = putObjectJob(
+				mockCtx,
 				{
 					key: 'test.jpg', // Different extension to test File.type takes precedence
 					data: file,
@@ -524,6 +526,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const testData = 'data';
 			const job = putObjectJob(
+				mockCtx,
 				{
 					key: 'image.jpg',
 					data: testData,
@@ -548,6 +551,7 @@ describe('putObjectJob with path', () => {
 	describe('cacheControl passed in option', () => {
 		it('should include CacheControl header', async () => {
 			const job = putObjectJob(
+				mockCtx,
 				{
 					path: testPath,
 					data,
@@ -570,6 +574,7 @@ describe('putObjectJob with path', () => {
 
 		it('should NOT include CacheControl header', async () => {
 			const job = putObjectJob(
+				mockCtx,
 				{
 					path: testPath,
 					data,

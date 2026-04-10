@@ -2,7 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, Subscription, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
-import { AmplifyContext, ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	ConsoleLogger,
+	Hub,
+	HubPayload,
+} from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
 	DocumentType,

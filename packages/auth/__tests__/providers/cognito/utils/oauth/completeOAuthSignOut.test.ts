@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Hub, clearCredentials } from '@aws-amplify/core';
+import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { tokenOrchestrator } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
 import { completeOAuthSignOut } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthSignOut';
 import { DefaultOAuthStore } from '../../../../../src/providers/cognito/utils/signInWithRedirectStore';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core', () => {
 	return {
@@ -20,8 +21,9 @@ jest.mock('@aws-amplify/core', () => {
 jest.mock('../../../../../src/providers/cognito/tokenProvider/tokenProvider');
 
 describe('completeOAuthSignOut', () => {
+	const mockCtx = createMockAmplifyContext();
 	// assert mocks
-	const mockClearCredentials = clearCredentials as jest.Mock;
+	const mockClearCredentials = mockCtx.clearCredentials as jest.Mock;
 	const mockHub = Hub as jest.Mocked<typeof Hub>;
 	const mockTokenOrchestrator = tokenOrchestrator as jest.Mocked<
 		typeof tokenOrchestrator
@@ -40,7 +42,7 @@ describe('completeOAuthSignOut', () => {
 	});
 
 	it('should complete OAuth sign out', async () => {
-		await completeOAuthSignOut(mockStore);
+		await completeOAuthSignOut(mockCtx, mockStore);
 
 		expect(mockStore.clearOAuthData).toHaveBeenCalledTimes(1);
 		expect(mockTokenOrchestrator.clearTokens).toHaveBeenCalledTimes(1);

@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import { del, get, head, patch, post, put } from '../src/index';
 import {
 	del as commonDel,
@@ -13,8 +11,11 @@ import {
 	put as commonPut,
 } from '../src/apis/common/publicApis';
 
+import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
+
 jest.mock('../src/apis/common/publicApis');
-jest.mock('@aws-amplify/core');
+
+const mockCtx = createMockAmplifyContext();
 
 const input = {
 	apiName: 'apiName',
@@ -23,33 +24,33 @@ const input = {
 };
 
 describe('REST API handlers', () => {
-	it('get should call common get API with client-side Amplify singleton', async () => {
-		get(input);
-		expect(commonGet).toHaveBeenCalledWith(Amplify, input);
+	it('get should call common get API with ctx', async () => {
+		get(mockCtx, input);
+		expect(commonGet).toHaveBeenCalledWith(mockCtx, input);
 	});
 
-	it('post should call common post API with client-side Amplify singleton', async () => {
-		post(input);
-		expect(commonPost).toHaveBeenCalledWith(Amplify, input);
+	it('post should call common post API with ctx', async () => {
+		post(mockCtx, input);
+		expect(commonPost).toHaveBeenCalledWith(mockCtx, input);
 	});
 
-	it('put should call common put API with client-side Amplify singleton', async () => {
-		put(input);
-		expect(commonPut).toHaveBeenCalledWith(Amplify, input);
+	it('put should call common put API with ctx', async () => {
+		put(mockCtx, input);
+		expect(commonPut).toHaveBeenCalledWith(mockCtx, input);
 	});
 
-	it('del should call common del API with client-side Amplify singleton', async () => {
-		del(input);
-		expect(commonDel).toHaveBeenCalledWith(Amplify, input);
+	it('del should call common del API with ctx', async () => {
+		del(mockCtx, input);
+		expect(commonDel).toHaveBeenCalledWith(mockCtx, input);
 	});
 
-	it('patch should call common patch API with client-side Amplify singleton', async () => {
-		patch(input);
-		expect(commonPatch).toHaveBeenCalledWith(Amplify, input);
+	it('patch should call common patch API with ctx', async () => {
+		patch(mockCtx, input);
+		expect(commonPatch).toHaveBeenCalledWith(mockCtx, input);
 	});
 
-	it('head should call common head API with client-side Amplify singleton', async () => {
-		head(input);
-		expect(commonHead).toHaveBeenCalledWith(Amplify, input);
+	it('head should call common head API with ctx', async () => {
+		head(mockCtx, input);
+		expect(commonHead).toHaveBeenCalledWith(mockCtx, input);
 	});
 });

@@ -24,6 +24,7 @@ import {
 	pinpointConfig,
 	userAgentValue,
 } from '../../../../testUtils/data';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('@aws-amplify/react-native', () => ({
@@ -32,6 +33,8 @@ jest.mock('@aws-amplify/react-native', () => ({
 jest.mock('../../../../../src/pushNotifications/errors/errorHelpers');
 jest.mock('../../../../../src/pushNotifications/providers/pinpoint/utils');
 jest.mock('../../../../../src/pushNotifications/utils');
+
+const mockCtx = createMockAmplifyContext();
 
 describe('identifyUser (native)', () => {
 	// assert mocks
@@ -65,7 +68,7 @@ describe('identifyUser (native)', () => {
 			throw new Error();
 		});
 		await expect(
-			identifyUser({ userId: 'user-id', userProfile: {} }),
+			identifyUser(mockCtx, { userId: 'user-id', userProfile: {} }),
 		).rejects.toThrow();
 	});
 
@@ -81,7 +84,7 @@ describe('identifyUser (native)', () => {
 				plan: 'plan',
 			},
 		};
-		await identifyUser(input);
+		await identifyUser(mockCtx, input);
 		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
@@ -101,7 +104,7 @@ describe('identifyUser (native)', () => {
 		const options: IdentifyUserInput['options'] = {
 			userAttributes,
 		};
-		await identifyUser({ ...input, options });
+		await identifyUser(mockCtx, { ...input, options });
 		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
@@ -119,7 +122,7 @@ describe('identifyUser (native)', () => {
 			userId: 'user-id',
 			userProfile: {},
 		};
-		await expect(identifyUser(input)).rejects.toBeDefined();
+		await expect(identifyUser(mockCtx, input)).rejects.toBeDefined();
 	});
 
 	it('awaits device registration promise when endpoint is not present', async () => {
@@ -128,7 +131,7 @@ describe('identifyUser (native)', () => {
 			userProfile: {},
 		};
 		mockGetEndpointId.mockResolvedValue(undefined);
-		await identifyUser(input);
+		await identifyUser(mockCtx, input);
 		expect(mockGetInflightDeviceRegistration).toHaveBeenCalled();
 	});
 
@@ -138,7 +141,7 @@ describe('identifyUser (native)', () => {
 			userProfile: {},
 		};
 		mockGetEndpointId.mockResolvedValue('endpoint-id');
-		await identifyUser(input);
+		await identifyUser(mockCtx, input);
 		expect(mockGetInflightDeviceRegistration).not.toHaveBeenCalled();
 	});
 });

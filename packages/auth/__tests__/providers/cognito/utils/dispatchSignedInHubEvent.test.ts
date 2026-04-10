@@ -10,6 +10,7 @@ import {
 } from '../../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
 import { getCurrentUser } from '../../../../src/providers/cognito/apis/getCurrentUser';
 import { assertAuthTokens } from '../../../../src/providers/cognito/utils/types';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/providers/cognito/apis/getCurrentUser', () => ({
 	getCurrentUser: jest.fn(),
@@ -24,6 +25,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	AMPLIFY_SYMBOL: Symbol('AMPLIFY_SYMBOL'),
 }));
 
+const mockCtx = createMockAmplifyContext();
 const mockGetCurrentUser = getCurrentUser as jest.Mock;
 const mockDispatch = Hub.dispatch as jest.Mock;
 
@@ -35,7 +37,7 @@ describe('dispatchSignedInHubEvent()', () => {
 		};
 		mockGetCurrentUser.mockResolvedValueOnce(mockGetCurrentUserPayload);
 
-		await dispatchSignedInHubEvent();
+		await dispatchSignedInHubEvent(mockCtx);
 
 		expect(mockDispatch).toHaveBeenCalledWith(
 			'auth',
@@ -53,7 +55,9 @@ describe('dispatchSignedInHubEvent()', () => {
 			assertAuthTokens(null);
 		});
 
-		expect(() => dispatchSignedInHubEvent()).rejects.toThrow(ERROR_MESSAGE);
+		expect(() => dispatchSignedInHubEvent(mockCtx)).rejects.toThrow(
+			ERROR_MESSAGE,
+		);
 	});
 
 	it('rethrows error if the error is not handled by itself', () => {
@@ -63,6 +67,6 @@ describe('dispatchSignedInHubEvent()', () => {
 			throw mockError;
 		});
 
-		expect(() => dispatchSignedInHubEvent()).rejects.toThrow(mockError);
+		expect(() => dispatchSignedInHubEvent(mockCtx)).rejects.toThrow(mockError);
 	});
 });

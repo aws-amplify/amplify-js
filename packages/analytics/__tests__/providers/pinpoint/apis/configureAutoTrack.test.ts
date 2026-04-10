@@ -7,6 +7,7 @@ import {
 	PageViewTracker,
 	SessionTracker,
 } from '../../../../src/trackers';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/trackers');
 
@@ -19,6 +20,8 @@ const MOCK_INPUT = {
 		},
 	},
 } as ConfigureAutoTrackInput;
+
+const mockCtx = createMockAmplifyContext();
 
 describe('Pinpoint API: configureAutoTrack', () => {
 	const MockEventTracker = EventTracker as jest.MockedClass<
@@ -46,7 +49,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			} = require('../../../../src/providers/pinpoint/apis');
 
 			try {
-				configureAutoTrack({
+				configureAutoTrack(mockCtx, {
 					...MOCK_INPUT,
 					type: 'invalidTracker',
 				} as any);
@@ -62,7 +65,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 				configureAutoTrack,
 			} = require('../../../../src/providers/pinpoint/apis');
 
-			configureAutoTrack(MOCK_INPUT);
+			configureAutoTrack(mockCtx, MOCK_INPUT);
 		});
 
 		expect(MockEventTracker).toHaveBeenCalledWith(
@@ -82,7 +85,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 				configureAutoTrack,
 			} = require('../../../../src/providers/pinpoint/apis');
 
-			configureAutoTrack(testInput);
+			configureAutoTrack(mockCtx, testInput);
 		});
 
 		expect(MockSessionTracker).toHaveBeenCalledWith(
@@ -102,7 +105,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 				configureAutoTrack,
 			} = require('../../../../src/providers/pinpoint/apis');
 
-			configureAutoTrack(testInput);
+			configureAutoTrack(mockCtx, testInput);
 		});
 
 		expect(MockPageViewTracker).toHaveBeenCalledWith(
@@ -118,14 +121,14 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			} = require('../../../../src/providers/pinpoint/apis');
 
 			// Enable the tracker
-			configureAutoTrack(MOCK_INPUT);
+			configureAutoTrack(mockCtx, MOCK_INPUT);
 			expect(MockEventTracker).toHaveBeenCalledWith(
 				expect.any(Function),
 				MOCK_INPUT.options,
 			);
 
 			// Reconfigure the tracker
-			configureAutoTrack(MOCK_INPUT);
+			configureAutoTrack(mockCtx, MOCK_INPUT);
 			expect(
 				MockEventTracker.mock.instances[0].configure,
 			).toHaveBeenCalledTimes(1);
@@ -144,14 +147,14 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			} = require('../../../../src/providers/pinpoint/apis');
 
 			// Enable the tracker
-			configureAutoTrack(MOCK_INPUT);
+			configureAutoTrack(mockCtx, MOCK_INPUT);
 			expect(MockEventTracker).toHaveBeenCalledWith(
 				expect.any(Function),
 				MOCK_INPUT.options,
 			);
 
 			// Disable the tracker
-			configureAutoTrack(testInput);
+			configureAutoTrack(mockCtx, testInput);
 			expect(MockEventTracker.mock.instances[0].cleanup).toHaveBeenCalledTimes(
 				1,
 			);

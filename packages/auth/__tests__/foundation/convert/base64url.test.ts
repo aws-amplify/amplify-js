@@ -5,22 +5,24 @@ import {
 
 describe('base64url', () => {
 	it('converts ArrayBuffer values to base64url', () => {
-		expect(convertArrayBufferToBase64Url(new Uint8Array([]))).toBe('');
-		expect(convertArrayBufferToBase64Url(new Uint8Array([0]))).toBe('AA');
-		expect(convertArrayBufferToBase64Url(new Uint8Array([1, 2, 3]))).toBe(
-			'AQID',
+		expect(convertArrayBufferToBase64Url(new Uint8Array([]).buffer)).toBe('');
+		expect(convertArrayBufferToBase64Url(new Uint8Array([0]).buffer)).toBe(
+			'AA',
 		);
+		expect(
+			convertArrayBufferToBase64Url(new Uint8Array([1, 2, 3]).buffer),
+		).toBe('AQID');
 	});
 	it('converts base64url values to ArrayBuffer', () => {
 		expect(
 			convertArrayBufferToBase64Url(convertBase64UrlToArrayBuffer('')),
-		).toBe(convertArrayBufferToBase64Url(new Uint8Array([])));
+		).toBe(convertArrayBufferToBase64Url(new Uint8Array([]).buffer));
 		expect(
 			convertArrayBufferToBase64Url(convertBase64UrlToArrayBuffer('AA')),
-		).toBe(convertArrayBufferToBase64Url(new Uint8Array([0])));
+		).toBe(convertArrayBufferToBase64Url(new Uint8Array([0]).buffer));
 		expect(
 			convertArrayBufferToBase64Url(convertBase64UrlToArrayBuffer('AQID')),
-		).toBe(convertArrayBufferToBase64Url(new Uint8Array([1, 2, 3])));
+		).toBe(convertArrayBufferToBase64Url(new Uint8Array([1, 2, 3]).buffer));
 	});
 
 	it('converts base64url to ArrayBuffer and back without data loss', () => {

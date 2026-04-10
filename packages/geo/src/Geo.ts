@@ -44,7 +44,8 @@ export class GeoClass {
 		const amplifyConfig = this.ctx.resourcesConfig ?? {};
 		this._config = Object.assign({}, this._config, amplifyConfig.Geo);
 
-		const locationProvider = new AmazonLocationServiceProvider(ctx, 
+		const locationProvider = new AmazonLocationServiceProvider(
+			ctx,
 			amplifyConfig.Geo,
 		);
 		this._pluggables.push(locationProvider);
@@ -308,4 +309,3 @@ export class GeoClass {
 		}
 	}
 }
-

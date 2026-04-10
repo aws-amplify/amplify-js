@@ -1,23 +1,14 @@
-import { Amplify } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { createListWebAuthnCredentialsClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { ListWebAuthnCredentialsInput } from '../../../src';
 import { mockUserCredentials } from '../../mockData';
-import { setUpGetConfig } from '../../providers/cognito/testUtils/setUpGetConfig';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
 import { listWebAuthnCredentials } from '../../../src/foundation/apis';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(() => ({
-				tokens: { accessToken: decodeJWT(mockAccessToken) },
-			})),
-		},
-	},
 }));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -29,13 +20,24 @@ jest.mock(
 jest.mock('../../../src/providers/cognito/factories');
 
 describe('listWebAuthnCredentials', () => {
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
 	const mockListWebAuthnCredentials = jest.fn();
 	const mockCreateListWebAuthnCredentialsClient = jest.mocked(
 		createListWebAuthnCredentialsClient,
 	);
 
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
+		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+			tokens: { accessToken: decodeJWT(mockAccessToken) },
+		});
 
 		mockCreateListWebAuthnCredentialsClient.mockReturnValue(
 			mockListWebAuthnCredentials,
@@ -53,7 +55,7 @@ describe('listWebAuthnCredentials', () => {
 	});
 
 	it('should pass correct service options when listing credentials', async () => {
-		await listWebAuthnCredentials(Amplify);
+		await listWebAuthnCredentials(mockCtx);
 
 		expect(mockListWebAuthnCredentials).toHaveBeenCalledWith(
 			{
@@ -72,7 +74,7 @@ describe('listWebAuthnCredentials', () => {
 		};
 
 		const { credentials, nextToken } = await listWebAuthnCredentials(
-			Amplify,
+			mockCtx,
 			input,
 		);
 
@@ -117,7 +119,7 @@ describe('listWebAuthnCredentials', () => {
 		};
 
 		const { credentials, nextToken } = await listWebAuthnCredentials(
-			Amplify,
+			mockCtx,
 			input,
 		);
 

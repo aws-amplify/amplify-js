@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import { confirmSignUp } from '../../../src/providers/cognito';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
@@ -10,10 +8,14 @@ import { ConfirmSignUpException } from '../../../src/providers/cognito/types/err
 import { createConfirmSignUpClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 import { ConfirmSignUpCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
+
+const mockCtx = createMockAmplifyContext();
+const { Amplify } = jest.requireMock('@aws-amplify/core');
 
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
@@ -41,6 +43,15 @@ describe('confirmSignUp', () => {
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
+		(mockCtx as any).resourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+				},
+			},
+		};
 	});
 
 	beforeEach(() => {
@@ -55,7 +66,7 @@ describe('confirmSignUp', () => {
 	});
 
 	it('should call confirmSignUp and return a SignUpResult', async () => {
-		const result = await confirmSignUp({
+		const result = await confirmSignUp(mockCtx, {
 			username: user1.username,
 			confirmationCode,
 		});
@@ -80,6 +91,16 @@ describe('confirmSignUp', () => {
 
 	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
 		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+		(mockCtx as any).resourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+					userPoolEndpoint: expectedUserPoolEndpoint,
+				},
+			},
+		};
 		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
 			Auth: {
 				Cognito: {
@@ -91,7 +112,7 @@ describe('confirmSignUp', () => {
 			},
 		});
 
-		await confirmSignUp({
+		await confirmSignUp(mockCtx, {
 			username: user1.username,
 			confirmationCode,
 		});
@@ -102,7 +123,7 @@ describe('confirmSignUp', () => {
 	});
 
 	it('should contain force alias creation', async () => {
-		await confirmSignUp({
+		await confirmSignUp(mockCtx, {
 			username: user1.username,
 			confirmationCode,
 			options: {
@@ -122,7 +143,7 @@ describe('confirmSignUp', () => {
 
 	it('should contain clientMetadata from request', async () => {
 		const clientMetadata = { data: 'abcd' };
-		await confirmSignUp({
+		await confirmSignUp(mockCtx, {
 			username: user1.username,
 			confirmationCode,
 			options: {
@@ -144,7 +165,7 @@ describe('confirmSignUp', () => {
 	it('should throw an error when username is empty', async () => {
 		expect.assertions(2);
 		try {
-			await confirmSignUp({ username: '', confirmationCode });
+			await confirmSignUp(mockCtx, { username: '', confirmationCode });
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
@@ -156,7 +177,10 @@ describe('confirmSignUp', () => {
 	it('should throw an error when confirmation code is empty', async () => {
 		expect.assertions(2);
 		try {
-			await confirmSignUp({ username: user1.username, confirmationCode: '' });
+			await confirmSignUp(mockCtx, {
+				username: user1.username,
+				confirmationCode: '',
+			});
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptyConfirmSignUpCode);
@@ -169,7 +193,10 @@ describe('confirmSignUp', () => {
 			throw getMockError(ConfirmSignUpException.InvalidParameterException);
 		});
 		try {
-			await confirmSignUp({ username: user1.username, confirmationCode });
+			await confirmSignUp(mockCtx, {
+				username: user1.username,
+				confirmationCode,
+			});
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(ConfirmSignUpException.InvalidParameterException);
@@ -182,7 +209,7 @@ describe('confirmSignUp', () => {
 				return 'abcd';
 			},
 		};
-		const result = await confirmSignUp({
+		const result = await confirmSignUp(mockCtx, {
 			username: user1.username,
 			confirmationCode,
 		});

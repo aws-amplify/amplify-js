@@ -20,7 +20,6 @@ import {
 	isNextRequest,
 	isValidOrigin,
 } from '../../src/auth/utils';
-import { globalSettings } from '../../src/utils';
 
 jest.mock('aws-amplify/adapter-core/internals', () => ({
 	...jest.requireActual('aws-amplify/adapter-core/internals'),
@@ -30,20 +29,18 @@ jest.mock('aws-amplify/adapter-core/internals', () => ({
 jest.mock('../../src/auth/handleAuthApiRouteRequestForAppRouter');
 jest.mock('../../src/auth/handleAuthApiRouteRequestForPagesRouter');
 jest.mock('../../src/auth/utils');
-jest.mock('../../src/utils', () => ({
-	globalSettings: {
-		isServerSideAuthEnabled: jest.fn(() => true),
-		enableServerSideAuth: jest.fn(),
-		setRuntimeOptions: jest.fn(),
-		getRuntimeOptions: jest.fn(() => ({
-			cookies: {
-				sameSite: 'strict',
-			},
-		})),
-		isSSLOrigin: jest.fn(() => true),
-		setIsSSLOrigin: jest.fn(),
-	},
-}));
+const globalSettings = {
+	isServerSideAuthEnabled: jest.fn(() => true),
+	enableServerSideAuth: jest.fn(),
+	setRuntimeOptions: jest.fn(),
+	getRuntimeOptions: jest.fn(() => ({
+		cookies: {
+			sameSite: 'strict',
+		},
+	})),
+	isSSLOrigin: jest.fn(() => true),
+	setIsSSLOrigin: jest.fn(),
+} as unknown as NextServer.GlobalSettings;
 
 const mockAmplifyConfig: ResourcesConfig = {
 	Auth: {

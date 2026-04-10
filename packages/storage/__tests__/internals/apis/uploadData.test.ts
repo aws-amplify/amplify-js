@@ -1,12 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { uploadData as advancedUploadData } from '../../../src/internals';
 import { uploadData as uploadDataInternal } from '../../../src/providers/s3/apis/internal/uploadData';
 
 jest.mock('../../../src/providers/s3/apis/internal/uploadData');
 const mockedUploadDataInternal = jest.mocked(uploadDataInternal);
 const mockedUploadTask = 'UPLOAD_TASK';
+
+const mockCtx = createMockAmplifyContext();
 
 describe('uploadData (internal)', () => {
 	beforeEach(() => {
@@ -35,7 +38,7 @@ describe('uploadData (internal)', () => {
 		const onProgress = jest.fn();
 		const metadata = { foo: 'bar' };
 
-		const result = advancedUploadData({
+		const result = advancedUploadData(mockCtx, {
 			path: 'input/path/to/mock/object',
 			data: 'data',
 			options: {
@@ -54,7 +57,7 @@ describe('uploadData (internal)', () => {
 		});
 
 		expect(mockedUploadDataInternal).toHaveBeenCalledTimes(1);
-		expect(mockedUploadDataInternal).toHaveBeenCalledWith({
+		expect(mockedUploadDataInternal).toHaveBeenCalledWith(mockCtx, {
 			path: 'input/path/to/mock/object',
 			data: 'data',
 			options: {

@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
-
 import { signIn } from '../../../src/providers/cognito';
 import { signInWithSRP } from '../../../src/providers/cognito/apis/signInWithSRP';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
@@ -17,6 +15,7 @@ import {
 	createRespondToAuthChallengeClient,
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
@@ -40,6 +39,8 @@ jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
 
+const mockCtx = createMockAmplifyContext();
+
 const authConfig = {
 	Cognito: {
 		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -48,9 +49,9 @@ const authConfig = {
 };
 
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-Amplify.configure({
+(mockCtx as any).resourcesConfig = {
 	Auth: authConfig,
-});
+};
 
 const mockedDeviceMetadata = {
 	deviceKey: 'mockedKey',
@@ -131,7 +132,7 @@ describe('signIn API happy path cases', () => {
 				},
 			);
 
-		const result = await signIn({
+		const result = await signIn(mockCtx, {
 			username: lastAuthUser,
 			password: 'XXXXXXXX',
 			options: {
@@ -152,7 +153,7 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signIn API invoked with authFlowType should return a SignInResult', async () => {
-		const result = await signIn({
+		const result = await signIn(mockCtx, {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 			options: {
@@ -164,7 +165,7 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signIn API should delegate to signinWithSRP API by default and return a SignInResult', async () => {
-		const result = await signIn({
+		const result = await signIn(mockCtx, {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 		});
@@ -173,7 +174,7 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithSRP API should return a SignInResult', async () => {
-		const result = await signInWithSRP({
+		const result = await signInWithSRP(mockCtx, {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 		});
@@ -184,7 +185,7 @@ describe('signIn API happy path cases', () => {
 	test('handleUserSRPFlow  should be called with clientMetada from request', async () => {
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithSRP({
+		await signInWithSRP(mockCtx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,
@@ -234,7 +235,7 @@ describe('signIn API happy path cases', () => {
 		});
 
 		test('respondToAuthChallenge should include device key in the request', async () => {
-			await signIn({
+			await signIn(mockCtx, {
 				username: lastAuthUser,
 				password: 'XXXXXXXX',
 			});
@@ -254,7 +255,7 @@ describe('signIn API happy path cases', () => {
 			'respondToAuthChallenge should not include device key in the request if any device key in storage is deleted',
 			async deviceKey => {
 				deleteDeviceKey(deviceKey);
-				await signIn({
+				await signIn(mockCtx, {
 					username: lastAuthUser,
 					password: 'XXXXXXXX',
 				});
@@ -303,7 +304,7 @@ describe('Cognito ASF', () => {
 
 	test('signIn SRP should send UserContextData', async () => {
 		try {
-			await signIn({
+			await signIn(mockCtx, {
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
 			});

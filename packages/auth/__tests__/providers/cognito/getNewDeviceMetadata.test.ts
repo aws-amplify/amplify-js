@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmDeviceException } from '../../../src/providers/cognito/types/errors';
 import { getNewDeviceMetadata } from '../../../src/providers/cognito/utils/getNewDeviceMetadata';
@@ -16,15 +14,6 @@ jest.mock(
 
 const userPoolId = 'us-west-2_zzzzz';
 
-Amplify.configure({
-	Auth: {
-		Cognito: {
-			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId,
-			identityPoolId: 'us-west-2:xxxxxx',
-		},
-	},
-});
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 

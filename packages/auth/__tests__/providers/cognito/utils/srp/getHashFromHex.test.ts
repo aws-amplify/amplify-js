@@ -11,7 +11,9 @@ describe('getHashFromHex', () => {
 		const awsCryptoHash = new Sha256();
 		awsCryptoHash.update('testString');
 		const resultFromAWSCrypto = awsCryptoHash.digestSync();
-		const hashHex = Buffer.from(resultFromAWSCrypto).toString('hex');
+		const hashHex = Buffer.from(
+			resultFromAWSCrypto.buffer as ArrayBuffer,
+		).toString('hex');
 
 		expect(regEx.test(getHashFromHex(hashHex))).toBe(true);
 	});

@@ -13,9 +13,12 @@ import {
 	mockKinesisConfig,
 } from '../../../testUtils/mockConstants';
 import { flushEvents } from '../../../../src/providers/kinesis-firehose/apis';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis-firehose/utils');
+
+const mockCtx = createMockAmplifyContext();
 
 describe('Analytics Kinesis Firehose API: flushEvents', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;
@@ -42,7 +45,7 @@ describe('Analytics Kinesis Firehose API: flushEvents', () => {
 	});
 
 	it('trigger flushAll on event buffer', async () => {
-		flushEvents();
+		flushEvents(mockCtx);
 		await new Promise(process.nextTick);
 		expect(mockResolveConfig).toHaveBeenCalledTimes(1);
 		expect(mockResolveCredentials).toHaveBeenCalledTimes(1);
@@ -59,7 +62,7 @@ describe('Analytics Kinesis Firehose API: flushEvents', () => {
 	it('logs an error when credentials can not be fetched', async () => {
 		mockResolveCredentials.mockRejectedValue(new Error('Mock Error'));
 
-		flushEvents();
+		flushEvents(mockCtx);
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.any(String),

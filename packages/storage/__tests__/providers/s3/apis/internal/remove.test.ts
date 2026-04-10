@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAccessLevel } from '@aws-amplify/core';
 
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 import {
 	deleteObject,
 	deleteObjects,
@@ -22,24 +23,13 @@ import { CanceledError } from '../../../../../src/errors/CanceledError';
 import './testUtils';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
-		return { debug: jest.fn() };
-	}),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
 
 const mockDeleteObject = deleteObject as jest.Mock;
 const mockDeleteObjects = deleteObjects as jest.Mock;
 const mockListObjectsV2 = listObjectsV2 as jest.Mock;
 const mockHeadObject = headObject as jest.Mock;
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = jest.mocked(Amplify.getConfig);
+const mockCtx = createMockAmplifyContext();
+const mockFetchAuthSession = jest.mocked(mockCtx.fetchAuthSession);
 
 const inputKey = 'key';
 const bucket = 'bucket';
@@ -64,7 +54,7 @@ describe('remove API', () => {
 			credentials,
 			identityId: defaultIdentityId,
 		});
-		mockGetConfig.mockReturnValue({
+		mockCtx.resourcesConfig = {
 			Storage: {
 				S3: {
 					bucket,
@@ -72,12 +62,12 @@ describe('remove API', () => {
 					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
-		});
+		};
 	});
 
 	describe('Happy Cases', () => {
 		describe('With Key', () => {
-			const removeWrapper = (input: RemoveInput) => remove(Amplify, input);
+			const removeWrapper = (input: RemoveInput) => remove(mockCtx, input);
 
 			beforeEach(() => {
 				mockDeleteObject.mockImplementation(() => {
@@ -218,7 +208,7 @@ describe('remove API', () => {
 
 		describe('With Path', () => {
 			const removeWrapper = (input: RemoveWithPathInput) =>
-				remove(Amplify, input);
+				remove(mockCtx, input);
 
 			beforeEach(() => {
 				mockDeleteObject.mockImplementation(() => {
@@ -546,7 +536,7 @@ describe('remove API', () => {
 			expect.assertions(3);
 			const key = 'wrongKey';
 			try {
-				await remove(Amplify, { key });
+				await remove(mockCtx, { key });
 			} catch (error: any) {
 				expect(deleteObject).toHaveBeenCalledTimes(1);
 				await expect(deleteObject).toBeLastCalledWithConfigAndInput(
@@ -563,7 +553,7 @@ describe('remove API', () => {
 		it('should throw InvalidStorageOperationInput error when the path is empty', async () => {
 			expect.assertions(1);
 			try {
-				await remove(Amplify, { path: '' });
+				await remove(mockCtx, { path: '' });
 			} catch (error: any) {
 				expect(error.name).toBe(
 					StorageValidationErrorCode.InvalidStorageOperationInput,
@@ -574,7 +564,7 @@ describe('remove API', () => {
 		it('should throw InvalidStoragePathInput error when the path has leading slash', async () => {
 			expect.assertions(1);
 			try {
-				await remove(Amplify, { path: '/invalid/path' });
+				await remove(mockCtx, { path: '/invalid/path' });
 			} catch (error: any) {
 				expect(error.name).toBe('InvalidStoragePathInput');
 			}

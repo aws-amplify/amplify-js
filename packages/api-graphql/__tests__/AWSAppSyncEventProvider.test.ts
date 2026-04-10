@@ -11,6 +11,7 @@ import { delay, FakeWebSocketInterface } from './helpers';
 import { ConnectionState as CS } from '../src/types/PubSub';
 
 import { AWSAppSyncEventProvider } from '../src/Providers/AWSAppSyncEventsProvider';
+import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
@@ -72,7 +73,7 @@ describe('AppSyncEventProvider', () => {
 		let provider: AWSAppSyncEventProvider;
 		beforeEach(async () => {
 			fakeWebSocketInterface = new FakeWebSocketInterface();
-			provider = new AWSAppSyncEventProvider();
+			provider = new AWSAppSyncEventProvider(createMockAmplifyContext());
 
 			Object.defineProperty(provider, 'socketStatus', {
 				value: constants.SOCKET_STATUS.CLOSED,
@@ -150,7 +151,7 @@ describe('AppSyncEventProvider', () => {
 						});
 
 					fakeWebSocketInterface = new FakeWebSocketInterface();
-					provider = new AWSAppSyncEventProvider();
+					provider = new AWSAppSyncEventProvider(createMockAmplifyContext());
 
 					// Saving this spy and resetting it by hand causes badness
 					//     Saving it causes new websockets to be reachable across past tests that have not fully closed
@@ -421,7 +422,7 @@ describe('AppSyncEventProvider', () => {
 				});
 
 			fakeWebSocketInterface = new FakeWebSocketInterface();
-			provider = new AWSAppSyncEventProvider();
+			provider = new AWSAppSyncEventProvider(createMockAmplifyContext());
 			Object.defineProperty(provider, 'socketStatus', {
 				value: constants.SOCKET_STATUS.READY,
 			});

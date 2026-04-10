@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	Amplify,
 	Identity,
 	ResourcesConfig,
 	createGetIdClient,
@@ -65,8 +64,6 @@ describe('Cognito IdentityId Provider', () => {
 
 	describe('Happy Path Cases:', () => {
 		beforeAll(() => {
-			jest.spyOn(Amplify, 'getConfig').mockImplementationOnce(() => ampConfig);
-
 			mockCreateGetIdClient.mockReturnValue(mockGetId);
 		});
 

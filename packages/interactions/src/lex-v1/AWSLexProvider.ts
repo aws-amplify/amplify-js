@@ -12,7 +12,7 @@ import {
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger} from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 import {
 	InteractionsMessage,
@@ -174,4 +174,5 @@ class AWSLexProvider {
 	}
 }
 
-export const createLexProvider = (ctx: AmplifyContext) => new AWSLexProvider(ctx);
+export const createLexProvider = (ctx: AmplifyContext) =>
+	new AWSLexProvider(ctx);

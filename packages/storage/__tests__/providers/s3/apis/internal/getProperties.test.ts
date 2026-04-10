@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAccessLevel } from '@aws-amplify/core';
 
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 import { headObject } from '../../../../../src/providers/s3/utils/client/s3data';
 import { getProperties } from '../../../../../src/providers/s3/apis/internal/getProperties';
 import {
@@ -16,20 +17,9 @@ import './testUtils';
 import { BucketInfo } from '../../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
-		return { debug: jest.fn() };
-	}),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
 const mockHeadObject = headObject as jest.MockedFunction<typeof headObject>;
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = jest.mocked(Amplify.getConfig);
+const mockCtx = createMockAmplifyContext();
+const mockFetchAuthSession = jest.mocked(mockCtx.fetchAuthSession);
 
 const bucket = 'bucket';
 const region = 'region';
@@ -56,13 +46,13 @@ const expectedResult = {
 
 describe('getProperties with key', () => {
 	const getPropertiesWrapper = (input: GetPropertiesInput) =>
-		getProperties(Amplify, input);
+		getProperties(mockCtx, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
 			identityId: defaultIdentityId,
 		});
-		mockGetConfig.mockReturnValue({
+		mockCtx.resourcesConfig = {
 			Storage: {
 				S3: {
 					bucket,
@@ -70,7 +60,7 @@ describe('getProperties with key', () => {
 					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
-		});
+		};
 	});
 
 	describe('Happy cases: With key', () => {
@@ -243,13 +233,13 @@ describe('getProperties with key', () => {
 
 describe('Happy cases: With path', () => {
 	const getPropertiesWrapper = (input: GetPropertiesWithPathInput) =>
-		getProperties(Amplify, input);
+		getProperties(mockCtx, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
 			identityId: defaultIdentityId,
 		});
-		mockGetConfig.mockReturnValue({
+		mockCtx.resourcesConfig = {
 			Storage: {
 				S3: {
 					bucket,
@@ -257,7 +247,7 @@ describe('Happy cases: With path', () => {
 					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
-		});
+		};
 	});
 	describe('getProperties with path', () => {
 		const config = {
@@ -415,13 +405,13 @@ describe('Happy cases: With path', () => {
 
 describe(`getProperties with path and Expected Bucket Owner`, () => {
 	const getPropertiesWrapper = (input: GetPropertiesWithPathInput) =>
-		getProperties(Amplify, input);
+		getProperties(mockCtx, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
 			identityId: defaultIdentityId,
 		});
-		mockGetConfig.mockReturnValue({
+		mockCtx.resourcesConfig = {
 			Storage: {
 				S3: {
 					bucket,
@@ -429,7 +419,7 @@ describe(`getProperties with path and Expected Bucket Owner`, () => {
 					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
-		});
+		};
 	});
 
 	afterEach(() => {

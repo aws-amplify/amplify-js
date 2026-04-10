@@ -67,7 +67,8 @@ import {
  * }
  * ```
  */
-export const get = (ctx: AmplifyContext, input: GetInput): GetOperation => commonGet(ctx, input);
+export const get = (ctx: AmplifyContext, input: GetInput): GetOperation =>
+	commonGet(ctx, input);
 
 /**
  * POST HTTP request
@@ -149,7 +150,8 @@ export const post = (ctx: AmplifyContext, input: PostInput): PostOperation =>
  * }
  * ```
  */
-export const put = (ctx: AmplifyContext, input: PutInput): PutOperation => commonPut(ctx, input);
+export const put = (ctx: AmplifyContext, input: PutInput): PutOperation =>
+	commonPut(ctx, input);
 
 /**
  * DELETE HTTP request
