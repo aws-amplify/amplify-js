@@ -52,7 +52,7 @@
 		"@aws-amplify/cache": "5.1.22",
 		"@aws-amplify/core": "5.8.16",
 		"@aws-amplify/rtn-push-notification": "1.1.15",
-		"lodash": "^4.17.21",
+		"lodash": "^4.18.1",
 		"uuid": "^3.2.1"
 	},
 	"devDependencies": {
