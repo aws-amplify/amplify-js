@@ -1,17 +1,18 @@
 import { enableFetchMocks } from 'jest-fetch-mock';
-import { Amplify, ResourcesConfig } from 'aws-amplify';
+import { configure, ResourcesConfig } from 'aws-amplify';
 
 // allows SSR function to be invoked without catastrophically failing out of the gate.
 enableFetchMocks();
 
-const generateClientWithAmplifyInstanceSpy = jest.fn();
-jest.mock('@aws-amplify/api/internals', () => ({
-	generateClientWithAmplifyInstance: generateClientWithAmplifyInstanceSpy
-}));
+// Polyfill structuredClone for jsdom environment
+if (typeof globalThis.structuredClone === 'undefined') {
+	globalThis.structuredClone = (val: any) => JSON.parse(JSON.stringify(val));
+}
 
 const generateClientSpy = jest.fn();
-jest.mock('aws-amplify/api/server', () => ({
-	generateClient: generateClientSpy
+jest.mock('@aws-amplify/api-graphql/internals', () => ({
+	...jest.requireActual('@aws-amplify/api-graphql/internals'),
+	generateClient: generateClientSpy,
 }));
 
 const {
@@ -19,9 +20,11 @@ const {
 	generateServerClientUsingReqRes,
 } = require('@aws-amplify/adapter-nextjs/api');
 
+let mockCtx: any;
+
 describe('SSR internals', () => {
 	beforeEach(() => {
-		Amplify.configure(
+		mockCtx = configure(
 			{
 				API: {
 					GraphQL: {
@@ -52,55 +55,56 @@ describe('SSR internals', () => {
 		has() { return false },
 	}) as any;
 
-	test('generateServerClientUsingCookies passes through to generateClientWithAmplifyInstance', () => {
-		generateClientWithAmplifyInstanceSpy.mockReturnValue('generateClientWithAmplifyInstance client');
+	test('generateServerClientUsingCookies passes through to generateClient', () => {
+		generateClientSpy.mockReturnValue('generated client');
 
 		const options = {
-			config: Amplify.getConfig(),
-			cookies: cookies, // must be a function to internal sanity checks
+			config: mockCtx.resourcesConfig,
+			cookies: cookies,
 			authMode: "authMode value",
 			authToken: "authToken value",
 			apiKey: "apiKey value",
 			endpoint: "endpoint value",
 			headers: "headers value"
 		} as any;
-
-		const {
-			config: _config, // config is replaced with resources config
-			cookies: _cookies, // cookies are not sent
-			...params
-		} = options;
 
 		const client = generateServerClientUsingCookies(options);
 
-		expect(generateClientWithAmplifyInstanceSpy).toHaveBeenCalledWith(
-			expect.objectContaining(params)
+		expect(generateClientSpy).toHaveBeenCalledWith(
+			expect.objectContaining({
+				authMode: "authMode value",
+				authToken: "authToken value",
+				apiKey: "apiKey value",
+				endpoint: "endpoint value",
+				headers: "headers value",
+			})
 		);
-		expect(client).toEqual('generateClientWithAmplifyInstance client');
+		expect(client).toEqual('generated client');
 	});
 
-	test('generateServerClientUsingReqRes passes through to generateClientSpy', () => {
-		generateClientSpy.mockReturnValue('generateClientSpy client');
+	test('generateServerClientUsingReqRes passes through to generateClient', () => {
+		generateClientSpy.mockReturnValue('generated client');
 
 		const options = {
-			config: Amplify.getConfig(),
+			config: mockCtx.resourcesConfig,
 			authMode: "authMode value",
 			authToken: "authToken value",
 			apiKey: "apiKey value",
 			endpoint: "endpoint value",
 			headers: "headers value"
 		} as any;
-
-		const {
-			config: _config, // config is replaced with resources config
-			...params
-		} = options;
 
 		const client = generateServerClientUsingReqRes(options);
 
 		expect(generateClientSpy).toHaveBeenCalledWith(
-			expect.objectContaining(params)
+			expect.objectContaining({
+				authMode: "authMode value",
+				authToken: "authToken value",
+				apiKey: "apiKey value",
+				endpoint: "endpoint value",
+				headers: "headers value",
+			})
 		);
-		expect(client).toEqual('generateClientSpy client');
+		expect(client).toEqual('generated client');
 	});
 })
