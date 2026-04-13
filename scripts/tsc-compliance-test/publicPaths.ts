@@ -11,16 +11,11 @@ import * as analyticsFirehose from 'aws-amplify/analytics/kinesis-firehose';
 
 import * as auth from 'aws-amplify/auth';
 import * as authCognito from 'aws-amplify/auth/cognito';
-import * as authServer from 'aws-amplify/auth/server';
-import * as authCognitoServer from 'aws-amplify/auth/cognito/server';
 
 import * as storage from 'aws-amplify/storage';
-import * as storageServer from 'aws-amplify/storage/server';
 import * as storageS3 from 'aws-amplify/storage/s3';
-import * as storageS3Server from 'aws-amplify/storage/s3/server';
 
 import * as api from 'aws-amplify/api';
-import * as apiServer from 'aws-amplify/api/server';
 
 import * as dataStore from 'aws-amplify/datastore';
 
@@ -46,16 +41,11 @@ export const allPublicPaths = [
 	// Auth
 	auth,
 	authCognito,
-	authServer,
-	authCognitoServer,
 	// Storage
 	storage,
-	storageServer,
 	storageS3,
-	storageS3Server,
 	// API
 	api,
-	apiServer,
 	// DataStore
 	dataStore,
 	// Interactions
