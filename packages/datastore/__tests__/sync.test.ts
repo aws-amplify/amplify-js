@@ -454,7 +454,7 @@ function jitteredRetrySyncProcessorSetup({
 
 		return {
 			...actualInternalAPIModule,
-			InternalAPI: {
+			InternalAPIClass: {
 				...actualInternalAPIInstance,
 				graphql: mockGraphQl,
 			},

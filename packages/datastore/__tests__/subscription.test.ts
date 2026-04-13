@@ -28,7 +28,7 @@ jest.mock('@aws-amplify/api/internals', () => {
 
 	return {
 		...actualInternalAPIModule,
-		InternalAPI: {
+		InternalAPIClass: {
 			...actualInternalAPIInstance,
 			graphql: mockGraphQL,
 		},

@@ -1,9 +1,7 @@
 const mockRetry = jest.fn(async (fn, args) => {
 	await fn(...args);
 });
-const mockRestPost = jest.fn(() => Promise.reject(serverError));
-
-import { Amplify } from '@aws-amplify/core';
+const mockGraphQl = jest.fn(() => Promise.reject(serverError));
 
 import {
 	Category,
@@ -32,9 +30,11 @@ import { SyncEngine, MutationEvent } from '../src/sync/';
 
 jest.mock('@aws-amplify/api/internals', () => {
 	const apiInternals = jest.requireActual('@aws-amplify/api/internals');
-	apiInternals.InternalAPI._graphqlApi._api.post = mockRestPost;
 	return {
 		...apiInternals,
+		InternalAPIClass: {
+			graphql: mockGraphQl,
+		},
 	};
 });
 // mocking jitteredBackoff to prevent it from retrying
@@ -53,7 +53,9 @@ let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 let serverError;
 
 beforeEach(() => {
-	serverError = timeoutError;
+	serverError = {
+		errors: [{ message: 'Network Error', originalError: { code: 'ERR_NETWORK' } }],
+	};
 });
 
 const datastoreUserAgentDetails: CustomUserAgentDetails = {
@@ -121,8 +123,6 @@ describe('MutationProcessor', () => {
 			aws_appsync_authenticationType: 'API_KEY',
 			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 		};
-
-		Amplify.configure(awsconfig);
 	});
 
 	afterEach(() => {
@@ -194,29 +194,19 @@ describe('MutationProcessor', () => {
 			expect(input.postId).toEqual('100');
 		});
 
-		it('Should send datastore details with the x-amz-user-agent in the rest api request', async () => {
+		it('Should send datastore details with the x-amz-user-agent in the graphql request', async () => {
 			jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
-			expect(mockRestPost).toHaveBeenCalledWith(
+			expect(mockGraphQl).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					query: expect.any(String),
+					authMode: 'API_KEY',
 				}),
-				expect.objectContaining({
-					url: new URL(
-						'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
-					),
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'x-amz-user-agent': getAmplifyUserAgent(
-								datastoreUserAgentDetails,
-							),
-						}),
-						signingServiceInfo: undefined,
-						withCredentials: undefined,
-					}),
-				}),
+				undefined,
+				{
+					category: Category.DataStore,
+					action: DataStoreAction.GraphQl,
+				},
 			);
 		});
 	});
@@ -241,16 +231,14 @@ describe('error handler', () => {
 			aws_appsync_authenticationType: 'API_KEY',
 			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 		};
-
-		Amplify.configure(awsconfig);
 	});
 
 	test('newly required field', async () => {
 		serverError = {
-			message: "Variable 'name' has coerced Null value for NonNull type",
-			name: 'Error',
-			code: '',
-			errorType: '',
+			errors: [{
+				message: "Variable 'name' has coerced Null value for NonNull type",
+				errorType: '',
+			}],
 		};
 		await mutationProcessor.resume();
 		expect(errorHandler).toHaveBeenCalledWith(
@@ -264,10 +252,10 @@ describe('error handler', () => {
 
 	test('connection timout', async () => {
 		serverError = {
-			message: 'Connection failed: Connection Timeout',
-			name: 'Error',
-			code: '',
-			errorType: '',
+			errors: [{
+				message: 'Connection failed: Connection Timeout',
+				errorType: '',
+			}],
 		};
 		await mutationProcessor.resume();
 		expect(errorHandler).toHaveBeenCalledWith(
@@ -281,11 +269,13 @@ describe('error handler', () => {
 
 	test('server error', async () => {
 		serverError = {
-			originalError: {
-				$metadata: {
-					httpStatusCode: 500,
+			errors: [{
+				originalError: {
+					$metadata: {
+						httpStatusCode: 500,
+					},
 				},
-			},
+			}],
 		};
 		await mutationProcessor.resume();
 		expect(errorHandler).toHaveBeenCalledWith(
@@ -299,11 +289,13 @@ describe('error handler', () => {
 
 	test('no auth decorator', async () => {
 		serverError = {
-			originalError: {
-				$metadata: {
-					httpStatusCode: 401,
+			errors: [{
+				originalError: {
+					$metadata: {
+						httpStatusCode: 401,
+					},
 				},
-			},
+			}],
 		};
 		await mutationProcessor.resume();
 
