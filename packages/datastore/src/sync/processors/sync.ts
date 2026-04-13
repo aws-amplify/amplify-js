@@ -232,7 +232,7 @@ class SyncProcessor {
 						action: DataStoreAction.GraphQl,
 					};
 
-					return await this.amplifyContext.InternalAPI.graphql(
+					return await this.amplifyContext.InternalAPI?.graphql?.(
 						{
 							query: retriedQuery,
 							variables: retriedVariables,

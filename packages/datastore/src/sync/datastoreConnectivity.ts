@@ -49,7 +49,7 @@ export default class DataStoreConnectivity {
 	unsubscribe() {
 		if (this.subscription) {
 			clearTimeout(this.timeout);
-			this.subscription.unsubscribe();
+			this.subscription?.unsubscribe?.();
 		}
 	}
 

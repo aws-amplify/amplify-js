@@ -364,7 +364,7 @@ class MutationProcessor {
 
 				do {
 					try {
-						const result = (await this.amplifyContext.InternalAPI.graphql(
+						const result = (await this.amplifyContext?.InternalAPI?.graphql?.(
 							tryWith,
 							undefined,
 							customUserAgentDetails,
@@ -436,7 +436,7 @@ class MutationProcessor {
 									);
 
 									const serverData =
-										(await this.amplifyContext.InternalAPI.graphql(
+										(await this.amplifyContext?.InternalAPI?.graphql?.(
 											{
 												query: builtQuery,
 												variables: { id: variables.input.id },

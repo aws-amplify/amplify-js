@@ -710,7 +710,7 @@ export class SyncEngine {
 												observer.next({
 													type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
 												});
-												syncQueriesSubscription.unsubscribe();
+												syncQueriesSubscription?.unsubscribe?.();
 											}
 										}
 									},

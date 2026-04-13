@@ -390,7 +390,7 @@ class SubscriptionProcessor {
 										);
 
 										const queryObservable =
-											this.amplifyContext.InternalAPI.graphql(
+											this.amplifyContext?.InternalAPI?.graphql?.(
 												{
 													query,
 													variables,
@@ -410,7 +410,7 @@ class SubscriptionProcessor {
 										subscriptions[modelDefinition.name][
 											transformerMutationType
 										].push(
-											queryObservable.subscribe({
+											queryObservable?.subscribe?.({
 												next: result => {
 													const { data, errors } = result;
 													if (Array.isArray(errors) && errors.length > 0) {
@@ -480,7 +480,7 @@ class SubscriptionProcessor {
 														subscriptions[modelDefinition.name][
 															transformerMutationType
 														].forEach(subscription =>
-															subscription.unsubscribe(),
+															subscription?.unsubscribe?.(),
 														);
 
 														subscriptions[modelDefinition.name][
@@ -505,7 +505,7 @@ class SubscriptionProcessor {
 														subscriptions[modelDefinition.name][
 															transformerMutationType
 														].forEach(subscription =>
-															subscription.unsubscribe(),
+															subscription?.unsubscribe?.(),
 														);
 														subscriptions[modelDefinition.name][
 															transformerMutationType
@@ -620,17 +620,17 @@ class SubscriptionProcessor {
 				Object.keys(subscriptions).forEach(modelName => {
 					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
 						subscription => {
-							subscription.unsubscribe();
+							subscription?.unsubscribe?.();
 						},
 					);
 					subscriptions[modelName][TransformerMutationType.UPDATE].forEach(
 						subscription => {
-							subscription.unsubscribe();
+							subscription?.unsubscribe?.();
 						},
 					);
 					subscriptions[modelName][TransformerMutationType.DELETE].forEach(
 						subscription => {
-							subscription.unsubscribe();
+							subscription?.unsubscribe?.();
 						},
 					);
 				});

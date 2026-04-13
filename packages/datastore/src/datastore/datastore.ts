@@ -2471,8 +2471,8 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
-		const currentAppSyncConfig = (this.amplifyContext as any).resourcesConfig
-			.API?.GraphQL;
+		const currentAppSyncConfig = (this.amplifyContext as any)?.resourcesConfig
+			?.API?.GraphQL;
 
 		const appSyncConfig = {
 			aws_appsync_graphqlEndpoint: currentAppSyncConfig?.endpoint,
@@ -2575,7 +2575,7 @@ class DataStore {
 		}
 
 		if (syncSubscription && !syncSubscription.closed) {
-			syncSubscription.unsubscribe();
+			syncSubscription?.unsubscribe?.();
 		}
 
 		if (this.sync) {
@@ -2605,7 +2605,7 @@ class DataStore {
 		await this.runningProcesses.close();
 
 		if (syncSubscription && !syncSubscription.closed) {
-			syncSubscription.unsubscribe();
+			syncSubscription?.unsubscribe?.();
 		}
 
 		if (this.sync) {
