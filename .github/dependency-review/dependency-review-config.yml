@@ -47,3 +47,7 @@ allow-dependencies-licenses:
   - 'pkg:npm/%2540img/sharp-win32-ia32'
   - 'pkg:npm/%2540img/sharp-win32-x64'
   - 'pkg:npm/unicode-match-property-value-ecmascript@2.2.1'
+  - 'pkg:npm/bowser@2.14.1'
+  - 'pkg:npm/unicode-property-aliases-ecmascript@2.2.0'
+  - 'pkg:npm/%2540babel/traverse--for-generate-function-map@7.29.0'
+  - 'pkg:npm/aws-jwt-verify'
