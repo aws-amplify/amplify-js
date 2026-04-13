@@ -1,6 +1,6 @@
 import { parse, print, DocumentNode } from 'graphql';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
-import { Amplify } from 'aws-amplify';
+import { AmplifyContext } from '@aws-amplify/core';
 
 /**
  * Performs an `expect()` on a jest spy with some basic nested argument checks
@@ -47,9 +47,8 @@ export function expectGet(
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
-			Auth: expect.any(Object),
-			configure: expect.any(Function),
-			getConfig: expect.any(Function),
+			resourcesConfig: expect.any(Object),
+			fetchAuthSession: expect.any(Function),
 		}),
 		{
 			abortController: expect.any(AbortController),
@@ -245,13 +244,13 @@ export function extractCallDetails(spy: jest.SpyInstance) {
  * @param pluralName plural name of model (e.g. "Todos")
  * @returns singular name of model (e.g. "Todo")
  */
-export function findSingularName(pluralName: string): string {
-	const config = Amplify.getConfig();
+export function findSingularName(pluralName: string, ctx?: AmplifyContext): string {
+	const config = ctx?.resourcesConfig ?? {};
 	const model = Object.values(
 		config.API?.GraphQL?.modelIntrospection?.models || {},
-	).find(m => m.pluralName === pluralName);
+	).find((m: any) => m.pluralName === pluralName);
 	if (!model) throw new Error(`No model found for plural name ${pluralName}`);
-	return model.name;
+	return (model as any).name;
 }
 
 /**

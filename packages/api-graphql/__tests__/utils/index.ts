@@ -2,6 +2,14 @@ export * from './expects';
 import * as raw from '../../src';
 import { Observable, from } from 'rxjs';
 
+// Reference to the module-level mockPost from test files
+// Tests that use mockApiResponse should define mockPost via jest.mock
+let _mockPostRef: jest.Mock | null = null;
+
+export function setMockPost(fn: jest.Mock) {
+	_mockPostRef = fn;
+}
+
 /**
  * For each call against the spy, assuming the spy is a `post()` spy,
  * replaces fields that are likely to change between calls (or library version revs)
@@ -50,9 +58,8 @@ export function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
  * @returns
  */
 export function mockApiResponse(value: any) {
-	return jest
-		.spyOn((raw.GraphQLAPI as any)._api, 'post')
-		.mockImplementation(async () => {
+	if (!_mockPostRef) throw new Error('Call setMockPost(mockPost) before using mockApiResponse');
+	return _mockPostRef.mockImplementation(async () => {
 			const result = await value;
 			return {
 				body: {
@@ -107,6 +114,6 @@ export function makeAppSyncStreams() {
 			});
 		}
 	});
-	(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+	(raw as any)._testAppSyncRealTimeSpy = spy;
 	return { streams, spy };
 }

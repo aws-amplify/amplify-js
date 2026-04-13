@@ -3,7 +3,7 @@
 
 import { resolveConfig } from '../src/utils';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 describe('GraphQL API Util: resolveConfig', () => {
 	const GraphQLConfig = {
@@ -18,12 +18,10 @@ describe('GraphQL API Util: resolveConfig', () => {
 
 	it('returns required config', () => {
 		const amplify = {
-			getConfig: jest.fn(() => {
-				return {
-					API: { GraphQL: GraphQLConfig },
-				};
-			}),
-		} as unknown as AmplifyClassV6;
+			resourcesConfig: {
+				API: { GraphQL: GraphQLConfig },
+			},
+		} as unknown as AmplifyContext;
 
 		const expected = {
 			...GraphQLConfig,
@@ -36,18 +34,16 @@ describe('GraphQL API Util: resolveConfig', () => {
 
 	it('throws if custom endpoint region exists without custom endpoint:', () => {
 		const amplify = {
-			getConfig: jest.fn(() => {
-				return {
-					API: {
-						GraphQL: {
-							...GraphQLConfig,
-							customEndpoint: undefined,
-							customEndpointRegion: 'some-region',
-						},
+			resourcesConfig: {
+				API: {
+					GraphQL: {
+						...GraphQLConfig,
+						customEndpoint: undefined,
+						customEndpointRegion: 'some-region',
 					},
-				};
-			}),
-		} as unknown as AmplifyClassV6;
+				},
+			},
+		} as unknown as AmplifyContext;
 
 		expect(() => resolveConfig(amplify)).toThrow();
 	});
