@@ -80,3 +80,4 @@ coverage-ts/
 # ruby
 vendor/
 Gemfile.lock
+*.tsbuildinfo
