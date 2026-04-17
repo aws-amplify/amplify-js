@@ -1,5 +1,14 @@
 # Change Log
 
+## 5.1.6
+
+### Patch Changes
+
+- Updated dependencies [[`03301e8`](https://github.com/aws-amplify/amplify-js/commit/03301e80a0ba5f1728db6ccd404d1e33ebe44485), [`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77)]:
+  - @aws-amplify/api-graphql@4.8.6
+  - @aws-amplify/core@6.16.2
+  - @aws-amplify/api@6.3.25
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

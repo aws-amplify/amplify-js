@@ -1,5 +1,18 @@
 # Change Log
 
+## 6.14.0
+
+### Minor Changes
+
+- [#14740](https://github.com/aws-amplify/amplify-js/pull/14740) [`8641160`](https://github.com/aws-amplify/amplify-js/commit/8641160ab7c8f3342ec349c533070ddb8665f82c) Thanks [@osama-rizk](https://github.com/osama-rizk)! - feat(storage): add PUT method support for getUrl presigned upload URLs
+
+### Patch Changes
+
+- [#14757](https://github.com/aws-amplify/amplify-js/pull/14757) [`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77) Thanks [@bobbor](https://github.com/bobbor)! - chore: bump aws-sdk's to v3.1012.0
+
+- Updated dependencies [[`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77)]:
+  - @aws-amplify/core@6.16.2
+
 ## 6.13.2
 
 ### Patch Changes

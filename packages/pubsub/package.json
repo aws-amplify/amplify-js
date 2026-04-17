@@ -81,10 +81,10 @@
 		"url": "0.11.0"
 	},
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.1.0"
+		"@aws-amplify/core": "^6.16.2"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.16.1"
+		"@aws-amplify/core": "6.16.2"
 	},
 	"size-limit": [
 		{

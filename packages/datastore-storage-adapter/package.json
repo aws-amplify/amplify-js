@@ -33,11 +33,11 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.1.0"
+		"@aws-amplify/core": "^6.16.2"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.16.1",
-		"@aws-amplify/datastore": "5.1.5",
+		"@aws-amplify/core": "6.16.2",
+		"@aws-amplify/datastore": "5.1.6",
 		"@types/better-sqlite3": "^7.6.13",
 		"@types/react-native-sqlite-storage": "5.0.1",
 		"better-sqlite3": "^12.6.2",

@@ -1,5 +1,17 @@
 # Change Log
 
+## 4.8.6
+
+### Patch Changes
+
+- [#14569](https://github.com/aws-amplify/amplify-js/pull/14569) [`03301e8`](https://github.com/aws-amplify/amplify-js/commit/03301e80a0ba5f1728db6ccd404d1e33ebe44485) Thanks [@anivar](https://github.com/anivar)! - fix(api-graphql): trigger WebSocket reconnection on auth errors to restore subscriptions after token expiration
+
+- [#14757](https://github.com/aws-amplify/amplify-js/pull/14757) [`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77) Thanks [@bobbor](https://github.com/bobbor)! - chore: bump aws-sdk's to v3.1012.0
+
+- Updated dependencies [[`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77)]:
+  - @aws-amplify/core@6.16.2
+  - @aws-amplify/api-rest@4.6.4
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
