@@ -20,6 +20,7 @@ const disableCacheMiddlewareFactory: Middleware<
 > = () => (next, _) =>
 	async function disableCacheMiddleware(request) {
 		request.headers = {
+			...request.headers,
 			'cache-control': 'no-store',
 			...(await Amplify.libraryOptions?.Auth?.headers?.()),
 		};
