@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { FetchMFAPreferenceOutput } from '../types';
@@ -24,7 +25,14 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * and settings.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function fetchMFAPreference(ctx: AmplifyContext): Promise<FetchMFAPreferenceOutput> {
+export async function fetchMFAPreference(): Promise<FetchMFAPreferenceOutput>;
+export async function fetchMFAPreference(
+	ctx: AmplifyContext,
+): Promise<FetchMFAPreferenceOutput>;
+export async function fetchMFAPreference(
+	...args: any[]
+): Promise<FetchMFAPreferenceOutput> {
+	const [ctx] = resolveCtxArgs<undefined>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

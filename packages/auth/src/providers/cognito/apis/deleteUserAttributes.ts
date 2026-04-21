@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
@@ -23,9 +24,14 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function deleteUserAttributes(
+	input: DeleteUserAttributesInput,
+): Promise<void>;
+export async function deleteUserAttributes(
 	ctx: AmplifyContext,
 	input: DeleteUserAttributesInput,
-): Promise<void> {
+): Promise<void>;
+export async function deleteUserAttributes(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<DeleteUserAttributesInput>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userAttributeKeys } = input;

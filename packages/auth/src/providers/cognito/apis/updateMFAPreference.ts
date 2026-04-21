@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { UpdateMFAPreferenceInput } from '../types';
@@ -25,9 +26,14 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updateMFAPreference(
+	input: UpdateMFAPreferenceInput,
+): Promise<void>;
+export async function updateMFAPreference(
 	ctx: AmplifyContext,
 	input: UpdateMFAPreferenceInput,
-): Promise<void> {
+): Promise<void>;
+export async function updateMFAPreference(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<UpdateMFAPreferenceInput>(args);
 	const { sms, totp, email } = input;
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);

@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -27,9 +28,14 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmUserAttribute(
+	input: ConfirmUserAttributeInput,
+): Promise<void>;
+export async function confirmUserAttribute(
 	ctx: AmplifyContext,
 	input: ConfirmUserAttributeInput,
-): Promise<void> {
+): Promise<void>;
+export async function confirmUserAttribute(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<ConfirmUserAttributeInput>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

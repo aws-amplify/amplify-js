@@ -38,9 +38,28 @@ export {
 	AnalyticsConfig,
 	GeoConfig,
 } from './singleton/types';
+export {
+	Amplify,
+	AmplifyClass as AmplifyClassV6,
+	fetchAuthSession,
+	clearCredentials,
+} from './singleton';
 
 // AmplifyContext — the singleton-free contract for category APIs
 export { AmplifyContext } from './singleton/AmplifyContext';
+
+// Context branding — runtime identification of AmplifyContext objects
+export {
+	isAmplifyContext,
+	AMPLIFY_CONTEXT_BRAND,
+} from './singleton/contextBrand';
+
+// Global context management
+export {
+	getActiveContext,
+	getGlobalContext,
+	hasGlobalContext,
+} from './singleton/globalContext';
 
 // Configuration Builder
 export { createConfigurationBuilder } from './configurationBuilder';

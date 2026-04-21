@@ -6,6 +6,7 @@ import {
 	AuthAction,
 	HubInternal,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
@@ -34,9 +35,16 @@ import { resetAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignUp(
+	input: ConfirmSignUpInput,
+): Promise<ConfirmSignUpOutput>;
+export async function confirmSignUp(
 	ctx: AmplifyContext,
 	input: ConfirmSignUpInput,
+): Promise<ConfirmSignUpOutput>;
+export async function confirmSignUp(
+	...args: any[]
 ): Promise<ConfirmSignUpOutput> {
+	const [ctx, input] = resolveCtxArgs<ConfirmSignUpInput>(args);
 	const { username, confirmationCode, options } = input;
 
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;

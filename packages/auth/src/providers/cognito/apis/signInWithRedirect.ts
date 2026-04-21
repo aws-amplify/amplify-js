@@ -7,6 +7,7 @@ import {
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	isBrowser,
+	resolveCtxArgs,
 	urlSafeEncode,
 } from '@aws-amplify/core/internals/utils';
 
@@ -39,9 +40,16 @@ import { OpenAuthSession } from '../../../utils/types';
  * @throws OAuthNotConfigureException - Thrown when the oauth config is invalid.
  */
 export async function signInWithRedirect(
+	input?: SignInWithRedirectInput,
+): Promise<void>;
+export async function signInWithRedirect(
 	ctx: AmplifyContext,
 	input?: SignInWithRedirectInput,
-): Promise<void> {
+): Promise<void>;
+export async function signInWithRedirect(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<SignInWithRedirectInput | undefined>(
+		args,
+	);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
@@ -79,25 +87,28 @@ export async function signInWithRedirect(
 	});
 }
 
-const oauthSignIn = async (ctx: AmplifyContext, {
-	oauthConfig,
-	provider,
-	idpIdentifier,
-	clientId,
-	customState,
-	preferPrivateSession,
-	options,
-	authSessionOpener,
-}: {
-	oauthConfig: OAuthConfig;
-	provider: string;
-	idpIdentifier?: string;
-	clientId: string;
-	customState?: string;
-	preferPrivateSession?: boolean;
-	options?: SignInWithRedirectInput['options'];
-	authSessionOpener?: OpenAuthSession;
-}) => {
+const oauthSignIn = async (
+	ctx: AmplifyContext,
+	{
+		oauthConfig,
+		provider,
+		idpIdentifier,
+		clientId,
+		customState,
+		preferPrivateSession,
+		options,
+		authSessionOpener,
+	}: {
+		oauthConfig: OAuthConfig;
+		provider: string;
+		idpIdentifier?: string;
+		clientId: string;
+		customState?: string;
+		preferPrivateSession?: boolean;
+		options?: SignInWithRedirectInput['options'];
+		authSessionOpener?: OpenAuthSession;
+	},
+) => {
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const { loginHint, lang, nonce, prompt } = options ?? {};
 	const randomState = generateState();

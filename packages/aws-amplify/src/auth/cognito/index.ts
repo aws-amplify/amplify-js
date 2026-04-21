@@ -2,6 +2,93 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /*
-This file maps exports from `aws-amplify/auth/cognito`. It provides access to Cognito APIs.
+This file maps exports from `aws-amplify/auth/cognito`.
+Plain re-exports — category functions already handle optional ctx.
 */
-export * from '@aws-amplify/auth/cognito';
+
+export {
+	signUp,
+	signIn,
+	signOut,
+	confirmSignUp,
+	confirmSignIn,
+	resetPassword,
+	confirmResetPassword,
+	resendSignUpCode,
+	updateMFAPreference,
+	fetchMFAPreference,
+	verifyTOTPSetup,
+	setUpTOTP,
+	updatePassword,
+	updateUserAttributes,
+	updateUserAttribute,
+	getCurrentUser,
+	confirmUserAttribute,
+	signInWithRedirect,
+	fetchUserAttributes,
+	sendUserAttributeVerificationCode,
+	deleteUserAttributes,
+	deleteUser,
+	rememberDevice,
+	forgetDevice,
+	fetchDevices,
+	autoSignIn,
+	// Provider internals
+	cognitoCredentialsProvider,
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	DefaultIdentityIdStore,
+	cognitoUserPoolsTokenProvider,
+	CognitoUserPoolTokenProviderType,
+	TokenOrchestrator,
+	DefaultTokenStore,
+	refreshAuthTokens,
+	refreshAuthTokensWithoutDedupe,
+	createKeysForAuthStorage,
+	AUTH_KEY_PREFIX,
+	generateState,
+	getRedirectUrl,
+	generateCodeVerifier,
+	validateState,
+	// Models
+	AuthUser,
+	CodeDeliveryDetails,
+	UserAttributeKey,
+	VerifiableUserAttributeKey,
+} from '@aws-amplify/auth/cognito';
+
+export type {
+	// Inputs
+	ConfirmResetPasswordInput,
+	ConfirmSignInInput,
+	ConfirmSignUpInput,
+	ConfirmUserAttributeInput,
+	ResendSignUpCodeInput,
+	ResetPasswordInput,
+	SignInInput,
+	SignInWithRedirectInput,
+	SignOutInput,
+	SignUpInput,
+	UpdateMFAPreferenceInput,
+	UpdatePasswordInput,
+	UpdateUserAttributesInput,
+	UpdateUserAttributeInput,
+	VerifyTOTPSetupInput,
+	SendUserAttributeVerificationCodeInput,
+	DeleteUserAttributesInput,
+	ForgetDeviceInput,
+	// Outputs
+	FetchUserAttributesOutput,
+	GetCurrentUserOutput,
+	ConfirmSignInOutput,
+	ConfirmSignUpOutput,
+	FetchMFAPreferenceOutput,
+	ResendSignUpCodeOutput,
+	ResetPasswordOutput,
+	SetUpTOTPOutput,
+	SignInOutput,
+	SignUpOutput,
+	UpdateUserAttributesOutput,
+	UpdateUserAttributeOutput,
+	SendUserAttributeVerificationCodeOutput,
+	FetchDevicesOutput,
+} from '@aws-amplify/auth/cognito';

@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AWSAuthDevice, FetchDevicesOutput } from '../types';
@@ -28,7 +29,14 @@ const MAX_DEVICES = 60;
  * @throws {@link ListDevicesException}
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function fetchDevices(ctx: AmplifyContext): Promise<FetchDevicesOutput> {
+export async function fetchDevices(): Promise<FetchDevicesOutput>;
+export async function fetchDevices(
+	ctx: AmplifyContext,
+): Promise<FetchDevicesOutput>;
+export async function fetchDevices(
+	...args: any[]
+): Promise<FetchDevicesOutput> {
+	const [ctx] = resolveCtxArgs<undefined>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

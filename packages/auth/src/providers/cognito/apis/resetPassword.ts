@@ -6,6 +6,7 @@ import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -31,9 +32,16 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  **/
 export async function resetPassword(
+	input: ResetPasswordInput,
+): Promise<ResetPasswordOutput>;
+export async function resetPassword(
 	ctx: AmplifyContext,
 	input: ResetPasswordInput,
+): Promise<ResetPasswordOutput>;
+export async function resetPassword(
+	...args: any[]
 ): Promise<ResetPasswordOutput> {
+	const [ctx, input] = resolveCtxArgs<ResetPasswordInput>(args);
 	const { username } = input;
 	assertValidationError(
 		!!username,

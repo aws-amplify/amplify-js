@@ -148,3 +148,16 @@ export {
 	SESSION_START_EVENT,
 	SESSION_STOP_EVENT,
 } from './utils/sessionListener';
+
+// Global context internals
+export {
+	setGlobalContext,
+	clearGlobalContext,
+} from './singleton/globalContext';
+
+// Context argument resolution
+export { resolveCtxArgs } from './singleton/resolveCtxArgs';
+
+// Storage internals
+export { InMemoryStorage } from './storage/InMemoryStorage';
+export { KeyValueStorage } from './storage/KeyValueStorage';

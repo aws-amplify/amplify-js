@@ -6,6 +6,7 @@ import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthDeliveryMedium } from '../../../types';
@@ -29,9 +30,16 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function resendSignUpCode(
+	input: ResendSignUpCodeInput,
+): Promise<ResendSignUpCodeOutput>;
+export async function resendSignUpCode(
 	ctx: AmplifyContext,
 	input: ResendSignUpCodeInput,
+): Promise<ResendSignUpCodeOutput>;
+export async function resendSignUpCode(
+	...args: any[]
 ): Promise<ResendSignUpCodeOutput> {
+	const [ctx, input] = resolveCtxArgs<ResendSignUpCodeInput>(args);
 	const { username } = input;
 	assertValidationError(
 		!!username,

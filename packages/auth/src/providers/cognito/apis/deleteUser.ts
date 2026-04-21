@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
@@ -23,7 +24,10 @@ import { signOut } from './signOut';
  * @throws - {@link DeleteUserException}
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function deleteUser(ctx: AmplifyContext): Promise<void> {
+export async function deleteUser(): Promise<void>;
+export async function deleteUser(ctx: AmplifyContext): Promise<void>;
+export async function deleteUser(...args: any[]): Promise<void> {
+	const [ctx] = resolveCtxArgs<undefined>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

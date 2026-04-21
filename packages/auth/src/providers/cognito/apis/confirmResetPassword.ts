@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -27,9 +28,14 @@ import { getRegionFromUserPoolId } from '../../../foundation/parsers';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmResetPassword(
+	input: ConfirmResetPasswordInput,
+): Promise<void>;
+export async function confirmResetPassword(
 	ctx: AmplifyContext,
 	input: ConfirmResetPasswordInput,
-): Promise<void> {
+): Promise<void>;
+export async function confirmResetPassword(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<ConfirmResetPasswordInput>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolClientId, userPoolId, userPoolEndpoint } = authConfig;

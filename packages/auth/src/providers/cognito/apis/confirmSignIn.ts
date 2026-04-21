@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	AssociateSoftwareTokenException,
@@ -50,9 +53,16 @@ import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignIn(
+	input: ConfirmSignInInput,
+): Promise<ConfirmSignInOutput>;
+export async function confirmSignIn(
 	ctx: AmplifyContext,
 	input: ConfirmSignInInput,
+): Promise<ConfirmSignInOutput>;
+export async function confirmSignIn(
+	...args: any[]
 ): Promise<ConfirmSignInOutput> {
+	const [ctx, input] = resolveCtxArgs<ConfirmSignInInput>(args);
 	const { challengeResponse, options } = input;
 	const { username, challengeName, signInSession, signInDetails } =
 		signInStore.getState();

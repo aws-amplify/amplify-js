@@ -2,29 +2,31 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	AMPLIFY_CONTEXT_BRAND,
 	AmplifyContext,
-	CookieStorage,
 	LibraryOptions,
 	ResourcesConfig,
-	defaultStorage,
 } from '@aws-amplify/core';
 import {
 	AmplifyOutputsUnknown,
 	AuthClass,
+	InMemoryStorage,
+	KeyValueStorage,
 	LegacyConfig,
 	parseAmplifyConfig,
 } from '@aws-amplify/core/internals/utils';
 
 import {
-	CognitoAWSCredentialsAndIdentityIdProvider,
-	DefaultIdentityIdStore,
-	cognitoCredentialsProvider,
-	cognitoUserPoolsTokenProvider,
-} from './auth/cognito';
+	createAWSCredentialsAndIdentityIdProvider,
+	createUserPoolsTokenProvider,
+} from './adapter-core/authProvidersFactories/cognito';
 
 /**
- * Creates an {@link AmplifyContext} from the given resource configuration.
- * This is a pure function — it does not mutate any global state.
+ * Creates an isolated {@link AmplifyContext} from the given resource configuration.
+ *
+ * The returned context is **not** stored globally — it does not affect
+ * `Amplify.configure()` state and does not dispatch Hub events. Use this for
+ * server-side rendering or testing where you need an isolated context.
  *
  * @example
  * ```ts
@@ -32,6 +34,8 @@ import {
  * import outputs from './amplify_outputs.json';
  *
  * const ctx = configure(outputs);
+ * // Pass ctx explicitly to category APIs:
+ * await signIn(ctx, { username, password });
  * ```
  */
 export function configure(
@@ -39,7 +43,7 @@ export function configure(
 	libraryOptions?: LibraryOptions,
 ): AmplifyContext {
 	const resolvedResourceConfig = parseAmplifyConfig(resourceConfig);
-	const resolvedLibraryOptions = resolveLibraryOptions(
+	const resolvedLibraryOptions = resolveLocalLibraryOptions(
 		resolvedResourceConfig,
 		libraryOptions,
 	);
@@ -52,15 +56,25 @@ export function configure(
 	const ctx: AmplifyContext = {
 		resourcesConfig: Object.freeze(resolvedResourceConfig),
 		libraryOptions: resolvedLibraryOptions,
-		fetchAuthSession: (options) => auth.fetchAuthSession(options ?? {}),
+		fetchAuthSession: fetchOptions => auth.fetchAuthSession(fetchOptions ?? {}),
 		clearCredentials: () => auth.clearCredentials(),
-		getTokens: (options) => auth.getTokens(options),
+		getTokens: tokenOptions => auth.getTokens(tokenOptions),
 	};
 
-	return Object.freeze(ctx);
+	// Brand the context for runtime identification by isAmplifyContext()
+	Object.defineProperty(ctx, AMPLIFY_CONTEXT_BRAND, {
+		value: true,
+		enumerable: false,
+		configurable: false,
+		writable: false,
+	});
+
+	Object.freeze(ctx);
+
+	return ctx;
 }
 
-function resolveLibraryOptions(
+function resolveLocalLibraryOptions(
 	resourceConfig: ResourcesConfig,
 	libraryOptions?: LibraryOptions,
 ): LibraryOptions {
@@ -68,28 +82,24 @@ function resolveLibraryOptions(
 		return libraryOptions ?? {};
 	}
 
+	// User-provided providers take precedence
 	if (libraryOptions?.Auth) {
 		return libraryOptions;
 	}
 
-	const cookieBasedKeyValueStorage = new CookieStorage({ sameSite: 'lax' });
-	const resolvedKeyValueStorage = libraryOptions?.ssr
-		? cookieBasedKeyValueStorage
-		: defaultStorage;
-	const resolvedCredentialsProvider = libraryOptions?.ssr
-		? new CognitoAWSCredentialsAndIdentityIdProvider(
-				new DefaultIdentityIdStore(cookieBasedKeyValueStorage),
-			)
-		: cognitoCredentialsProvider;
-
-	cognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
-	cognitoUserPoolsTokenProvider.setKeyValueStorage(resolvedKeyValueStorage);
+	// Create fresh providers with isolated in-memory storage
+	const keyValueStorage = new KeyValueStorage(new InMemoryStorage());
+	const tokenProvider = createUserPoolsTokenProvider(
+		resourceConfig.Auth,
+		keyValueStorage,
+	);
+	const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
+		resourceConfig.Auth,
+		keyValueStorage,
+	);
 
 	return {
 		...libraryOptions,
-		Auth: {
-			tokenProvider: cognitoUserPoolsTokenProvider,
-			credentialsProvider: resolvedCredentialsProvider,
-		},
+		Auth: { tokenProvider, credentialsProvider },
 	};
 }

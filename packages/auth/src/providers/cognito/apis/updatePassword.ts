@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -25,10 +26,13 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws - {@link AuthValidationErrorCode} - Validation errors thrown when oldPassword or newPassword are empty.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
+export async function updatePassword(input: UpdatePasswordInput): Promise<void>;
 export async function updatePassword(
 	ctx: AmplifyContext,
 	input: UpdatePasswordInput,
-): Promise<void> {
+): Promise<void>;
+export async function updatePassword(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<UpdatePasswordInput>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
@@ -22,7 +23,10 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * setting device status to remembered using an invalid device key.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function rememberDevice(ctx: AmplifyContext): Promise<void> {
+export async function rememberDevice(): Promise<void>;
+export async function rememberDevice(ctx: AmplifyContext): Promise<void>;
+export async function rememberDevice(...args: any[]): Promise<void> {
+	const [ctx] = resolveCtxArgs<undefined>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

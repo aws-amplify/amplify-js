@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -37,7 +38,14 @@ import { assertValidCredentialCreationOptions } from '../utils/passkey/types';
  * @throws - {@link CompleteWebAuthnRegistrationException}
  * - Thrown due to a service error when verifying WebAuthn registration result
  */
-export async function associateWebAuthnCredential(ctx: AmplifyContext): Promise<void> {
+export async function associateWebAuthnCredential(): Promise<void>;
+export async function associateWebAuthnCredential(
+	ctx: AmplifyContext,
+): Promise<void>;
+export async function associateWebAuthnCredential(
+	...args: any[]
+): Promise<void> {
+	const [ctx] = resolveCtxArgs<undefined>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 
 	assertTokenProviderConfig(authConfig);

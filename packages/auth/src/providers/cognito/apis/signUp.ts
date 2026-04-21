@@ -6,6 +6,7 @@ import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthDeliveryMedium } from '../../../types';
@@ -39,7 +40,13 @@ import { setAutoSignIn } from './autoSignIn';
  *  are not defined.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signUp(ctx: AmplifyContext, input: SignUpInput): Promise<SignUpOutput> {
+export async function signUp(input: SignUpInput): Promise<SignUpOutput>;
+export async function signUp(
+	ctx: AmplifyContext,
+	input: SignUpInput,
+): Promise<SignUpOutput>;
+export async function signUp(...args: any[]): Promise<SignUpOutput> {
+	const [ctx, input] = resolveCtxArgs<SignUpInput>(args);
 	const { username, password, options } = input;
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const signUpVerificationMethod =

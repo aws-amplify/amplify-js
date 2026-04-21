@@ -5,6 +5,7 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -28,9 +29,14 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function verifyTOTPSetup(
+	input: VerifyTOTPSetupInput,
+): Promise<void>;
+export async function verifyTOTPSetup(
 	ctx: AmplifyContext,
 	input: VerifyTOTPSetupInput,
-): Promise<void> {
+): Promise<void>;
+export async function verifyTOTPSetup(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<VerifyTOTPSetupInput>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

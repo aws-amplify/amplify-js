@@ -6,6 +6,7 @@ import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthDeliveryMedium } from '../../../types';
@@ -28,10 +29,18 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws - {@link GetUserAttributeVerificationException}
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const sendUserAttributeVerificationCode = async (
+export async function sendUserAttributeVerificationCode(
+	input: SendUserAttributeVerificationCodeInput,
+): Promise<SendUserAttributeVerificationCodeOutput>;
+export async function sendUserAttributeVerificationCode(
 	ctx: AmplifyContext,
 	input: SendUserAttributeVerificationCodeInput,
-): Promise<SendUserAttributeVerificationCodeOutput> => {
+): Promise<SendUserAttributeVerificationCodeOutput>;
+export async function sendUserAttributeVerificationCode(
+	...args: any[]
+): Promise<SendUserAttributeVerificationCodeOutput> {
+	const [ctx, input] =
+		resolveCtxArgs<SendUserAttributeVerificationCodeInput>(args);
 	const { userAttributeKey, options } = input;
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const clientMetadata = options?.clientMetadata;
@@ -67,4 +76,4 @@ export const sendUserAttributeVerificationCode = async (
 		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
 		attributeName: AttributeName as AuthVerifiableAttributeKey,
 	};
-};
+}

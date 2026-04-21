@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import { UpdateUserAttributeInput, UpdateUserAttributeOutput } from '../types';
 import { UpdateUserAttributesException } from '../types/errors';
@@ -16,10 +17,17 @@ import { updateUserAttributes } from './updateUserAttributes';
  * @throws - {@link UpdateUserAttributesException}
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const updateUserAttribute = async (
+export async function updateUserAttribute(
+	input: UpdateUserAttributeInput,
+): Promise<UpdateUserAttributeOutput>;
+export async function updateUserAttribute(
 	ctx: AmplifyContext,
 	input: UpdateUserAttributeInput,
-): Promise<UpdateUserAttributeOutput> => {
+): Promise<UpdateUserAttributeOutput>;
+export async function updateUserAttribute(
+	...args: any[]
+): Promise<UpdateUserAttributeOutput> {
+	const [ctx, input] = resolveCtxArgs<UpdateUserAttributeInput>(args);
 	const {
 		userAttribute: { attributeKey, value },
 		options,
@@ -30,4 +38,4 @@ export const updateUserAttribute = async (
 	});
 
 	return Object.values(output)[0];
-};
+}
