@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import {
 	HttpRequest,
@@ -18,7 +19,11 @@ const disableCacheMiddlewareFactory: Middleware<
 	Record<string, unknown>
 > = () => (next, _) =>
 	async function disableCacheMiddleware(request) {
-		request.headers['cache-control'] = 'no-store';
+		request.headers = {
+			...request.headers,
+			'cache-control': 'no-store',
+			...(await Amplify.libraryOptions?.Auth?.headers?.()),
+		};
 
 		return next(request);
 	};
