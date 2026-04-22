@@ -3,9 +3,6 @@
 
 export {
 	KeyValueStorageMethodValidator,
-	AmplifyServerContextError,
-	getAmplifyServerContext,
-	AmplifyServer,
 	CookieStorage,
 } from '@aws-amplify/core/internals/adapter-core';
 export { OAuthConfig } from '@aws-amplify/core';
