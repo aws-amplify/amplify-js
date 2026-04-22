@@ -38,6 +38,7 @@ export {
 	ListOutputItem,
 	ListOutputItemWithPath,
 	ServerUploadDataOutput,
+	ServerUploadDataTask,
 } from './outputs';
 export {
 	CopyInput,

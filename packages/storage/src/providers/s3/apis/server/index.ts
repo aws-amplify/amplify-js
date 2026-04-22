@@ -7,7 +7,9 @@ export { list } from './list';
 export { remove } from './remove';
 export { copy } from './copy';
 export { uploadData } from './uploadData';
+export { uploadDataDirect } from './uploadDataDirect';
 export type {
 	ServerUploadDataWithPathInput,
 	ServerUploadDataOutput,
+	ServerUploadDataTask,
 } from '../../types';

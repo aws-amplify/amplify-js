@@ -89,6 +89,11 @@ export interface ServerUploadDataOutput {
 	size?: number;
 }
 
+export interface ServerUploadDataTask {
+	result: Promise<ServerUploadDataOutput>;
+	cancel(): void;
+}
+
 /**
  * Output type for S3 getProperties API.
  * @deprecated Use {@link GetPropertiesWithPathOutput} instead.
