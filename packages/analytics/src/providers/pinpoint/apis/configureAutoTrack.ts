@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/pinpoint';
 
 import { AnalyticsValidationErrorCode } from '../../../errors';
@@ -15,7 +17,6 @@ import {
 } from '../../../utils';
 import { ConfigureAutoTrackInput } from '../types';
 
-import { AmplifyContext } from '@aws-amplify/core';
 import { record } from './record';
 
 // Configured Tracker instances for Pinpoint
@@ -47,9 +48,15 @@ const emitTrackingEvent = (ctx: AmplifyContext,
  * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library
  *  configuration is incorrect.
  */
-export const configureAutoTrack = (ctx: AmplifyContext, input: ConfigureAutoTrackInput): void => {
+export function configureAutoTrack(input: ConfigureAutoTrackInput): void;
+export function configureAutoTrack(
+	ctx: AmplifyContext,
+	input: ConfigureAutoTrackInput,
+): void;
+export function configureAutoTrack(...args: any[]): void {
+	const [ctx, input] = resolveCtxArgs<ConfigureAutoTrackInput>(args);
 	validateTrackerConfiguration(input);
 
 	// Initialize or update this provider's trackers
 	updateProviderTrackers(input, emitTrackingEvent.bind(null, ctx), configuredTrackers);
-};
+}

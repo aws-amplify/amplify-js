@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Signer } from '@aws-amplify/core/internals/utils';
-import { AmplifyContext } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	getGlobalContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 
 import { MqttOptions, MqttOverWS } from './MqttOverWS';
 
@@ -15,7 +19,12 @@ export interface AWSIoTOptions extends MqttOptions {
 export class AWSIoT extends MqttOverWS {
 	private ctx: AmplifyContext;
 
-	constructor(ctx: AmplifyContext, options: AWSIoTOptions = {}) {
+	constructor(options?: AWSIoTOptions);
+	constructor(ctx: AmplifyContext, options?: AWSIoTOptions);
+	constructor(...args: any[]) {
+		const hasCtx = isAmplifyContext(args[0]);
+		const ctx: AmplifyContext = hasCtx ? args[0] : getGlobalContext();
+		const options: AWSIoTOptions = hasCtx ? (args[1] ?? {}) : (args[0] ?? {});
 		super(options);
 		this.ctx = ctx;
 	}

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger, isAmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
 import { validateCoordinates } from './util';
@@ -307,5 +308,102 @@ export class GeoClass {
 			throw error;
 		}
 	}
+
+	// --- Static methods for v6 compatibility ---
+	// These use resolveCtxArgs to support both `Geo.method(input)` and `Geo.method(ctx, input)`.
+
+	static searchByText(text: string, options?: SearchByTextOptions): Promise<Place[]>;
+	static searchByText(ctx: AmplifyContext, text: string, options?: SearchByTextOptions): Promise<Place[]>;
+	static searchByText(...args: any[]): Promise<Place[]> {
+		const [ctx, text, options] = resolveStaticArgs<string>(args);
+
+		return new GeoClass(ctx).searchByText(text, options);
+	}
+
+	static searchForSuggestions(text: string, options?: SearchByTextOptions): Promise<SearchForSuggestionsResults>;
+	static searchForSuggestions(ctx: AmplifyContext, text: string, options?: SearchByTextOptions): Promise<SearchForSuggestionsResults>;
+	static searchForSuggestions(...args: any[]): Promise<SearchForSuggestionsResults> {
+		const [ctx, text, options] = resolveStaticArgs<string>(args);
+
+		return new GeoClass(ctx).searchForSuggestions(text, options);
+	}
+
+	static searchByPlaceId(placeId: string, options?: searchByPlaceIdOptions): Promise<Place | undefined>;
+	static searchByPlaceId(ctx: AmplifyContext, placeId: string, options?: searchByPlaceIdOptions): Promise<Place | undefined>;
+	static searchByPlaceId(...args: any[]): Promise<Place | undefined> {
+		const [ctx, placeId, options] = resolveStaticArgs<string>(args);
+
+		return new GeoClass(ctx).searchByPlaceId(placeId, options);
+	}
+
+	static searchByCoordinates(coordinates: Coordinates, options?: SearchByCoordinatesOptions): Promise<Place>;
+	static searchByCoordinates(ctx: AmplifyContext, coordinates: Coordinates, options?: SearchByCoordinatesOptions): Promise<Place>;
+	static searchByCoordinates(...args: any[]): Promise<Place> {
+		const [ctx, coordinates, options] = resolveStaticArgs<Coordinates>(args);
+
+		return new GeoClass(ctx).searchByCoordinates(coordinates, options);
+	}
+
+	static getAvailableMaps(provider?: string): MapStyle[];
+	static getAvailableMaps(ctx: AmplifyContext, provider?: string): MapStyle[];
+	static getAvailableMaps(...args: any[]): MapStyle[] {
+		const [ctx, provider] = resolveStaticArgs<string | undefined>(args);
+
+		return new GeoClass(ctx).getAvailableMaps(provider);
+	}
+
+	static getDefaultMap(provider?: string): MapStyle;
+	static getDefaultMap(ctx: AmplifyContext, provider?: string): MapStyle;
+	static getDefaultMap(...args: any[]): MapStyle {
+		const [ctx, provider] = resolveStaticArgs<string | undefined>(args);
+
+		return new GeoClass(ctx).getDefaultMap(provider);
+	}
+
+	static saveGeofences(geofences: GeofenceInput | GeofenceInput[], options?: GeofenceOptions): Promise<SaveGeofencesResults>;
+	static saveGeofences(ctx: AmplifyContext, geofences: GeofenceInput | GeofenceInput[], options?: GeofenceOptions): Promise<SaveGeofencesResults>;
+	static saveGeofences(...args: any[]): Promise<SaveGeofencesResults> {
+		const [ctx, geofences, options] = resolveStaticArgs<GeofenceInput | GeofenceInput[]>(args);
+
+		return new GeoClass(ctx).saveGeofences(geofences, options);
+	}
+
+	static getGeofence(geofenceId: GeofenceId, options?: GeofenceOptions): Promise<Geofence>;
+	static getGeofence(ctx: AmplifyContext, geofenceId: GeofenceId, options?: GeofenceOptions): Promise<Geofence>;
+	static getGeofence(...args: any[]): Promise<Geofence> {
+		const [ctx, geofenceId, options] = resolveStaticArgs<GeofenceId>(args);
+
+		return new GeoClass(ctx).getGeofence(geofenceId, options);
+	}
+
+	static listGeofences(options?: ListGeofenceOptions): Promise<ListGeofenceResults>;
+	static listGeofences(ctx: AmplifyContext, options?: ListGeofenceOptions): Promise<ListGeofenceResults>;
+	static listGeofences(...args: any[]): Promise<ListGeofenceResults> {
+		const [ctx, options] = resolveStaticArgs<ListGeofenceOptions | undefined>(args);
+
+		return new GeoClass(ctx).listGeofences(options);
+	}
+
+	static deleteGeofences(geofenceIds: string | string[], options?: GeofenceOptions): Promise<DeleteGeofencesResults>;
+	static deleteGeofences(ctx: AmplifyContext, geofenceIds: string | string[], options?: GeofenceOptions): Promise<DeleteGeofencesResults>;
+	static deleteGeofences(...args: any[]): Promise<DeleteGeofencesResults> {
+		const [ctx, geofenceIds, options] = resolveStaticArgs<string | string[]>(args);
+
+		return new GeoClass(ctx).deleteGeofences(geofenceIds, options);
+	}
 }
 
+/**
+ * Helper to resolve optional leading AmplifyContext from static method args.
+ * Returns [ctx, firstArg, secondArg] where ctx falls back to getActiveContext().
+ */
+function resolveStaticArgs<T>(args: any[]): [AmplifyContext, T, any] {
+	const [ctx, remaining] = resolveCtxArgs<T>(args);
+
+	// If ctx was extracted from args[0], the "remaining" is args[1] and args[2] is the third arg.
+	// If ctx was resolved from global, "remaining" is args[0] and args[1] is the second arg.
+	const hasExplicitCtx = isAmplifyContext(args[0]);
+	const thirdArg = hasExplicitCtx ? args[2] : args[1];
+
+	return [ctx, remaining, thirdArg];
+}

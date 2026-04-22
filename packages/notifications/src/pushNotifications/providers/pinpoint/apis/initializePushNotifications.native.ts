@@ -4,7 +4,7 @@
 import { AmplifyContext } from '@aws-amplify/core';
 
 import { ConsoleLogger } from '@aws-amplify/core';
-import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
+import { PushNotificationAction, resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
 
@@ -42,7 +42,10 @@ const logger = new ConsoleLogger('Notifications.PushNotification');
 
 const BACKGROUND_TASK_TIMEOUT = 25; // seconds
 
-export const initializePushNotifications = (ctx: AmplifyContext): void => {
+export function initializePushNotifications(): void;
+export function initializePushNotifications(ctx: AmplifyContext): void;
+export function initializePushNotifications(...args: any[]): void {
+	const [ctx] = resolveCtxArgs<undefined>(args);
 	if (isInitialized()) {
 		logger.info('Push notifications have already been enabled');
 
@@ -51,7 +54,7 @@ export const initializePushNotifications = (ctx: AmplifyContext): void => {
 	addNativeListeners(ctx);
 	addAnalyticsListeners(ctx);
 	initialize();
-};
+}
 
 const addNativeListeners = (ctx: AmplifyContext): void => {
 	let launchNotificationOpenedListener:

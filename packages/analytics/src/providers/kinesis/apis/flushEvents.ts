@@ -1,9 +1,11 @@
-import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
+import {
+	AnalyticsAction,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 
 import { resolveConfig } from '../utils/resolveConfig';
 import {
@@ -21,7 +23,10 @@ const logger = new ConsoleLogger('Kinesis');
  * This API will make a best-effort attempt to flush events from the buffer. Events recorded immediately after invoking
  * this API may not be included in the flush.
  */
-export const flushEvents = (ctx: AmplifyContext) => {
+export function flushEvents(): void;
+export function flushEvents(ctx: AmplifyContext): void;
+export function flushEvents(...args: any[]): void {
+	const [ctx] = resolveCtxArgs<undefined>(args);
 	const { region, flushSize, flushInterval, bufferSize, resendLimit } =
 		resolveConfig(ctx);
 	resolveCredentials(ctx)
@@ -41,4 +46,4 @@ export const flushEvents = (ctx: AmplifyContext) => {
 		.catch(e => {
 			logger.warn('Failed to flush events.', e);
 		});
-};
+}

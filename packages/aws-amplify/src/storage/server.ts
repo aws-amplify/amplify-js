@@ -17,4 +17,53 @@
  * getUrl(ctx, { path: "photo.jpg" });
  * ```
  */
-export * from '.';
+
+export {
+	uploadData,
+	downloadData,
+	remove,
+	list,
+	getProperties,
+	copy,
+	getUrl,
+	isCancelError,
+	StorageError,
+	DEFAULT_PART_SIZE,
+} from '@aws-amplify/storage';
+
+export type {
+	UploadDataInput,
+	UploadDataWithPathInput,
+	DownloadDataInput,
+	DownloadDataWithPathInput,
+	RemoveInput,
+	RemoveOperation,
+	RemoveWithPathInput,
+	ListAllInput,
+	ListAllWithPathInput,
+	ListPaginateInput,
+	ListPaginateWithPathInput,
+	GetPropertiesInput,
+	GetPropertiesWithPathInput,
+	CopyInput,
+	CopyWithPathInput,
+	GetUrlInput,
+	GetUrlWithPathInput,
+	UploadDataOutput,
+	UploadDataWithPathOutput,
+	DownloadDataOutput,
+	DownloadDataWithPathOutput,
+	RemoveOutput,
+	RemoveWithPathOutput,
+	ListAllOutput,
+	ListAllWithPathOutput,
+	ListPaginateOutput,
+	ListPaginateWithPathOutput,
+	GetPropertiesOutput,
+	GetPropertiesWithPathOutput,
+	CopyOutput,
+	CopyWithPathOutput,
+	GetUrlOutput,
+	GetUrlWithPathOutput,
+	TransferProgressEvent,
+} from '@aws-amplify/storage';

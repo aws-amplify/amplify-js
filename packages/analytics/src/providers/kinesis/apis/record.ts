@@ -1,10 +1,12 @@
-import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
+import {
+	AnalyticsAction,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 import { fromUtf8 } from '@smithy/util-utf8';
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 import { RecordInput } from '../types';
 import { getEventBuffer } from '../utils/getEventBuffer';
@@ -39,11 +41,12 @@ const logger = new ConsoleLogger('Kinesis');
  *
  * @returns void
  */
-export const record = (ctx: AmplifyContext, {
-	streamName,
-	partitionKey,
-	data,
-}: RecordInput): void => {
+export function record(input: RecordInput): void;
+export function record(ctx: AmplifyContext, input: RecordInput): void;
+export function record(...args: any[]): void {
+	const [ctx, input] = resolveCtxArgs<RecordInput>(args);
+	const { streamName, partitionKey, data } = input;
+
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
 
@@ -80,4 +83,4 @@ export const record = (ctx: AmplifyContext, {
 			// An error occured while fetching credentials or persisting the event to the buffer
 			logger.warn('Failed to record event.', e);
 		});
-};
+}
