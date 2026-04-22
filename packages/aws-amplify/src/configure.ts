@@ -4,14 +4,14 @@
 import {
 	AMPLIFY_CONTEXT_BRAND,
 	AmplifyContext,
+	CookieStorage,
 	LibraryOptions,
 	ResourcesConfig,
+	defaultStorage,
 } from '@aws-amplify/core';
 import {
 	AmplifyOutputsUnknown,
 	AuthClass,
-	InMemoryStorage,
-	KeyValueStorage,
 	LegacyConfig,
 	parseAmplifyConfig,
 } from '@aws-amplify/core/internals/utils';
@@ -22,11 +22,16 @@ import {
 } from './adapter-core/authProvidersFactories/cognito';
 
 /**
- * Creates an isolated {@link AmplifyContext} from the given resource configuration.
+ * Creates a local {@link AmplifyContext} from the given resource configuration.
  *
- * The returned context is **not** stored globally — it does not affect
- * `Amplify.configure()` state and does not dispatch Hub events. Use this for
- * server-side rendering or testing where you need an isolated context.
+ * Unlike `Amplify.configure()`, the returned context is **not** set as the
+ * global context and no Hub events are dispatched. Category APIs that receive
+ * this context will use it instead of the global one.
+ *
+ * Storage behaviour matches `Amplify.configure()`: tokens are persisted to
+ * `localStorage` by default, or to cookies when `{ ssr: true }` is set.
+ * Multiple contexts that share the same Auth configuration will share the
+ * same underlying token storage.
  *
  * @example
  * ```ts
@@ -87,8 +92,12 @@ function resolveLocalLibraryOptions(
 		return libraryOptions;
 	}
 
-	// Create fresh providers with isolated in-memory storage
-	const keyValueStorage = new KeyValueStorage(new InMemoryStorage());
+	// Resolve storage based on SSR option:
+	// - ssr: true  → CookieStorage (shared between client and server)
+	// - ssr: false  → defaultStorage (localStorage with server-safe fallback)
+	const keyValueStorage = libraryOptions?.ssr
+		? new CookieStorage({ sameSite: 'lax' })
+		: defaultStorage;
 	const tokenProvider = createUserPoolsTokenProvider(
 		resourceConfig.Auth,
 		keyValueStorage,
