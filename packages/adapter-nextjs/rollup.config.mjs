@@ -18,13 +18,13 @@ const config = defineConfig([
 	{
 		input: input,
 		output: cjsOutput,
-		plugins: [typescript(cjsTSOptions)],
+		plugins: [typescript({ ...cjsTSOptions, noEmitOnError: false })],
 	},
 	// ESM config
 	{
 		input: input,
 		output: esmOutput,
-		plugins: [typescript(esmTSOptions)],
+		plugins: [typescript({ ...esmTSOptions, noEmitOnError: false })],
 	},
 ]);
 

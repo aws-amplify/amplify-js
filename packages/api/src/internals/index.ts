@@ -11,6 +11,7 @@ export {
 } from '@aws-amplify/api-graphql';
 export {
 	generateClient,
+	generateClientWithAmplifyInstance,
 	CommonPublicClientOptions,
 	DefaultCommonClientOptions,
 } from '@aws-amplify/api-graphql/internals';

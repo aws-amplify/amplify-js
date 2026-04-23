@@ -8,3 +8,13 @@ export {
 export { graphql, cancel, isCancelError } from './v6';
 export { generateClient } from './generateClient';
 export { CommonPublicClientOptions, DefaultCommonClientOptions } from './types';
+
+import { generateClient as _generateClient } from './generateClient';
+
+/** @deprecated Use generateClient instead. */
+export function generateClientWithAmplifyInstance<
+	T extends Record<any, any> = never,
+	ClientType = any,
+>(...args: any[]): ClientType {
+	return (_generateClient as any)(...args);
+}

@@ -6,6 +6,7 @@ export {
 	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 	generateClient,
+	generateClientWithAmplifyInstance,
 	CommonPublicClientOptions,
 	DefaultCommonClientOptions,
 } from '@aws-amplify/api/internals';
