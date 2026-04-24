@@ -23,8 +23,6 @@ export const parser = {
 			tagValueProcessor: (_, val) =>
 				val.trim() === '' && val.includes('\n') ? '' : undefined,
 		});
-		xmlParser.addEntity('#xD', '\r');
-		xmlParser.addEntity('#10', '\n');
 		const parsedObj: any = xmlParser.parse(xmlStr);
 		const textNodeName = '#text';
 		const key = Object.keys(parsedObj)[0];

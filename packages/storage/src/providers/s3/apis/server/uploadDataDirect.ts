@@ -5,89 +5,36 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
 	ServerUploadDataOutput,
 	ServerUploadDataTask,
 	ServerUploadDataWithPathInput,
 } from '../../types';
-import { putObject } from '../../utils/client/s3data';
-import {
-	resolveS3ConfigAndInput,
-	validateStorageOperationInput,
-} from '../../utils';
-import { getStorageUserAgentValue } from '../../utils/userAgent';
-import { STORAGE_INPUT_KEY } from '../../utils/constants';
+import { uploadData as uploadDataInternal } from '../internal/uploadData';
+import { byteLength } from '../internal/uploadData/byteLength';
+import { DEFAULT_PART_SIZE } from '../../utils/constants';
 
 export function uploadDataDirect(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: ServerUploadDataWithPathInput,
 ): ServerUploadDataTask {
-	const abortController = new AbortController();
+	const amplify = getAmplifyServerContext(contextSpec).amplify;
+	const size = byteLength(input.data);
+	const isMultipart = size !== undefined && size > DEFAULT_PART_SIZE;
 
-	const result = (async (): Promise<ServerUploadDataOutput> => {
-		const { amplify } = getAmplifyServerContext(contextSpec);
-		const { data, options } = input;
+	console.log(`[uploadDataDirect v4] ${isMultipart ? 'MULTIPART' : 'SINGLE'} upload for: ${input.path} (${size} bytes)`);
 
-		const { s3Config, bucket, keyPrefix, identityId } =
-			await resolveS3ConfigAndInput(amplify, input as any);
-		const { inputType, objectKey } = validateStorageOperationInput(
-			input as any,
-			identityId,
-		);
-
-		const finalKey =
-			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
-
-		const contentType =
-			options?.contentType ??
-			(data instanceof Blob ? data.type : undefined) ??
-			'application/octet-stream';
-
-		const body =
-			data instanceof ArrayBuffer || ArrayBuffer.isView(data)
-				? data
-				: data instanceof Blob
-					? data
-					: typeof data === 'string'
-						? data
-						: undefined;
-
-		if (body === undefined) {
-			throw new Error(
-				'Unsupported data type. Supported types: string, Blob, ArrayBuffer, ArrayBufferView.',
-			);
-		}
-
-		const { ETag: eTag } = await putObject(
-			{
-				...s3Config,
-				abortSignal: abortController.signal,
-				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData),
-			},
-			{
-				Bucket: bucket,
-				Key: finalKey,
-				Body: body,
-				ContentType: contentType,
-				Metadata: options?.metadata,
-			},
-		);
-
-		return {
-			path: input.path,
-			eTag,
-			contentType,
-			metadata: options?.metadata,
-			size: data instanceof Blob ? data.size : undefined,
-		};
-	})();
+	const task = uploadDataInternal(amplify, input as any);
 
 	return {
-		result,
-		cancel: () => {
-			abortController.abort();
-		},
+		result: task.result.then(res => ({
+			path: input.path,
+			eTag: res.eTag,
+			contentType: res.contentType,
+			metadata: res.metadata,
+			size: undefined,
+		})),
+		cancel: () => task.cancel(),
 	};
 }

@@ -18,6 +18,7 @@ export function uploadData(
 	const abortController = new AbortController();
 
 	const result = (async (): Promise<ServerUploadDataOutput> => {
+		console.log('[uploadData v2] presigned URL approach - starting upload for:', input.path);
 		const { options, data, ...restInput } = input;
 
 		const urlOptions = {
