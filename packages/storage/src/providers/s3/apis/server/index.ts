@@ -8,8 +8,10 @@ export { remove } from './remove';
 export { copy } from './copy';
 export { uploadData } from './uploadData';
 export { uploadDataDirect } from './uploadDataDirect';
+export { uploadStream } from './uploadStream';
 export type {
 	ServerUploadDataWithPathInput,
 	ServerUploadDataOutput,
 	ServerUploadDataTask,
 } from '../../types';
+export type { ServerUploadStreamInput } from './uploadStream';
