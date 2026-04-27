@@ -20,6 +20,7 @@ import {
 } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
+import { calculateContentCRC32 } from '../../utils/crc32';
 
 const DEFAULT_PART_SIZE = 25 * 1024 * 1024; // 25MB
 const MAX_PART_SIZE = 500 * 1024 * 1024; // 500MB
@@ -97,6 +98,7 @@ export function uploadStream(
 			): Promise<void> => {
 				if (aborted) return;
 				const partStart = Date.now();
+				const checksumCRC32 = await calculateContentCRC32(chunk);
 				const { ETag } = await uploadPart(
 					{
 						...s3Config,
@@ -110,6 +112,7 @@ export function uploadStream(
 						UploadId,
 						PartNumber: pn,
 						Body: chunk,
+						ChecksumCRC32: checksumCRC32,
 					},
 				);
 				completedParts.push({ PartNumber: pn, ETag: ETag! });
