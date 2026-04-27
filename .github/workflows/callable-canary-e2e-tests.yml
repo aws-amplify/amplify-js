@@ -53,15 +53,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # Minimal depth 2 so we can checkout the commit before possible merge commit.
           fetch-depth: 2
           path: amplify-js
-      - name: Setup Node.js 18
-        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0 https://github.com/actions/setup-node/commit/64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 18.20.2
+          node-version: 24
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
 
@@ -138,7 +138,7 @@ jobs:
         working-directory: amplify-js-samples-staging
         shell: bash
       - name: Upload artifact
-        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: failure()
         with:
           name: ${{ inputs.test_name }}
