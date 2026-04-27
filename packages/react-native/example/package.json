@@ -33,5 +33,11 @@
 			"**/react-native",
 			"**/react-native/**"
 		]
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/react-native/example"
 	}
 }

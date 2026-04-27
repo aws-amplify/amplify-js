@@ -4,5 +4,11 @@
 	"react-native": "../dist/cjs/utils/index.js",
 	"browser": "../dist/esm/utils/index.mjs",
 	"module": "../dist/esm/utils/index.mjs",
-	"typings": "../dist/esm/utils/index.d.ts"
+	"typings": "../dist/esm/utils/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/utils"
+	}
 }

@@ -3,5 +3,11 @@
 	"types": "../dist/esm/providers/cognito/utils/oauth/enableOAuthListener.d.ts",
 	"main": "../dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js",
 	"module": "../dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs",
-	"sideEffects": true
+	"sideEffects": true,
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/auth/enable-oauth-listener"
+	}
 }

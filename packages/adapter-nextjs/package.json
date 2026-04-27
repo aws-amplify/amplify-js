@@ -67,5 +67,10 @@
 		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/adapter-nextjs"
 	}
 }

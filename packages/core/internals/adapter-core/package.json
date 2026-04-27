@@ -3,5 +3,11 @@
 	"types": "../../dist/esm/adapterCore/index.d.ts",
 	"main": "../../dist/cjs/adapterCore/index.js",
 	"module": "../../dist/esm/adapterCore/index.mjs",
-	"sideEffects": false
+	"sideEffects": false,
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/core/internals/adapter-core"
+	}
 }

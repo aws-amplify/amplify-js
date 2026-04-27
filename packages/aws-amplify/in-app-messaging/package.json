@@ -4,5 +4,11 @@
 	"react-native": "../dist/cjs/in-app-messaging/index.js",
 	"browser": "../dist/esm/in-app-messaging/index.mjs",
 	"module": "../dist/esm/in-app-messaging/index.mjs",
-	"typings": "../dist/esm/in-app-messaging/index.d.ts"
+	"typings": "../dist/esm/in-app-messaging/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/in-app-messaging"
+	}
 }

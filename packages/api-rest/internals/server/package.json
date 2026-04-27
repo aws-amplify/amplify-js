@@ -3,5 +3,11 @@
 	"types": "../../dist/esm/internals/server.d.ts",
 	"main": "../../dist/cjs/internals/server.js",
 	"module": "../../dist/esm/internals/server.mjs",
-	"sideEffects": false
+	"sideEffects": false,
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/api-rest/internals/server"
+	}
 }

@@ -4,5 +4,11 @@
 	"browser": "../dist/esm/providers/personalize/index.mjs",
 	"module": "../dist/esm/providers/personalize/index.mjs",
 	"react-native": "../dist/cjs/providers/personalize/index.js",
-	"typings": "../dist/esm/providers/personalize/index.d.ts"
+	"typings": "../dist/esm/providers/personalize/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/analytics/personalize"
+	}
 }

@@ -4,5 +4,11 @@
 	"browser": "../../dist/esm/pushNotifications/providers/pinpoint/index.mjs",
 	"module": "../../dist/esm/pushNotifications/providers/pinpoint/index.mjs",
 	"react-native": "../../dist/cjs/pushNotifications/providers/pinpoint/index.js",
-	"typings": "../../dist/esm/pushNotifications/providers/pinpoint/index.d.ts"
+	"typings": "../../dist/esm/pushNotifications/providers/pinpoint/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/notifications/push-notifications/pinpoint"
+	}
 }

@@ -3,5 +3,11 @@
 	"types": "../../dist/esm/libraryUtils.d.ts",
 	"main": "../../dist/cjs/libraryUtils.js",
 	"module": "../../dist/esm/libraryUtils.mjs",
-	"react-native": "../../dist/cjs/libraryUtils.js"
+	"react-native": "../../dist/cjs/libraryUtils.js",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/core/internals/utils"
+	}
 }

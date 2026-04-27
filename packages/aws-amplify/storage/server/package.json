@@ -3,5 +3,11 @@
 	"main": "../../dist/cjs/storage/server.js",
 	"browser": "../../dist/esm/storage/server.mjs",
 	"module": "../../dist/esm/storage/server.mjs",
-	"typings": "../../dist/esm/storage/server.d.ts"
+	"typings": "../../dist/esm/storage/server.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/storage/server"
+	}
 }

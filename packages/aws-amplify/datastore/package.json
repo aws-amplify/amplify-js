@@ -4,5 +4,11 @@
 	"react-native": "../dist/cjs/datastore/index.js",
 	"browser": "../dist/esm/datastore/index.mjs",
 	"module": "../dist/esm/datastore/index.mjs",
-	"typings": "../dist/esm/datastore/index.d.ts"
+	"typings": "../dist/esm/datastore/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/datastore"
+	}
 }

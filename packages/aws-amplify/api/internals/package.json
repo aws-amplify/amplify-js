@@ -3,5 +3,11 @@
 	"main": "../../dist/cjs/api/internals.js",
 	"browser": "../../dist/esm/api/internals.mjs",
 	"module": "../../dist/esm/api/internals.mjs",
-	"typings": "../../dist/esm/api/internals.d.ts"
+	"typings": "../../dist/esm/api/internals.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/api/internals"
+	}
 }

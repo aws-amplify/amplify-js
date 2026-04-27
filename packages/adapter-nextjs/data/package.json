@@ -3,5 +3,11 @@
 	"main": "../dist/cjs/api/index.js",
 	"browser": "../dist/esm/api/index.mjs",
 	"module": "../dist/esm/api/index.mjs",
-	"typings": "../dist/esm/api/index.d.ts"
+	"typings": "../dist/esm/api/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/adapter-nextjs/data"
+	}
 }

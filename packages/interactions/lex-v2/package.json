@@ -4,5 +4,11 @@
 	"browser": "../dist/esm/lex-v2/index.mjs",
 	"module": "../dist/esm/lex-v2/index.mjs",
 	"react-native": "../dist/cjs/lex-v2/index.js",
-	"typings": "../dist/esm/lex-v2/index.d.ts"
+	"typings": "../dist/esm/lex-v2/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/interactions/lex-v2"
+	}
 }

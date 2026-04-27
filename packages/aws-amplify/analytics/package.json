@@ -4,5 +4,11 @@
 	"react-native": "../dist/cjs/analytics/index.js",
 	"browser": "../dist/esm/analytics/index.mjs",
 	"module": "../dist/esm/analytics/index.mjs",
-	"typings": "../dist/esm/analytics/index.d.ts"
+	"typings": "../dist/esm/analytics/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/analytics"
+	}
 }

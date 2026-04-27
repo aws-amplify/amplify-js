@@ -4,5 +4,11 @@
 	"main": "../../../dist/cjs/awsClients/pinpoint/index.js",
 	"module": "../../../dist/esm/awsClients/pinpoint/index.mjs",
 	"react-native": "../../../dist/cjs/awsClients/pinpoint/index.js",
-	"sideEffects": false
+	"sideEffects": false,
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/core/internals/aws-clients/pinpoint"
+	}
 }

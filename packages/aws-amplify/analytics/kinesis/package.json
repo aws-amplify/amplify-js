@@ -4,5 +4,11 @@
 	"react-native": "../../dist/cjs/analytics/kinesis/index.js",
 	"browser": "../../dist/esm/analytics/kinesis/index.mjs",
 	"module": "../../dist/esm/analytics/kinesis/index.mjs",
-	"typings": "../../dist/esm/analytics/kinesis/index.d.ts"
+	"typings": "../../dist/esm/analytics/kinesis/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/analytics/kinesis"
+	}
 }

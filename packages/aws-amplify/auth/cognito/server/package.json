@@ -3,5 +3,11 @@
 	"main": "../../../dist/cjs/auth/cognito/server/index.js",
 	"browser": "../../../dist/esm/auth/cognito/server/index.mjs",
 	"module": "../../../dist/esm/auth/cognito/server/index.mjs",
-	"typings": "../../../dist/esm/auth/cognito/server/index.d.ts"
+	"typings": "../../../dist/esm/auth/cognito/server/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/auth/cognito/server"
+	}
 }

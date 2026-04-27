@@ -4,5 +4,11 @@
 	"react-native": "../../dist/cjs/analytics/pinpoint/index.js",
 	"browser": "../../dist/esm/analytics/pinpoint/index.mjs",
 	"module": "../../dist/esm/analytics/pinpoint/index.mjs",
-	"typings": "../../dist/esm/analytics/pinpoint/index.d.ts"
+	"typings": "../../dist/esm/analytics/pinpoint/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/analytics/pinpoint"
+	}
 }

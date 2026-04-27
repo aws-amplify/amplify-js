@@ -4,5 +4,11 @@
 	"react-native": "../../dist/cjs/auth/cognito/index.js",
 	"browser": "../../dist/esm/auth/cognito/index.mjs",
 	"module": "../../dist/esm/auth/cognito/index.mjs",
-	"typings": "../../dist/esm/auth/cognito/index.d.ts"
+	"typings": "../../dist/esm/auth/cognito/index.d.ts",
+	"homepage": "https://aws-amplify.github.io/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/aws-amplify/auth/cognito"
+	}
 }
