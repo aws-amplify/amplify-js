@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { amplifyUuid } from '@aws-amplify/core/internals/utils';
-import { lexProvider } from '../../../src/lex-v2/AWSLexV2Provider';
+import { v4 as uuid } from 'uuid';
+import { Amplify } from '@aws-amplify/core';
+import { createLexV2Provider } from '../../../src/lex-v2/AWSLexV2Provider';
 import { onComplete } from '../../../src/lex-v2/apis';
 import { generateRandomLexV2Config } from '../../testUtils/randomConfigGeneration';
 import { resolveBotConfig } from '../../../src/lex-v2/utils';
@@ -14,24 +15,33 @@ jest.mock('../../../src/lex-v2/utils');
 describe('Interactions LexV2 API: onComplete', () => {
 	const v2BotConfig = generateRandomLexV2Config();
 
-	const mockLexProvider = lexProvider.onComplete as jest.Mock;
+	const mockOnComplete = jest.fn();
+	const mockCreateLexV2Provider = createLexV2Provider as jest.Mock;
 	const mockResolveBotConfig = resolveBotConfig as jest.Mock;
+
+	beforeAll(() => {
+		Amplify.configure({});
+	});
 
 	beforeEach(() => {
 		mockResolveBotConfig.mockReturnValue(v2BotConfig);
+		mockCreateLexV2Provider.mockReturnValue({
+			onComplete: mockOnComplete,
+		});
 	});
 
 	afterEach(() => {
-		mockLexProvider.mockReset();
+		mockOnComplete.mockReset();
+		mockCreateLexV2Provider.mockReset();
 		mockResolveBotConfig.mockReset();
 	});
 
 	it('invokes provider onComplete API', () => {
-		const message = amplifyUuid();
+		const message = uuid();
 		const mockCallback = jest.fn();
 		onComplete({ botName: v2BotConfig.name, callback: mockCallback });
-		expect(mockLexProvider).toHaveBeenCalledTimes(1);
-		expect(mockLexProvider).toHaveBeenCalledWith(v2BotConfig, mockCallback);
+		expect(mockOnComplete).toHaveBeenCalledTimes(1);
+		expect(mockOnComplete).toHaveBeenCalledWith(v2BotConfig, mockCallback);
 	});
 
 	it('rejects when bot config does not exist', async () => {

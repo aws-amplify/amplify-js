@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { fetchAuthSession } from '@aws-amplify/core';
+import { AMPLIFY_CONTEXT_BRAND, AmplifyContext } from '@aws-amplify/core';
 import {
 	IntentState,
 	LexRuntimeV2Client,
@@ -10,10 +10,8 @@ import {
 } from '@aws-sdk/client-lex-runtime-v2';
 import { gzip, strToU8 } from 'fflate';
 import { encode } from 'base-64';
-import { lexProvider } from '../../src/lex-v2/AWSLexV2Provider';
-import { amplifyUuid } from '@aws-amplify/core/internals/utils';
-
-jest.mock('@aws-amplify/core');
+import { v4 as uuid } from 'uuid';
+import { createLexV2Provider } from '../../src/lex-v2/AWSLexV2Provider';
 
 (global as any).Response = class Response {
 	arrayBuffer(blob: Blob) {
@@ -46,7 +44,19 @@ const credentials = {
 	identityId: 'identity-id',
 };
 
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockFetchAuthSession = jest.fn();
+
+const createMockCtx = (): AmplifyContext => {
+	const ctx = {
+		[AMPLIFY_CONTEXT_BRAND]: true,
+		resourcesConfig: {},
+		libraryOptions: {},
+		fetchAuthSession: mockFetchAuthSession,
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	};
+	return ctx as unknown as AmplifyContext;
+};
 
 const arrayBufferToBase64 = (buffer: Uint8Array) => {
 	var binary = '';
@@ -226,7 +236,7 @@ describe('Interactions', () => {
 
 		beforeEach(() => {
 			mockFetchAuthSession.mockReturnValue(credentials);
-			provider = lexProvider;
+			provider = createLexV2Provider(createMockCtx());
 		});
 
 		afterEach(() => mockFetchAuthSession.mockReset());
@@ -377,7 +387,7 @@ describe('Interactions', () => {
 
 		beforeEach(() => {
 			mockFetchAuthSession.mockReturnValue(credentials);
-			provider = lexProvider;
+			provider = createLexV2Provider(createMockCtx());
 		});
 
 		afterEach(() => mockFetchAuthSession.mockReset());
@@ -393,7 +403,7 @@ describe('Interactions', () => {
 	// Test 'reportBotStatus' API
 	describe('reportBotStatus API', () => {
 		jest.useFakeTimers();
-		let provider = lexProvider;
+		let provider = createLexV2Provider(createMockCtx());
 		// enum, action types callback function can handle
 		const ACTION_TYPE = Object.freeze({
 			IN_PROGRESS: 'inProgress',
@@ -467,7 +477,7 @@ describe('Interactions', () => {
 		describe('onComplete callback from `Interactions.onComplete`', () => {
 			test(`In progress, callback shouldn't be called`, async () => {
 				// callback is only called once conversation is completed
-				let config = { ...botConfig.BookTrip, name: amplifyUuid() };
+				let config = { ...botConfig.BookTrip, name: uuid() };
 				const inProgressCallback = mockCallbackProvider(
 					ACTION_TYPE.IN_PROGRESS,
 				);
@@ -484,7 +494,7 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with success resp`, async () => {
-				let config = { ...botConfig.BookTrip, name: amplifyUuid() };
+				let config = { ...botConfig.BookTrip, name: uuid() };
 				const completeSuccessCallback = mockCallbackProvider(
 					ACTION_TYPE.COMPLETE,
 				);
@@ -502,7 +512,7 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with error resp`, async () => {
-				let config = { ...botConfig.BookTrip, name: amplifyUuid() };
+				let config = { ...botConfig.BookTrip, name: uuid() };
 				const completeFailCallback = mockCallbackProvider(ACTION_TYPE.ERROR);
 				provider.onComplete(config, completeFailCallback);
 
