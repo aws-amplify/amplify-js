@@ -19,6 +19,7 @@ import {
 } from '../../../../testUtils/data';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
 import { notifyEventListeners } from '../../../../../src/eventListeners';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
@@ -29,9 +30,11 @@ const mockGetConflictHandler = getConflictHandler as jest.Mock;
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockProcessInAppMessages = processInAppMessages as jest.Mock;
 
+const mockCtx = createMockAmplifyContext();
+
 describe('dispatchEvent', () => {
 	beforeAll(() => {
-		initializeInAppMessaging();
+		initializeInAppMessaging(mockCtx);
 	});
 	beforeEach(() => {
 		mockGetConflictHandler.mockReturnValue(() => inAppMessages[0]);

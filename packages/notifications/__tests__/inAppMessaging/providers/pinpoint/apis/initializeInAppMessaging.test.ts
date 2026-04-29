@@ -9,6 +9,7 @@ import {
 	notifyEventListeners,
 } from '../../../../../src/eventListeners';
 import { initializeInAppMessaging } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/eventListeners');
@@ -17,12 +18,14 @@ jest.mock('@aws-amplify/core/internals/utils');
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockAddEventListener = addEventListener as jest.Mock;
 
+const mockCtx = createMockAmplifyContext();
+
 describe('initializeInAppMessaging', () => {
 	beforeEach(() => {
 		mockNotifyEventListeners.mockClear();
 	});
 	it('will intialize session tracking, analytics listeners and in-app events listeners', async () => {
-		initializeInAppMessaging();
+		initializeInAppMessaging(mockCtx);
 
 		expect(sessionListener.addStateChangeListener).toHaveBeenCalledTimes(1);
 		expect(mockAddEventListener).toHaveBeenNthCalledWith(

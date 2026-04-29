@@ -27,6 +27,7 @@ import {
 	pushToken,
 	simplePushMessage,
 } from '../../../../testUtils/data';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
@@ -51,8 +52,10 @@ const mockCompleteNotification = jest.fn();
 const mockGetConstants = jest.fn();
 const mockRegisterHeadlessTask = jest.fn();
 
+const mockCtx = createMockAmplifyContext();
+
 describe('initializePushNotifications (native)', () => {
-	let initializePushNotifications: () => void;
+	let initializePushNotifications: (...args: any[]) => void;
 	const { NativeEvent } = pushModuleConstants;
 	// create mocks
 	const mockEventListenerRemover = { remove: jest.fn() };
@@ -129,13 +132,13 @@ describe('initializePushNotifications (native)', () => {
 
 	it('only enables once', () => {
 		mockIsInitialized.mockReturnValue(true);
-		initializePushNotifications();
+		initializePushNotifications(mockCtx);
 		expect(mockInitialize).not.toHaveBeenCalled();
 	});
 
 	describe('background notification', () => {
 		it('registers a headless task if able', () => {
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 			expect(mockRegisterHeadlessTask).toHaveBeenCalledWith(
 				expect.any(Function),
 			);
@@ -148,7 +151,7 @@ describe('initializePushNotifications (native)', () => {
 			mockRegisterHeadlessTask.mockImplementation(task => {
 				task(simplePushMessage);
 			});
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 			expect(mockNotifyEventListenersAndAwaitHandlers).toHaveBeenCalledWith(
 				'backgroundMessageReceived',
 				simplePushMessage,
@@ -158,7 +161,7 @@ describe('initializePushNotifications (native)', () => {
 		it('registers and calls background notification listener if unable to register headless task', () => {
 			listenForEvent(NativeEvent.BACKGROUND_MESSAGE_RECEIVED);
 			mockGetConstants.mockReturnValue({ NativeEvent });
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 			expectListenerForEvent(
 				NativeEvent.BACKGROUND_MESSAGE_RECEIVED,
 			).toBeAdded();
@@ -180,7 +183,7 @@ describe('initializePushNotifications (native)', () => {
 				done();
 			});
 			mockGetConstants.mockReturnValue({ NativeEvent });
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 			expectListenerForEvent(
 				NativeEvent.BACKGROUND_MESSAGE_RECEIVED,
 			).toBeAdded();
@@ -195,7 +198,7 @@ describe('initializePushNotifications (native)', () => {
 	describe('launch notification', () => {
 		it('registers and calls launch notification listener if able', () => {
 			listenForEvent(NativeEvent.LAUNCH_NOTIFICATION_OPENED);
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 
 			expectListenerForEvent(
 				NativeEvent.LAUNCH_NOTIFICATION_OPENED,
@@ -214,7 +217,7 @@ describe('initializePushNotifications (native)', () => {
 					LAUNCH_NOTIFICATION_OPENED: undefined,
 				},
 			});
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 
 			expectListenerForEvent(
 				NativeEvent.LAUNCH_NOTIFICATION_OPENED,
@@ -225,7 +228,7 @@ describe('initializePushNotifications (native)', () => {
 
 	it('registers and calls foreground message listener', () => {
 		listenForEvent(NativeEvent.FOREGROUND_MESSAGE_RECEIVED);
-		initializePushNotifications();
+		initializePushNotifications(mockCtx);
 
 		expectListenerForEvent(NativeEvent.FOREGROUND_MESSAGE_RECEIVED).toBeAdded();
 		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
@@ -236,7 +239,7 @@ describe('initializePushNotifications (native)', () => {
 
 	it('registers and calls notification opened listener', () => {
 		listenForEvent(NativeEvent.NOTIFICATION_OPENED);
-		initializePushNotifications();
+		initializePushNotifications(mockCtx);
 
 		expectListenerForEvent(NativeEvent.NOTIFICATION_OPENED).toBeAdded();
 		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
@@ -269,7 +272,7 @@ describe('initializePushNotifications (native)', () => {
 					}
 				},
 			);
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 		});
 
 		it('should not be invoke token received listener with the same token twice', () => {
@@ -282,7 +285,7 @@ describe('initializePushNotifications (native)', () => {
 					handler(pushToken);
 				}
 			});
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 
 			expect(mockNotifyEventListeners).toHaveBeenCalledTimes(1);
 		});
@@ -297,7 +300,7 @@ describe('initializePushNotifications (native)', () => {
 					handler('bar-foo');
 				}
 			});
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 
 			expect(mockNotifyEventListeners).toHaveBeenCalledTimes(2);
 		});
@@ -319,7 +322,7 @@ describe('initializePushNotifications (native)', () => {
 					}
 				},
 			);
-			initializePushNotifications();
+			initializePushNotifications(mockCtx);
 		});
 	});
 });
