@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	getRetryDecider,
 	parseJsonError,
@@ -48,12 +48,8 @@ const mockConfig = {
 };
 const mockParseJsonError = parseJsonError as jest.Mock;
 const mockRestHeaders = jest.fn();
-const mockGetConfig = jest.fn();
-const mockAmplifyInstance = {
-	Auth: {
-		fetchAuthSession: mockFetchAuthSession,
-	},
-	getConfig: mockGetConfig,
+const mockAmplifyInstance: AmplifyContext = {
+	resourcesConfig: mockConfig,
 	libraryOptions: {
 		API: {
 			REST: {
@@ -61,7 +57,10 @@ const mockAmplifyInstance = {
 			},
 		},
 	},
-} as any as AmplifyClassV6;
+	fetchAuthSession: mockFetchAuthSession,
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
 const credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -90,7 +89,6 @@ describe('public APIs', () => {
 		mockSuccessResponse.body.json.mockResolvedValue({ foo: 'bar' });
 		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 		mockUnauthenticatedHandler.mockResolvedValue(mockSuccessResponse);
-		mockGetConfig.mockReturnValue(mockConfig);
 		mockGetRetryDecider.mockReturnValue(mockRetryDeciderResponse);
 	});
 
@@ -491,7 +489,7 @@ describe('public APIs', () => {
 						},
 					},
 				},
-			} as any as AmplifyClassV6;
+			} as unknown as AmplifyContext;
 			mockAuthenticatedHandler.mockImplementation(() => {
 				return new Promise((_resolve, reject) => {
 					setTimeout(() => {
@@ -594,7 +592,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as unknown as AmplifyContext;
 				await fn(mockAmplifyInstanceWithNoRetry, {
 					apiName: 'restApi1',
 					path: 'items',
@@ -629,7 +627,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as unknown as AmplifyContext;
 				await fn(mockAmplifyInstanceWithRetry, {
 					apiName: 'restApi1',
 					path: 'items',
@@ -664,7 +662,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as unknown as AmplifyContext;
 				await fn(mockAmplifyInstanceWithRetry, {
 					apiName: 'restApi1',
 					path: 'items',
@@ -745,7 +743,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as unknown as AmplifyContext;
 
 				mockFetchAuthSession.mockClear();
 
@@ -771,7 +769,7 @@ describe('public APIs', () => {
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				} as unknown as AmplifyContext;
 
 				mockFetchAuthSession.mockClear();
 				mockFetchAuthSession.mockResolvedValue({ credentials });

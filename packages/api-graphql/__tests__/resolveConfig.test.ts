@@ -3,27 +3,26 @@
 
 import { resolveConfig } from '../src/utils';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 describe('GraphQL API Util: resolveConfig', () => {
 	const GraphQLConfig = {
 		endpoint: 'https://test.us-west-2.amazonaws.com/graphql',
 		region: 'us-west-2',
 		apiKey: 'mock-api-key',
-		defaultAuthMode: {
-			type: 'apiKey' as GraphQLAuthMode,
-			apiKey: '0123456789',
-		},
+		defaultAuthMode: 'apiKey' as GraphQLAuthMode,
 	};
 
 	it('returns required config', () => {
-		const amplify = {
-			getConfig: jest.fn(() => {
-				return {
-					API: { GraphQL: GraphQLConfig },
-				};
-			}),
-		} as unknown as AmplifyClassV6;
+		const mockCtx: AmplifyContext = {
+			resourcesConfig: {
+				API: { GraphQL: GraphQLConfig },
+			},
+			libraryOptions: {},
+			fetchAuthSession: jest.fn().mockResolvedValue({}),
+			clearCredentials: jest.fn(),
+			getTokens: jest.fn(),
+		};
 
 		const expected = {
 			...GraphQLConfig,
@@ -31,24 +30,26 @@ describe('GraphQL API Util: resolveConfig', () => {
 			customEndpointRegion: undefined,
 		};
 
-		expect(resolveConfig(amplify)).toStrictEqual(expected);
+		expect(resolveConfig(mockCtx)).toStrictEqual(expected);
 	});
 
 	it('throws if custom endpoint region exists without custom endpoint:', () => {
-		const amplify = {
-			getConfig: jest.fn(() => {
-				return {
-					API: {
-						GraphQL: {
-							...GraphQLConfig,
-							customEndpoint: undefined,
-							customEndpointRegion: 'some-region',
-						},
+		const mockCtx: AmplifyContext = {
+			resourcesConfig: {
+				API: {
+					GraphQL: {
+						...GraphQLConfig,
+						customEndpoint: undefined,
+						customEndpointRegion: 'some-region',
 					},
-				};
-			}),
-		} as unknown as AmplifyClassV6;
+				},
+			},
+			libraryOptions: {},
+			fetchAuthSession: jest.fn().mockResolvedValue({}),
+			clearCredentials: jest.fn(),
+			getTokens: jest.fn(),
+		};
 
-		expect(() => resolveConfig(amplify)).toThrow();
+		expect(() => resolveConfig(mockCtx)).toThrow();
 	});
 });

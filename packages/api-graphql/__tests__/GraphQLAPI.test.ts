@@ -1,7 +1,6 @@
-import * as raw from '../src';
 import { graphql, cancel, isCancelError } from '../src/internals/v6';
 import { Amplify } from 'aws-amplify';
-import { Amplify as AmplifyCore } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import * as typedQueries from './fixtures/with-types/queries';
 import * as typedSubscriptions from './fixtures/with-types/subscriptions';
 import { expectGet } from './utils/expects';
@@ -22,6 +21,27 @@ import { GraphQLApiError } from '../src/utils/errors';
 import { NO_ENDPOINT } from '../src/utils/errors/constants';
 import { GraphQLError } from 'graphql';
 
+import {
+	post as postFn,
+	cancel as cancelRESTFn,
+} from '@aws-amplify/api-rest/internals';
+import { isCancelError as isCancelErrorRESTFn } from '@aws-amplify/api-rest';
+
+jest.mock('@aws-amplify/api-rest/internals');
+jest.mock('@aws-amplify/api-rest', () => {
+	const original = jest.requireActual('@aws-amplify/api-rest');
+	return {
+		...original,
+		isCancelError: jest.fn(),
+	};
+});
+
+const mockRestPost = postFn as jest.Mock;
+const mockCancelREST = cancelRESTFn as jest.Mock;
+const mockIsCancelErrorREST = isCancelErrorRESTFn as jest.MockedFunction<
+	typeof isCancelErrorRESTFn
+>;
+
 const serverManagedFields = {
 	id: 'some-id',
 	owner: 'wirejobviously',
@@ -36,50 +56,66 @@ let mockCredentials: any = {
 	secretAccessKey: 'mock-secret-access-key',
 };
 
-jest.mock('aws-amplify', () => {
-	const originalModule = jest.requireActual('aws-amplify');
-
-	const mockedModule = {
-		...originalModule,
-		Amplify: {
-			...originalModule.Amplify,
-			Auth: {
-				...originalModule.Amplify.Auth,
-				fetchAuthSession: jest.fn(() => {
-					return {
-						tokens: {
-							accessToken: {
-								toString: () => mockAccessToken,
-							},
-						},
-						credentials: mockCredentials,
-					};
-				}),
+const mockFetchAuthSession: jest.Mock = jest.fn().mockImplementation(() =>
+	Promise.resolve({
+		tokens: {
+			accessToken: {
+				toString: () => mockAccessToken,
 			},
 		},
+		credentials: mockCredentials,
+	}),
+);
+
+let mockCtx: AmplifyContext = {
+	resourcesConfig: {},
+	libraryOptions: {},
+	fetchAuthSession: mockFetchAuthSession,
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
+
+/**
+ * Helper to configure the mock AmplifyContext for tests.
+ * Replaces configureMockCtx() calls in tests.
+ */
+function configureMockCtx(
+	config: Record<string, unknown>,
+	libraryOptions?: Record<string, unknown>,
+) {
+	mockCtx = {
+		...mockCtx,
+		resourcesConfig: config as AmplifyContext['resourcesConfig'],
+		libraryOptions: (libraryOptions || {}) as AmplifyContext['libraryOptions'],
 	};
-	return mockedModule;
-});
+	// Also configure real Amplify for any code that reads global context
+	Amplify.configure(config);
+}
 
 const client = {
-	[__amplify]: Amplify,
 	graphql,
 	cancel,
 	isCancelError,
 } as unknown as V6Client;
-
-const mockFetchAuthSession = (Amplify as any).Auth
-	.fetchAuthSession as jest.Mock;
+Object.defineProperty(client, __amplify, {
+	get() {
+		return mockCtx;
+	},
+	enumerable: true,
+});
 
 describe('API test', () => {
 	afterEach(() => {
+		mockRestPost.mockReset();
+		mockCancelREST.mockReset();
+		mockIsCancelErrorREST.mockReset();
 		jest.clearAllMocks();
 		jest.restoreAllMocks();
 	});
 
 	describe('graphql test', () => {
 		test('happy-case-query', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -107,13 +143,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
@@ -131,7 +165,7 @@ describe('API test', () => {
 
 		test('auth-error-case', async () => {
 			expect.assertions(1);
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -168,17 +202,15 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => {
-					return {
-						body: {
-							json: () => ({
-								errors: [err],
-							}),
-						},
-					};
-				});
+			const spy = mockRestPost.mockImplementation(() => {
+				return {
+					body: {
+						json: () => ({
+							errors: [err],
+						}),
+					},
+				};
+			});
 
 			try {
 				const result: GraphQLResult<GetThreadQuery> = await client.graphql({
@@ -200,7 +232,7 @@ describe('API test', () => {
 		});
 
 		test('cancel-graphql-query', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -211,16 +243,14 @@ describe('API test', () => {
 				},
 			});
 
-			jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'cancelREST')
-				.mockReturnValue(true);
+			mockCancelREST.mockReturnValue(true);
 
 			const request = Promise.resolve();
 			expect(client.cancel(request)).toBe(true);
 		});
 
 		test('cancel-graphql-query', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -231,13 +261,9 @@ describe('API test', () => {
 				},
 			});
 
-			jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'cancelREST')
-				.mockReturnValue(true);
+			mockCancelREST.mockReturnValue(true);
 
-			jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'isCancelErrorREST')
-				.mockReturnValue(true);
+			mockIsCancelErrorREST.mockReturnValue(true);
 
 			let promiseToCancel;
 			let isCancelErrorResult;
@@ -256,7 +282,7 @@ describe('API test', () => {
 		});
 
 		test('happy-case-query-oidc', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'oidc',
@@ -283,13 +309,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
@@ -305,9 +329,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -326,7 +349,7 @@ describe('API test', () => {
 		});
 
 		test('happy-case-query-oidc with auth storage federated token', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'oidc',
@@ -353,13 +376,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
@@ -374,9 +395,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -395,7 +415,7 @@ describe('API test', () => {
 		});
 
 		test('happy case query with AWS_LAMBDA', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'lambda',
@@ -422,13 +442,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
@@ -444,9 +462,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -465,7 +482,7 @@ describe('API test', () => {
 		});
 
 		test('additional headers with AWS_LAMBDA', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'lambda',
@@ -492,13 +509,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql(
 				{
@@ -518,9 +533,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -539,7 +553,7 @@ describe('API test', () => {
 		});
 
 		test('multi-auth default case AWS_IAM, using API_KEY as auth mode', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'iam',
@@ -567,13 +581,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
@@ -588,9 +600,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -604,7 +615,7 @@ describe('API test', () => {
 		});
 
 		test('multi-auth default case api-key, using AWS_IAM as auth mode', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -632,13 +643,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
@@ -654,9 +663,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -673,7 +681,7 @@ describe('API test', () => {
 		});
 
 		test('multi-auth default case api-key, using identityPool as auth mode', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -701,13 +709,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
@@ -723,9 +729,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -742,7 +747,7 @@ describe('API test', () => {
 		});
 
 		test('multi-auth default case api-key, using AWS_LAMBDA as auth mode', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -770,13 +775,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
@@ -793,9 +796,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -818,7 +820,7 @@ describe('API test', () => {
 				new Error('mock failing fetchAuthSession() call here.'),
 			);
 
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -846,7 +848,7 @@ describe('API test', () => {
 				},
 			};
 
-			jest.spyOn((raw.GraphQLAPI as any)._api, 'post').mockReturnValue({
+			mockRestPost.mockReturnValue({
 				body: {
 					json: () => graphqlResponse,
 				},
@@ -865,7 +867,7 @@ describe('API test', () => {
 			const prevMockAccessToken = mockAccessToken;
 			mockAccessToken = null;
 
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -891,13 +893,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const graphqlVariables = { id: 'some-id' };
 
@@ -914,7 +914,7 @@ describe('API test', () => {
 		});
 
 		it('AWS_LAMBDA as auth mode, but no auth token specified', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'lambda',
@@ -936,7 +936,7 @@ describe('API test', () => {
 		});
 
 		test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'iam',
@@ -961,7 +961,7 @@ describe('API test', () => {
 			const prevMockCredentials = mockCredentials;
 			mockCredentials = undefined;
 
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -987,7 +987,7 @@ describe('API test', () => {
 		});
 
 		test('multi-auth default case api-key, using CUP as auth mode', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -1015,13 +1015,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
@@ -1036,9 +1034,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -1212,12 +1209,17 @@ describe('API test', () => {
 			 * (in this test case, headers passed via configuration options).
 			 */
 			const optionsClient = {
-				[__amplify]: AmplifyCore,
 				graphql,
 				cancel,
 			} as unknown as V6Client;
+			Object.defineProperty(optionsClient, __amplify, {
+				get() {
+					return mockCtx;
+				},
+				enumerable: true,
+			});
 
-			Amplify.configure(
+			configureMockCtx(
 				{
 					API: {
 						GraphQL: {
@@ -1258,13 +1260,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const additionalHeaders = {
 				someAdditionalHeader: 'foo',
@@ -1286,9 +1286,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -1312,12 +1311,17 @@ describe('API test', () => {
 			 * (in this test case, headers passed via configuration options).
 			 */
 			const optionsClient = {
-				[__amplify]: AmplifyCore,
 				graphql,
 				cancel,
 			} as unknown as V6Client;
+			Object.defineProperty(optionsClient, __amplify, {
+				get() {
+					return mockCtx;
+				},
+				enumerable: true,
+			});
 
-			Amplify.configure(
+			configureMockCtx(
 				{
 					API: {
 						GraphQL: {
@@ -1354,13 +1358,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			const result: GraphQLResult<GetThreadQuery> = await optionsClient.graphql(
 				{
@@ -1377,9 +1379,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -1396,7 +1397,7 @@ describe('API test', () => {
 		test('throws a GraphQLResult with NO_ENDPOINT error when endpoint is not configured', () => {
 			const expectedGraphQLApiError = new GraphQLApiError(NO_ENDPOINT);
 
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -1432,11 +1433,9 @@ describe('API test', () => {
 
 		test('throws a GraphQLResult with NetworkError when the `post()` API throws for network error', () => {
 			const postAPIThrownError = new Error('Network error');
-			jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockRejectedValueOnce(postAPIThrownError);
+			mockRestPost.mockRejectedValueOnce(postAPIThrownError);
 
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'userPool',
@@ -1470,7 +1469,7 @@ describe('API test', () => {
 		});
 
 		test('identityPool alias with query', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -1491,13 +1490,11 @@ describe('API test', () => {
 
 			const spy = jest.spyOn(graphqlAuth, 'headerBasedAuth');
 
-			const spy2 = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const spy2 = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			await client.graphql({
 				query: typedQueries.getThread,
@@ -1507,9 +1504,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				'iam',
 				'FAKE-KEY',
@@ -1518,7 +1514,7 @@ describe('API test', () => {
 		});
 
 		test('identityPool alias with subscription', async () => {
-			Amplify.configure({
+			configureMockCtx({
 				API: {
 					GraphQL: {
 						defaultAuthMode: 'apiKey',
@@ -1537,13 +1533,11 @@ describe('API test', () => {
 
 			const spy = jest.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe');
 
-			const _spy2 = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			const _spy2 = mockRestPost.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			await client.graphql({
 				query: typedSubscriptions.onCreateThread,
@@ -1560,7 +1554,7 @@ describe('API test', () => {
 	});
 
 	test('request level custom headers are applied to query string', async () => {
-		Amplify.configure({
+		configureMockCtx({
 			API: {
 				GraphQL: {
 					defaultAuthMode: 'lambda',
@@ -1615,7 +1609,7 @@ describe('API test', () => {
 		expect(subscribeOptions).toBe(resolvedUrl);
 	});
 	test('graphql method handles INTERNAL_USER_AGENT_OVERRIDE correctly', async () => {
-		Amplify.configure({
+		configureMockCtx({
 			API: {
 				GraphQL: {
 					defaultAuthMode: 'apiKey',
@@ -1631,7 +1625,7 @@ describe('API test', () => {
 				json: () => ({ data: { test: 'result' } }),
 			},
 		});
-		(raw.GraphQLAPI as any)._api.post = mockPost;
+		mockRestPost.mockImplementation(mockPost);
 
 		const graphqlOptions = {
 			query: 'query TestQuery { test }',

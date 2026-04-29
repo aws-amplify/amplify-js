@@ -1,6 +1,8 @@
 export * from './expects';
-import * as raw from '../../src';
 import { Observable, from } from 'rxjs';
+import { post } from '@aws-amplify/api-rest/internals';
+
+const mockPost = post as jest.Mock;
 
 /**
  * For each call against the spy, assuming the spy is a `post()` spy,
@@ -28,7 +30,7 @@ import { Observable, from } from 'rxjs';
  */
 export function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
 	return spy.mock.calls.map((call: any) => {
-		// The 1st param in `call` is an instance of `AmplifyClassV6`
+		// The 1st param in `call` is an instance of `AmplifyContext`
 		// The 2nd param in `call` is the actual `postOptions`
 		const [_, postOptions] = call;
 		const userAgent = postOptions?.options?.headers?.['x-amz-user-agent'];
@@ -36,7 +38,7 @@ export function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
 			const staticUserAgent = userAgent.replace(/\/[\w\d.+-]+/g, '/latest');
 			postOptions.options.headers['x-amz-user-agent'] = staticUserAgent;
 		}
-		// Calling of `post` API with an instance of `AmplifyClassV6` has been
+		// Calling of `post` API with an instance of `AmplifyContext` has been
 		// unit tested in other test suites. To reduce the noise in the generated
 		// snapshot, we hide the details of the instance here.
 		return ['AmplifyClassV6', postOptions];
@@ -50,16 +52,14 @@ export function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
  * @returns
  */
 export function mockApiResponse(value: any) {
-	return jest
-		.spyOn((raw.GraphQLAPI as any)._api, 'post')
-		.mockImplementation(async () => {
-			const result = await value;
-			return {
-				body: {
-					json: () => result,
-				},
-			};
-		});
+	return mockPost.mockImplementation(async () => {
+		const result = await value;
+		return {
+			body: {
+				json: () => result,
+			},
+		};
+	});
 }
 
 /**
@@ -107,6 +107,12 @@ export function makeAppSyncStreams() {
 			});
 		}
 	});
-	(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+	jest
+		.spyOn(
+			require('../../src/Providers/AWSAppSyncRealTimeProvider')
+				.AWSAppSyncRealTimeProvider.prototype,
+			'subscribe',
+		)
+		.mockImplementation(spy);
 	return { streams, spy };
 }

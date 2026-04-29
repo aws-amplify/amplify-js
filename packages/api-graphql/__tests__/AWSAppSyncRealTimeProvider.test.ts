@@ -1,6 +1,6 @@
 import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import { MESSAGE_TYPES } from '../src/Providers/constants';
 import * as constants from '../src/Providers/constants';
 
@@ -13,6 +13,26 @@ import { ConnectionState as CS } from '../src/types/PubSub';
 
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
 import { isCustomDomain } from '../src/Providers/AWSWebSocketProvider/appsyncUrl';
+
+const mockCtx: AmplifyContext = {
+	resourcesConfig: {
+		API: {
+			GraphQL: {
+				endpoint: 'https://test.appsync-api.us-east-1.amazonaws.com/graphql',
+				region: 'us-east-1',
+				defaultAuthMode: 'apiKey',
+				apiKey: 'da2-fakeApiId123456',
+			},
+		},
+	},
+	libraryOptions: {},
+	fetchAuthSession: jest.fn().mockResolvedValue({
+		tokens: { accessToken: { toString: () => 'test' } },
+		credentials: { accessKeyId: 'test', secretAccessKey: 'test' },
+	}),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
 
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
@@ -88,14 +108,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 	describe('getProviderName()', () => {
 		test('returns the provider name', () => {
-			const provider = new AWSAppSyncRealTimeProvider();
+			const provider = new AWSAppSyncRealTimeProvider(mockCtx);
 			expect(provider.getProviderName()).toEqual('AWSAppSyncRealTimeProvider');
 		});
 	});
 
 	describe('subscribe()', () => {
 		test('returns an observable', () => {
-			const provider = new AWSAppSyncRealTimeProvider();
+			const provider = new AWSAppSyncRealTimeProvider(mockCtx);
 			expect(provider.subscribe({})).toBeInstanceOf(Observable);
 		});
 
@@ -127,7 +147,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						});
 
 					fakeWebSocketInterface = new FakeWebSocketInterface();
-					provider = new AWSAppSyncRealTimeProvider();
+					provider = new AWSAppSyncRealTimeProvider(mockCtx);
 
 					// Saving this spy and resetting it by hand causes badness
 					//     Saving it causes new websockets to be reachable across past tests that have not fully closed
@@ -148,9 +168,13 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						value: 100,
 					});
 					// Reduce the keep alive heartbeat to 10ms
-					Object.defineProperty(constants, 'DEFAULT_KEEP_ALIVE_HEARTBEAT_TIMEOUT', {
-						value: 10,
-					});
+					Object.defineProperty(
+						constants,
+						'DEFAULT_KEEP_ALIVE_HEARTBEAT_TIMEOUT',
+						{
+							value: 10,
+						},
+					);
 				});
 
 				afterEach(async () => {
@@ -210,7 +234,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					expect.assertions(2);
 					const mockError = jest.fn();
 
-					const provider = new AWSAppSyncRealTimeProvider();
+					const provider = new AWSAppSyncRealTimeProvider(mockCtx);
 
 					await Promise.resolve(
 						provider.subscribe({}).subscribe({
@@ -995,8 +1019,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				test('unsubscription message should be sent even if unsubscribe immediately', async () => {
 					expect.assertions(1);
 
-					const sendUnsubscriptionMessageSpy = jest
-						.spyOn(provider as any, '_sendUnsubscriptionMessage');
+					const sendUnsubscriptionMessageSpy = jest.spyOn(
+						provider as any,
+						'_sendUnsubscriptionMessage',
+					);
 
 					provider
 						.subscribe({
