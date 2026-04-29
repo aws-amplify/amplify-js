@@ -450,14 +450,12 @@ function jitteredRetrySyncProcessorSetup({
 		const actualInternalAPIModule = jest.requireActual(
 			'@aws-amplify/api/internals',
 		);
-		const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 		return {
 			...actualInternalAPIModule,
-			InternalAPI: {
-				...actualInternalAPIInstance,
+			InternalAPI: () => ({
 				graphql: mockGraphQl,
-			},
+			}),
 		};
 	});
 

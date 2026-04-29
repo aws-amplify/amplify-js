@@ -30,13 +30,10 @@ import {
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { SyncEngine, MutationEvent } from '../src/sync/';
 
-jest.mock('@aws-amplify/api/internals', () => {
-	const apiInternals = jest.requireActual('@aws-amplify/api/internals');
-	apiInternals.InternalAPI._graphqlApi._api.post = mockRestPost;
-	return {
-		...apiInternals,
-	};
-});
+jest.mock('@aws-amplify/api-rest/internals', () => ({
+	...jest.requireActual('@aws-amplify/api-rest/internals'),
+	post: mockRestPost,
+}));
 // mocking jitteredBackoff to prevent it from retrying
 // endlessly in the mutation processor and so that we can expect the thrown result in our test
 // should throw a Network Error
@@ -112,7 +109,6 @@ describe('MutationProcessor', () => {
 	let mutationProcessor: MutationProcessor;
 
 	beforeAll(async () => {
-		mutationProcessor = await instantiateMutationProcessor();
 		const awsconfig = {
 			aws_project_region: 'us-west-2',
 			aws_appsync_graphqlEndpoint:
@@ -123,6 +119,7 @@ describe('MutationProcessor', () => {
 		};
 
 		Amplify.configure(awsconfig);
+		mutationProcessor = await instantiateMutationProcessor();
 	});
 
 	afterEach(() => {
@@ -199,9 +196,8 @@ describe('MutationProcessor', () => {
 			await mutationProcessor.resume();
 			expect(mockRestPost).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				expect.objectContaining({
 					url: new URL(
@@ -232,7 +228,6 @@ describe('error handler', () => {
 
 	beforeEach(async () => {
 		errorHandler.mockClear();
-		mutationProcessor = await instantiateMutationProcessor({ errorHandler });
 		const awsconfig = {
 			aws_project_region: 'us-west-2',
 			aws_appsync_graphqlEndpoint:
@@ -243,6 +238,7 @@ describe('error handler', () => {
 		};
 
 		Amplify.configure(awsconfig);
+		mutationProcessor = await instantiateMutationProcessor({ errorHandler });
 	});
 
 	test('newly required field', async () => {

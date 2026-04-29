@@ -1,4 +1,4 @@
-import { JWT, decodeJWT } from '@aws-amplify/core/internals/utils';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import {
 	InternalSchema,
 	ModelAttributeAuthAllow,
@@ -442,12 +442,12 @@ async function testMultiAuthStrategy({
 	hasAuthenticatedUser: boolean;
 	result: any;
 }) {
-	mockCurrentUser({ hasAuthenticatedUser });
+	const mockCtx = createMockCtx({ hasAuthenticatedUser });
 
 	const multiAuthStrategyWrapper =
 		require('../src/authModeStrategies/multiAuthStrategy').multiAuthStrategy;
 
-	const multiAuthStrategy = multiAuthStrategyWrapper({});
+	const multiAuthStrategy = multiAuthStrategyWrapper(mockCtx);
 
 	const schema = getAuthSchema(authRules);
 
@@ -533,22 +533,20 @@ function getAuthSchema(
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
-function mockCurrentUser({
+function createMockCtx({
 	hasAuthenticatedUser,
 }: {
 	hasAuthenticatedUser: boolean;
 }) {
-	jest.mock('@aws-amplify/core', () => ({
-		async fetchAuthSession(): Promise<{ tokens?: { accessToken: JWT } }> {
-			if (hasAuthenticatedUser) {
-				return {
-					tokens: {
-						accessToken: decodeJWT(mockedAccessToken),
-					},
-				};
-			} else {
-				return {};
-			}
-		},
-	}));
+	return {
+		resourcesConfig: {},
+		libraryOptions: {},
+		fetchAuthSession: jest.fn().mockResolvedValue(
+			hasAuthenticatedUser
+				? { tokens: { accessToken: decodeJWT(mockedAccessToken) } }
+				: {},
+		),
+		clearCredentials: jest.fn().mockResolvedValue(undefined),
+		getTokens: jest.fn().mockResolvedValue(undefined),
+	};
 }
