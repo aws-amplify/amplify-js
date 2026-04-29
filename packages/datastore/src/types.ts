@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { InternalAPIClass } from '@aws-amplify/api/internals';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 import { ModelInstanceCreator } from './datastore/datastore';

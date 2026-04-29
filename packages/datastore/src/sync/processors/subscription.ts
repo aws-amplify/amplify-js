@@ -1,11 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLResult } from '@aws-amplify/api';
-import { InternalAPIClass as InternalAPI } from '@aws-amplify/api/internals';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import {
 	ConsoleLogger,
 	Hub,
 	HubCapsule,
+	getActiveContext,
+	hasGlobalContext,
 } from '@aws-amplify/core';
 import {
 	BackgroundProcessManager,
@@ -88,7 +90,11 @@ class SubscriptionProcessor {
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext = {
-			InternalAPI,
+			InternalAPI: InternalAPI(
+				hasGlobalContext()
+					? getActiveContext()
+					: ({ resourcesConfig: {}, libraryOptions: {} } as any),
+			),
 		},
 	) {}
 
@@ -269,7 +275,9 @@ class SubscriptionProcessor {
 			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials
-					const credentials = (await (this.amplifyContext as any).fetchAuthSession()).tokens?.accessToken;
+					const credentials = (
+						await (this.amplifyContext as any).fetchAuthSession()
+					).tokens?.accessToken;
 					userCredentials = credentials
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;
