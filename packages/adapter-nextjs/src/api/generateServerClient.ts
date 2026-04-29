@@ -102,5 +102,5 @@ export function generateServerClientUsingReqRes<
 	return generateClient<T>({
 		config: amplifyConfig,
 		...params,
-	}) as any;
+	} as any) as any;
 }
