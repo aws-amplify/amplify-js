@@ -3,6 +3,7 @@
 
 import {
 	DownloadTask,
+	NonPausableTransferTask,
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,
 	StorageItemWithKey,
@@ -79,6 +80,24 @@ export type UploadDataOutput = UploadTask<ItemWithKey>;
  *  Output type with path for S3 uploadData API.
  * */
 export type UploadDataWithPathOutput = UploadTask<ItemWithPath>;
+
+/**
+ * Output type for the server-side S3 uploadData API.
+ *
+ * Non-pausable variant of {@link UploadDataOutput}. See {@link uploadData}
+ * server-side API documentation for details.
+ *
+ * @deprecated Use {@link UploadDataServerWithPathOutput} instead.
+ */
+export type UploadDataServerOutput = NonPausableTransferTask<ItemWithKey>;
+/**
+ * Output type with path for the server-side S3 uploadData API.
+ *
+ * Non-pausable variant of {@link UploadDataWithPathOutput}. See
+ * {@link uploadData} server-side API documentation for details.
+ */
+export type UploadDataServerWithPathOutput =
+	NonPausableTransferTask<ItemWithPath>;
 
 /**
  * Output type for S3 getProperties API.

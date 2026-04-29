@@ -8,31 +8,28 @@ import {
 
 import {
 	UploadDataInput,
-	UploadDataOutput,
+	UploadDataServerOutput,
+	UploadDataServerWithPathOutput,
 	UploadDataWithPathInput,
-	UploadDataWithPathOutput,
 } from '../../types';
 import { uploadData as uploadDataInternal } from '../internal/uploadData';
 
 /**
- * Upload data to the specified S3 object path. By default uses single PUT operation to upload if the payload is less than 5MB.
- * Otherwise, uses multipart upload to upload the payload.
+ * Upload data to the specified S3 object path. By default uses a single PUT
+ * operation to upload when the payload is less than 5MB. Otherwise, uses
+ * multipart upload to upload the payload.
  *
- * Server-side uploadData is intended for use in SSR contexts (e.g. Next.js Route Handlers, Server Actions,
- * Nuxt.js server routes). Unlike the client-side counterpart, it does NOT support pause/resume of
- * multipart uploads (pause/resume relies on client-side persistent storage).
- *
- * Limitations:
- * * Maximum object size is 5TB.
- * * Maximum object size if the size cannot be determined before upload is 50GB.
+ * Server-side `uploadData` is intended for use in SSR contexts such as
+ * Next.js Route Handlers and Server Actions.
  *
  * @param contextSpec - The isolated server context.
  * @param input - A `UploadDataWithPathInput` object.
  *
- * @returns A cancelable task exposing the result promise from the `result` property.
+ * @returns An `UploadDataServerWithPathOutput` task. Await the `result`
+ * 	promise to get the upload result.
  *
- * @throws Service: `S3Exception` thrown when checking for existence of the object.
- * @throws Validation: `StorageValidationErrorCode` thrown when a validation error occurs.
+ * @throws An `S3Exception` when the underlying S3 service returned error.
+ * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
  *
  * @example
  * ```ts
@@ -56,34 +53,43 @@ import { uploadData as uploadDataInternal } from '../internal/uploadData';
 export function uploadData(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: UploadDataWithPathInput,
-): UploadDataWithPathOutput;
+): UploadDataServerWithPathOutput;
 
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/upload/#uploaddata | path} instead.
  *
- * Upload data to the specified S3 object key. By default uses single PUT operation to upload if the payload is less than 5MB.
- * Otherwise, uses multipart upload to upload the payload.
+ * Upload data to the specified S3 object key. By default uses a single PUT
+ * operation to upload when the payload is less than 5MB. Otherwise, uses
+ * multipart upload to upload the payload.
+ *
+ * The returned task does NOT support `pause()` / `resume()` server-side. See
+ * the path-based overload above for details.
  *
  * @param contextSpec - The isolated server context.
  * @param input - A `UploadDataInput` object.
  *
- * @returns A cancelable task exposing the result promise from the `result` property.
+ * @returns An `UploadDataServerOutput` task. Await the `result` promise to
+ * 	get the upload result.
  *
- * @throws Service: `S3Exception` thrown when checking for existence of the object.
- * @throws Validation: `StorageValidationErrorCode` thrown when a validation error occurs.
+ * @throws An `S3Exception` when the underlying S3 service returned error.
+ * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
  */
 export function uploadData(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: UploadDataInput,
-): UploadDataOutput;
+): UploadDataServerOutput;
 
 export function uploadData(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: UploadDataInput | UploadDataWithPathInput,
-) {
+): UploadDataServerOutput | UploadDataServerWithPathOutput {
+	// The internal uploadData returns an UploadTask which has pause/resume. On
+	// the server path we intentionally hide pause/resume from the type because
+	// they are not supported across isolated server requests. The runtime
+	// object still exposes them as no-ops (delegated to createUploadTask).
 	return uploadDataInternal(
 		getAmplifyServerContext(contextSpec).amplify,
 		input,
-	);
+	) as UploadDataServerOutput | UploadDataServerWithPathOutput;
 }
