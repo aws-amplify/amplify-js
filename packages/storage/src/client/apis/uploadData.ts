@@ -8,9 +8,8 @@ import {
 	UploadDataOutput,
 	UploadDataWithPathInput,
 	UploadDataWithPathOutput,
-} from '../types';
-
-import { uploadData as uploadDataInternal } from './internal/uploadData';
+} from '../../providers/s3/types';
+import { uploadData as uploadDataInternal } from '../../providers/s3/apis/internal/uploadData';
 
 /**
  * Upload data to the specified S3 object path. By default uses single PUT operation to upload if the payload is less than 5MB.
