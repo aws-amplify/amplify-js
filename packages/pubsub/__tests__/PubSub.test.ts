@@ -20,13 +20,40 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 
-import { Reachability } from '@aws-amplify/core/internals/utils';
+import {
+	AMPLIFY_CONTEXT_BRAND,
+	AmplifyContext,
+} from '@aws-amplify/core';
+import {
+	Reachability,
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 import * as Paho from '../src/vendor/paho-mqtt';
 import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
 import { PubSub as MqttPubSub } from '../src/clients/mqtt';
 import { HubConnectionListener } from './helpers';
 import { Observable, Observer } from 'rxjs';
 import * as constants from '../src/Providers/constants';
+
+const mockGlobalCtx = {
+	[AMPLIFY_CONTEXT_BRAND]: true,
+	resourcesConfig: {},
+	libraryOptions: {},
+	fetchAuthSession: jest.fn().mockResolvedValue({
+		credentials: {
+			accessKeyId: 'accessKeyId',
+			sessionToken: 'sessionToken',
+			secretAccessKey: 'secretAccessKey',
+			identityId: 'identityId',
+			authenticated: true,
+		},
+	}),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+} as unknown as AmplifyContext;
+
+setGlobalContext(mockGlobalCtx);
 
 const pahoClientMockCache = {};
 
