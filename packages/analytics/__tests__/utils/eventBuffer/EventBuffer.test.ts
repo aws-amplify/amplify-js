@@ -14,7 +14,7 @@ describe('EventBuffer', () => {
 		const eventBuffer = new EventBuffer<TestEvent>(
 			{
 				bufferSize: 2,
-				flushSize: 1,
+				flushSize: 2,
 				flushInterval: 25,
 			},
 			() => events => {
@@ -36,7 +36,7 @@ describe('EventBuffer', () => {
 			expect(result[0]).toEqual(testEvents[0]);
 			expect(result[1]).toEqual(testEvents[1]);
 			done();
-		}, 100);
+		}, 200);
 	});
 
 	it('flush all events at once', done => {

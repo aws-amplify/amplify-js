@@ -11,6 +11,10 @@ import {
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
 import { getAnalyticsUserAgentString } from '../../../../src/utils';
+import {
+	setupGlobalContext,
+	teardownGlobalContext,
+} from '../../../testUtils/mockAmplifyContext';
 
 import { config, credentials, identityId } from './testUtils/data';
 
@@ -18,6 +22,12 @@ jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 
 describe('Pinpoint API: flushEvents', () => {
+	beforeAll(() => {
+		setupGlobalContext();
+	});
+	afterAll(() => {
+		teardownGlobalContext();
+	});
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockPinpointFlushEvents = pinpointFlushEvents as jest.Mock;

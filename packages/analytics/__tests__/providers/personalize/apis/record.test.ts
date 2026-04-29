@@ -24,6 +24,14 @@ import {
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/personalize/utils');
 
+const mockCtx = {
+	resourcesConfig: {},
+	libraryOptions: {},
+	fetchAuthSession: jest.fn(),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+} as any;
+
 describe('Analytics Personalize API: record', () => {
 	const mockRecordInput: PersonalizeRecordInput = {
 		eventType: 'eventType0',
@@ -73,7 +81,7 @@ describe('Analytics Personalize API: record', () => {
 	});
 
 	it('append to event buffer if record provided', async () => {
-		record(mockRecordInput);
+		record(mockCtx, mockRecordInput);
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
 		expect(mockAppend).toHaveBeenCalledWith(
@@ -102,7 +110,7 @@ describe('Analytics Personalize API: record', () => {
 				userId: newSession.userId,
 			},
 		};
-		record(updatedMockRecordInput);
+		record(mockCtx, updatedMockRecordInput);
 
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
@@ -133,7 +141,7 @@ describe('Analytics Personalize API: record', () => {
 			...mockRecordInput,
 			userId: newSession.userId,
 		};
-		record(updatedMockRecordInput);
+		record(mockCtx, updatedMockRecordInput);
 
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
@@ -156,7 +164,7 @@ describe('Analytics Personalize API: record', () => {
 			...mockRecordInput,
 			eventType: MEDIA_AUTO_TRACK_EVENT_TYPE,
 		};
-		record(updatedMockRecordInput);
+		record(mockCtx, updatedMockRecordInput);
 
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
@@ -185,7 +193,7 @@ describe('Analytics Personalize API: record', () => {
 		mockGetLength.mockReturnValue(mockPersonalizeConfig.flushSize + 1);
 		mockGetEventBuffer.mockImplementation(() => updatedMockEventBuffer);
 
-		record(mockRecordInput);
+		record(mockCtx, mockRecordInput);
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
 		expect(mockAppend).toHaveBeenCalledWith(
@@ -202,7 +210,7 @@ describe('Analytics Personalize API: record', () => {
 	it('logs an error when credentials can not be fetched', async () => {
 		mockResolveCredentials.mockRejectedValue(new Error('Mock Error'));
 
-		record(mockRecordInput);
+		record(mockCtx, mockRecordInput);
 
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
@@ -213,7 +221,7 @@ describe('Analytics Personalize API: record', () => {
 
 	it('logs and skip the event recoding if Analytics plugin is not enabled', async () => {
 		mockIsAnalyticsEnabled.mockReturnValue(false);
-		record(mockRecordInput);
+		record(mockCtx, mockRecordInput);
 		await new Promise(process.nextTick);
 		expect(loggerDebugSpy).toHaveBeenCalledWith(expect.any(String));
 		expect(mockGetEventBuffer).not.toHaveBeenCalled();

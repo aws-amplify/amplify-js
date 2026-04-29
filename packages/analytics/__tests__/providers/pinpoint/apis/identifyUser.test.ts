@@ -10,12 +10,22 @@ import {
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
 import { getAnalyticsUserAgentString } from '../../../../src/utils/userAgent';
+import {
+	setupGlobalContext,
+	teardownGlobalContext,
+} from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('../../../../src/utils/userAgent');
 
 describe('Analytics Pinpoint Provider API: identifyUser', () => {
+	beforeAll(() => {
+		setupGlobalContext();
+	});
+	afterAll(() => {
+		teardownGlobalContext();
+	});
 	const credentials = {
 		credentials: {
 			accessKeyId: 'access-key-id',

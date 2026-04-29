@@ -12,6 +12,10 @@ import {
 	getAnalyticsUserAgentString,
 	isAnalyticsEnabled,
 } from '../../../../src/utils';
+import {
+	setupGlobalContext,
+	teardownGlobalContext,
+} from '../../../testUtils/mockAmplifyContext';
 
 import {
 	appId,
@@ -28,6 +32,12 @@ jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/pinpoint/utils');
 
 describe('Pinpoint API: record', () => {
+	beforeAll(() => {
+		setupGlobalContext();
+	});
+	afterAll(() => {
+		teardownGlobalContext();
+	});
 	// create spies
 	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
 	// create mocks

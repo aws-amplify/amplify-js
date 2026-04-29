@@ -13,11 +13,21 @@ import {
 	mockKinesisConfig,
 } from '../../../testUtils/mockConstants';
 import { flushEvents } from '../../../../src/providers/kinesis-firehose/apis';
+import {
+	setupGlobalContext,
+	teardownGlobalContext,
+} from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis-firehose/utils');
 
 describe('Analytics Kinesis Firehose API: flushEvents', () => {
+	beforeAll(() => {
+		setupGlobalContext();
+	});
+	afterAll(() => {
+		teardownGlobalContext();
+	});
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;
