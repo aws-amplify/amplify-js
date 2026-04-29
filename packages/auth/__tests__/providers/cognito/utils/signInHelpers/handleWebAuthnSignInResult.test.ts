@@ -14,6 +14,7 @@ import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorCodes } from '../../../../../src/common/AuthErrorStrings';
 import { cacheCognitoTokens } from '../../../../../src/providers/cognito/tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../../../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 import { getIsPasskeySupported } from '../../../../../src/client/utils/passkey/getIsPasskeySupported';
 import {
 	assertCredentialIsPkcWithAuthenticatorAssertionResponse,
@@ -70,6 +71,16 @@ describe('handleWebAuthnSignInResult', () => {
 	const mockAssertCredentialIsPkcWithAuthenticatorAttestationResponse =
 		jest.mocked(assertCredentialIsPkcWithAuthenticatorAttestationResponse);
 
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
 		mockGetIsPasskeySupported.mockReturnValue(true);
@@ -100,7 +111,7 @@ describe('handleWebAuthnSignInResult', () => {
 		});
 		expect.assertions(2);
 		try {
-			await handleWebAuthnSignInResult(challengeParameters);
+			await handleWebAuthnSignInResult(mockCtx, challengeParameters);
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthErrorCodes.SignInException);
@@ -110,7 +121,7 @@ describe('handleWebAuthnSignInResult', () => {
 	it('should throw an error when CREDENTIAL_REQUEST_OPTIONS is empty', async () => {
 		expect.assertions(2);
 		try {
-			await handleWebAuthnSignInResult({});
+			await handleWebAuthnSignInResult(mockCtx, {});
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthErrorCodes.SignInException);
@@ -125,7 +136,7 @@ describe('handleWebAuthnSignInResult', () => {
 		});
 		expect.assertions(2);
 		try {
-			await handleWebAuthnSignInResult(challengeParameters);
+			await handleWebAuthnSignInResult(mockCtx, challengeParameters);
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthErrorCodes.SignInException);
@@ -139,7 +150,7 @@ describe('handleWebAuthnSignInResult', () => {
 			signInSession,
 		});
 		try {
-			await handleWebAuthnSignInResult(challengeParameters);
+			await handleWebAuthnSignInResult(mockCtx, challengeParameters);
 		} catch (error: any) {
 			// __ we don't care about this error
 		}
@@ -173,6 +184,7 @@ describe('handleWebAuthnSignInResult', () => {
 		mockDispatchSignedInHubEvent.mockResolvedValue(undefined);
 
 		const result = (await handleWebAuthnSignInResult(
+			mockCtx,
 			challengeParameters,
 		)) as AuthSignInOutput;
 
@@ -192,7 +204,10 @@ describe('handleWebAuthnSignInResult', () => {
 		mockCacheCognitoTokens.mockResolvedValue(undefined);
 		mockDispatchSignedInHubEvent.mockResolvedValue(undefined);
 
-		const result = (await handleWebAuthnSignInResult(challengeParameters)) as {
+		const result = (await handleWebAuthnSignInResult(
+			mockCtx,
+			challengeParameters,
+		)) as {
 			challengeName: ChallengeName;
 			challengeParameters: ChallengeParameters;
 		};
@@ -216,7 +231,7 @@ describe('handleWebAuthnSignInResult', () => {
 		mockDispatchSignedInHubEvent.mockResolvedValue(undefined);
 
 		await expect(
-			handleWebAuthnSignInResult(challengeParameters),
+			handleWebAuthnSignInResult(mockCtx, challengeParameters),
 		).rejects.toThrow('Sequential WEB_AUTHN challenges returned');
 	});
 });

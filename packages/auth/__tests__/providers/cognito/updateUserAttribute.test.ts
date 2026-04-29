@@ -61,11 +61,16 @@ describe('updateUserAttribute API happy path cases', () => {
 		const result = await updateUserAttribute(mockInput);
 		expect(result).toEqual(mockOutput);
 		expect(mockUpdateUserAttributes).toHaveBeenCalledTimes(1);
-		expect(mockUpdateUserAttributes).toHaveBeenCalledWith({
-			userAttributes: {
-				[mockInput.userAttribute.attributeKey]: mockInput.userAttribute.value,
+		expect(mockUpdateUserAttributes).toHaveBeenCalledWith(
+			expect.objectContaining({
+				resourcesConfig: expect.any(Object),
+			}),
+			{
+				userAttributes: {
+					[mockInput.userAttribute.attributeKey]: mockInput.userAttribute.value,
+				},
+				options: mockInput.options,
 			},
-			options: mockInput.options,
-		});
+		);
 	});
 });

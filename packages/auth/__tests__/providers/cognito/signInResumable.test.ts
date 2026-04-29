@@ -20,7 +20,9 @@ import { authAPITestParams } from './testUtils/authApiTestParams';
 
 const signInStoreImplementation = require('../../../src/client/utils/store/signInStore');
 
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+}));
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),

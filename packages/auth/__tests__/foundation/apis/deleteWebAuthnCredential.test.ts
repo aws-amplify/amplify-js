@@ -6,6 +6,7 @@ import { DeleteWebAuthnCredentialInput } from '../../../src';
 import { setUpGetConfig } from '../../providers/cognito/testUtils/setUpGetConfig';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
 import { deleteWebAuthnCredential } from '../../../src/foundation/apis';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -33,6 +34,20 @@ describe('deleteWebAuthnCredential', () => {
 		createDeleteWebAuthnCredentialClient,
 	);
 
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+	// Override fetchAuthSession to return the mock access token
+	(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+		tokens: { accessToken: decodeJWT(mockAccessToken) },
+	});
+
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
 
@@ -46,7 +61,7 @@ describe('deleteWebAuthnCredential', () => {
 			credentialId: 'dummyId',
 		};
 
-		await deleteWebAuthnCredential(Amplify, input);
+		await deleteWebAuthnCredential(mockCtx, input);
 
 		expect(mockDeleteWebAuthnCredential).toHaveBeenCalledWith(
 			{

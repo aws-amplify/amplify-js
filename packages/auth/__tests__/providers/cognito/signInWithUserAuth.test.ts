@@ -6,6 +6,7 @@ import { AmplifyErrorCode } from '@aws-amplify/core/internals/utils';
 import { signInWithUserAuth } from '../../../src/providers/cognito/apis/signInWithUserAuth';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 import { InitiateAuthCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../src/providers/cognito/utils/signInHelpers', () => ({
 	...jest.requireActual('../../../src/providers/cognito/utils/signInHelpers'),
@@ -54,6 +55,7 @@ describe('signInWithUserAuth API tests', () => {
 	const { handleUserAuthFlow } = jest.requireMock(
 		'../../../src/client/flows/userAuth/handleUserAuthFlow',
 	);
+	const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -69,7 +71,7 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		const result = await signInWithUserAuth({
+		const result = await signInWithUserAuth(mockCtx, {
 			username: 'testuser',
 		});
 
@@ -102,7 +104,7 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		const result = await signInWithUserAuth({
+		const result = await signInWithUserAuth(mockCtx, {
 			username: 'testuser',
 			options: { preferredChallenge: 'EMAIL_OTP' },
 		});
@@ -129,7 +131,7 @@ describe('signInWithUserAuth API tests', () => {
 
 	test('should throw validation error for empty username', async () => {
 		await expect(
-			signInWithUserAuth({
+			signInWithUserAuth(mockCtx, {
 				username: '', // empty username
 			}),
 		).rejects.toThrow('username is required to signIn');
@@ -150,7 +152,7 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		const result = await signInWithUserAuth({
+		const result = await signInWithUserAuth(mockCtx, {
 			username: 'testuser',
 		});
 
@@ -165,7 +167,7 @@ describe('signInWithUserAuth API tests', () => {
 		error.name = 'PasswordResetRequiredException';
 		handleUserAuthFlow.mockRejectedValue(error);
 
-		const result = await signInWithUserAuth({
+		const result = await signInWithUserAuth(mockCtx, {
 			username: 'testuser',
 		});
 
@@ -198,7 +200,10 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		await signInWithUserAuth({
+		const passwordlessCtx = createMockAmplifyContext({
+			Auth: authConfigWithPasswordless,
+		});
+		await signInWithUserAuth(passwordlessCtx, {
 			username: 'testuser',
 		});
 
@@ -241,7 +246,10 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		await signInWithUserAuth({
+		const passwordlessCtx2 = createMockAmplifyContext({
+			Auth: authConfigWithPasswordless,
+		});
+		await signInWithUserAuth(passwordlessCtx2, {
 			username: 'testuser',
 			options: { preferredChallenge: 'SMS_OTP' },
 		});
@@ -267,7 +275,7 @@ describe('signInWithUserAuth API tests', () => {
 		handleUserAuthFlow.mockRejectedValue(error);
 
 		await expect(
-			signInWithUserAuth({
+			signInWithUserAuth(mockCtx, {
 				username: 'testuser',
 			}),
 		).rejects.toThrow(AmplifyErrorCode.Unknown);

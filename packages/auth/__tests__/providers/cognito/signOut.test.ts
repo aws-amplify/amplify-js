@@ -3,11 +3,16 @@
 
 import {
 	Amplify,
+	AmplifyContext,
 	ConsoleLogger,
 	Hub,
 	clearCredentials,
 } from '@aws-amplify/core';
-import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+import {
+	AMPLIFY_SYMBOL,
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
@@ -108,6 +113,32 @@ describe('signOut', () => {
 
 	beforeEach(() => {
 		mockAmplify.getConfig.mockReturnValue({ Auth: { Cognito: cognitoConfig } });
+		const mockCtx: AmplifyContext = {
+			get resourcesConfig() {
+				return mockAmplify.getConfig();
+			},
+			get libraryOptions() {
+				return (mockAmplify as any).libraryOptions ?? {};
+			},
+			fetchAuthSession(...args: any[]) {
+				const core = require('@aws-amplify/core');
+
+				return core.fetchAuthSession(...args);
+			},
+			clearCredentials(...args: any[]) {
+				const core = require('@aws-amplify/core');
+
+				return core.clearCredentials(...args);
+			},
+			getTokens(...args: any[]) {
+				const core = require('@aws-amplify/core');
+
+				return (
+					core.Amplify?.Auth?.getTokens?.(...args) ?? Promise.resolve(undefined)
+				);
+			},
+		};
+		setGlobalContext(mockCtx);
 		mockGlobalSignOut.mockResolvedValue({ $metadata: {} });
 		mockCreateGlobalSignOutClient.mockReturnValueOnce(mockGlobalSignOut);
 		mockRevokeToken.mockResolvedValue({});
@@ -118,6 +149,7 @@ describe('signOut', () => {
 
 	afterEach(() => {
 		mockAmplify.getConfig.mockReset();
+		clearGlobalContext();
 		mockGlobalSignOut.mockReset();
 		mockRevokeToken.mockReset();
 		mockClearCredentials.mockClear();
@@ -276,6 +308,9 @@ describe('signOut', () => {
 				cognitoConfigWithOauth,
 			);
 			expect(mockHandleOAuthSignOut).toHaveBeenCalledWith(
+				expect.objectContaining({
+					resourcesConfig: expect.any(Object),
+				}),
 				cognitoConfigWithOauth,
 				mockDefaultOAuthStoreInstance,
 				mockTokenOrchestrator,

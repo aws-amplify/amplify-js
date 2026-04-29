@@ -10,6 +10,7 @@ import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
@@ -68,9 +69,10 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleUserPasswordAuthFlow should be called with clientMetadata from request', async () => {
+		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithUserPassword({
+		await signInWithUserPassword(mockCtx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,

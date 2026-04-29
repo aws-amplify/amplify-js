@@ -10,6 +10,7 @@ import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
@@ -69,7 +70,8 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithCustomSRPAuth API should return a SignInResult', async () => {
-		const result = await signInWithCustomSRPAuth({
+		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+		const result = await signInWithCustomSRPAuth(mockCtx, {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 		});
@@ -78,9 +80,10 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleCustomSRPAuthFlow should be called with clientMetada from request', async () => {
+		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithCustomSRPAuth({
+		await signInWithCustomSRPAuth(mockCtx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,

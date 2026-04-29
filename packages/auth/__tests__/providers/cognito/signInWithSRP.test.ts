@@ -6,6 +6,7 @@ import { Amplify } from 'aws-amplify';
 import { signIn } from '../../../src/providers/cognito';
 import { signInWithSRP } from '../../../src/providers/cognito/apis/signInWithSRP';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
@@ -173,7 +174,8 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithSRP API should return a SignInResult', async () => {
-		const result = await signInWithSRP({
+		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+		const result = await signInWithSRP(mockCtx, {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 		});
@@ -182,9 +184,10 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleUserSRPFlow  should be called with clientMetada from request', async () => {
+		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithSRP({
+		await signInWithSRP(mockCtx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,

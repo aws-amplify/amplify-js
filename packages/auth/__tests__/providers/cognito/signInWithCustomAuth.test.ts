@@ -6,6 +6,7 @@ import { Amplify } from 'aws-amplify';
 import { signIn } from '../../../src/providers/cognito';
 import { signInWithCustomAuth } from '../../../src/providers/cognito/apis/signInWithCustomAuth';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
@@ -65,16 +66,18 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithCustomAuth API should return a SignInResult', async () => {
-		const result = await signInWithCustomAuth({
+		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+		const result = await signInWithCustomAuth(mockCtx, {
 			username: authAPITestParams.user1.username,
 		});
 		expect(result).toEqual(authAPITestParams.signInResultWithCustomAuth());
 		expect(handleCustomAuthFlowWithoutSRPSpy).toHaveBeenCalledTimes(1);
 	});
 	test('handleCustomAuthFlowWithoutSRP should be called with clientMetada from request', async () => {
+		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 		const { username } = authAPITestParams.user1;
 
-		await signInWithCustomAuth({
+		await signInWithCustomAuth(mockCtx, {
 			username,
 			options: authAPITestParams.configWithClientMetadata,
 		});

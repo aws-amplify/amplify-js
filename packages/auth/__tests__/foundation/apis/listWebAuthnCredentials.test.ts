@@ -7,6 +7,7 @@ import { mockUserCredentials } from '../../mockData';
 import { setUpGetConfig } from '../../providers/cognito/testUtils/setUpGetConfig';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
 import { listWebAuthnCredentials } from '../../../src/foundation/apis';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -34,6 +35,20 @@ describe('listWebAuthnCredentials', () => {
 		createListWebAuthnCredentialsClient,
 	);
 
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+	// Override fetchAuthSession to return the mock access token
+	(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+		tokens: { accessToken: decodeJWT(mockAccessToken) },
+	});
+
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
 
@@ -53,7 +68,7 @@ describe('listWebAuthnCredentials', () => {
 	});
 
 	it('should pass correct service options when listing credentials', async () => {
-		await listWebAuthnCredentials(Amplify);
+		await listWebAuthnCredentials(mockCtx);
 
 		expect(mockListWebAuthnCredentials).toHaveBeenCalledWith(
 			{
@@ -72,7 +87,7 @@ describe('listWebAuthnCredentials', () => {
 		};
 
 		const { credentials, nextToken } = await listWebAuthnCredentials(
-			Amplify,
+			mockCtx,
 			input,
 		);
 
@@ -117,7 +132,7 @@ describe('listWebAuthnCredentials', () => {
 		};
 
 		const { credentials, nextToken } = await listWebAuthnCredentials(
-			Amplify,
+			mockCtx,
 			input,
 		);
 

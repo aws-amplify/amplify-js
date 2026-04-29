@@ -6,6 +6,7 @@ import { completeOAuthSignOut } from '../../../../../src/providers/cognito/utils
 import { handleOAuthSignOut } from '../../../../../src/providers/cognito/utils/oauth/handleOAuthSignOut';
 import { oAuthSignOutRedirect } from '../../../../../src/providers/cognito/utils/oauth/oAuthSignOutRedirect';
 import { DefaultOAuthStore } from '../../../../../src/providers/cognito/utils/signInWithRedirectStore';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock(
 	'../../../../../src/providers/cognito/utils/oauth/completeOAuthSignOut',
@@ -22,6 +23,9 @@ describe('handleOAuthSignOut', () => {
 		userPoolId: `${region}_zzzzz`,
 		identityPoolId: `${region}:xxxxxx`,
 	};
+	const mockCtx = createMockAmplifyContext({
+		Auth: { Cognito: cognitoConfig },
+	});
 	// assert mocks
 	const mockCompleteOAuthSignOut = completeOAuthSignOut as jest.Mock;
 	const mockOAuthSignOutRedirect = oAuthSignOutRedirect as jest.Mock;
@@ -46,13 +50,14 @@ describe('handleOAuthSignOut', () => {
 			preferPrivateSession: false,
 		});
 		await handleOAuthSignOut(
+			mockCtx,
 			cognitoConfig,
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
 		);
 
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockCtx, mockStore);
 		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 			cognitoConfig,
 			false,
@@ -69,13 +74,14 @@ describe('handleOAuthSignOut', () => {
 			preferPrivateSession: false,
 		});
 		await handleOAuthSignOut(
+			mockCtx,
 			cognitoConfig,
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
 		);
 
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockCtx, mockStore);
 		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 			cognitoConfig,
 			false,
@@ -89,13 +95,14 @@ describe('handleOAuthSignOut', () => {
 			preferPrivateSession: false,
 		});
 		await handleOAuthSignOut(
+			mockCtx,
 			cognitoConfig,
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
 		);
 
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockCtx, mockStore);
 		expect(mockOAuthSignOutRedirect).not.toHaveBeenCalled();
 	});
 });

@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { Hub } from '@aws-amplify/core';
 import {
-	ADD_OAUTH_LISTENER,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	isBrowser,
@@ -19,7 +18,6 @@ import {
 	oAuthStore,
 } from '../../../src/providers/cognito/utils/oauth';
 import { getAuthUserAgentValue, openAuthSession } from '../../../src/utils';
-import { attemptCompleteOAuthFlow } from '../../../src/providers/cognito/utils/oauth/attemptCompleteOAuthFlow';
 import { createOAuthError } from '../../../src/providers/cognito/utils/oauth/createOAuthError';
 import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWithRedirect';
 import type { OAuthStore } from '../../../src/providers/cognito/utils/types';
@@ -32,16 +30,29 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	assertTokenProviderConfig: jest.fn(),
 	urlSafeEncode: jest.fn(),
 	isBrowser: jest.fn(() => true),
+	resolveCtxArgs: jest.fn((...args: any[]) => {
+		// Return a mock context with the test's auth config, and the input
+		const input = args[0]?.[0];
+
+		return [
+			{
+				resourcesConfig: mockAuthConfigWithOAuth,
+				libraryOptions: {},
+				fetchAuthSession: jest.fn(),
+				clearCredentials: jest.fn(),
+				getTokens: jest.fn(),
+			},
+			input,
+		];
+	}),
 }));
 jest.mock('@aws-amplify/core', () => {
-	const { ADD_OAUTH_LISTENER: ACTUAL_ADD_OAUTH_LISTENER } = jest.requireActual(
-		'@aws-amplify/core/internals/utils',
-	);
-
 	return {
 		Amplify: {
 			getConfig: jest.fn(() => mockAuthConfigWithOAuth),
-			[ACTUAL_ADD_OAUTH_LISTENER]: jest.fn(),
+		},
+		Hub: {
+			listen: jest.fn(),
 		},
 		ConsoleLogger: jest.fn().mockImplementation(() => {
 			return { warn: jest.fn() };
@@ -270,14 +281,14 @@ describe('signInWithRedirect', () => {
 
 	describe('specifications on Web', () => {
 		describe('side effect', () => {
-			it('attaches oauth listener to the Amplify singleton', async () => {
+			it('registers a Hub listener for OAuth flow completion on configure events', async () => {
 				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(
 					false,
 				);
 
-				expect(Amplify[ADD_OAUTH_LISTENER]).toHaveBeenCalledWith(
-					attemptCompleteOAuthFlow,
-				);
+				// The enableOAuthListener module sets up a Hub.listen('core', ...) side effect
+				// when imported. Verify Hub.listen was called.
+				expect(Hub.listen).toHaveBeenCalledWith('core', expect.any(Function));
 			});
 		});
 
@@ -319,6 +330,7 @@ describe('signInWithRedirect', () => {
 			});
 
 			expect(mockCompleteOAuthFlow).toHaveBeenCalledWith(
+				expect.any(Object),
 				expect.objectContaining({
 					currentUrl: mockOpenAuthSessionResult.url,
 					preferPrivateSession: true,
@@ -368,6 +380,7 @@ describe('signInWithRedirect', () => {
 			).rejects.toThrow(expectedError);
 
 			expect(mockCompleteOAuthFlow).toHaveBeenCalledWith(
+				expect.any(Object),
 				expect.objectContaining({
 					currentUrl: mockOpenAuthSessionResult.url,
 				}),
