@@ -34,13 +34,16 @@ export function getAmplifyServerContext(_contextSpec: any): any {
 }
 
 /** @deprecated Will be removed once adapter-nextjs migrates to configure(). */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace AmplifyServer {
-	export type ContextSpec = { token: { value: symbol } };
-	export type ContextToken = { value: symbol };
-	export interface RunOperationWithContext {
-		<Result>(input: {
-			operation: (contextSpec: ContextSpec) => Result | Promise<Result>;
-			[key: string]: any;
-		}): Promise<Result>;
+	export interface ContextSpec {
+		token: { value: symbol };
 	}
+	export interface ContextToken {
+		value: symbol;
+	}
+	export type RunOperationWithContext = <Result>(input: {
+		operation(contextSpec: ContextSpec): Result | Promise<Result>;
+		[key: string]: any;
+	}) => Promise<Result>;
 }

@@ -1,8 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { configure } from '../src/configure';
 import { createConfigurationBuilder } from '@aws-amplify/core';
+
+import { configure } from '../src/configure';
+
 import { amplifyOutputsFixture } from './fixtures/amplifyOutputs';
 
 describe('configure()', () => {
@@ -45,6 +47,7 @@ describe('configure()', () => {
 			...amplifyOutputsFixture,
 			auth: {
 				...amplifyOutputsFixture.auth,
+				// eslint-disable-next-line camelcase
 				user_pool_id: 'eu-north-1_NewPoolId',
 			},
 		});
@@ -55,6 +58,60 @@ describe('configure()', () => {
 		expect(ctx2.resourcesConfig.Auth?.Cognito.userPoolId).toBe(
 			'eu-north-1_NewPoolId',
 		);
+	});
+});
+
+describe('configure() — resolveLocalLibraryOptions branches', () => {
+	it('returns empty options when no Auth config', () => {
+		const ctx = configure({
+			version: '1.4',
+			storage: amplifyOutputsFixture.storage,
+		});
+		expect(ctx.resourcesConfig.Auth).toBeUndefined();
+		expect(ctx.resourcesConfig.Storage?.S3?.bucket).toBe(
+			'my-test-app-storage-bucket-abcdef123456',
+		);
+	});
+
+	it('passes through custom Auth libraryOptions', () => {
+		const mockTokenProvider = {
+			getTokens: jest.fn().mockResolvedValue(undefined),
+		};
+		const mockCredentialsProvider = {
+			getCredentialsAndIdentityId: jest.fn().mockResolvedValue(undefined),
+			clearCredentialsAndIdentityId: jest.fn(),
+		};
+		const ctx = configure(amplifyOutputsFixture, {
+			Auth: {
+				tokenProvider: mockTokenProvider as any,
+				credentialsProvider: mockCredentialsProvider as any,
+			},
+		});
+		expect(ctx.resourcesConfig.Auth?.Cognito.userPoolId).toBe(
+			'eu-north-1_Ab12CdEfG',
+		);
+	});
+
+	it('uses cookie storage when ssr is true', () => {
+		const ctx = configure(amplifyOutputsFixture, { ssr: true });
+		expect(ctx.resourcesConfig.Auth?.Cognito.userPoolId).toBe(
+			'eu-north-1_Ab12CdEfG',
+		);
+	});
+
+	it('delegates fetchAuthSession to AuthClass', () => {
+		const ctx = configure(amplifyOutputsFixture);
+		expect(typeof ctx.fetchAuthSession).toBe('function');
+	});
+
+	it('delegates clearCredentials to AuthClass', () => {
+		const ctx = configure(amplifyOutputsFixture);
+		expect(typeof ctx.clearCredentials).toBe('function');
+	});
+
+	it('delegates getTokens to AuthClass', () => {
+		const ctx = configure(amplifyOutputsFixture);
+		expect(typeof ctx.getTokens).toBe('function');
 	});
 });
 
@@ -87,6 +144,7 @@ describe('createConfigurationBuilder()', () => {
 			.auth(amplifyOutputsFixture.auth)
 			.auth({
 				...amplifyOutputsFixture.auth,
+				// eslint-disable-next-line camelcase
 				user_pool_id: 'eu-north-1_Replaced',
 			})
 			.build();
