@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+
 import { uploadData as advancedUploadData } from '../../../src/internals';
 import { uploadData as uploadDataInternal } from '../../../src/providers/s3/apis/internal/uploadData';
 
@@ -54,7 +56,7 @@ describe('uploadData (internal)', () => {
 		});
 
 		expect(mockedUploadDataInternal).toHaveBeenCalledTimes(1);
-		expect(mockedUploadDataInternal).toHaveBeenCalledWith({
+		expect(mockedUploadDataInternal).toHaveBeenCalledWith(Amplify, {
 			path: 'input/path/to/mock/object',
 			data: 'data',
 			options: {

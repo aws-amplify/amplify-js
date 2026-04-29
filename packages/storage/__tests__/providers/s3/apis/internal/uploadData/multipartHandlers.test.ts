@@ -190,6 +190,7 @@ describe('getMultipartUploadHandlers with key', () => {
 
 	it('should return multipart upload handlers', async () => {
 		const multipartUploadHandlers = getMultipartUploadHandlers(
+			Amplify,
 			{
 				key: defaultKey,
 				data: { size: 5 * 1024 * 1024 } as any,
@@ -235,6 +236,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				async (_, twoPartsPayload) => {
 					mockMultipartUploadSuccess();
 					const { multipartUploadJob } = getMultipartUploadHandlers(
+						Amplify,
 						{
 							key: defaultKey,
 							data: twoPartsPayload,
@@ -293,6 +295,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			async (_, twoPartsPayload, expectedCrc32, finalCrc32) => {
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
+					Amplify,
 					{
 						key: defaultKey,
 						data: twoPartsPayload,
@@ -341,6 +344,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				},
 			};
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new Uint8Array(8 * MB),
@@ -356,6 +360,7 @@ describe('getMultipartUploadHandlers with key', () => {
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: 1 as any,
@@ -388,6 +393,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			} as any as File;
 			mockMultipartUploadSuccess();
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: file,
@@ -417,6 +423,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			});
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(8 * MB),
@@ -440,6 +447,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockCreateMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(8 * MB),
@@ -456,6 +464,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockCompleteMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(8 * MB),
@@ -477,6 +486,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockUploadPart.mockRejectedValueOnce(new Error('error'));
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(8 * MB),
@@ -495,6 +505,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				const mockRegion = 'region-1';
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
+					Amplify,
 					{
 						key: 'key',
 						data: mockData,
@@ -524,6 +535,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			it('should override bucket in putObject call when bucket as string', async () => {
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
+					Amplify,
 					{
 						key: 'key',
 						data: mockData,
@@ -585,6 +597,7 @@ describe('getMultipartUploadHandlers with key', () => {
 
 				const onProgress = jest.fn();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
+					Amplify,
 					{
 						key: defaultKey,
 						data: new ArrayBuffer(8 * MB),
@@ -616,6 +629,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockMultipartUploadSuccess();
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
@@ -645,6 +659,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			};
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
@@ -669,6 +684,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockMultipartUploadSuccess();
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
@@ -700,6 +716,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
@@ -721,6 +738,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new File([new ArrayBuffer(size)], 'someName'),
@@ -759,6 +777,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new File([new ArrayBuffer(size)], 'someName'),
@@ -791,6 +810,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
@@ -812,6 +832,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
@@ -842,6 +863,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
@@ -867,6 +889,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
@@ -891,6 +914,7 @@ describe('getMultipartUploadHandlers with key', () => {
 	describe('cancel()', () => {
 		it('should abort in-flight uploadPart requests and throw if upload is canceled', async () => {
 			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(8 * MB),
@@ -931,6 +955,7 @@ describe('getMultipartUploadHandlers with key', () => {
 
 			const { multipartUploadJob, onPause, onResume } =
 				getMultipartUploadHandlers(
+					Amplify,
 					{
 						key: defaultKey,
 						data: new ArrayBuffer(8 * MB),
@@ -963,6 +988,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			const onProgress = jest.fn();
 			mockMultipartUploadSuccess();
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(8 * MB),
@@ -1013,6 +1039,7 @@ describe('getMultipartUploadHandlers with key', () => {
 
 			const onProgress = jest.fn();
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(8 * MB),
@@ -1059,6 +1086,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 	it('should return multipart upload handlers', async () => {
 		const multipartUploadHandlers = getMultipartUploadHandlers(
+			Amplify,
 			{
 				path: testPath,
 				data: { size: 5 * 1024 * 1024 } as any,
@@ -1097,6 +1125,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				async (_, twoPartsPayload) => {
 					mockMultipartUploadSuccess();
 					const { multipartUploadJob } = getMultipartUploadHandlers(
+						Amplify,
 						{
 							path: inputPath,
 							data: twoPartsPayload,
@@ -1154,6 +1183,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			async (_, twoPartsPayload, expectedCrc32, finalCrc32) => {
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
+					Amplify,
 					{
 						path: testPath,
 						data: twoPartsPayload,
@@ -1202,6 +1232,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				},
 			};
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new Uint8Array(8 * MB),
@@ -1217,6 +1248,7 @@ describe('getMultipartUploadHandlers with path', () => {
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: 1 as any,
@@ -1249,6 +1281,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			} as any as File;
 			mockMultipartUploadSuccess();
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: file,
@@ -1278,6 +1311,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			});
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(8 * MB),
@@ -1301,6 +1335,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockCreateMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(8 * MB),
@@ -1317,6 +1352,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockCompleteMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(8 * MB),
@@ -1338,6 +1374,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockUploadPart.mockRejectedValueOnce(new Error('error'));
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(8 * MB),
@@ -1355,6 +1392,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				mockMultipartUploadSuccess();
 
 				const { multipartUploadJob } = getMultipartUploadHandlers(
+					Amplify,
 					{
 						path: testPath,
 						data: new ArrayBuffer(8 * MB),
@@ -1385,6 +1423,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				const mockRegion = 'region-1';
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
+					Amplify,
 					{
 						path: 'path/',
 						data: mockData,
@@ -1416,6 +1455,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			it('should override bucket in putObject call when bucket as string', async () => {
 				mockMultipartUploadSuccess();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
+					Amplify,
 					{
 						path: 'path/',
 						data: mockData,
@@ -1480,6 +1520,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 				const onProgress = jest.fn();
 				const { multipartUploadJob } = getMultipartUploadHandlers(
+					Amplify,
 					{
 						path: testPath,
 						data: new ArrayBuffer(8 * MB),
@@ -1511,6 +1552,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockMultipartUploadSuccess();
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
@@ -1528,6 +1570,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockMultipartUploadSuccess();
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
@@ -1560,6 +1603,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			};
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
@@ -1595,6 +1639,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
@@ -1616,6 +1661,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new File([new ArrayBuffer(size)], 'someName'),
@@ -1655,6 +1701,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new File([new ArrayBuffer(size)], 'someName'),
@@ -1687,6 +1734,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
@@ -1708,6 +1756,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
@@ -1736,6 +1785,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
@@ -1761,6 +1811,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
@@ -1785,6 +1836,7 @@ describe('getMultipartUploadHandlers with path', () => {
 	describe('cancel()', () => {
 		it('should abort in-flight uploadPart requests and throw if upload is canceled', async () => {
 			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(8 * MB),
@@ -1824,6 +1876,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 			const { multipartUploadJob, onPause, onResume } =
 				getMultipartUploadHandlers(
+					Amplify,
 					{
 						path: testPath,
 						data: new ArrayBuffer(8 * MB),
@@ -1857,6 +1910,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			const onProgress = jest.fn();
 			mockMultipartUploadSuccess();
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(8 * MB),
@@ -1908,6 +1962,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 			const onProgress = jest.fn();
 			const { multipartUploadJob } = getMultipartUploadHandlers(
+				Amplify,
 				{
 					path: testPath,
 					data: new ArrayBuffer(8 * MB),

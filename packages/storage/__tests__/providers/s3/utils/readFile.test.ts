@@ -87,4 +87,28 @@ describe('readFile', () => {
 		expect(result).toBe(mockArrayBuffer);
 		expect(result.byteLength).toBe(1024 * 1024 * 10);
 	});
+
+	describe('when FileReader is unavailable (server-side)', () => {
+		const originalFileReader = (global as any).FileReader;
+
+		beforeEach(() => {
+			delete (global as any).FileReader;
+		});
+
+		afterEach(() => {
+			(global as any).FileReader = originalFileReader;
+		});
+
+		it('should fall back to Blob.arrayBuffer()', async () => {
+			const mockArrayBuffer = new ArrayBuffer(12);
+			const mockBlob = {
+				arrayBuffer: jest.fn().mockResolvedValue(mockArrayBuffer),
+			} as unknown as Blob;
+
+			const result = await readFile(mockBlob);
+
+			expect(mockBlob.arrayBuffer).toHaveBeenCalled();
+			expect(result).toBe(mockArrayBuffer);
+		});
+	});
 });

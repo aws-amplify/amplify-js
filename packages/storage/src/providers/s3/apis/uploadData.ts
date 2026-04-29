@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { defaultStorage } from '@aws-amplify/core';
+import { Amplify, defaultStorage } from '@aws-amplify/core';
 
 import {
 	UploadDataInput,
@@ -123,7 +123,7 @@ export function uploadData(
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
 export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
-	return uploadDataInternal({
+	return uploadDataInternal(Amplify, {
 		...input,
 		options: {
 			...input?.options,

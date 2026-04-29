@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput } from '../../../types';
@@ -42,6 +42,7 @@ export type SinglePartUploadDataInput =
  */
 export const putObjectJob =
 	(
+		amplify: AmplifyClassV6,
 		uploadDataInput: SinglePartUploadDataInput,
 		abortSignal: AbortSignal,
 		totalLength: number,
@@ -49,7 +50,7 @@ export const putObjectJob =
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
-			await resolveS3ConfigAndInput(Amplify, uploadDataInput);
+			await resolveS3ConfigAndInput(amplify, uploadDataInput);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
 			identityId,
