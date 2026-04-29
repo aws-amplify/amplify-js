@@ -26,6 +26,16 @@ jest.mock('@aws-amplify/core', () => ({
 	})),
 }));
 
+const mockCtx = {
+	get resourcesConfig() {
+		return mockGetConfig();
+	},
+	libraryOptions: {},
+	fetchAuthSession: (...args: any[]) => mockFetchAuthSession(...args),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+} as any;
+
 ComprehendClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof DetectEntitiesCommand) {
 		const resultDetectEntities = {
@@ -232,7 +242,7 @@ describe('Predictions interpret provider test', () => {
 	});
 	describe('interpretText tests', () => {
 		test('happy case credentials exist detectEntities', async () => {
-			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
+			const predictionsProvider = new AmazonAIInterpretPredictionsProvider(mockCtx);
 			const detectEntitiesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			expect.assertions(2);
 
@@ -261,7 +271,7 @@ describe('Predictions interpret provider test', () => {
 		});
 
 		test('happy case credentials exists detectDominantLanguage', async () => {
-			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
+			const predictionsProvider = new AmazonAIInterpretPredictionsProvider(mockCtx);
 			const dominantLanguageSpy = jest.spyOn(
 				ComprehendClient.prototype,
 				'send',
@@ -292,7 +302,7 @@ describe('Predictions interpret provider test', () => {
 		});
 
 		test('happy case credentials exists detect sentiment', async () => {
-			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
+			const predictionsProvider = new AmazonAIInterpretPredictionsProvider(mockCtx);
 			const sentimentSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(2);
@@ -328,7 +338,7 @@ describe('Predictions interpret provider test', () => {
 		});
 
 		test('happy case credentials exists detect syntax', async () => {
-			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
+			const predictionsProvider = new AmazonAIInterpretPredictionsProvider(mockCtx);
 			const syntaxSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(2);
@@ -374,7 +384,7 @@ describe('Predictions interpret provider test', () => {
 		});
 
 		test('happy case credentials exists detect key phrases', async () => {
-			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
+			const predictionsProvider = new AmazonAIInterpretPredictionsProvider(mockCtx);
 			const keyPhrasesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(2);
@@ -408,7 +418,7 @@ describe('Predictions interpret provider test', () => {
 		});
 
 		test("happy case credentials type: 'all'", async () => {
-			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
+			const predictionsProvider = new AmazonAIInterpretPredictionsProvider(mockCtx);
 			await expect(
 				predictionsProvider.interpret({
 					text: {
@@ -483,7 +493,7 @@ describe('Predictions interpret provider test', () => {
 	describe('custom user agent', () => {
 		test('interpret initializes a client with the correct custom user agent', async () => {
 			jest.spyOn(ComprehendClient.prototype, 'send');
-			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
+			const predictionsProvider = new AmazonAIInterpretPredictionsProvider(mockCtx);
 			await predictionsProvider.interpret({
 				text: {
 					source: {
@@ -502,6 +512,16 @@ describe('Predictions interpret provider test', () => {
 					category: Category.Predictions,
 					action: PredictionsAction.Interpret,
 				}),
+			);
+		});
+	});
+
+	describe('getProviderName', () => {
+		it('returns provider name', () => {
+			const mockCtx = {} as any;
+			const predictionsProvider = new AmazonAIInterpretPredictionsProvider(mockCtx);
+			expect(predictionsProvider.getProviderName()).toBe(
+				'AmazonAIInterpretPredictionsProvider',
 			);
 		});
 	});

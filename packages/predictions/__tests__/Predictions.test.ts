@@ -13,15 +13,21 @@ import {
 	TranslateTextOutput,
 } from '../src/types';
 
+import { createMockAmplifyContext } from './testUtils';
+
+const mockCtx = createMockAmplifyContext();
+
 describe('Predictions test', () => {
 	describe('getModuleName tests', () => {
 		test('happy and the only case', () => {
-			expect(new PredictionsClass().getModuleName()).toMatch('Predictions');
+			expect(new PredictionsClass(mockCtx).getModuleName()).toMatch(
+				'Predictions',
+			);
 		});
 	});
 
 	test('convert test', async () => {
-		const predictions = new PredictionsClass();
+		const predictions = new PredictionsClass(mockCtx);
 		const input: TranslateTextInput = {
 			translateText: { source: { text: 'sourceText' } },
 		};
@@ -40,7 +46,7 @@ describe('Predictions test', () => {
 	});
 
 	test('identify test', async () => {
-		const predictions = new PredictionsClass();
+		const predictions = new PredictionsClass(mockCtx);
 		const input: IdentifyTextInput = {
 			text: { source: { key: 'key' }, format: 'PLAIN' },
 		};
@@ -63,7 +69,7 @@ describe('Predictions test', () => {
 	});
 
 	test('interpret test', async () => {
-		const predictions = new PredictionsClass();
+		const predictions = new PredictionsClass(mockCtx);
 		const input: InterpretTextInput = {
 			text: {
 				source: {
