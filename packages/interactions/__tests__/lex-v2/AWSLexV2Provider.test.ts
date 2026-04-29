@@ -10,8 +10,8 @@ import {
 } from '@aws-sdk/client-lex-runtime-v2';
 import { gzip, strToU8 } from 'fflate';
 import { encode } from 'base-64';
-import { v4 as uuid } from 'uuid';
 import { lexProvider } from '../../src/lex-v2/AWSLexV2Provider';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 
 jest.mock('@aws-amplify/core');
 
@@ -467,7 +467,7 @@ describe('Interactions', () => {
 		describe('onComplete callback from `Interactions.onComplete`', () => {
 			test(`In progress, callback shouldn't be called`, async () => {
 				// callback is only called once conversation is completed
-				let config = { ...botConfig.BookTrip, name: uuid() };
+				let config = { ...botConfig.BookTrip, name: amplifyUuid() };
 				const inProgressCallback = mockCallbackProvider(
 					ACTION_TYPE.IN_PROGRESS,
 				);
@@ -484,7 +484,7 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with success resp`, async () => {
-				let config = { ...botConfig.BookTrip, name: uuid() };
+				let config = { ...botConfig.BookTrip, name: amplifyUuid() };
 				const completeSuccessCallback = mockCallbackProvider(
 					ACTION_TYPE.COMPLETE,
 				);
@@ -502,7 +502,7 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with error resp`, async () => {
-				let config = { ...botConfig.BookTrip, name: uuid() };
+				let config = { ...botConfig.BookTrip, name: amplifyUuid() };
 				const completeFailCallback = mockCallbackProvider(ACTION_TYPE.ERROR);
 				provider.onComplete(config, completeFailCallback);
 

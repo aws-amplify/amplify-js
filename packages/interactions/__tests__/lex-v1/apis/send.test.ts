@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { v4 as uuid } from 'uuid';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import { lexProvider } from '../../../src/lex-v1/AWSLexProvider';
 import { send } from '../../../src/lex-v1/apis';
 import { generateRandomLexV1Config } from '../../testUtils/randomConfigGeneration';
@@ -27,7 +27,7 @@ describe('Interactions LexV1 API: send', () => {
 	});
 
 	it('invokes provider sendMessage API', async () => {
-		const message = uuid();
+		const message = amplifyUuid();
 		await send({ botName: v1BotConfig.name, message });
 		expect(mockLexProvider).toHaveBeenCalledTimes(1);
 		expect(mockLexProvider).toHaveBeenCalledWith(v1BotConfig, message);
@@ -36,7 +36,7 @@ describe('Interactions LexV1 API: send', () => {
 	it('rejects when bot config does not exist', async () => {
 		mockResolveBotConfig.mockReturnValue(undefined);
 		await expect(
-			send({ botName: v1BotConfig.name, message: uuid() }),
+			send({ botName: v1BotConfig.name, message: amplifyUuid() }),
 		).rejects.toBeInstanceOf(InteractionsError);
 	});
 });

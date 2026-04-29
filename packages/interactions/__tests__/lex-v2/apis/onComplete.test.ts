@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { v4 as uuid } from 'uuid';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import { lexProvider } from '../../../src/lex-v2/AWSLexV2Provider';
 import { onComplete } from '../../../src/lex-v2/apis';
 import { generateRandomLexV2Config } from '../../testUtils/randomConfigGeneration';
@@ -27,7 +27,7 @@ describe('Interactions LexV2 API: onComplete', () => {
 	});
 
 	it('invokes provider onComplete API', () => {
-		const message = uuid();
+		const message = amplifyUuid();
 		const mockCallback = jest.fn();
 		onComplete({ botName: v2BotConfig.name, callback: mockCallback });
 		expect(mockLexProvider).toHaveBeenCalledTimes(1);
