@@ -27,9 +27,18 @@ import {
 } from './types';
 
 type ConvertInput = TranslateTextInput | TextToSpeechInput | SpeechToTextInput;
-type ConvertOutput = TranslateTextOutput | TextToSpeechOutput | SpeechToTextOutput;
-type IdentifyInput = IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput;
-type IdentifyOutput = IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput;
+type ConvertOutput =
+	| TranslateTextOutput
+	| TextToSpeechOutput
+	| SpeechToTextOutput;
+type IdentifyInput =
+	| IdentifyTextInput
+	| IdentifyLabelsInput
+	| IdentifyEntitiesInput;
+type IdentifyOutput =
+	| IdentifyTextOutput
+	| IdentifyLabelsOutput
+	| IdentifyEntitiesOutput;
 
 export class PredictionsClass {
 	private ctx: AmplifyContext;
@@ -81,9 +90,21 @@ export class PredictionsClass {
 	static convert(input: TranslateTextInput): Promise<TranslateTextOutput>;
 	static convert(input: TextToSpeechInput): Promise<TextToSpeechOutput>;
 	static convert(input: SpeechToTextInput): Promise<SpeechToTextOutput>;
-	static convert(ctx: AmplifyContext, input: TranslateTextInput): Promise<TranslateTextOutput>;
-	static convert(ctx: AmplifyContext, input: TextToSpeechInput): Promise<TextToSpeechOutput>;
-	static convert(ctx: AmplifyContext, input: SpeechToTextInput): Promise<SpeechToTextOutput>;
+	static convert(
+		ctx: AmplifyContext,
+		input: TranslateTextInput,
+	): Promise<TranslateTextOutput>;
+
+	static convert(
+		ctx: AmplifyContext,
+		input: TextToSpeechInput,
+	): Promise<TextToSpeechOutput>;
+
+	static convert(
+		ctx: AmplifyContext,
+		input: SpeechToTextInput,
+	): Promise<SpeechToTextOutput>;
+
 	static convert(...args: any[]): Promise<ConvertOutput> {
 		const [ctx, input] = resolveCtxArgs<ConvertInput>(args);
 
@@ -92,10 +113,25 @@ export class PredictionsClass {
 
 	static identify(input: IdentifyTextInput): Promise<IdentifyTextOutput>;
 	static identify(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput>;
-	static identify(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput>;
-	static identify(ctx: AmplifyContext, input: IdentifyTextInput): Promise<IdentifyTextOutput>;
-	static identify(ctx: AmplifyContext, input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput>;
-	static identify(ctx: AmplifyContext, input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput>;
+	static identify(
+		input: IdentifyEntitiesInput,
+	): Promise<IdentifyEntitiesOutput>;
+
+	static identify(
+		ctx: AmplifyContext,
+		input: IdentifyTextInput,
+	): Promise<IdentifyTextOutput>;
+
+	static identify(
+		ctx: AmplifyContext,
+		input: IdentifyLabelsInput,
+	): Promise<IdentifyLabelsOutput>;
+
+	static identify(
+		ctx: AmplifyContext,
+		input: IdentifyEntitiesInput,
+	): Promise<IdentifyEntitiesOutput>;
+
 	static identify(...args: any[]): Promise<IdentifyOutput> {
 		const [ctx, input] = resolveCtxArgs<IdentifyInput>(args);
 
@@ -103,7 +139,11 @@ export class PredictionsClass {
 	}
 
 	static interpret(input: InterpretTextInput): Promise<InterpretTextOutput>;
-	static interpret(ctx: AmplifyContext, input: InterpretTextInput): Promise<InterpretTextOutput>;
+	static interpret(
+		ctx: AmplifyContext,
+		input: InterpretTextInput,
+	): Promise<InterpretTextOutput>;
+
 	static interpret(...args: any[]): Promise<InterpretTextOutput> {
 		const [ctx, input] = resolveCtxArgs<InterpretTextInput>(args);
 
@@ -111,4 +151,5 @@ export class PredictionsClass {
 	}
 }
 
-export const createPredictions = (ctx: AmplifyContext) => new PredictionsClass(ctx);
+export const createPredictions = (ctx: AmplifyContext) =>
+	new PredictionsClass(ctx);

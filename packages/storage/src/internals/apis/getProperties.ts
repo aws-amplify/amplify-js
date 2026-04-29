@@ -10,7 +10,8 @@ import { GetPropertiesOutput } from '../types/outputs';
 /**
  * @internal
  */
-export const getProperties = (ctx: AmplifyContext,
+export const getProperties = (
+	ctx: AmplifyContext,
 	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput> =>
 	getPropertiesInternal(ctx, {

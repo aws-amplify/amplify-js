@@ -41,7 +41,8 @@ const openChannels = new Set<string>();
  * @param options - request overrides: `authMode`, `authToken`
  *
  */
-async function connect(ctx: AmplifyContext, 
+async function connect(
+	ctx: AmplifyContext,
 	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel> {
@@ -146,12 +147,13 @@ async function connect(ctx: AmplifyContext,
  * @returns void on success
  * @throws on error
  */
-async function post(ctx: AmplifyContext, 
+async function post(
+	ctx: AmplifyContext,
 	channel: string,
 	event: DocumentType | DocumentType[],
 	options?: EventsOptions,
 ): Promise<void | PublishedEvent[]> {
-	const eventProvider = createAppSyncEventProvider(ctx);
+	const _eventProvider = createAppSyncEventProvider(ctx);
 	const providerOptions: ProviderOptions = configure(ctx);
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,

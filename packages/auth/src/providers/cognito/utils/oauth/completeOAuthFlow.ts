@@ -18,23 +18,26 @@ import { resolveAndClearInflightPromises } from './inflightPromise';
 import { validateState } from './validateState';
 import { oAuthStore } from './oAuthStore';
 
-export const completeOAuthFlow = async (ctx: AmplifyContext, {
-	currentUrl,
-	userAgentValue,
-	clientId,
-	redirectUri,
-	responseType,
-	domain,
-	preferPrivateSession,
-}: {
-	currentUrl: string;
-	userAgentValue: string;
-	clientId: string;
-	redirectUri: string;
-	responseType: string;
-	domain: string;
-	preferPrivateSession?: boolean;
-}): Promise<void> => {
+export const completeOAuthFlow = async (
+	ctx: AmplifyContext,
+	{
+		currentUrl,
+		userAgentValue,
+		clientId,
+		redirectUri,
+		responseType,
+		domain,
+		preferPrivateSession,
+	}: {
+		currentUrl: string;
+		userAgentValue: string;
+		clientId: string;
+		redirectUri: string;
+		responseType: string;
+		domain: string;
+		preferPrivateSession?: boolean;
+	},
+): Promise<void> => {
 	const urlParams = new AmplifyUrl(currentUrl);
 	const error = urlParams.searchParams.get('error');
 	const errorMessage = urlParams.searchParams.get('error_description');
@@ -61,21 +64,24 @@ export const completeOAuthFlow = async (ctx: AmplifyContext, {
 	});
 };
 
-const handleCodeFlow = async (ctx: AmplifyContext, {
-	currentUrl,
-	userAgentValue,
-	clientId,
-	redirectUri,
-	domain,
-	preferPrivateSession,
-}: {
-	currentUrl: string;
-	userAgentValue: string;
-	clientId: string;
-	redirectUri: string;
-	domain: string;
-	preferPrivateSession?: boolean;
-}) => {
+const handleCodeFlow = async (
+	ctx: AmplifyContext,
+	{
+		currentUrl,
+		userAgentValue,
+		clientId,
+		redirectUri,
+		domain,
+		preferPrivateSession,
+	}: {
+		currentUrl: string;
+		userAgentValue: string;
+		clientId: string;
+		redirectUri: string;
+		domain: string;
+		preferPrivateSession?: boolean;
+	},
+) => {
 	/* Convert URL into an object with parameters as keys
 { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
 	const url = new AmplifyUrl(currentUrl);
@@ -157,15 +163,18 @@ const handleCodeFlow = async (ctx: AmplifyContext, {
 	});
 };
 
-const handleImplicitFlow = async (ctx: AmplifyContext, {
-	currentUrl,
-	redirectUri,
-	preferPrivateSession,
-}: {
-	currentUrl: string;
-	redirectUri: string;
-	preferPrivateSession?: boolean;
-}) => {
+const handleImplicitFlow = async (
+	ctx: AmplifyContext,
+	{
+		currentUrl,
+		redirectUri,
+		preferPrivateSession,
+	}: {
+		currentUrl: string;
+		redirectUri: string;
+		preferPrivateSession?: boolean;
+	},
+) => {
 	// hash is `null` if `#` doesn't exist on URL
 	const url = new AmplifyUrl(currentUrl);
 
@@ -219,15 +228,18 @@ const handleImplicitFlow = async (ctx: AmplifyContext, {
 	});
 };
 
-const completeFlow = async (ctx: AmplifyContext, {
-	redirectUri,
-	state,
-	preferPrivateSession,
-}: {
-	preferPrivateSession?: boolean;
-	redirectUri: string;
-	state: string;
-}) => {
+const completeFlow = async (
+	ctx: AmplifyContext,
+	{
+		redirectUri,
+		state,
+		preferPrivateSession,
+	}: {
+		preferPrivateSession?: boolean;
+		redirectUri: string;
+		state: string;
+	},
+) => {
 	await tokenOrchestrator.setOAuthMetadata({
 		oauthSignIn: true,
 	});

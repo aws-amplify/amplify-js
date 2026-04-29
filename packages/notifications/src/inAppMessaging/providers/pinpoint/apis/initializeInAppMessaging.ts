@@ -2,11 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { sessionListener } from '@aws-amplify/core/internals/utils';
-import { Hub, HubCapsule } from '@aws-amplify/core';
+import { AmplifyContext, Hub, HubCapsule } from '@aws-amplify/core';
 
 import { InAppMessage, InAppMessagingEvent } from '../../../types';
 import { addEventListener } from '../../../../eventListeners';
-import { AmplifyContext } from '@aws-amplify/core';
 import { recordAnalyticsEvent } from '../utils/helpers';
 import { PinpointMessageEvent } from '../types';
 import { incrementMessageCounts, sessionStateChangeHandler } from '../utils';
@@ -43,7 +42,11 @@ export function initializeInAppMessaging(ctx: AmplifyContext): void {
 		recordAnalyticsEvent(ctx, PinpointMessageEvent.MESSAGE_DISMISSED, message);
 	});
 	addEventListener('messageActionTaken', (message: InAppMessage) => {
-		recordAnalyticsEvent(ctx, PinpointMessageEvent.MESSAGE_ACTION_TAKEN, message);
+		recordAnalyticsEvent(
+			ctx,
+			PinpointMessageEvent.MESSAGE_ACTION_TAKEN,
+			message,
+		);
 	});
 
 	// listen to analytics hub events

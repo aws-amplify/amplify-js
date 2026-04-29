@@ -54,6 +54,7 @@ export class InternalGraphQLAPIClass {
 	constructor(ctx: AmplifyContext) {
 		this.ctx = ctx;
 	}
+
 	/**
 	 * @private
 	 */
@@ -397,7 +398,8 @@ export class InternalGraphQLAPIClass {
 		// know why somethings depends on its absence!)
 		const memoKey = appSyncGraphqlEndpoint ?? 'none';
 		const realtimeProvider =
-			this.appSyncRealTime.get(memoKey) ?? new AWSAppSyncRealTimeProvider(this.ctx);
+			this.appSyncRealTime.get(memoKey) ??
+			new AWSAppSyncRealTimeProvider(this.ctx);
 		this.appSyncRealTime.set(memoKey, realtimeProvider);
 
 		return realtimeProvider
@@ -426,4 +428,5 @@ export class InternalGraphQLAPIClass {
 	}
 }
 
-export const createInternalGraphQLAPI = (ctx: AmplifyContext) => new InternalGraphQLAPIClass(ctx);
+export const createInternalGraphQLAPI = (ctx: AmplifyContext) =>
+	new InternalGraphQLAPIClass(ctx);

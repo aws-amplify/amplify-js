@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HubInternal } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { signIn } from '../apis/signIn';
-import { AmplifyContext } from '@aws-amplify/core';
 import { SignInInput, SignInOutput } from '../types';
 import { AutoSignInEventData } from '../types/models';
 import { AutoSignInCallback } from '../../../types/models';
@@ -15,7 +15,10 @@ import { signInWithUserAuth } from '../apis/signInWithUserAuth';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
-export function handleCodeAutoSignIn(ctx: AmplifyContext, signInInput: SignInInput) {
+export function handleCodeAutoSignIn(
+	ctx: AmplifyContext,
+	signInInput: SignInInput,
+) {
 	const stopHubListener = HubInternal.listen<AutoSignInEventData>(
 		'auth-internal',
 		async ({ payload }) => {
@@ -63,7 +66,8 @@ function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
 	};
 }
 
-function handleAutoSignInWithLink(ctx: AmplifyContext, 
+function handleAutoSignInWithLink(
+	ctx: AmplifyContext,
 	signInInput: SignInInput,
 	resolve: (value: SignInOutput) => void,
 	reject: (reason?: any) => void,
@@ -105,7 +109,8 @@ const debouncedAutoSignWithCodeOrUserConfirmed = debounce(
 	300,
 );
 
-export function autoSignInWhenUserIsConfirmedWithLink(ctx: AmplifyContext, 
+export function autoSignInWhenUserIsConfirmedWithLink(
+	ctx: AmplifyContext,
 	signInInput: SignInInput,
 ): AutoSignInCallback {
 	return async () => {
@@ -114,7 +119,8 @@ export function autoSignInWhenUserIsConfirmedWithLink(ctx: AmplifyContext,
 		});
 	};
 }
-async function handleAutoSignInWithCodeOrUserConfirmed(ctx: AmplifyContext, 
+async function handleAutoSignInWithCodeOrUserConfirmed(
+	ctx: AmplifyContext,
 	signInInput: SignInInput,
 	resolve: (value: SignInOutput) => void,
 	reject: (reason?: any) => void,
@@ -133,10 +139,18 @@ async function handleAutoSignInWithCodeOrUserConfirmed(ctx: AmplifyContext,
 	}
 }
 
-function autoSignInWithCode(ctx: AmplifyContext, signInInput: SignInInput): AutoSignInCallback {
+function autoSignInWithCode(
+	ctx: AmplifyContext,
+	signInInput: SignInInput,
+): AutoSignInCallback {
 	return async () => {
 		return new Promise<SignInOutput>((resolve, reject) => {
-			debouncedAutoSignWithCodeOrUserConfirmed([ctx, signInInput, resolve, reject]);
+			debouncedAutoSignWithCodeOrUserConfirmed([
+				ctx,
+				signInInput,
+				resolve,
+				reject,
+			]);
 		});
 	};
 }

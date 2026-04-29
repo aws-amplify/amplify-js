@@ -11,7 +11,10 @@ import { RemoveOutput } from '../types/outputs';
 /**
  * @internal
  */
-export const remove = (ctx: AmplifyContext, input: RemoveInput): RemoveOperation<RemoveOutput> => {
+export const remove = (
+	ctx: AmplifyContext,
+	input: RemoveInput,
+): RemoveOperation<RemoveOutput> => {
 	return removeInternal(
 		ctx,
 		{

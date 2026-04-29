@@ -1,8 +1,7 @@
-import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import {
 	InAppMessagingAction,
 	getClientInfo,

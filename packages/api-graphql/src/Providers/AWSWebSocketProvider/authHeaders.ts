@@ -17,7 +17,10 @@ type AWSAppSyncRealTimeAuthInput =
 		host?: string | undefined;
 	};
 
-const awsAuthTokenHeader = async (ctx: AmplifyContext, { host }: AWSAppSyncRealTimeAuthInput) => {
+const awsAuthTokenHeader = async (
+	ctx: AmplifyContext,
+	{ host }: AWSAppSyncRealTimeAuthInput,
+) => {
 	const session = await ctx.fetchAuthSession();
 
 	return {
@@ -26,10 +29,10 @@ const awsAuthTokenHeader = async (ctx: AmplifyContext, { host }: AWSAppSyncRealT
 	};
 };
 
-const awsRealTimeApiKeyHeader = async (_ctx: AmplifyContext, {
-	apiKey,
-	host,
-}: AWSAppSyncRealTimeAuthInput) => {
+const awsRealTimeApiKeyHeader = async (
+	_ctx: AmplifyContext,
+	{ apiKey, host }: AWSAppSyncRealTimeAuthInput,
+) => {
 	const dt = new Date();
 	const dtStr = dt.toISOString().replace(/[:-]|\.\d{3}/g, '');
 
@@ -40,12 +43,15 @@ const awsRealTimeApiKeyHeader = async (_ctx: AmplifyContext, {
 	};
 };
 
-const awsRealTimeIAMHeader = async (ctx: AmplifyContext, {
-	payload,
-	canonicalUri,
-	appSyncGraphqlEndpoint,
-	region,
-}: AWSAppSyncRealTimeAuthInput) => {
+const awsRealTimeIAMHeader = async (
+	ctx: AmplifyContext,
+	{
+		payload,
+		canonicalUri,
+		appSyncGraphqlEndpoint,
+		region,
+	}: AWSAppSyncRealTimeAuthInput,
+) => {
 	const endpointInfo = {
 		region,
 		service: 'appsync',
@@ -77,10 +83,10 @@ const awsRealTimeIAMHeader = async (ctx: AmplifyContext, {
 	return signedParams.headers;
 };
 
-const customAuthHeader = async (_ctx: AmplifyContext, {
-	host,
-	additionalCustomHeaders,
-}: AWSAppSyncRealTimeAuthInput) => {
+const customAuthHeader = async (
+	_ctx: AmplifyContext,
+	{ host, additionalCustomHeaders }: AWSAppSyncRealTimeAuthInput,
+) => {
 	/**
 	 * If `additionalHeaders` was provided to the subscription as a function,
 	 * the headers that are returned by that function will already have been
@@ -96,17 +102,18 @@ const customAuthHeader = async (_ctx: AmplifyContext, {
 	};
 };
 
-export const awsRealTimeHeaderBasedAuth = async (ctx: AmplifyContext, {
-	apiKey,
-	authenticationType,
-	canonicalUri,
-	appSyncGraphqlEndpoint,
-	region,
-	additionalCustomHeaders,
-	payload,
-}: AWSAppSyncRealTimeAuthInput): Promise<
-	Record<string, string | undefined> | undefined
-> => {
+export const awsRealTimeHeaderBasedAuth = async (
+	ctx: AmplifyContext,
+	{
+		apiKey,
+		authenticationType,
+		canonicalUri,
+		appSyncGraphqlEndpoint,
+		region,
+		additionalCustomHeaders,
+		payload,
+	}: AWSAppSyncRealTimeAuthInput,
+): Promise<Record<string, string | undefined> | undefined> => {
 	const headerHandler = {
 		apiKey: awsRealTimeApiKeyHeader,
 		iam: awsRealTimeIAMHeader,

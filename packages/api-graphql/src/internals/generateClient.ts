@@ -56,7 +56,7 @@ export function generateClient<
 		subscriptions: emptyProperty as CustomSubscriptions<never>,
 	} as any;
 
-	const apiGraphqlConfig = params.amplify.resourcesConfig.API?.GraphQL;
+	const apiGraphqlConfig = params.amplify?.resourcesConfig?.API?.GraphQL;
 
 	if (client[__endpoint]) {
 		if (!client[__authMode]) {

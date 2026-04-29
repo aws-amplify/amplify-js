@@ -7,7 +7,10 @@ import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 import { DefaultOAuthStore } from '../../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../../tokenProvider';
 
-export const completeOAuthSignOut = async (ctx: AmplifyContext, store: DefaultOAuthStore) => {
+export const completeOAuthSignOut = async (
+	ctx: AmplifyContext,
+	store: DefaultOAuthStore,
+) => {
 	await store.clearOAuthData();
 	tokenOrchestrator.clearTokens();
 	await ctx.clearCredentials();

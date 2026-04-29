@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
-
 import {
 	CustomUserAgentDetails,
 	DocumentType,

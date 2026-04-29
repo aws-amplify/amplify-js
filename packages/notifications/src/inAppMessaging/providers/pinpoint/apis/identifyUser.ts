@@ -1,7 +1,7 @@
-import { AmplifyContext } from '@aws-amplify/core';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import {
 	UpdateEndpointException,
@@ -70,7 +70,10 @@ import { assertIsInitialized } from '../../../utils';
  *     },
  * });
  */
-export const identifyUser = async (ctx: AmplifyContext, input: IdentifyUserInput): Promise<void> => {
+export const identifyUser = async (
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void> => {
 	const { userId, userProfile, options } = input;
 	assertIsInitialized();
 	const { credentials, identityId } = await resolveCredentials(ctx);

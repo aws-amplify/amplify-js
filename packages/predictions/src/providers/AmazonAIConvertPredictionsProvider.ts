@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Buffer } from 'buffer';
 
-import { AmplifyContext, ConsoleLogger} from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import {
 	AWSCredentials,
 	Category,
@@ -151,7 +151,8 @@ export class AmazonAIConvertPredictionsProvider {
 			PredictionsValidationErrorCode.NoSource,
 		);
 
-		const { speechGenerator } = this.ctx.resourcesConfig.Predictions?.convert ?? {};
+		const { speechGenerator } =
+			this.ctx.resourcesConfig.Predictions?.convert ?? {};
 		assertValidationError(
 			!!speechGenerator?.region,
 			PredictionsValidationErrorCode.NoRegion,
@@ -203,7 +204,8 @@ export class AmazonAIConvertPredictionsProvider {
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
-		const { transcription } = this.ctx.resourcesConfig.Predictions?.convert ?? {};
+		const { transcription } =
+			this.ctx.resourcesConfig.Predictions?.convert ?? {};
 		assertValidationError(
 			!!transcription?.region,
 			PredictionsValidationErrorCode.NoRegion,

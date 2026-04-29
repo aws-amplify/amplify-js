@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyContext } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import {
 	IntentState,
 	LexRuntimeV2Client,
@@ -11,11 +11,8 @@ import {
 	RecognizeUtteranceCommandInput,
 	RecognizeUtteranceCommandOutput,
 } from '@aws-sdk/client-lex-runtime-v2';
-import {
-	amplifyUuid,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
+import { v4 as uuid } from 'uuid';
 
 import { convert, unGzipBase64AsJson } from '../utils';
 import {
@@ -62,7 +59,7 @@ class AWSLexV2Provider {
 		InteractionsOnCompleteCallback
 	> = {};
 
-	private defaultSessionId: string = amplifyUuid();
+	private defaultSessionId: string = uuid();
 
 	constructor(ctx: AmplifyContext) {
 		this.ctx = ctx;
@@ -274,4 +271,5 @@ class AWSLexV2Provider {
 	}
 }
 
-export const createLexV2Provider = (ctx: AmplifyContext) => new AWSLexV2Provider(ctx);
+export const createLexV2Provider = (ctx: AmplifyContext) =>
+	new AWSLexV2Provider(ctx);

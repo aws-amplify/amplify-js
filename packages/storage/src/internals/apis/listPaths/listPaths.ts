@@ -8,7 +8,9 @@ import { ListPathsOutput } from '../../types/credentials';
 import { resolveLocationsForCurrentSession } from './resolveLocationsForCurrentSession';
 import { getHighestPrecedenceUserGroup } from './getHighestPrecedenceUserGroup';
 
-export const listPaths = async (ctx: AmplifyContext): Promise<ListPathsOutput> => {
+export const listPaths = async (
+	ctx: AmplifyContext,
+): Promise<ListPathsOutput> => {
 	const { buckets } = ctx.resourcesConfig.Storage!.S3!;
 	const { groups } = ctx.resourcesConfig.Auth!.Cognito;
 

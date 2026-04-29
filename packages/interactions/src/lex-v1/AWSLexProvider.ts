@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyContext } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import {
 	DialogState,
 	LexRuntimeServiceClient,
@@ -12,7 +12,6 @@ import {
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger} from '@aws-amplify/core';
 
 import {
 	InteractionsMessage,
@@ -174,4 +173,5 @@ class AWSLexProvider {
 	}
 }
 
-export const createLexProvider = (ctx: AmplifyContext) => new AWSLexProvider(ctx);
+export const createLexProvider = (ctx: AmplifyContext) =>
+	new AWSLexProvider(ctx);

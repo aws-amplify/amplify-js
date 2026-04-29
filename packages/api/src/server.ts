@@ -1,9 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-/**
- * @deprecated Server-specific imports are no longer needed.
- * Use {@link @aws-amplify/api | @aws-amplify/api} directly — all APIs now accept
- * an optional `AmplifyContext` as the first argument.
- */
-export * from '.';
+export {
+	get,
+	put,
+	post,
+	del,
+	head,
+	patch,
+	isCancelError,
+} from '@aws-amplify/api-rest/server';
+export { generateClient } from '@aws-amplify/api-graphql/server';

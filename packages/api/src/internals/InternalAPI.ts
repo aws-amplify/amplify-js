@@ -90,7 +90,8 @@ export class InternalAPIClass {
 			...customUserAgentDetails,
 		};
 
-		return this._graphqlApi.graphql(this.ctx, 
+		return this._graphqlApi.graphql(
+			this.ctx,
 			options,
 			additionalHeaders,
 			apiUserAgentDetails,
@@ -98,4 +99,5 @@ export class InternalAPIClass {
 	}
 }
 
-export const createInternalAPI = (ctx: AmplifyContext) => new InternalAPIClass(ctx);
+export const createInternalAPI = (ctx: AmplifyContext) =>
+	new InternalAPIClass(ctx);
