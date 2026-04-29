@@ -1,8 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 import {
 	GetPropertiesInput,
 	GetPropertiesWithPathInput,
@@ -14,7 +18,17 @@ jest.mock('../../../../src/providers/s3/apis/internal/getProperties');
 
 const mockInternalGetPropertiesImpl = jest.mocked(internalGetPropertiesImpl);
 
+const mockCtx = createMockAmplifyContext();
+
 describe('client-side getProperties', () => {
+	beforeAll(() => {
+		setGlobalContext(mockCtx);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -26,7 +40,7 @@ describe('client-side getProperties', () => {
 			key: 'source-key',
 		};
 		expect(getProperties(input)).toEqual(mockInternalResult);
-		expect(mockInternalGetPropertiesImpl).toBeCalledWith(Amplify, input);
+		expect(mockInternalGetPropertiesImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through input with path and output to internal implementation', async () => {
@@ -36,6 +50,6 @@ describe('client-side getProperties', () => {
 			path: 'abc',
 		};
 		expect(getProperties(input)).toEqual(mockInternalResult);
-		expect(mockInternalGetPropertiesImpl).toBeCalledWith(Amplify, input);
+		expect(mockInternalGetPropertiesImpl).toBeCalledWith(mockCtx, input);
 	});
 });

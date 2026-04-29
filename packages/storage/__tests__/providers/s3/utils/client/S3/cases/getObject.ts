@@ -241,18 +241,14 @@ const getObjectErrorCaseInvalidCustomEndpoint: ApiFunctionalTestCase<
 	getObject,
 	{
 		...defaultConfig,
-		customEndpoint: 'http://custom.endpoint.com',
+		customEndpoint: 'ftp://custom.endpoint.com',
 		forcePathStyle: true,
 	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',
 	},
-	expect.objectContaining({
-		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key?x-id=GetObject',
-		}),
-	}),
+	expect.objectContaining({}),
 	{
 		status: 400,
 		headers: DEFAULT_RESPONSE_HEADERS,

@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
-
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { list as advancedList } from '../../../src/internals';
 import { list as listInternal } from '../../../src/providers/s3/apis/internal/list';
 
 jest.mock('../../../src/providers/s3/apis/internal/list');
 const mockedListInternal = jest.mocked(listInternal);
+
+const mockCtx = createMockAmplifyContext();
 
 describe('list (internals)', () => {
 	beforeEach(() => {
@@ -29,7 +30,7 @@ describe('list (internals)', () => {
 				expiration: new Date(),
 			},
 		});
-		const result = await advancedList({
+		const result = await advancedList(mockCtx, {
 			path: 'input/path/to/mock/object',
 			options: {
 				customEndpoint,
@@ -40,19 +41,16 @@ describe('list (internals)', () => {
 			},
 		});
 		expect(mockedListInternal).toHaveBeenCalledTimes(1);
-		expect(mockedListInternal).toHaveBeenCalledWith(
-			expect.any(AmplifyClassV6),
-			{
-				path: 'input/path/to/mock/object',
-				options: {
-					customEndpoint,
-					useAccelerateEndpoint,
-					bucket,
-					expectedBucketOwner,
-					locationCredentialsProvider,
-				},
+		expect(mockedListInternal).toHaveBeenCalledWith(mockCtx, {
+			path: 'input/path/to/mock/object',
+			options: {
+				customEndpoint,
+				useAccelerateEndpoint,
+				bucket,
+				expectedBucketOwner,
+				locationCredentialsProvider,
 			},
-		);
+		});
 		expect(result).toEqual({
 			items: [],
 		});

@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getAmplifyServerContext } from '@aws-amplify/core/internals/adapter-core';
-
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 import {
 	ListAllInput,
 	ListAllWithPathInput,
@@ -13,21 +12,13 @@ import { list } from '../../../../../src/providers/s3/apis/server';
 import { list as internalListImpl } from '../../../../../src/providers/s3/apis/internal/list';
 
 jest.mock('../../../../../src/providers/s3/apis/internal/list');
-jest.mock('@aws-amplify/core/internals/adapter-core');
 
 const mockInternalListImpl = jest.mocked(internalListImpl);
-const mockGetAmplifyServerContext = jest.mocked(getAmplifyServerContext);
 const mockInternalResult = 'RESULT' as any;
-const mockAmplifyClass = 'AMPLIFY_CLASS' as any;
-const mockAmplifyContextSpec = {
-	token: { value: Symbol('123') },
-};
+const mockCtx = createMockAmplifyContext();
 
 describe('server-side list', () => {
 	beforeEach(() => {
-		mockGetAmplifyServerContext.mockReturnValue({
-			amplify: mockAmplifyClass,
-		});
 		mockInternalListImpl.mockReturnValue(mockInternalResult);
 	});
 
@@ -39,8 +30,8 @@ describe('server-side list', () => {
 		const input: ListAllInput = {
 			prefix: 'source-key',
 		};
-		expect(list(mockAmplifyContextSpec, input)).toEqual(mockInternalResult);
-		expect(mockInternalListImpl).toBeCalledWith(mockAmplifyClass, input);
+		expect(list(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalListImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through list paginate input with key and output to internal implementation', async () => {
@@ -51,16 +42,16 @@ describe('server-side list', () => {
 				pageSize: 10,
 			},
 		};
-		expect(list(mockAmplifyContextSpec, input)).toEqual(mockInternalResult);
-		expect(mockInternalListImpl).toBeCalledWith(mockAmplifyClass, input);
+		expect(list(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalListImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through list all input with path and output to internal implementation', async () => {
 		const input: ListAllWithPathInput = {
 			path: 'abc',
 		};
-		expect(list(mockAmplifyContextSpec, input)).toEqual(mockInternalResult);
-		expect(mockInternalListImpl).toBeCalledWith(mockAmplifyClass, input);
+		expect(list(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalListImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through list paginate input with path and output to internal implementation', async () => {
@@ -71,7 +62,7 @@ describe('server-side list', () => {
 				pageSize: 10,
 			},
 		};
-		expect(list(mockAmplifyContextSpec, input)).toEqual(mockInternalResult);
-		expect(mockInternalListImpl).toBeCalledWith(mockAmplifyClass, input);
+		expect(list(mockCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalListImpl).toBeCalledWith(mockCtx, input);
 	});
 });
