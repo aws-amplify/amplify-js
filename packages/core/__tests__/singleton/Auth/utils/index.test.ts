@@ -1,4 +1,9 @@
-import { decodeJWT } from '../../../../src/singleton/Auth/utils';
+import {
+	assertIdentityPoolIdConfig,
+	assertOAuthConfig,
+	assertTokenProviderConfig,
+	decodeJWT,
+} from '../../../../src/singleton/Auth/utils';
 
 const testSamples = [
 	{
@@ -35,4 +40,111 @@ describe('decodeJWT', () => {
 			expect(result.toString()).toEqual(token);
 		},
 	);
+
+	it('throws error for invalid token format', () => {
+		expect(() => decodeJWT('invalid')).toThrow('Invalid token');
+	});
+
+	it('throws error for malformed payload', () => {
+		expect(() => decodeJWT('header.invalid-payload.signature')).toThrow(
+			'Invalid token payload',
+		);
+	});
+});
+
+describe('assertTokenProviderConfig', () => {
+	it('passes with valid user pool config', () => {
+		expect(() => {
+			assertTokenProviderConfig({
+				userPoolId: 'us-east-1_test',
+				userPoolClientId: 'client123',
+			});
+		}).not.toThrow();
+	});
+
+	it('throws when config is undefined', () => {
+		expect(() => {
+			assertTokenProviderConfig(undefined);
+		}).toThrow();
+	});
+
+	it('throws when userPoolId is missing', () => {
+		expect(() => {
+			assertTokenProviderConfig({
+				userPoolClientId: 'client123',
+			} as any);
+		}).toThrow();
+	});
+
+	it('throws when userPoolClientId is missing', () => {
+		expect(() => {
+			assertTokenProviderConfig({
+				userPoolId: 'us-east-1_test',
+			} as any);
+		}).toThrow();
+	});
+});
+
+describe('assertOAuthConfig', () => {
+	it('passes with valid oauth config', () => {
+		expect(() => {
+			assertOAuthConfig({
+				userPoolId: 'us-east-1_test',
+				userPoolClientId: 'client123',
+				loginWith: {
+					oauth: {
+						domain: 'example.auth.us-east-1.amazoncognito.com',
+						redirectSignIn: ['http://localhost:3000/'],
+						redirectSignOut: ['http://localhost:3000/'],
+						responseType: 'code',
+						scopes: ['openid'],
+					},
+				},
+			});
+		}).not.toThrow();
+	});
+
+	it('throws when oauth config is missing', () => {
+		expect(() => {
+			assertOAuthConfig(undefined);
+		}).toThrow();
+	});
+
+	it('throws when domain is missing', () => {
+		expect(() => {
+			assertOAuthConfig({
+				userPoolId: 'us-east-1_test',
+				userPoolClientId: 'client123',
+				loginWith: {
+					oauth: {
+						redirectSignIn: ['http://localhost:3000/'],
+						redirectSignOut: ['http://localhost:3000/'],
+						responseType: 'code',
+					} as any,
+				},
+			});
+		}).toThrow();
+	});
+});
+
+describe('assertIdentityPoolIdConfig', () => {
+	it('passes with valid identity pool config', () => {
+		expect(() => {
+			assertIdentityPoolIdConfig({
+				identityPoolId: 'us-east-1:test-id',
+			});
+		}).not.toThrow();
+	});
+
+	it('throws when identityPoolId is missing', () => {
+		expect(() => {
+			assertIdentityPoolIdConfig(undefined);
+		}).toThrow();
+	});
+
+	it('throws when identityPoolId is empty', () => {
+		expect(() => {
+			assertIdentityPoolIdConfig({} as any);
+		}).toThrow();
+	});
 });
