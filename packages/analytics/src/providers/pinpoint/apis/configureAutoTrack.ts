@@ -23,7 +23,8 @@ import { record } from './record';
 const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
 
 // Callback that will emit an appropriate event to Pinpoint when required by the Tracker
-const emitTrackingEvent = (ctx: AmplifyContext, 
+const emitTrackingEvent = (
+	ctx: AmplifyContext,
 	eventName: string,
 	attributes: TrackerAttributes,
 ) => {
@@ -58,5 +59,9 @@ export function configureAutoTrack(...args: any[]): void {
 	validateTrackerConfiguration(input);
 
 	// Initialize or update this provider's trackers
-	updateProviderTrackers(input, emitTrackingEvent.bind(null, ctx), configuredTrackers);
+	updateProviderTrackers(
+		input,
+		emitTrackingEvent.bind(null, ctx),
+		configuredTrackers,
+	);
 }
