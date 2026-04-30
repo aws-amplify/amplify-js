@@ -52,8 +52,7 @@
 		"@smithy/eventstream-codec": "2.0.9",
 		"@smithy/util-utf8": "2.0.0",
 		"buffer": "4.9.2",
-		"tslib": "^2.5.0",
-		"uuid": "^11.0.0"
+		"tslib": "^2.5.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.16.2"
