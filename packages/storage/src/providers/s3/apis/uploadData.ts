@@ -20,8 +20,8 @@ import { uploadData as uploadDataInternal } from './internal/uploadData';
  * * Maximum object size is 5TB.
  * * Maximum object size if the size cannot be determined before upload is 50GB.
  *
- * @throws An `S3Exception` when the underlying S3 service returned error.
- * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
+ * @throws S3Exception when the underlying S3 service returned error.
+ * @throws StorageValidationErrorCode when API call parameters are invalid.
  *
  * @param input - A `UploadDataWithPathInput` object.
  *
@@ -78,8 +78,8 @@ export function uploadData(
  * @deprecated The `key` and `accessLevel` parameters are deprecated and will be removed in next major version.
  * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/upload/#uploaddata | path} instead.
  *
- * @throws An `S3Exception` when the underlying S3 service returned error.
- * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
+ * @throws S3Exception when the underlying S3 service returned error.
+ * @throws StorageValidationErrorCode when API call parameters are invalid.
  *
  * @param input - A `UploadDataInput` object.
  *

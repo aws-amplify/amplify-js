@@ -28,8 +28,8 @@ import { uploadData as uploadDataInternal } from '../internal/uploadData';
  * @returns An `UploadDataServerWithPathOutput` task. Await the `result`
  * 	promise to get the upload result.
  *
- * @throws An `S3Exception` when the underlying S3 service returned error.
- * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
+ * @throws S3Exception when the underlying S3 service returned error.
+ * @throws StorageValidationErrorCode when API call parameters are invalid.
  *
  * @example
  * ```ts
@@ -72,8 +72,8 @@ export function uploadData(
  * @returns An `UploadDataServerOutput` task. Await the `result` promise to
  * 	get the upload result.
  *
- * @throws An `S3Exception` when the underlying S3 service returned error.
- * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
+ * @throws S3Exception when the underlying S3 service returned error.
+ * @throws StorageValidationErrorCode when API call parameters are invalid.
  */
 export function uploadData(
 	contextSpec: AmplifyServer.ContextSpec,
