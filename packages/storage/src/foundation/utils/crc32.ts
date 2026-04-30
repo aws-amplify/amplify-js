@@ -1,23 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// TODO: Remove this file once the remove/delete API is migrated to the
-// 3-layer architecture. It is kept only for `deleteObjects` which still
-// relies on the old `readFile` runtime guard. New code should import
-// `calculateContentCRC32` from `foundation/utils/crc32` instead.
-
 import crc32 from 'crc-32';
 
-import { hexToBase64 } from './hexUtils';
-import { readFile } from './readFile';
+import { hexToBase64 } from '../../providers/s3/utils/hexUtils';
+import { ReadFile } from '../types';
 
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 
 /**
- * Calculate the CRC32 checksum for given content and return base64 encoded checksum.
+ * Calculate the CRC32 checksum for given content and return base64 encoded
+ * checksum. The `readFile` dependency is injected so that the foundation
+ * layer stays free of environment-specific logic (see {@link ReadFile}).
  */
 export const calculateContentCRC32 = async (
 	content: Blob | string | ArrayBuffer | ArrayBufferView,
+	readFile: ReadFile,
 	seed = 0,
 ): Promise<string> => {
 	let internalSeed = seed;

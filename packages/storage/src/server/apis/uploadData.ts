@@ -6,6 +6,7 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 
+import { readFile } from '../utils/readFile';
 import {
 	UploadDataInput,
 	UploadDataServerOutput,
@@ -86,7 +87,10 @@ export function uploadData(
 	// they are not supported across isolated server requests. The runtime
 	// object still exposes them as no-ops (delegated to createUploadTask).
 	return uploadDataInternal(
-		getAmplifyServerContext(contextSpec).amplify,
+		{
+			amplify: getAmplifyServerContext(contextSpec).amplify,
+			readFile,
+		},
 		input,
 	) as UploadDataServerOutput | UploadDataServerWithPathOutput;
 }

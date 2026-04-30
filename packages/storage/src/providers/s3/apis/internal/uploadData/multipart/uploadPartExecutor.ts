@@ -1,16 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+	calculateContentCRC32,
+	calculateContentMd5,
+} from '../../../../../../foundation/utils';
+import { FoundationContext } from '../../../../../../foundation/types';
 import { TransferProgressEvent } from '../../../../../../types';
 import { ResolvedS3Config } from '../../../../types/options';
 import { uploadPart } from '../../../../utils/client/s3data';
 import { logger } from '../../../../../../utils';
-import { calculateContentCRC32 } from '../../../../utils/crc32';
-import { calculateContentMd5 } from '../../../../utils';
 
 import { PartToUpload } from './getDataChunker';
 
 interface UploadPartExecutorOptions {
+	ctx: FoundationContext;
 	dataChunkerGenerator: Generator<PartToUpload, void, undefined>;
 	completedPartNumberSet: Set<number>;
 	s3Config: ResolvedS3Config;
@@ -30,6 +34,7 @@ interface UploadPartExecutorOptions {
 }
 
 export const uploadPartExecutor = async ({
+	ctx,
 	dataChunkerGenerator,
 	completedPartNumberSet,
 	s3Config,
@@ -60,12 +65,12 @@ export const uploadPartExecutor = async ({
 			// handle cancel error
 			let checksumCRC32: string | undefined;
 			if (useCRC32Checksum) {
-				checksumCRC32 = await calculateContentCRC32(data);
+				checksumCRC32 = await calculateContentCRC32(data, ctx.readFile);
 			}
 			const contentMD5 =
 				// check if checksum exists. ex: should not exist in react native
 				!checksumCRC32 && isObjectLockEnabled
-					? await calculateContentMd5(data)
+					? await calculateContentMd5(data, ctx.readFile)
 					: undefined;
 
 			const { ETag: eTag } = await uploadPart(

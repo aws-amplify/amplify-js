@@ -3,6 +3,7 @@
 
 import { Amplify, defaultStorage } from '@aws-amplify/core';
 
+import { readFile } from '../utils/readFile';
 import {
 	UploadDataInput,
 	UploadDataOutput,
@@ -122,13 +123,16 @@ export function uploadData(
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
 export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
-	return uploadDataInternal(Amplify, {
-		...input,
-		options: {
-			...input?.options,
-			// This option enables caching in-progress multipart uploads.
-			// It's ONLY needed for client-side API.
-			resumableUploadsCache: defaultStorage,
+	return uploadDataInternal(
+		{ amplify: Amplify, readFile },
+		{
+			...input,
+			options: {
+				...input?.options,
+				// This option enables caching in-progress multipart uploads.
+				// It's ONLY needed for client-side API.
+				resumableUploadsCache: defaultStorage,
+			},
 		},
-	});
+	);
 }
