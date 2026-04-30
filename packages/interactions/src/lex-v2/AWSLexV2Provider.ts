@@ -10,9 +10,11 @@ import {
 	RecognizeUtteranceCommandInput,
 	RecognizeUtteranceCommandOutput,
 } from '@aws-sdk/client-lex-runtime-v2';
-import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
+import {
+	amplifyUuid,
+	getAmplifyUserAgentObject,
+} from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
-import { v4 as uuid } from 'uuid';
 
 import { convert, unGzipBase64AsJson } from '../utils';
 import {
@@ -58,7 +60,7 @@ class AWSLexV2Provider {
 		InteractionsOnCompleteCallback
 	> = {};
 
-	private defaultSessionId: string = uuid();
+	private defaultSessionId: string = amplifyUuid();
 
 	/**
 	 * Send a message to a bot
