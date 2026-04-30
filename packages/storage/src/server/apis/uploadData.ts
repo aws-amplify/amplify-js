@@ -11,8 +11,8 @@ import {
 	UploadDataServerOutput,
 	UploadDataServerWithPathOutput,
 	UploadDataWithPathInput,
-} from '../../types';
-import { uploadData as uploadDataInternal } from '../internal/uploadData';
+} from '../../providers/s3/types';
+import { uploadData as uploadDataInternal } from '../../providers/s3/apis/internal/uploadData';
 
 /**
  * Upload data to the specified S3 object path. By default uses a single PUT
@@ -62,9 +62,6 @@ export function uploadData(
  * Upload data to the specified S3 object key. By default uses a single PUT
  * operation to upload when the payload is less than 5MB. Otherwise, uses
  * multipart upload to upload the payload.
- *
- * The returned task does NOT support `pause()` / `resume()` server-side. See
- * the path-based overload above for details.
  *
  * @param contextSpec - The isolated server context.
  * @param input - A `UploadDataInput` object.
