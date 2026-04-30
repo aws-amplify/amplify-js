@@ -65,12 +65,12 @@ export const uploadPartExecutor = async ({
 			// handle cancel error
 			let checksumCRC32: string | undefined;
 			if (useCRC32Checksum) {
-				checksumCRC32 = await calculateContentCRC32(data, ctx.readFile);
+				checksumCRC32 = await calculateContentCRC32(ctx, data);
 			}
 			const contentMD5 =
 				// check if checksum exists. ex: should not exist in react native
 				!checksumCRC32 && isObjectLockEnabled
-					? await calculateContentMd5(data, ctx.readFile)
+					? await calculateContentMd5(ctx, data)
 					: undefined;
 
 			const { ETag: eTag } = await uploadPart(

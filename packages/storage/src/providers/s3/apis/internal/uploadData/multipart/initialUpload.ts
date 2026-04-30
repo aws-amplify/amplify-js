@@ -133,7 +133,7 @@ export const loadOrCreateMultipartUpload = async ({
 		 */
 		const finalCrc32 =
 			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
-				? await calculateContentCRC32(data, ctx.readFile)
+				? await calculateContentCRC32(ctx, data)
 				: undefined;
 
 		const { UploadId } = await createMultipartUpload(

@@ -3,19 +3,31 @@
 
 import crc32 from 'crc-32';
 
-import { hexToBase64 } from '../../providers/s3/utils/hexUtils';
-import { ReadFile } from '../types';
+import { FoundationContext } from '../types';
 
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 
 /**
+ * Convert a hex string to base64 using the injected `toBase64` from the
+ * foundation context.
+ */
+const hexToBase64 = (hex: string, toBase64: FoundationContext['toBase64']) => {
+	const bytes = new Uint8Array(
+		(hex.match(/\w{2}/g) ?? []).map(h => parseInt(h, 16)),
+	);
+
+	return toBase64(bytes);
+};
+
+/**
  * Calculate the CRC32 checksum for given content and return base64 encoded
- * checksum. The `readFile` dependency is injected so that the foundation
- * layer stays free of environment-specific logic (see {@link ReadFile}).
+ * checksum. Environment-specific dependencies (`readFile`, `toBase64`) are
+ * injected via the {@link FoundationContext} so the foundation layer stays
+ * free of any environment-discriminating logic.
  */
 export const calculateContentCRC32 = async (
+	ctx: FoundationContext,
 	content: Blob | string | ArrayBuffer | ArrayBufferView,
-	readFile: ReadFile,
 	seed = 0,
 ): Promise<string> => {
 	let internalSeed = seed;
@@ -53,7 +65,7 @@ export const calculateContentCRC32 = async (
 		while (offset < blob.size) {
 			const end = Math.min(offset + CHUNK_SIZE, blob.size);
 			const chunk = blob.slice(offset, end);
-			const arrayBuffer = await readFile(chunk);
+			const arrayBuffer = await ctx.readFile(chunk);
 			const uint8Array = new Uint8Array(arrayBuffer);
 
 			internalSeed = crc32.buf(uint8Array, internalSeed) >>> 0;
@@ -64,5 +76,5 @@ export const calculateContentCRC32 = async (
 
 	const hex = internalSeed.toString(16).padStart(8, '0');
 
-	return hexToBase64(hex);
+	return hexToBase64(hex, ctx.toBase64);
 };

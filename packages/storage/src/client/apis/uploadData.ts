@@ -4,6 +4,7 @@
 import { Amplify, defaultStorage } from '@aws-amplify/core';
 
 import { readFile } from '../utils/readFile';
+import { toBase64 } from '../utils/toBase64';
 import {
 	UploadDataInput,
 	UploadDataOutput,
@@ -124,7 +125,7 @@ export function uploadData(input: UploadDataInput): UploadDataOutput;
 
 export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
 	return uploadDataInternal(
-		{ amplify: Amplify, readFile },
+		{ amplify: Amplify, readFile, toBase64 },
 		{
 			...input,
 			options: {

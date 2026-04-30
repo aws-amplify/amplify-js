@@ -77,13 +77,13 @@ export const putObjectJob =
 
 		const checksumCRC32 =
 			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
-				? await calculateContentCRC32(data, ctx.readFile)
+				? await calculateContentCRC32(ctx, data)
 				: undefined;
 
 		const contentMD5 =
 			// check if checksum exists. ex: should not exist in react native
 			!checksumCRC32 && isObjectLockEnabled
-				? await calculateContentMd5(data, ctx.readFile)
+				? await calculateContentMd5(ctx, data)
 				: undefined;
 
 		const { ETag: eTag, VersionId: versionId } = await putObject(
