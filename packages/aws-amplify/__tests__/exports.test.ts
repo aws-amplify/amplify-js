@@ -237,18 +237,19 @@ describe('aws-amplify Exports', () => {
 
 	describe('Storage exports', () => {
 		it('should only export expected symbols from the top-level', () => {
+			// Note: This test runs with customExportConditions: ['node'] in jest.config.js,
+			// so the import resolves to the SERVER module (see package.json#exports["."]).
+			// The server module intentionally exposes a narrower surface — it omits
+			// `downloadData`, `isCancelError`, `StorageError`, and `DEFAULT_PART_SIZE`
+			// because those are client-only APIs.
 			expect(Object.keys(storageTopLevelExports).sort()).toEqual(
 				[
 					'uploadData',
-					'downloadData',
 					'remove',
 					'list',
 					'getProperties',
 					'copy',
 					'getUrl',
-					'isCancelError',
-					'StorageError',
-					'DEFAULT_PART_SIZE',
 				].sort(),
 			);
 		});

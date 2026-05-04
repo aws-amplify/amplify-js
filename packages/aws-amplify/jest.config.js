@@ -15,4 +15,7 @@ module.exports = {
 	moduleNameMapper: {
 		uuid: require.resolve('uuid'),
 	},
+	testEnvironmentOptions: {
+		customExportConditions: ['node'],
+	},
 };
