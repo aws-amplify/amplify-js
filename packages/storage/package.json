@@ -46,9 +46,6 @@
 			"server": [
 				"./dist/esm/server.d.ts"
 			],
-			"client": [
-				"./dist/esm/client.d.ts"
-			],
 			"s3/server": [
 				"./dist/esm/providers/s3/server.d.ts"
 			]
@@ -70,7 +67,6 @@
 		"internals",
 		"src",
 		"server",
-		"client",
 		"s3"
 	],
 	"dependencies": {
@@ -85,8 +81,9 @@
 		".": {
 			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
-			"import": "./dist/esm/index.mjs",
-			"require": "./dist/cjs/index.js"
+			"browser": "./dist/esm/index.mjs",
+			"import": "./dist/esm/server.mjs",
+			"require": "./dist/cjs/server.js"
 		},
 		"./internals": {
 			"types": "./dist/esm/internals/index.d.ts",
@@ -97,11 +94,6 @@
 			"types": "./dist/esm/server.d.ts",
 			"import": "./dist/esm/server.mjs",
 			"require": "./dist/cjs/server.js"
-		},
-		"./client": {
-			"types": "./dist/esm/client.d.ts",
-			"import": "./dist/esm/client.mjs",
-			"require": "./dist/cjs/client.js"
 		},
 		"./s3": {
 			"react-native": "./dist/cjs/providers/s3/index.js",

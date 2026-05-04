@@ -127,11 +127,6 @@
 			"import": "./dist/esm/storage/server.mjs",
 			"require": "./dist/cjs/storage/server.js"
 		},
-		"./storage/client": {
-			"types": "./dist/esm/storage/client.d.ts",
-			"import": "./dist/esm/storage/client.mjs",
-			"require": "./dist/cjs/storage/client.js"
-		},
 		"./storage/s3/server": {
 			"types": "./dist/esm/storage/s3/server.d.ts",
 			"import": "./dist/esm/storage/s3/server.mjs",
