@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { defaultStorage } from '@aws-amplify/core';
+import { Amplify, defaultStorage } from '@aws-amplify/core';
 
 import {
 	UploadDataInput,
@@ -20,8 +20,8 @@ import { uploadData as uploadDataInternal } from './internal/uploadData';
  * * Maximum object size is 5TB.
  * * Maximum object size if the size cannot be determined before upload is 50GB.
  *
- * @throws Service: `S3Exception` thrown when checking for existence of the object.
- * @throws Validation: `StorageValidationErrorCode` thrown when a validation error occurs.
+ * @throws S3Exception when the underlying S3 service returned error.
+ * @throws StorageValidationErrorCode when API call parameters are invalid.
  *
  * @param input - A `UploadDataWithPathInput` object.
  *
@@ -78,8 +78,8 @@ export function uploadData(
  * @deprecated The `key` and `accessLevel` parameters are deprecated and will be removed in next major version.
  * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/upload/#uploaddata | path} instead.
  *
- * @throws Service: `S3Exception` thrown when checking for existence of the object.
- * @throws Validation: `StorageValidationErrorCode` thrown when a validation error occurs.
+ * @throws S3Exception when the underlying S3 service returned error.
+ * @throws StorageValidationErrorCode when API call parameters are invalid.
  *
  * @param input - A `UploadDataInput` object.
  *
@@ -123,7 +123,7 @@ export function uploadData(
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
 export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
-	return uploadDataInternal({
+	return uploadDataInternal(Amplify, {
 		...input,
 		options: {
 			...input?.options,

@@ -21,6 +21,8 @@ export {
 export {
 	UploadDataOutput,
 	UploadDataWithPathOutput,
+	UploadDataServerOutput,
+	UploadDataServerWithPathOutput,
 	DownloadDataOutput,
 	DownloadDataWithPathOutput,
 	RemoveOutput,

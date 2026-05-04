@@ -88,6 +88,7 @@ describe('putObjectJob with key', () => {
 			const useAccelerateEndpoint = true;
 
 			const job = putObjectJob(
+				Amplify,
 				{
 					key: inputKey,
 					data,
@@ -155,6 +156,7 @@ describe('putObjectJob with key', () => {
 			},
 		};
 		const job = putObjectJob(
+			Amplify,
 			{
 				key: 'key',
 				data: 'data',
@@ -173,6 +175,7 @@ describe('putObjectJob with key', () => {
 			const mockRegion = 'region-1';
 
 			const job = putObjectJob(
+				Amplify,
 				{
 					key: 'key',
 					data,
@@ -207,6 +210,7 @@ describe('putObjectJob with key', () => {
 		it('should override bucket in putObject call when bucket as string', async () => {
 			const abortController = new AbortController();
 			const job = putObjectJob(
+				Amplify,
 				{
 					key: 'key',
 					data,
@@ -239,6 +243,7 @@ describe('putObjectJob with key', () => {
 	describe('cacheControl passed in option', () => {
 		it('should include CacheControl header', async () => {
 			const job = putObjectJob(
+				Amplify,
 				{
 					path: testPath,
 					data,
@@ -309,6 +314,7 @@ describe('putObjectJob with path', () => {
 			const useAccelerateEndpoint = true;
 
 			const job = putObjectJob(
+				Amplify,
 				{
 					path: inputPath,
 					data,
@@ -376,6 +382,7 @@ describe('putObjectJob with path', () => {
 			},
 		};
 		const job = putObjectJob(
+			Amplify,
 			{
 				path: testPath,
 				data,
@@ -390,6 +397,7 @@ describe('putObjectJob with path', () => {
 	describe('overwrite prevention', () => {
 		it('should include if-none-match header', async () => {
 			const job = putObjectJob(
+				Amplify,
 				{
 					path: testPath,
 					data,
@@ -416,6 +424,7 @@ describe('putObjectJob with path', () => {
 			const mockRegion = 'region-1';
 
 			const job = putObjectJob(
+				Amplify,
 				{
 					path: 'path/',
 					data,
@@ -450,6 +459,7 @@ describe('putObjectJob with path', () => {
 		it('should override bucket in putObject call when bucket as string', async () => {
 			const abortController = new AbortController();
 			const job = putObjectJob(
+				Amplify,
 				{
 					path: 'path/',
 					data,
@@ -482,6 +492,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const testData = 'data';
 			const job = putObjectJob(
+				Amplify,
 				{
 					key: 'image.jpg',
 					data: testData,
@@ -503,6 +514,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const file = new File(['content'], 'test.png', { type: 'image/png' });
 			const job = putObjectJob(
+				Amplify,
 				{
 					key: 'test.jpg', // Different extension to test File.type takes precedence
 					data: file,
@@ -524,6 +536,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const testData = 'data';
 			const job = putObjectJob(
+				Amplify,
 				{
 					key: 'image.jpg',
 					data: testData,
@@ -548,6 +561,7 @@ describe('putObjectJob with path', () => {
 	describe('cacheControl passed in option', () => {
 		it('should include CacheControl header', async () => {
 			const job = putObjectJob(
+				Amplify,
 				{
 					path: testPath,
 					data,
@@ -570,6 +584,7 @@ describe('putObjectJob with path', () => {
 
 		it('should NOT include CacheControl header', async () => {
 			const job = putObjectJob(
+				Amplify,
 				{
 					path: testPath,
 					data,
