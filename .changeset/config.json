@@ -1,21 +1,24 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
-  "changelog": [
-    "@changesets/changelog-github",
-    { "repo": "aws-amplify/amplify-js" }
-  ],
-  "snapshot": {
-      "useCalculatedVersion": true
-  },
-  "commit": false,
-  "fixed": [],
-  "linked": [],
-  "access": "public",
-  "baseBranch": "main",
-  "updateInternalDependencies": "patch",
-  "ignore": [
-    "@aws-amplify/react-native-example",
-    "@aws-amplify/rtn-passkeys-example",
-    "tsc-compliance-test"
-  ]
+	"$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
+	"changelog": [
+		"@changesets/changelog-github",
+		{ "repo": "aws-amplify/amplify-js" }
+	],
+	"snapshot": {
+		"useCalculatedVersion": true
+	},
+	"commit": false,
+	"fixed": [],
+	"linked": [],
+	"access": "public",
+	"baseBranch": "main",
+	"updateInternalDependencies": "patch",
+	"ignore": [
+		"@aws-amplify/react-native-example",
+		"@aws-amplify/rtn-passkeys-example",
+		"tsc-compliance-test"
+	],
+	"___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+		"onlyUpdatePeerDependentsWhenOutOfRange": true
+	}
 }
