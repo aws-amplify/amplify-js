@@ -22,16 +22,3 @@ export {
 	AUTH_KEY_PREFIX,
 } from '@aws-amplify/auth/cognito';
 export { DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE } from './constants';
-
-// Deprecated stub — kept for adapter-nextjs compilation until it migrates to configure()
-
-/** @deprecated Will be removed once adapter-nextjs migrates to configure(). */
-export function runWithAmplifyServerContext(
-	_resourceConfig: any,
-	_libraryOptions?: any,
-	_operation?: any,
-): Promise<any> {
-	throw new Error(
-		'runWithAmplifyServerContext is no longer supported. Use configure() to create an AmplifyContext instead.',
-	);
-}

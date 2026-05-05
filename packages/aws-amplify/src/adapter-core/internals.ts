@@ -14,36 +14,3 @@ export {
 	LegacyConfig,
 	AmplifyOutputsUnknown,
 } from '@aws-amplify/core/internals/utils';
-
-// Deprecated stubs — kept for adapter-nextjs compilation until it migrates to configure()
-
-/** @deprecated Will be removed once adapter-nextjs migrates to configure(). */
-export class AmplifyServerContextError extends Error {
-	constructor(params: { message: string; recoverySuggestion?: string }) {
-		super(params.message);
-		this.name = 'AmplifyServerContextError';
-	}
-}
-
-/** @deprecated Will be removed once adapter-nextjs migrates to configure(). */
-export function getAmplifyServerContext(_contextSpec: any): any {
-	throw new AmplifyServerContextError({
-		message:
-			'getAmplifyServerContext is no longer supported. Use configure() to create an AmplifyContext instead.',
-	});
-}
-
-/** @deprecated Will be removed once adapter-nextjs migrates to configure(). */
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace AmplifyServer {
-	export interface ContextSpec {
-		token: { value: symbol };
-	}
-	export interface ContextToken {
-		value: symbol;
-	}
-	export type RunOperationWithContext = <Result>(input: {
-		operation(contextSpec: ContextSpec): Result | Promise<Result>;
-		[key: string]: any;
-	}) => Promise<Result>;
-}
