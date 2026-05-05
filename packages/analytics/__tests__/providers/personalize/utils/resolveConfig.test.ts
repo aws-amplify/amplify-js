@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import {
 	DEFAULT_PERSONALIZE_CONFIG,
 	PERSONALIZE_FLUSH_SIZE_MAX,
@@ -15,18 +17,19 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 		flushInterval: 1000,
 	};
 
-	const createCtx = (analyticsConfig: Record<string, unknown> = {}) =>
-		({
-			resourcesConfig: { Analytics: analyticsConfig },
-			libraryOptions: {},
-			fetchAuthSession: jest.fn(),
-			clearCredentials: jest.fn(),
-			getTokens: jest.fn(),
-		}) as any;
+	const createCtx = (
+		resourcesConfig: Record<string, unknown> = {},
+	): AmplifyContext => ({
+		resourcesConfig,
+		libraryOptions: {},
+		fetchAuthSession: jest.fn(),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	});
 
 	it('returns required config', () => {
 		expect(
-			resolveConfig(createCtx({ Personalize: providedConfig })),
+			resolveConfig(createCtx({ Analytics: { Personalize: providedConfig } })),
 		).toStrictEqual({
 			...providedConfig,
 			bufferSize: providedConfig.flushSize + 1,
@@ -40,7 +43,7 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 		};
 
 		expect(
-			resolveConfig(createCtx({ Personalize: requiredFields })),
+			resolveConfig(createCtx({ Analytics: { Personalize: requiredFields } })),
 		).toStrictEqual({
 			...DEFAULT_PERSONALIZE_CONFIG,
 			region: requiredFields.region,
@@ -53,7 +56,7 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 		expect(() =>
 			resolveConfig(
 				createCtx({
-					Personalize: { ...providedConfig, region: undefined },
+					Analytics: { Personalize: { ...providedConfig, region: undefined } },
 				}),
 			),
 		).toThrow();
@@ -63,9 +66,11 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 		expect(() =>
 			resolveConfig(
 				createCtx({
-					Personalize: {
-						...providedConfig,
-						flushSize: PERSONALIZE_FLUSH_SIZE_MAX + 1,
+					Analytics: {
+						Personalize: {
+							...providedConfig,
+							flushSize: PERSONALIZE_FLUSH_SIZE_MAX + 1,
+						},
 					},
 				}),
 			),

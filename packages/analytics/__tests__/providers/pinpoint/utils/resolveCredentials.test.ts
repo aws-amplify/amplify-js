@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, fetchAuthSession } from '@aws-amplify/core';
 
 import { AnalyticsError } from '../../../../src/errors';
 import { resolveCredentials } from '../../../../src/providers/pinpoint/utils';
@@ -10,13 +10,13 @@ jest.mock('@aws-amplify/core');
 
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 
-const mockCtx = {
+const mockCtx: AmplifyContext = {
 	resourcesConfig: {},
 	libraryOptions: {},
 	fetchAuthSession: (...args: unknown[]) => mockFetchAuthSession(...args),
 	clearCredentials: jest.fn(),
 	getTokens: jest.fn(),
-} as any;
+};
 
 describe('Analytics Pinpoint Provider Util: resolveCredentials', () => {
 	const credentials = {

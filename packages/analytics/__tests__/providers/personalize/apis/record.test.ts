@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import {
 	autoTrackMedia,
@@ -24,13 +24,13 @@ import {
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/personalize/utils');
 
-const mockCtx = {
+const mockCtx: AmplifyContext = {
 	resourcesConfig: {},
 	libraryOptions: {},
 	fetchAuthSession: jest.fn(),
 	clearCredentials: jest.fn(),
 	getTokens: jest.fn(),
-} as any;
+};
 
 describe('Analytics Personalize API: record', () => {
 	const mockRecordInput: PersonalizeRecordInput = {

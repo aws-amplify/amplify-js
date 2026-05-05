@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import { resolveConfig } from '../../../../src/providers/kinesis-firehose/utils';
 import { DEFAULT_KINESIS_FIREHOSE_CONFIG } from '../../../../src/providers/kinesis-firehose/utils/constants';
 
@@ -13,18 +15,21 @@ describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 		resendLimit: 3,
 	};
 
-	const createCtx = (analyticsConfig: Record<string, unknown> = {}) =>
-		({
-			resourcesConfig: { Analytics: analyticsConfig },
-			libraryOptions: {},
-			fetchAuthSession: jest.fn(),
-			clearCredentials: jest.fn(),
-			getTokens: jest.fn(),
-		}) as any;
+	const createCtx = (
+		resourcesConfig: Record<string, unknown> = {},
+	): AmplifyContext => ({
+		resourcesConfig,
+		libraryOptions: {},
+		fetchAuthSession: jest.fn(),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	});
 
 	it('returns required config', () => {
 		expect(
-			resolveConfig(createCtx({ KinesisFirehose: providedConfig })),
+			resolveConfig(
+				createCtx({ Analytics: { KinesisFirehose: providedConfig } }),
+			),
 		).toStrictEqual(providedConfig);
 	});
 
@@ -36,7 +41,9 @@ describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 		};
 
 		expect(
-			resolveConfig(createCtx({ KinesisFirehose: requiredFields })),
+			resolveConfig(
+				createCtx({ Analytics: { KinesisFirehose: requiredFields } }),
+			),
 		).toStrictEqual({
 			...DEFAULT_KINESIS_FIREHOSE_CONFIG,
 			region: requiredFields.region,
@@ -48,7 +55,9 @@ describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 		expect(() =>
 			resolveConfig(
 				createCtx({
-					KinesisFirehose: { ...providedConfig, region: undefined },
+					Analytics: {
+						KinesisFirehose: { ...providedConfig, region: undefined },
+					},
 				}),
 			),
 		).toThrow();
@@ -58,9 +67,11 @@ describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 		expect(() =>
 			resolveConfig(
 				createCtx({
-					KinesisFirehose: {
-						...providedConfig,
-						flushSize: providedConfig.bufferSize + 1,
+					Analytics: {
+						KinesisFirehose: {
+							...providedConfig,
+							flushSize: providedConfig.bufferSize + 1,
+						},
 					},
 				}),
 			),

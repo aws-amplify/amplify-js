@@ -1,4 +1,4 @@
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, AmplifyContext, fetchAuthSession } from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
@@ -26,7 +26,7 @@ jest.mock('@aws-amplify/core', () => ({
 	})),
 }));
 
-const mockCtx = {
+const mockCtx: AmplifyContext = {
 	get resourcesConfig() {
 		return mockGetConfig();
 	},
@@ -34,7 +34,7 @@ const mockCtx = {
 	fetchAuthSession: (...args: any[]) => mockFetchAuthSession(...args),
 	clearCredentials: jest.fn(),
 	getTokens: jest.fn(),
-} as any;
+};
 
 ComprehendClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof DetectEntitiesCommand) {

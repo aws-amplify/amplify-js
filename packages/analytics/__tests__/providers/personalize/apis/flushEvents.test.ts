@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import {
 	getEventBuffer,
@@ -17,13 +17,13 @@ import { flushEvents } from '../../../../src/providers/personalize';
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/personalize/utils');
 
-const mockCtx = {
+const mockCtx: AmplifyContext = {
 	resourcesConfig: {},
 	libraryOptions: {},
 	fetchAuthSession: jest.fn(),
 	clearCredentials: jest.fn(),
 	getTokens: jest.fn(),
-} as any;
+};
 
 describe('Analytics Personalize API: flushEvents', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;

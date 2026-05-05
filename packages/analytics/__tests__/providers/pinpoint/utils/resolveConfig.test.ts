@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import { resolveConfig } from '../../../../src/providers/pinpoint/utils';
 
 describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
@@ -13,25 +15,28 @@ describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
 		resendLimit: 3,
 	};
 
-	const createCtx = (analyticsConfig: Record<string, unknown> = {}) =>
-		({
-			resourcesConfig: { Analytics: analyticsConfig },
-			libraryOptions: {},
-			fetchAuthSession: jest.fn(),
-			clearCredentials: jest.fn(),
-			getTokens: jest.fn(),
-		}) as any;
+	const createCtx = (
+		resourcesConfig: Record<string, unknown> = {},
+	): AmplifyContext => ({
+		resourcesConfig,
+		libraryOptions: {},
+		fetchAuthSession: jest.fn(),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	});
 
 	it('returns required config', () => {
 		expect(
-			resolveConfig(createCtx({ Pinpoint: pinpointConfig })),
+			resolveConfig(createCtx({ Analytics: { Pinpoint: pinpointConfig } })),
 		).toStrictEqual(pinpointConfig);
 	});
 
 	it('throws if appId is missing', () => {
 		expect(() =>
 			resolveConfig(
-				createCtx({ Pinpoint: { ...pinpointConfig, appId: undefined } }),
+				createCtx({
+					Analytics: { Pinpoint: { ...pinpointConfig, appId: undefined } },
+				}),
 			),
 		).toThrow();
 	});
@@ -39,7 +44,9 @@ describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
 	it('throws if region is missing', () => {
 		expect(() =>
 			resolveConfig(
-				createCtx({ Pinpoint: { ...pinpointConfig, region: undefined } }),
+				createCtx({
+					Analytics: { Pinpoint: { ...pinpointConfig, region: undefined } },
+				}),
 			),
 		).toThrow();
 	});

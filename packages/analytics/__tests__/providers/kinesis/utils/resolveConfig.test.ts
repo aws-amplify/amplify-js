@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
 import { DEFAULT_KINESIS_CONFIG } from '../../../../src/providers/kinesis/utils/constants';
 
@@ -13,19 +15,20 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 		resendLimit: 3,
 	};
 
-	const createCtx = (analyticsConfig: Record<string, unknown> = {}) =>
-		({
-			resourcesConfig: { Analytics: analyticsConfig },
-			libraryOptions: {},
-			fetchAuthSession: jest.fn(),
-			clearCredentials: jest.fn(),
-			getTokens: jest.fn(),
-		}) as any;
+	const createCtx = (
+		resourcesConfig: Record<string, unknown> = {},
+	): AmplifyContext => ({
+		resourcesConfig,
+		libraryOptions: {},
+		fetchAuthSession: jest.fn(),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	});
 
 	it('returns required config', () => {
-		expect(resolveConfig(createCtx({ Kinesis: kinesisConfig }))).toStrictEqual(
-			kinesisConfig,
-		);
+		expect(
+			resolveConfig(createCtx({ Analytics: { Kinesis: kinesisConfig } })),
+		).toStrictEqual(kinesisConfig);
 	});
 
 	it('use default config for optional fields', () => {
@@ -35,19 +38,21 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 			resendLimit: undefined,
 		};
 
-		expect(resolveConfig(createCtx({ Kinesis: requiredFields }))).toStrictEqual(
-			{
-				...DEFAULT_KINESIS_CONFIG,
-				region: requiredFields.region,
-				resendLimit: requiredFields.resendLimit,
-			},
-		);
+		expect(
+			resolveConfig(createCtx({ Analytics: { Kinesis: requiredFields } })),
+		).toStrictEqual({
+			...DEFAULT_KINESIS_CONFIG,
+			region: requiredFields.region,
+			resendLimit: requiredFields.resendLimit,
+		});
 	});
 
 	it('throws if region is missing', () => {
 		expect(() =>
 			resolveConfig(
-				createCtx({ Kinesis: { ...kinesisConfig, region: undefined } }),
+				createCtx({
+					Analytics: { Kinesis: { ...kinesisConfig, region: undefined } },
+				}),
 			),
 		).toThrow();
 	});
@@ -56,9 +61,11 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 		expect(() =>
 			resolveConfig(
 				createCtx({
-					Kinesis: {
-						...kinesisConfig,
-						flushSize: kinesisConfig.bufferSize + 1,
+					Analytics: {
+						Kinesis: {
+							...kinesisConfig,
+							flushSize: kinesisConfig.bufferSize + 1,
+						},
 					},
 				}),
 			),
