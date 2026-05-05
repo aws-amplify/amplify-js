@@ -7,22 +7,24 @@ import {
 	validationErrorMap,
 } from '../../src/errors';
 
-const mkAmplify = (endpoint = 'https://example.com/api', apiName = 'myAPI') =>
-	({
-		resourcesConfig: {
-			API: {
-				REST: {
-					[apiName]: {
-						endpoint,
-					},
+const mkAmplify = (
+	endpoint = 'https://example.com/api',
+	apiName = 'myAPI',
+): AmplifyContext => ({
+	resourcesConfig: {
+		API: {
+			REST: {
+				[apiName]: {
+					endpoint,
 				},
 			},
 		},
-		libraryOptions: {},
-		fetchAuthSession: jest.fn(),
-		clearCredentials: jest.fn(),
-		getTokens: jest.fn(),
-	}) as unknown as AmplifyContext;
+	},
+	libraryOptions: {},
+	fetchAuthSession: jest.fn(),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+});
 
 describe('resolveApiUrl', () => {
 	beforeEach(() => {

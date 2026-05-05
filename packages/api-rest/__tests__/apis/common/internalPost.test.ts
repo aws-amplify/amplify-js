@@ -429,7 +429,7 @@ describe('internal post', () => {
 
 	it('should use jittered-exponential-backoff retry strategy, even when configuring using library options', async () => {
 		expect.assertions(2);
-		const mockAmplifyInstanceWithNoRetry = {
+		const mockAmplifyInstanceWithNoRetry: AmplifyContext = {
 			...mockAmplifyInstance,
 			libraryOptions: {
 				API: {
@@ -440,7 +440,7 @@ describe('internal post', () => {
 					},
 				},
 			},
-		} as unknown as AmplifyContext;
+		};
 		await post(mockAmplifyInstanceWithNoRetry, {
 			url: apiGatewayUrl,
 			options: {
