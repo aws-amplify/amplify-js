@@ -1,5 +1,14 @@
 # Change Log
 
+## 4.8.7
+
+### Patch Changes
+
+- [#14788](https://github.com/aws-amplify/amplify-js/pull/14788) [`9fbd3ba`](https://github.com/aws-amplify/amplify-js/commit/9fbd3bae72bbbb00854affc8fdc9b18b13869afd) Thanks [@AdrianoNicolucci](https://github.com/AdrianoNicolucci)! - Remove unused uuid dependency from @aws-amplify/api-graphql, @aws-amplify/interactions, and @aws-amplify/predictions packages. All UUID generation is now consolidated through @aws-amplify/core's amplifyUuid wrapper, addressing security advisory GHSA-w5hq-g745-h8pq.
+
+- Updated dependencies [[`93487ff`](https://github.com/aws-amplify/amplify-js/commit/93487ff0967b8b4f752aca4aacd341052b343177)]:
+  - @aws-amplify/core@6.16.3
+
 ## 4.8.6
 
 ### Patch Changes

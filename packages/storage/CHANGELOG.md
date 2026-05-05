@@ -1,5 +1,15 @@
 # Change Log
 
+## 6.15.0
+
+### Minor Changes
+
+- [#14796](https://github.com/aws-amplify/amplify-js/pull/14796) [`d01b650`](https://github.com/aws-amplify/amplify-js/commit/d01b650a36bfb6d04cd6f946078b0988effa47d2) Thanks [@osama-rizk](https://github.com/osama-rizk)! - feat(storage): add server-side `uploadData` storage API.
+
+### Patch Changes
+
+- [#14793](https://github.com/aws-amplify/amplify-js/pull/14793) [`aa831db`](https://github.com/aws-amplify/amplify-js/commit/aa831db73e0bc5985c41907e159cc7fa4c81341d) Thanks [@osama-rizk](https://github.com/osama-rizk)! - fix(storage): merge authenticated and group permissions in `resolveLocationsForCurrentSession` so `allow.authenticated` and `allow.groups(...)` access rules are additive for users in a Cognito group, matching IAM. Fixes StorageBrowser hiding folders and under-reporting permissions when both rule types apply (aws-amplify/amplify-ui#6930).
+
 ## 6.14.0
 
 ### Minor Changes

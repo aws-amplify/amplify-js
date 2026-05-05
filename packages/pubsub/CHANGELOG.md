@@ -1,5 +1,12 @@
 # Change Log
 
+## 6.1.70
+
+### Patch Changes
+
+- Updated dependencies [[`93487ff`](https://github.com/aws-amplify/amplify-js/commit/93487ff0967b8b4f752aca4aacd341052b343177)]:
+  - @aws-amplify/auth@6.20.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
