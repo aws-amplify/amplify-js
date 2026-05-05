@@ -9,7 +9,6 @@ import configFixture from '../../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../../fixtures/modeled/schema';
 import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../../src/types';
 import { mockApiResponse, normalizePostGraphqlCalls } from '../../utils';
-import { post as postFn } from '@aws-amplify/api-rest/internals';
 
 jest.mock('@aws-amplify/api-rest/internals');
 

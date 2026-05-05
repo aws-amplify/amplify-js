@@ -7,7 +7,7 @@ import {
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
 
-export const mockAmplifyCtx = {
+export const mockAmplifyCtx: AmplifyContext = {
 	[AMPLIFY_CONTEXT_BRAND]: true,
 	resourcesConfig: {},
 	libraryOptions: {},
@@ -21,7 +21,7 @@ export const mockAmplifyCtx = {
 	}),
 	clearCredentials: jest.fn(),
 	getTokens: jest.fn(),
-} as unknown as AmplifyContext;
+};
 
 export function setupGlobalContext() {
 	setGlobalContext(mockAmplifyCtx);
