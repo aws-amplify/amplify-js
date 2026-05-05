@@ -3,13 +3,13 @@
 
 import { createConfigurationBuilder } from '@aws-amplify/core';
 
-import { configure } from '../src/configure';
+import { createAmplifyContext } from '../src/configure';
 
 import { amplifyOutputsFixture } from './fixtures/amplifyOutputs';
 
-describe('configure()', () => {
+describe('createAmplifyContext()', () => {
 	it('returns a frozen AmplifyContext from amplify_outputs fixture', () => {
-		const ctx = configure(amplifyOutputsFixture);
+		const ctx = createAmplifyContext(amplifyOutputsFixture);
 
 		expect(Object.isFrozen(ctx)).toBe(true);
 		expect(ctx.resourcesConfig.Auth?.Cognito.userPoolId).toBe(
@@ -34,16 +34,16 @@ describe('configure()', () => {
 	});
 
 	it('exposes fetchAuthSession, clearCredentials, and getTokens', () => {
-		const ctx = configure(amplifyOutputsFixture);
+		const ctx = createAmplifyContext(amplifyOutputsFixture);
 
 		expect(typeof ctx.fetchAuthSession).toBe('function');
 		expect(typeof ctx.clearCredentials).toBe('function');
 		expect(typeof ctx.getTokens).toBe('function');
 	});
 
-	it('supports reconfiguration by calling configure() again', () => {
-		const ctx1 = configure(amplifyOutputsFixture);
-		const ctx2 = configure({
+	it('supports reconfiguration by calling createAmplifyContext() again', () => {
+		const ctx1 = createAmplifyContext(amplifyOutputsFixture);
+		const ctx2 = createAmplifyContext({
 			...amplifyOutputsFixture,
 			auth: {
 				...amplifyOutputsFixture.auth,
@@ -61,9 +61,9 @@ describe('configure()', () => {
 	});
 });
 
-describe('configure() — resolveLocalLibraryOptions branches', () => {
+describe('createAmplifyContext() — resolveLocalLibraryOptions branches', () => {
 	it('returns empty options when no Auth config', () => {
-		const ctx = configure({
+		const ctx = createAmplifyContext({
 			version: '1.4',
 			storage: amplifyOutputsFixture.storage,
 		});
@@ -81,7 +81,7 @@ describe('configure() — resolveLocalLibraryOptions branches', () => {
 			getCredentialsAndIdentityId: jest.fn().mockResolvedValue(undefined),
 			clearCredentialsAndIdentityId: jest.fn(),
 		};
-		const ctx = configure(amplifyOutputsFixture, {
+		const ctx = createAmplifyContext(amplifyOutputsFixture, {
 			Auth: {
 				tokenProvider: mockTokenProvider as any,
 				credentialsProvider: mockCredentialsProvider as any,
@@ -93,30 +93,30 @@ describe('configure() — resolveLocalLibraryOptions branches', () => {
 	});
 
 	it('uses cookie storage when ssr is true', () => {
-		const ctx = configure(amplifyOutputsFixture, { ssr: true });
+		const ctx = createAmplifyContext(amplifyOutputsFixture, { ssr: true });
 		expect(ctx.resourcesConfig.Auth?.Cognito.userPoolId).toBe(
 			'eu-north-1_Ab12CdEfG',
 		);
 	});
 
 	it('delegates fetchAuthSession to AuthClass', () => {
-		const ctx = configure(amplifyOutputsFixture);
+		const ctx = createAmplifyContext(amplifyOutputsFixture);
 		expect(typeof ctx.fetchAuthSession).toBe('function');
 	});
 
 	it('delegates clearCredentials to AuthClass', () => {
-		const ctx = configure(amplifyOutputsFixture);
+		const ctx = createAmplifyContext(amplifyOutputsFixture);
 		expect(typeof ctx.clearCredentials).toBe('function');
 	});
 
 	it('delegates getTokens to AuthClass', () => {
-		const ctx = configure(amplifyOutputsFixture);
+		const ctx = createAmplifyContext(amplifyOutputsFixture);
 		expect(typeof ctx.getTokens).toBe('function');
 	});
 });
 
 describe('createConfigurationBuilder()', () => {
-	it('round-trips through configure()', () => {
+	it('round-trips through createAmplifyContext()', () => {
 		const config = createConfigurationBuilder()
 			.auth(amplifyOutputsFixture.auth)
 			.storage(amplifyOutputsFixture.storage)
@@ -126,7 +126,7 @@ describe('createConfigurationBuilder()', () => {
 		expect(config.version).toBe('1.4');
 		expect(Object.isFrozen(config)).toBe(true);
 
-		const ctx = configure(config);
+		const ctx = createAmplifyContext(config);
 
 		expect(ctx.resourcesConfig.Auth?.Cognito.userPoolId).toBe(
 			'eu-north-1_Ab12CdEfG',
@@ -149,7 +149,7 @@ describe('createConfigurationBuilder()', () => {
 			})
 			.build();
 
-		const ctx = configure(config);
+		const ctx = createAmplifyContext(config);
 
 		expect(ctx.resourcesConfig.Auth?.Cognito.userPoolId).toBe(
 			'eu-north-1_Replaced',

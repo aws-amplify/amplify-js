@@ -25,7 +25,11 @@ describe('aws-amplify Exports', () => {
 	describe('Top-level exports', () => {
 		it('should only export expected symbols', () => {
 			expect(Object.keys(topLevelExports).sort()).toEqual(
-				['Amplify', 'configure', 'createConfigurationBuilder'].sort(),
+				[
+					'Amplify',
+					'createAmplifyContext',
+					'createConfigurationBuilder',
+				].sort(),
 			);
 		});
 	});

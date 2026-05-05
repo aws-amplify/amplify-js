@@ -53,8 +53,8 @@ describe('Re-export function coverage', () => {
 		}
 	});
 
-	it('top-level configure and Amplify are exported', () => {
-		expect(typeof topLevel.configure).toBe('function');
+	it('top-level createAmplifyContext and Amplify are exported', () => {
+		expect(typeof topLevel.createAmplifyContext).toBe('function');
 		expect(typeof topLevel.Amplify).toBe('object');
 		expect(typeof topLevel.Amplify.configure).toBe('function');
 		expect(typeof topLevel.Amplify.getConfig).toBe('function');

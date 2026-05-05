@@ -35,15 +35,15 @@ import {
  *
  * @example
  * ```ts
- * import { configure } from 'aws-amplify';
+ * import { createAmplifyContext } from 'aws-amplify';
  * import outputs from './amplify_outputs.json';
  *
- * const ctx = configure(outputs);
+ * const ctx = createAmplifyContext(outputs);
  * // Pass ctx explicitly to category APIs:
  * await signIn(ctx, { username, password });
  * ```
  */
-export function configure(
+export function createAmplifyContext(
 	resourceConfig: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
 	libraryOptions?: LibraryOptions,
 ): AmplifyContext {
