@@ -3,17 +3,17 @@
 import { AMPLIFY_SYMBOL, Hub } from '../Hub';
 import { deepFreeze } from '../utils';
 import { parseAmplifyConfig } from '../libraryUtils';
+import { AmplifyContext } from '../context/AmplifyContext';
+import { AMPLIFY_CONTEXT_BRAND } from '../context/contextBrand';
+import { setGlobalContext } from '../context/globalContext';
 
+import { AuthClass } from './Auth';
 import {
 	AmplifyOutputsUnknown,
 	LegacyConfig,
 	LibraryOptions,
 	ResourcesConfig,
 } from './types';
-import { AmplifyContext } from './AmplifyContext';
-import { AuthClass } from './Auth';
-import { AMPLIFY_CONTEXT_BRAND } from './contextBrand';
-import { setGlobalContext } from './globalContext';
 
 export class AmplifyClass {
 	private isConfigured = false;

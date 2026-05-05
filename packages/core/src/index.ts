@@ -46,20 +46,20 @@ export {
 } from './singleton';
 
 // AmplifyContext — the singleton-free contract for category APIs
-export { AmplifyContext } from './singleton/AmplifyContext';
+export { AmplifyContext } from './context/AmplifyContext';
 
 // Context branding — runtime identification of AmplifyContext objects
 export {
 	isAmplifyContext,
 	AMPLIFY_CONTEXT_BRAND,
-} from './singleton/contextBrand';
+} from './context/contextBrand';
 
 // Global context management
 export {
 	getActiveContext,
 	getGlobalContext,
 	hasGlobalContext,
-} from './singleton/globalContext';
+} from './context/globalContext';
 
 // Configuration Builder
 export { createConfigurationBuilder } from './configurationBuilder';

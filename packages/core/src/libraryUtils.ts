@@ -149,13 +149,10 @@ export {
 } from './utils/sessionListener';
 
 // Global context internals
-export {
-	setGlobalContext,
-	clearGlobalContext,
-} from './singleton/globalContext';
+export { setGlobalContext, clearGlobalContext } from './context/globalContext';
 
 // Context argument resolution
-export { resolveCtxArgs } from './singleton/resolveCtxArgs';
+export { resolveCtxArgs } from './context/resolveCtxArgs';
 
 // Storage internals
 export { InMemoryStorage } from './storage/InMemoryStorage';

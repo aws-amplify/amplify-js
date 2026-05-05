@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthSession, FetchAuthSessionOptions } from '../Auth/types';
-import { getActiveContext } from '../globalContext';
+import { getActiveContext } from '../../context/globalContext';
 
 /**
  * Fetch the auth session including the tokens and credentials if they are available. By default it
