@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server.js';
-import {
-	AmplifyServerContextError,
-	CookieStorage,
-} from 'aws-amplify/adapter-core/internals';
+import { CookieStorage } from 'aws-amplify/adapter-core/internals';
 
 import { NextServer } from '../types';
 import { isServerSideAuthAllowedCookie } from '../auth/utils';
@@ -78,10 +75,9 @@ export const createCookieStorageAdapterFromNextServerContext = async (
 	}
 
 	// This should not happen normally.
-	throw new AmplifyServerContextError({
-		message:
-			'Attempted to create cookie storage adapter from an unsupported Next.js server context.',
-	});
+	throw new Error(
+		'Attempted to create cookie storage adapter from an unsupported Next.js server context.',
+	);
 };
 
 const createCookieStorageAdapterFromNextRequestAndNextResponse = (

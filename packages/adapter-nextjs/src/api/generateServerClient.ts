@@ -9,10 +9,6 @@ import {
 	generateClientWithAmplifyInstance,
 } from 'aws-amplify/api/internals';
 import { generateClient } from 'aws-amplify/api/server';
-import {
-	AmplifyServerContextError,
-	getAmplifyServerContext,
-} from 'aws-amplify/adapter-core/internals';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
 
 import { NextServer } from '../types';
@@ -43,13 +39,9 @@ export function generateServerClientUsingCookies<
 		CookiesClientParams = DefaultCommonClientOptions & CookiesClientParams,
 >(options: Options): V6ClientSSRCookies<T, Options> {
 	if (typeof options.cookies !== 'function') {
-		throw new AmplifyServerContextError({
-			message:
-				'generateServerClientUsingCookies is only compatible with the `cookies` Dynamic Function available in Server Components.',
-			// TODO: link to docs
-			recoverySuggestion:
-				'use `generateServerClient` inside of `runWithAmplifyServerContext` with the `request` object.',
-		});
+		throw new Error(
+			'generateServerClientUsingCookies is only compatible with the `cookies` Dynamic Function available in Server Components.',
+		);
 	}
 
 	const { runWithAmplifyServerContext, resourcesConfig } =
@@ -61,8 +53,7 @@ export function generateServerClientUsingCookies<
 	const getAmplify = (fn: (amplify: any) => Promise<any>) =>
 		runWithAmplifyServerContext({
 			nextServerContext: { cookies: options.cookies },
-			operation: contextSpec =>
-				fn(getAmplifyServerContext(contextSpec).amplify),
+			operation: contextSpec => fn(contextSpec),
 		});
 
 	const { cookies: _cookies, config: _config, ...params } = options;

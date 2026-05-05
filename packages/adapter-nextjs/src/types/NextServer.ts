@@ -6,11 +6,10 @@ import { NextRequest, NextResponse } from 'next/server.js';
 import { cookies } from 'next/headers.js';
 import {
 	AmplifyOutputsUnknown,
-	AmplifyServer,
 	CookieStorage,
 	LegacyConfig,
 } from 'aws-amplify/adapter-core/internals';
-import { ResourcesConfig } from 'aws-amplify';
+import { AmplifyContext, ResourcesConfig } from 'aws-amplify';
 
 import { CreateAuthRouteHandlers } from '../auth/types';
 
@@ -71,7 +70,7 @@ export declare namespace NextServer {
 	export interface RunWithContextInput<OperationResult> {
 		nextServerContext: Context | null;
 		operation(
-			contextSpec: AmplifyServer.ContextSpec,
+			contextSpec: AmplifyContext,
 		): OperationResult | Promise<OperationResult>;
 	}
 

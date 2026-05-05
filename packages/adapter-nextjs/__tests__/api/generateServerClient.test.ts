@@ -1,4 +1,4 @@
-import { AmplifyContext, ResourcesConfig } from 'aws-amplify';
+import { ResourcesConfig } from 'aws-amplify';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
 
 import {
@@ -109,7 +109,7 @@ describe('generateServerClient', () => {
 				response: mockedRes,
 			},
 			operation: async contextSpec => {
-				await client.graphql(contextSpec as unknown as AmplifyContext, {
+				await client.graphql(contextSpec, {
 					query: '',
 				});
 			},

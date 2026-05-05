@@ -1,14 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig } from 'aws-amplify';
+import { ResourcesConfig, createAmplifyContext } from 'aws-amplify';
 import { sharedInMemoryStorage } from 'aws-amplify/utils';
 import { KeyValueStorageMethodValidator } from 'aws-amplify/adapter-core/internals';
 import {
 	createAWSCredentialsAndIdentityIdProvider,
 	createKeyValueStorageFromCookieStorageAdapter,
 	createUserPoolsTokenProvider,
-	runWithAmplifyServerContext as runWithAmplifyServerContextCore,
 } from 'aws-amplify/adapter-core';
 
 import { NextServer } from '../types';
@@ -75,18 +74,18 @@ export const createRunWithAmplifyServerContext = ({
 					keyValueStorage,
 				);
 
-				return runWithAmplifyServerContextCore(
-					resourcesConfig,
-					{
-						Auth: { credentialsProvider, tokenProvider },
-					},
-					operation,
-				);
+				const amplifyContext = createAmplifyContext(resourcesConfig, {
+					Auth: { credentialsProvider, tokenProvider },
+				});
+
+				return operation(amplifyContext);
 			}
 
 			// Otherwise it may be the case that auth is not used, e.g. API key.
 			// Omitting the `Auth` in the second parameter.
-			return runWithAmplifyServerContextCore(resourcesConfig, {}, operation);
+			const amplifyContext = createAmplifyContext(resourcesConfig, {});
+
+			return operation(amplifyContext);
 		};
 
 	return runWithAmplifyServerContext;

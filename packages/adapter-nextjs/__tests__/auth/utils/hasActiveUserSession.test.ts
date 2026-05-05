@@ -2,6 +2,7 @@ import { getCurrentUser } from 'aws-amplify/auth/server';
 import { NextRequest } from 'next/server';
 import { AuthUser } from 'aws-amplify/auth';
 import { NextApiRequest } from 'next';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	hasActiveUserSessionWithAppRouter,
@@ -17,7 +18,13 @@ const mockRunWithAmplifyServerContext =
 const mockGetCurrentUser = jest.mocked(getCurrentUser);
 
 describe('hasUserSignedIn', () => {
-	const mockContextSpec = { token: { value: Symbol('mock') } };
+	const mockContextSpec = {
+		resourcesConfig: {},
+		libraryOptions: {},
+		fetchAuthSession: jest.fn(),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	} as unknown as AmplifyContext;
 	const mockCurrentUserResult: AuthUser = {
 		userId: 'mockUserId',
 		username: 'mockUsername',

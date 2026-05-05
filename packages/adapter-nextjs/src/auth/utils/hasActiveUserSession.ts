@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest } from 'next/server';
-import { AmplifyContext } from '@aws-amplify/core';
 import { getCurrentUser } from 'aws-amplify/auth/server';
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -21,7 +20,7 @@ export const hasActiveUserSessionWithAppRouter = async ({
 		await runWithAmplifyServerContext({
 			nextServerContext: { request, response: dummyResponse },
 			operation(contextSpec) {
-				return getCurrentUser(contextSpec as unknown as AmplifyContext);
+				return getCurrentUser(contextSpec);
 			},
 		});
 
@@ -45,7 +44,7 @@ export const hasActiveUserSessionWithPagesRouter = async ({
 		await runWithAmplifyServerContext({
 			nextServerContext: { request, response },
 			operation(contextSpec) {
-				return getCurrentUser(contextSpec as unknown as AmplifyContext);
+				return getCurrentUser(contextSpec);
 			},
 		});
 
