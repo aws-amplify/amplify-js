@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { OAuthConfig } from 'aws-amplify/adapter-core/internals';
+import { AmplifyError, OAuthConfig } from 'aws-amplify/adapter-core/internals';
 
 export const resolveRedirectSignInUrl = (
 	origin: string,
@@ -33,7 +33,9 @@ export const resolveRedirectSignOutUrl = (
 	return redirectUrl;
 };
 
-const createError = (urlType: string): Error =>
-	new Error(
-		`No valid ${urlType} url found in the OAuth config. Check the OAuth config and ensure the ${urlType} url is valid.`,
-	);
+const createError = (urlType: string): AmplifyError =>
+	new AmplifyError({
+		name: 'InvalidRedirectUrlError',
+		message: `No valid ${urlType} url found in the OAuth config.`,
+		recoverySuggestion: `Check the OAuth config and ensure the ${urlType} url is valid.`,
+	});

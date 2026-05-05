@@ -18,13 +18,13 @@ const mockRunWithAmplifyServerContext =
 const mockGetCurrentUser = jest.mocked(getCurrentUser);
 
 describe('hasUserSignedIn', () => {
-	const mockContextSpec = {
+	const mockContextSpec: AmplifyContext = {
 		resourcesConfig: {},
 		libraryOptions: {},
 		fetchAuthSession: jest.fn(),
 		clearCredentials: jest.fn(),
 		getTokens: jest.fn(),
-	} as unknown as AmplifyContext;
+	};
 	const mockCurrentUserResult: AuthUser = {
 		userId: 'mockUserId',
 		username: 'mockUsername',

@@ -11,6 +11,7 @@ export {
 	assertTokenProviderConfig,
 	urlSafeEncode,
 	decodeJWT,
+	AmplifyError,
 	LegacyConfig,
 	AmplifyOutputsUnknown,
 } from '@aws-amplify/core/internals/utils';
