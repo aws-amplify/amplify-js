@@ -1,5 +1,12 @@
 # Change Log
 
+## 6.3.26
+
+### Patch Changes
+
+- Updated dependencies [[`9fbd3ba`](https://github.com/aws-amplify/amplify-js/commit/9fbd3bae72bbbb00854affc8fdc9b18b13869afd)]:
+  - @aws-amplify/api-graphql@4.8.7
+
 ## 6.3.25
 
 ### Patch Changes

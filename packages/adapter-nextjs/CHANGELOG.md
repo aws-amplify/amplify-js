@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.7.3
+
+### Patch Changes
+
+- [#14791](https://github.com/aws-amplify/amplify-js/pull/14791) [`cbd2307`](https://github.com/aws-amplify/amplify-js/commit/cbd2307a14ea21c7c3c1bfdc7b0fcee5cf981888) Thanks [@osama-rizk](https://github.com/osama-rizk)! - fix(adapter-nextjs): match percent-encoded cookie names on read so sign-out clears Cognito session cookies for usernames containing URL-unsafe characters (e.g. `@`)
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
