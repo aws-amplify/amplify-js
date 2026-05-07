@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
-import { AmplifyErrorCode } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyErrorCode,
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { signInWithUserAuth } from '../../../src/providers/cognito/apis/signInWithUserAuth';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
@@ -46,9 +49,7 @@ const authConfig = {
 };
 
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-Amplify.configure({
-	Auth: authConfig,
-});
+setGlobalContext(createMockAmplifyContext({ Auth: authConfig }));
 
 describe('signInWithUserAuth API tests', () => {
 	// Update how we get the mock
@@ -188,10 +189,6 @@ describe('signInWithUserAuth API tests', () => {
 			},
 		};
 
-		Amplify.configure({
-			Auth: authConfigWithPasswordless,
-		});
-
 		const mockResponse: InitiateAuthCommandOutput = {
 			ChallengeName: 'EMAIL_OTP',
 			Session: 'mockSession',
@@ -215,11 +212,6 @@ describe('signInWithUserAuth API tests', () => {
 			preferredChallenge: 'EMAIL_OTP',
 			password: undefined,
 		});
-
-		// Reset config
-		Amplify.configure({
-			Auth: authConfig,
-		});
 	});
 
 	test('should prioritize user-provided preferredChallenge over config', async () => {
@@ -233,10 +225,6 @@ describe('signInWithUserAuth API tests', () => {
 				},
 			},
 		};
-
-		Amplify.configure({
-			Auth: authConfigWithPasswordless,
-		});
 
 		const mockResponse: InitiateAuthCommandOutput = {
 			ChallengeName: 'SMS_OTP',
@@ -262,11 +250,6 @@ describe('signInWithUserAuth API tests', () => {
 			preferredChallenge: 'SMS_OTP',
 			password: undefined,
 		});
-
-		// Reset config
-		Amplify.configure({
-			Auth: authConfig,
-		});
 	});
 
 	test('should throw error when service error has no sign in result', async () => {
@@ -280,4 +263,8 @@ describe('signInWithUserAuth API tests', () => {
 			}),
 		).rejects.toThrow(AmplifyErrorCode.Unknown);
 	});
+});
+
+afterAll(() => {
+	clearGlobalContext();
 });

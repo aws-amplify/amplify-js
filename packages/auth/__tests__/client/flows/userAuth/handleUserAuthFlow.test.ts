@@ -1,10 +1,14 @@
-import { Amplify } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { createInitiateAuthClient } from '../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../../src/providers/cognito/factories';
 import { InitiateAuthCommandOutput } from '../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { getUserContextData } from '../../../../src/providers/cognito/utils/userContextData';
 import { handleUserAuthFlow } from '../../../../src/client/flows/userAuth/handleUserAuthFlow';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 // Mock dependencies
 jest.mock('@aws-amplify/core/internals/utils', () => ({
@@ -32,9 +36,7 @@ const authConfig = {
 	},
 };
 
-Amplify.configure({
-	Auth: authConfig,
-});
+setGlobalContext(createMockAmplifyContext({ Auth: authConfig }));
 
 describe('handleUserAuthFlow', () => {
 	const mockConfig = {
@@ -355,4 +357,8 @@ describe('handleUserAuthFlow', () => {
 			}),
 		).rejects.toThrow('Auth failed');
 	});
+});
+
+afterAll(() => {
+	clearGlobalContext();
 });

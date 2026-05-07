@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
-
 import {
-	cognitoUserPoolsTokenProvider,
-	confirmSignUp,
-	signUp,
-} from '../../../src/providers/cognito';
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
+
+import { confirmSignUp, signUp } from '../../../src/providers/cognito';
 import {
 	autoSignIn,
 	resetAutoSignIn,
@@ -24,6 +23,7 @@ import { cacheCognitoTokens } from '../../../src/providers/cognito/tokenProvider
 import { dispatchSignedInHubEvent } from '../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
 import { handleUserAuthFlow } from '../../../src/client/flows/userAuth/handleUserAuthFlow';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../src/errors/constants';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
@@ -45,10 +45,9 @@ const authConfig = {
 		userPoolId: 'us-west-2_zzzzz',
 	},
 };
-cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-Amplify.configure({
-	Auth: authConfig,
-});
+
+const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+setGlobalContext(mockCtx);
 
 const { user1 } = authAPITestParams;
 
@@ -72,6 +71,10 @@ describe('autoSignIn()', () => {
 	const mockHandleUserAuthFlow = jest.mocked(handleUserAuthFlow);
 	// to get around debounce on autoSignIn() APIs
 	jest.useFakeTimers();
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	describe('handleUserSRPAuthFlow', () => {
 		beforeEach(() => {

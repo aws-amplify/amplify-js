@@ -1,13 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmDeviceException } from '../../../src/providers/cognito/types/errors';
 import { getNewDeviceMetadata } from '../../../src/providers/cognito/utils/getNewDeviceMetadata';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 import { createConfirmDeviceClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../src/providers/cognito/factories');
 jest.mock(
@@ -16,15 +20,15 @@ jest.mock(
 
 const userPoolId = 'us-west-2_zzzzz';
 
-Amplify.configure({
-	Auth: {
-		Cognito: {
-			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId,
-			identityPoolId: 'us-west-2:xxxxxx',
-		},
+const authConfig = {
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId,
+		identityPoolId: 'us-west-2:xxxxxx',
 	},
-});
+};
+
+setGlobalContext(createMockAmplifyContext({ Auth: authConfig }));
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
@@ -119,4 +123,8 @@ describe('test getNewDeviceMetadata API', () => {
 			endpointOverride: expectedEndpoint,
 		});
 	});
+});
+
+afterAll(() => {
+	clearGlobalContext();
 });

@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { signIn } from '../../../src/providers/cognito';
 import { signInWithSRP } from '../../../src/providers/cognito/apis/signInWithSRP';
@@ -49,9 +52,8 @@ const authConfig = {
 };
 
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-Amplify.configure({
-	Auth: authConfig,
-});
+const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+setGlobalContext(mockCtx);
 
 const mockedDeviceMetadata = {
 	deviceKey: 'mockedKey',
@@ -174,8 +176,8 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithSRP API should return a SignInResult', async () => {
-		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
-		const result = await signInWithSRP(mockCtx, {
+		const ctx = createMockAmplifyContext({ Auth: authConfig });
+		const result = await signInWithSRP(ctx, {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 		});
@@ -184,10 +186,10 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleUserSRPFlow  should be called with clientMetada from request', async () => {
-		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+		const ctx = createMockAmplifyContext({ Auth: authConfig });
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithSRP(mockCtx, {
+		await signInWithSRP(ctx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,
@@ -324,4 +326,8 @@ describe('Cognito ASF', () => {
 			}),
 		);
 	});
+});
+
+afterAll(() => {
+	clearGlobalContext();
 });

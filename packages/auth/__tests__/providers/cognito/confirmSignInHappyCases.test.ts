@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	confirmSignIn,
@@ -21,6 +24,7 @@ import {
 	createVerifySoftwareTokenClient,
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
@@ -37,6 +41,10 @@ const authConfig = {
 	},
 };
 
+const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+setGlobalContext(mockCtx);
+cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+
 //  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
 // before returning an `AuthSignInResult`
 const mockedGetCurrentUser = jest.mocked(getCurrentUser);
@@ -49,8 +57,6 @@ describe('confirmSignIn API happy path cases', () => {
 	const mockCreateInitiateAuthClient = jest.mocked(createInitiateAuthClient);
 
 	beforeEach(async () => {
-		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-
 		handleChallengeNameSpy = jest
 			.spyOn(signInHelpers, 'handleChallengeName')
 			.mockImplementation(
@@ -84,10 +90,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn test SMS_MFA ChallengeName.`, async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
-
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -140,10 +142,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn with EMAIL_OTP ChallengeName`, async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
-
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -189,9 +187,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn tests MFA_SETUP challengeName`, async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -229,10 +224,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn with SELECT_MFA_TYPE challengeName and SMS response`, async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
-
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -293,10 +284,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn with SELECT_MFA_TYPE challengeName and TOTP response`, async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
-
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -347,10 +334,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn with SELECT_MFA_TYPE challengeName and EMAIL response`, async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
-
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -408,10 +391,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test('handleChallengeName should be called with clientMetadata and  usersub', async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
-
 		const mockedUserSub = '1111-2222-3333-4444';
 		const activeSignInSession = '1234234232';
 		const activeChallengeName = 'SMS_MFA';
@@ -525,10 +504,6 @@ describe('Cognito ASF', () => {
 	const { username } = authAPITestParams.user1;
 	const { password } = authAPITestParams.user1;
 	beforeEach(() => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
-
 		// load Cognito ASF polyfill
 		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
@@ -645,9 +620,6 @@ describe('Cognito ASF', () => {
 	});
 
 	test(`confirmSignIn tests MFA_SETUP sends UserContextData`, async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
 		jest.spyOn(signInHelpers, 'handleUserSRPAuthFlow').mockImplementationOnce(
 			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
 				ChallengeName: 'SOFTWARE_TOKEN_MFA',
@@ -684,9 +656,6 @@ describe('Cognito ASF', () => {
 	});
 
 	test(`confirmSignIn tests NEW_PASSWORD_REQUIRED sends UserContextData`, async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
 		jest.spyOn(signInHelpers, 'handleUserSRPAuthFlow').mockImplementationOnce(
 			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
 				ChallengeName: 'NEW_PASSWORD_REQUIRED',
@@ -724,9 +693,6 @@ describe('Cognito ASF', () => {
 		);
 	});
 	test(`confirmSignIn tests CUSTOM_CHALLENGE sends UserContextData`, async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
 		jest.spyOn(signInHelpers, 'handleUserSRPAuthFlow').mockImplementationOnce(
 			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
 				ChallengeName: 'CUSTOM_CHALLENGE',
@@ -769,9 +735,6 @@ describe('confirmSignIn MFA_SETUP challenge happy path cases', () => {
 	const { username, password } = authAPITestParams.user1;
 
 	test('confirmSignIn with multiple MFA_SETUP options using SOFTWARE_TOKEN_MFA', async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
 		jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -849,10 +812,6 @@ describe('confirmSignIn MFA_SETUP challenge happy path cases', () => {
 	});
 
 	test('confirmSignIn with multiple MFA_SETUP options using EMAIL_OTP', async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
-
 		jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -916,10 +875,6 @@ describe('confirmSignIn MFA_SETUP challenge happy path cases', () => {
 	});
 
 	test('confirmSignIn with single MFA_SETUP option using EMAIL_OTP', async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
-
 		jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -970,9 +925,6 @@ describe('confirmSignIn MFA_SETUP challenge happy path cases', () => {
 	});
 
 	test('confirmSignIn with single MFA_SETUP option using SOFTWARE_TOKEN_MFA', async () => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
 		jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -1035,4 +987,8 @@ describe('confirmSignIn MFA_SETUP challenge happy path cases', () => {
 		expect(confirmSignInResult.isSignedIn).toBe(true);
 		expect(confirmSignInResult.nextStep.signInStep).toBe('DONE');
 	});
+});
+
+afterAll(() => {
+	clearGlobalContext();
 });
