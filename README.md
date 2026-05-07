@@ -16,6 +16,10 @@
 > **Note**
 > aws-amplify 6 has been released. If you are looking for upgrade guidance [click here](#notice)
 
+> **⚠️ Deprecation Notice**
+> **All AWS Amplify JavaScript library versions other than v5 and v6 are deprecated.**
+> Only **v5.x.x** and **v6.x.x** are actively supported. Versions **v4 and below** are deprecated. If you are using any version other than v5 or v6, we strongly recommend upgrading to v6 as soon as possible.
+
 ### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications
 
 AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations. AWS Amplify goes well with any JavaScript based frontend workflow and React Native for mobile developers.
@@ -146,42 +150,6 @@ If you are using AWS Amplify JavaScript library v4 and below, we strongly recomm
   + Amplify.configure(...);
   + // ...
   + Auth.signIn(...);
-  ```
-
-### Amplify 4.x.x has breaking changes for React Native. Please see the breaking changes below:
-
-- If you are using React Native (vanilla or Expo), you will need to add the following React Native community dependencies:
-  - `@react-native-community/netinfo`
-  - `@react-native-async-storage/async-storage`
-
-```
-// React Native
-yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage
-npx pod-install
-
-// Expo
-yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage
-```
-
-### Amplify 3.x.x has breaking changes. Please see the breaking changes below:
-
-- `AWS.credentials` and `AWS.config` don’t exist anymore in Amplify JavaScript.
-  - Both options will not be available to use in version 3. You will not be able to use and set your own credentials.
-  - For more information on this change, please see the [AWS SDK for JavaScript v3](https://github.com/aws/aws-sdk-js-v3/#configuration)
-- `aws-sdk@2.x` has been removed from `Amplify@3.x.x` in favor of [version 3 of aws-sdk-js](https://github.com/aws/aws-sdk-js-v3). We recommend to migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) if you rely on AWS services that are not supported by Amplify, since [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) is imported modularly.
-
-If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or rely on aws-sdk@2.x, you will need to import it separately.
-
-- If you are using exported paths within your Amplify JS application, (e.g. `import from "@aws-amplify/analytics/lib/Analytics"`) this will now break and no longer will be supported. You will need to change to named imports:
-
-  ```js
-  import { Analytics } from 'aws-amplify';
-  ```
-
-- If you are using categories as `Amplify.<Category>`, this will no longer work and we recommend to import the category you are needing to use:
-
-  ```js
-  import { Auth } from 'aws-amplify';
   ```
 
 ### DataStore Docs
