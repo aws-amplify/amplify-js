@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../src/errors/AuthError';
@@ -10,14 +9,10 @@ import { VerifySoftwareTokenException } from '../../../src/providers/cognito/typ
 import { verifyTOTPSetup } from '../../../src/providers/cognito';
 import { createVerifySoftwareTokenClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -31,7 +26,6 @@ describe('verifyTOTPSetup', () => {
 	const code = '123456';
 	const friendlyDeviceName = 'FriendlyDeviceName';
 	// assert mocks
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 	const mockVerifySoftwareToken = jest.fn();
 	const mockCreateVerifySoftwareTokenClient = jest.mocked(
 		createVerifySoftwareTokenClient,
@@ -40,9 +34,18 @@ describe('verifyTOTPSetup', () => {
 		createCognitoUserPoolEndpointResolver,
 	);
 
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
-		mockFetchAuthSession.mockResolvedValue({
+		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
 	});
@@ -56,12 +59,12 @@ describe('verifyTOTPSetup', () => {
 
 	afterEach(() => {
 		mockVerifySoftwareToken.mockReset();
-		mockFetchAuthSession.mockClear();
+		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
 		mockCreateVerifySoftwareTokenClient.mockClear();
 	});
 
 	it('should return successful response', async () => {
-		await verifyTOTPSetup({
+		await verifyTOTPSetup(mockCtx, {
 			code,
 			options: { friendlyDeviceName },
 		});
@@ -78,7 +81,7 @@ describe('verifyTOTPSetup', () => {
 
 	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
 		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
-		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+		const endpointCtx = createMockAmplifyContext({
 			Auth: {
 				Cognito: {
 					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -88,8 +91,11 @@ describe('verifyTOTPSetup', () => {
 				},
 			},
 		});
+		(endpointCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+			tokens: { accessToken: decodeJWT(mockAccessToken) },
+		});
 
-		await verifyTOTPSetup({
+		await verifyTOTPSetup(endpointCtx, {
 			code,
 			options: { friendlyDeviceName },
 		});
@@ -102,7 +108,7 @@ describe('verifyTOTPSetup', () => {
 	it('should throw an error when code is empty', async () => {
 		expect.assertions(2);
 		try {
-			await verifyTOTPSetup({ code: '' });
+			await verifyTOTPSetup(mockCtx, { code: '' });
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptyVerifyTOTPSetupCode);
@@ -117,7 +123,7 @@ describe('verifyTOTPSetup', () => {
 			);
 		});
 		try {
-			await verifyTOTPSetup({ code });
+			await verifyTOTPSetup(mockCtx, { code });
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
