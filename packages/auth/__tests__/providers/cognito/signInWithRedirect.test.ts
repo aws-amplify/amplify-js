@@ -57,6 +57,8 @@ jest.mock('@aws-amplify/core', () => {
 		ConsoleLogger: jest.fn().mockImplementation(() => {
 			return { warn: jest.fn() };
 		}),
+		hasGlobalContext: jest.fn(() => false),
+		getActiveContext: jest.fn(),
 		syncSessionStorage: {
 			setItem: jest.fn((key, value) => {
 				window.sessionStorage.setItem(key, value);
