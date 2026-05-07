@@ -1,5 +1,20 @@
 # Change Log
 
+## 6.17.0
+
+### Minor Changes
+
+- [#14796](https://github.com/aws-amplify/amplify-js/pull/14796) [`d01b650`](https://github.com/aws-amplify/amplify-js/commit/d01b650a36bfb6d04cd6f946078b0988effa47d2) Thanks [@osama-rizk](https://github.com/osama-rizk)! - feat(storage): add server-side `uploadData` storage API.
+
+### Patch Changes
+
+- Updated dependencies [[`93487ff`](https://github.com/aws-amplify/amplify-js/commit/93487ff0967b8b4f752aca4aacd341052b343177), [`aa831db`](https://github.com/aws-amplify/amplify-js/commit/aa831db73e0bc5985c41907e159cc7fa4c81341d), [`d01b650`](https://github.com/aws-amplify/amplify-js/commit/d01b650a36bfb6d04cd6f946078b0988effa47d2)]:
+  - @aws-amplify/auth@6.20.0
+  - @aws-amplify/core@6.16.3
+  - @aws-amplify/storage@6.15.0
+  - @aws-amplify/api@6.3.26
+  - @aws-amplify/datastore@5.1.7
+
 ## 6.16.4
 
 ### Patch Changes

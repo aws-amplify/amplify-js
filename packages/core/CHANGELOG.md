@@ -1,5 +1,11 @@
 # Change Log
 
+## 6.16.3
+
+### Patch Changes
+
+- [#14756](https://github.com/aws-amplify/amplify-js/pull/14756) [`93487ff`](https://github.com/aws-amplify/amplify-js/commit/93487ff0967b8b4f752aca4aacd341052b343177) Thanks [@piotrekwitkowski](https://github.com/piotrekwitkowski)! - Add custom headers support for Cognito Auth requests via `libraryOptions.Auth.headers`
+
 ## 6.16.2
 
 ### Patch Changes
