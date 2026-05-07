@@ -22,3 +22,8 @@ export {
 	AUTH_KEY_PREFIX,
 } from '@aws-amplify/auth/cognito';
 export { DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE } from './constants';
+
+// Backwards-compat: AmplifyServer.ContextSpec → AmplifyContext
+export { type AmplifyContext as ContextSpec } from '@aws-amplify/core';
+export { AmplifyServer } from './AmplifyServer';
+export { AmplifyServerContextError } from '@aws-amplify/core';

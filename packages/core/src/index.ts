@@ -48,6 +48,9 @@ export {
 // AmplifyContext — the singleton-free contract for category APIs
 export { AmplifyContext } from './context/AmplifyContext';
 
+/** @deprecated Use AmplifyContext instead. */
+export type { AmplifyContext as ContextSpec } from './context/AmplifyContext';
+
 // Context branding — runtime identification of AmplifyContext objects
 export {
 	isAmplifyContext,
@@ -102,3 +105,6 @@ export { ConsoleLogger } from './Logger';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
+
+// Errors
+export { AmplifyServerContextError } from './errors/AmplifyServerContextError';
