@@ -20,12 +20,7 @@ jobs:
   setup:
     if: |
       github.event.pull_request.head.repo.full_name == github.repository &&
-      (contains(github.event.pull_request.labels.*.name, 'run-tests') ||
-       github.head_ref == 'e2e/storage-getUrl-put-and-server-uploadData')
-    # TEMPORARY: the second OR clause above auto-triggers e2e on every push to the
-    # e2e/storage-getUrl-put-and-server-uploadData branch so adding the 'run-tests'
-    # label on each synchronize isn't required. Revert to the label-only check
-    # before merging this branch to main.
+      contains(github.event.pull_request.labels.*.name, 'run-tests')
     runs-on: ubuntu-latest
     permissions:
       statuses: write # This is required for running set-status actions
