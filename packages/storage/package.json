@@ -81,9 +81,8 @@
 		".": {
 			"react-native": "./dist/cjs/index.js",
 			"types": "./dist/esm/index.d.ts",
-			"browser": "./dist/esm/index.mjs",
-			"import": "./dist/esm/server.mjs",
-			"require": "./dist/cjs/server.js"
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js"
 		},
 		"./internals": {
 			"types": "./dist/esm/internals/index.d.ts",

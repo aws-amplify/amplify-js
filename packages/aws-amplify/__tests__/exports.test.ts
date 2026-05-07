@@ -237,22 +237,18 @@ describe('aws-amplify Exports', () => {
 
 	describe('Storage exports', () => {
 		it('should only export expected symbols from the top-level', () => {
-			// This suite runs under the `node` Jest project (see jest.config.js),
-			// so `@aws-amplify/storage` resolves to its server bundle via
-			// `package.json#exports["."].import/require`. The server bundle
-			// intentionally exposes a narrower surface — it omits
-			// `downloadData`, `isCancelError`, `StorageError`, and
-			// `DEFAULT_PART_SIZE` because those are client-only APIs. The
-			// full client surface is asserted in `exports.browser.test.ts`
-			// under the `browser` Jest project.
 			expect(Object.keys(storageTopLevelExports).sort()).toEqual(
 				[
 					'uploadData',
+					'downloadData',
 					'remove',
 					'list',
 					'getProperties',
 					'copy',
 					'getUrl',
+					'isCancelError',
+					'StorageError',
+					'DEFAULT_PART_SIZE',
 				].sort(),
 			);
 		});
