@@ -14,14 +14,9 @@ jobs:
       - name: Read integ config files
         id: load_config
         run: |
-          # TEMPORARY: branch e2e/storage-getUrl-put-and-server-uploadData only needs storage tests.
-          # Revert the two lines below before merging this branch to main (see original commented lines).
-          # Original: echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
-          echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c '[.[] | select(.category == "storage")]')" >> $GITHUB_OUTPUT
+          echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
           echo "INTEG_CONFIG_HEADLESS=$(cat .github/integ-config/integ-all-headless.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
-          # TEMPORARY: detox native tests are not exercised by JS storage changes on this branch.
-          # Original: echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_OUTPUT
-          echo "DETOX_INTEG_CONFIG=[]" >> $GITHUB_OUTPUT
+          echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_OUTPUT
         working-directory: ./amplify-js
     outputs:
       integ-config: ${{ steps.load_config.outputs.INTEG_CONFIG }}
@@ -71,9 +66,6 @@ jobs:
   detox-e2e-test-runner:
     name: E2E test runner
     needs: e2e-prep
-    # TEMPORARY: skip detox (native) e2e on this storage-only branch.
-    # Revert to the original (remove this `if:` line) before merging to main.
-    if: fromJSON(needs.e2e-prep.outputs.detox-integ-config)[0] != null
     strategy:
       matrix:
         integ-config: ${{ fromJson(needs.e2e-prep.outputs.detox-integ-config) }}
