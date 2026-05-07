@@ -41,6 +41,8 @@ export {
 	deleteWebAuthnCredential,
 } from '@aws-amplify/auth';
 
+export { fetchAuthSession } from '@aws-amplify/core';
+
 export type {
 	// Inputs
 	ConfirmResetPasswordInput,

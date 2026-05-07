@@ -185,6 +185,7 @@ describe('aws-amplify Exports', () => {
 					'fetchDevices',
 					'autoSignIn',
 					'decodeJWT',
+					'fetchAuthSession',
 					'associateWebAuthnCredential',
 					'listWebAuthnCredentials',
 					'deleteWebAuthnCredential',

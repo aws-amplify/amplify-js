@@ -13,6 +13,7 @@ import {
 	ResourcesConfig,
 	defaultStorage,
 	getGlobalContext,
+	hasGlobalContext,
 } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
@@ -48,17 +49,22 @@ export const Amplify = {
 	 * APIs can be called without passing a context explicitly.
 	 *
 	 * @remarks
-	 * This API does not perform any merging of either `resourcesConfig` or
-	 * `libraryOptions`. The most recently provided values will be used.
+	 * If `libraryOptions` is not provided, the previously configured
+	 * `libraryOptions` are preserved (merge behavior). If provided, the new
+	 * values replace the previous ones.
 	 */
 	configure(
 		resourceConfig: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
 		libraryOptions?: LibraryOptions,
 	): void {
 		const resolvedResourceConfig = parseAmplifyConfig(resourceConfig);
+		const previousLibraryOptions = hasGlobalContext()
+			? getGlobalContext().libraryOptions
+			: undefined;
 		const resolvedLibraryOptions = resolveLibraryOptions(
 			resolvedResourceConfig,
 			libraryOptions,
+			previousLibraryOptions,
 		);
 
 		const auth = new AuthClass();
@@ -136,7 +142,13 @@ export const Amplify = {
 function resolveLibraryOptions(
 	resourceConfig: ResourcesConfig,
 	libraryOptions?: LibraryOptions,
+	previousLibraryOptions?: LibraryOptions,
 ): LibraryOptions {
+	// If no new libraryOptions provided, preserve previous
+	if (!libraryOptions && previousLibraryOptions) {
+		return previousLibraryOptions;
+	}
+
 	if (!resourceConfig.Auth) {
 		return libraryOptions ?? {};
 	}
