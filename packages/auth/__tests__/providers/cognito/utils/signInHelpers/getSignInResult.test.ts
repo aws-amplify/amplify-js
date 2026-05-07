@@ -1,19 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import { ChallengeName } from '../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { getSignInResult } from '../../../../../src/providers/cognito/utils/signInHelpers';
 import { AuthSignInOutput } from '../../../../../src/types';
-import { setUpGetConfig } from '../../testUtils/setUpGetConfig';
 import { createAssociateSoftwareTokenClient } from '../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
 jest.mock(
 	'../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
@@ -51,7 +44,6 @@ describe('getSignInResult', () => {
 	});
 
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
 		mockCreateAssociateSoftwareTokenClient.mockReturnValue(
 			mockAssociateSoftwareToken,
 		);

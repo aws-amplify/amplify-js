@@ -1,25 +1,12 @@
-import { Amplify } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { createListWebAuthnCredentialsClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { ListWebAuthnCredentialsInput } from '../../../src';
 import { mockUserCredentials } from '../../mockData';
-import { setUpGetConfig } from '../../providers/cognito/testUtils/setUpGetConfig';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
 import { listWebAuthnCredentials } from '../../../src/foundation/apis';
 import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(() => ({
-				tokens: { accessToken: decodeJWT(mockAccessToken) },
-			})),
-		},
-	},
-}));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -50,8 +37,6 @@ describe('listWebAuthnCredentials', () => {
 	});
 
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
-
 		mockCreateListWebAuthnCredentialsClient.mockReturnValue(
 			mockListWebAuthnCredentials,
 		);
