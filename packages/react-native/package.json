@@ -53,7 +53,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/react-native"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
