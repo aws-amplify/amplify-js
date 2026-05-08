@@ -2,7 +2,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Amplify, Cache, ConsoleLogger, Hub } from '@aws-amplify/core';
+import {
+	Cache,
+	ConsoleLogger,
+	Hub,
+	getActiveContext,
+	hasGlobalContext,
+} from '@aws-amplify/core';
 import {
 	Draft,
 	Patch,
@@ -1394,7 +1400,6 @@ enum DataStoreState {
 // https://github.com/aws-amplify/amplify-js/pull/10477/files#r1007363485
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
-	private InternalAPI = InternalAPI;
 	private Cache = Cache;
 
 	// Non-null assertions (bang operator) have been added to most of these properties
@@ -1425,7 +1430,7 @@ class DataStore {
 	private storageAdapter!: Adapter;
 	// object that gets passed to descendent classes. Allows us to pass these down by reference
 	private amplifyContext: AmplifyContext = {
-		InternalAPI: this.InternalAPI,
+		InternalAPI: undefined as any,
 	};
 
 	private connectivityMonitor?: DataStoreConnectivity;
@@ -2457,7 +2462,10 @@ class DataStore {
 	};
 
 	configure = (config: DataStoreConfig = {}) => {
-		this.amplifyContext.InternalAPI = this.InternalAPI;
+		const ctx = hasGlobalContext()
+			? getActiveContext()
+			: ({ resourcesConfig: {}, libraryOptions: {} } as any);
+		this.amplifyContext.InternalAPI = InternalAPI(ctx);
 
 		const {
 			DataStore: configDataStore,
@@ -2471,7 +2479,8 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
-		const currentAppSyncConfig = Amplify.getConfig().API?.GraphQL;
+		const currentAppSyncConfig = (this.amplifyContext as any).resourcesConfig
+			?.API?.GraphQL;
 
 		const appSyncConfig = {
 			aws_appsync_graphqlEndpoint: currentAppSyncConfig?.endpoint,
@@ -2496,7 +2505,7 @@ class DataStore {
 
 		switch (authModeStrategyType) {
 			case AuthModeStrategyType.MULTI_AUTH:
-				this.authModeStrategy = multiAuthStrategy(this.amplifyContext);
+				this.authModeStrategy = multiAuthStrategy(this.amplifyContext as any);
 				break;
 			case AuthModeStrategyType.DEFAULT:
 				this.authModeStrategy = defaultAuthStrategy;

@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server.js';
 import {
-	AmplifyServerContextError,
+	AmplifyError,
 	CookieStorage,
 } from 'aws-amplify/adapter-core/internals';
 
@@ -78,7 +78,8 @@ export const createCookieStorageAdapterFromNextServerContext = async (
 	}
 
 	// This should not happen normally.
-	throw new AmplifyServerContextError({
+	throw new AmplifyError({
+		name: 'UnsupportedServerContextError',
 		message:
 			'Attempted to create cookie storage adapter from an unsupported Next.js server context.',
 	});

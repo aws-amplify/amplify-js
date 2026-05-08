@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { uploadData } from '../../../../../../src/providers/s3/apis/internal/uploadData';
 import { MAX_OBJECT_SIZE } from '../../../../../../src/providers/s3/utils/constants';
@@ -25,7 +25,13 @@ jest.mock(
 	'../../../../../../src/providers/s3/apis/internal/uploadData/multipart',
 );
 
-const mockAmplifyInstance = {} as AmplifyClassV6;
+const mockCtx: AmplifyContext = {
+	resourcesConfig: {},
+	libraryOptions: {},
+	fetchAuthSession: jest.fn().mockResolvedValue({}),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
 
 const testPath = 'testPath/object';
 const validBucketOwner = '111122223333';
@@ -52,7 +58,7 @@ describe('uploadData with key', () => {
 				key: 'key',
 				data: { size: MAX_OBJECT_SIZE + 1 } as any,
 			};
-			expect(() => uploadData(mockAmplifyInstance, mockUploadInput)).toThrow(
+			expect(() => uploadData(mockCtx, mockUploadInput)).toThrow(
 				expect.objectContaining(
 					validationErrorMap[StorageValidationErrorCode.ObjectIsTooLarge],
 				),
@@ -61,7 +67,7 @@ describe('uploadData with key', () => {
 
 		it('should throw if data size is unknown', async () => {
 			expect(() =>
-				uploadData(mockAmplifyInstance, {
+				uploadData(mockCtx, {
 					key: 'key',
 					data: {} as any,
 				}),
@@ -76,7 +82,7 @@ describe('uploadData with key', () => {
 	describe('use putObject for small uploads', () => {
 		const smallData = { size: 5 * 1024 * 1024 } as any;
 		it('should use putObject if data size is <= 5MB', async () => {
-			uploadData(mockAmplifyInstance, {
+			uploadData(mockCtx, {
 				key: 'key',
 				data: smallData,
 			});
@@ -90,10 +96,10 @@ describe('uploadData with key', () => {
 				data: '', // 0 bytes
 			};
 
-			uploadData(mockAmplifyInstance, testInput);
+			uploadData(mockCtx, testInput);
 
 			expect(mockPutObjectJob).toHaveBeenCalledWith(
-				mockAmplifyInstance,
+				mockCtx,
 				expect.objectContaining(testInput),
 				expect.any(AbortSignal),
 				expect.any(Number),
@@ -104,7 +110,7 @@ describe('uploadData with key', () => {
 		it('should use uploadTask', async () => {
 			mockPutObjectJob.mockReturnValueOnce('putObjectJob');
 			mockCreateUploadTask.mockReturnValueOnce('uploadTask');
-			const task = uploadData(mockAmplifyInstance, {
+			const task = uploadData(mockCtx, {
 				key: 'key',
 				data: smallData,
 			});
@@ -122,7 +128,7 @@ describe('uploadData with key', () => {
 	describe('use multipartUpload for large uploads', () => {
 		const biggerData = { size: 5 * 1024 * 1024 + 1 } as any;
 		it('should use multipartUpload if data size is > 5MB', async () => {
-			uploadData(mockAmplifyInstance, {
+			uploadData(mockCtx, {
 				key: 'key',
 				data: biggerData,
 			});
@@ -132,7 +138,7 @@ describe('uploadData with key', () => {
 
 		it('should use uploadTask', async () => {
 			mockCreateUploadTask.mockReturnValueOnce('uploadTask');
-			const task = uploadData(mockAmplifyInstance, {
+			const task = uploadData(mockCtx, {
 				key: 'key',
 				data: biggerData,
 			});
@@ -149,7 +155,7 @@ describe('uploadData with key', () => {
 		});
 
 		it('should call getMultipartUploadHandlers', async () => {
-			uploadData(mockAmplifyInstance, {
+			uploadData(mockCtx, {
 				key: 'key',
 				data: biggerData,
 			});
@@ -169,7 +175,7 @@ describe('uploadData with path', () => {
 				path: testPath,
 				data: { size: MAX_OBJECT_SIZE + 1 } as any,
 			};
-			expect(() => uploadData(mockAmplifyInstance, mockUploadInput)).toThrow(
+			expect(() => uploadData(mockCtx, mockUploadInput)).toThrow(
 				expect.objectContaining(
 					validationErrorMap[StorageValidationErrorCode.ObjectIsTooLarge],
 				),
@@ -178,7 +184,7 @@ describe('uploadData with path', () => {
 
 		it('should throw if data size is unknown', async () => {
 			expect(() =>
-				uploadData(mockAmplifyInstance, {
+				uploadData(mockCtx, {
 					path: testPath,
 					data: {} as any,
 				}),
@@ -208,10 +214,10 @@ describe('uploadData with path', () => {
 					data: smallData,
 				};
 
-				uploadData(mockAmplifyInstance, testInput);
+				uploadData(mockCtx, testInput);
 
 				expect(mockPutObjectJob).toHaveBeenCalledWith(
-					mockAmplifyInstance,
+					mockCtx,
 					expect.objectContaining(testInput),
 					expect.any(AbortSignal),
 					expect.any(Number),
@@ -226,10 +232,10 @@ describe('uploadData with path', () => {
 				data: '', // 0 bytes
 			};
 
-			uploadData(mockAmplifyInstance, testInput);
+			uploadData(mockCtx, testInput);
 
 			expect(mockPutObjectJob).toHaveBeenCalledWith(
-				mockAmplifyInstance,
+				mockCtx,
 				expect.objectContaining(testInput),
 				expect.any(AbortSignal),
 				expect.any(Number),
@@ -241,7 +247,7 @@ describe('uploadData with path', () => {
 			mockPutObjectJob.mockReturnValueOnce('putObjectJob');
 			mockCreateUploadTask.mockReturnValueOnce('uploadTask');
 
-			const task = uploadData(mockAmplifyInstance, {
+			const task = uploadData(mockCtx, {
 				path: testPath,
 				data: smallData,
 			});
@@ -265,11 +271,11 @@ describe('uploadData with path', () => {
 				data: biggerData,
 			};
 
-			uploadData(mockAmplifyInstance, testInput);
+			uploadData(mockCtx, testInput);
 
 			expect(mockPutObjectJob).not.toHaveBeenCalled();
 			expect(mockGetMultipartUploadHandlers).toHaveBeenCalledWith(
-				mockAmplifyInstance,
+				mockCtx,
 				expect.objectContaining(testInput),
 				expect.any(Number),
 			);
@@ -277,7 +283,7 @@ describe('uploadData with path', () => {
 
 		it('should use uploadTask', async () => {
 			mockCreateUploadTask.mockReturnValueOnce('uploadTask');
-			const task = uploadData(mockAmplifyInstance, {
+			const task = uploadData(mockCtx, {
 				path: testPath,
 				data: biggerData,
 			});
@@ -298,7 +304,7 @@ describe('uploadData with path', () => {
 		it('should include expectedBucketOwner in headers when provided for singlepartUpload', async () => {
 			mockPutObjectJob.mockReturnValueOnce('putObjectJob');
 			const smallData = 'smallData';
-			uploadData(mockAmplifyInstance, {
+			uploadData(mockCtx, {
 				path: testPath,
 				data: smallData,
 				options: {
@@ -306,7 +312,7 @@ describe('uploadData with path', () => {
 				},
 			});
 			expect(mockPutObjectJob).toHaveBeenCalledWith(
-				mockAmplifyInstance,
+				mockCtx,
 				expect.objectContaining({
 					path: 'testPath/object',
 					data: 'smallData',
@@ -329,9 +335,9 @@ describe('uploadData with path', () => {
 					expectedBucketOwner: validBucketOwner,
 				},
 			};
-			uploadData(mockAmplifyInstance, testInput);
+			uploadData(mockCtx, testInput);
 			expect(mockGetMultipartUploadHandlers).toHaveBeenCalledWith(
-				mockAmplifyInstance,
+				mockCtx,
 				{
 					...testInput,
 					options: expect.objectContaining(testInput.options),

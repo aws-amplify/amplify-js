@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { resolveConfig } from '../../../../src/providers/pinpoint/utils';
 
@@ -14,35 +14,40 @@ describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
 		flushInterval: 50,
 		resendLimit: 3,
 	};
-	// create spies
-	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
 
-	beforeEach(() => {
-		getConfigSpy.mockReset();
+	const createCtx = (
+		resourcesConfig: Record<string, unknown> = {},
+	): AmplifyContext => ({
+		resourcesConfig,
+		libraryOptions: {},
+		fetchAuthSession: jest.fn(),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
 	});
 
 	it('returns required config', () => {
-		getConfigSpy.mockReturnValue({
-			Analytics: { Pinpoint: pinpointConfig },
-		});
-		expect(resolveConfig()).toStrictEqual(pinpointConfig);
+		expect(
+			resolveConfig(createCtx({ Analytics: { Pinpoint: pinpointConfig } })),
+		).toStrictEqual(pinpointConfig);
 	});
 
 	it('throws if appId is missing', () => {
-		getConfigSpy.mockReturnValue({
-			Analytics: {
-				Pinpoint: { ...pinpointConfig, appId: undefined } as any,
-			},
-		});
-		expect(resolveConfig).toThrow();
+		expect(() =>
+			resolveConfig(
+				createCtx({
+					Analytics: { Pinpoint: { ...pinpointConfig, appId: undefined } },
+				}),
+			),
+		).toThrow();
 	});
 
 	it('throws if region is missing', () => {
-		getConfigSpy.mockReturnValue({
-			Analytics: {
-				Pinpoint: { ...pinpointConfig, region: undefined } as any,
-			},
-		});
-		expect(resolveConfig).toThrow();
+		expect(() =>
+			resolveConfig(
+				createCtx({
+					Analytics: { Pinpoint: { ...pinpointConfig, region: undefined } },
+				}),
+			),
+		).toThrow();
 	});
 });

@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import {
 	DialogState,
 	LexRuntimeServiceClient,
@@ -11,7 +12,6 @@ import {
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
 
 import {
 	InteractionsMessage,
@@ -34,10 +34,15 @@ type AWSLexProviderSendResponse =
 	| PostContentCommandOutputFormatted;
 
 class AWSLexProvider {
+	private ctx: AmplifyContext;
 	private readonly _botsCompleteCallback: Record<
 		string,
 		InteractionsOnCompleteCallback
 	> = {};
+
+	constructor(ctx: AmplifyContext) {
+		this.ctx = ctx;
+	}
 
 	/**
 	 * @deprecated
@@ -75,7 +80,7 @@ class AWSLexProvider {
 		// check if credentials are present
 		let session;
 		try {
-			session = await fetchAuthSession();
+			session = await this.ctx.fetchAuthSession();
 		} catch (error) {
 			return Promise.reject(new Error('No credentials'));
 		}
@@ -168,4 +173,5 @@ class AWSLexProvider {
 	}
 }
 
-export const lexProvider = new AWSLexProvider();
+export const createLexProvider = (ctx: AmplifyContext) =>
+	new AWSLexProvider(ctx);

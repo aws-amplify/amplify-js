@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthDeliveryMedium } from '../../../types';
@@ -28,15 +29,24 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws - {@link GetUserAttributeVerificationException}
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const sendUserAttributeVerificationCode = async (
+export async function sendUserAttributeVerificationCode(
 	input: SendUserAttributeVerificationCodeInput,
-): Promise<SendUserAttributeVerificationCodeOutput> => {
+): Promise<SendUserAttributeVerificationCodeOutput>;
+export async function sendUserAttributeVerificationCode(
+	ctx: AmplifyContext,
+	input: SendUserAttributeVerificationCodeInput,
+): Promise<SendUserAttributeVerificationCodeOutput>;
+export async function sendUserAttributeVerificationCode(
+	...args: any[]
+): Promise<SendUserAttributeVerificationCodeOutput> {
+	const [ctx, input] =
+		resolveCtxArgs<SendUserAttributeVerificationCodeInput>(args);
 	const { userAttributeKey, options } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const clientMetadata = options?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await ctx.fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const getUserAttributeVerificationCode =
 		createGetUserAttributeVerificationCodeClient({
@@ -66,4 +76,4 @@ export const sendUserAttributeVerificationCode = async (
 		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
 		attributeName: AttributeName as AuthVerifiableAttributeKey,
 	};
-};
+}

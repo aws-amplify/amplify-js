@@ -12,6 +12,7 @@ import { getRedirectUrl } from '../../../../../src/providers/cognito/utils/oauth
 import { oAuthStore } from '../../../../../src/providers/cognito/utils/oauth/oAuthStore';
 import { mockAuthConfigWithOAuth } from '../../../../mockData';
 import type { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow');
@@ -50,6 +51,9 @@ const mockGetRedirectUrl = getRedirectUrl as jest.Mock;
 describe('attemptCompleteOAuthFlow', () => {
 	const windowSpy = jest.spyOn(window, 'window', 'get');
 	const mockRedirectUrl = 'http://localhost:3000/';
+	const mockCtx = createMockAmplifyContext({
+		Auth: mockAuthConfigWithOAuth.Auth,
+	});
 
 	beforeAll(() => {
 		(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(false);
@@ -82,7 +86,7 @@ describe('attemptCompleteOAuthFlow', () => {
 
 	it('invokes config asserters', async () => {
 		const cognitoConfig = mockAuthConfigWithOAuth.Auth.Cognito;
-		await attemptCompleteOAuthFlow(cognitoConfig);
+		await attemptCompleteOAuthFlow(mockCtx, cognitoConfig);
 
 		expect(mockAssertTokenProviderConfig).toHaveBeenCalledWith(cognitoConfig);
 		expect(mockAssertOAuthConfig).toHaveBeenCalledWith(cognitoConfig);
@@ -90,7 +94,10 @@ describe('attemptCompleteOAuthFlow', () => {
 	});
 
 	it('does nothing when `await oAuthStore.loadOAuthInFlight()` resolves `false` (there is no inflight oauth process)', async () => {
-		await attemptCompleteOAuthFlow(mockAuthConfigWithOAuth.Auth.Cognito);
+		await attemptCompleteOAuthFlow(
+			mockCtx,
+			mockAuthConfigWithOAuth.Auth.Cognito,
+		);
 
 		expect(oAuthStore.loadOAuthInFlight).toHaveBeenCalledTimes(1);
 		expect(mockCompleteOAuthFlow).not.toHaveBeenCalled();
@@ -99,9 +106,13 @@ describe('attemptCompleteOAuthFlow', () => {
 	it('invokes `completeOAuthFlow` to complete an inflight oauth process', async () => {
 		(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(true);
 
-		await attemptCompleteOAuthFlow(mockAuthConfigWithOAuth.Auth.Cognito);
+		await attemptCompleteOAuthFlow(
+			mockCtx,
+			mockAuthConfigWithOAuth.Auth.Cognito,
+		);
 
 		expect(mockCompleteOAuthFlow).toHaveBeenCalledWith(
+			mockCtx,
 			expect.objectContaining({
 				currentUrl: 'http://localhost:3000/',
 				redirectUri: 'http://localhost:3000/',
@@ -118,7 +129,7 @@ describe('attemptCompleteOAuthFlow', () => {
 			throw new Error('some error');
 		});
 		expect(
-			attemptCompleteOAuthFlow(mockAuthConfigWithOAuth.Auth.Cognito),
+			attemptCompleteOAuthFlow(mockCtx, mockAuthConfigWithOAuth.Auth.Cognito),
 		).resolves.toBeUndefined();
 	});
 });

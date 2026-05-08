@@ -1,4 +1,4 @@
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, AmplifyContext, fetchAuthSession } from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
@@ -33,6 +33,16 @@ jest.mock('@aws-amplify/core', () => ({
 		debug: jest.fn(),
 	})),
 }));
+
+const mockCtx: AmplifyContext = {
+	get resourcesConfig() {
+		return mockGetConfig();
+	},
+	libraryOptions: {},
+	fetchAuthSession: (...args: any[]) => mockFetchAuthSession(...args),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
 
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
 const resetTranslateMock = () => {
@@ -171,7 +181,7 @@ describe('Predictions convert provider test', () => {
 					convert: options,
 				},
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 			expect(
 				predictionsProvider.convert(validTranslateTextInput),
 			).resolves.toMatchObject({ language: 'es', text: 'translatedText' });
@@ -183,7 +193,7 @@ describe('Predictions convert provider test', () => {
 					convert: options,
 				},
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 
 			expect(
 				predictionsProvider.convert(validTranslateTextInput),
@@ -203,7 +213,7 @@ describe('Predictions convert provider test', () => {
 					convert: options,
 				},
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 			jest.spyOn(TranslateClient.prototype, 'send').mockImplementation(() => {
 				return Promise.reject('error');
 			});
@@ -227,7 +237,7 @@ describe('Predictions convert provider test', () => {
 					convert: options,
 				},
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 			window.URL.createObjectURL = jest.fn();
 			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
 				return 'dummyURL';
@@ -249,7 +259,7 @@ describe('Predictions convert provider test', () => {
 					convert: options,
 				},
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 			expect(
 				predictionsProvider.convert(validTextToSpeechInput),
 			).rejects.toThrow(
@@ -268,7 +278,7 @@ describe('Predictions convert provider test', () => {
 					convert: options,
 				},
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 			jest.spyOn(PollyClient.prototype, 'send').mockImplementation(() => {
 				return Promise.reject('error');
 			});
@@ -305,7 +315,7 @@ describe('Predictions convert provider test', () => {
 				},
 			);
 
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 
 			return expect(
 				predictionsProvider.convert(validSpeechToTextInput),
@@ -336,7 +346,7 @@ describe('Predictions convert provider test', () => {
 				},
 			);
 
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 
 			expect(
 				predictionsProvider.convert(validSpeechToTextInput),
@@ -362,7 +372,7 @@ describe('Predictions convert provider test', () => {
 				},
 			);
 
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 
 			expect(
 				predictionsProvider.convert(validSpeechToTextInput),
@@ -400,7 +410,7 @@ describe('Predictions convert provider test', () => {
 				'downsampleBuffer',
 			);
 
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 
 			await predictionsProvider.convert(validSpeechToTextInput);
 			expect(downsampleBufferSpyon).toHaveBeenCalledWith(
@@ -424,7 +434,7 @@ describe('Predictions convert provider test', () => {
 					convert: options,
 				},
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 			window.URL.createObjectURL = jest.fn();
 			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
 				return 'dummyURL';
@@ -453,7 +463,7 @@ describe('Predictions convert provider test', () => {
 					convert: options,
 				},
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
 
 			await predictionsProvider.convert(validTranslateTextInput);
 			// translateClient is a private property
@@ -465,6 +475,16 @@ describe('Predictions convert provider test', () => {
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
 				}),
+			);
+		});
+	});
+
+	describe('getProviderName', () => {
+		it('returns provider name', () => {
+			const mockCtx = {} as any;
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(mockCtx);
+			expect(predictionsProvider.getProviderName()).toBe(
+				'AmazonAIConvertPredictionsProvider',
 			);
 		});
 	});

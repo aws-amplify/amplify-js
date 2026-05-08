@@ -8,7 +8,7 @@ import {
 	print,
 } from 'graphql';
 import { Observable, catchError } from 'rxjs';
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	CustomUserAgentDetails,
@@ -39,9 +39,9 @@ const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const isAmplifyInstance = (
 	amplify:
-		| AmplifyClassV6
-		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
-): amplify is AmplifyClassV6 => {
+		| AmplifyContext
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyContext>),
+): amplify is AmplifyContext => {
 	return typeof amplify !== 'function';
 };
 
@@ -49,6 +49,12 @@ const isAmplifyInstance = (
  * Export Cloud Logic APIs
  */
 export class InternalGraphQLAPIClass {
+	private ctx: AmplifyContext;
+
+	constructor(ctx: AmplifyContext) {
+		this.ctx = ctx;
+	}
+
 	/**
 	 * @private
 	 */
@@ -86,8 +92,8 @@ export class InternalGraphQLAPIClass {
 	 */
 	graphql<T = any>(
 		amplify:
-			| AmplifyClassV6
-			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
+			| AmplifyContext
+			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyContext>),
 		{
 			query: paramQuery,
 			variables = {},
@@ -131,7 +137,7 @@ export class InternalGraphQLAPIClass {
 				} else {
 					// NOTE: this wrapper function must be await-able so the Amplify server context manager can
 					// destroy the context only after it completes
-					const wrapper = async (amplifyInstance: AmplifyClassV6) => {
+					const wrapper = async (amplifyInstance: AmplifyContext) => {
 						const result = await this._graphql<T>(
 							amplifyInstance,
 							{ query, variables, authMode, apiKey, endpoint },
@@ -158,7 +164,7 @@ export class InternalGraphQLAPIClass {
 			}
 			case 'subscription':
 				return this._graphqlSubscribe(
-					amplify as AmplifyClassV6,
+					amplify as AmplifyContext,
 					{ query, variables, authMode, apiKey, endpoint },
 					headers,
 					customUserAgentDetails,
@@ -170,7 +176,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		amplify: AmplifyClassV6,
+		amplify: AmplifyContext,
 		{
 			query,
 			variables,
@@ -308,7 +314,7 @@ export class InternalGraphQLAPIClass {
 			// 	// // See the inline doc of the REST `post()` API for possible errors to be thrown.
 			// 	// // As these errors are catastrophic they should be caught and handled by GraphQL
 			// 	// // API consumers.
-			const { body: responseBody } = await this._api.post(amplify, {
+			const { body: responseBody } = await this._api.post(amplify as any, {
 				url: new AmplifyUrl(endpoint),
 				options: {
 					headers,
@@ -354,7 +360,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private _graphqlSubscribe(
-		amplify: AmplifyClassV6,
+		amplify: AmplifyContext,
 		{
 			query,
 			variables,
@@ -392,7 +398,8 @@ export class InternalGraphQLAPIClass {
 		// know why somethings depends on its absence!)
 		const memoKey = appSyncGraphqlEndpoint ?? 'none';
 		const realtimeProvider =
-			this.appSyncRealTime.get(memoKey) ?? new AWSAppSyncRealTimeProvider();
+			this.appSyncRealTime.get(memoKey) ??
+			new AWSAppSyncRealTimeProvider(this.ctx);
 		this.appSyncRealTime.set(memoKey, realtimeProvider);
 
 		return realtimeProvider
@@ -421,4 +428,5 @@ export class InternalGraphQLAPIClass {
 	}
 }
 
-export const InternalGraphQLAPI = new InternalGraphQLAPIClass();
+export const createInternalGraphQLAPI = (ctx: AmplifyContext) =>
+	new InternalGraphQLAPIClass(ctx);

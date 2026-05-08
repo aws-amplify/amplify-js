@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { UploadDataInput } from '../types/inputs';
 import { UploadDataOutput } from '../types/outputs';
@@ -10,10 +10,10 @@ import { uploadData as uploadDataInternal } from '../../providers/s3/apis/intern
 /**
  * @internal
  */
-export const uploadData = (input: UploadDataInput) => {
+export const uploadData = (ctx: AmplifyContext, input: UploadDataInput) => {
 	const { data, path, options } = input;
 
-	return uploadDataInternal(Amplify, {
+	return uploadDataInternal(ctx, {
 		path,
 		data,
 		options: {

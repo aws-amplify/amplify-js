@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClass } from '../../Amplify';
+import { AmplifyContext } from '../../../context/AmplifyContext';
 import { AuthSession, FetchAuthSessionOptions } from '../../Auth/types';
 
 export const fetchAuthSession = (
-	amplify: AmplifyClass,
+	amplify: AmplifyContext,
 	options?: FetchAuthSessionOptions,
 ): Promise<AuthSession> => {
-	return amplify.Auth.fetchAuthSession(options);
+	return amplify.fetchAuthSession(options);
 };

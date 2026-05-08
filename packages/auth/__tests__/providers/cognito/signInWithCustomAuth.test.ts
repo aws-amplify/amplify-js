@@ -1,11 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { signIn } from '../../../src/providers/cognito';
 import { signInWithCustomAuth } from '../../../src/providers/cognito/apis/signInWithCustomAuth';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
@@ -30,9 +34,8 @@ const authConfig = {
 	},
 };
 
-Amplify.configure({
-	Auth: authConfig,
-});
+const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+setGlobalContext(mockCtx);
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 describe('signIn API happy path cases', () => {
 	let handleCustomAuthFlowWithoutSRPSpy: jest.SpyInstance;
@@ -65,16 +68,18 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithCustomAuth API should return a SignInResult', async () => {
-		const result = await signInWithCustomAuth({
+		const ctx = createMockAmplifyContext({ Auth: authConfig });
+		const result = await signInWithCustomAuth(ctx, {
 			username: authAPITestParams.user1.username,
 		});
 		expect(result).toEqual(authAPITestParams.signInResultWithCustomAuth());
 		expect(handleCustomAuthFlowWithoutSRPSpy).toHaveBeenCalledTimes(1);
 	});
 	test('handleCustomAuthFlowWithoutSRP should be called with clientMetada from request', async () => {
+		const ctx = createMockAmplifyContext({ Auth: authConfig });
 		const { username } = authAPITestParams.user1;
 
-		await signInWithCustomAuth({
+		await signInWithCustomAuth(ctx, {
 			username,
 			options: authAPITestParams.configWithClientMetadata,
 		});
@@ -138,4 +143,8 @@ describe('Cognito ASF', () => {
 			},
 		);
 	});
+});
+
+afterAll(() => {
+	clearGlobalContext();
 });

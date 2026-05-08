@@ -14,11 +14,21 @@ import {
 } from '../../../testUtils/mockConstants';
 import { record } from '../../../../src/providers/kinesis-firehose';
 import { RecordInput as KinesisFirehoseRecordInput } from '../../../../src/providers/kinesis-firehose/types';
+import {
+	setupGlobalContext,
+	teardownGlobalContext,
+} from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis-firehose/utils');
 
 describe('Analytics KinesisFirehose API: record', () => {
+	beforeAll(() => {
+		setupGlobalContext();
+	});
+	afterAll(() => {
+		teardownGlobalContext();
+	});
 	const mockRecordInput: KinesisFirehoseRecordInput = {
 		streamName: 'stream0',
 		data: new Uint8Array([0x01, 0x02, 0xff]),

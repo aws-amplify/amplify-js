@@ -1,8 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, defaultStorage } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
+import { defaultStorage } from '@aws-amplify/core';
 
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 import { uploadData } from '../../../../src/providers/s3/apis';
 import { uploadData as internalUploadDataImpl } from '../../../../src/providers/s3/apis/internal/uploadData';
 
@@ -10,7 +15,17 @@ jest.mock('../../../../src/providers/s3/apis/internal/uploadData');
 
 const mockInternalUploadDataImpl = jest.mocked(internalUploadDataImpl);
 
+const mockCtx = createMockAmplifyContext();
+
 describe('client-side uploadData', () => {
+	beforeAll(() => {
+		setGlobalContext(mockCtx);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -26,7 +41,7 @@ describe('client-side uploadData', () => {
 			},
 		};
 		expect(uploadData(input)).toEqual(mockInternalResult);
-		expect(mockInternalUploadDataImpl).toBeCalledWith(Amplify, {
+		expect(mockInternalUploadDataImpl).toBeCalledWith(mockCtx, {
 			...input,
 			options: {
 				...input.options,
@@ -46,7 +61,7 @@ describe('client-side uploadData', () => {
 			},
 		};
 		expect(uploadData(input)).toEqual(mockInternalResult);
-		expect(mockInternalUploadDataImpl).toBeCalledWith(Amplify, {
+		expect(mockInternalUploadDataImpl).toBeCalledWith(mockCtx, {
 			...input,
 			options: {
 				...input.options,

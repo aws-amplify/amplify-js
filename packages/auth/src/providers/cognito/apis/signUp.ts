@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthDeliveryMedium } from '../../../types';
@@ -39,9 +40,15 @@ import { setAutoSignIn } from './autoSignIn';
  *  are not defined.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
+export async function signUp(input: SignUpInput): Promise<SignUpOutput>;
+export async function signUp(
+	ctx: AmplifyContext,
+	input: SignUpInput,
+): Promise<SignUpOutput>;
+export async function signUp(...args: any[]): Promise<SignUpOutput> {
+	const [ctx, input] = resolveCtxArgs<SignUpInput>(args);
 	const { username, password, options } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
 	const { clientMetadata, validationData, autoSignIn } = input.options ?? {};
@@ -121,7 +128,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	// No Confirm Sign In Step Required
 	if (isSignUpComplete) {
 		if (isAutoSignInStarted) {
-			setAutoSignIn(autoSignInUserConfirmed(signInInput));
+			setAutoSignIn(autoSignInUserConfirmed(ctx, signInInput));
 
 			return {
 				isSignUpComplete: true,
@@ -147,7 +154,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		// Confirmation Via Link Occurs In Separate Context
 		// AutoSignIn Fn Will Initiate Polling Once Executed
 		if (signUpVerificationMethod === 'link') {
-			setAutoSignIn(autoSignInWhenUserIsConfirmedWithLink(signInInput));
+			setAutoSignIn(autoSignInWhenUserIsConfirmedWithLink(ctx, signInInput));
 
 			return {
 				isSignUpComplete: false,
@@ -160,7 +167,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		}
 		// Confirmation Via Code Occurs In Same Context
 		// AutoSignIn Next Step Will Be Returned From Confirm Sign Up
-		handleCodeAutoSignIn(signInInput);
+		handleCodeAutoSignIn(ctx, signInInput);
 	}
 
 	return {

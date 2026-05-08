@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 import { RecordInput } from '../types';
 import {
@@ -50,12 +50,10 @@ const logger = new ConsoleLogger('Personalize');
  *
  * @returns void
  */
-export const record = ({
-	userId,
-	eventId,
-	eventType,
-	properties,
-}: RecordInput): void => {
+export const record = (
+	ctx: AmplifyContext,
+	{ userId, eventId, eventType, properties }: RecordInput,
+): void => {
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
 
@@ -63,8 +61,8 @@ export const record = ({
 	}
 
 	const { region, trackingId, bufferSize, flushSize, flushInterval } =
-		resolveConfig();
-	resolveCredentials()
+		resolveConfig(ctx);
+	resolveCredentials(ctx)
 		.then(async ({ credentials, identityId }) => {
 			const timestamp = Date.now();
 			const { sessionId: cachedSessionId, userId: cachedUserId } =

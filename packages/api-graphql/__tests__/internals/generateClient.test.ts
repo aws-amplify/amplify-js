@@ -1,5 +1,4 @@
-import * as raw from '../../src';
-import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
+import { Amplify, AmplifyContext, getActiveContext } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
@@ -12,6 +11,10 @@ import {
 	mockApiResponse,
 } from '../utils/index';
 import { AWSAppSyncRealTimeProvider } from '../../src/Providers/AWSAppSyncRealTimeProvider';
+import { post as postFn } from '@aws-amplify/api-rest/internals';
+
+jest.mock('@aws-amplify/api-rest/internals');
+const mockRestPost = postFn as jest.Mock;
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -31,14 +34,14 @@ describe('generateClient', () => {
 		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
 			Amplify.configure(configFixture); // clear the resource config
 
-			const client = generateClient<Schema>({ amplify: Amplify });
+			const client = generateClient<Schema>({ amplify: getActiveContext() });
 
 			expect(Object.keys(client.models)).toEqual(expectedModelsProperties);
 		});
 
 		it('generates `models` property when Amplify.configure() is called later with a valid GraphQL provider config', async () => {
 			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
-			const client = generateClient<Schema>({ amplify: Amplify });
+			const client = generateClient<Schema>({ amplify: getActiveContext() });
 
 			expect(Object.keys(client.models)).toHaveLength(0);
 
@@ -49,7 +52,7 @@ describe('generateClient', () => {
 
 		it('generates `models` property throwing error when there is no valid GraphQL provider config can be resolved', () => {
 			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
-			const client = generateClient<Schema>({ amplify: Amplify });
+			const client = generateClient<Schema>({ amplify: getActiveContext() });
 
 			expect(() => {
 				client.models.Todo.create({ name: 'todo' });
@@ -63,42 +66,40 @@ describe('generateClient', () => {
 		// TS lies: We don't care what `amplify` is or does. We want want to make sure
 		// it shows up in the client in the right spot.
 
-		const fetchAuthSession = jest.fn().mockReturnValue({});
-		const getConfig = jest.fn().mockReturnValue({
-			API: {
-				GraphQL: {
-					apiKey: 'apikey',
-					customEndpoint: undefined,
-					customEndpointRegion: undefined,
-					defaultAuthMode: 'apiKey',
-					endpoint: 'https://0.0.0.0/graphql',
-					region: 'us-east-1',
+		const fetchAuthSession = jest.fn().mockResolvedValue({});
+
+		const amplify: AmplifyContext = {
+			resourcesConfig: {
+				API: {
+					GraphQL: {
+						apiKey: 'apikey',
+						customEndpoint: undefined,
+						customEndpointRegion: undefined,
+						defaultAuthMode: 'apiKey',
+						endpoint: 'https://0.0.0.0/graphql',
+						region: 'us-east-1',
+					},
 				},
+			},
+			libraryOptions: {},
+			fetchAuthSession,
+			clearCredentials: jest.fn(),
+			getTokens: jest.fn(),
+		};
+
+		const apiSpy = mockRestPost.mockReturnValue({
+			body: {
+				json: () => ({
+					data: {
+						getWidget: {
+							__typename: 'Widget',
+							...serverManagedFields,
+							someField: 'some value',
+						},
+					},
+				}),
 			},
 		});
-
-		const apiSpy = jest
-			.spyOn((raw.GraphQLAPI as any)._api, 'post')
-			.mockReturnValue({
-				body: {
-					json: () => ({
-						data: {
-							getWidget: {
-								__typename: 'Widget',
-								...serverManagedFields,
-								someField: 'some value',
-							},
-						},
-					}),
-				},
-			});
-
-		const amplify = {
-			Auth: {
-				fetchAuthSession,
-			},
-			getConfig,
-		} as unknown as AmplifyClassV6;
 
 		const client = generateClient({ amplify });
 		const result = (await client.graphql({
@@ -112,7 +113,6 @@ describe('generateClient', () => {
 		// shouldn't fetch auth for apiKey auth
 		expect(fetchAuthSession).not.toHaveBeenCalled();
 
-		expect(getConfig).toHaveBeenCalled();
 		expect(apiSpy).toHaveBeenCalled();
 	});
 
@@ -120,42 +120,40 @@ describe('generateClient', () => {
 		// TS lies: We don't care what `amplify` is or does. We want want to make sure
 		// it shows up in the client in the right spot.
 
-		const fetchAuthSession = jest.fn().mockReturnValue({ credentials: {} });
-		const getConfig = jest.fn().mockReturnValue({
-			API: {
-				GraphQL: {
-					apiKey: undefined,
-					customEndpoint: undefined,
-					customEndpointRegion: undefined,
-					defaultAuthMode: 'iam',
-					endpoint: 'https://0.0.0.0/graphql',
-					region: 'us-east-1',
+		const fetchAuthSession = jest.fn().mockResolvedValue({ credentials: {} });
+
+		const amplify: AmplifyContext = {
+			resourcesConfig: {
+				API: {
+					GraphQL: {
+						apiKey: undefined,
+						customEndpoint: undefined,
+						customEndpointRegion: undefined,
+						defaultAuthMode: 'iam',
+						endpoint: 'https://0.0.0.0/graphql',
+						region: 'us-east-1',
+					},
 				},
+			},
+			libraryOptions: {},
+			fetchAuthSession,
+			clearCredentials: jest.fn(),
+			getTokens: jest.fn(),
+		};
+
+		const apiSpy = mockRestPost.mockReturnValue({
+			body: {
+				json: () => ({
+					data: {
+						getWidget: {
+							__typename: 'Widget',
+							...serverManagedFields,
+							someField: 'some value',
+						},
+					},
+				}),
 			},
 		});
-
-		const apiSpy = jest
-			.spyOn((raw.GraphQLAPI as any)._api, 'post')
-			.mockReturnValue({
-				body: {
-					json: () => ({
-						data: {
-							getWidget: {
-								__typename: 'Widget',
-								...serverManagedFields,
-								someField: 'some value',
-							},
-						},
-					}),
-				},
-			});
-
-		const amplify = {
-			Auth: {
-				fetchAuthSession,
-			},
-			getConfig,
-		} as unknown as AmplifyClassV6;
 
 		const client = generateClient({ amplify });
 		const result = await client.graphql({
@@ -169,7 +167,6 @@ describe('generateClient', () => {
 		// should fetch auth for iam
 		expect(fetchAuthSession).toHaveBeenCalled();
 
-		expect(getConfig).toHaveBeenCalled();
 		expect(apiSpy).toHaveBeenCalled();
 	});
 
@@ -206,7 +203,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const client = generateClient({ amplify: Amplify });
+			const client = generateClient({ amplify: getActiveContext() });
 			await client.graphql({
 				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
 			});
@@ -234,7 +231,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const client = generateClient<Schema>({ amplify: Amplify });
+			const client = generateClient<Schema>({ amplify: getActiveContext() });
 
 			const { data, errors } = await client.models.Todo.get({ id: 'a1' });
 
@@ -267,17 +264,12 @@ describe('generateClient', () => {
 				'subscription-header': 'should-exist',
 			};
 
-			const client = generateClient<Schema>({ amplify: Amplify });
+			const client = generateClient<Schema>({ amplify: getActiveContext() });
 
 			const spy = jest.fn(() => from([graphqlMessage]));
-			(raw.GraphQLAPI as any).appSyncRealTime = {
-				get() {
-					return { subscribe: spy }
-				},
-				set() {
-					// not needed for test mock
-				}
-			};
+			jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(spy);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
@@ -327,7 +319,7 @@ describe('generateClient', () => {
 
 			test('with custom client headers', async () => {
 				const client = generateClient<Schema>({
-					amplify: Amplify,
+					amplify: getActiveContext(),
 					headers: {
 						'client-header': 'should exist',
 					},
@@ -346,7 +338,7 @@ describe('generateClient', () => {
 				};
 
 				const client = generateClient<Schema>({
-					amplify: Amplify,
+					amplify: getActiveContext(),
 					headers,
 				});
 
@@ -366,7 +358,7 @@ describe('generateClient', () => {
 
 			test('with custom client header functions', async () => {
 				const client = generateClient<Schema>({
-					amplify: Amplify,
+					amplify: getActiveContext(),
 					headers: async () => ({
 						'client-header-function': 'should return this header',
 					}),
@@ -381,7 +373,7 @@ describe('generateClient', () => {
 
 			test('with custom client header functions that pass requestOptions', async () => {
 				const client = generateClient<Schema>({
-					amplify: Amplify,
+					amplify: getActiveContext(),
 					headers: async requestOptions => ({
 						'rq-url': requestOptions?.url || 'should-not-be-present',
 						'rq-qs': requestOptions?.queryString || 'should-not-be-present',
@@ -398,7 +390,7 @@ describe('generateClient', () => {
 
 			test('with custom request headers', async () => {
 				const client = generateClient<Schema>({
-					amplify: Amplify,
+					amplify: getActiveContext(),
 					headers: {
 						'client-header': 'should not exist',
 					},
@@ -419,7 +411,10 @@ describe('generateClient', () => {
 
 				// Request headers should overwrite client headers:
 				expect(spy).toHaveBeenCalledWith(
-					expect.any(AmplifyClassV6),
+					expect.objectContaining({
+						resourcesConfig: expect.any(Object),
+						fetchAuthSession: expect.any(Function),
+					}),
 					expect.objectContaining({
 						options: expect.objectContaining({
 							headers: expect.not.objectContaining({
@@ -432,7 +427,7 @@ describe('generateClient', () => {
 
 			test('with custom request header function', async () => {
 				const client = generateClient<Schema>({
-					amplify: Amplify,
+					amplify: getActiveContext(),
 					headers: {
 						'client-header': 'should not exist',
 					},
@@ -454,7 +449,7 @@ describe('generateClient', () => {
 
 			test('with custom request header function that accept requestOptions', async () => {
 				const client = generateClient<Schema>({
-					amplify: Amplify,
+					amplify: getActiveContext(),
 					headers: {
 						'client-header': 'should not exist',
 					},
@@ -501,17 +496,12 @@ describe('generateClient', () => {
 					'subscription-header': 'should-exist',
 				};
 
-				const client = generateClient<Schema>({ amplify: Amplify });
+				const client = generateClient<Schema>({ amplify: getActiveContext() });
 
 				const spy = jest.fn(() => from([graphqlMessage]));
-				(raw.GraphQLAPI as any).appSyncRealTime = {
-					get() {
-						return { subscribe: spy }
-					},
-					set() {
-						// not needed for test mock
-					}
-				};
+				jest
+					.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+					.mockImplementation(spy);
 
 				client.models.Note.onCreate({
 					filter: graphqlVariables.filter,
@@ -540,19 +530,14 @@ describe('generateClient', () => {
 				};
 
 				const client = generateClient<Schema>({
-					amplify: Amplify,
+					amplify: getActiveContext(),
 					headers: customHeaders,
 				});
 
 				const spy = jest.fn(() => from([graphqlMessage]));
-				(raw.GraphQLAPI as any).appSyncRealTime = {
-					get() {
-						return { subscribe: spy }
-					},
-					set() {
-						// not needed for test mock
-					}
-				};
+				jest
+					.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+					.mockImplementation(spy);
 
 				client.models.Note.onCreate({
 					filter: graphqlVariables.filter,
@@ -579,17 +564,12 @@ describe('generateClient', () => {
 					'subscription-header-function': 'should-return-this-header',
 				};
 
-				const client = generateClient<Schema>({ amplify: Amplify });
+				const client = generateClient<Schema>({ amplify: getActiveContext() });
 
 				const spy = jest.fn(() => from([graphqlMessage]));
-				(raw.GraphQLAPI as any).appSyncRealTime = {
-					get() {
-						return { subscribe: spy }
-					},
-					set() {
-						// not needed for test mock
-					}
-				};
+				jest
+					.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+					.mockImplementation(spy);
 
 				client.models.Note.onCreate({
 					filter: graphqlVariables.filter,
@@ -608,17 +588,12 @@ describe('generateClient', () => {
 			});
 
 			test('with a custom header function that accepts requestOptions', done => {
-				const client = generateClient<Schema>({ amplify: Amplify });
+				const client = generateClient<Schema>({ amplify: getActiveContext() });
 
 				const spy = jest.fn(() => from([graphqlMessage]));
-				(raw.GraphQLAPI as any).appSyncRealTime = {
-					get() {
-						return { subscribe: spy }
-					},
-					set() {
-						// not needed for test mock
-					}
-				};
+				jest
+					.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+					.mockImplementation(spy);
 
 				client.models.Note.onCreate({
 					filter: graphqlVariables.filter,
@@ -673,7 +648,7 @@ describe('generateClient', () => {
 
 		test('config & client headers', async () => {
 			const client = generateClient<Schema>({
-				amplify: Amplify,
+				amplify: getActiveContext(),
 				headers: {
 					'client-header': 'should exist',
 				},
@@ -688,7 +663,7 @@ describe('generateClient', () => {
 
 		test('custom client headers should not overwrite library config headers', async () => {
 			const client = generateClient<Schema>({
-				amplify: Amplify,
+				amplify: getActiveContext(),
 				headers: {
 					Authorization: 'client-level-header',
 				},
@@ -703,7 +678,7 @@ describe('generateClient', () => {
 
 		test('custom request headers should not overwrite library config headers', async () => {
 			const client = generateClient<Schema>({
-				amplify: Amplify,
+				amplify: getActiveContext(),
 			});
 
 			const { data } = await client.models.Todo.get(
@@ -743,17 +718,12 @@ describe('generateClient', () => {
 				'subscription-header': 'should-exist',
 			};
 
-			const client = generateClient<Schema>({ amplify: Amplify });
+			const client = generateClient<Schema>({ amplify: getActiveContext() });
 
 			const spy = jest.fn(() => from([graphqlMessage]));
-			(raw.GraphQLAPI as any).appSyncRealTime = {
-				get() {
-					return { subscribe: spy }
-				},
-				set() {
-					// not needed for test mock
-				}
-			};
+			jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(spy);
 
 			client.models.Note.onCreate({
 				filter: graphqlVariables.filter,

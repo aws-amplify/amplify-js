@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	// cancel as cancelREST,
 	post,
@@ -10,7 +10,7 @@ import {
 } from '@aws-amplify/api-rest/internals';
 
 export async function graphqlRequest(
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	url: string,
 	options: any,
 	abortController: AbortController,
@@ -18,7 +18,7 @@ export async function graphqlRequest(
 ) {
 	const p = _post ?? post;
 
-	const { body: responseBody } = await p(amplify, {
+	const { body: responseBody } = await p(amplify as any, {
 		url: new AmplifyUrl(url),
 		options,
 		abortController,

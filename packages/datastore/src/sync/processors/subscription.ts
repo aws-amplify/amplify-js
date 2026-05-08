@@ -6,7 +6,8 @@ import {
 	ConsoleLogger,
 	Hub,
 	HubCapsule,
-	fetchAuthSession,
+	getActiveContext,
+	hasGlobalContext,
 } from '@aws-amplify/core';
 import {
 	BackgroundProcessManager,
@@ -89,7 +90,11 @@ class SubscriptionProcessor {
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext = {
-			InternalAPI,
+			InternalAPI: InternalAPI(
+				hasGlobalContext()
+					? getActiveContext()
+					: ({ resourcesConfig: {}, libraryOptions: {} } as any),
+			),
 		},
 	) {}
 
@@ -270,7 +275,9 @@ class SubscriptionProcessor {
 			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials
-					const credentials = (await fetchAuthSession()).tokens?.accessToken;
+					const credentials = (
+						await (this.amplifyContext as any).fetchAuthSession()
+					).tokens?.accessToken;
 					userCredentials = credentials
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;
@@ -280,7 +287,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
-					const session = await fetchAuthSession();
+					const session = await (this.amplifyContext as any).fetchAuthSession();
 					oidcTokenPayload = session.tokens?.idToken?.payload;
 				} catch (err) {
 					// best effort to get jwt from Cognito

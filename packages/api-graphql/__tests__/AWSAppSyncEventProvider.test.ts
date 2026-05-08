@@ -3,7 +3,7 @@
 
 import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import { MESSAGE_TYPES } from '../src/Providers/constants';
 import * as constants from '../src/Providers/constants';
 
@@ -11,6 +11,26 @@ import { delay, FakeWebSocketInterface } from './helpers';
 import { ConnectionState as CS } from '../src/types/PubSub';
 
 import { AWSAppSyncEventProvider } from '../src/Providers/AWSAppSyncEventsProvider';
+
+const mockCtx: AmplifyContext = {
+	resourcesConfig: {
+		API: {
+			GraphQL: {
+				endpoint: 'https://test.appsync-api.us-east-1.amazonaws.com/graphql',
+				region: 'us-east-1',
+				defaultAuthMode: 'apiKey',
+				apiKey: 'da2-fakeApiId123456',
+			},
+		},
+	},
+	libraryOptions: {},
+	fetchAuthSession: jest.fn().mockResolvedValue({
+		tokens: { accessToken: { toString: () => 'test' } },
+		credentials: { accessKeyId: 'test', secretAccessKey: 'test' },
+	}),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
 
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
@@ -72,17 +92,17 @@ describe('AppSyncEventProvider', () => {
 		let provider: AWSAppSyncEventProvider;
 		beforeEach(async () => {
 			fakeWebSocketInterface = new FakeWebSocketInterface();
-			provider = new AWSAppSyncEventProvider();
+			provider = new AWSAppSyncEventProvider(mockCtx);
 
 			Object.defineProperty(provider, 'socketStatus', {
 				value: constants.SOCKET_STATUS.CLOSED,
 			});
-			
+
 			jest.spyOn(provider as any, '_getNewWebSocket').mockImplementation(() => {
 				fakeWebSocketInterface.newWebSocket();
 				return fakeWebSocketInterface.webSocket as WebSocket;
 			});
-		})
+		});
 
 		afterEach(async () => {
 			provider?.close();
@@ -92,33 +112,36 @@ describe('AppSyncEventProvider', () => {
 		});
 
 		test('socket status should be READY', async () => {
-
 			// Connect to the provider
 			const connectPromise = provider.connect({
 				appSyncGraphqlEndpoint: 'ws://localhost:8080',
 				authenticationType: 'apiKey',
 				apiKey: 'test-api-key',
-				region: 'us-east-1'
+				region: 'us-east-1',
 			});
 
 			// Verify the socket status to be CONNECTING
 			await new Promise(resolve => setTimeout(resolve, 1));
-			expect((provider as any).socketStatus).toBe(constants.SOCKET_STATUS.CONNECTING);
+			expect((provider as any).socketStatus).toBe(
+				constants.SOCKET_STATUS.CONNECTING,
+			);
 
 			// Trigger the websocket open event
 			await fakeWebSocketInterface.readyForUse;
 			await fakeWebSocketInterface.triggerOpen();
 
-			// Initiate handshake			
+			// Initiate handshake
 			await fakeWebSocketInterface.sendDataMessage({
-				type: MESSAGE_TYPES.GQL_CONNECTION_ACK
+				type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
 			});
 
 			// Wait for connection to complete
 			await connectPromise;
 
 			// Verify the socket status
-			expect((provider as any).socketStatus).toBe(constants.SOCKET_STATUS.READY);
+			expect((provider as any).socketStatus).toBe(
+				constants.SOCKET_STATUS.READY,
+			);
 		});
 	});
 	describe('subscribe()', () => {
@@ -150,7 +173,7 @@ describe('AppSyncEventProvider', () => {
 						});
 
 					fakeWebSocketInterface = new FakeWebSocketInterface();
-					provider = new AWSAppSyncEventProvider();
+					provider = new AWSAppSyncEventProvider(mockCtx);
 
 					// Saving this spy and resetting it by hand causes badness
 					//     Saving it causes new websockets to be reachable across past tests that have not fully closed
@@ -421,7 +444,7 @@ describe('AppSyncEventProvider', () => {
 				});
 
 			fakeWebSocketInterface = new FakeWebSocketInterface();
-			provider = new AWSAppSyncEventProvider();
+			provider = new AWSAppSyncEventProvider(mockCtx);
 			Object.defineProperty(provider, 'socketStatus', {
 				value: constants.SOCKET_STATUS.READY,
 			});

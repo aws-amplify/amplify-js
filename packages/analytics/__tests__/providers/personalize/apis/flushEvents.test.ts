@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import {
 	getEventBuffer,
@@ -16,6 +16,14 @@ import { flushEvents } from '../../../../src/providers/personalize';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/personalize/utils');
+
+const mockCtx: AmplifyContext = {
+	resourcesConfig: {},
+	libraryOptions: {},
+	fetchAuthSession: jest.fn(),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
 
 describe('Analytics Personalize API: flushEvents', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;
@@ -42,7 +50,7 @@ describe('Analytics Personalize API: flushEvents', () => {
 	});
 
 	it('trigger flushAll on event buffer', async () => {
-		flushEvents();
+		flushEvents(mockCtx);
 		await new Promise(process.nextTick);
 		expect(mockResolveConfig).toHaveBeenCalledTimes(1);
 		expect(mockResolveCredentials).toHaveBeenCalledTimes(1);
@@ -60,7 +68,7 @@ describe('Analytics Personalize API: flushEvents', () => {
 	it('logs an error when credentials can not be fetched', async () => {
 		mockResolveCredentials.mockRejectedValue(new Error('Mock Error'));
 
-		flushEvents();
+		flushEvents(mockCtx);
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.any(String),

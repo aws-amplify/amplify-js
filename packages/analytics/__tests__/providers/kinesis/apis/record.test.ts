@@ -12,12 +12,22 @@ import {
 } from '../../../testUtils/mockConstants';
 import { record } from '../../../../src/providers/kinesis';
 import { RecordInput as KinesisRecordInput } from '../../../../src/providers/kinesis/types';
+import {
+	setupGlobalContext,
+	teardownGlobalContext,
+} from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
 jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
 
 describe('Analytics Kinesis API: record', () => {
+	beforeAll(() => {
+		setupGlobalContext();
+	});
+	afterAll(() => {
+		teardownGlobalContext();
+	});
 	const mockRecordInput: KinesisRecordInput = {
 		streamName: 'stream0',
 		partitionKey: 'partition0',

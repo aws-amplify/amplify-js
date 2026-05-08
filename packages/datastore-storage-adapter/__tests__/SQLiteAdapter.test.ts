@@ -31,6 +31,20 @@ jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
 	};
 });
 
+jest.mock('@aws-amplify/api/internals', () => {
+	const { Observable } = require('rxjs');
+
+	return {
+		InternalAPI: () => ({
+			graphql: jest.fn().mockReturnValue(
+				new Observable(() => {}),
+			),
+			getModuleName: jest.fn().mockReturnValue('InternalAPI'),
+			getGraphqlOperationType: jest.fn(),
+		}),
+	};
+});
+
 // TODO: move into generalized test suite helper?
 jest.mock('react-native-sqlite-storage', () => {
 	return {

@@ -24,14 +24,12 @@ jest.mock('@aws-amplify/api/internals', () => {
 	const actualInternalAPIModule = jest.requireActual(
 		'@aws-amplify/api/internals',
 	);
-	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 	return {
 		...actualInternalAPIModule,
-		InternalAPI: {
-			...actualInternalAPIInstance,
+		InternalAPI: () => ({
 			graphql: mockGraphQL,
-		},
+		}),
 	};
 });
 

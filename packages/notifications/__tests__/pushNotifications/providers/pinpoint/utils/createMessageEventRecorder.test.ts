@@ -15,6 +15,7 @@ import {
 	pinpointConfig,
 	simplePushMessage,
 } from '../../../../testUtils/data';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('@aws-amplify/react-native', () => ({
@@ -30,6 +31,8 @@ jest.mock(
 	'../../../../../src/pushNotifications/providers/pinpoint/utils/resolveConfig',
 );
 jest.mock('../../../../../src/pushNotifications/utils');
+
+const mockCtx = createMockAmplifyContext();
 
 describe('createMessageEventRecorder', () => {
 	// assert mocks
@@ -51,9 +54,9 @@ describe('createMessageEventRecorder', () => {
 	});
 
 	it('returns message event recorder', () => {
-		expect(createMessageEventRecorder('received_background')).toStrictEqual(
-			expect.any(Function),
-		);
+		expect(
+			createMessageEventRecorder(mockCtx, 'received_background'),
+		).toStrictEqual(expect.any(Function));
 	});
 
 	it('accepts and invokes a callback', done => {
@@ -63,6 +66,7 @@ describe('createMessageEventRecorder', () => {
 			done();
 		});
 		const recorder = createMessageEventRecorder(
+			mockCtx,
 			'received_background',
 			callback,
 		);
@@ -77,7 +81,10 @@ describe('createMessageEventRecorder', () => {
 				);
 				done();
 			});
-			const recorder = createMessageEventRecorder('received_background');
+			const recorder = createMessageEventRecorder(
+				mockCtx,
+				'received_background',
+			);
 			recorder(simplePushMessage);
 		});
 	});

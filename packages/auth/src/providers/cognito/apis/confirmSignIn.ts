@@ -1,8 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
+import {
+	assertTokenProviderConfig,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	AssociateSoftwareTokenException,
@@ -51,12 +54,20 @@ import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
  */
 export async function confirmSignIn(
 	input: ConfirmSignInInput,
+): Promise<ConfirmSignInOutput>;
+export async function confirmSignIn(
+	ctx: AmplifyContext,
+	input: ConfirmSignInInput,
+): Promise<ConfirmSignInOutput>;
+export async function confirmSignIn(
+	...args: any[]
 ): Promise<ConfirmSignInOutput> {
+	const [ctx, input] = resolveCtxArgs<ConfirmSignInInput>(args);
 	const { challengeResponse, options } = input;
 	const { username, challengeName, signInSession, signInDetails } =
 		signInStore.getState();
 
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
 	const clientMetaData = options?.clientMetadata;
@@ -122,7 +133,7 @@ export async function confirmSignIn(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(ctx);
 
 			return {
 				isSignedIn: true,
@@ -130,7 +141,7 @@ export async function confirmSignIn(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: handledChallengeName as ChallengeName,
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});

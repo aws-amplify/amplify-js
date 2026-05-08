@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -32,13 +33,21 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  **/
 export async function resetPassword(
 	input: ResetPasswordInput,
+): Promise<ResetPasswordOutput>;
+export async function resetPassword(
+	ctx: AmplifyContext,
+	input: ResetPasswordInput,
+): Promise<ResetPasswordOutput>;
+export async function resetPassword(
+	...args: any[]
 ): Promise<ResetPasswordOutput> {
+	const [ctx, input] = resolveCtxArgs<ResetPasswordInput>(args);
 	const { username } = input;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyResetPasswordUsername,
 	);
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolClientId, userPoolId, userPoolEndpoint } = authConfig;
 	const clientMetadata = input.options?.clientMetadata;

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { resolveConfig } from '../../../../src/providers/kinesis-firehose/utils';
 import { DEFAULT_KINESIS_FIREHOSE_CONFIG } from '../../../../src/providers/kinesis-firehose/utils/constants';
@@ -15,18 +15,22 @@ describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 		resendLimit: 3,
 	};
 
-	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
-
-	beforeEach(() => {
-		getConfigSpy.mockReset();
+	const createCtx = (
+		resourcesConfig: Record<string, unknown> = {},
+	): AmplifyContext => ({
+		resourcesConfig,
+		libraryOptions: {},
+		fetchAuthSession: jest.fn(),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
 	});
 
 	it('returns required config', () => {
-		getConfigSpy.mockReturnValue({
-			Analytics: { KinesisFirehose: providedConfig },
-		});
-
-		expect(resolveConfig()).toStrictEqual(providedConfig);
+		expect(
+			resolveConfig(
+				createCtx({ Analytics: { KinesisFirehose: providedConfig } }),
+			),
+		).toStrictEqual(providedConfig);
 	});
 
 	it('use default config for optional fields', () => {
@@ -35,11 +39,12 @@ describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 			bufferSize: undefined,
 			resendLimit: undefined,
 		};
-		getConfigSpy.mockReturnValue({
-			Analytics: { KinesisFirehose: requiredFields },
-		});
 
-		expect(resolveConfig()).toStrictEqual({
+		expect(
+			resolveConfig(
+				createCtx({ Analytics: { KinesisFirehose: requiredFields } }),
+			),
+		).toStrictEqual({
 			...DEFAULT_KINESIS_FIREHOSE_CONFIG,
 			region: requiredFields.region,
 			resendLimit: requiredFields.resendLimit,
@@ -47,25 +52,29 @@ describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 	});
 
 	it('throws if region is missing', () => {
-		getConfigSpy.mockReturnValue({
-			Analytics: {
-				KinesisFirehose: { ...providedConfig, region: undefined as any },
-			},
-		});
-
-		expect(resolveConfig).toThrow();
+		expect(() =>
+			resolveConfig(
+				createCtx({
+					Analytics: {
+						KinesisFirehose: { ...providedConfig, region: undefined },
+					},
+				}),
+			),
+		).toThrow();
 	});
 
 	it('throws if flushSize is larger than bufferSize', () => {
-		getConfigSpy.mockReturnValue({
-			Analytics: {
-				KinesisFirehose: {
-					...providedConfig,
-					flushSize: providedConfig.bufferSize + 1,
-				},
-			},
-		});
-
-		expect(resolveConfig).toThrow();
+		expect(() =>
+			resolveConfig(
+				createCtx({
+					Analytics: {
+						KinesisFirehose: {
+							...providedConfig,
+							flushSize: providedConfig.bufferSize + 1,
+						},
+					},
+				}),
+			),
+		).toThrow();
 	});
 });

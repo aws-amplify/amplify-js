@@ -1,12 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
-
 import { resolveCredentials } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
-
-jest.mock('@aws-amplify/core');
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 describe('resolveCredentials', () => {
 	const credentials = {
@@ -18,7 +14,7 @@ describe('resolveCredentials', () => {
 	};
 
 	it('should return the credentials and identityId', async () => {
-		mockFetchAuthSession.mockReturnValue(credentials);
-		expect(await resolveCredentials()).toStrictEqual(credentials);
+		const mockCtx = createMockAmplifyContext({}, credentials);
+		expect(await resolveCredentials(mockCtx)).toStrictEqual(credentials);
 	});
 });

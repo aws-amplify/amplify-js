@@ -1,13 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { getCurrentUser, signIn } from '../../../src/providers/cognito';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInStore } from '../../../src/client/utils/store/signInStore';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
@@ -30,7 +34,12 @@ describe('local sign-in state management tests', () => {
 
 	beforeEach(() => {
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		setGlobalContext(createMockAmplifyContext({ Auth: authConfig }));
 		signInStore.dispatch({ type: 'RESET_STATE' });
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	test('local state management should return state after signIn returns a ChallengeName', async () => {
@@ -47,10 +56,6 @@ describe('local sign-in state management tests', () => {
 					},
 				}),
 			);
-
-		Amplify.configure({
-			Auth: authConfig,
-		});
 		await signIn({
 			username,
 			password,
@@ -79,10 +84,6 @@ describe('local sign-in state management tests', () => {
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
 					authAPITestParams.RespondToAuthChallengeCommandOutput,
 			);
-
-		Amplify.configure({
-			Auth: authConfig,
-		});
 		await signIn({
 			username,
 			password,

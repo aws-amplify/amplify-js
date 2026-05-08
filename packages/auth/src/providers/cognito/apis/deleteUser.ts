@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
@@ -23,11 +24,14 @@ import { signOut } from './signOut';
  * @throws - {@link DeleteUserException}
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function deleteUser(): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+export async function deleteUser(): Promise<void>;
+export async function deleteUser(ctx: AmplifyContext): Promise<void>;
+export async function deleteUser(...args: any[]): Promise<void> {
+	const [ctx] = resolveCtxArgs<undefined>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
-	const { tokens } = await fetchAuthSession();
+	const { tokens } = await ctx.fetchAuthSession();
 	assertAuthTokens(tokens);
 	const serviceDeleteUser = createDeleteUserClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({
@@ -44,5 +48,5 @@ export async function deleteUser(): Promise<void> {
 		},
 	);
 	await tokenOrchestrator.clearDeviceMetadata();
-	await signOut();
+	await signOut(ctx);
 }

@@ -9,11 +9,6 @@ jest.mock('@aws-amplify/api/internals', () => ({
 	generateClientWithAmplifyInstance: generateClientWithAmplifyInstanceSpy
 }));
 
-const generateClientSpy = jest.fn();
-jest.mock('aws-amplify/api/server', () => ({
-	generateClient: generateClientSpy
-}));
-
 const {
 	generateServerClientUsingCookies,
 	generateServerClientUsingReqRes,
@@ -79,8 +74,8 @@ describe('SSR internals', () => {
 		expect(client).toEqual('generateClientWithAmplifyInstance client');
 	});
 
-	test('generateServerClientUsingReqRes passes through to generateClientSpy', () => {
-		generateClientSpy.mockReturnValue('generateClientSpy client');
+	test('generateServerClientUsingReqRes passes through to generateClientWithAmplifyInstance', () => {
+		generateClientWithAmplifyInstanceSpy.mockReturnValue('generateClientWithAmplifyInstance client');
 
 		const options = {
 			config: Amplify.getConfig(),
@@ -98,9 +93,9 @@ describe('SSR internals', () => {
 
 		const client = generateServerClientUsingReqRes(options);
 
-		expect(generateClientSpy).toHaveBeenCalledWith(
+		expect(generateClientWithAmplifyInstanceSpy).toHaveBeenCalledWith(
 			expect.objectContaining(params)
 		);
-		expect(client).toEqual('generateClientSpy client');
+		expect(client).toEqual('generateClientWithAmplifyInstance client');
 	});
 })

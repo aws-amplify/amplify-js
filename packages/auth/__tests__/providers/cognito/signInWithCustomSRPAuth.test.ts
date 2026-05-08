@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
@@ -10,6 +13,7 @@ import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
@@ -31,9 +35,8 @@ const authConfig = {
 	},
 };
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-Amplify.configure({
-	Auth: authConfig,
-});
+const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+setGlobalContext(mockCtx);
 
 describe('signIn API happy path cases', () => {
 	let handleCustomSRPAuthFlowSpy: jest.SpyInstance;
@@ -69,7 +72,8 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithCustomSRPAuth API should return a SignInResult', async () => {
-		const result = await signInWithCustomSRPAuth({
+		const ctx = createMockAmplifyContext({ Auth: authConfig });
+		const result = await signInWithCustomSRPAuth(ctx, {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 		});
@@ -78,9 +82,10 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleCustomSRPAuthFlow should be called with clientMetada from request', async () => {
+		const ctx = createMockAmplifyContext({ Auth: authConfig });
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithCustomSRPAuth({
+		await signInWithCustomSRPAuth(ctx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,
@@ -150,4 +155,8 @@ describe('Cognito ASF', () => {
 			}),
 		);
 	});
+});
+
+afterAll(() => {
+	clearGlobalContext();
 });

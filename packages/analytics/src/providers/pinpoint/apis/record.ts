@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger, Hub } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger, Hub } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
 	AnalyticsAction,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
 
@@ -51,9 +52,12 @@ const logger = new ConsoleLogger('Analytics');
  * })
  * ```
  */
-export const record = (input: RecordInput): void => {
+export function record(input: RecordInput): void;
+export function record(ctx: AmplifyContext, input: RecordInput): void;
+export function record(...args: any[]): void {
+	const [ctx, input] = resolveCtxArgs<RecordInput>(args);
 	const { appId, region, bufferSize, flushSize, flushInterval, resendLimit } =
-		resolveConfig();
+		resolveConfig(ctx);
 
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
@@ -63,7 +67,7 @@ export const record = (input: RecordInput): void => {
 
 	assertValidationError(!!input.name, AnalyticsValidationErrorCode.NoEventName);
 
-	resolveCredentials()
+	resolveCredentials(ctx)
 		.then(({ credentials, identityId }) => {
 			Hub.dispatch(
 				'analytics',
@@ -89,4 +93,4 @@ export const record = (input: RecordInput): void => {
 			// An error occured while fetching credentials or persisting the event to the buffer
 			logger.warn('Failed to record event.', e);
 		});
-};
+}

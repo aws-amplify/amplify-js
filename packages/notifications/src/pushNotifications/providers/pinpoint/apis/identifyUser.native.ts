@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
+import {
+	PushNotificationAction,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 import {
 	getEndpointId,
 	updateEndpoint,
@@ -17,16 +21,19 @@ import {
 	getInflightDeviceRegistration,
 	resolveConfig,
 } from '../utils';
-import { IdentifyUser } from '../types';
+import { IdentifyUserInput } from '../types';
 
-export const identifyUser: IdentifyUser = async ({
-	userId,
-	userProfile,
-	options,
-}) => {
+export async function identifyUser(input: IdentifyUserInput): Promise<void>;
+export async function identifyUser(
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void>;
+export async function identifyUser(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<IdentifyUserInput>(args);
+	const { userId, userProfile, options } = input;
 	assertIsInitialized();
-	const { credentials, identityId } = await resolveCredentials();
-	const { appId, region } = resolveConfig();
+	const { credentials, identityId } = await resolveCredentials(ctx);
+	const { appId, region } = resolveConfig(ctx);
 	const { address, optOut, userAttributes } = options ?? {};
 	if (!(await getEndpointId(appId, 'PushNotification'))) {
 		// if there is no cached endpoint id, wait for successful endpoint creation before continuing
@@ -48,4 +55,4 @@ export const identifyUser: IdentifyUser = async ({
 			PushNotificationAction.IdentifyUser,
 		),
 	});
-};
+}

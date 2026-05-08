@@ -54,7 +54,7 @@
 		"ulid": "^2.3.0"
 	},
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.16.2"
+		"@aws-amplify/core": "^6.16.3"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.16.3",

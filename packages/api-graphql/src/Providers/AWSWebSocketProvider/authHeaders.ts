@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
@@ -17,8 +17,11 @@ type AWSAppSyncRealTimeAuthInput =
 		host?: string | undefined;
 	};
 
-const awsAuthTokenHeader = async ({ host }: AWSAppSyncRealTimeAuthInput) => {
-	const session = await fetchAuthSession();
+const awsAuthTokenHeader = async (
+	ctx: AmplifyContext,
+	{ host }: AWSAppSyncRealTimeAuthInput,
+) => {
+	const session = await ctx.fetchAuthSession();
 
 	return {
 		Authorization: session?.tokens?.accessToken?.toString(),
@@ -26,10 +29,10 @@ const awsAuthTokenHeader = async ({ host }: AWSAppSyncRealTimeAuthInput) => {
 	};
 };
 
-const awsRealTimeApiKeyHeader = async ({
-	apiKey,
-	host,
-}: AWSAppSyncRealTimeAuthInput) => {
+const awsRealTimeApiKeyHeader = async (
+	_ctx: AmplifyContext,
+	{ apiKey, host }: AWSAppSyncRealTimeAuthInput,
+) => {
 	const dt = new Date();
 	const dtStr = dt.toISOString().replace(/[:-]|\.\d{3}/g, '');
 
@@ -40,18 +43,21 @@ const awsRealTimeApiKeyHeader = async ({
 	};
 };
 
-const awsRealTimeIAMHeader = async ({
-	payload,
-	canonicalUri,
-	appSyncGraphqlEndpoint,
-	region,
-}: AWSAppSyncRealTimeAuthInput) => {
+const awsRealTimeIAMHeader = async (
+	ctx: AmplifyContext,
+	{
+		payload,
+		canonicalUri,
+		appSyncGraphqlEndpoint,
+		region,
+	}: AWSAppSyncRealTimeAuthInput,
+) => {
 	const endpointInfo = {
 		region,
 		service: 'appsync',
 	};
 
-	const creds = (await fetchAuthSession()).credentials;
+	const creds = (await ctx.fetchAuthSession()).credentials;
 
 	const request = {
 		url: `${appSyncGraphqlEndpoint}${canonicalUri}`,
@@ -77,10 +83,10 @@ const awsRealTimeIAMHeader = async ({
 	return signedParams.headers;
 };
 
-const customAuthHeader = async ({
-	host,
-	additionalCustomHeaders,
-}: AWSAppSyncRealTimeAuthInput) => {
+const customAuthHeader = async (
+	_ctx: AmplifyContext,
+	{ host, additionalCustomHeaders }: AWSAppSyncRealTimeAuthInput,
+) => {
 	/**
 	 * If `additionalHeaders` was provided to the subscription as a function,
 	 * the headers that are returned by that function will already have been
@@ -96,17 +102,18 @@ const customAuthHeader = async ({
 	};
 };
 
-export const awsRealTimeHeaderBasedAuth = async ({
-	apiKey,
-	authenticationType,
-	canonicalUri,
-	appSyncGraphqlEndpoint,
-	region,
-	additionalCustomHeaders,
-	payload,
-}: AWSAppSyncRealTimeAuthInput): Promise<
-	Record<string, string | undefined> | undefined
-> => {
+export const awsRealTimeHeaderBasedAuth = async (
+	ctx: AmplifyContext,
+	{
+		apiKey,
+		authenticationType,
+		canonicalUri,
+		appSyncGraphqlEndpoint,
+		region,
+		additionalCustomHeaders,
+		payload,
+	}: AWSAppSyncRealTimeAuthInput,
+): Promise<Record<string, string | undefined> | undefined> => {
 	const headerHandler = {
 		apiKey: awsRealTimeApiKeyHeader,
 		iam: awsRealTimeIAMHeader,
@@ -131,7 +138,7 @@ export const awsRealTimeHeaderBasedAuth = async ({
 
 		logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
 
-		const result = await handler({
+		const result = await handler(ctx, {
 			payload,
 			canonicalUri,
 			appSyncGraphqlEndpoint,

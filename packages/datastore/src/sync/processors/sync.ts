@@ -12,7 +12,12 @@ import {
 	NonRetryableError,
 	jitteredExponentialRetry,
 } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger, Hub } from '@aws-amplify/core';
+import {
+	ConsoleLogger,
+	Hub,
+	getActiveContext,
+	hasGlobalContext,
+} from '@aws-amplify/core';
 
 import {
 	AmplifyContext,
@@ -62,7 +67,13 @@ class SyncProcessor {
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext,
 	) {
-		amplifyContext.InternalAPI = amplifyContext.InternalAPI || InternalAPI;
+		amplifyContext.InternalAPI =
+			amplifyContext.InternalAPI ||
+			InternalAPI(
+				hasGlobalContext()
+					? getActiveContext()
+					: ({ resourcesConfig: {}, libraryOptions: {} } as any),
+			);
 		this.generateQueries();
 	}
 

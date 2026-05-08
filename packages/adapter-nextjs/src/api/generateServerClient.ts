@@ -8,11 +8,7 @@ import {
 	V6ClientSSRRequest,
 	generateClientWithAmplifyInstance,
 } from 'aws-amplify/api/internals';
-import { generateClient } from 'aws-amplify/api/server';
-import {
-	AmplifyServerContextError,
-	getAmplifyServerContext,
-} from 'aws-amplify/adapter-core/internals';
+import { AmplifyError } from 'aws-amplify/adapter-core/internals';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
 
 import { NextServer } from '../types';
@@ -43,12 +39,12 @@ export function generateServerClientUsingCookies<
 		CookiesClientParams = DefaultCommonClientOptions & CookiesClientParams,
 >(options: Options): V6ClientSSRCookies<T, Options> {
 	if (typeof options.cookies !== 'function') {
-		throw new AmplifyServerContextError({
+		throw new AmplifyError({
+			name: 'InvalidCookiesError',
 			message:
 				'generateServerClientUsingCookies is only compatible with the `cookies` Dynamic Function available in Server Components.',
-			// TODO: link to docs
 			recoverySuggestion:
-				'use `generateServerClient` inside of `runWithAmplifyServerContext` with the `request` object.',
+				'Use `generateServerClient` inside of `runWithAmplifyServerContext` with the `request` object.',
 		});
 	}
 
@@ -61,8 +57,7 @@ export function generateServerClientUsingCookies<
 	const getAmplify = (fn: (amplify: any) => Promise<any>) =>
 		runWithAmplifyServerContext({
 			nextServerContext: { cookies: options.cookies },
-			operation: contextSpec =>
-				fn(getAmplifyServerContext(contextSpec).amplify),
+			operation: contextSpec => fn(contextSpec),
 		});
 
 	const { cookies: _cookies, config: _config, ...params } = options;
@@ -71,7 +66,7 @@ export function generateServerClientUsingCookies<
 		amplify: getAmplify,
 		config: resourcesConfig,
 		...params,
-	} as any); // TS can't narrow the type here.
+	});
 }
 
 /**
@@ -99,8 +94,8 @@ export function generateServerClientUsingReqRes<
 
 	const { config: _config, ...params } = options;
 
-	return generateClient<T>({
+	return generateClientWithAmplifyInstance<T, V6ClientSSRRequest<T, Options>>({
 		config: amplifyConfig,
 		...params,
-	}) as any;
+	});
 }

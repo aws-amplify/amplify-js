@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CognitoUserPoolConfig } from '@aws-amplify/core';
+import { AmplifyContext, CognitoUserPoolConfig } from '@aws-amplify/core';
 
 import { OpenAuthSessionResult } from '../../../../utils/types';
 import { DefaultOAuthStore } from '../../utils/signInWithRedirectStore';
@@ -11,6 +11,7 @@ import { completeOAuthSignOut } from './completeOAuthSignOut';
 import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 
 export const handleOAuthSignOut = async (
+	ctx: AmplifyContext,
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
 	tokenOrchestrator: TokenOrchestrator,
@@ -21,7 +22,7 @@ export const handleOAuthSignOut = async (
 
 	// Clear everything before attempting to visted logout endpoint since the current application
 	// state could be wiped away on redirect
-	await completeOAuthSignOut(store);
+	await completeOAuthSignOut(ctx, store);
 
 	// The isOAuthSignIn flag is propagated by the oAuthToken store which manages oauth keys in local storage only.
 	// These keys are used to determine if a user is in an inflight or signedIn oauth states.

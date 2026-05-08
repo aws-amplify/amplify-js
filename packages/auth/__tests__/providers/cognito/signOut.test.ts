@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import {
-	Amplify,
-	ConsoleLogger,
-	Hub,
-	clearCredentials,
-} from '@aws-amplify/core';
-import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+	AMPLIFY_SYMBOL,
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
@@ -20,8 +19,8 @@ import {
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { getRegionFromUserPoolId } from '../../../src/foundation/parsers';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
-jest.mock('@aws-amplify/core');
 jest.mock('../../../src/providers/cognito/tokenProvider');
 jest.mock('../../../src/providers/cognito/utils/oauth');
 jest.mock('../../../src/providers/cognito/utils/signInWithRedirectStore');
@@ -52,13 +51,10 @@ describe('signOut', () => {
 		refreshToken,
 	};
 	// assert mocks
-	const mockAmplify = Amplify as jest.Mocked<typeof Amplify>;
-	const mockClearCredentials = clearCredentials as jest.Mock;
 	const mockGetRegionFromUserPoolId = jest.mocked(getRegionFromUserPoolId);
 	const mockGlobalSignOut = jest.fn();
 	const mockCreateGlobalSignOutClient = jest.mocked(createGlobalSignOutClient);
 	const mockHandleOAuthSignOut = handleOAuthSignOut as jest.Mock;
-	const mockHub = Hub as jest.Mocked<typeof Hub>;
 	const mockRevokeToken = jest.fn();
 	const mockedRevokeTokenClient = jest.mocked(createRevokeTokenClient);
 	const mockTokenOrchestrator = tokenOrchestrator as jest.Mocked<
@@ -78,12 +74,18 @@ describe('signOut', () => {
 	};
 	// create spies
 	const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
+	const hubDispatchSpy = jest.spyOn(Hub, 'dispatch');
+
+	// mock context
+	let mockCtx: ReturnType<typeof createMockAmplifyContext>;
+	const mockClearCredentials = () => mockCtx.clearCredentials as jest.Mock;
+
 	// create test helpers
 	const expectSignOut = () => ({
 		toComplete: () => {
 			expect(mockTokenOrchestrator.clearTokens).toHaveBeenCalledTimes(1);
-			expect(mockClearCredentials).toHaveBeenCalledTimes(1);
-			expect(mockHub.dispatch).toHaveBeenCalledWith(
+			expect(mockClearCredentials()).toHaveBeenCalledTimes(1);
+			expect(hubDispatchSpy).toHaveBeenCalledWith(
 				'auth',
 				{ event: 'signedOut' },
 				'Auth',
@@ -93,8 +95,8 @@ describe('signOut', () => {
 		not: {
 			toComplete: () => {
 				expect(mockTokenOrchestrator.clearTokens).not.toHaveBeenCalled();
-				expect(mockClearCredentials).not.toHaveBeenCalled();
-				expect(mockHub.dispatch).not.toHaveBeenCalled();
+				expect(mockClearCredentials()).not.toHaveBeenCalled();
+				expect(hubDispatchSpy).not.toHaveBeenCalled();
 			},
 		},
 	});
@@ -107,7 +109,10 @@ describe('signOut', () => {
 	});
 
 	beforeEach(() => {
-		mockAmplify.getConfig.mockReturnValue({ Auth: { Cognito: cognitoConfig } });
+		mockCtx = createMockAmplifyContext({
+			Auth: { Cognito: cognitoConfig },
+		});
+		setGlobalContext(mockCtx);
 		mockGlobalSignOut.mockResolvedValue({ $metadata: {} });
 		mockCreateGlobalSignOutClient.mockReturnValueOnce(mockGlobalSignOut);
 		mockRevokeToken.mockResolvedValue({});
@@ -117,12 +122,11 @@ describe('signOut', () => {
 	});
 
 	afterEach(() => {
-		mockAmplify.getConfig.mockReset();
+		clearGlobalContext();
 		mockGlobalSignOut.mockReset();
 		mockRevokeToken.mockReset();
-		mockClearCredentials.mockClear();
 		mockGetRegionFromUserPoolId.mockClear();
-		mockHub.dispatch.mockClear();
+		hubDispatchSpy.mockClear();
 		mockTokenOrchestrator.clearTokens.mockClear();
 		loggerDebugSpy.mockClear();
 		mockCreateCognitoUserPoolEndpointResolver.mockClear();
@@ -144,7 +148,8 @@ describe('signOut', () => {
 		it('invokes createCognitoUserPoolEndpointResolver with the userPoolEndpoint for creating the revokeToken client', async () => {
 			const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
 			const expectedEndpointResolver = jest.fn();
-			mockAmplify.getConfig.mockReturnValueOnce({
+			// Override context with custom endpoint config
+			mockCtx = createMockAmplifyContext({
 				Auth: {
 					Cognito: {
 						...cognitoConfig,
@@ -152,6 +157,7 @@ describe('signOut', () => {
 					},
 				},
 			});
+			setGlobalContext(mockCtx);
 			mockCreateCognitoUserPoolEndpointResolver.mockReturnValueOnce(
 				expectedEndpointResolver,
 			);
@@ -195,7 +201,8 @@ describe('signOut', () => {
 		it('invokes createCognitoUserPoolEndpointResolver with the userPoolEndpoint for creating the globalSignOut client', async () => {
 			const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
 			const expectedEndpointResolver = jest.fn();
-			mockAmplify.getConfig.mockReturnValueOnce({
+			// Override context with custom endpoint config
+			mockCtx = createMockAmplifyContext({
 				Auth: {
 					Cognito: {
 						...cognitoConfig,
@@ -203,6 +210,7 @@ describe('signOut', () => {
 					},
 				},
 			});
+			setGlobalContext(mockCtx);
 			mockCreateCognitoUserPoolEndpointResolver.mockReturnValueOnce(
 				expectedEndpointResolver,
 			);
@@ -257,14 +265,14 @@ describe('signOut', () => {
 		};
 
 		beforeEach(() => {
-			mockAmplify.getConfig.mockReturnValue({
+			mockCtx = createMockAmplifyContext({
 				Auth: { Cognito: cognitoConfigWithOauth },
 			});
+			setGlobalContext(mockCtx);
 			mockHandleOAuthSignOut.mockResolvedValue({ type: 'success' });
 		});
 
 		afterEach(() => {
-			mockAmplify.getConfig.mockReset();
 			mockHandleOAuthSignOut.mockReset();
 		});
 
@@ -276,6 +284,9 @@ describe('signOut', () => {
 				cognitoConfigWithOauth,
 			);
 			expect(mockHandleOAuthSignOut).toHaveBeenCalledWith(
+				expect.objectContaining({
+					resourcesConfig: expect.any(Object),
+				}),
 				cognitoConfigWithOauth,
 				mockDefaultOAuthStoreInstance,
 				mockTokenOrchestrator,

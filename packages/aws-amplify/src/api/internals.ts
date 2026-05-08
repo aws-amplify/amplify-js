@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export {
-	generateClientWithAmplifyInstance,
+	V6Client,
 	V6ClientSSRCookies,
 	V6ClientSSRRequest,
+	generateClient,
+	generateClientWithAmplifyInstance,
 	CommonPublicClientOptions,
 	DefaultCommonClientOptions,
 } from '@aws-amplify/api/internals';

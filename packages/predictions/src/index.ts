@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-export { Predictions } from './Predictions';
+export { PredictionsClass as Predictions } from './Predictions';
 
 export {
 	IdentifyEntitiesInput,

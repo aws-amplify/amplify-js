@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
+import { AmplifyContext, ResourcesConfig } from '@aws-amplify/core';
 import {
 	BaseClient,
 	ClientExtensions,
@@ -16,7 +16,6 @@ import {
 	DocumentType,
 	GraphQLAuthMode,
 } from '@aws-amplify/core/internals/utils';
-import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 import { CommonPublicClientOptions } from '../internals/types';
 
@@ -486,7 +485,7 @@ export type GraphQLMethodSSR<Options extends CommonPublicClientOptions> = <
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string,
 >(
-	contextSpec: AmplifyServer.ContextSpec,
+	contextSpec: AmplifyContext,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>,
 	additionalHeaders?: CustomHeaders | undefined,
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
@@ -500,7 +499,7 @@ export interface ServerClientGenerationParams {
 	amplify:
 		| null // null expected when used with `generateServerClient`
 		// closure expected with `generateServerClientUsingCookies`
-		| ((fn: (amplify: AmplifyClassV6) => Promise<any>) => Promise<any>);
+		| ((fn: (amplify: AmplifyContext) => Promise<any>) => Promise<any>);
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
 }

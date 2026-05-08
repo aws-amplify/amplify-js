@@ -7,6 +7,7 @@ import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 import { tokenOrchestrator } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
 import { completeOAuthSignOut } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthSignOut';
 import { DefaultOAuthStore } from '../../../../../src/providers/cognito/utils/signInWithRedirectStore';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core', () => {
 	return {
@@ -40,11 +41,12 @@ describe('completeOAuthSignOut', () => {
 	});
 
 	it('should complete OAuth sign out', async () => {
-		await completeOAuthSignOut(mockStore);
+		const mockCtx = createMockAmplifyContext();
+		await completeOAuthSignOut(mockCtx, mockStore);
 
 		expect(mockStore.clearOAuthData).toHaveBeenCalledTimes(1);
 		expect(mockTokenOrchestrator.clearTokens).toHaveBeenCalledTimes(1);
-		expect(mockClearCredentials).toHaveBeenCalledTimes(1);
+		expect(mockCtx.clearCredentials).toHaveBeenCalledTimes(1);
 		expect(mockHub.dispatch).toHaveBeenCalledWith(
 			'auth',
 			{ event: 'signedOut' },

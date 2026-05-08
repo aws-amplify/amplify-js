@@ -11,12 +11,22 @@ import {
 } from '../../../testUtils/mockConstants';
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
 import { flushEvents } from '../../../../src/providers/kinesis/apis';
+import {
+	setupGlobalContext,
+	teardownGlobalContext,
+} from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
 jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
 
 describe('Analytics Kinesis API: flushEvents', () => {
+	beforeAll(() => {
+		setupGlobalContext();
+	});
+	afterAll(() => {
+		teardownGlobalContext();
+	});
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;

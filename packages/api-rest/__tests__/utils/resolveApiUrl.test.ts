@@ -1,4 +1,4 @@
-import type { AmplifyClassV6 } from '@aws-amplify/core';
+import type { AmplifyContext } from '@aws-amplify/core';
 
 import { resolveApiUrl } from '../../src/utils';
 import {
@@ -7,18 +7,24 @@ import {
 	validationErrorMap,
 } from '../../src/errors';
 
-const mkAmplify = (endpoint = 'https://example.com/api', apiName = 'myAPI') =>
-	({
-		getConfig: () => ({
-			API: {
-				REST: {
-					[apiName]: {
-						endpoint,
-					},
+const mkAmplify = (
+	endpoint = 'https://example.com/api',
+	apiName = 'myAPI',
+): AmplifyContext => ({
+	resourcesConfig: {
+		API: {
+			REST: {
+				[apiName]: {
+					endpoint,
 				},
 			},
-		}),
-	}) as unknown as AmplifyClassV6;
+		},
+	},
+	libraryOptions: {},
+	fetchAuthSession: jest.fn(),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+});
 
 describe('resolveApiUrl', () => {
 	beforeEach(() => {

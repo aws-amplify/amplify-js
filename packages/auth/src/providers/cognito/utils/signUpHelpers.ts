@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HubInternal } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { signIn } from '../apis/signIn';
 import { SignInInput, SignInOutput } from '../types';
@@ -14,7 +15,10 @@ import { signInWithUserAuth } from '../apis/signInWithUserAuth';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
-export function handleCodeAutoSignIn(signInInput: SignInInput) {
+export function handleCodeAutoSignIn(
+	ctx: AmplifyContext,
+	signInInput: SignInInput,
+) {
 	const stopHubListener = HubInternal.listen<AutoSignInEventData>(
 		'auth-internal',
 		async ({ payload }) => {
@@ -25,7 +29,7 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 						HubInternal.dispatch('auth-internal', {
 							event: 'autoSignIn',
 						});
-						setAutoSignIn(autoSignInWithCode(signInInput));
+						setAutoSignIn(autoSignInWithCode(ctx, signInInput));
 						stopHubListener();
 					}
 				}
@@ -63,6 +67,7 @@ function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
 }
 
 function handleAutoSignInWithLink(
+	ctx: AmplifyContext,
 	signInInput: SignInInput,
 	resolve: (value: SignInOutput) => void,
 	reject: (reason?: any) => void,
@@ -84,7 +89,7 @@ function handleAutoSignInWithLink(
 			resetAutoSignIn();
 		} else {
 			try {
-				const signInOutput = await signIn(signInInput);
+				const signInOutput = await signIn(ctx, signInInput);
 				if (signInOutput.nextStep.signInStep !== 'CONFIRM_SIGN_UP') {
 					resolve(signInOutput);
 					clearInterval(autoSignInPollingIntervalId);
@@ -105,15 +110,17 @@ const debouncedAutoSignWithCodeOrUserConfirmed = debounce(
 );
 
 export function autoSignInWhenUserIsConfirmedWithLink(
+	ctx: AmplifyContext,
 	signInInput: SignInInput,
 ): AutoSignInCallback {
 	return async () => {
 		return new Promise<SignInOutput>((resolve, reject) => {
-			debouncedAutoSignInWithLink([signInInput, resolve, reject]);
+			debouncedAutoSignInWithLink([ctx, signInInput, resolve, reject]);
 		});
 	};
 }
 async function handleAutoSignInWithCodeOrUserConfirmed(
+	ctx: AmplifyContext,
 	signInInput: SignInInput,
 	resolve: (value: SignInOutput) => void,
 	reject: (reason?: any) => void,
@@ -121,8 +128,8 @@ async function handleAutoSignInWithCodeOrUserConfirmed(
 	try {
 		const output =
 			signInInput?.options?.authFlowType === 'USER_AUTH'
-				? await signInWithUserAuth(signInInput)
-				: await signIn(signInInput);
+				? await signInWithUserAuth(ctx, signInInput)
+				: await signIn(ctx, signInInput);
 
 		resolve(output);
 		resetAutoSignIn();
@@ -132,10 +139,18 @@ async function handleAutoSignInWithCodeOrUserConfirmed(
 	}
 }
 
-function autoSignInWithCode(signInInput: SignInInput): AutoSignInCallback {
+function autoSignInWithCode(
+	ctx: AmplifyContext,
+	signInInput: SignInInput,
+): AutoSignInCallback {
 	return async () => {
 		return new Promise<SignInOutput>((resolve, reject) => {
-			debouncedAutoSignWithCodeOrUserConfirmed([signInInput, resolve, reject]);
+			debouncedAutoSignWithCodeOrUserConfirmed([
+				ctx,
+				signInInput,
+				resolve,
+				reject,
+			]);
 		});
 	};
 }

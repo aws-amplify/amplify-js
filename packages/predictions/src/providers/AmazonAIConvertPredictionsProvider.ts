@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Buffer } from 'buffer';
 
-import { Amplify, ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import {
 	AWSCredentials,
 	Category,
@@ -49,6 +49,12 @@ const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];
 
 export class AmazonAIConvertPredictionsProvider {
 	private translateClient?: TranslateClient;
+	private ctx: AmplifyContext;
+
+	constructor(ctx: AmplifyContext) {
+		this.ctx = ctx;
+	}
+
 	private pollyClient?: PollyClient;
 
 	getProviderName() {
@@ -84,14 +90,14 @@ export class AmazonAIConvertPredictionsProvider {
 		logger.debug('Starting translation');
 
 		const { translateText = {} } =
-			Amplify.getConfig().Predictions?.convert ?? {};
+			this.ctx.resourcesConfig.Predictions?.convert ?? {};
 		assertValidationError(
 			!!translateText.region,
 			PredictionsValidationErrorCode.NoRegion,
 		);
 		const { defaults = {}, region } = translateText;
 
-		const { credentials } = await fetchAuthSession();
+		const { credentials } = await this.ctx.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
@@ -135,7 +141,7 @@ export class AmazonAIConvertPredictionsProvider {
 	protected async convertTextToSpeech(
 		input: TextToSpeechInput,
 	): Promise<TextToSpeechOutput> {
-		const { credentials } = await fetchAuthSession();
+		const { credentials } = await this.ctx.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
@@ -145,7 +151,8 @@ export class AmazonAIConvertPredictionsProvider {
 			PredictionsValidationErrorCode.NoSource,
 		);
 
-		const { speechGenerator } = Amplify.getConfig().Predictions?.convert ?? {};
+		const { speechGenerator } =
+			this.ctx.resourcesConfig.Predictions?.convert ?? {};
 		assertValidationError(
 			!!speechGenerator?.region,
 			PredictionsValidationErrorCode.NoRegion,
@@ -191,13 +198,14 @@ export class AmazonAIConvertPredictionsProvider {
 		input: SpeechToTextInput,
 	): Promise<SpeechToTextOutput> {
 		logger.debug('starting transcription..');
-		const { credentials } = await fetchAuthSession();
+		const { credentials } = await this.ctx.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
-		const { transcription } = Amplify.getConfig().Predictions?.convert ?? {};
+		const { transcription } =
+			this.ctx.resourcesConfig.Predictions?.convert ?? {};
 		assertValidationError(
 			!!transcription?.region,
 			PredictionsValidationErrorCode.NoRegion,

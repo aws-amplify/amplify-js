@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
-
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { getUrl as advancedGetUrl } from '../../../src/internals';
 import { getUrl as getUrlInternal } from '../../../src/providers/s3/apis/internal/getUrl';
 
@@ -11,6 +10,8 @@ const mockedGetUrlInternal = jest.mocked(getUrlInternal);
 const MOCK_URL = new URL('https://s3.aws/mock-presigned-url');
 const MOCK_DATE = new Date();
 MOCK_DATE.setMonth(MOCK_DATE.getMonth() + 1);
+
+const mockCtx = createMockAmplifyContext();
 
 describe('getUrl (internal)', () => {
 	beforeEach(() => {
@@ -41,7 +42,7 @@ describe('getUrl (internal)', () => {
 				expiration: new Date(),
 			},
 		});
-		const result = await advancedGetUrl({
+		const result = await advancedGetUrl(mockCtx, {
 			path: 'input/path/to/mock/object',
 			options: {
 				customEndpoint,
@@ -56,23 +57,20 @@ describe('getUrl (internal)', () => {
 			},
 		});
 		expect(mockedGetUrlInternal).toHaveBeenCalledTimes(1);
-		expect(mockedGetUrlInternal).toHaveBeenCalledWith(
-			expect.any(AmplifyClassV6),
-			{
-				path: 'input/path/to/mock/object',
-				options: {
-					customEndpoint,
-					useAccelerateEndpoint,
-					bucket,
-					validateObjectExistence,
-					expiresIn,
-					contentDisposition,
-					contentType,
-					expectedBucketOwner,
-					locationCredentialsProvider,
-				},
+		expect(mockedGetUrlInternal).toHaveBeenCalledWith(mockCtx, {
+			path: 'input/path/to/mock/object',
+			options: {
+				customEndpoint,
+				useAccelerateEndpoint,
+				bucket,
+				validateObjectExistence,
+				expiresIn,
+				contentDisposition,
+				contentType,
+				expectedBucketOwner,
+				locationCredentialsProvider,
 			},
-		);
+		});
 		expect(result).toEqual({
 			url: MOCK_URL,
 			expiresAt: MOCK_DATE,

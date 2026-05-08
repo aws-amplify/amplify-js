@@ -3,7 +3,7 @@
 
 import { NextRequest } from 'next/server';
 import {
-	AmplifyServerContextError,
+	AmplifyError,
 	CookieStorage,
 	OAuthConfig,
 	assertOAuthConfig,
@@ -97,7 +97,8 @@ export const createAuthRouteHandlersFactory = ({
 		// origin validation should happen when createAuthRouteHandlers is being called to create
 		// Auth API routes.
 		if (!amplifyAppOrigin) {
-			throw new AmplifyServerContextError({
+			throw new AmplifyError({
+				name: 'MissingOriginError',
 				message: 'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
 				recoverySuggestion:
 					'Add the AMPLIFY_APP_ORIGIN environment variable to the `.env` file of your Next.js project.',
@@ -105,7 +106,8 @@ export const createAuthRouteHandlersFactory = ({
 		}
 
 		if (!isValidOrigin(amplifyAppOrigin)) {
-			throw new AmplifyServerContextError({
+			throw new AmplifyError({
+				name: 'InvalidOriginError',
 				message:
 					'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
 				recoverySuggestion:

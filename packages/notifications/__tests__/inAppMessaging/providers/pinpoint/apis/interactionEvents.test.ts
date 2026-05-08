@@ -14,16 +14,19 @@ import {
 	onMessageDisplayed,
 	onMessageReceived,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock('../../../../../src/eventListeners');
 
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockAddEventListener = addEventListener as jest.Mock;
 
+const mockCtx = createMockAmplifyContext();
+
 describe('Interaction events', () => {
 	const handler = jest.fn();
 	beforeAll(() => {
-		initializeInAppMessaging();
+		initializeInAppMessaging(mockCtx);
 	});
 	it('can be listened to by onMessageReceived', () => {
 		onMessageReceived(handler);

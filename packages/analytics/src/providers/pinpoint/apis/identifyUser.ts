@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
+import {
+	AnalyticsAction,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 import {
 	UpdateEndpointException,
 	updateEndpoint,
@@ -59,13 +63,16 @@ import { resolveConfig, resolveCredentials } from '../utils';
  *     }
  * });
  */
-export const identifyUser = async ({
-	userId,
-	userProfile,
-	options,
-}: IdentifyUserInput): Promise<void> => {
-	const { credentials, identityId } = await resolveCredentials();
-	const { appId, region } = resolveConfig();
+export async function identifyUser(input: IdentifyUserInput): Promise<void>;
+export async function identifyUser(
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void>;
+export async function identifyUser(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<IdentifyUserInput>(args);
+	const { userId, userProfile, options } = input;
+	const { credentials, identityId } = await resolveCredentials(ctx);
+	const { appId, region } = resolveConfig(ctx);
 	const { userAttributes } = options ?? {};
 	await updateEndpoint({
 		appId,
@@ -78,4 +85,4 @@ export const identifyUser = async ({
 		userProfile,
 		userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.IdentifyUser),
 	});
-};
+}

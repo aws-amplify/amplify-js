@@ -10,7 +10,7 @@ import {
 	OperationTypeNode,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { Amplify, Cache } from '@aws-amplify/core';
+import { AmplifyContext, Cache } from '@aws-amplify/core';
 import {
 	ApiAction,
 	Category,
@@ -34,6 +34,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
  * Export Cloud Logic APIs
  */
 export class InternalAPIClass {
+	private ctx: AmplifyContext;
 	private _graphqlApi: InternalGraphQLAPIClass;
 
 	Cache = Cache;
@@ -41,8 +42,9 @@ export class InternalAPIClass {
 	/**
 	 * Initialize API
 	 */
-	constructor() {
-		this._graphqlApi = new InternalGraphQLAPIClass();
+	constructor(ctx: AmplifyContext) {
+		this.ctx = ctx;
+		this._graphqlApi = new InternalGraphQLAPIClass(ctx);
 	}
 
 	public getModuleName() {
@@ -89,7 +91,7 @@ export class InternalAPIClass {
 		};
 
 		return this._graphqlApi.graphql(
-			Amplify,
+			this.ctx,
 			options,
 			additionalHeaders,
 			apiUserAgentDetails,
@@ -97,4 +99,5 @@ export class InternalAPIClass {
 	}
 }
 
-export const InternalAPI = new InternalAPIClass();
+export const createInternalAPI = (ctx: AmplifyContext) =>
+	new InternalAPIClass(ctx);

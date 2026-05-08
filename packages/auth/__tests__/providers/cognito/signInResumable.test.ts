@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify, syncSessionStorage } from '@aws-amplify/core';
+import { syncSessionStorage } from '@aws-amplify/core';
 
 import {
 	resetActiveSignInState,
@@ -14,13 +14,15 @@ import {
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signIn } from '../../../src/providers/cognito';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
 const signInStoreImplementation = require('../../../src/client/utils/store/signInStore');
 
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+}));
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -108,12 +110,18 @@ describe('signInStore', () => {
 	const { username } = authAPITestParams.user1;
 	const { password } = authAPITestParams.user1;
 
-	beforeEach(() => {
-		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
 	});
 
-	beforeAll(() => {
-		setUpGetConfig(Amplify);
+	beforeEach(() => {
+		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 	});
 
 	afterEach(() => {
@@ -164,7 +172,7 @@ describe('signInStore', () => {
 				}),
 			);
 
-		await signIn({
+		await signIn(mockCtx, {
 			username,
 			password,
 		});

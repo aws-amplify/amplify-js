@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	AmplifyUrlSearchParams,
@@ -25,12 +25,12 @@ import {
  * @internal
  */
 export const resolveApiUrl = (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	apiName: string,
 	path: string,
 	queryParams?: Record<string, string>,
 ): URL => {
-	const urlStr = amplify.getConfig()?.API?.REST?.[apiName]?.endpoint;
+	const urlStr = amplify.resourcesConfig?.API?.REST?.[apiName]?.endpoint;
 	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
 	try {
 		let url: URL;

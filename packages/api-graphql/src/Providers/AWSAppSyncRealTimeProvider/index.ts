@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
 	DocumentType,
@@ -45,8 +46,8 @@ const WS_PROTOCOL_NAME = 'graphql-ws';
 const CONNECT_URI = '/connect';
 
 export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
-	constructor() {
-		super({
+	constructor(ctx: AmplifyContext) {
+		super(ctx, {
 			providerName: PROVIDER_NAME,
 			wsProtocolName: WS_PROTOCOL_NAME,
 			connectUri: CONNECT_URI,
@@ -92,7 +93,7 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 		const serializedData = JSON.stringify(data);
 
 		const headers = {
-			...(await awsRealTimeHeaderBasedAuth({
+			...(await awsRealTimeHeaderBasedAuth(this.ctx, {
 				apiKey,
 				appSyncGraphqlEndpoint,
 				authenticationType,

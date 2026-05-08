@@ -1,4 +1,4 @@
-import { Amplify } from '@aws-amplify/core';
+import { getGlobalContext, hasGlobalContext } from '@aws-amplify/core';
 import { unauthenticatedHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
@@ -10,6 +10,8 @@ jest.mock('@aws-amplify/core/internals/aws-client-utils/composers');
 
 const mockComposeTransferHandler = jest.mocked(composeTransferHandler);
 const mockUnauthenticatedHandler = jest.mocked(unauthenticatedHandler);
+const mockHasGlobalContext = jest.mocked(hasGlobalContext);
+const mockGetGlobalContext = jest.mocked(getGlobalContext);
 
 describe('cognitoUserPoolTransferHandler', () => {
 	beforeAll(() => {
@@ -47,9 +49,12 @@ describe('cognitoUserPoolTransferHandler', () => {
 		const mockHeaders = jest.fn().mockResolvedValue({
 			'custom-header': 'custom-value',
 		});
-		(Amplify as any).libraryOptions = {
-			Auth: { headers: mockHeaders },
-		};
+		mockHasGlobalContext.mockReturnValue(true);
+		mockGetGlobalContext.mockReturnValue({
+			libraryOptions: {
+				Auth: { headers: mockHeaders },
+			},
+		} as any);
 
 		const [, middleware] = mockComposeTransferHandler.mock.calls[0];
 		const disableCacheMiddlewareFactory = middleware[0] as any;
@@ -63,7 +68,7 @@ describe('cognitoUserPoolTransferHandler', () => {
 	});
 
 	it('does not attach custom headers when not configured', async () => {
-		(Amplify as any).libraryOptions = {};
+		mockHasGlobalContext.mockReturnValue(false);
 
 		const [, middleware] = mockComposeTransferHandler.mock.calls[0];
 		const disableCacheMiddlewareFactory = middleware[0] as any;

@@ -51,23 +51,19 @@
 		">=4.2": {
 			"internals": [
 				"./dist/esm/internals/index.d.ts"
-			],
-			"server": [
-				"./dist/esm/server.d.ts"
 			]
 		}
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git",
-		"directory": "packages/api"
+		"url": "https://github.com/aws-amplify/amplify-js.git"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
-	"homepage": "https://docs.amplify.aws/",
+	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
 		"@aws-amplify/core": "6.16.3",
 		"jest-fetch-mock": "3.0.3"
@@ -77,8 +73,7 @@
 		"dist/esm",
 		"src",
 		"index.*.d.ts",
-		"internals",
-		"server"
+		"internals"
 	],
 	"dependencies": {
 		"@aws-amplify/api-graphql": "4.8.7",
@@ -88,6 +83,6 @@
 		"tslib": "^2.5.0"
 	},
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.16.2"
+		"@aws-amplify/core": "^6.16.3"
 	}
 }

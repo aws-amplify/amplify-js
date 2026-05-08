@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { getGlobalContext, hasGlobalContext } from '@aws-amplify/core';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import {
 	HttpRequest,
@@ -22,7 +22,8 @@ const disableCacheMiddlewareFactory: Middleware<
 		request.headers = {
 			...request.headers,
 			'cache-control': 'no-store',
-			...(await Amplify.libraryOptions?.Auth?.headers?.()),
+			...(hasGlobalContext() &&
+				(await getGlobalContext().libraryOptions?.Auth?.headers?.())),
 		};
 
 		return next(request);

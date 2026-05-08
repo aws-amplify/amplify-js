@@ -109,7 +109,9 @@ describe('generateServerClient', () => {
 				response: mockedRes,
 			},
 			operation: async contextSpec => {
-				await client.graphql(contextSpec, { query: '' });
+				await client.graphql(contextSpec, {
+					query: '',
+				});
 			},
 		});
 

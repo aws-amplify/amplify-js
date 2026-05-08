@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
@@ -10,6 +13,7 @@ import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
@@ -36,9 +40,8 @@ describe('signIn API happy path cases', () => {
 	let handleUserPasswordFlowSpy: jest.SpyInstance;
 
 	beforeAll(() => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
+		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+		setGlobalContext(mockCtx);
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 	});
 
@@ -68,9 +71,10 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleUserPasswordAuthFlow should be called with clientMetadata from request', async () => {
+		const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithUserPassword({
+		await signInWithUserPassword(mockCtx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,
@@ -136,4 +140,8 @@ describe('Cognito ASF', () => {
 			}),
 		);
 	});
+});
+
+afterAll(() => {
+	clearGlobalContext();
 });

@@ -1,3 +1,4 @@
+import { AMPLIFY_CONTEXT_BRAND, AmplifyContext } from '@aws-amplify/core';
 import {
 	BatchDeleteGeofenceCommand,
 	BatchPutGeofenceCommand,
@@ -7,7 +8,24 @@ import {
 
 import { Geofence } from '../src/types';
 
-import { validGeometry, validPolygon } from './testData';
+import { credentials, validGeometry, validPolygon } from './testData';
+
+export function createMockAmplifyContext(
+	resourcesConfig: Record<string, unknown> = {},
+): AmplifyContext {
+	const ctx = {
+		[AMPLIFY_CONTEXT_BRAND]: true,
+		resourcesConfig,
+		libraryOptions: {},
+		fetchAuthSession: jest
+			.fn()
+			.mockResolvedValue({ credentials, identityId: credentials.identityId }),
+		clearCredentials: jest.fn().mockResolvedValue(undefined),
+		getTokens: jest.fn().mockResolvedValue(undefined),
+	};
+
+	return ctx as unknown as AmplifyContext;
+}
 
 export function createGeofenceInputArray(numberOfGeofences) {
 	const geofences: Geofence[] = [];

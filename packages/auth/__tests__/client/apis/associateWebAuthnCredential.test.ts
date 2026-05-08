@@ -1,4 +1,3 @@
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -17,17 +16,13 @@ import {
 import { serializePkcWithAttestationToJson } from '../../../src/client/utils/passkey/serde';
 import * as utils from '../../../src/client/utils';
 import { getIsPasskeySupported } from '../../../src/client/utils/passkey/getIsPasskeySupported';
-import { setUpGetConfig } from '../../providers/cognito/testUtils/setUpGetConfig';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
 import {
 	assertCredentialIsPkcWithAuthenticatorAssertionResponse,
 	assertCredentialIsPkcWithAuthenticatorAttestationResponse,
 } from '../../../src/client/utils/passkey/types';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -57,8 +52,6 @@ describe('associateWebAuthnCredential', () => {
 	);
 	const registerPasskeySpy = jest.spyOn(utils, 'registerPasskey');
 
-	const mockFetchAuthSession = jest.mocked(fetchAuthSession);
-
 	const mockGetIsPasskeySupported = jest.mocked(getIsPasskeySupported);
 
 	const mockStartWebAuthnRegistration = jest.fn();
@@ -76,9 +69,18 @@ describe('associateWebAuthnCredential', () => {
 	const mockAssertCredentialIsPkcWithAuthenticatorAttestationResponse =
 		jest.mocked(assertCredentialIsPkcWithAuthenticatorAttestationResponse);
 
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
-		mockFetchAuthSession.mockResolvedValue({
+		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
 		mockCreateStartWebAuthnRegistrationClient.mockReturnValue(
@@ -103,7 +105,7 @@ describe('associateWebAuthnCredential', () => {
 	});
 
 	afterEach(() => {
-		mockFetchAuthSession.mockClear();
+		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
 		mockStartWebAuthnRegistration.mockClear();
 		navigatorCredentialsCreateSpy.mockClear();
 	});
@@ -113,7 +115,7 @@ describe('associateWebAuthnCredential', () => {
 			CredentialCreationOptions: passkeyCredentialCreateOptions,
 		}));
 
-		await associateWebAuthnCredential();
+		await associateWebAuthnCredential(mockCtx);
 
 		expect(mockStartWebAuthnRegistration).toHaveBeenCalledWith(
 			{
@@ -131,7 +133,7 @@ describe('associateWebAuthnCredential', () => {
 			CredentialCreationOptions: passkeyCredentialCreateOptions,
 		}));
 
-		await associateWebAuthnCredential();
+		await associateWebAuthnCredential(mockCtx);
 
 		expect(mockCompleteWebAuthnRegistration).toHaveBeenCalledWith(
 			{
@@ -152,7 +154,7 @@ describe('associateWebAuthnCredential', () => {
 			CredentialCreationOptions: passkeyCredentialCreateOptions,
 		}));
 
-		await associateWebAuthnCredential();
+		await associateWebAuthnCredential(mockCtx);
 
 		expect(registerPasskeySpy).toHaveBeenCalledWith(
 			passkeyCredentialCreateOptions,
@@ -169,7 +171,7 @@ describe('associateWebAuthnCredential', () => {
 		}));
 
 		try {
-			await associateWebAuthnCredential();
+			await associateWebAuthnCredential(mockCtx);
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(PasskeyError);
 			expect(error.name).toBe(
@@ -188,7 +190,7 @@ describe('associateWebAuthnCredential', () => {
 		mockGetIsPasskeySupported.mockReturnValue(false);
 
 		try {
-			await associateWebAuthnCredential();
+			await associateWebAuthnCredential(mockCtx);
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(PasskeyError);
 			expect(error.name).toBe(PasskeyErrorCode.PasskeyNotSupported);

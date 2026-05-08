@@ -3,6 +3,7 @@ import { authAPITestParams } from '../../testUtils/authApiTestParams';
 import { signInWithUserAuth } from '../../../../../src/providers/cognito/apis/signInWithUserAuth';
 import { signIn } from '../../../../../src/providers/cognito/apis/signIn';
 import { SignInInput } from '../../../../../src/providers/cognito/types/inputs';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -17,6 +18,7 @@ jest.mock('../../../../../src/providers/cognito/apis/signIn');
 describe('autoSignInUserConfirmed()', () => {
 	const mockSignInWithUserAuth = jest.mocked(signInWithUserAuth);
 	const mockSignIn = jest.mocked(signIn);
+	const mockCtx = createMockAmplifyContext();
 
 	jest.useFakeTimers();
 
@@ -42,10 +44,10 @@ describe('autoSignInUserConfirmed()', () => {
 			},
 		};
 
-		autoSignInUserConfirmed(signInInput)();
+		autoSignInUserConfirmed(mockCtx, signInInput)();
 
 		expect(mockSignInWithUserAuth).toHaveBeenCalledTimes(1);
-		expect(mockSignInWithUserAuth).toHaveBeenCalledWith(signInInput);
+		expect(mockSignInWithUserAuth).toHaveBeenCalledWith(mockCtx, signInInput);
 
 		expect(mockSignIn).not.toHaveBeenCalled();
 	});
@@ -55,11 +57,11 @@ describe('autoSignInUserConfirmed()', () => {
 			username: user1.username,
 		};
 
-		autoSignInUserConfirmed(signInInput)();
+		autoSignInUserConfirmed(mockCtx, signInInput)();
 
 		expect(mockSignInWithUserAuth).not.toHaveBeenCalled();
 
 		expect(mockSignIn).toHaveBeenCalledTimes(1);
-		expect(mockSignIn).toHaveBeenCalledWith(signInInput);
+		expect(mockSignIn).toHaveBeenCalledWith(mockCtx, signInInput);
 	});
 });

@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import { ListWebAuthnCredentialsException } from '../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import {
@@ -23,6 +24,17 @@ import { listWebAuthnCredentials as listWebAuthnCredentialsFoundation } from '..
  */
 export async function listWebAuthnCredentials(
 	input?: ListWebAuthnCredentialsInput,
+): Promise<ListWebAuthnCredentialsOutput>;
+export async function listWebAuthnCredentials(
+	ctx: AmplifyContext,
+	input?: ListWebAuthnCredentialsInput,
+): Promise<ListWebAuthnCredentialsOutput>;
+export async function listWebAuthnCredentials(
+	...args: any[]
 ): Promise<ListWebAuthnCredentialsOutput> {
-	return listWebAuthnCredentialsFoundation(Amplify, input);
+	const [ctx, input] = resolveCtxArgs<ListWebAuthnCredentialsInput | undefined>(
+		args,
+	);
+
+	return listWebAuthnCredentialsFoundation(ctx, input);
 }

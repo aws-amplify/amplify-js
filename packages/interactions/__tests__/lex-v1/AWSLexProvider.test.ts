@@ -6,10 +6,8 @@ import {
 	PostTextCommand,
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
-import { lexProvider } from '../../src/lex-v1/AWSLexProvider';
-import { fetchAuthSession } from '@aws-amplify/core';
-
-jest.mock('@aws-amplify/core');
+import { createLexProvider } from '../../src/lex-v1/AWSLexProvider';
+import { AMPLIFY_CONTEXT_BRAND, AmplifyContext } from '@aws-amplify/core';
 
 (global as any).Response = class Response {
 	arrayBuffer(blob: Blob) {
@@ -45,7 +43,19 @@ const credentials = {
 	identityId: 'identity-id',
 };
 
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockFetchAuthSession = jest.fn();
+
+const createMockCtx = (): AmplifyContext => {
+	const ctx = {
+		[AMPLIFY_CONTEXT_BRAND]: true,
+		resourcesConfig: {},
+		libraryOptions: {},
+		fetchAuthSession: mockFetchAuthSession,
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	};
+	return ctx as unknown as AmplifyContext;
+};
 
 LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof PostTextCommand) {
@@ -150,7 +160,7 @@ describe('Interactions', () => {
 
 		beforeEach(() => {
 			mockFetchAuthSession.mockReturnValue(credentials);
-			provider = lexProvider;
+			provider = createLexProvider(createMockCtx());
 		});
 
 		afterEach(() => {
@@ -290,7 +300,7 @@ describe('Interactions', () => {
 
 		beforeEach(() => {
 			mockFetchAuthSession.mockReturnValue(credentials);
-			provider = lexProvider;
+			provider = createLexProvider(createMockCtx());
 		});
 
 		afterEach(() => {
@@ -320,7 +330,7 @@ describe('Interactions', () => {
 
 		beforeEach(async () => {
 			mockFetchAuthSession.mockReturnValue(credentials);
-			provider = lexProvider;
+			provider = createLexProvider(createMockCtx());
 
 			// mock callbacks
 			inProgressCallback = jest.fn((err, confirmation) =>

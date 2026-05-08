@@ -41,16 +41,15 @@
 			"import": "./dist/esm/internals/index.mjs",
 			"require": "./dist/cjs/internals/index.js"
 		},
-		"./internals/server": {
-			"react-native": "./dist/cjs/internals/server/index.js",
-			"types": "./dist/esm/internals/server/index.d.ts",
-			"import": "./dist/esm/internals/server/index.mjs",
-			"require": "./dist/cjs/internals/server/index.js"
-		},
 		"./server": {
 			"types": "./dist/esm/server/index.d.ts",
 			"import": "./dist/esm/server/index.mjs",
 			"require": "./dist/cjs/server/index.js"
+		},
+		"./internals/server": {
+			"types": "./dist/esm/internals/server/index.d.ts",
+			"import": "./dist/esm/internals/server/index.mjs",
+			"require": "./dist/cjs/internals/server/index.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -63,21 +62,19 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git",
-		"directory": "packages/api-graphql"
+		"url": "https://github.com/aws-amplify/amplify-js.git"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
-	"homepage": "https://docs.amplify.aws/",
+	"homepage": "https://aws-amplify.github.io/",
 	"files": [
 		"dist/cjs",
 		"dist/esm",
 		"src",
-		"internals",
-		"server"
+		"internals"
 	],
 	"dependencies": {
 		"@aws-amplify/api-rest": "4.6.4",
@@ -86,7 +83,8 @@
 		"@aws-sdk/types": "^3.973.6",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
-		"tslib": "^2.5.0"
+		"tslib": "^2.5.0",
+		"uuid": "^11.0.0"
 	},
 	"size-limit": [
 		{

@@ -1,6 +1,5 @@
 import { enableFetchMocks } from 'jest-fetch-mock';
-import { Amplify } from '@aws-amplify/core';
-import { GraphQLAPI } from '@aws-amplify/api-graphql';
+import { Amplify, AmplifyContext } from '@aws-amplify/core';
 import { generateClient, CONNECTION_STATE_CHANGE } from '@aws-amplify/api';
 import {
 	generateServerClientUsingCookies,
@@ -9,6 +8,20 @@ import {
 import { generateClientWithAmplifyInstance } from '@aws-amplify/api/internals';
 import { Observable } from 'rxjs';
 import { decodeJWT } from '@aws-amplify/core';
+import { post as postFn } from '@aws-amplify/api-rest/internals';
+
+jest.mock('@aws-amplify/api-rest/internals');
+const mockPost = postFn as jest.Mock;
+
+const _subspy = jest.fn().mockReturnValue(new Observable());
+
+jest.mock('../../api-graphql/dist/cjs/Providers/AWSAppSyncRealTimeProvider', () => {
+	return {
+		AWSAppSyncRealTimeProvider: jest.fn().mockImplementation(() => ({
+			subscribe: _subspy,
+		})),
+	};
+});
 
 // Make global `Request` available. (Necessary for using `adapter-nextjs` clients.)
 enableFetchMocks();
@@ -35,21 +48,41 @@ const CUSTOM_ENDPOINT = 'https://a-custom-appsync-endpoint.local/graphql';
 const DEFAULT_AUTH_TOKEN =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
 
-const _postSpy = jest.spyOn((GraphQLAPI as any)._api, 'post');
-const _subspy = jest.fn();
-
-/**
- * Should be called on every subscription, ensuring that realtime provider instances
- * are re-used for each distinct endpoint.
- */
-const _setProviderSpy = jest.fn();
-
-(GraphQLAPI as any).appSyncRealTime = {
-	get() {
-		return { subscribe: _subspy };
+const mockFetchAuthSession = jest.fn().mockResolvedValue({
+	credentials: {
+		accessKeyId: 'accessKeyIdValue',
+		secretAccessKey: 'secretAccessKeyValue',
+		sessionToken: 'sessionTokenValue',
+		expiration: new Date(123),
 	},
-	set: _setProviderSpy,
-};
+	tokens: {
+		accessToken: { toString: () => DEFAULT_AUTH_TOKEN },
+	},
+});
+
+const mockCtx: AmplifyContext = {
+	resourcesConfig: {
+		API: {
+			GraphQL: {
+				defaultAuthMode: DEFAULT_AUTH_MODE,
+				apiKey: DEFAULT_API_KEY,
+				endpoint: DEFAULT_ENDPOINT,
+				region: 'north-pole-7',
+			},
+		},
+		Auth: {
+			Cognito: {
+				userPoolId: 'north-pole-7:santas-little-helpers',
+				identityPoolId: 'north-pole-7:santas-average-sized-helpers',
+				userPoolClientId: 'the-mrs-claus-oversight-committee',
+			},
+		},
+	},
+	libraryOptions: {},
+	fetchAuthSession: mockFetchAuthSession,
+	clearCredentials: jest.fn().mockResolvedValue(undefined),
+	getTokens: jest.fn().mockResolvedValue(undefined),
+} as unknown as AmplifyContext;
 
 /**
  * Validates that a specific "post" occurred (against `_postSpy`).
@@ -73,7 +106,7 @@ function expectPost({
 	//
 	// It is also incidentally much simpler for most the other assertions too ...
 	//
-	const postOptions = _postSpy.mock.calls[0][1] as {
+	const postOptions = mockPost.mock.calls[0][1] as {
 		// just the things we care about
 		url: URL;
 		options: {
@@ -132,7 +165,6 @@ function expectSubscription({
 		}),
 		expect.anything(),
 	);
-	expect(_setProviderSpy).toHaveBeenCalledWith(endpoint, expect.anything());
 }
 
 /**
@@ -199,7 +231,7 @@ function prepareMocks() {
 			},
 		},
 	);
-	_postSpy.mockReturnValue({
+	mockPost.mockReturnValue({
 		body: {
 			json() {
 				return JSON.stringify({
@@ -230,12 +262,12 @@ describe('generateClient (web)', () => {
 		describe(`[${opType}] without a custom endpoint`, () => {
 			test('does not require `authMode` or `apiKey` override', () => {
 				expect(() => {
-					generateClient();
+					generateClient(mockCtx);
 				}).not.toThrow();
 			});
 
 			test('does not require `authMode` or `apiKey` override in client.graphql()', async () => {
-				const client = generateClient();
+				const client = generateClient(mockCtx);
 
 				await client.graphql({ query: `${op} A { queryA { a b c } }` });
 
@@ -247,7 +279,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test('allows `authMode` override in client', async () => {
-				const client = generateClient({
+				const client = generateClient(mockCtx, {
 					authMode: 'userPool',
 				});
 
@@ -263,7 +295,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test('allows `authMode` override in `client.graphql()`', async () => {
-				const client = generateClient();
+				const client = generateClient(mockCtx);
 
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
@@ -278,7 +310,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test('allows `apiKey` override in `client.graphql()`', async () => {
-				const client = generateClient();
+				const client = generateClient(mockCtx);
 
 				await client.graphql({
 					query: `${op} A { queryA { a b c } }`,
@@ -294,7 +326,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test('allows `authMode` + `apiKey` override in `client.graphql()`', async () => {
-				const client = generateClient({
+				const client = generateClient(mockCtx, {
 					authMode: 'userPool',
 				});
 
@@ -317,7 +349,7 @@ describe('generateClient (web)', () => {
 			test('requires `authMode` override', () => {
 				expect(() =>
 					// @ts-expect-error omitting authMode for test
-					generateClient({
+					generateClient(mockCtx, {
 						endpoint: CUSTOM_ENDPOINT,
 					}),
 				).toThrow();
@@ -326,7 +358,7 @@ describe('generateClient (web)', () => {
 			test("requires `apiKey` with `authMode: 'apiKey'` override in client", async () => {
 				expect(() => {
 					// @ts-expect-error omitting apiKey for test
-					generateClient({
+					generateClient(mockCtx, {
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'apiKey',
 					});
@@ -334,7 +366,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test('allows `authMode` override in client', async () => {
-				const client = generateClient({
+				const client = generateClient(mockCtx, {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'userPool',
 				});
@@ -351,7 +383,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test("allows `authMode: 'none'` override in client.graphql()", async () => {
-				const client = generateClient({
+				const client = generateClient(mockCtx, {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
@@ -368,7 +400,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client", async () => {
-				const client = generateClient({
+				const client = generateClient(mockCtx, {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'apiKey',
 					apiKey: CUSTOM_API_KEY,
@@ -387,7 +419,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test('allows `authMode` override in client.graphql()', async () => {
-				const client = generateClient({
+				const client = generateClient(mockCtx, {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
@@ -405,7 +437,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test("requires `apiKey` with `authMode: 'apiKey'` override in client.graphql()", async () => {
-				const client = generateClient({
+				const client = generateClient(mockCtx, {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
@@ -420,7 +452,7 @@ describe('generateClient (web)', () => {
 			});
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client.graphql()", async () => {
-				const client = generateClient({
+				const client = generateClient(mockCtx, {
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
 				});
@@ -457,7 +489,7 @@ describe('generateClient (cookie client)', () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	const cookies = () =>
@@ -696,7 +728,7 @@ describe('generateClient (req/res client)', () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	const cookies = () =>
@@ -928,7 +960,7 @@ describe('SSR common', () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	for (const op of ['query', 'subscription'] as const) {
@@ -938,7 +970,7 @@ describe('SSR common', () => {
 			test('does not require `authMode` or `apiKey` override', () => {
 				expect(() =>
 					generateClientWithAmplifyInstance({
-						amplify: Amplify as any,
+						amplify: mockCtx as any,
 						config: Amplify.getConfig(),
 					}),
 				).not.toThrow();
@@ -946,7 +978,7 @@ describe('SSR common', () => {
 
 			test('does not require `authMode` or `apiKey` override in client.graphql()', async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 				});
 
@@ -961,7 +993,7 @@ describe('SSR common', () => {
 
 			test('allows `authMode` override in client', async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 					authMode: 'userPool',
 				});
@@ -979,7 +1011,7 @@ describe('SSR common', () => {
 
 			test('allows `authMode` override in `client.graphql()`', async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 				});
 
@@ -997,7 +1029,7 @@ describe('SSR common', () => {
 
 			test('allows `apiKey` override in `client.graphql()`', async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 				});
 
@@ -1016,7 +1048,7 @@ describe('SSR common', () => {
 
 			test('allows `authMode` + `apiKey` override in `client.graphql()`', async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 					authMode: 'userPool',
 				});
@@ -1039,9 +1071,8 @@ describe('SSR common', () => {
 		describe(`[${opType}] with a custom endpoint`, () => {
 			test('requires `authMode` override', () => {
 				expect(() =>
-					// @ts-expect-error omitting authMode for test
 					generateClientWithAmplifyInstance({
-						amplify: Amplify as any,
+						amplify: mockCtx as any,
 						config: Amplify.getConfig(),
 						endpoint: CUSTOM_ENDPOINT,
 					}),
@@ -1050,9 +1081,8 @@ describe('SSR common', () => {
 
 			test("requires `apiKey` with `authMode: 'apiKey'` override in client", async () => {
 				expect(() =>
-					// @ts-expect-error omitting apiKey for test
 					generateClientWithAmplifyInstance({
-						amplify: Amplify as any,
+						amplify: mockCtx as any,
 						config: Amplify.getConfig(),
 						endpoint: CUSTOM_ENDPOINT,
 						authMode: 'apiKey',
@@ -1062,7 +1092,7 @@ describe('SSR common', () => {
 
 			test('allows `authMode` override in client', async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'userPool',
@@ -1081,7 +1111,7 @@ describe('SSR common', () => {
 
 			test("allows `authMode: 'none'` override in client.graphql()", async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
@@ -1100,7 +1130,7 @@ describe('SSR common', () => {
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client", async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'apiKey',
@@ -1121,7 +1151,7 @@ describe('SSR common', () => {
 
 			test('allows `authMode` override in client.graphql()', async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: {},
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
@@ -1143,7 +1173,7 @@ describe('SSR common', () => {
 				// no TS expect error here. types for `generateClientWithAmplifyInstance` have been simplified
 				// because they are not customer-facing.
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',
@@ -1159,7 +1189,7 @@ describe('SSR common', () => {
 
 			test("allows `authMode: 'apiKey'` + `apiKey` override in client.graphql()", async () => {
 				const client = generateClientWithAmplifyInstance({
-					amplify: Amplify as any,
+					amplify: mockCtx as any,
 					config: Amplify.getConfig(),
 					endpoint: CUSTOM_ENDPOINT,
 					authMode: 'none',

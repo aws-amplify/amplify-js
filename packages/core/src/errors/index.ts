@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { AmplifyError } from './AmplifyError';
+export { AmplifyServerContextError } from './AmplifyServerContextError';
 export { ApiError, ApiErrorParams, ApiErrorResponse } from './APIError';
 export { createAssertionFunction } from './createAssertionFunction';
 export { PlatformNotSupportedError } from './PlatformNotSupportedError';

@@ -24,7 +24,13 @@ import * as storageS3Exports from '../src/storage/s3';
 describe('aws-amplify Exports', () => {
 	describe('Top-level exports', () => {
 		it('should only export expected symbols', () => {
-			expect(Object.keys(topLevelExports).sort()).toEqual(['Amplify'].sort());
+			expect(Object.keys(topLevelExports).sort()).toEqual(
+				[
+					'Amplify',
+					'createAmplifyContext',
+					'createConfigurationBuilder',
+				].sort(),
+			);
 		});
 	});
 
@@ -178,8 +184,8 @@ describe('aws-amplify Exports', () => {
 					'forgetDevice',
 					'fetchDevices',
 					'autoSignIn',
-					'fetchAuthSession',
 					'decodeJWT',
+					'fetchAuthSession',
 					'associateWebAuthnCredential',
 					'listWebAuthnCredentials',
 					'deleteWebAuthnCredential',

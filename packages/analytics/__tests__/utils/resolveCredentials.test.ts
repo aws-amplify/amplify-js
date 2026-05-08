@@ -1,12 +1,23 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, fetchAuthSession } from '@aws-amplify/core';
 
 import { resolveCredentials } from '../../src/utils';
 import { AnalyticsError } from '../../src';
 
 jest.mock('@aws-amplify/core');
+
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+
+const mockCtx: AmplifyContext = {
+	resourcesConfig: {},
+	libraryOptions: {},
+	fetchAuthSession: (...args: unknown[]) => mockFetchAuthSession(...args),
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
+
 describe('Analytics Kinesis Provider Util: resolveCredentials', () => {
 	const credentials = {
 		credentials: {
@@ -16,7 +27,6 @@ describe('Analytics Kinesis Provider Util: resolveCredentials', () => {
 		},
 		identityId: 'identity-id',
 	};
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 
 	beforeEach(() => {
 		mockFetchAuthSession.mockReset();
@@ -24,7 +34,7 @@ describe('Analytics Kinesis Provider Util: resolveCredentials', () => {
 
 	it('resolves required credentials', async () => {
 		mockFetchAuthSession.mockResolvedValue(credentials);
-		expect(await resolveCredentials()).toStrictEqual(credentials);
+		expect(await resolveCredentials(mockCtx)).toStrictEqual(credentials);
 	});
 
 	it('throws if credentials are missing', async () => {
@@ -32,6 +42,8 @@ describe('Analytics Kinesis Provider Util: resolveCredentials', () => {
 			...credentials,
 			credentials: undefined,
 		});
-		await expect(resolveCredentials()).rejects.toBeInstanceOf(AnalyticsError);
+		await expect(resolveCredentials(mockCtx)).rejects.toBeInstanceOf(
+			AnalyticsError,
+		);
 	});
 });

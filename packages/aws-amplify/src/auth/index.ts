@@ -2,6 +2,99 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /*
-This file maps exports from `aws-amplify/auth`. It provides access to the default Auth provider and category utils.
+This file maps exports from `aws-amplify/auth`.
+Since category functions already handle optional ctx via overloads,
+this is a plain re-export layer.
 */
-export * from '@aws-amplify/auth';
+
+export {
+	signUp,
+	signIn,
+	signOut,
+	confirmSignUp,
+	confirmSignIn,
+	resetPassword,
+	confirmResetPassword,
+	resendSignUpCode,
+	updateMFAPreference,
+	fetchMFAPreference,
+	verifyTOTPSetup,
+	setUpTOTP,
+	updatePassword,
+	updateUserAttributes,
+	updateUserAttribute,
+	getCurrentUser,
+	confirmUserAttribute,
+	signInWithRedirect,
+	fetchUserAttributes,
+	sendUserAttributeVerificationCode,
+	deleteUserAttributes,
+	deleteUser,
+	rememberDevice,
+	forgetDevice,
+	fetchDevices,
+	autoSignIn,
+	AuthError,
+	decodeJWT,
+	associateWebAuthnCredential,
+	listWebAuthnCredentials,
+	deleteWebAuthnCredential,
+} from '@aws-amplify/auth';
+
+export { fetchAuthSession } from '@aws-amplify/core';
+
+export type {
+	// Inputs
+	ConfirmResetPasswordInput,
+	ConfirmSignInInput,
+	ConfirmSignUpInput,
+	ConfirmUserAttributeInput,
+	ResendSignUpCodeInput,
+	ResetPasswordInput,
+	SignInInput,
+	SignInWithRedirectInput,
+	SignOutInput,
+	SignUpInput,
+	UpdateMFAPreferenceInput,
+	UpdatePasswordInput,
+	UpdateUserAttributesInput,
+	UpdateUserAttributeInput,
+	VerifyTOTPSetupInput,
+	SendUserAttributeVerificationCodeInput,
+	DeleteUserAttributesInput,
+	ForgetDeviceInput,
+	// Outputs
+	FetchUserAttributesOutput,
+	GetCurrentUserOutput,
+	ConfirmSignInOutput,
+	ConfirmSignUpOutput,
+	FetchMFAPreferenceOutput,
+	ResendSignUpCodeOutput,
+	ResetPasswordOutput,
+	SetUpTOTPOutput,
+	SignInOutput,
+	SignUpOutput,
+	UpdateUserAttributesOutput,
+	SendUserAttributeVerificationCodeOutput,
+	UpdateUserAttributeOutput,
+	FetchDevicesOutput,
+	// Re-exported from @aws-amplify/core
+	FetchAuthSessionOptions,
+	AuthSession,
+	CredentialsAndIdentityIdProvider,
+	GetCredentialsOptions,
+	CredentialsAndIdentityId,
+	TokenProvider,
+	AuthTokens,
+	JWT,
+	// Models
+	AuthUser,
+	CodeDeliveryDetails,
+	UserAttributeKey,
+	VerifiableUserAttributeKey,
+	// WebAuthn
+	AuthWebAuthnCredential,
+	DeleteWebAuthnCredentialInput,
+	ListWebAuthnCredentialsInput,
+	ListWebAuthnCredentialsOutput,
+} from '@aws-amplify/auth';

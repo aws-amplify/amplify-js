@@ -13,7 +13,11 @@ import {
 	retry,
 } from '@aws-amplify/core/internals/utils';
 import { Observable, Observer } from 'rxjs';
-import { ConsoleLogger } from '@aws-amplify/core';
+import {
+	ConsoleLogger,
+	getActiveContext,
+	hasGlobalContext,
+} from '@aws-amplify/core';
 
 import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
@@ -92,7 +96,12 @@ class MutationProcessor {
 		private readonly amplifyContext: AmplifyContext,
 	) {
 		this.amplifyContext.InternalAPI =
-			this.amplifyContext.InternalAPI || InternalAPI;
+			this.amplifyContext.InternalAPI ||
+			InternalAPI(
+				hasGlobalContext()
+					? getActiveContext()
+					: ({ resourcesConfig: {}, libraryOptions: {} } as any),
+			);
 		this.generateQueries();
 	}
 

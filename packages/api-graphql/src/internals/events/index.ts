@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Subscription } from 'rxjs';
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { DocumentType, amplifyUuid } from '@aws-amplify/core/internals/utils';
 
-import { AppSyncEventProvider as eventProvider } from '../../Providers/AWSAppSyncEventsProvider';
+import { createAppSyncEventProvider } from '../../Providers/AWSAppSyncEventsProvider';
 
 import { appsyncRequest } from './appsyncRequest';
 import { configure, normalizeAuth, serializeEvents } from './utils';
@@ -42,10 +42,12 @@ const openChannels = new Set<string>();
  *
  */
 async function connect(
+	ctx: AmplifyContext,
 	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel> {
-	const providerOptions: ProviderOptions = configure();
+	const eventProvider = createAppSyncEventProvider(ctx);
+	const providerOptions: ProviderOptions = configure(ctx);
 
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
@@ -146,11 +148,13 @@ async function connect(
  * @throws on error
  */
 async function post(
+	ctx: AmplifyContext,
 	channel: string,
 	event: DocumentType | DocumentType[],
 	options?: EventsOptions,
 ): Promise<void | PublishedEvent[]> {
-	const providerOptions: ProviderOptions = configure();
+	const _eventProvider = createAppSyncEventProvider(ctx);
+	const providerOptions: ProviderOptions = configure(ctx);
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
 		providerOptions.authenticationType,
@@ -170,7 +174,7 @@ async function post(
 	const abortController = new AbortController();
 
 	const res = await appsyncRequest<PublishResponse>(
-		Amplify,
+		ctx,
 		publishOptions,
 		{},
 		abortController,
@@ -192,7 +196,8 @@ async function post(
  * @returns void on success
  * @throws on error
  */
-async function closeAll(): Promise<void> {
+async function closeAll(ctx: AmplifyContext): Promise<void> {
+	const eventProvider = createAppSyncEventProvider(ctx);
 	await eventProvider.close();
 }
 

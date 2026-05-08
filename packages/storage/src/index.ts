@@ -17,6 +17,7 @@ export {
 	DownloadDataInput,
 	DownloadDataWithPathInput,
 	RemoveInput,
+	RemoveOperation,
 	RemoveWithPathInput,
 	ListAllInput,
 	ListAllWithPathInput,

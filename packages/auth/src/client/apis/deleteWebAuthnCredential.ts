@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import { DeleteWebAuthnCredentialException } from '../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { DeleteWebAuthnCredentialInput } from '../../foundation/types';
@@ -19,6 +20,13 @@ import { deleteWebAuthnCredential as deleteWebAuthnCredentialFoundation } from '
  */
 export async function deleteWebAuthnCredential(
 	input: DeleteWebAuthnCredentialInput,
-): Promise<void> {
-	return deleteWebAuthnCredentialFoundation(Amplify, input);
+): Promise<void>;
+export async function deleteWebAuthnCredential(
+	ctx: AmplifyContext,
+	input: DeleteWebAuthnCredentialInput,
+): Promise<void>;
+export async function deleteWebAuthnCredential(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<DeleteWebAuthnCredentialInput>(args);
+
+	return deleteWebAuthnCredentialFoundation(ctx, input);
 }

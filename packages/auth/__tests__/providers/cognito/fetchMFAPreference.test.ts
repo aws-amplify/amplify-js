@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../src/errors/AuthError';
@@ -9,14 +8,10 @@ import { fetchMFAPreference } from '../../../src/providers/cognito/apis/fetchMFA
 import { GetUserException } from '../../../src/providers/cognito/types/errors';
 import { createGetUserClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
@@ -24,16 +19,24 @@ jest.mock('../../../src/providers/cognito/factories');
 
 describe('fetchMFAPreference', () => {
 	// assert mocks
-	const mockFetchAuthSession = jest.mocked(fetchAuthSession);
 	const mockGetUser = jest.fn();
 	const mockCreateGetUserClient = jest.mocked(createGetUserClient);
 	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
 		createCognitoUserPoolEndpointResolver,
 	);
 
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
-		mockFetchAuthSession.mockResolvedValue({
+		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
 		mockCreateGetUserClient.mockReturnValue(mockGetUser);
@@ -41,7 +44,7 @@ describe('fetchMFAPreference', () => {
 
 	afterEach(() => {
 		mockGetUser.mockReset();
-		mockFetchAuthSession.mockClear();
+		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
 	});
 
 	it('should return correct MFA preferences when SMS is preferred', async () => {
@@ -52,7 +55,7 @@ describe('fetchMFAPreference', () => {
 			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'],
 			$metadata: {},
 		});
-		const resp = await fetchMFAPreference();
+		const resp = await fetchMFAPreference(mockCtx);
 		expect(resp).toEqual({
 			preferred: 'SMS',
 			enabled: ['SMS', 'TOTP', 'EMAIL'],
@@ -67,7 +70,7 @@ describe('fetchMFAPreference', () => {
 			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'],
 			$metadata: {},
 		});
-		const resp = await fetchMFAPreference();
+		const resp = await fetchMFAPreference(mockCtx);
 		expect(resp).toEqual({
 			preferred: 'EMAIL',
 			enabled: ['SMS', 'TOTP', 'EMAIL'],
@@ -81,7 +84,7 @@ describe('fetchMFAPreference', () => {
 			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'],
 			$metadata: {},
 		});
-		const resp = await fetchMFAPreference();
+		const resp = await fetchMFAPreference(mockCtx);
 		expect(resp).toEqual({
 			preferred: 'TOTP',
 			enabled: ['SMS', 'TOTP', 'EMAIL'],
@@ -94,7 +97,7 @@ describe('fetchMFAPreference', () => {
 			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'],
 			$metadata: {},
 		});
-		const resp = await fetchMFAPreference();
+		const resp = await fetchMFAPreference(mockCtx);
 		expect(resp).toEqual({
 			enabled: ['SMS', 'TOTP', 'EMAIL'],
 		});
@@ -105,13 +108,13 @@ describe('fetchMFAPreference', () => {
 			Username: 'XXXXXXXX',
 			$metadata: {},
 		});
-		const resp = await fetchMFAPreference();
+		const resp = await fetchMFAPreference(mockCtx);
 		expect(resp).toEqual({});
 	});
 
 	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
 		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
-		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+		const endpointCtx = createMockAmplifyContext({
 			Auth: {
 				Cognito: {
 					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -120,6 +123,9 @@ describe('fetchMFAPreference', () => {
 					userPoolEndpoint: expectedUserPoolEndpoint,
 				},
 			},
+		});
+		(endpointCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
 
 		mockGetUser.mockResolvedValueOnce({
@@ -130,7 +136,7 @@ describe('fetchMFAPreference', () => {
 			$metadata: {},
 		});
 
-		await fetchMFAPreference();
+		await fetchMFAPreference(endpointCtx);
 
 		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
 			endpointOverride: expectedUserPoolEndpoint,
@@ -143,7 +149,7 @@ describe('fetchMFAPreference', () => {
 			throw getMockError(GetUserException.InvalidParameterException);
 		});
 		try {
-			await fetchMFAPreference();
+			await fetchMFAPreference(mockCtx);
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(GetUserException.InvalidParameterException);
