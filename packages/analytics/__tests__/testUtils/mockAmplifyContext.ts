@@ -7,21 +7,29 @@ import {
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
 
-export const mockAmplifyCtx: AmplifyContext = {
-	[AMPLIFY_CONTEXT_BRAND]: true,
-	resourcesConfig: {},
-	libraryOptions: {},
-	fetchAuthSession: jest.fn().mockResolvedValue({
-		credentials: {
-			accessKeyId: 'access-key-id',
-			secretAccessKey: 'secret-access-key',
-			sessionToken: 'session-token',
-		},
-		identityId: 'identity-id',
-	}),
-	clearCredentials: jest.fn(),
-	getTokens: jest.fn(),
-};
+export const mockAmplifyCtx: AmplifyContext = (() => {
+	const ctx: AmplifyContext = {
+		resourcesConfig: {},
+		libraryOptions: {},
+		fetchAuthSession: jest.fn().mockResolvedValue({
+			credentials: {
+				accessKeyId: 'access-key-id',
+				secretAccessKey: 'secret-access-key',
+				sessionToken: 'session-token',
+			},
+			identityId: 'identity-id',
+		}),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	};
+
+	Object.defineProperty(ctx, AMPLIFY_CONTEXT_BRAND, {
+		value: true,
+		enumerable: false,
+	});
+
+	return ctx;
+})();
 
 export function setupGlobalContext() {
 	setGlobalContext(mockAmplifyCtx);
