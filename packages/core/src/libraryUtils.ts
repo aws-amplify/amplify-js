@@ -28,7 +28,7 @@ export {
 	AmplifyOutputs,
 	AmplifyOutputsUnknown,
 } from './singleton/AmplifyOutputs/types';
-export { ADD_OAUTH_LISTENER } from './singleton/constants';
+export { AuthClass } from './singleton/Auth';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
 export { parseAmplifyConfig } from './utils/parseAmplifyConfig';
@@ -147,3 +147,13 @@ export {
 	SESSION_START_EVENT,
 	SESSION_STOP_EVENT,
 } from './utils/sessionListener';
+
+// Global context internals
+export { setGlobalContext, clearGlobalContext } from './context/globalContext';
+
+// Context argument resolution
+export { resolveCtxArgs } from './context/resolveCtxArgs';
+
+// Storage internals
+export { InMemoryStorage } from './storage/InMemoryStorage';
+export { KeyValueStorage } from './storage/KeyValueStorage';

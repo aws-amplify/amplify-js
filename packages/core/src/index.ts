@@ -40,10 +40,39 @@ export {
 } from './singleton/types';
 export {
 	Amplify,
-	fetchAuthSession,
 	AmplifyClass as AmplifyClassV6,
+	fetchAuthSession,
 	clearCredentials,
 } from './singleton';
+
+// AmplifyContext — the singleton-free contract for category APIs
+export { AmplifyContext } from './context/AmplifyContext';
+
+/** @deprecated Use AmplifyContext instead. */
+export type { AmplifyContext as ContextSpec } from './context/AmplifyContext';
+
+// Context branding — runtime identification of AmplifyContext objects
+export {
+	isAmplifyContext,
+	AMPLIFY_CONTEXT_BRAND,
+} from './context/contextBrand';
+
+// Global context management
+export {
+	getActiveContext,
+	getGlobalContext,
+	hasGlobalContext,
+} from './context/globalContext';
+
+// Configuration Builder
+export { createConfiguration } from './configurationBuilder';
+export type {
+	ConfigurationBuilder,
+	CreateConfigurationOptions,
+} from './configurationBuilder/createConfigurationBuilder';
+
+/** @deprecated Use `createConfiguration()` instead. */
+export { createConfiguration as createConfigurationBuilder } from './configurationBuilder';
 
 // Cognito Identity service client factories
 export {
@@ -79,3 +108,6 @@ export { ConsoleLogger } from './Logger';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
+
+// Errors
+export { AmplifyServerContextError } from './errors/AmplifyServerContextError';

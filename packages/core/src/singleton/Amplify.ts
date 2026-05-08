@@ -3,22 +3,19 @@
 import { AMPLIFY_SYMBOL, Hub } from '../Hub';
 import { deepFreeze } from '../utils';
 import { parseAmplifyConfig } from '../libraryUtils';
+import { AmplifyContext } from '../context/AmplifyContext';
+import { AMPLIFY_CONTEXT_BRAND } from '../context/contextBrand';
+import { setGlobalContext } from '../context/globalContext';
 
+import { AuthClass } from './Auth';
 import {
 	AmplifyOutputsUnknown,
-	AuthConfig,
 	LegacyConfig,
 	LibraryOptions,
 	ResourcesConfig,
 } from './types';
-import { AuthClass } from './Auth';
-import { ADD_OAUTH_LISTENER } from './constants';
 
 export class AmplifyClass {
-	private oAuthListener:
-		| ((authConfig: AuthConfig['Cognito']) => void)
-		| undefined = undefined;
-
 	private isConfigured = false;
 
 	resourcesConfig: ResourcesConfig;
@@ -82,6 +79,29 @@ export class AmplifyClass {
 			);
 		}
 
+		this.isConfigured = true;
+
+		// Publish a branded AmplifyContext so that context-based APIs
+		// (fetchAuthSession, clearCredentials) can resolve the global context.
+		// Must be set BEFORE Hub.dispatch so listeners can call getActiveContext().
+		const ctx: AmplifyContext = {
+			resourcesConfig: this.resourcesConfig,
+			libraryOptions: this.libraryOptions,
+			fetchAuthSession: (options?) => this.Auth.fetchAuthSession(options ?? {}),
+			clearCredentials: () => this.Auth.clearCredentials(),
+			getTokens: options => this.Auth.getTokens(options),
+		};
+
+		Object.defineProperty(ctx, AMPLIFY_CONTEXT_BRAND, {
+			value: true,
+			enumerable: false,
+			configurable: false,
+			writable: false,
+		});
+
+		Object.freeze(ctx);
+		setGlobalContext(ctx);
+
 		Hub.dispatch(
 			'core',
 			{
@@ -91,9 +111,6 @@ export class AmplifyClass {
 			'Configure',
 			AMPLIFY_SYMBOL,
 		);
-
-		this.notifyOAuthListener();
-		this.isConfigured = true;
 	}
 
 	/**
@@ -110,30 +127,6 @@ export class AmplifyClass {
 		}
 
 		return this.resourcesConfig;
-	}
-
-	/** @internal */
-	[ADD_OAUTH_LISTENER](listener: (authConfig: AuthConfig['Cognito']) => void) {
-		if (this.resourcesConfig.Auth?.Cognito.loginWith?.oauth) {
-			// when Amplify has been configured with a valid OAuth config while adding the listener, run it directly
-			listener(this.resourcesConfig.Auth?.Cognito);
-		} else {
-			// otherwise register the listener and run it later when Amplify gets configured with a valid oauth config
-			this.oAuthListener = listener;
-		}
-	}
-
-	private notifyOAuthListener() {
-		if (
-			!this.resourcesConfig.Auth?.Cognito.loginWith?.oauth ||
-			!this.oAuthListener
-		) {
-			return;
-		}
-
-		this.oAuthListener(this.resourcesConfig.Auth?.Cognito);
-		// the listener should only be notified once with a valid oauth config
-		this.oAuthListener = undefined;
 	}
 }
 
