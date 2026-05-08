@@ -15,5 +15,7 @@ export const toBase64: ToBase64 = input => {
 		return Buffer.from(input, 'utf-8').toString('base64');
 	}
 
-	return Buffer.from(input.buffer).toString('base64');
+	return Buffer.from(input.buffer, input.byteOffset, input.byteLength).toString(
+		'base64',
+	);
 };
