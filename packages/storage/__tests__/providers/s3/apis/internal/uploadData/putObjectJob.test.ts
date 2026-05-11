@@ -12,6 +12,7 @@ import '../testUtils';
 import { UploadDataChecksumAlgorithm } from '../../../../../../src/providers/s3/types/options';
 import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../../../src/providers/s3/utils/constants';
 import { FoundationContext } from '../../../../../../src/foundation/types';
+import { toBase64 as realToBase64 } from '../../../../../../src/client/utils/toBase64';
 import { readFile as realReadFile } from '../../../../../../src/client/utils/readFile';
 
 jest.mock('../../../../../../src/providers/s3/utils/client/s3data');
@@ -51,6 +52,7 @@ const dataLength = data.length;
 const mockCtx: FoundationContext = {
 	amplify: Amplify,
 	readFile: realReadFile,
+	toBase64: realToBase64,
 };
 
 mockFetchAuthSession.mockResolvedValue({

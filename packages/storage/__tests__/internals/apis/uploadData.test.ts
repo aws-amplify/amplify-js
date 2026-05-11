@@ -13,6 +13,7 @@ const mockedUploadTask = 'UPLOAD_TASK';
 const expectedCtx = {
 	amplify: Amplify,
 	readFile: expect.any(Function),
+	toBase64: expect.any(Function),
 };
 
 describe('uploadData (internal)', () => {

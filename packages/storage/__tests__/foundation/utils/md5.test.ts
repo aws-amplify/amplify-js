@@ -5,21 +5,17 @@ import { Md5 } from '@smithy/md5-js';
 
 import { calculateContentMd5 } from '../../../src/foundation/utils/md5';
 import { FoundationContext } from '../../../src/foundation/types';
-import { toBase64 } from '../../../src/foundation/utils/toBase64';
 
 jest.mock('@smithy/md5-js');
-jest.mock('../../../src/foundation/utils/toBase64', () => ({
-	toBase64: jest.fn().mockReturnValue('MOCK_BASE64'),
-}));
 
 const mockMd5 = Md5 as jest.Mock;
-const mockToBase64 = toBase64 as jest.Mock;
 
 const createTestCtx = (
 	overrides: Partial<FoundationContext> = {},
 ): FoundationContext => ({
 	amplify: {} as FoundationContext['amplify'],
 	readFile: jest.fn(),
+	toBase64: jest.fn().mockReturnValue('MOCK_BASE64'),
 	...overrides,
 });
 
@@ -30,8 +26,6 @@ describe('calculateContentMd5 (foundation)', () => {
 
 	beforeEach(() => {
 		mockMd5.mockClear();
-		mockToBase64.mockClear();
-		mockToBase64.mockReturnValue('MOCK_BASE64');
 	});
 
 	it.each([
@@ -48,7 +42,7 @@ describe('calculateContentMd5 (foundation)', () => {
 			const [mockMd5Instance] = mockMd5.mock.instances;
 			expect(mockMd5Instance.update).toHaveBeenCalledWith(content);
 			expect(ctx.readFile).not.toHaveBeenCalled();
-			expect(mockToBase64).toHaveBeenCalled();
+			expect(ctx.toBase64).toHaveBeenCalled();
 		},
 	);
 
@@ -63,10 +57,10 @@ describe('calculateContentMd5 (foundation)', () => {
 		const [mockMd5Instance] = mockMd5.mock.instances;
 		expect(ctx.readFile).toHaveBeenCalledWith(blob);
 		expect(mockMd5Instance.update).toHaveBeenCalledWith(fileReaderResult);
-		expect(mockToBase64).toHaveBeenCalled();
+		expect(ctx.toBase64).toHaveBeenCalled();
 	});
 
-	it('returns the base64 string produced by toBase64 over the Md5 digest', async () => {
+	it('returns the base64 string produced by ctx.toBase64 over the Md5 digest', async () => {
 		const ctx = createTestCtx();
 		mockMd5.mockImplementationOnce(() => ({
 			update: jest.fn(),
@@ -75,7 +69,7 @@ describe('calculateContentMd5 (foundation)', () => {
 
 		const result = await calculateContentMd5(ctx, stringContent);
 
-		expect(mockToBase64).toHaveBeenCalledWith(md5Digest);
+		expect(ctx.toBase64).toHaveBeenCalledWith(md5Digest);
 		expect(result).toBe('MOCK_BASE64');
 	});
 
@@ -87,6 +81,6 @@ describe('calculateContentMd5 (foundation)', () => {
 		await expect(
 			calculateContentMd5(ctx, new Blob([stringContent])),
 		).rejects.toThrow('read failed');
-		expect(mockToBase64).not.toHaveBeenCalled();
+		expect(ctx.toBase64).not.toHaveBeenCalled();
 	});
 });

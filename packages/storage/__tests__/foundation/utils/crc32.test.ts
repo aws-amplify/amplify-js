@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { TextEncoder as TextEncoderPolyfill } from 'node:util';
+import { Buffer } from 'node:buffer';
 
 import { calculateContentCRC32 } from '../../../src/foundation/utils/crc32';
 import { FoundationContext } from '../../../src/foundation/types';
@@ -16,7 +17,7 @@ const encoder = new TextEncoder();
  * Build a real foundation context that is self-contained and does not
  * depend on the `client/*` or `server/*` implementations under test
  * elsewhere. `readFile` uses the jsdom `FileReader` available in the test
- * environment.
+ * environment; `toBase64` uses Node `Buffer`.
  */
 const createTestCtx = (
 	overrides: Partial<FoundationContext> = {},
@@ -33,6 +34,12 @@ const createTestCtx = (
 			};
 			reader.readAsArrayBuffer(blob);
 		}),
+	toBase64: input =>
+		typeof input === 'string'
+			? Buffer.from(input, 'utf-8').toString('base64')
+			: Buffer.from(input.buffer, input.byteOffset, input.byteLength).toString(
+					'base64',
+				),
 	...overrides,
 });
 
@@ -125,6 +132,15 @@ describe('calculateContentCRC32 (foundation)', () => {
 			await calculateContentCRC32(ctx, new Uint8Array([1, 2, 3, 4]));
 
 			expect(readFileSpy).not.toHaveBeenCalled();
+		});
+
+		it('should call ctx.toBase64 exactly once per invocation', async () => {
+			const ctx = createTestCtx();
+			const toBase64Spy = jest.spyOn(ctx, 'toBase64');
+
+			await calculateContentCRC32(ctx, 'data');
+
+			expect(toBase64Spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('should propagate errors thrown by ctx.readFile', async () => {

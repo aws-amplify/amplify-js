@@ -5,11 +5,13 @@ import crc32 from 'crc-32';
 
 import { FoundationContext } from '../types';
 
-import { toBase64 } from './toBase64';
-
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 
-const hexToBase64 = (hex: string) => {
+/**
+ * Convert a hex string to base64 using the injected `toBase64` from the
+ * foundation context.
+ */
+const hexToBase64 = (hex: string, toBase64: FoundationContext['toBase64']) => {
 	const bytes = new Uint8Array(
 		(hex.match(/\w{2}/g) ?? []).map(h => parseInt(h, 16)),
 	);
@@ -19,9 +21,9 @@ const hexToBase64 = (hex: string) => {
 
 /**
  * Calculate the CRC32 checksum for given content and return base64 encoded
- * checksum. Environment-specific dependencies (`readFile`) are injected via
- * the {@link FoundationContext} so the foundation layer stays free of any
- * environment-discriminating logic.
+ * checksum. Environment-specific dependencies (`readFile`, `toBase64`) are
+ * injected via the {@link FoundationContext} so the foundation layer stays
+ * free of any environment-discriminating logic.
  */
 export const calculateContentCRC32 = async (
 	ctx: FoundationContext,
@@ -74,5 +76,5 @@ export const calculateContentCRC32 = async (
 
 	const hex = internalSeed.toString(16).padStart(8, '0');
 
-	return hexToBase64(hex);
+	return hexToBase64(hex, ctx.toBase64);
 };

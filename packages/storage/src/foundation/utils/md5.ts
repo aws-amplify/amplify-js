@@ -5,13 +5,11 @@ import { Md5 } from '@smithy/md5-js';
 
 import { FoundationContext } from '../types';
 
-import { toBase64 } from './toBase64';
-
 /**
  * Calculate the MD5 checksum of the given content as a base64 string.
- * Environment-specific dependencies (`readFile`) are injected via the
- * {@link FoundationContext} so the foundation layer stays free of any
- * environment-discriminating logic.
+ * Environment-specific dependencies (`readFile`, `toBase64`) are injected
+ * via the {@link FoundationContext} so the foundation layer stays free of
+ * any environment-discriminating logic.
  */
 export const calculateContentMd5 = async (
 	ctx: FoundationContext,
@@ -23,5 +21,5 @@ export const calculateContentMd5 = async (
 	hasher.update(buffer);
 	const digest = await hasher.digest();
 
-	return toBase64(digest);
+	return ctx.toBase64(digest);
 };

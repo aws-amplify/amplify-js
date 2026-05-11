@@ -4,6 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 
 import { readFile } from '../../client/utils/readFile';
+import { toBase64 } from '../../client/utils/toBase64';
 import { UploadDataInput } from '../types/inputs';
 import { UploadDataOutput } from '../types/outputs';
 import { uploadData as uploadDataInternal } from '../../providers/s3/apis/internal/uploadData';
@@ -15,7 +16,7 @@ export const uploadData = (input: UploadDataInput) => {
 	const { data, path, options } = input;
 
 	return uploadDataInternal(
-		{ amplify: Amplify, readFile },
+		{ amplify: Amplify, readFile, toBase64 },
 		{
 			path,
 			data,

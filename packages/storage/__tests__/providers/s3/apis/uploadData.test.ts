@@ -13,6 +13,7 @@ const mockInternalUploadDataImpl = jest.mocked(internalUploadDataImpl);
 const expectedCtx = {
 	amplify: Amplify,
 	readFile: expect.any(Function),
+	toBase64: expect.any(Function),
 };
 
 describe('client-side uploadData', () => {
