@@ -66,7 +66,7 @@ export { createConfiguration } from './configurationBuilder';
 export type {
 	ConfigurationBuilder,
 	CreateConfigurationOptions,
-} from './configurationBuilder/createConfigurationBuilder';
+} from './configurationBuilder/configurationBuilder';
 
 // Cognito Identity service client factories
 export {
@@ -102,6 +102,4 @@ export { ConsoleLogger } from './Logger';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
-
-// Errors
-export { AmplifyServerContextError } from './errors/AmplifyServerContextError';
+// Errors — AmplifyServerContextError is exported from adapterCore
