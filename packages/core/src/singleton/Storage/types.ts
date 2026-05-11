@@ -25,20 +25,6 @@ export interface S3ProviderConfig {
 		 * @internal
 		 */
 		dangerouslyConnectToHttpEndpointForTesting?: string;
-		/**
-		 * Custom endpoint provider for S3-compatible services (e.g. MinIO, LocalStack).
-		 * Called with bucket and region to resolve the endpoint URL.
-		 */
-		endpointProvider?(params: {
-			bucket?: string;
-			region?: string;
-		}): string | Promise<string>;
-		/**
-		 * When true, uses path-style URLs (e.g. http://host/bucket/key)
-		 * instead of virtual-hosted-style (e.g. http://bucket.host/key).
-		 * Required for most S3-compatible services.
-		 */
-		forcePathStyle?: boolean;
 		/** Map of friendly name for bucket to its information  */
 		buckets?: Record<string, BucketInfo>;
 	};
