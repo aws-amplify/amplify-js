@@ -5,4 +5,4 @@ export {
 	createConfiguration,
 	ConfigurationBuilder,
 	CreateConfigurationOptions,
-} from './createConfigurationBuilder';
+} from './configurationBuilder';
