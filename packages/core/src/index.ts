@@ -48,9 +48,6 @@ export {
 // AmplifyContext — the singleton-free contract for category APIs
 export { AmplifyContext } from './context/AmplifyContext';
 
-/** @deprecated Use AmplifyContext instead. */
-export type { AmplifyContext as ContextSpec } from './context/AmplifyContext';
-
 // Context branding — runtime identification of AmplifyContext objects
 export {
 	isAmplifyContext,
@@ -70,9 +67,6 @@ export type {
 	ConfigurationBuilder,
 	CreateConfigurationOptions,
 } from './configurationBuilder/createConfigurationBuilder';
-
-/** @deprecated Use `createConfiguration()` instead. */
-export { createConfiguration as createConfigurationBuilder } from './configurationBuilder';
 
 // Cognito Identity service client factories
 export {
