@@ -31,7 +31,6 @@ const mockAmplifyContextSpec = {
 const expectedCtx = {
 	amplify: mockAmplifyClass,
 	readFile: expect.any(Function),
-	toBase64: expect.any(Function),
 };
 
 describe('server-side uploadData', () => {

@@ -7,7 +7,6 @@ import {
 } from '@aws-amplify/core/internals/adapter-core';
 
 import { readFile } from '../utils/readFile';
-import { toBase64 } from '../utils/toBase64';
 import {
 	UploadDataInput,
 	UploadDataServerOutput,
@@ -91,7 +90,6 @@ export function uploadData(
 		{
 			amplify: getAmplifyServerContext(contextSpec).amplify,
 			readFile,
-			toBase64,
 		},
 		input,
 	) as UploadDataServerOutput | UploadDataServerWithPathOutput;

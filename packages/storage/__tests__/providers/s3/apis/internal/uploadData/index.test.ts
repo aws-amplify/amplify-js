@@ -30,7 +30,6 @@ const mockAmplifyInstance = {} as AmplifyClassV6;
 const mockCtx: FoundationContext = {
 	amplify: mockAmplifyInstance,
 	readFile: jest.fn(),
-	toBase64: jest.fn(),
 };
 
 const testPath = 'testPath/object';

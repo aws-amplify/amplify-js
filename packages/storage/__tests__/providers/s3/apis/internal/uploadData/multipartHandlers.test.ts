@@ -27,7 +27,6 @@ import { calculateContentCRC32 } from '../../../../../../src/foundation/utils/cr
 import { calculateContentMd5 } from '../../../../../../src/foundation/utils';
 import { byteLength } from '../../../../../../src/providers/s3/apis/internal/uploadData/byteLength';
 import { FoundationContext } from '../../../../../../src/foundation/types';
-import { toBase64 as realToBase64 } from '../../../../../../src/client/utils/toBase64';
 import { readFile as realReadFile } from '../../../../../../src/client/utils/readFile';
 
 import '../testUtils';
@@ -71,7 +70,6 @@ const mockCalculateContentCRC32 = jest.mocked(calculateContentCRC32);
 const mockCtx: FoundationContext = {
 	amplify: Amplify,
 	readFile: realReadFile,
-	toBase64: realToBase64,
 };
 
 const disableAssertionFlag = true;

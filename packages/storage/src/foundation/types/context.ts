@@ -12,14 +12,6 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 export type ReadFile = (blob: Blob) => Promise<ArrayBuffer>;
 
 /**
- * Encode a string or binary buffer as base64. Browser implementations use
- * `btoa`/`TextEncoder`; Node.js and React Native use `Buffer`.
- *
- * Injected into foundation-layer functions via {@link FoundationContext}.
- */
-export type ToBase64 = (input: string | ArrayBufferView) => string;
-
-/**
  * Per-invocation context passed into foundation-layer functions by the
  * client or server layer. It carries dependencies that are either
  * environment-specific or environment-scoped (e.g. a request-scoped
@@ -43,12 +35,4 @@ export interface FoundationContext {
 	 * equivalent. On the server this wraps `Blob.arrayBuffer()`.
 	 */
 	readFile: ReadFile;
-
-	/**
-	 * Encodes a string or binary buffer as base64.
-	 *
-	 * On the client (browser) this uses `btoa` + `TextEncoder`. On React
-	 * Native and the server this uses `Buffer`.
-	 */
-	toBase64: ToBase64;
 }
