@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createConfiguration } from '../../src';
+import { createConfigurationBuilder } from '../../src';
 
-describe('createConfiguration', () => {
+describe('createConfigurationBuilder', () => {
 	describe('basic builder', () => {
 		it('returns a builder object with from/add/patch/build methods', () => {
-			const builder = createConfiguration();
+			const builder = createConfigurationBuilder();
 			expect(builder.from).toBeDefined();
 			expect(builder.add).toBeDefined();
 			expect(builder.patch).toBeDefined();
@@ -14,7 +14,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('build() returns empty frozen config when nothing added', () => {
-			const config = createConfiguration().build();
+			const config = createConfigurationBuilder().build();
 			expect(config).toEqual({});
 			expect(Object.isFrozen(config)).toBe(true);
 		});
@@ -22,7 +22,7 @@ describe('createConfiguration', () => {
 
 	describe('.add(category, value)', () => {
 		it('sets a category config', () => {
-			const config = createConfiguration()
+			const config = createConfigurationBuilder()
 				.add('Auth', {
 					Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
 				})
@@ -33,7 +33,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('replaces existing category config entirely', () => {
-			const config = createConfiguration()
+			const config = createConfigurationBuilder()
 				.add('Auth', {
 					Cognito: { userPoolId: 'a', userPoolClientId: 'b' },
 				})
@@ -45,7 +45,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('returns the builder for chaining', () => {
-			const builder = createConfiguration();
+			const builder = createConfigurationBuilder();
 			expect(
 				builder.add('Auth', {
 					Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
@@ -56,7 +56,7 @@ describe('createConfiguration', () => {
 
 	describe('.patch(category, value)', () => {
 		it('deep-merges partial config into existing category', () => {
-			const config = createConfiguration()
+			const config = createConfigurationBuilder()
 				.add('Auth', {
 					Cognito: {
 						userPoolId: 'pool',
@@ -71,7 +71,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('creates category if it does not exist', () => {
-			const config = createConfiguration()
+			const config = createConfigurationBuilder()
 				.patch('Auth', {
 					Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
 				})
@@ -79,8 +79,8 @@ describe('createConfiguration', () => {
 			expect(config.Auth).toBeDefined();
 		});
 
-		it('handles arrays by replacing (not merging)', () => {
-			const config = createConfiguration()
+		it('handles category configuration by replacing (not merging)', () => {
+			const config = createConfigurationBuilder()
 				.add('API', {
 					REST: {
 						myApi: {
@@ -100,10 +100,11 @@ describe('createConfiguration', () => {
 			expect(config.API?.REST?.myApi?.endpoint).toBe(
 				'https://api2.example.com',
 			);
+			expect(config.API?.REST?.myApi.region).toBe('us-east-1');
 		});
 
 		it('returns the builder for chaining', () => {
-			const builder = createConfiguration();
+			const builder = createConfigurationBuilder();
 			expect(
 				builder.patch('Auth', {
 					Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
@@ -117,7 +118,7 @@ describe('createConfiguration', () => {
 			const seed = {
 				Auth: { Cognito: { userPoolId: 'x', userPoolClientId: 'y' } },
 			};
-			const config = createConfiguration().from(seed).build();
+			const config = createConfigurationBuilder().from(seed).build();
 			expect(config.Auth).toEqual(seed.Auth);
 		});
 
@@ -127,22 +128,22 @@ describe('createConfiguration', () => {
 				aws_user_pools_id: 'pool',
 				aws_user_pools_web_client_id: 'client',
 			};
-			const config = createConfiguration()
+			const config = createConfigurationBuilder()
 				.from(legacy as any)
 				.build();
 			expect(config.Auth?.Cognito?.userPoolId).toBe('pool');
 		});
 
 		it('merges another ConfigurationBuilder as seed', () => {
-			const base = createConfiguration().add('Auth', {
+			const base = createConfigurationBuilder().add('Auth', {
 				Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
 			});
-			const config = createConfiguration().from(base).build();
+			const config = createConfigurationBuilder().from(base).build();
 			expect(config.Auth).toBeDefined();
 		});
 
 		it('can be called multiple times (accumulates)', () => {
-			const config = createConfiguration()
+			const config = createConfigurationBuilder()
 				.from({
 					Auth: {
 						Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
@@ -155,7 +156,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('returns the builder for chaining', () => {
-			const builder = createConfiguration();
+			const builder = createConfigurationBuilder();
 			expect(
 				builder.from({
 					Auth: {
@@ -166,9 +167,9 @@ describe('createConfiguration', () => {
 		});
 	});
 
-	describe('createConfiguration({ from })', () => {
+	describe('createConfigurationBuilder({ from })', () => {
 		it('accepts initial seed via options', () => {
-			const config = createConfiguration({
+			const config = createConfigurationBuilder({
 				from: {
 					Auth: {
 						Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
@@ -179,20 +180,20 @@ describe('createConfiguration', () => {
 		});
 
 		it('accepts a ConfigurationBuilder as initial seed', () => {
-			const base = createConfiguration().add('Auth', {
+			const base = createConfigurationBuilder().add('Auth', {
 				Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
 			});
-			const config = createConfiguration({ from: base }).build();
+			const config = createConfigurationBuilder({ from: base }).build();
 			expect(config.Auth).toBeDefined();
 		});
 	});
 
 	describe('category shorthands', () => {
 		it('.auth() is equivalent to .add("Auth", ...)', () => {
-			const a = createConfiguration()
+			const a = createConfigurationBuilder()
 				.auth({ Cognito: { userPoolId: 'pool', userPoolClientId: 'client' } })
 				.build();
-			const b = createConfiguration()
+			const b = createConfigurationBuilder()
 				.add('Auth', {
 					Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
 				})
@@ -201,24 +202,24 @@ describe('createConfiguration', () => {
 		});
 
 		it('.storage() is equivalent to .add("Storage", ...)', () => {
-			const a = createConfiguration()
+			const a = createConfigurationBuilder()
 				.storage({ S3: { bucket: 'my-bucket', region: 'us-east-1' } })
 				.build();
-			const b = createConfiguration()
+			const b = createConfigurationBuilder()
 				.add('Storage', { S3: { bucket: 'my-bucket', region: 'us-east-1' } })
 				.build();
 			expect(a).toEqual(b);
 		});
 
 		it('.api() is equivalent to .add("API", ...)', () => {
-			const a = createConfiguration()
+			const a = createConfigurationBuilder()
 				.api({
 					REST: {
 						myApi: { endpoint: 'https://api.example.com', region: 'us-east-1' },
 					},
 				})
 				.build();
-			const b = createConfiguration()
+			const b = createConfigurationBuilder()
 				.add('API', {
 					REST: {
 						myApi: { endpoint: 'https://api.example.com', region: 'us-east-1' },
@@ -229,7 +230,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('.analytics() is equivalent to .add("Analytics", ...)', () => {
-			const a = createConfiguration()
+			const a = createConfigurationBuilder()
 				.analytics({
 					Pinpoint: {
 						appId: 'app-id',
@@ -237,7 +238,7 @@ describe('createConfiguration', () => {
 					},
 				})
 				.build();
-			const b = createConfiguration()
+			const b = createConfigurationBuilder()
 				.add('Analytics', {
 					Pinpoint: {
 						appId: 'app-id',
@@ -249,7 +250,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('.geo() is equivalent to .add("Geo", ...)', () => {
-			const a = createConfiguration()
+			const a = createConfigurationBuilder()
 				.geo({
 					LocationService: {
 						maps: { items: {}, default: 'map1' },
@@ -257,7 +258,7 @@ describe('createConfiguration', () => {
 					},
 				})
 				.build();
-			const b = createConfiguration()
+			const b = createConfigurationBuilder()
 				.add('Geo', {
 					LocationService: {
 						maps: { items: {}, default: 'map1' },
@@ -269,14 +270,14 @@ describe('createConfiguration', () => {
 		});
 
 		it('.notifications() is equivalent to .add("Notifications", ...)', () => {
-			const a = createConfiguration()
+			const a = createConfigurationBuilder()
 				.notifications({
 					PushNotification: {
 						Pinpoint: { appId: 'app-id', region: 'us-east-1' },
 					},
 				})
 				.build();
-			const b = createConfiguration()
+			const b = createConfigurationBuilder()
 				.add('Notifications', {
 					PushNotification: {
 						Pinpoint: { appId: 'app-id', region: 'us-east-1' },
@@ -287,7 +288,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('.interactions() is equivalent to .add("Interactions", ...)', () => {
-			const a = createConfiguration()
+			const a = createConfigurationBuilder()
 				.interactions({
 					LexV2: {
 						'bot-alias': {
@@ -299,7 +300,7 @@ describe('createConfiguration', () => {
 					},
 				})
 				.build();
-			const b = createConfiguration()
+			const b = createConfigurationBuilder()
 				.add('Interactions', {
 					LexV2: {
 						'bot-alias': {
@@ -315,7 +316,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('.predictions() is equivalent to .add("Predictions", ...)', () => {
-			const a = createConfiguration()
+			const a = createConfigurationBuilder()
 				.predictions({
 					convert: {
 						translateText: {
@@ -325,7 +326,7 @@ describe('createConfiguration', () => {
 					},
 				})
 				.build();
-			const b = createConfiguration()
+			const b = createConfigurationBuilder()
 				.add('Predictions', {
 					convert: {
 						translateText: {
@@ -341,7 +342,7 @@ describe('createConfiguration', () => {
 
 	describe('.build()', () => {
 		it('returns a frozen object', () => {
-			const config = createConfiguration()
+			const config = createConfigurationBuilder()
 				.add('Auth', {
 					Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
 				})
@@ -350,7 +351,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('returns a shallow copy — mutations to internal state do not affect built config', () => {
-			const builder = createConfiguration().add('Auth', {
+			const builder = createConfigurationBuilder().add('Auth', {
 				Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
 			});
 			const config1 = builder.build();
@@ -363,7 +364,7 @@ describe('createConfiguration', () => {
 		});
 
 		it('can be called multiple times', () => {
-			const builder = createConfiguration().add('Auth', {
+			const builder = createConfigurationBuilder().add('Auth', {
 				Cognito: { userPoolId: 'pool', userPoolClientId: 'client' },
 			});
 			const a = builder.build();

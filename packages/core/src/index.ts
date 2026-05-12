@@ -55,18 +55,14 @@ export {
 } from './context/contextBrand';
 
 // Global context management
-export {
-	getActiveContext,
-	getGlobalContext,
-	hasGlobalContext,
-} from './context/globalContext';
+export { getGlobalContext, hasGlobalContext } from './context/globalContext';
 
 // Configuration Builder
-export { createConfiguration } from './configurationBuilder';
+export { createConfigurationBuilder } from './configurationBuilder';
 export type {
 	ConfigurationBuilder,
-	CreateConfigurationOptions,
-} from './configurationBuilder/configurationBuilder';
+	CreateConfigurationBuilderOptions,
+} from './configurationBuilder';
 
 // Cognito Identity service client factories
 export {
@@ -102,4 +98,3 @@ export { ConsoleLogger } from './Logger';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
-// Errors — AmplifyServerContextError is exported from adapterCore

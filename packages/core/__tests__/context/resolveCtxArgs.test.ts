@@ -88,4 +88,23 @@ describe('resolveCtxArgs', () => {
 			expect(opts).toBeUndefined();
 		});
 	});
+
+	describe('multi-arg scenarios', () => {
+		it('returns all remaining args when context is first', () => {
+			const ctx = makeBrandedContext();
+			const [resolved, a, b] = resolveCtxArgs([ctx, 'arg1', 'arg2']);
+			expect(resolved).toBe(ctx);
+			expect(a).toBe('arg1');
+			expect(b).toBe('arg2');
+		});
+
+		it('returns all args as rest when no context provided', () => {
+			const globalCtx = makeBrandedContext();
+			setGlobalContext(globalCtx);
+			const [resolved, a, b] = resolveCtxArgs(['arg1', 'arg2']);
+			expect(resolved).toBe(globalCtx);
+			expect(a).toBe('arg1');
+			expect(b).toBe('arg2');
+		});
+	});
 });

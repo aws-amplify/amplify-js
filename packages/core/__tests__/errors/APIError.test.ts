@@ -26,8 +26,6 @@ describe('ApiError', () => {
 			response,
 		});
 		expect(error.response).toEqual(response);
-		expect(error.response).not.toBe(response);
-		expect(error.response?.headers).not.toBe(response.headers);
 	});
 
 	it('replicates response to prevent mutation', () => {

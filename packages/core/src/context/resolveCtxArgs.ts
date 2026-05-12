@@ -3,26 +3,28 @@
 
 import { AmplifyContext } from './AmplifyContext';
 import { isAmplifyContext } from './contextBrand';
-import { getActiveContext } from './globalContext';
+import { getGlobalContext } from './globalContext';
 
 /**
  * Resolves the optional leading `AmplifyContext` argument from a function's
  * arguments array. Used by category functions that accept an optional context
  * as their first positional parameter.
  *
- * @returns A tuple of `[AmplifyContext, T]` where `T` is the remaining input.
+ * @returns A tuple of `[AmplifyContext, ...T]` where `T` is the remaining args.
  *
  * @example
  * ```ts
  * export function signIn(...args: any[]) {
- *   const [ctx, input] = resolveCtxArgs<SignInInput>(args);
+ *   const [ctx, input] = resolveCtxArgs<[SignInInput]>(args);
  *   // ctx is guaranteed to be a valid AmplifyContext
  * }
  * ```
  *
  * @internal
  */
-export function resolveCtxArgs<T>(args: unknown[]): [AmplifyContext, T] {
+export function resolveCtxArgs<T extends unknown[]>(
+	args: unknown[],
+): [AmplifyContext, ...T] {
 	if (args.length > 1 && args[0] === undefined) {
 		throw new Error(
 			'Undefined AmplifyContext passed. Call configure() first or omit the parameter.',
@@ -30,8 +32,8 @@ export function resolveCtxArgs<T>(args: unknown[]): [AmplifyContext, T] {
 	}
 
 	if (isAmplifyContext(args[0])) {
-		return [args[0], args[1] as T];
+		return [args[0], ...args.slice(1)] as [AmplifyContext, ...T];
 	}
 
-	return [getActiveContext(), args[0] as T];
+	return [getGlobalContext(), ...args] as [AmplifyContext, ...T];
 }

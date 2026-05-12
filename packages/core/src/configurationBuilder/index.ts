@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export {
-	createConfiguration,
+	createConfigurationBuilder,
 	ConfigurationBuilder,
-	CreateConfigurationOptions,
+	CreateConfigurationBuilderOptions,
 } from './configurationBuilder';

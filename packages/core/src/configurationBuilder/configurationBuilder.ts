@@ -100,7 +100,7 @@ export interface ConfigurationBuilder {
 	build(): ResourcesConfig;
 }
 
-export interface CreateConfigurationOptions {
+export interface CreateConfigurationBuilderOptions {
 	from?: ConfigurationSeed;
 }
 
@@ -119,8 +119,8 @@ export interface CreateConfigurationOptions {
  * Amplify.configure(config);
  * ```
  */
-export function createConfiguration(
-	options?: CreateConfigurationOptions,
+export function createConfigurationBuilder(
+	options?: CreateConfigurationBuilderOptions,
 ): ConfigurationBuilder {
 	const config: ResourcesConfig = {};
 

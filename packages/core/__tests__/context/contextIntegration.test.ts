@@ -3,7 +3,7 @@
 
 import { Amplify } from '../../src/singleton';
 import {
-	getActiveContext,
+	getGlobalContext,
 	hasGlobalContext,
 	isAmplifyContext,
 } from '../../src';
@@ -22,29 +22,29 @@ describe('Amplify.configure() context integration', () => {
 
 	it('the global context is branded', () => {
 		Amplify.configure({});
-		const ctx = getActiveContext();
+		const ctx = getGlobalContext();
 		expect(isAmplifyContext(ctx)).toBe(true);
 	});
 
 	it('the global context is frozen', () => {
 		Amplify.configure({});
-		const ctx = getActiveContext();
+		const ctx = getGlobalContext();
 		expect(Object.isFrozen(ctx)).toBe(true);
 	});
 
 	it('context.resourcesConfig matches Amplify.getConfig()', () => {
 		const config = { Auth: { Cognito: { identityPoolId: 'test-pool' } } };
 		Amplify.configure(config);
-		const ctx = getActiveContext();
+		const ctx = getGlobalContext();
 		expect(ctx.resourcesConfig).toEqual(Amplify.getConfig());
 	});
 
 	it('reconfiguring replaces the global context', () => {
 		Amplify.configure({ Auth: { Cognito: { identityPoolId: 'pool1' } } });
-		const ctx1 = getActiveContext();
+		const ctx1 = getGlobalContext();
 
 		Amplify.configure({ Auth: { Cognito: { identityPoolId: 'pool2' } } });
-		const ctx2 = getActiveContext();
+		const ctx2 = getGlobalContext();
 
 		expect(ctx1).not.toBe(ctx2);
 	});
@@ -61,7 +61,7 @@ describe('Amplify.configure() context integration', () => {
 			{ Auth: { tokenProvider: mockTokenProvider } },
 		);
 
-		const ctx = getActiveContext();
+		const ctx = getGlobalContext();
 		await ctx.fetchAuthSession();
 
 		expect(mockTokenProvider.getTokens).toHaveBeenCalled();
@@ -80,7 +80,7 @@ describe('Amplify.configure() context integration', () => {
 			{ Auth: { credentialsProvider: mockCredentialsProvider } },
 		);
 
-		const ctx = getActiveContext();
+		const ctx = getGlobalContext();
 		await ctx.clearCredentials();
 
 		expect(
@@ -100,7 +100,7 @@ describe('Amplify.configure() context integration', () => {
 			{ Auth: { tokenProvider: mockTokenProvider } },
 		);
 
-		const ctx = getActiveContext();
+		const ctx = getGlobalContext();
 		await ctx.getTokens({});
 
 		expect(mockTokenProvider.getTokens).toHaveBeenCalled();

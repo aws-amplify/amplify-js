@@ -3,7 +3,6 @@
 
 import {
 	AMPLIFY_CONTEXT_BRAND,
-	getActiveContext,
 	getGlobalContext,
 	hasGlobalContext,
 } from '../../src';
@@ -48,15 +47,15 @@ describe('globalContext', () => {
 		});
 	});
 
-	describe('getActiveContext', () => {
+	describe('getGlobalContext', () => {
 		it('throws when no context is set', () => {
-			expect(() => getActiveContext()).toThrow('No AmplifyContext available');
+			expect(() => getGlobalContext()).toThrow('No AmplifyContext available');
 		});
 
 		it('returns the context set by setGlobalContext', () => {
 			const ctx = makeBrandedContext();
 			setGlobalContext(ctx);
-			expect(getActiveContext()).toBe(ctx);
+			expect(getGlobalContext()).toBe(ctx);
 		});
 
 		it('returns the most recently set context (overwrite)', () => {
@@ -64,19 +63,7 @@ describe('globalContext', () => {
 			const ctx2 = makeBrandedContext();
 			setGlobalContext(ctx1);
 			setGlobalContext(ctx2);
-			expect(getActiveContext()).toBe(ctx2);
-		});
-	});
-
-	describe('getGlobalContext', () => {
-		it('is an alias for getActiveContext — same behavior', () => {
-			const ctx = makeBrandedContext();
-			setGlobalContext(ctx);
-			expect(getGlobalContext()).toBe(getActiveContext());
-		});
-
-		it('throws when no context is set', () => {
-			expect(() => getGlobalContext()).toThrow('No AmplifyContext available');
+			expect(getGlobalContext()).toBe(ctx2);
 		});
 	});
 
@@ -84,13 +71,13 @@ describe('globalContext', () => {
 		it('stores the context for retrieval', () => {
 			const ctx = makeBrandedContext();
 			setGlobalContext(ctx);
-			expect(getActiveContext()).toBe(ctx);
+			expect(getGlobalContext()).toBe(ctx);
 		});
 
 		it('accepts any object as AmplifyContext (no runtime brand check)', () => {
 			const unbranded = { resourcesConfig: {} } as any;
 			setGlobalContext(unbranded);
-			expect(getActiveContext()).toBe(unbranded);
+			expect(getGlobalContext()).toBe(unbranded);
 		});
 	});
 

@@ -10,7 +10,7 @@ let _globalContext: AmplifyContext | null = null;
  *
  * @throws If `Amplify.configure()` has not been called yet.
  */
-export function getActiveContext(): AmplifyContext {
+export function getGlobalContext(): AmplifyContext {
 	if (!_globalContext) {
 		throw new Error(
 			'No AmplifyContext available. Call Amplify.configure() to set a global context, ' +
@@ -19,16 +19,6 @@ export function getActiveContext(): AmplifyContext {
 	}
 
 	return _globalContext;
-}
-
-/**
- * Returns the global {@link AmplifyContext} set by `Amplify.configure()`.
- * Alias for {@link getActiveContext} — provided for semantic clarity.
- *
- * @throws If `Amplify.configure()` has not been called yet.
- */
-export function getGlobalContext(): AmplifyContext {
-	return getActiveContext();
 }
 
 /**

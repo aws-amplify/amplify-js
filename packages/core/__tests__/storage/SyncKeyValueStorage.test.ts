@@ -4,32 +4,83 @@
 import { SyncKeyValueStorage } from '../../src/storage/SyncKeyValueStorage';
 
 describe('SyncKeyValueStorage', () => {
-	it('throws when accessing storage without initialization', () => {
-		const storage = new SyncKeyValueStorage();
-		expect(() => {
-			storage.setItem('key', 'value');
-		}).toThrow();
+	describe('throwing without initialization', () => {
+		it('throws when trying to set an item', () => {
+			const storage = new SyncKeyValueStorage();
+			expect(() => {
+				storage.setItem('key', 'value');
+			}).toThrow();
+		});
+
+		it('throws when trying to get an item', () => {
+			const storage = new SyncKeyValueStorage();
+			expect(() => {
+				storage.getItem('key');
+			}).toThrow();
+		});
+
+		it('throws when trying to remove an item', () => {
+			const storage = new SyncKeyValueStorage();
+			expect(() => {
+				storage.removeItem('key');
+			}).toThrow();
+		});
+
+		it('throws when trying to clear', () => {
+			const storage = new SyncKeyValueStorage();
+			expect(() => {
+				storage.clear();
+			}).toThrow();
+		});
 	});
 
-	it('works with provided storage', () => {
-		const mockStorage = {
-			setItem: jest.fn(),
-			getItem: jest.fn(() => 'value'),
-			removeItem: jest.fn(),
-			clear: jest.fn(),
-		} as any;
+	describe('initialized storage', () => {
+		const store: Storage = {
+			length: 0,
+			key: () => null,
+			setItem: (_k: string, _v: string) => undefined,
+			getItem: (_k: string) => null,
+			removeItem: (_k: string) => undefined,
+			clear: () => undefined,
+		};
 
-		const storage = new SyncKeyValueStorage(mockStorage);
-		storage.setItem('key', 'value');
-		expect(mockStorage.setItem).toHaveBeenCalledWith('key', 'value');
+		it('allows setting an item', () => {
+			const setItem = jest.fn();
+			const storage = new SyncKeyValueStorage({
+				...store,
+				setItem,
+			});
+			storage.setItem('key', 'value');
+			expect(setItem).toHaveBeenCalledWith('key', 'value');
+		});
 
-		const value = storage.getItem('key');
-		expect(value).toBe('value');
+		it('allows getting an item', () => {
+			const getItem = jest.fn();
+			const storage = new SyncKeyValueStorage({
+				...store,
+				getItem,
+			});
+			storage.getItem('key');
+			expect(getItem).toHaveBeenCalledWith('key');
+		});
 
-		storage.removeItem('key');
-		expect(mockStorage.removeItem).toHaveBeenCalledWith('key');
-
-		storage.clear();
-		expect(mockStorage.clear).toHaveBeenCalled();
+		it('allows removing an item', () => {
+			const removeItem = jest.fn();
+			const storage = new SyncKeyValueStorage({
+				...store,
+				removeItem,
+			});
+			storage.removeItem('key');
+			expect(removeItem).toHaveBeenCalledWith('key');
+		});
+		it('allows clearing the store', () => {
+			const clear = jest.fn();
+			const storage = new SyncKeyValueStorage({
+				...store,
+				clear,
+			});
+			storage.clear();
+			expect(clear).toHaveBeenCalled();
+		});
 	});
 });
