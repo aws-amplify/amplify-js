@@ -4,6 +4,7 @@
 import { LegacyConfig, ResourcesConfig } from '../singleton/types';
 import { AmplifyOutputsUnknown } from '../singleton/AmplifyOutputs/types';
 import { parseAmplifyConfig } from '../utils/parseAmplifyConfig';
+import { deepMerge } from '../utils/deepMerge';
 
 /**
  * Supported category names for `.add()`.
@@ -189,38 +190,4 @@ export function createConfigurationBuilder(
 	};
 
 	return builder;
-}
-
-function deepMerge(target: unknown, source: unknown): unknown {
-	if (
-		typeof target !== 'object' ||
-		typeof source !== 'object' ||
-		target === null ||
-		source === null ||
-		Array.isArray(target) ||
-		Array.isArray(source)
-	) {
-		return source;
-	}
-
-	const result: Record<string, unknown> = {
-		...(target as Record<string, unknown>),
-	};
-
-	for (const key of Object.keys(source as Record<string, unknown>)) {
-		const sourceVal = (source as Record<string, unknown>)[key];
-		const targetVal = result[key];
-
-		result[key] =
-			typeof targetVal === 'object' &&
-			typeof sourceVal === 'object' &&
-			targetVal !== null &&
-			sourceVal !== null &&
-			!Array.isArray(targetVal) &&
-			!Array.isArray(sourceVal)
-				? deepMerge(targetVal, sourceVal)
-				: sourceVal;
-	}
-
-	return result;
 }
