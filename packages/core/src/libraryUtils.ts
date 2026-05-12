@@ -154,7 +154,3 @@ export { setGlobalContext, clearGlobalContext } from './context/globalContext';
 
 // Context argument resolution
 export { resolveCtxArgs } from './context/resolveCtxArgs';
-
-// Storage internals
-export { InMemoryStorage } from './storage/InMemoryStorage';
-export { KeyValueStorage } from './storage/KeyValueStorage';
