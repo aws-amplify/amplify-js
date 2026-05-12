@@ -1,14 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
+import {
+	calculateContentCRC32,
+	calculateContentMd5,
+} from '../../../../../foundation/utils';
+import { FoundationContext } from '../../../../../foundation/types';
 import { UploadDataInput } from '../../../types';
 // TODO: Remove this interface when we move to public advanced APIs.
 import { UploadDataInput as UploadDataWithPathInputWithAdvancedOptions } from '../../../../../internals/types/inputs';
 import {
-	calculateContentMd5,
 	resolveS3ConfigAndInput,
 	validateBucketOwnerID,
 	validateStorageOperationInput,
@@ -20,7 +23,6 @@ import {
 	CHECKSUM_ALGORITHM_CRC32,
 	STORAGE_INPUT_KEY,
 } from '../../../utils/constants';
-import { calculateContentCRC32 } from '../../../utils/crc32';
 import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 import { getContentType } from '../../../../../utils/contentType';
 
@@ -42,7 +44,7 @@ export type SinglePartUploadDataInput =
  */
 export const putObjectJob =
 	(
-		amplify: AmplifyClassV6,
+		ctx: FoundationContext,
 		uploadDataInput: SinglePartUploadDataInput,
 		abortSignal: AbortSignal,
 		totalLength: number,
@@ -50,7 +52,7 @@ export const putObjectJob =
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
-			await resolveS3ConfigAndInput(amplify, uploadDataInput);
+			await resolveS3ConfigAndInput(ctx.amplify, uploadDataInput);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
 			identityId,
@@ -75,13 +77,13 @@ export const putObjectJob =
 
 		const checksumCRC32 =
 			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
-				? await calculateContentCRC32(data)
+				? await calculateContentCRC32(ctx, data)
 				: undefined;
 
 		const contentMD5 =
 			// check if checksum exists. ex: should not exist in react native
 			!checksumCRC32 && isObjectLockEnabled
-				? await calculateContentMd5(data)
+				? await calculateContentMd5(ctx, data)
 				: undefined;
 
 		const { ETag: eTag, VersionId: versionId } = await putObject(

@@ -3,6 +3,8 @@
 
 import { Amplify } from '@aws-amplify/core';
 
+import { readFile } from '../../client/utils/readFile';
+import { toBase64 } from '../../client/utils/toBase64';
 import { UploadDataInput } from '../types/inputs';
 import { UploadDataOutput } from '../types/outputs';
 import { uploadData as uploadDataInternal } from '../../providers/s3/apis/internal/uploadData';
@@ -13,26 +15,29 @@ import { uploadData as uploadDataInternal } from '../../providers/s3/apis/intern
 export const uploadData = (input: UploadDataInput) => {
 	const { data, path, options } = input;
 
-	return uploadDataInternal(Amplify, {
-		path,
-		data,
-		options: {
-			useAccelerateEndpoint: options?.useAccelerateEndpoint,
-			bucket: options?.bucket,
-			onProgress: options?.onProgress,
-			contentDisposition: options?.contentDisposition,
-			contentEncoding: options?.contentEncoding,
-			contentType: options?.contentType,
-			metadata: options?.metadata,
-			preventOverwrite: options?.preventOverwrite,
-			expectedBucketOwner: options?.expectedBucketOwner,
-			checksumAlgorithm: options?.checksumAlgorithm,
+	return uploadDataInternal(
+		{ amplify: Amplify, readFile, toBase64 },
+		{
+			path,
+			data,
+			options: {
+				useAccelerateEndpoint: options?.useAccelerateEndpoint,
+				bucket: options?.bucket,
+				onProgress: options?.onProgress,
+				contentDisposition: options?.contentDisposition,
+				contentEncoding: options?.contentEncoding,
+				contentType: options?.contentType,
+				metadata: options?.metadata,
+				preventOverwrite: options?.preventOverwrite,
+				expectedBucketOwner: options?.expectedBucketOwner,
+				checksumAlgorithm: options?.checksumAlgorithm,
 
-			// Advanced options
-			locationCredentialsProvider: options?.locationCredentialsProvider,
-			customEndpoint: options?.customEndpoint,
+				// Advanced options
+				locationCredentialsProvider: options?.locationCredentialsProvider,
+				customEndpoint: options?.customEndpoint,
+			},
 		},
 		// Type casting is necessary because `uploadDataInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.
-	}) as UploadDataOutput;
+	) as UploadDataOutput;
 };

@@ -3,14 +3,15 @@
 
 import { Amplify, defaultStorage } from '@aws-amplify/core';
 
+import { readFile } from '../utils/readFile';
+import { toBase64 } from '../utils/toBase64';
 import {
 	UploadDataInput,
 	UploadDataOutput,
 	UploadDataWithPathInput,
 	UploadDataWithPathOutput,
-} from '../types';
-
-import { uploadData as uploadDataInternal } from './internal/uploadData';
+} from '../../providers/s3/types';
+import { uploadData as uploadDataInternal } from '../../providers/s3/apis/internal/uploadData';
 
 /**
  * Upload data to the specified S3 object path. By default uses single PUT operation to upload if the payload is less than 5MB.
@@ -123,13 +124,16 @@ export function uploadData(
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
 export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
-	return uploadDataInternal(Amplify, {
-		...input,
-		options: {
-			...input?.options,
-			// This option enables caching in-progress multipart uploads.
-			// It's ONLY needed for client-side API.
-			resumableUploadsCache: defaultStorage,
+	return uploadDataInternal(
+		{ amplify: Amplify, readFile, toBase64 },
+		{
+			...input,
+			options: {
+				...input?.options,
+				// This option enables caching in-progress multipart uploads.
+				// It's ONLY needed for client-side API.
+				resumableUploadsCache: defaultStorage,
+			},
 		},
-	});
+	);
 }

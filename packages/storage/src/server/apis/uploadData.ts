@@ -6,13 +6,15 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 
+import { readFile } from '../utils/readFile';
+import { toBase64 } from '../utils/toBase64';
 import {
 	UploadDataInput,
 	UploadDataServerOutput,
 	UploadDataServerWithPathOutput,
 	UploadDataWithPathInput,
-} from '../../types';
-import { uploadData as uploadDataInternal } from '../internal/uploadData';
+} from '../../providers/s3/types';
+import { uploadData as uploadDataInternal } from '../../providers/s3/apis/internal/uploadData';
 
 /**
  * Upload data to the specified S3 object path. By default uses a single PUT
@@ -63,9 +65,6 @@ export function uploadData(
  * operation to upload when the payload is less than 5MB. Otherwise, uses
  * multipart upload to upload the payload.
  *
- * The returned task does NOT support `pause()` / `resume()` server-side. See
- * the path-based overload above for details.
- *
  * @param contextSpec - The isolated server context.
  * @param input - A `UploadDataInput` object.
  *
@@ -89,7 +88,11 @@ export function uploadData(
 	// they are not supported across isolated server requests. The runtime
 	// object still exposes them as no-ops (delegated to createUploadTask).
 	return uploadDataInternal(
-		getAmplifyServerContext(contextSpec).amplify,
+		{
+			amplify: getAmplifyServerContext(contextSpec).amplify,
+			readFile,
+			toBase64,
+		},
 		input,
 	) as UploadDataServerOutput | UploadDataServerWithPathOutput;
 }
