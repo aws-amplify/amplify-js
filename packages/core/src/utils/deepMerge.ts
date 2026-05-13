@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 const isMergeable = (object: unknown): object is Record<string, unknown> => {
 	return (
 		typeof object === 'object' && object !== null && !Array.isArray(object)
