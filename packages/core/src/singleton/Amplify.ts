@@ -3,7 +3,12 @@
 import { AMPLIFY_SYMBOL, Hub } from '../Hub';
 import { deepFreeze } from '../utils';
 import { parseAmplifyConfig } from '../libraryUtils';
+import { AmplifyContext } from '../context/AmplifyContext';
+import { AMPLIFY_CONTEXT_BRAND } from '../context/contextBrand';
+import { setGlobalContext } from '../context/globalContext';
 
+import { AuthClass } from './Auth';
+import { ADD_OAUTH_LISTENER } from './constants';
 import {
 	AmplifyOutputsUnknown,
 	AuthConfig,
@@ -11,8 +16,6 @@ import {
 	LibraryOptions,
 	ResourcesConfig,
 } from './types';
-import { AuthClass } from './Auth';
-import { ADD_OAUTH_LISTENER } from './constants';
 
 export class AmplifyClass {
 	private oAuthListener:
@@ -81,6 +84,27 @@ export class AmplifyClass {
 					'Pinpoint recommends Amazon Kinesis for event collection and mobile analytics.',
 			);
 		}
+
+		// Publish a branded AmplifyContext so that context-based APIs
+		// (fetchAuthSession, clearCredentials) can resolve the global context.
+		// Must be set BEFORE Hub.dispatch so listeners can call getActiveContext().
+		const ctx: AmplifyContext = {
+			resourcesConfig: this.resourcesConfig,
+			libraryOptions: this.libraryOptions,
+			fetchAuthSession: (options?) => this.Auth.fetchAuthSession(options ?? {}),
+			clearCredentials: () => this.Auth.clearCredentials(),
+			getTokens: options => this.Auth.getTokens(options),
+		};
+
+		Object.defineProperty(ctx, AMPLIFY_CONTEXT_BRAND, {
+			value: true,
+			enumerable: false,
+			configurable: false,
+			writable: false,
+		});
+
+		Object.freeze(ctx);
+		setGlobalContext(ctx);
 
 		Hub.dispatch(
 			'core',
