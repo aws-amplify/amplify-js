@@ -179,4 +179,29 @@ describe('getClientInfo', () => {
 			expect(result).toEqual(expect.objectContaining(expectedResult));
 		},
 	);
+
+	test('returns empty object when window is undefined', () => {
+		const originalWindow = (global as any).window;
+		delete (global as any).window;
+		const result = getClientInfo();
+		expect(result).toEqual({});
+		(global as any).window = originalWindow;
+	});
+
+	test('returns empty object when navigator is undefined', () => {
+		mockNavigator.mockReturnValueOnce(undefined as any);
+		const result = getClientInfo();
+		expect(result).toEqual({});
+	});
+
+	test('handles unknown user agent', () => {
+		mockNavigator.mockReturnValueOnce({
+			userAgent: 'UnknownBrowser',
+			platform: 'Unknown',
+			language: 'en',
+		} as any);
+		const result = getClientInfo();
+		expect(result.model).toBe('');
+		expect(result.version).toBe('');
+	});
 });
