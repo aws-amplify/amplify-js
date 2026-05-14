@@ -61,7 +61,7 @@
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"clean": "npm run clean:size && rimraf dist",
-		"clean:size": "rimraf dual-publish-tmp tmp*",
+		"clean:size": "rimraf --glob dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
 		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",

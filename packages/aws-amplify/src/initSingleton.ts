@@ -98,8 +98,9 @@ export const DefaultAmplify = {
 			}
 
 			Amplify.configure(resolvedResourceConfig, {
-				Auth: authLibraryOptions,
+				...Amplify.libraryOptions,
 				...libraryOptions,
+				Auth: authLibraryOptions,
 			});
 
 			return;

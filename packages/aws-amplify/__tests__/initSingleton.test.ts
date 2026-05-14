@@ -324,6 +324,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				it('should preserve current auth providers (default or otherwise) and configure provider with a new CookieStorage instance', () => {
 					const libraryOptions = { ssr: true };
+					const authLibraryOptions = AmplifySingleton.libraryOptions.Auth;
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
@@ -336,7 +337,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							Auth: AmplifySingleton.libraryOptions.Auth,
+							Auth: authLibraryOptions,
 							...libraryOptions,
 						},
 					);
@@ -344,6 +345,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				it('should preserve current auth providers (default or otherwise) and configure provider with defaultStorage', () => {
 					const libraryOptions = { ssr: false };
+					const authLibraryOptions = AmplifySingleton.libraryOptions.Auth;
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
@@ -355,7 +357,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							Auth: AmplifySingleton.libraryOptions.Auth,
+							Auth: authLibraryOptions,
 							...libraryOptions,
 						},
 					);
@@ -365,6 +367,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					const libraryOptions = {
 						Storage: { S3: { isObjectLockEnabled: true } },
 					};
+					const authLibraryOptions = AmplifySingleton.libraryOptions.Auth;
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
@@ -376,8 +379,33 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							Auth: AmplifySingleton.libraryOptions.Auth,
+							Auth: authLibraryOptions,
 							...libraryOptions,
+						},
+					);
+				});
+
+				it('should preserve non-Auth library options when reconfiguring with partial libraryOptions', () => {
+					const storageLibraryOptions = {
+						S3: { defaultAccessLevel: 'private' as const },
+					};
+					AmplifySingleton.libraryOptions = {
+						Auth: {
+							tokenProvider: cognitoUserPoolsTokenProvider,
+							credentialsProvider: cognitoCredentialsProvider,
+						},
+						Storage: storageLibraryOptions,
+					};
+					const authLibraryOptions = AmplifySingleton.libraryOptions.Auth;
+
+					Amplify.configure(mockResourceConfig, { ssr: true });
+
+					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+						mockResourceConfig,
+						{
+							Auth: authLibraryOptions,
+							Storage: storageLibraryOptions,
+							ssr: true,
 						},
 					);
 				});
