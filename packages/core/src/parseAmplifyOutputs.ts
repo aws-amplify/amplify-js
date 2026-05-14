@@ -81,6 +81,7 @@ function parseAuth(
 	const {
 		user_pool_id,
 		user_pool_client_id,
+		auth_session_validity,
 		identity_pool_id,
 		password_policy,
 		mfa_configuration,
@@ -100,6 +101,10 @@ function parseAuth(
 			groups,
 		},
 	} as AuthConfig;
+
+	if (auth_session_validity !== undefined) {
+		authConfig.Cognito.authSessionValidity = auth_session_validity;
+	}
 
 	if (identity_pool_id) {
 		authConfig.Cognito = {

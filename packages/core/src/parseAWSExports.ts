@@ -55,6 +55,7 @@ export const parseAWSExports = (
 		aws_appsync_region,
 		aws_bots_config,
 		aws_cognito_identity_pool_id,
+		aws_cognito_auth_session_validity,
 		aws_cognito_sign_up_verification_method,
 		aws_cognito_mfa_configuration,
 		aws_cognito_mfa_types,
@@ -178,6 +179,10 @@ export const parseAWSExports = (
 					) ?? false,
 			}
 		: undefined;
+	const authSessionValidityConfig =
+		aws_cognito_auth_session_validity !== undefined
+			? { authSessionValidity: aws_cognito_auth_session_validity }
+			: undefined;
 	const mergedUserAttributes: LegacyUserAttributeKey[] = Array.from(
 		new Set([
 			...(aws_cognito_verification_mechanisms ?? []),
@@ -209,6 +214,7 @@ export const parseAWSExports = (
 				userPoolId: aws_user_pools_id,
 				mfa: mfaConfig,
 				passwordFormat: passwordFormatConfig,
+				...authSessionValidityConfig,
 				loginWith: {
 					username: !(loginWithEmailEnabled || loginWithPhoneEnabled),
 					email: loginWithEmailEnabled,
