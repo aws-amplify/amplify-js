@@ -11,6 +11,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
 import { signInWithUserAuth } from '../apis/signInWithUserAuth';
+
 import { getAuthSessionValidity } from './getAuthSessionValidity';
 
 export function handleCodeAutoSignIn(signInInput: SignInInput) {

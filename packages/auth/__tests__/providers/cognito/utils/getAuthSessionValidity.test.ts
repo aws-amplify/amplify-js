@@ -30,9 +30,7 @@ describe('getAuthSessionValidity()', () => {
 	it('returns the default Cognito auth session validity when not configured', () => {
 		mockGetConfig.mockReturnValue({} as any);
 
-		expect(getAuthSessionValidity()).toBe(
-			DEFAULT_AUTH_SESSION_VALIDITY_MS,
-		);
+		expect(getAuthSessionValidity()).toBe(DEFAULT_AUTH_SESSION_VALIDITY_MS);
 	});
 
 	it('returns configured Cognito auth session validity in milliseconds', () => {
