@@ -179,10 +179,7 @@ export const parseAWSExports = (
 					) ?? false,
 			}
 		: undefined;
-	const authSessionValidityConfig =
-		aws_cognito_auth_session_validity !== undefined
-			? { authSessionValidity: aws_cognito_auth_session_validity }
-			: undefined;
+	const authSessionValidityConfig = aws_cognito_auth_session_validity;
 	const mergedUserAttributes: LegacyUserAttributeKey[] = Array.from(
 		new Set([
 			...(aws_cognito_verification_mechanisms ?? []),
@@ -214,7 +211,6 @@ export const parseAWSExports = (
 				userPoolId: aws_user_pools_id,
 				mfa: mfaConfig,
 				passwordFormat: passwordFormatConfig,
-				...authSessionValidityConfig,
 				loginWith: {
 					username: !(loginWithEmailEnabled || loginWithPhoneEnabled),
 					email: loginWithEmailEnabled,
@@ -222,6 +218,11 @@ export const parseAWSExports = (
 				},
 			},
 		};
+
+		if (authSessionValidityConfig !== undefined) {
+			amplifyConfig.Auth.Cognito.authSessionValidity =
+				authSessionValidityConfig;
+		}
 	}
 
 	const hasOAuthConfig = oauth ? Object.keys(oauth).length > 0 : false;
