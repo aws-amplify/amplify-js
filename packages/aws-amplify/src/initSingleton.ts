@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	Amplify,
+	AuthConfig,
 	CookieStorage,
 	LibraryOptions,
 	ResourcesConfig,
@@ -19,6 +20,15 @@ import {
 	cognitoCredentialsProvider,
 	cognitoUserPoolsTokenProvider,
 } from './auth/cognito';
+
+const usesDefaultCognitoTokenProvider = (
+	authLibraryOptions?: LibraryOptions['Auth'],
+): boolean =>
+	authLibraryOptions?.tokenProvider === cognitoUserPoolsTokenProvider;
+
+const syncDefaultCognitoAuthConfig = (authConfig: AuthConfig): void => {
+	cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+};
 
 export const DefaultAmplify = {
 	/**
@@ -56,10 +66,25 @@ export const DefaultAmplify = {
 			return;
 		}
 
-		// If Auth options are provided, always just configure as is.
-		// Otherwise, we can assume no Auth libraryOptions were provided from here on.
+		// If Auth options are provided, merge with existing libraryOptions so other categories are preserved.
 		if (libraryOptions?.Auth) {
-			Amplify.configure(resolvedResourceConfig, libraryOptions);
+			const mergedLibraryOptions: LibraryOptions = {
+				...Amplify.libraryOptions,
+				...libraryOptions,
+			};
+
+			if (usesDefaultCognitoTokenProvider(mergedLibraryOptions.Auth)) {
+				syncDefaultCognitoAuthConfig(resolvedResourceConfig.Auth);
+
+				if (libraryOptions.ssr !== undefined) {
+					cognitoUserPoolsTokenProvider.setKeyValueStorage(
+						// TODO: allow configure with a public interface
+						resolvedKeyValueStorage,
+					);
+				}
+			}
+
+			Amplify.configure(resolvedResourceConfig, mergedLibraryOptions);
 
 			return;
 		}
@@ -97,9 +122,14 @@ export const DefaultAmplify = {
 				authLibraryOptions.credentialsProvider = resolvedCredentialsProvider;
 			}
 
+			if (usesDefaultCognitoTokenProvider(authLibraryOptions)) {
+				syncDefaultCognitoAuthConfig(resolvedResourceConfig.Auth);
+			}
+
 			Amplify.configure(resolvedResourceConfig, {
-				Auth: authLibraryOptions,
+				...Amplify.libraryOptions,
 				...libraryOptions,
+				Auth: authLibraryOptions,
 			});
 
 			return;
@@ -107,6 +137,10 @@ export const DefaultAmplify = {
 
 		// Finally, if there were no libraryOptions given at all, we should simply not touch the currently
 		// configured libraryOptions.
+		if (usesDefaultCognitoTokenProvider(Amplify.libraryOptions.Auth)) {
+			syncDefaultCognitoAuthConfig(resolvedResourceConfig.Auth);
+		}
+
 		Amplify.configure(resolvedResourceConfig);
 	},
 	/**

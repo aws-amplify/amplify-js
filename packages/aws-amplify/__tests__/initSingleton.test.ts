@@ -246,16 +246,29 @@ describe('initSingleton (DefaultAmplify)', () => {
 		});
 
 		describe('when ResourcesConfig.Auth is defined', () => {
-			it('should just configure with the provided config and options when libraryOptions.Auth is defined', () => {
+			it('should merge with existing libraryOptions when libraryOptions.Auth is defined', () => {
+				const customTokenProvider = { getTokens: jest.fn() };
+				const storageLibraryOptions = {
+					S3: { defaultAccessLevel: 'private' as const },
+				};
+				AmplifySingleton.libraryOptions = {
+					Storage: storageLibraryOptions,
+				};
 				const libraryOptions = {
-					Auth: { tokenProvider: { getTokens: jest.fn() } },
+					Auth: { tokenProvider: customTokenProvider },
 				};
 				Amplify.configure(mockResourceConfig, libraryOptions);
 
 				expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 					mockResourceConfig,
-					libraryOptions,
+					{
+						Storage: storageLibraryOptions,
+						Auth: libraryOptions.Auth,
+					},
 				);
+				expect(
+					mockCognitoUserPoolsTokenProviderSetAuthConfig,
+				).not.toHaveBeenCalled();
 			});
 
 			describe('when the singleton libraryOptions have not yet been configured with Auth', () => {
@@ -324,11 +337,12 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				it('should preserve current auth providers (default or otherwise) and configure provider with a new CookieStorage instance', () => {
 					const libraryOptions = { ssr: true };
+					const authLibraryOptions = AmplifySingleton.libraryOptions.Auth;
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig,
-					).not.toHaveBeenCalled();
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(MockCookieStorage).toHaveBeenCalledWith({ sameSite: 'lax' });
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
@@ -336,7 +350,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							Auth: AmplifySingleton.libraryOptions.Auth,
+							Auth: authLibraryOptions,
 							...libraryOptions,
 						},
 					);
@@ -344,18 +358,19 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				it('should preserve current auth providers (default or otherwise) and configure provider with defaultStorage', () => {
 					const libraryOptions = { ssr: false };
+					const authLibraryOptions = AmplifySingleton.libraryOptions.Auth;
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig,
-					).not.toHaveBeenCalled();
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).toHaveBeenCalledWith(defaultStorage);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							Auth: AmplifySingleton.libraryOptions.Auth,
+							Auth: authLibraryOptions,
 							...libraryOptions,
 						},
 					);
@@ -365,29 +380,89 @@ describe('initSingleton (DefaultAmplify)', () => {
 					const libraryOptions = {
 						Storage: { S3: { isObjectLockEnabled: true } },
 					};
+					const authLibraryOptions = AmplifySingleton.libraryOptions.Auth;
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig,
-					).not.toHaveBeenCalled();
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).not.toHaveBeenCalled();
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							Auth: AmplifySingleton.libraryOptions.Auth,
+							Auth: authLibraryOptions,
 							...libraryOptions,
 						},
 					);
 				});
 
-				it('should just configure without touching libraryOptions', () => {
+				it('should preserve non-Auth library options when reconfiguring with partial libraryOptions', () => {
+					const storageLibraryOptions = {
+						S3: { defaultAccessLevel: 'private' as const },
+					};
+					AmplifySingleton.libraryOptions = {
+						Auth: {
+							tokenProvider: cognitoUserPoolsTokenProvider,
+							credentialsProvider: cognitoCredentialsProvider,
+						},
+						Storage: storageLibraryOptions,
+					};
+					const authLibraryOptions = AmplifySingleton.libraryOptions.Auth;
+
+					Amplify.configure(mockResourceConfig, { ssr: true });
+
+					expect(
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
+					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+						mockResourceConfig,
+						{
+							Auth: authLibraryOptions,
+							Storage: storageLibraryOptions,
+							ssr: true,
+						},
+					);
+				});
+
+				it('should sync default Cognito auth config when reconfiguring with resource config only', () => {
 					Amplify.configure(mockResourceConfig);
 
+					expect(
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 					);
+				});
+
+				it('should sync default Cognito auth config when libraryOptions.Auth overrides with default provider', () => {
+					const updatedResourceConfig: ResourcesConfig = {
+						Auth: {
+							Cognito: {
+								userPoolClientId: 'newClientId',
+								userPoolId: 'newPoolId',
+							},
+						},
+					};
+					AmplifySingleton.libraryOptions = {
+						Auth: {
+							tokenProvider: cognitoUserPoolsTokenProvider,
+							credentialsProvider: cognitoCredentialsProvider,
+						},
+					};
+
+					Amplify.configure(updatedResourceConfig, {
+						Auth: {
+							tokenProvider: cognitoUserPoolsTokenProvider,
+							credentialsProvider: cognitoCredentialsProvider,
+						},
+					});
+
+					expect(
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
+					).toHaveBeenCalledWith(updatedResourceConfig.Auth);
 				});
 			});
 
