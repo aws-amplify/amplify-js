@@ -10,6 +10,12 @@ jest.mock('../../../../src/providers/s3/apis/internal/uploadData');
 
 const mockInternalUploadDataImpl = jest.mocked(internalUploadDataImpl);
 
+const expectedCtx = {
+	amplify: Amplify,
+	readFile: expect.any(Function),
+	toBase64: expect.any(Function),
+};
+
 describe('client-side uploadData', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -26,7 +32,7 @@ describe('client-side uploadData', () => {
 			},
 		};
 		expect(uploadData(input)).toEqual(mockInternalResult);
-		expect(mockInternalUploadDataImpl).toBeCalledWith(Amplify, {
+		expect(mockInternalUploadDataImpl).toBeCalledWith(expectedCtx, {
 			...input,
 			options: {
 				...input.options,
@@ -46,7 +52,7 @@ describe('client-side uploadData', () => {
 			},
 		};
 		expect(uploadData(input)).toEqual(mockInternalResult);
-		expect(mockInternalUploadDataImpl).toBeCalledWith(Amplify, {
+		expect(mockInternalUploadDataImpl).toBeCalledWith(expectedCtx, {
 			...input,
 			options: {
 				...input.options,

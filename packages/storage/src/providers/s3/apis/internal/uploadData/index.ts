@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
-
+import { FoundationContext } from '../../../../../foundation/types';
 import { createUploadTask } from '../../../utils';
 import { assertValidationError } from '../../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../../errors/types/validation';
@@ -16,7 +15,7 @@ import {
 } from './multipart';
 
 export const uploadData = (
-	amplify: AmplifyClassV6,
+	ctx: FoundationContext,
 	input: SinglePartUploadDataInput | MultipartUploadDataInput,
 ) => {
 	const { data } = input;
@@ -39,7 +38,7 @@ export const uploadData = (
 
 		return createUploadTask({
 			isMultipartUpload: false,
-			job: putObjectJob(amplify, input, abortController.signal, dataByteLength),
+			job: putObjectJob(ctx, input, abortController.signal, dataByteLength),
 			onCancel: (message?: string) => {
 				abortController.abort(message);
 			},
@@ -47,7 +46,7 @@ export const uploadData = (
 	} else {
 		// Multipart upload
 		const { multipartUploadJob, onPause, onResume, onCancel } =
-			getMultipartUploadHandlers(amplify, input, dataByteLength);
+			getMultipartUploadHandlers(ctx, input, dataByteLength);
 
 		return createUploadTask({
 			isMultipartUpload: true,
