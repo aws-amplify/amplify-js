@@ -43,6 +43,9 @@
 		"dist/esm",
 		"src"
 	],
+	"engines": {
+		"node": ">=18"
+	},
 	"dependencies": {
 		"@aws-amplify/storage": "6.15.0",
 		"@aws-sdk/client-comprehend": "^3.1012.0",

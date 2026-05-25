@@ -67,6 +67,9 @@
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
+	"engines": {
+		"node": ">=18"
+	},
 	"homepage": "https://docs.amplify.aws/",
 	"devDependencies": {
 		"@aws-amplify/core": "6.16.3",
