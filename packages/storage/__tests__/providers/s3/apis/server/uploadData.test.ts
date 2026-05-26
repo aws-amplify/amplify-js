@@ -28,6 +28,11 @@ const mockAmplifyClass = 'AMPLIFY_CLASS' as any;
 const mockAmplifyContextSpec = {
 	token: { value: Symbol('123') },
 };
+const expectedCtx = {
+	amplify: mockAmplifyClass,
+	readFile: expect.any(Function),
+	toBase64: expect.any(Function),
+};
 
 describe('server-side uploadData', () => {
 	beforeEach(() => {
@@ -52,7 +57,7 @@ describe('server-side uploadData', () => {
 		expect(uploadData(mockAmplifyContextSpec as any, input)).toEqual(
 			mockInternalResult,
 		);
-		expect(mockInternalUploadDataImpl).toBeCalledWith(mockAmplifyClass, input);
+		expect(mockInternalUploadDataImpl).toBeCalledWith(expectedCtx, input);
 	});
 
 	it('should pass through input with key and return output from internal implementation', () => {
@@ -66,7 +71,7 @@ describe('server-side uploadData', () => {
 		expect(uploadData(mockAmplifyContextSpec as any, input)).toEqual(
 			mockInternalResult,
 		);
-		expect(mockInternalUploadDataImpl).toBeCalledWith(mockAmplifyClass, input);
+		expect(mockInternalUploadDataImpl).toBeCalledWith(expectedCtx, input);
 	});
 
 	it('should NOT inject resumableUploadsCache (server-side does not support pause/resume)', () => {
@@ -87,7 +92,9 @@ describe('server-side uploadData', () => {
 		uploadData(mockAmplifyContextSpec as any, input);
 		expect(mockGetAmplifyServerContext).toBeCalledWith(mockAmplifyContextSpec);
 		// Ensure the amplify passed to internal uploadData is from the server context
-		expect(mockInternalUploadDataImpl.mock.calls[0][0]).toBe(mockAmplifyClass);
+		expect((mockInternalUploadDataImpl.mock.calls[0][0] as any).amplify).toBe(
+			mockAmplifyClass,
+		);
 	});
 
 	it('should return a task type that does NOT expose pause/resume at the type level', () => {

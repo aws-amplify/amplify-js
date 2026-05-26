@@ -67,7 +67,7 @@ export const recordAnalyticsEvent = (
 			});
 		})
 		.catch(e => {
-			// An error occured while fetching credentials or persisting the event to the buffer
+			// An error occurred while fetching credentials or persisting the event to the buffer
 			logger.warn('Failed to record event.', e);
 		});
 };

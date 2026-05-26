@@ -5,16 +5,19 @@ import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 
 import { putObject } from '../../../../../../src/providers/s3/utils/client/s3data';
-import { calculateContentMd5 } from '../../../../../../src/providers/s3/utils';
-import * as CRC32 from '../../../../../../src/providers/s3/utils/crc32';
+import { calculateContentMd5 } from '../../../../../../src/foundation/utils';
+import * as CRC32 from '../../../../../../src/foundation/utils/crc32';
 import { putObjectJob } from '../../../../../../src/providers/s3/apis/internal/uploadData/putObjectJob';
 import '../testUtils';
 import { UploadDataChecksumAlgorithm } from '../../../../../../src/providers/s3/types/options';
 import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../../../src/providers/s3/utils/constants';
+import { FoundationContext } from '../../../../../../src/foundation/types';
+import { toBase64 as realToBase64 } from '../../../../../../src/client/utils/toBase64';
+import { readFile as realReadFile } from '../../../../../../src/client/utils/readFile';
 
 jest.mock('../../../../../../src/providers/s3/utils/client/s3data');
-jest.mock('../../../../../../src/providers/s3/utils', () => {
-	const utils = jest.requireActual('../../../../../../src/providers/s3/utils');
+jest.mock('../../../../../../src/foundation/utils', () => {
+	const utils = jest.requireActual('../../../../../../src/foundation/utils');
 
 	return {
 		...utils,
@@ -45,6 +48,12 @@ const bucket = 'bucket';
 const region = 'region';
 const data = 'data';
 const dataLength = data.length;
+
+const mockCtx: FoundationContext = {
+	amplify: Amplify,
+	readFile: realReadFile,
+	toBase64: realToBase64,
+};
 
 mockFetchAuthSession.mockResolvedValue({
 	credentials,
@@ -88,7 +97,7 @@ describe('putObjectJob with key', () => {
 			const useAccelerateEndpoint = true;
 
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					key: inputKey,
 					data,
@@ -156,7 +165,7 @@ describe('putObjectJob with key', () => {
 			},
 		};
 		const job = putObjectJob(
-			Amplify,
+			mockCtx,
 			{
 				key: 'key',
 				data: 'data',
@@ -165,7 +174,7 @@ describe('putObjectJob with key', () => {
 			dataLength,
 		);
 		await job();
-		expect(calculateContentMd5).toHaveBeenCalledWith('data');
+		expect(calculateContentMd5).toHaveBeenCalledWith(mockCtx, 'data');
 	});
 
 	describe('bucket passed in options', () => {
@@ -175,7 +184,7 @@ describe('putObjectJob with key', () => {
 			const mockRegion = 'region-1';
 
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					key: 'key',
 					data,
@@ -210,7 +219,7 @@ describe('putObjectJob with key', () => {
 		it('should override bucket in putObject call when bucket as string', async () => {
 			const abortController = new AbortController();
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					key: 'key',
 					data,
@@ -243,7 +252,7 @@ describe('putObjectJob with key', () => {
 	describe('cacheControl passed in option', () => {
 		it('should include CacheControl header', async () => {
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					path: testPath,
 					data,
@@ -314,7 +323,7 @@ describe('putObjectJob with path', () => {
 			const useAccelerateEndpoint = true;
 
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					path: inputPath,
 					data,
@@ -382,7 +391,7 @@ describe('putObjectJob with path', () => {
 			},
 		};
 		const job = putObjectJob(
-			Amplify,
+			mockCtx,
 			{
 				path: testPath,
 				data,
@@ -391,13 +400,13 @@ describe('putObjectJob with path', () => {
 			dataLength,
 		);
 		await job();
-		expect(calculateContentMd5).toHaveBeenCalledWith('data');
+		expect(calculateContentMd5).toHaveBeenCalledWith(mockCtx, 'data');
 	});
 
 	describe('overwrite prevention', () => {
 		it('should include if-none-match header', async () => {
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					path: testPath,
 					data,
@@ -424,7 +433,7 @@ describe('putObjectJob with path', () => {
 			const mockRegion = 'region-1';
 
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					path: 'path/',
 					data,
@@ -459,7 +468,7 @@ describe('putObjectJob with path', () => {
 		it('should override bucket in putObject call when bucket as string', async () => {
 			const abortController = new AbortController();
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					path: 'path/',
 					data,
@@ -492,7 +501,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const testData = 'data';
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					key: 'image.jpg',
 					data: testData,
@@ -514,7 +523,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const file = new File(['content'], 'test.png', { type: 'image/png' });
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					key: 'test.jpg', // Different extension to test File.type takes precedence
 					data: file,
@@ -536,7 +545,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const testData = 'data';
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					key: 'image.jpg',
 					data: testData,
@@ -561,7 +570,7 @@ describe('putObjectJob with path', () => {
 	describe('cacheControl passed in option', () => {
 		it('should include CacheControl header', async () => {
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					path: testPath,
 					data,
@@ -584,7 +593,7 @@ describe('putObjectJob with path', () => {
 
 		it('should NOT include CacheControl header', async () => {
 			const job = putObjectJob(
-				Amplify,
+				mockCtx,
 				{
 					path: testPath,
 					data,

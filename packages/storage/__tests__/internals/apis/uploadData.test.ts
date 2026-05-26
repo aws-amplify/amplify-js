@@ -10,6 +10,12 @@ jest.mock('../../../src/providers/s3/apis/internal/uploadData');
 const mockedUploadDataInternal = jest.mocked(uploadDataInternal);
 const mockedUploadTask = 'UPLOAD_TASK';
 
+const expectedCtx = {
+	amplify: Amplify,
+	readFile: expect.any(Function),
+	toBase64: expect.any(Function),
+};
+
 describe('uploadData (internal)', () => {
 	beforeEach(() => {
 		mockedUploadDataInternal.mockReturnValue(mockedUploadTask as any);
@@ -56,7 +62,7 @@ describe('uploadData (internal)', () => {
 		});
 
 		expect(mockedUploadDataInternal).toHaveBeenCalledTimes(1);
-		expect(mockedUploadDataInternal).toHaveBeenCalledWith(Amplify, {
+		expect(mockedUploadDataInternal).toHaveBeenCalledWith(expectedCtx, {
 			path: 'input/path/to/mock/object',
 			data: 'data',
 			options: {
