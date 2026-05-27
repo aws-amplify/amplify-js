@@ -22,7 +22,10 @@
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
-		"types": ["jest", "node", "lodash"]
+		"types": ["jest", "node", "lodash"],
+		"paths": {
+			"expo-file-system/legacy": ["../../node_modules/expo-file-system/build/legacy/index.d.ts"]
+		}
 	},
 	"include": ["src/**/*", "ExpoSQLiteAdapter", "SQLiteAdapter", "__tests__"]
 }

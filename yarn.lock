@@ -7851,12 +7851,10 @@ expect@^29.0.0, expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
-expo-file-system@15.0.0:
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-15.0.0.tgz#e37b31799b9f033916b12282ad045d298c712589"
-  integrity sha512-zxJRSuhIYFoJQwYnEY0DNj3+Ve4rJfy4WOCZ3g0RP21lc5Upkwf4f191v/jAf8r4bOhkQYqQYYQlulAXK70YuA==
-  dependencies:
-    uuid "^3.4.0"
+expo-file-system@56.0.7:
+  version "56.0.7"
+  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-56.0.7.tgz#66a69361d839afa1773dc247b160da166e3df0da"
+  integrity sha512-dcKzo8ShPloM7jgfnMcJStgQebhP8owVjCkNI/aX6NMFV1CYB8bxKGMdnzJ3mXk5nfaiW+F/lSKr2UIJ02WAUA==
 
 expo-sqlite@10.1.0:
   version "10.1.0"
@@ -12934,11 +12932,6 @@ uuid@^11.1.1:
   version "11.1.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-11.1.1.tgz#f6d81d2e1c65d00762e5e29b16c5d2d995e208ad"
   integrity sha512-vIYxrBCC/N/K+Js3qSN88go7kIfNPssr/hHCesKCQNAjmgvYS2oqr69kIufEG+O4+PfezOH4EbIeHCfFov8ZgQ==
-
-uuid@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
-  integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
 v8-to-istanbul@^9.0.1:
   version "9.3.0"

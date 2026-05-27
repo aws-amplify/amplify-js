@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
-import { deleteAsync, documentDirectory } from 'expo-file-system';
+import { deleteAsync, documentDirectory } from 'expo-file-system/legacy';
 import { WebSQLDatabase, openDatabase } from 'expo-sqlite';
 
 import { DB_NAME } from '../common/constants';

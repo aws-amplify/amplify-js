@@ -8,6 +8,7 @@ module.exports = {
 		'@aws-amplify/datastore',
 		'@aws-amplify/core',
 		'expo-file-system',
+		'expo-file-system/legacy',
 		'expo-sqlite',
 		'react-native-sqlite-storage',
 	],
