@@ -116,7 +116,7 @@
 		"rollup": "^4.9.6",
 		"size-limit": "^11.2.0",
 		"ts-jest": "^29.1.1",
-		"turbo": "^2.3.3",
+		"turbo": "^2.9.14",
 		"typedoc": "^0.28.17",
 		"typedoc-plugin-extras": "^4.0.0",
 		"typedoc-plugin-missing-exports": "^2.2.0",
