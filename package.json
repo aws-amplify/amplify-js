@@ -111,12 +111,13 @@
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
-		"fast-xml-parser": "5.5.7",
-		"axios": "1.15.0",
+		"fast-xml-parser": "5.8.0",
+		"axios": "1.16.1",
 		"node-gyp": "^10.0.0",
-		"qs": "^6.14.1",
+		"qs": "6.15.2",
 		"**/form-data": "4.0.4",
-		"lodash": "^4.18.1"
+		"lodash": "^4.18.1",
+		"js-cookie": "3.0.7"
 	},
 	"jest": {
 		"resetMocks": true,
