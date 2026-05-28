@@ -65,7 +65,7 @@
     "buffer": "4.9.2",
     "fast-base64-decode": "^1.0.0",
     "isomorphic-unfetch": "^3.0.0",
-    "js-cookie": "^2.2.1"
+    "js-cookie": "^3.0.7"
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^1.17.12",

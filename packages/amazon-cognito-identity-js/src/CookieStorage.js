@@ -1,4 +1,4 @@
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 
 /** @class */
 export default class CookieStorage {
@@ -77,7 +77,8 @@ export default class CookieStorage {
 	 * @returns {string} the data item
 	 */
 	getItem(key) {
-		return Cookies.get(key);
+		const item = Cookies.get(key);
+		return item ?? null;
 	}
 
 	/**
