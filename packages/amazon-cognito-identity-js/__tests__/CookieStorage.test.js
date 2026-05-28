@@ -63,9 +63,9 @@ describe('Cookie Storage Unit Tests', () => {
 			test('Clearing cookies should remove all items within the storage', () => {
 				const cookieStore = new CookieStorage(cookieStoreData);
 				cookieStore.setItem('testKey2', 'testValue');
-				const tempReference = cookieStore.getItem();
+				expect(cookieStore.getItem('testKey2')).toBe('testValue');
 				cookieStore.clear();
-				expect(cookieStore.getItem()).not.toEqual(tempReference);
+				expect(cookieStore.getItem('testKey2')).toBeNull();
 			});
 		});
 	});
