@@ -19,7 +19,7 @@
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
-		"clean:size": "rimraf dual-publish-tmp tmp*",
+		"clean:size": "rimraf --glob dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
 		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
