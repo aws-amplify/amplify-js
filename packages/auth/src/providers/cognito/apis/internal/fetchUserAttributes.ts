@@ -5,7 +5,6 @@ import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
-	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
 
 import { getRegionFromUserPoolId } from '../../../../foundation/parsers';
@@ -22,7 +21,7 @@ export const fetchUserAttributes = async (
 	const authConfig = amplify.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
-	const { tokens } = await fetchAuthSession(amplify, {
+	const { tokens } = await amplify.fetchAuthSession({
 		forceRefresh: false,
 	});
 	assertAuthTokens(tokens);
