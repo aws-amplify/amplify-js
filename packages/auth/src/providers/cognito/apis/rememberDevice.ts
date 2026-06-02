@@ -26,7 +26,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 export async function rememberDevice(): Promise<void>;
 export async function rememberDevice(ctx: AmplifyContext): Promise<void>;
 export async function rememberDevice(...args: any[]): Promise<void> {
-	const [ctx] = resolveCtxArgs<undefined>(args);
+	const [ctx] = resolveCtxArgs<[]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

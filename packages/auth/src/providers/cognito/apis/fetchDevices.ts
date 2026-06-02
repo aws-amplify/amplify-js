@@ -36,7 +36,7 @@ export async function fetchDevices(
 export async function fetchDevices(
 	...args: any[]
 ): Promise<FetchDevicesOutput> {
-	const [ctx] = resolveCtxArgs<undefined>(args);
+	const [ctx] = resolveCtxArgs<[]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

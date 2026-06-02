@@ -32,7 +32,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 export async function setUpTOTP(): Promise<SetUpTOTPOutput>;
 export async function setUpTOTP(ctx: AmplifyContext): Promise<SetUpTOTPOutput>;
 export async function setUpTOTP(...args: any[]): Promise<SetUpTOTPOutput> {
-	const [ctx] = resolveCtxArgs<undefined>(args);
+	const [ctx] = resolveCtxArgs<[]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

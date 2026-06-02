@@ -24,7 +24,7 @@ export async function getCurrentUser(
 export async function getCurrentUser(
 	...args: any[]
 ): Promise<GetCurrentUserOutput> {
-	const [ctx] = resolveCtxArgs<undefined>(args);
+	const [ctx] = resolveCtxArgs<[]>(args);
 
 	return getCurrentUserInternal(ctx);
 }

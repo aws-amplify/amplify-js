@@ -32,7 +32,7 @@ export async function fetchMFAPreference(
 export async function fetchMFAPreference(
 	...args: any[]
 ): Promise<FetchMFAPreferenceOutput> {
-	const [ctx] = resolveCtxArgs<undefined>(args);
+	const [ctx] = resolveCtxArgs<[]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

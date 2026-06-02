@@ -27,7 +27,7 @@ import { signOut } from './signOut';
 export async function deleteUser(): Promise<void>;
 export async function deleteUser(ctx: AmplifyContext): Promise<void>;
 export async function deleteUser(...args: any[]): Promise<void> {
-	const [ctx] = resolveCtxArgs<undefined>(args);
+	const [ctx] = resolveCtxArgs<[]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;

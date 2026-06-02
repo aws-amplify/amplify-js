@@ -22,7 +22,7 @@ export async function fetchUserAttributes(
 export async function fetchUserAttributes(
 	...args: any[]
 ): Promise<FetchUserAttributesOutput> {
-	const [ctx] = resolveCtxArgs<undefined>(args);
+	const [ctx] = resolveCtxArgs<[]>(args);
 
 	return fetchUserAttributesInternal(ctx);
 }
