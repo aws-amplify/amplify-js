@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -16,6 +17,7 @@ import { getUserContextData } from '../utils/userContextData';
 import { createConfirmForgotPasswordClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
+
 /**
  * Confirms the new password and verification code to reset the password.
  *
@@ -28,8 +30,14 @@ import { getRegionFromUserPoolId } from '../../../foundation/parsers';
  */
 export async function confirmResetPassword(
 	input: ConfirmResetPasswordInput,
-): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+): Promise<void>;
+export async function confirmResetPassword(
+	ctx: AmplifyContext,
+	input: ConfirmResetPasswordInput,
+): Promise<void>;
+export async function confirmResetPassword(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[ConfirmResetPasswordInput]>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolClientId, userPoolId, userPoolEndpoint } = authConfig;
 	const { username, newPassword } = input;

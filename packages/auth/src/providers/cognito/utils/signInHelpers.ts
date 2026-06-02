@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
+import { Amplify, AmplifyContext, CognitoUserPoolConfig } from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	AuthAction,
@@ -944,10 +944,10 @@ export function getAllowedMfaSetupTypes(availableMfaSetupTypes: AuthMFAType[]) {
 	);
 }
 
-export async function assertUserNotAuthenticated() {
+export async function assertUserNotAuthenticated(ctx: AmplifyContext) {
 	let authUser: AWSAuthUser | undefined;
 	try {
-		authUser = await getCurrentUser();
+		authUser = await getCurrentUser(ctx);
 	} catch (error) {}
 
 	if (authUser && authUser.userId && authUser.username) {

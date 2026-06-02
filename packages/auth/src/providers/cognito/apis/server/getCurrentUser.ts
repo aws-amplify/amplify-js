@@ -1,24 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { GetCurrentUserOutput } from '../../types';
-import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrentUser';
 import { InitiateAuthException } from '../../types/errors';
+import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrentUser';
 
 /**
  * Gets the current user from the idToken.
  *
+ * This is the server-side entry point — callers must provide an explicit
+ * {@link AmplifyContext} (e.g. one created per-request by the server adapter).
+ *
+ * @param ctx - The AmplifyContext for this request.
  * @returns GetCurrentUserOutput
  * @throws - {@link InitiateAuthException} - Thrown when the service fails to refresh the tokens.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const getCurrentUser = async (
-	contextSpec: AmplifyServer.ContextSpec,
+export const getCurrentUser = (
+	ctx: AmplifyContext,
 ): Promise<GetCurrentUserOutput> => {
-	return getCurrentUserInternal(getAmplifyServerContext(contextSpec).amplify);
+	return getCurrentUserInternal(ctx);
 };

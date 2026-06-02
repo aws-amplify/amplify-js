@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, getGlobalContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
@@ -101,7 +101,7 @@ export async function handleWebAuthnSignInResult(
 			signInDetails,
 		});
 		signInStore.dispatch({ type: 'RESET_STATE' });
-		await dispatchSignedInHubEvent();
+		await dispatchSignedInHubEvent(getGlobalContext());
 
 		return {
 			isSignedIn: true,

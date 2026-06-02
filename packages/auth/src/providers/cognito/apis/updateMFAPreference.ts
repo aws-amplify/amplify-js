@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, fetchAuthSession } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { UpdateMFAPreferenceInput } from '../types';
@@ -26,9 +27,15 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  */
 export async function updateMFAPreference(
 	input: UpdateMFAPreferenceInput,
-): Promise<void> {
+): Promise<void>;
+export async function updateMFAPreference(
+	ctx: AmplifyContext,
+	input: UpdateMFAPreferenceInput,
+): Promise<void>;
+export async function updateMFAPreference(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[UpdateMFAPreferenceInput]>(args);
 	const { sms, totp, email } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });

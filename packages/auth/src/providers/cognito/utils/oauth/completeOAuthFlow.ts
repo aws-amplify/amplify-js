@@ -7,7 +7,7 @@ import {
 	USER_AGENT_HEADER,
 	urlSafeDecode,
 } from '@aws-amplify/core/internals/utils';
-import { Hub, decodeJWT } from '@aws-amplify/core';
+import { Hub, decodeJWT, getGlobalContext } from '@aws-amplify/core';
 
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../dispatchSignedInHubEvent';
@@ -254,7 +254,7 @@ const completeFlow = async ({
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	await dispatchSignedInHubEvent();
+	await dispatchSignedInHubEvent(getGlobalContext());
 };
 
 const isCustomState = (state: string): boolean => {

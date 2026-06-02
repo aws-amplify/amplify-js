@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, fetchAuthSession } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
@@ -24,8 +25,14 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  */
 export async function deleteUserAttributes(
 	input: DeleteUserAttributesInput,
-): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+): Promise<void>;
+export async function deleteUserAttributes(
+	ctx: AmplifyContext,
+	input: DeleteUserAttributesInput,
+): Promise<void>;
+export async function deleteUserAttributes(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[DeleteUserAttributesInput]>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userAttributeKeys } = input;
 	const { userPoolEndpoint, userPoolId } = authConfig;

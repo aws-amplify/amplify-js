@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, fetchAuthSession } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
@@ -24,9 +25,15 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * forgetting device with invalid device key
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function forgetDevice(input?: ForgetDeviceInput): Promise<void> {
+export async function forgetDevice(input?: ForgetDeviceInput): Promise<void>;
+export async function forgetDevice(
+	ctx: AmplifyContext,
+	input?: ForgetDeviceInput,
+): Promise<void>;
+export async function forgetDevice(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[ForgetDeviceInput | undefined]>(args);
 	const { device: { id: externalDeviceKey } = { id: undefined } } = input ?? {};
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { tokens } = await fetchAuthSession();

@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from 'aws-amplify';
+import { setGlobalContext } from '@aws-amplify/core/internals/utils';
 
 import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInWithCustomSRPAuth } from '../../../src/providers/cognito/apis/signInWithCustomSRPAuth';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
@@ -31,9 +33,8 @@ const authConfig = {
 	},
 };
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-Amplify.configure({
-	Auth: authConfig,
-});
+const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+setGlobalContext(mockCtx);
 
 describe('signIn API happy path cases', () => {
 	let handleCustomSRPAuthFlowSpy: jest.SpyInstance;
@@ -69,7 +70,7 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithCustomSRPAuth API should return a SignInResult', async () => {
-		const result = await signInWithCustomSRPAuth({
+		const result = await signInWithCustomSRPAuth(mockCtx, {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 		});
@@ -80,7 +81,7 @@ describe('signIn API happy path cases', () => {
 	test('handleCustomSRPAuthFlow should be called with clientMetada from request', async () => {
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithCustomSRPAuth({
+		await signInWithCustomSRPAuth(mockCtx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,

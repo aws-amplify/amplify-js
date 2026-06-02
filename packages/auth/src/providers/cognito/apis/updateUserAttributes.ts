@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, fetchAuthSession } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -33,11 +34,19 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws - {@link UpdateUserAttributesException}
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const updateUserAttributes = async (
+export async function updateUserAttributes(
 	input: UpdateUserAttributesInput,
-): Promise<UpdateUserAttributesOutput> => {
+): Promise<UpdateUserAttributesOutput>;
+export async function updateUserAttributes(
+	ctx: AmplifyContext,
+	input: UpdateUserAttributesInput,
+): Promise<UpdateUserAttributesOutput>;
+export async function updateUserAttributes(
+	...args: any[]
+): Promise<UpdateUserAttributesOutput> {
+	const [ctx, input] = resolveCtxArgs<[UpdateUserAttributesInput]>(args);
 	const { userAttributes, options } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const clientMetadata = options?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
@@ -64,7 +73,7 @@ export const updateUserAttributes = async (
 		...getConfirmedAttributes(userAttributes),
 		...getUnConfirmedAttributes(CodeDeliveryDetailsList),
 	};
-};
+}
 
 function getConfirmedAttributes(
 	attributes: AuthUserAttributes,

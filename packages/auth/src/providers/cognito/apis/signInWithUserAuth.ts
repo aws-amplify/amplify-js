@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -44,6 +44,7 @@ import { resetAutoSignIn } from './autoSignIn';
 /**
  * Signs a user in through a registered email or phone number without a password by by receiving and entering an OTP.
  *
+ * @param ctx - The AmplifyContext
  * @param input - The SignInWithUserAuthInput object
  * @returns SignInWithUserAuthOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito service errors
@@ -53,10 +54,11 @@ import { resetAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithUserAuth(
+	ctx: AmplifyContext,
 	input: SignInWithUserAuthInput,
 ): Promise<SignInWithUserAuthOutput> {
 	const { username, password, options } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
 		authFlowType: 'USER_AUTH',
@@ -114,7 +116,7 @@ export async function signInWithUserAuth(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(ctx);
 
 			resetAutoSignIn();
 
