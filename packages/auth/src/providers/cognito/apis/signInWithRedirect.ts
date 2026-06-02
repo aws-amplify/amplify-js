@@ -47,7 +47,8 @@ export async function signInWithRedirect(
 	input?: SignInWithRedirectInput,
 ): Promise<void>;
 export async function signInWithRedirect(...args: any[]): Promise<void> {
-	const [ctx, input] = resolveCtxArgs<[SignInWithRedirectInput | undefined]>(args);
+	const [ctx, input] =
+		resolveCtxArgs<[SignInWithRedirectInput | undefined]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);

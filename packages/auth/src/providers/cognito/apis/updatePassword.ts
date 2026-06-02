@@ -26,9 +26,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws - {@link AuthValidationErrorCode} - Validation errors thrown when oldPassword or newPassword are empty.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function updatePassword(
-	input: UpdatePasswordInput,
-): Promise<void>;
+export async function updatePassword(input: UpdatePasswordInput): Promise<void>;
 export async function updatePassword(
 	ctx: AmplifyContext,
 	input: UpdatePasswordInput,

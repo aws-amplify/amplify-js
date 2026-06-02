@@ -55,7 +55,9 @@ describe('dispatchSignedInHubEvent(mockCtx)', () => {
 			assertAuthTokens(null);
 		});
 
-		expect(() => dispatchSignedInHubEvent(mockCtx)).rejects.toThrow(ERROR_MESSAGE);
+		expect(() => dispatchSignedInHubEvent(mockCtx)).rejects.toThrow(
+			ERROR_MESSAGE,
+		);
 	});
 
 	it('rethrows error if the error is not handled by itself', () => {

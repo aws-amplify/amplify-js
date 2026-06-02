@@ -39,7 +39,8 @@ export async function sendUserAttributeVerificationCode(
 export async function sendUserAttributeVerificationCode(
 	...args: any[]
 ): Promise<SendUserAttributeVerificationCodeOutput> {
-	const [ctx, input] = resolveCtxArgs<[SendUserAttributeVerificationCodeInput]>(args);
+	const [ctx, input] =
+		resolveCtxArgs<[SendUserAttributeVerificationCodeInput]>(args);
 	const { userAttributeKey, options } = input;
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const clientMetadata = options?.clientMetadata;

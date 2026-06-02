@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AmplifyContext, CognitoUserPoolConfig } from '@aws-amplify/core';
+import {
+	Amplify,
+	AmplifyContext,
+	CognitoUserPoolConfig,
+} from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	AuthAction,
