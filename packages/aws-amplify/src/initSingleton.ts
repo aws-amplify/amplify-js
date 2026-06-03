@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	Amplify,
-	AuthConfig,
 	CookieStorage,
 	LibraryOptions,
 	ResourcesConfig,
@@ -20,15 +19,6 @@ import {
 	cognitoCredentialsProvider,
 	cognitoUserPoolsTokenProvider,
 } from './auth/cognito';
-
-const usesDefaultCognitoTokenProvider = (
-	authLibraryOptions?: LibraryOptions['Auth'],
-): boolean =>
-	authLibraryOptions?.tokenProvider === cognitoUserPoolsTokenProvider;
-
-const syncDefaultCognitoAuthConfig = (authConfig: AuthConfig): void => {
-	cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-};
 
 export const DefaultAmplify = {
 	/**
@@ -58,90 +48,25 @@ export const DefaultAmplify = {
 				)
 			: cognitoCredentialsProvider;
 
-		// If no Auth config is provided, no special handling will be required, configure as is.
-		// Otherwise, we can assume an Auth config is provided from here on.
-		if (!resolvedResourceConfig.Auth) {
+		if (!resolvedResourceConfig.Auth || libraryOptions?.Auth) {
 			Amplify.configure(resolvedResourceConfig, libraryOptions);
 
 			return;
 		}
 
-		// If Auth options are provided, merge with existing libraryOptions so other categories are preserved.
-		if (libraryOptions?.Auth) {
-			const mergedLibraryOptions: LibraryOptions = {
-				...Amplify.libraryOptions,
-				...libraryOptions,
-			};
+		cognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
+		cognitoUserPoolsTokenProvider.setKeyValueStorage(
+			// TODO: allow configure with a public interface
+			resolvedKeyValueStorage,
+		);
 
-			if (usesDefaultCognitoTokenProvider(mergedLibraryOptions.Auth)) {
-				syncDefaultCognitoAuthConfig(resolvedResourceConfig.Auth);
-
-				if (libraryOptions.ssr !== undefined) {
-					cognitoUserPoolsTokenProvider.setKeyValueStorage(
-						// TODO: allow configure with a public interface
-						resolvedKeyValueStorage,
-					);
-				}
-			}
-
-			Amplify.configure(resolvedResourceConfig, mergedLibraryOptions);
-
-			return;
-		}
-
-		// If no Auth libraryOptions were previously configured, then always add default providers.
-		if (!Amplify.libraryOptions.Auth) {
-			cognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
-			cognitoUserPoolsTokenProvider.setKeyValueStorage(
-				// TODO: allow configure with a public interface
-				resolvedKeyValueStorage,
-			);
-
-			Amplify.configure(resolvedResourceConfig, {
-				...libraryOptions,
-				Auth: {
-					tokenProvider: cognitoUserPoolsTokenProvider,
-					credentialsProvider: resolvedCredentialsProvider,
-				},
-			});
-
-			return;
-		}
-
-		// At this point, Auth libraryOptions would have been previously configured and no overriding
-		// Auth options were given, so we should preserve the currently configured Auth libraryOptions.
-		if (libraryOptions) {
-			const authLibraryOptions = Amplify.libraryOptions.Auth;
-			// If ssr is provided through libraryOptions, we should respect the intentional reconfiguration.
-			if (libraryOptions.ssr !== undefined) {
-				cognitoUserPoolsTokenProvider.setKeyValueStorage(
-					// TODO: allow configure with a public interface
-					resolvedKeyValueStorage,
-				);
-
-				authLibraryOptions.credentialsProvider = resolvedCredentialsProvider;
-			}
-
-			if (usesDefaultCognitoTokenProvider(authLibraryOptions)) {
-				syncDefaultCognitoAuthConfig(resolvedResourceConfig.Auth);
-			}
-
-			Amplify.configure(resolvedResourceConfig, {
-				...Amplify.libraryOptions,
-				...libraryOptions,
-				Auth: authLibraryOptions,
-			});
-
-			return;
-		}
-
-		// Finally, if there were no libraryOptions given at all, we should simply not touch the currently
-		// configured libraryOptions.
-		if (usesDefaultCognitoTokenProvider(Amplify.libraryOptions.Auth)) {
-			syncDefaultCognitoAuthConfig(resolvedResourceConfig.Auth);
-		}
-
-		Amplify.configure(resolvedResourceConfig);
+		Amplify.configure(resolvedResourceConfig, {
+			...libraryOptions,
+			Auth: {
+				tokenProvider: cognitoUserPoolsTokenProvider,
+				credentialsProvider: resolvedCredentialsProvider,
+			},
+		});
 	},
 	/**
 	 * Returns the {@link ResourcesConfig} object passed in as the `resourceConfig` parameter when calling

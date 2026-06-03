@@ -28,15 +28,6 @@ const poolBConfig: ResourcesConfig = {
 	},
 };
 
-const storageLibraryOptions = {
-	Storage: {
-		S3: {
-			defaultAccessLevel: 'private' as const,
-			isObjectLockEnabled: true,
-		},
-	},
-};
-
 describe('DefaultAmplify.configure integration', () => {
 	let setAuthConfigSpy: jest.SpyInstance;
 	let setKeyValueStorageSpy: jest.SpyInstance;
@@ -61,32 +52,25 @@ describe('DefaultAmplify.configure integration', () => {
 		CoreAmplify.resourcesConfig = {};
 	});
 
-	it('keeps Storage and refreshes Cognito auth config on partial reconfigure', () => {
-		DefaultAmplify.configure(poolAConfig, storageLibraryOptions);
+	it('refreshes Cognito auth config on reconfigure with partial libraryOptions', () => {
+		DefaultAmplify.configure(poolAConfig);
 
-		expect(CoreAmplify.libraryOptions.Storage).toEqual(
-			storageLibraryOptions.Storage,
-		);
-		expect(CoreAmplify.libraryOptions.Auth?.tokenProvider).toBe(
-			cognitoUserPoolsTokenProvider,
-		);
 		expect(setAuthConfigSpy).toHaveBeenCalledWith(poolAConfig.Auth);
 
 		setAuthConfigSpy.mockClear();
+		setKeyValueStorageSpy.mockClear();
 
 		DefaultAmplify.configure(poolBConfig, { ssr: false });
 
-		expect(CoreAmplify.libraryOptions.Storage).toEqual(
-			storageLibraryOptions.Storage,
-		);
+		expect(setAuthConfigSpy).toHaveBeenCalledWith(poolBConfig.Auth);
+		expect(setKeyValueStorageSpy).toHaveBeenCalled();
 		expect(CoreAmplify.getConfig().Auth?.Cognito?.userPoolClientId).toBe(
 			'client-b',
 		);
-		expect(setAuthConfigSpy).toHaveBeenCalledWith(poolBConfig.Auth);
 	});
 
-	it('merges prior libraryOptions when libraryOptions.Auth overrides default provider', () => {
-		DefaultAmplify.configure(poolAConfig, storageLibraryOptions);
+	it('passes through when libraryOptions.Auth is provided', () => {
+		DefaultAmplify.configure(poolAConfig);
 
 		setAuthConfigSpy.mockClear();
 
@@ -98,26 +82,22 @@ describe('DefaultAmplify.configure integration', () => {
 			},
 		});
 
-		expect(CoreAmplify.libraryOptions.Storage).toEqual(
-			storageLibraryOptions.Storage,
-		);
-		expect(setAuthConfigSpy).toHaveBeenCalledWith(poolBConfig.Auth);
+		expect(setAuthConfigSpy).not.toHaveBeenCalled();
 		expect(CoreAmplify.getConfig().Auth?.Cognito?.userPoolClientId).toBe(
 			'client-b',
 		);
 	});
 
-	it('syncs default Cognito auth config when only resource config is passed', () => {
-		DefaultAmplify.configure(poolAConfig, storageLibraryOptions);
+	it('refreshes Cognito auth config when only resource config is passed', () => {
+		DefaultAmplify.configure(poolAConfig);
 
 		setAuthConfigSpy.mockClear();
+		setKeyValueStorageSpy.mockClear();
 
 		DefaultAmplify.configure(poolBConfig);
 
-		expect(CoreAmplify.libraryOptions.Storage).toEqual(
-			storageLibraryOptions.Storage,
-		);
 		expect(setAuthConfigSpy).toHaveBeenCalledWith(poolBConfig.Auth);
+		expect(setKeyValueStorageSpy).toHaveBeenCalled();
 		expect(CoreAmplify.getConfig().Auth?.Cognito?.userPoolId).toBe('pool-b');
 	});
 });
