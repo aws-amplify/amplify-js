@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { setGlobalContext } from '@aws-amplify/core/internals/utils';
+import { Amplify } from '@aws-amplify/core';
 
 import { signIn } from '../../../src/providers/cognito';
 import { signInWithCustomAuth } from '../../../src/providers/cognito/apis/signInWithCustomAuth';
@@ -33,6 +34,7 @@ const authConfig = {
 
 const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 setGlobalContext(mockCtx);
+Amplify.configure({ Auth: authConfig });
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 describe('signIn API happy path cases', () => {
 	let handleCustomAuthFlowWithoutSRPSpy: jest.SpyInstance;

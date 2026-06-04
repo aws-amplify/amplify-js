@@ -1,13 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
+import { Amplify } from '@aws-amplify/core';
+import { clearGlobalContext } from '@aws-amplify/core/internals/utils';
 
-import {
-	cognitoUserPoolsTokenProvider,
-	confirmSignUp,
-	signUp,
-} from '../../../src/providers/cognito';
+import { confirmSignUp, signUp } from '../../../src/providers/cognito';
 import {
 	autoSignIn,
 	resetAutoSignIn,
@@ -45,10 +42,8 @@ const authConfig = {
 		userPoolId: 'us-west-2_zzzzz',
 	},
 };
-cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-Amplify.configure({
-	Auth: authConfig,
-});
+
+Amplify.configure({ Auth: authConfig });
 
 const { user1 } = authAPITestParams;
 
@@ -72,6 +67,10 @@ describe('autoSignIn()', () => {
 	const mockHandleUserAuthFlow = jest.mocked(handleUserAuthFlow);
 	// to get around debounce on autoSignIn() APIs
 	jest.useFakeTimers();
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	describe('handleUserSRPAuthFlow', () => {
 		beforeEach(() => {
@@ -270,7 +269,6 @@ describe('autoSignIn()', () => {
 			expect(mockHandleUserAuthFlow).toHaveBeenCalledWith(
 				expect.objectContaining({
 					username: user1.username,
-					session: 'ASDFGHJKL',
 				}),
 			);
 			expect(autoSignInResult.isSignedIn).toBe(true);

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { setGlobalContext } from '@aws-amplify/core/internals/utils';
+import { Amplify } from '@aws-amplify/core';
 
 import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
@@ -31,6 +32,7 @@ const authConfig = {
 		userPoolId: 'us-west-2_zzzzz',
 	},
 };
+Amplify.configure({ Auth: authConfig });
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 setGlobalContext(mockCtx);

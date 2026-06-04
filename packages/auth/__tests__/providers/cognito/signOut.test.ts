@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Amplify,
-	ConsoleLogger,
-	Hub,
-	clearCredentials,
-} from '@aws-amplify/core';
+import { ConsoleLogger, Hub, clearCredentials } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
@@ -20,8 +15,13 @@ import {
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { getRegionFromUserPoolId } from '../../../src/foundation/parsers';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
-jest.mock('@aws-amplify/core');
+jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
+	Hub: { dispatch: jest.fn() },
+	clearCredentials: jest.fn(),
+}));
 jest.mock('../../../src/providers/cognito/tokenProvider');
 jest.mock('../../../src/providers/cognito/utils/oauth');
 jest.mock('../../../src/providers/cognito/utils/signInWithRedirectStore');
@@ -51,8 +51,12 @@ describe('signOut', () => {
 		accessToken,
 		refreshToken,
 	};
+
+	const mockCtx = createMockAmplifyContext({
+		Auth: { Cognito: cognitoConfig },
+	});
+
 	// assert mocks
-	const mockAmplify = Amplify as jest.Mocked<typeof Amplify>;
 	const mockClearCredentials = clearCredentials as jest.Mock;
 	const mockGetRegionFromUserPoolId = jest.mocked(getRegionFromUserPoolId);
 	const mockGlobalSignOut = jest.fn();
@@ -107,7 +111,6 @@ describe('signOut', () => {
 	});
 
 	beforeEach(() => {
-		mockAmplify.getConfig.mockReturnValue({ Auth: { Cognito: cognitoConfig } });
 		mockGlobalSignOut.mockResolvedValue({ $metadata: {} });
 		mockCreateGlobalSignOutClient.mockReturnValueOnce(mockGlobalSignOut);
 		mockRevokeToken.mockResolvedValue({});
@@ -117,7 +120,6 @@ describe('signOut', () => {
 	});
 
 	afterEach(() => {
-		mockAmplify.getConfig.mockReset();
 		mockGlobalSignOut.mockReset();
 		mockRevokeToken.mockReset();
 		mockClearCredentials.mockClear();
@@ -130,7 +132,7 @@ describe('signOut', () => {
 
 	describe('Without OAuth configured', () => {
 		it('should perform client sign out on a revocable session', async () => {
-			await signOut();
+			await signOut(mockCtx);
 
 			expect(mockRevokeToken).toHaveBeenCalledWith(
 				{ region },
@@ -144,7 +146,7 @@ describe('signOut', () => {
 		it('invokes createCognitoUserPoolEndpointResolver with the userPoolEndpoint for creating the revokeToken client', async () => {
 			const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
 			const expectedEndpointResolver = jest.fn();
-			mockAmplify.getConfig.mockReturnValueOnce({
+			const customCtx = createMockAmplifyContext({
 				Auth: {
 					Cognito: {
 						...cognitoConfig,
@@ -156,7 +158,7 @@ describe('signOut', () => {
 				expectedEndpointResolver,
 			);
 
-			await signOut();
+			await signOut(customCtx);
 
 			expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
 				endpointOverride: expectedUserPoolEndpoint,
@@ -172,7 +174,7 @@ describe('signOut', () => {
 				accessToken: {},
 			});
 
-			await signOut();
+			await signOut(mockCtx);
 
 			expect(mockRevokeToken).not.toHaveBeenCalled();
 			expect(mockGlobalSignOut).not.toHaveBeenCalled();
@@ -181,7 +183,7 @@ describe('signOut', () => {
 		});
 
 		it('should perform global sign out', async () => {
-			await signOut({ global: true });
+			await signOut(mockCtx, { global: true });
 
 			expect(mockGlobalSignOut).toHaveBeenCalledWith(
 				{ region: 'us-west-2' },
@@ -195,7 +197,7 @@ describe('signOut', () => {
 		it('invokes createCognitoUserPoolEndpointResolver with the userPoolEndpoint for creating the globalSignOut client', async () => {
 			const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
 			const expectedEndpointResolver = jest.fn();
-			mockAmplify.getConfig.mockReturnValueOnce({
+			const customCtx = createMockAmplifyContext({
 				Auth: {
 					Cognito: {
 						...cognitoConfig,
@@ -207,7 +209,7 @@ describe('signOut', () => {
 				expectedEndpointResolver,
 			);
 
-			await signOut({ global: true });
+			await signOut(customCtx, { global: true });
 
 			expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
 				endpointOverride: expectedUserPoolEndpoint,
@@ -220,7 +222,7 @@ describe('signOut', () => {
 		it('should still perform client sign out if token revoke fails', async () => {
 			mockRevokeToken.mockRejectedValue(new Error());
 
-			await signOut();
+			await signOut(mockCtx);
 
 			expect(loggerDebugSpy).toHaveBeenCalledWith(
 				expect.stringContaining('Client signOut error caught'),
@@ -232,7 +234,7 @@ describe('signOut', () => {
 		it('should still perform global sign out if token revoke fails', async () => {
 			mockGlobalSignOut.mockRejectedValue(new Error());
 
-			await signOut({ global: true });
+			await signOut(mockCtx, { global: true });
 
 			expect(loggerDebugSpy).toHaveBeenCalledWith(
 				expect.stringContaining('Global signOut error caught'),
@@ -250,26 +252,26 @@ describe('signOut', () => {
 					domain: 'hosted-ui.test',
 					redirectSignIn: ['https://myapp.test/completeSignIn/'],
 					redirectSignOut: ['https://myapp.test/completeSignOut/'],
-					responseType: 'code' as const, // assert string union instead of string type
+					responseType: 'code' as const,
 					scopes: [],
 				},
 			},
 		};
 
+		const mockCtxWithOAuth = createMockAmplifyContext({
+			Auth: { Cognito: cognitoConfigWithOauth },
+		});
+
 		beforeEach(() => {
-			mockAmplify.getConfig.mockReturnValue({
-				Auth: { Cognito: cognitoConfigWithOauth },
-			});
 			mockHandleOAuthSignOut.mockResolvedValue({ type: 'success' });
 		});
 
 		afterEach(() => {
-			mockAmplify.getConfig.mockReset();
 			mockHandleOAuthSignOut.mockReset();
 		});
 
 		it('should perform OAuth sign out', async () => {
-			await signOut();
+			await signOut(mockCtxWithOAuth);
 
 			expect(MockDefaultOAuthStore).toHaveBeenCalledTimes(1);
 			expect(mockDefaultOAuthStoreInstance.setAuthConfig).toHaveBeenCalledWith(
@@ -289,7 +291,7 @@ describe('signOut', () => {
 		it('should throw an error on OAuth failure', async () => {
 			mockHandleOAuthSignOut.mockResolvedValue({ type: 'error' });
 
-			await expect(signOut()).rejects.toThrow();
+			await expect(signOut(mockCtxWithOAuth)).rejects.toThrow();
 		});
 	});
 });

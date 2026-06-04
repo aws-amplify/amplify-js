@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../src/errors/AuthError';
@@ -9,18 +8,10 @@ import { AssociateSoftwareTokenException } from '../../../src/providers/cognito/
 import { setUpTOTP } from '../../../src/providers/cognito';
 import { createAssociateSoftwareTokenClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	isBrowser: jest.fn(() => false),
-}));
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
@@ -29,7 +20,6 @@ jest.mock('../../../src/providers/cognito/factories');
 describe('setUpTOTP', () => {
 	const secretCode = 'secret-code';
 	// assert mocks
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 	const mockAssociateSoftwareToken = jest.fn();
 	const mockCreateAssociateSoftwareTokenClient = jest.mocked(
 		createAssociateSoftwareTokenClient,
@@ -38,9 +28,18 @@ describe('setUpTOTP', () => {
 		createCognitoUserPoolEndpointResolver,
 	);
 
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
-		mockFetchAuthSession.mockResolvedValue({
+		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
 	});
@@ -57,12 +56,12 @@ describe('setUpTOTP', () => {
 
 	afterEach(() => {
 		mockAssociateSoftwareToken.mockReset();
-		mockFetchAuthSession.mockClear();
+		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
 		mockCreateAssociateSoftwareTokenClient.mockClear();
 	});
 
 	it('setUpTOTP API should call the UserPoolClient and should return a TOTPSetupDetails', async () => {
-		const result = await setUpTOTP();
+		const result = await setUpTOTP(mockCtx);
 		expect(mockAssociateSoftwareToken).toHaveBeenCalledWith(
 			{
 				region: 'us-west-2',
@@ -78,7 +77,7 @@ describe('setUpTOTP', () => {
 
 	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
 		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
-		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+		const customCtx = createMockAmplifyContext({
 			Auth: {
 				Cognito: {
 					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -88,8 +87,11 @@ describe('setUpTOTP', () => {
 				},
 			},
 		});
+		(customCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+			tokens: { accessToken: decodeJWT(mockAccessToken) },
+		});
 
-		await setUpTOTP();
+		await setUpTOTP(customCtx);
 
 		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
 			endpointOverride: expectedUserPoolEndpoint,
@@ -104,7 +106,7 @@ describe('setUpTOTP', () => {
 			);
 		});
 		try {
-			await setUpTOTP();
+			await setUpTOTP(mockCtx);
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(

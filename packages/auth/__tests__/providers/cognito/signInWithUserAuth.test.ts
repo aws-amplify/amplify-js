@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
 import {
 	AmplifyErrorCode,
 	setGlobalContext,
@@ -49,6 +50,7 @@ const authConfig = {
 };
 
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+Amplify.configure({ Auth: authConfig });
 const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 setGlobalContext(mockCtx);
 
@@ -189,7 +191,7 @@ describe('signInWithUserAuth API tests', () => {
 			},
 		};
 
-		Amplify.configure({
+		const customCtx = createMockAmplifyContext({
 			Auth: authConfigWithPasswordless,
 		});
 
@@ -201,7 +203,7 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		await signInWithUserAuth(mockCtx, {
+		await signInWithUserAuth(customCtx, {
 			username: 'testuser',
 		});
 
@@ -212,11 +214,6 @@ describe('signInWithUserAuth API tests', () => {
 			tokenOrchestrator: expect.anything(),
 			preferredChallenge: 'EMAIL_OTP',
 			password: undefined,
-		});
-
-		// Reset config
-		Amplify.configure({
-			Auth: authConfig,
 		});
 	});
 
@@ -232,7 +229,7 @@ describe('signInWithUserAuth API tests', () => {
 			},
 		};
 
-		Amplify.configure({
+		const customCtx = createMockAmplifyContext({
 			Auth: authConfigWithPasswordless,
 		});
 
@@ -244,7 +241,7 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		await signInWithUserAuth(mockCtx, {
+		await signInWithUserAuth(customCtx, {
 			username: 'testuser',
 			options: { preferredChallenge: 'SMS_OTP' },
 		});
@@ -256,11 +253,6 @@ describe('signInWithUserAuth API tests', () => {
 			tokenOrchestrator: expect.anything(),
 			preferredChallenge: 'SMS_OTP',
 			password: undefined,
-		});
-
-		// Reset config
-		Amplify.configure({
-			Auth: authConfig,
 		});
 	});
 

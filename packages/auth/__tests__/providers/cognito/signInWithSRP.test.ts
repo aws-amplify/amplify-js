@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { setGlobalContext } from '@aws-amplify/core/internals/utils';
+import { Amplify } from '@aws-amplify/core';
 
 import { signIn } from '../../../src/providers/cognito';
 import { signInWithSRP } from '../../../src/providers/cognito/apis/signInWithSRP';
@@ -48,6 +49,7 @@ const authConfig = {
 	},
 };
 
+Amplify.configure({ Auth: authConfig });
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 setGlobalContext(mockCtx);
