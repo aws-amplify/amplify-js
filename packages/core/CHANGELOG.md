@@ -1,5 +1,11 @@
 # Change Log
 
+## 6.16.4
+
+### Patch Changes
+
+- [#14826](https://github.com/aws-amplify/amplify-js/pull/14826) [`51a50b1`](https://github.com/aws-amplify/amplify-js/commit/51a50b11e2cc436cb06d59df7ba87119f34bf425) Thanks [@soberm](https://github.com/soberm)! - fix(deps): bump uuid to ^11.1.1 to fix CVE-2026-41907 (missing buffer bounds check in v3/v5/v6)
+
 ## 6.16.3
 
 ### Patch Changes
