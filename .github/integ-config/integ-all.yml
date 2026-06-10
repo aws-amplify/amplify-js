@@ -611,22 +611,11 @@ tests:
   #   amplifyjs_dir: true
 
   # INTERACTIONS
-  - test_name: integ_react_interactions_react_interactions
-    desc: 'React Interactions'
-    framework: react
-    category: interactions
-    sample_name: [chatbot-component]
-    spec: chatbot-component
-    browser: *minimal_browser_list
-  # Skipping chatbot_v1 test due to persistent AWS Lex V1 rate limiting issues
-  # TODO: Re-enable after investigating bot configuration
-  # - test_name: integ_react_interactions_chatbot_v1
-  #   desc: 'Chatbot V1'
-  #   framework: react
-  #   category: interactions
-  #   sample_name: [lex-test-component]
-  #   spec: chatbot-v1
-  #   browser: *minimal_browser_list
+  # Amazon Lex V1 reached end of support on 2025-09-15 and its runtime
+  # (runtime.lex.*.amazonaws.com) is no longer reachable. The chatbot-component
+  # samples and the standalone chatbot_v1 test exercised Lex V1, so they have
+  # been removed. Lex V2 coverage is provided by integ_react_interactions_chatbot_v2
+  # below. See https://docs.aws.amazon.com/lexv2/latest/dg/migration.html
   - test_name: integ_react_interactions_chatbot_v2
     desc: 'Chatbot V2'
     framework: react
@@ -634,27 +623,6 @@ tests:
     sample_name: [lex-test-component]
     spec: chatbot-v2
     browser: *minimal_browser_list
-  - test_name: integ_angular_interactions
-    desc: 'Angular Interactions'
-    framework: angular
-    category: interactions
-    sample_name: [chatbot-component]
-    spec: chatbot-component
-    browser: *minimal_browser_list
-  - test_name: integ_vue_interactions_vue_2_interactions
-    desc: 'Vue 2 Interactions'
-    framework: vue
-    category: interactions
-    sample_name: [chatbot-component]
-    spec: chatbot-component
-    browser: [chrome]
-  - test_name: integ_vue_interactionsvue_3_interactions
-    desc: 'Vue 3 Interactions'
-    framework: vue
-    category: interactions
-    sample_name: [chatbot-component-vue3]
-    spec: chatbot-component
-    browser: [chrome]
 
   # PREDICTIONS
   - test_name: integ_react_predictions
