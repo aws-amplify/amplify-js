@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.9.20...@aws-amplify/storage@5.9.21) (2026-06-12)
+
+### Bug Fixes
+
+- resolve dependency security vulnerabilities (axios, js-cookie, fast-xml-parser, qs) in v5 ([#14832](https://github.com/aws-amplify/amplify-js/issues/14832)) ([7b1f9af](https://github.com/aws-amplify/amplify-js/commit/7b1f9af686ffd26b6a8b326e5097e253dce61f45))
+- upgrade fast-xml-parser to 5.5.7 ([#14775](https://github.com/aws-amplify/amplify-js/issues/14775)) ([a0a7b5e](https://github.com/aws-amplify/amplify-js/commit/a0a7b5ea0cb7e956643033b4ac1f8852e1c0c58c))
+
 ## [5.9.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.9.19...@aws-amplify/storage@5.9.20) (2026-03-13)
 
 **Note:** Version bump only for package @aws-amplify/storage

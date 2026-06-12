@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "5.6.6",
+  "version": "5.6.7",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -50,7 +50,7 @@
     "internals"
   ],
   "dependencies": {
-    "@aws-amplify/auth": "5.6.19",
+    "@aws-amplify/auth": "5.6.20",
     "@aws-amplify/cache": "5.1.22",
     "@aws-amplify/core": "5.8.16",
     "buffer": "4.9.2",

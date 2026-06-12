@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.6.18...@aws-amplify/notifications@1.6.19) (2026-06-12)
+
+### Bug Fixes
+
+- **deps:** resolve uuid to ^11.1.1 to address CVE-2026-41907 in v5 ([#14839](https://github.com/aws-amplify/amplify-js/issues/14839)) ([08eb8c4](https://github.com/aws-amplify/amplify-js/commit/08eb8c4e5b04a83934711c3345cf0b12293787b5)), closes [#14828](https://github.com/aws-amplify/amplify-js/issues/14828) [#14832](https://github.com/aws-amplify/amplify-js/issues/14832) [#14827](https://github.com/aws-amplify/amplify-js/issues/14827) [#14827](https://github.com/aws-amplify/amplify-js/issues/14827) [#14827](https://github.com/aws-amplify/amplify-js/issues/14827)
+- upgrade lodash to ^4.18.1 ([#14773](https://github.com/aws-amplify/amplify-js/issues/14773)) ([6b1bf74](https://github.com/aws-amplify/amplify-js/commit/6b1bf7449a03e3001717688eb3d4166ce4038d61))
+
 ## [1.6.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.6.17...@aws-amplify/notifications@1.6.18) (2026-03-13)
 
 **Note:** Version bump only for package @aws-amplify/notifications

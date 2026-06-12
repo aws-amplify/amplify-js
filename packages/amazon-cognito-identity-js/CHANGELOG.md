@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.17](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.3.16...amazon-cognito-identity-js@6.3.17) (2026-06-12)
+
+### Bug Fixes
+
+- resolve dependency security vulnerabilities (axios, js-cookie, fast-xml-parser, qs) in v5 ([#14832](https://github.com/aws-amplify/amplify-js/issues/14832)) ([7b1f9af](https://github.com/aws-amplify/amplify-js/commit/7b1f9af686ffd26b6a8b326e5097e253dce61f45))
+
 ## [6.3.16](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.3.15...amazon-cognito-identity-js@6.3.16) (2025-11-10)
 
 ### Bug Fixes

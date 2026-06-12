@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.5.18...@aws-amplify/api-rest@3.5.19) (2026-06-12)
+
+### Bug Fixes
+
+- resolve dependency security vulnerabilities (axios, js-cookie, fast-xml-parser, qs) in v5 ([#14832](https://github.com/aws-amplify/amplify-js/issues/14832)) ([7b1f9af](https://github.com/aws-amplify/amplify-js/commit/7b1f9af686ffd26b6a8b326e5097e253dce61f45))
+- upgrade axios to 1.15.0 to address NO_PROXY SSRF vulnerability ([#14774](https://github.com/aws-amplify/amplify-js/issues/14774)) ([e6c569f](https://github.com/aws-amplify/amplify-js/commit/e6c569f814c622e74cea59344fffc0c7a8d0ce0f))
+
 ## [3.5.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.5.17...@aws-amplify/api-rest@3.5.18) (2026-03-13)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

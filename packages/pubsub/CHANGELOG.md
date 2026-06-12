@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.6.6...@aws-amplify/pubsub@5.6.7) (2026-06-12)
+
+### Bug Fixes
+
+- **deps:** resolve uuid to ^11.1.1 to address CVE-2026-41907 in v5 ([#14839](https://github.com/aws-amplify/amplify-js/issues/14839)) ([08eb8c4](https://github.com/aws-amplify/amplify-js/commit/08eb8c4e5b04a83934711c3345cf0b12293787b5)), closes [#14828](https://github.com/aws-amplify/amplify-js/issues/14828) [#14832](https://github.com/aws-amplify/amplify-js/issues/14832) [#14827](https://github.com/aws-amplify/amplify-js/issues/14827) [#14827](https://github.com/aws-amplify/amplify-js/issues/14827) [#14827](https://github.com/aws-amplify/amplify-js/issues/14827)
+
 ## [5.6.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.6.5...@aws-amplify/pubsub@5.6.6) (2026-03-13)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
