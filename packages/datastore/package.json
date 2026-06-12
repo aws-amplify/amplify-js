@@ -68,6 +68,14 @@
 		"zen-observable-ts": "0.8.19",
 		"zen-push": "0.2.1"
 	},
+	"peerDependencies": {
+		"react-native-get-random-values": ">=1.7.0"
+	},
+	"peerDependenciesMeta": {
+		"react-native-get-random-values": {
+			"optional": true
+		}
+	},
 	"size-limit": [
 		{
 			"name": "DataStore (top-level class)",

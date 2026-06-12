@@ -110,6 +110,12 @@ import {
 } from '../predicates/next';
 import { getIdentifierValue } from '../sync/utils';
 import DataStoreConnectivity from '../sync/datastoreConnectivity';
+import { loadGetRandomValues } from './loadGetRandomValues';
+
+// `uuid` v4 (used below to mint model ids) requires `crypto.getRandomValues`,
+// which is not available in React Native. On RN this loads the
+// `react-native-get-random-values` polyfill; on web/Node it is a no-op.
+loadGetRandomValues();
 
 setAutoFreeze(true);
 enablePatches();
