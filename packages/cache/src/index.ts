@@ -9,3 +9,5 @@ export { BrowserStorageCache, InMemoryCache, CacheConfig };
 
 // Standard `Cache` export to maintain interoperability with React Native
 export { BrowserStorageCache as Cache };
+
+// chore: trigger v5-stable LTS release to complete partial publish (uuid-v11 RN fix, datastore). No functional change.

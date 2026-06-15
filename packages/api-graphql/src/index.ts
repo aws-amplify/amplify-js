@@ -6,3 +6,5 @@ export { GraphQLResult, GraphQLAuthError, GRAPHQL_AUTH_MODE } from './types';
 export { GraphQLAPI, GraphQLAPIClass, graphqlOperation } from './GraphQLAPI';
 export * from './types';
 export default GraphQLAPI;
+
+// chore: trigger v5-stable LTS release to complete partial publish (uuid-v11 RN fix, datastore). No functional change.

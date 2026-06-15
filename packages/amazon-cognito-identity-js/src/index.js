@@ -16,3 +16,5 @@ export { default as CookieStorage } from './CookieStorage';
 export { default as DateHelper } from './DateHelper';
 export { appendToCognitoUserAgent } from './UserAgent';
 export { default as WordArray } from './utils/WordArray';
+
+// chore: trigger v5-stable LTS release to complete partial publish (uuid-v11 RN fix, datastore). No functional change.
