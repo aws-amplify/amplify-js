@@ -36,3 +36,5 @@ export {
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
 export { Geo } from '@aws-amplify/geo';
+
+// chore: trigger v5-stable LTS release to complete partial publish (uuid-v11 RN fix, datastore). No functional change.

@@ -18,3 +18,5 @@ export {
 	AmazonAIPredictionsProvider,
 	AmazonAIInterpretPredictionsProvider,
 };
+
+// chore: trigger v5-stable LTS release to complete partial publish (uuid-v11 RN fix, datastore). No functional change.
