@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.35](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.3.34...aws-amplify@5.3.35) (2026-06-15)
+
+### Bug Fixes
+
+- complete partial v5-stable LTS release (publish remaining packages) ([#14843](https://github.com/aws-amplify/amplify-js/issues/14843)) ([b17999d](https://github.com/aws-amplify/amplify-js/commit/b17999d4be1e39c2a3127cf83bf509fb8ca807bc)), closes [#14842](https://github.com/aws-amplify/amplify-js/issues/14842)
+
 ## [5.3.34](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.3.33...aws-amplify@5.3.34) (2026-06-12)
 
 **Note:** Version bump only for package aws-amplify
