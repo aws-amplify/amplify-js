@@ -86,34 +86,38 @@
 	],
 	"jest": {
 		"moduleNameMapper": {
+			"^dexie$": "<rootDir>/../../node_modules/dexie/dist/dexie.js",
 			"axios": "axios/dist/node/axios.cjs",
 			"fast-xml-parser/src/xmlparser/XMLParser.js": "<rootDir>/../../__mocks__/fast-xml-parser.js"
 		},
 		"transformIgnorePatterns": [
 			"node_modules/(?!(fast-xml-parser)/)"
 		],
-		"globals": {
-			"ts-jest": {
-				"diagnostics": true,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2019"
-					],
-					"target": "es5",
-					"allowJs": true,
-					"esModuleInterop": true,
-					"downlevelIteration": true,
-					"strictNullChecks": true
-				}
-			}
-		},
 		"resolver": "<rootDir>/../../scripts/jest-node-resolver.js",
+		"setupFiles": [
+			"<rootDir>/jest.setup.js"
+		],
 		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+			"^.+\\.(js|jsx|ts|tsx)$": [
+				"ts-jest",
+				{
+					"diagnostics": true,
+					"tsconfig": {
+						"lib": [
+							"es5",
+							"es2015",
+							"dom",
+							"esnext.asynciterable",
+							"es2019"
+						],
+						"target": "es5",
+						"allowJs": true,
+						"esModuleInterop": true,
+						"downlevelIteration": true,
+						"strictNullChecks": true
+					}
+				}
+			]
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"testPathIgnorePatterns": [
@@ -130,7 +134,6 @@
 			"jsx"
 		],
 		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
 		"coverageThreshold": {
 			"global": {
 				"branches": 0,

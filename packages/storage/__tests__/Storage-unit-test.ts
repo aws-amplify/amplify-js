@@ -896,7 +896,7 @@ describe('Storage', () => {
 			const blob = new Blob(['blob']);
 			const uploadTask = storage.put('key', blob, {
 				resumable: true,
-			});
+			}) as any;
 			uploadTask.pause();
 			uploadTask.resume();
 			storage.cancel(uploadTask);

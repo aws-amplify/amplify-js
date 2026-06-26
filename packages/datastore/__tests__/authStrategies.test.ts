@@ -520,7 +520,7 @@ function getAuthSchema(
 					Post: {
 						...baseSchema.namespaces[NAMESPACES.USER].models.Post,
 						attributes: [
-							...baseSchema.namespaces[NAMESPACES.USER].models.Post.attributes,
+							...baseSchema.namespaces[NAMESPACES.USER].models.Post.attributes!,
 							{
 								type: 'auth',
 								properties: {

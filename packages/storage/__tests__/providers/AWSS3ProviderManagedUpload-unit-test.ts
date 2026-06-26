@@ -154,10 +154,23 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 			slice: mockBodySlice,
 		});
 
+		// Reuse one buffer across slice() calls. createParts() retains every
+		// part's bodyPart in a single array at once, so the large multi-part
+		// cases (e.g. the 10,000-part test) would otherwise hold tens of
+		// thousands of multi-MB Buffers simultaneously and exhaust memory on
+		// constrained CI runners. uploadPart is mocked and only reads `.length`,
+		// so a correctly sized reused buffer is equivalent.
+		let reusedSliceBuffer: Buffer | undefined;
+
 		beforeEach(() => {
-			mockBodySlice.mockImplementation((start, end) =>
-				Buffer.alloc(end - start)
-			);
+			reusedSliceBuffer = undefined;
+			mockBodySlice.mockImplementation((start, end) => {
+				const size = end - start;
+				if (!reusedSliceBuffer || reusedSliceBuffer.byteLength !== size) {
+					reusedSliceBuffer = Buffer.alloc(size);
+				}
+				return reusedSliceBuffer;
+			});
 		});
 
 		test('happy case: upload a body that splits in two parts', async () => {

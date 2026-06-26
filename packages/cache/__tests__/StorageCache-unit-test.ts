@@ -86,8 +86,8 @@ describe('StorageCache', () => {
 				defaultConfig.defaultPriority
 			);
 			config.defaultPriority = 6;
-			const storage: StorageCache = new StorageCache(config);
-			expect(storage.configure().defaultPriority).toBe(
+			const storage2: StorageCache = new StorageCache(config);
+			expect(storage2.configure().defaultPriority).toBe(
 				defaultConfig.defaultPriority
 			);
 			config.defaultPriority = tmp;

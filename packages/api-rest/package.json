@@ -52,7 +52,7 @@
     "url": "0.11.0"
   },
   "devDependencies": {
-    "typescript": "5.0.2"
+    "typescript": "5.8.3"
   },
   "size-limit": [
     {
@@ -66,14 +66,22 @@
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
     },
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false,
-        "tsConfig": false
-      }
-    },
     "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+      "^.+\\.(js|jsx|ts|tsx)$": [
+        "ts-jest",
+        {
+          "diagnostics": false,
+          "tsconfig": {
+            "allowJs": true,
+            "esModuleInterop": true,
+            "types": [
+              "jest",
+              "node"
+            ],
+            "noEmitOnError": false
+          }
+        }
+      ]
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "testPathIgnorePatterns": [
@@ -95,7 +103,6 @@
         "statements": 0
       }
     },
-    "testURL": "http://localhost/",
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "dist",

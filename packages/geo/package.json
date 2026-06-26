@@ -50,7 +50,7 @@
 		"@aws-sdk/client-location": "3.982.0",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2",
-		"tslib": "^1.8.0"
+		"tslib": "^2.0.0"
 	},
 	"size-limit": [
 		{
@@ -61,26 +61,26 @@
 		}
 	],
 	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": true,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2019.object"
-					],
-					"allowJs": true,
-					"esModuleInterop": true,
-					"downlevelIteration": true
-				}
-			}
-		},
 		"resolver": "<rootDir>/../../scripts/jest-node-resolver.js",
 		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+			"^.+\\.(js|jsx|ts|tsx)$": [
+				"ts-jest",
+				{
+					"diagnostics": true,
+					"tsconfig": {
+						"lib": [
+							"es5",
+							"es2015",
+							"dom",
+							"esnext.asynciterable",
+							"es2019.object"
+						],
+						"allowJs": true,
+						"esModuleInterop": true,
+						"downlevelIteration": true
+					}
+				}
+			]
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"testPathIgnorePatterns": [
@@ -98,7 +98,6 @@
 			"jsx"
 		],
 		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
 		"coverageThreshold": {
 			"global": {
 				"branches": 0,

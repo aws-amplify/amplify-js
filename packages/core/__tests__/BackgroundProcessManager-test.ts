@@ -195,7 +195,7 @@ describe('BackgroundProcessManager', () => {
 		// manager can register completion.
 
 		unblock();
-		await new Promise(resume => setImmediate(resume));
+		await new Promise(resume => setTimeout(resume, 0));
 
 		expect(manager.state).toEqual(BackgroundProcessManagerState.Closed);
 		expect(manager.isOpen).toBe(false);

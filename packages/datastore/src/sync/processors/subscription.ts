@@ -660,7 +660,7 @@ class SubscriptionProcessor {
 											(async () => {
 												let boundFunction: any;
 
-												await new Promise(res => {
+												await new Promise<void>(res => {
 													subscriptionReadyCallback = res;
 													boundFunction = this.hubQueryCompletionListener.bind(
 														this,

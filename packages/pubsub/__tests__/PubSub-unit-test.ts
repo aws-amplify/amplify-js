@@ -139,7 +139,7 @@ describe('PubSub', () => {
 	});
 
 	describe('AWSIoTProvider', () => {
-		test('subscribe and publish to the same topic using AWSIoTProvider', async done => {
+		test('subscribe and publish to the same topic using AWSIoTProvider', async () => {
 			let hubConnectionListener = new HubConnectionListener('pubsub');
 
 			const config = {
@@ -160,13 +160,15 @@ describe('PubSub', () => {
 				value: 'my message',
 				provider: awsIotProvider,
 			};
-			const obs = pubsub.subscribe('topicA').subscribe({
-				next: data => {
-					expect(data).toEqual(expectedData);
-					done();
-				},
-				complete: () => console.log('done'),
-				error: error => console.log('error', error),
+			const messageReceived = new Promise<void>(resolve => {
+				pubsub.subscribe('topicA').subscribe({
+					next: data => {
+						expect(data).toEqual(expectedData);
+						resolve();
+					},
+					complete: () => console.log('done'),
+					error: error => console.log('error', error),
+				});
 			});
 
 			await hubConnectionListener.waitUntilConnectionStateIn([
@@ -174,6 +176,7 @@ describe('PubSub', () => {
 			]);
 
 			await pubsub.publish('topicA', 'my message');
+			await messageReceived;
 		});
 
 		test('subscriber is matching MQTT topic wildcards', () => {

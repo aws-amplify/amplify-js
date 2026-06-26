@@ -1,6 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { isFieldAssociation, ModelFieldType, ModelMeta } from '../types';
+import {
+	isFieldAssociation,
+	ModelFieldType,
+	ModelMeta,
+	PersistentModel,
+} from '../types';
 
 /**
  * Defines a relationship from a LOCAL model.field to a REMOTE model.field and helps
@@ -10,7 +15,7 @@ import { isFieldAssociation, ModelFieldType, ModelMeta } from '../types';
  * Because I mean, relationships are tough.
  *
  */
-export class ModelRelationship<T> {
+export class ModelRelationship<T extends PersistentModel> {
 	private localModel: ModelMeta<T>;
 	private _field: string;
 
@@ -33,7 +38,7 @@ export class ModelRelationship<T> {
 	 * @param model The model the relationship field exists in.
 	 * @param field The field that may relates the local model to the remote model.
 	 */
-	static from<T>(model: ModelMeta<T>, field: string) {
+	static from<T extends PersistentModel>(model: ModelMeta<T>, field: string) {
 		if (isFieldAssociation(model.schema, field)) {
 			return new this(model, field);
 		} else {
@@ -46,7 +51,7 @@ export class ModelRelationship<T> {
 	 *
 	 * @param model The model definition to enumerate relationships of.
 	 */
-	static allFrom<T>(model: ModelMeta<T>) {
+	static allFrom<T extends PersistentModel>(model: ModelMeta<T>) {
 		const relationships: ModelRelationship<T>[] = [];
 		for (const field of Object.keys(model.schema.fields)) {
 			const relationship = ModelRelationship.from(model, field);

@@ -69,16 +69,27 @@
     }
   ],
   "jest": {
-    "globals": {
-      "ts-jest": {
-        "diagnostics": {
-          "pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
-        },
-        "tsConfig": false
-      }
-    },
     "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+      "^.+\\.(js|jsx|ts|tsx)$": [
+        "ts-jest",
+        {
+          "diagnostics": {
+            "exclude": [
+              "**/src/**",
+              "**/node_modules/**"
+            ]
+          },
+          "tsconfig": {
+            "allowJs": true,
+            "esModuleInterop": true,
+            "types": [
+              "jest",
+              "node"
+            ],
+            "noEmitOnError": false
+          }
+        }
+      ]
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "testPathIgnorePatterns": [
@@ -97,7 +108,6 @@
       "jsx"
     ],
     "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
     "coverageThreshold": {
       "global": {
         "branches": 0,
@@ -115,6 +125,6 @@
   },
   "devDependencies": {
     "@types/sinon": "^7.5.1",
-    "typescript": "5.0.2"
+    "typescript": "5.8.3"
   }
 }

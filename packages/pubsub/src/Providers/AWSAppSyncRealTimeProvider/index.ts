@@ -935,14 +935,16 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		};
 
 		if (!authenticationType || !headerHandler[authenticationType]) {
-			logger.debug(`Authentication type ${authenticationType} not supported`);
+			logger.debug(
+				`Authentication type ${String(authenticationType)} not supported`
+			);
 			return undefined;
 		} else {
 			const handler = headerHandler[authenticationType];
 
 			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
 
-			logger.debug(`Authenticating with ${authenticationType}`);
+			logger.debug(`Authenticating with ${String(authenticationType)}`);
 
 			const result = await handler({
 				payload,

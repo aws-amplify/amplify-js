@@ -55,7 +55,7 @@
 		"@aws-sdk/client-personalize-events": "3.6.1",
 		"@aws-sdk/util-utf8-browser": "3.6.1",
 		"lodash": "^4.18.1",
-		"tslib": "^1.8.0",
+		"tslib": "^2.0.0",
 		"uuid": "^11.1.1"
 	},
 	"devDependencies": {
@@ -76,24 +76,24 @@
 		}
 	],
 	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true,
-					"esModuleInterop": true
-				}
-			}
-		},
 		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+			"^.+\\.(js|jsx|ts|tsx)$": [
+				"ts-jest",
+				{
+					"diagnostics": false,
+					"tsconfig": {
+						"lib": [
+							"es5",
+							"es2015",
+							"dom",
+							"esnext.asynciterable",
+							"es2017.object"
+						],
+						"allowJs": true,
+						"esModuleInterop": true
+					}
+				}
+			]
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"moduleFileExtensions": [
@@ -104,7 +104,6 @@
 			"jsx"
 		],
 		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
 		"coverageThreshold": {
 			"global": {
 				"branches": 0,

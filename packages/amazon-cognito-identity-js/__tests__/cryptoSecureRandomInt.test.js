@@ -7,8 +7,6 @@ jest.mock('crypto', () => ({
 	})),
 }));
 
-const mockCrypto = crypto;
-
 describe('cryptoSecureRandomInt test', () => {
 	let windowSpy;
 
@@ -53,15 +51,26 @@ describe('cryptoSecureRandomInt test', () => {
 			crypto: null,
 		}));
 
-		const originalGetRandomValues = mockCrypto.getRandomValues;
+		const savedGlobalCrypto = globalThis.crypto;
+		Object.defineProperty(globalThis, 'crypto', {
+			value: undefined,
+			configurable: true,
+			writable: true,
+		});
+		try {
+			const currentMockCrypto = require('crypto');
+			currentMockCrypto.getRandomValues = undefined;
 
-		mockCrypto.getRandomValues = undefined;
-
-		const cryptoSecureRandomInt =
-			require('../src/utils/cryptoSecureRandomInt').default;
-		expect(cryptoSecureRandomInt()).toBe(54321);
-
-		mockCrypto.getRandomValues = originalGetRandomValues;
+			const cryptoSecureRandomInt =
+				require('../src/utils/cryptoSecureRandomInt').default;
+			expect(cryptoSecureRandomInt()).toBe(54321);
+		} finally {
+			Object.defineProperty(globalThis, 'crypto', {
+				value: savedGlobalCrypto,
+				configurable: true,
+				writable: true,
+			});
+		}
 	});
 
 	test('crypto is set for Node (>= 18)', () => {
@@ -69,10 +78,25 @@ describe('cryptoSecureRandomInt test', () => {
 			crypto: null,
 		}));
 
-		mockCrypto.getRandomValues.mockReturnValueOnce([54321]);
+		const savedGlobalCrypto = globalThis.crypto;
+		Object.defineProperty(globalThis, 'crypto', {
+			value: undefined,
+			configurable: true,
+			writable: true,
+		});
+		try {
+			const currentMockCrypto = require('crypto');
+			currentMockCrypto.getRandomValues.mockReturnValueOnce([54321]);
 
-		const cryptoSecureRandomInt =
-			require('../src/utils/cryptoSecureRandomInt').default;
-		expect(cryptoSecureRandomInt()).toBe(54321);
+			const cryptoSecureRandomInt =
+				require('../src/utils/cryptoSecureRandomInt').default;
+			expect(cryptoSecureRandomInt()).toBe(54321);
+		} finally {
+			Object.defineProperty(globalThis, 'crypto', {
+				value: savedGlobalCrypto,
+				configurable: true,
+				writable: true,
+			});
+		}
 	});
 });

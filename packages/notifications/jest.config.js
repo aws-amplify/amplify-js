@@ -1,5 +1,17 @@
 module.exports = {
-	preset: 'ts-jest/presets/js-with-babel',
+	transform: {
+		'^.+\\.(js|jsx|ts|tsx)$': [
+			'ts-jest',
+			{
+				tsconfig: {
+					allowJs: true,
+					esModuleInterop: true,
+					types: ['jest', 'node'],
+					noEmitOnError: false,
+				},
+			},
+		],
+	},
 	testMatch: ['**/__tests__/**/*.+(test|spec).[jt]s', '!**/*.native.*'],
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 	testEnvironment: 'jsdom',

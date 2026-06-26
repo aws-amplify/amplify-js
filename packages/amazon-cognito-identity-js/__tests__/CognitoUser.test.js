@@ -571,8 +571,8 @@ describe('getDeviceResponse()', () => {
 
 	afterAll(() => {
 		jest.restoreAllMocks();
-		jest.onFailure.mockClear();
-		jest.onSuccess.mockClear();
+		callback.onFailure.mockClear();
+		callback.onSuccess.mockClear();
 	});
 
 	afterEach(() => {
