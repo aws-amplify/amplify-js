@@ -110,7 +110,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 });
 
 jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
-	const CognitoUser = function() {
+	const CognitoUser = function CognitoUser() {
 		// mock private member
 		this.signInUserSession = null;
 	};
@@ -255,7 +255,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	CognitoUser.prototype.listDevices = (limit, paginationToken, callback) => {
 		callback.onSuccess('success');
 	};
-	CognitoUser.prototype.getSignInUserSession = function() {
+	CognitoUser.prototype.getSignInUserSession = function getSignInUserSession() {
 		return this.signInUserSession;
 	};
 
@@ -362,14 +362,14 @@ const session = new CognitoUserSession({
 });
 
 const authCallbacks = {
-	customChallenge: jasmine.any(Function),
-	mfaRequired: jasmine.any(Function),
-	mfaSetup: jasmine.any(Function),
-	newPasswordRequired: jasmine.any(Function),
-	onFailure: jasmine.any(Function),
-	onSuccess: jasmine.any(Function),
-	selectMFAType: jasmine.any(Function),
-	totpRequired: jasmine.any(Function),
+	customChallenge: expect.any(Function),
+	mfaRequired: expect.any(Function),
+	mfaSetup: expect.any(Function),
+	newPasswordRequired: expect.any(Function),
+	onFailure: expect.any(Function),
+	onSuccess: expect.any(Function),
+	selectMFAType: expect.any(Function),
+	totpRequired: expect.any(Function),
 };
 
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -418,7 +418,7 @@ describe('auth unit test', () => {
 					{ Name: 'otherAttrs', Value: 'otherAttrs' },
 				],
 				null,
-				jasmine.any(Function),
+				expect.any(Function),
 				{ foo: 'bar' }
 			);
 			spyon.mockClear();
@@ -451,7 +451,7 @@ describe('auth unit test', () => {
 					{ Name: 'otherAttrs', Value: 'otherAttrs' },
 				],
 				null,
-				jasmine.any(Function),
+				expect.any(Function),
 				{ custom: 'value' }
 			);
 			spyon.mockClear();
@@ -718,8 +718,8 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
 				code,
-				jasmine.any(Boolean),
-				jasmine.any(Function),
+				expect.any(Boolean),
+				expect.any(Function),
 				{
 					foo: 'bar',
 				}
@@ -738,8 +738,8 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
 				code,
-				jasmine.any(Boolean),
-				jasmine.any(Function),
+				expect.any(Boolean),
+				expect.any(Function),
 				{
 					custom: 'value',
 				}
@@ -834,7 +834,7 @@ describe('auth unit test', () => {
 			await auth.resendSignUp('username');
 
 			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
-				jasmine.any(Function),
+				expect.any(Function),
 				{ foo: 'bar' }
 			);
 			spyon.mockClear();
@@ -847,7 +847,7 @@ describe('auth unit test', () => {
 			await auth.resendSignUp('username', { custom: 'value' });
 
 			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
-				jasmine.any(Function),
+				expect.any(Function),
 				{ custom: 'value' }
 			);
 			spyon.mockClear();
@@ -1048,7 +1048,7 @@ describe('auth unit test', () => {
 					{ Name: 'foo', Value: 'bar' },
 					{ Name: 'test', Value: '123' },
 				],
-				jasmine.any(Function),
+				expect.any(Function),
 				{ custom: 'value' }
 			);
 			spyon.mockClear();
@@ -1375,8 +1375,8 @@ describe('auth unit test', () => {
 			expect(await CognitoUser.prototype.sendMFACode).toBeCalledWith(
 				code,
 				{
-					onSuccess: jasmine.any(Function),
-					onFailure: jasmine.any(Function),
+					onSuccess: expect.any(Function),
+					onFailure: expect.any(Function),
 				},
 				undefined,
 				{ foo: 'bar' }
@@ -1398,8 +1398,8 @@ describe('auth unit test', () => {
 			expect(await CognitoUser.prototype.sendMFACode).toBeCalledWith(
 				code,
 				{
-					onSuccess: jasmine.any(Function),
-					onFailure: jasmine.any(Function),
+					onSuccess: expect.any(Function),
+					onFailure: expect.any(Function),
 				},
 				'SMS_MFA',
 				{ custom: 'value' }
@@ -1522,11 +1522,11 @@ describe('auth unit test', () => {
 				'password',
 				{},
 				{
-					onSuccess: jasmine.any(Function),
-					onFailure: jasmine.any(Function),
-					mfaRequired: jasmine.any(Function),
-					mfaSetup: jasmine.any(Function),
-					totpRequired: jasmine.any(Function),
+					onSuccess: expect.any(Function),
+					onFailure: expect.any(Function),
+					mfaRequired: expect.any(Function),
+					mfaSetup: expect.any(Function),
+					totpRequired: expect.any(Function),
 				},
 				{ foo: 'bar' }
 			);
@@ -1552,11 +1552,11 @@ describe('auth unit test', () => {
 				'password',
 				{},
 				{
-					onSuccess: jasmine.any(Function),
-					onFailure: jasmine.any(Function),
-					mfaRequired: jasmine.any(Function),
-					mfaSetup: jasmine.any(Function),
-					totpRequired: jasmine.any(Function),
+					onSuccess: expect.any(Function),
+					onFailure: expect.any(Function),
+					mfaRequired: expect.any(Function),
+					mfaSetup: expect.any(Function),
+					totpRequired: expect.any(Function),
 				},
 				{ custom: 'value' }
 			);
@@ -1879,7 +1879,7 @@ describe('auth unit test', () => {
 			const concurrency = 10;
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'getSession')
-				.mockImplementationOnce(function(callback: any) {
+				.mockImplementationOnce(function getSessionMock(callback: any) {
 					this.signInUserSession = session;
 					callback(null, session);
 				});
@@ -2345,7 +2345,7 @@ describe('auth unit test', () => {
 				.spyOn(Auth.prototype, 'verifyUserAttributeSubmit')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
-						res();
+						res(undefined);
 					});
 				});
 
@@ -2419,7 +2419,7 @@ describe('auth unit test', () => {
 				.spyOn(Auth.prototype, 'currentUserCredentials')
 				.mockImplementationOnce(() => {
 					return new Promise((resolve, reject) => {
-						resolve();
+						resolve(undefined);
 					});
 				});
 			const spyon = jest
@@ -2568,7 +2568,7 @@ describe('auth unit test', () => {
 			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
 				oldPassword,
 				newPassword,
-				jasmine.any(Function),
+				expect.any(Function),
 				{
 					foo: 'bar',
 				}
@@ -2593,7 +2593,7 @@ describe('auth unit test', () => {
 			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
 				oldPassword,
 				newPassword,
-				jasmine.any(Function),
+				expect.any(Function),
 				{
 					custom: 'value',
 				}
@@ -2622,9 +2622,9 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.forgotPassword).toBeCalledWith(
 				{
-					inputVerificationCode: jasmine.any(Function),
-					onFailure: jasmine.any(Function),
-					onSuccess: jasmine.any(Function),
+					inputVerificationCode: expect.any(Function),
+					onFailure: expect.any(Function),
+					onSuccess: expect.any(Function),
 				},
 				{ foo: 'bar' }
 			);
@@ -2639,9 +2639,9 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.forgotPassword).toBeCalledWith(
 				{
-					inputVerificationCode: jasmine.any(Function),
-					onFailure: jasmine.any(Function),
-					onSuccess: jasmine.any(Function),
+					inputVerificationCode: expect.any(Function),
+					onFailure: expect.any(Function),
+					onSuccess: expect.any(Function),
 				},
 				{ custom: 'value' }
 			);
@@ -2754,8 +2754,8 @@ describe('auth unit test', () => {
 				code,
 				password,
 				{
-					onFailure: jasmine.any(Function),
-					onSuccess: jasmine.any(Function),
+					onFailure: expect.any(Function),
+					onSuccess: expect.any(Function),
 				},
 				{ foo: 'bar' }
 			);
@@ -2777,8 +2777,8 @@ describe('auth unit test', () => {
 				code,
 				password,
 				{
-					onFailure: jasmine.any(Function),
-					onSuccess: jasmine.any(Function),
+					onFailure: expect.any(Function),
+					onSuccess: expect.any(Function),
 				},
 				{ custom: 'value' }
 			);
@@ -3067,7 +3067,7 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.updateAttributes).toBeCalledWith(
 				[],
-				jasmine.any(Function),
+				expect.any(Function),
 				{ foo: 'bar' }
 			);
 			spyon.mockClear();
@@ -3085,13 +3085,13 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.updateAttributes).toBeCalledWith(
 				[],
-				jasmine.any(Function),
+				expect.any(Function),
 				{ custom: 'value' }
 			);
 			spyon.mockClear();
 		});
 
-		test('error hub event', async done => {
+		test('error hub event', async () => {
 			expect.assertions(3);
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'updateAttributes')
@@ -3112,14 +3112,16 @@ describe('auth unit test', () => {
 				sub: 'sub',
 			};
 
-			const listenToHub = Hub.listen('auth', ({ payload }) => {
-				const { event } = payload;
-				if (event === 'updateUserAttributes_failure') {
-					expect(payload.data.message).toBe('Error');
-					expect(payload.message).toBe('Failed to update attributes');
-					listenToHub();
-					done();
-				}
+			const hubPromise = new Promise<void>(resolveHub => {
+				const listenToHub = Hub.listen('auth', ({ payload }) => {
+					const { event } = payload;
+					if (event === 'updateUserAttributes_failure') {
+						expect(payload.data.message).toBe('Error');
+						expect(payload.message).toBe('Failed to update attributes');
+						listenToHub();
+						resolveHub();
+					}
+				});
 			});
 
 			try {
@@ -3128,10 +3130,11 @@ describe('auth unit test', () => {
 				expect(e).toEqual(new Error('Error'));
 			}
 
+			await hubPromise;
 			spyon.mockClear();
 		});
 
-		test('happy case code delivery details hub event', async done => {
+		test('happy case code delivery details hub event', async () => {
 			expect.assertions(2);
 
 			const codeDeliverDetailsResult: any = {
@@ -3176,16 +3179,19 @@ describe('auth unit test', () => {
 					isUpdated: true,
 				},
 			};
-			const listenToHub = Hub.listen('auth', ({ payload }) => {
-				const { event } = payload;
-				if (event === 'updateUserAttributes') {
-					expect(payload.data).toEqual(payloadData);
-					listenToHub();
-					done();
-				}
+			const hubPromise = new Promise<void>(resolveHub => {
+				const listenToHub = Hub.listen('auth', ({ payload }) => {
+					const { event } = payload;
+					if (event === 'updateUserAttributes') {
+						expect(payload.data).toEqual(payloadData);
+						listenToHub();
+						resolveHub();
+					}
+				});
 			});
 
 			expect(await auth.updateUserAttributes(user, attributes)).toBe('SUCCESS');
+			await hubPromise;
 			spyon.mockClear();
 		});
 	});
@@ -3229,7 +3235,7 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.deleteAttributes).toBeCalledWith(
 				['email', 'phone_number'],
-				jasmine.any(Function)
+				expect.any(Function)
 			);
 			spyon.mockClear();
 		});
@@ -3631,17 +3637,17 @@ describe('auth unit test', () => {
 			// replaceState should be called *prior* to `signIn` dispatch,
 			// so that customers can override with a new value
 			expect(trackSpies.mock.calls).toMatchInlineSnapshot(`
-			Array [
-			  Array [
+			[
+			  [
 			    "Hub.dispatch('auth', { data: ..., event: 'parsingCallbackUrl' })",
 			  ],
-			  Array [
-			    "window.history.replaceState(null, \\"\\", 'http://localhost:3000/')",
+			  [
+			    "window.history.replaceState(null, "", 'http://localhost:3000/')",
 			  ],
-			  Array [
+			  [
 			    "Hub.dispatch('auth', { data: ..., event: 'signIn' })",
 			  ],
-			  Array [
+			  [
 			    "Hub.dispatch('auth', { data: ..., event: 'cognitoHostedUI' })",
 			  ],
 			]

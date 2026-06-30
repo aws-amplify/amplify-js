@@ -18,24 +18,28 @@ module.exports = {
 		},
 	},
 
-	globals: {
-		'ts-jest': {
-			diagnostics: false,
-			tsConfig: {
-				lib: ['es5', 'es2015', 'dom', 'esnext.asynciterable', 'es2017.object'],
-				allowJs: true,
-				esModuleInterop: true,
-			},
-		},
-	},
-
 	transform: {
-		'^.+\\.(js|jsx|ts|tsx)$': 'ts-jest',
+		'^.+\\.(js|jsx|ts|tsx)$': [
+			'ts-jest',
+			{
+				diagnostics: false,
+				tsconfig: {
+					lib: [
+						'es5',
+						'es2015',
+						'dom',
+						'esnext.asynciterable',
+						'es2017.object',
+					],
+					allowJs: true,
+					esModuleInterop: true,
+				},
+			},
+		],
 	},
 	preset: 'ts-jest',
 	testRegex: ['(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$'],
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'jsx'],
 
 	testEnvironment: 'jsdom',
-	testURL: 'http://localhost/',
 };

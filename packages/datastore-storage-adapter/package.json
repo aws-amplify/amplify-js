@@ -47,25 +47,25 @@
 		"moduleNameMapper": {
 			"axios": "axios/dist/node/axios.cjs"
 		},
-		"globals": {
-			"ts-jest": {
-				"diagnostics": true,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2019"
-					],
-					"allowJs": true,
-					"esModuleInterop": true,
-					"downlevelIteration": true
-				}
-			}
-		},
 		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+			"^.+\\.(js|jsx|ts|tsx)$": [
+				"ts-jest",
+				{
+					"diagnostics": true,
+					"tsconfig": {
+						"lib": [
+							"es5",
+							"es2015",
+							"dom",
+							"esnext.asynciterable",
+							"es2019"
+						],
+						"allowJs": true,
+						"esModuleInterop": true,
+						"downlevelIteration": true
+					}
+				}
+			]
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"testPathIgnorePatterns": [
@@ -81,7 +81,6 @@
 			"jsx"
 		],
 		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
 		"coverageThreshold": {
 			"global": {
 				"branches": 0,

@@ -66,23 +66,23 @@
     }
   ],
   "jest": {
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false,
-        "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
-        }
-      }
-    },
     "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+      "^.+\\.(js|jsx|ts|tsx)$": [
+        "ts-jest",
+        {
+          "diagnostics": false,
+          "tsconfig": {
+            "lib": [
+              "es5",
+              "es2015",
+              "dom",
+              "esnext.asynciterable",
+              "es2017.object"
+            ],
+            "allowJs": true
+          }
+        }
+      ]
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "moduleFileExtensions": [
@@ -97,7 +97,6 @@
       "./__mocks__/LocalStorage.js"
     ],
     "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
     "coverageThreshold": {
       "global": {
         "branches": 0,

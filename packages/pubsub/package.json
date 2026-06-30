@@ -76,26 +76,28 @@
   ],
   "jest": {
     "globals": {
-      "ts-jest": {
-        "diagnostics": false,
-        "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
-        }
-      },
       "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
       "testPathIgnorePatterns": [
         "__tests__/helpers.ts"
       ]
     },
     "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+      "^.+\\.(js|jsx|ts|tsx)$": [
+        "ts-jest",
+        {
+          "diagnostics": false,
+          "tsconfig": {
+            "lib": [
+              "es5",
+              "es2015",
+              "dom",
+              "esnext.asynciterable",
+              "es2017.object"
+            ],
+            "allowJs": true
+          }
+        }
+      ]
     },
     "testPathIgnorePatterns": [
       "__tests__/helpers.ts"
@@ -108,7 +110,6 @@
       "jsx"
     ],
     "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
     "coverageThreshold": {
       "global": {
         "branches": 0,

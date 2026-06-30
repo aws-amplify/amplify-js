@@ -654,9 +654,9 @@ describe('Predictions identify provider test', () => {
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
-					expect(
-						(command as DetectLabelsCommand).input.Image.Bytes
-					).toMatchObject(fileInput);
+					expect((command as DetectLabelsCommand).input.Image.Bytes).toBe(
+						fileInput
+					);
 					return {};
 				});
 			await predictionsProvider.identify(detectLabelInput);

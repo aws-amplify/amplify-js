@@ -267,12 +267,12 @@ export abstract class StorageAdapterBase implements Adapter {
 
 		if (connectionStoreNames.length === 0) {
 			return records.map(record =>
-				this.modelInstanceCreator(modelConstructor, record)
+				this.modelInstanceCreator(modelConstructor, record as Partial<any>)
 			);
 		}
 
 		return records.map(record =>
-			this.modelInstanceCreator(modelConstructor, record)
+			this.modelInstanceCreator(modelConstructor, record as Partial<any>)
 		);
 	}
 

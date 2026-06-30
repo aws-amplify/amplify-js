@@ -177,7 +177,7 @@ class SyncProcessor {
 
 		const { data } = await authModeRetry();
 
-		const { [opName]: opResult } = data;
+		const { [opName]: opResult } = data as Record<string, any>;
 
 		const { items, nextToken: newNextToken, startedAt } = opResult;
 

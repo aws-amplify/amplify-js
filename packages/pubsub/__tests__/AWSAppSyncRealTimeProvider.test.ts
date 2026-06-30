@@ -354,7 +354,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
-						'error on bound ',
+						'error on bound _initializeHandshake',
 						expect.objectContaining({
 							message: expect.stringMatching('Connection handshake error'),
 						})
@@ -462,7 +462,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
-						'error on bound ',
+						'error on bound _initializeHandshake',
 						expect.objectContaining({
 							message: expect.stringMatching('{"isTrusted":false}'),
 						})
@@ -571,7 +571,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					]);
 				});
 
-				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async done => {
+				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async () => {
 					expect.assertions(3);
 
 					const socketCloseSpy = jest.spyOn(
@@ -584,13 +584,15 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					observer.subscribe({
-						error: e => {
-							expect(e.errors[0].message).toEqual(
-								'Connection failed: Non-retriable Test'
-							);
-							done();
-						},
+					const errorReceived = new Promise<void>(resolve => {
+						observer.subscribe({
+							error: e => {
+								expect(e.errors[0].message).toEqual(
+									'Connection failed: Non-retriable Test'
+								);
+								resolve();
+							},
+						});
 					});
 
 					await fakeWebSocketInterface?.readyForUse;
@@ -614,13 +616,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
-						'error on bound ',
+						'error on bound _initializeHandshake',
 						expect.objectContaining({
 							message: expect.stringMatching('Non-retriable Test'),
 						})
 					);
 
 					expect(socketCloseSpy).toHaveBeenNthCalledWith(1, 3001);
+					await errorReceived;
 				});
 
 				test('subscription observer error is triggered when a connection is formed', async () => {
@@ -681,7 +684,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
-						'error on bound ',
+						'error on bound _initializeHandshake',
 						expect.objectContaining({
 							message: expect.stringMatching('Retriable Test'),
 						})
@@ -935,7 +938,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// Watching for raised exception to be caught and logged
 						expect(loggerSpy).not.toBeCalledWith(
 							'DEBUG',
-							'error on bound ',
+							'error on bound _initializeHandshake',
 							expect.objectContaining({
 								message: expect.stringMatching(
 									'Connection timeout: ack from AWSAppSyncRealTime was not received after'
@@ -970,7 +973,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// Watching for raised exception to be caught and logged
 						expect(loggerSpy).toBeCalledWith(
 							'DEBUG',
-							'error on bound ',
+							'error on bound _initializeHandshake',
 							expect.objectContaining({
 								message: expect.stringMatching(
 									'Connection timeout: ack from AWSAppSyncRealTime was not received after'

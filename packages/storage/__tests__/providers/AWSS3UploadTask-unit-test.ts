@@ -237,7 +237,7 @@ describe('resumable upload task test', () => {
 		uploadTask.resume();
 		await uploadTask._cancel();
 		expect(mockLocalStorage.getItem).toHaveBeenCalledWith(UPLOADS_STORAGE_KEY);
-		expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith(
+		expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
 			UPLOADS_STORAGE_KEY,
 			'{}'
 		);

@@ -28,29 +28,23 @@ describe('Custom Identifier', () => {
 			myId: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
 		CustomIdentifierDefaultRO.copyOf({} as CustomIdentifierDefaultRO, d => {
-			// @ts-expect-error
 			// d.id;
-			// @ts-expect-error
 			// d.id = '';
 
 			d.myId;
-			// @ts-expect-error
 			// d.myId = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
 			// d.updatedAt = '';
 		});
 	});
@@ -76,29 +70,23 @@ describe('Custom Identifier', () => {
 			myId: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
 		CustomIdentifierCustomRO.copyOf({} as CustomIdentifierCustomRO, d => {
-			// @ts-expect-error
 			// d.id;
-			// @ts-expect-error
 			// d.id = '';
 
 			d.myId;
-			// @ts-expect-error
 			// d.myId = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
-			// @ts-expect-error
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
 			// d.updatedOn = '';
 		});
 	});

@@ -11,6 +11,7 @@ const mockCookies = jest.fn().mockImplementation(function () {
 	};
 });
 jest.mock('universal-cookie', () => ({
+	__esModule: true,
 	default: mockCookies,
 }));
 jest.mock('../src/JS', () => ({
@@ -143,7 +144,7 @@ describe(UniversalStorage.name, () => {
 
 		describe('clear', () => {
 			test('removes all items in store', () => {
-				const mockRemoveItem = spyOn(universalStorage, 'removeItem');
+				const mockRemoveItem = jest.spyOn(universalStorage, 'removeItem');
 				universalStorage.setItem('foo', 'bar');
 				universalStorage.setItem('quz', 'baz');
 				universalStorage.clear();

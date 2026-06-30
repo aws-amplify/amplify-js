@@ -12,7 +12,7 @@ import { gzip, strToU8 } from 'fflate';
 import { encode } from 'base-64';
 import { prototype } from 'stream';
 
-(global as any).Response = () => {};
+(global as any).Response = function () {};
 (global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
 	return Promise.resolve(new ArrayBuffer(0));
 };

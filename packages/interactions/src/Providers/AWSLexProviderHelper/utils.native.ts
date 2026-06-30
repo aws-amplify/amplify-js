@@ -16,7 +16,7 @@ export const convert = async (stream: object): Promise<Uint8Array> => {
 			fileReaderInstance.onload = async () => {
 				const blobURL = fileReaderInstance.result as string;
 
-				const base64Blob = blobURL.split(/,(.*)/s)[1];
+				const base64Blob = blobURL.split(new RegExp(',(.*)', 's'))[1];
 
 				const decodedArrayBuffer = base64ToArrayBuffer(base64Blob);
 				resolve(decodedArrayBuffer);

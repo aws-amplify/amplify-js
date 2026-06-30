@@ -1,15 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Sync jitteredRetry custom pk: should return all data 1`] = `
-Object {
-  "data": Object {
-    "syncPosts": Object {
-      "items": Array [
-        Object {
+{
+  "data": {
+    "syncPosts": {
+      "items": [
+        {
           "postId": "1",
           "title": "Item 1",
         },
-        Object {
+        {
           "postId": "2",
           "title": "Item 2",
         },
@@ -20,15 +20,15 @@ Object {
 `;
 
 exports[`Sync jitteredRetry should return all data 1`] = `
-Object {
-  "data": Object {
-    "syncPosts": Object {
-      "items": Array [
-        Object {
+{
+  "data": {
+    "syncPosts": {
+      "items": [
+        {
           "id": "1",
           "title": "Item 1",
         },
-        Object {
+        {
           "id": "2",
           "title": "Item 2",
         },
@@ -39,23 +39,23 @@ Object {
 `;
 
 exports[`Sync jitteredRetry should return partial data and send Hub event 1`] = `
-Object {
-  "data": Object {
-    "syncPosts": Object {
-      "items": Array [
-        Object {
+{
+  "data": {
+    "syncPosts": {
+      "items": [
+        {
           "id": "1",
           "title": "Item 1",
         },
-        Object {
+        {
           "id": "3",
           "title": "Item 3",
         },
       ],
     },
   },
-  "errors": Array [
-    Object {
+  "errors": [
+    {
       "message": "Item 2 error",
     },
   ],
@@ -63,10 +63,10 @@ Object {
 `;
 
 exports[`Sync jitteredRetry should throw error if no data is returned 1`] = `
-Object {
+{
   "data": null,
-  "errors": Array [
-    Object {
+  "errors": [
+    {
       "message": "General error",
     },
   ],

@@ -1637,7 +1637,7 @@ export class AuthClass {
 			logger.debug('failed to clear cached items');
 		}
 		if (this.isSignedInHostedUI()) {
-			return new Promise((res, rej) => {
+			return new Promise<void>((res, rej) => {
 				this.oAuthSignOutRedirect(res, rej);
 			});
 		} else {
@@ -1662,7 +1662,7 @@ export class AuthClass {
 					if (this.isOAuthInProgress()) {
 						logger.debug('OAuth signIn in progress, waiting for resolution...');
 
-						await new Promise(res => {
+						await new Promise<void>(res => {
 							const timeoutId = setTimeout(() => {
 								logger.debug('OAuth signIn in progress timeout');
 
@@ -2069,7 +2069,7 @@ export class AuthClass {
 			this._oAuthHandler &&
 			this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
 
-		return new Promise((res, rej) => {
+		return new Promise<void>((res, rej) => {
 			if (opts && opts.global) {
 				logger.debug('user global sign out', user);
 				// in order to use global signout
@@ -2242,7 +2242,7 @@ export class AuthClass {
 		}
 
 		const user = this.createCognitoUser(username);
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			user.forgotPassword(
 				{
 					onSuccess: () => {

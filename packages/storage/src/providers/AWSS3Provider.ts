@@ -860,7 +860,7 @@ export class AWSS3Provider implements StorageProvider {
 				listResult = await this._list(params, opt, prefix);
 				list.results.push(...listResult.results);
 				list.hasNextToken = listResult.hasNextToken;
-				list.nextToken = null ?? listResult.nextToken;
+				list.nextToken = listResult.nextToken;
 			}
 			dispatchStorageEvent(
 				track,

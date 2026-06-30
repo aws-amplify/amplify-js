@@ -2824,5 +2824,5 @@ function onMessageArrived(message) {
 			? window
 			: {}
 	);
-	return PahoMQTT;
+	return /** @type {any} */ (PahoMQTT);
 });

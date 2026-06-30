@@ -764,7 +764,7 @@ export function mergePatches<T>(
 	produce(
 		originalSource,
 		draft => {
-			applyPatches(draft, patchesToMerge);
+			applyPatches(draft as any, patchesToMerge);
 		},
 		p => {
 			patches = p;

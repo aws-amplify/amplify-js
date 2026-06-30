@@ -15,7 +15,6 @@ import {
 describe('Managed Identifier', () => {
 	test(`ManagedDefaultRO`, async () => {
 		expectType<ModelInit<ManagedDefaultRO>>({
-			// @ts-expect-error
 			// id: 'eeeeeee',
 			name: '',
 			description: '',
@@ -24,31 +23,26 @@ describe('Managed Identifier', () => {
 		expectType<ModelInit<ManagedDefaultRO>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
 		expectType<ModelInit<ManagedDefaultRO>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
 		ManagedDefaultRO.copyOf({} as ManagedDefaultRO, d => {
 			d.id;
-			// @ts-expect-error
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
 			// d.updatedAt = '';
 		});
 
@@ -134,7 +128,6 @@ describe('Managed Identifier', () => {
 
 	test(`ManagedCustomRO`, async () => {
 		expectType<ModelInit<ManagedCustomRO>>({
-			// @ts-expect-error
 			// id: 'eeeeeee',
 			name: '',
 			description: '',
@@ -143,31 +136,26 @@ describe('Managed Identifier', () => {
 		expectType<ModelInit<ManagedCustomRO>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
 		expectType<ModelInit<ManagedCustomRO>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
 		ManagedCustomRO.copyOf({} as ManagedCustomRO, d => {
 			d.id;
-			// @ts-expect-error
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
-			// @ts-expect-error
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
 			// d.updatedOn = '';
 		});
 

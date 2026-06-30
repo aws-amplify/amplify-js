@@ -9,7 +9,7 @@ import {
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 
-(global as any).Response = () => {};
+(global as any).Response = function () {};
 (global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
 	return Promise.resolve(new ArrayBuffer(0));
 };

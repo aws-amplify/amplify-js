@@ -17,7 +17,7 @@ import {
 } from '@aws-amplify/core';
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 import { Cache } from '@aws-amplify/cache';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';
 
 axios.CancelToken = <CancelTokenStatic>{
@@ -1002,7 +1002,7 @@ describe('API test', () => {
 			);
 		});
 
-		test('happy-case-subscription', async done => {
+		test('happy-case-subscription', done => {
 			jest
 				.spyOn(RestClient.prototype, 'post')
 				.mockImplementation(async (url, init) => ({
@@ -1056,7 +1056,7 @@ describe('API test', () => {
 			expect(observable).not.toBe(undefined);
 		});
 
-		test('happy case subscription with additionalHeaders', async done => {
+		test('happy case subscription with additionalHeaders', done => {
 			jest
 				.spyOn(RestClient.prototype, 'post')
 				.mockImplementation(async (url, init) => ({
@@ -1260,7 +1260,7 @@ describe('API test', () => {
 		});
 
 		test('call isInstanceCreated', () => {
-			const createInstanceMock = spyOn(API.prototype, 'createInstance');
+			const createInstanceMock = jest.spyOn(API.prototype, 'createInstance');
 			const api = new API(config);
 			api.createInstanceIfNotCreated();
 			expect(createInstanceMock).toHaveBeenCalled();
@@ -1269,7 +1269,7 @@ describe('API test', () => {
 		test('should not call createInstance when there is already an instance', () => {
 			const api = new API(config);
 			api.createInstance();
-			const createInstanceMock = spyOn(API.prototype, 'createInstance');
+			const createInstanceMock = jest.spyOn(API.prototype, 'createInstance');
 			api.createInstanceIfNotCreated();
 			expect(createInstanceMock).not.toHaveBeenCalled();
 		});
@@ -1466,7 +1466,7 @@ describe('Internal API customUserAgent test', () => {
 			expect(spyon).toBeCalledWith(url, init);
 		});
 
-		test('happy case subscription', async done => {
+		test('happy case subscription', done => {
 			jest
 				.spyOn(RestClient.prototype, 'post')
 				.mockImplementation(async (url, init) => ({

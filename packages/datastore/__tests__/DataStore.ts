@@ -54,6 +54,23 @@ const nameOf = <T>(name: keyof T) => name;
 const expectType: <T>(param: T) => void = () => {};
 
 /**
+ * Creates a jest-`done`-style callback backed by a promise. Tests can await the
+ * returned promise to wait for an asynchronous callback to signal completion,
+ * preserving the original `done()` / `done(error)` semantics under @types/jest 29
+ * (which no longer permits a test callback to both accept `done` and return a Promise).
+ */
+function makeDone(): {
+	done: (error?: any) => void;
+	donePromise: Promise<void>;
+} {
+	let done!: (error?: any) => void;
+	const donePromise = new Promise<void>((resolve, reject) => {
+		done = (error?: any) => (error ? reject(error) : resolve());
+	});
+	return { done, donePromise };
+}
+
+/**
  * Renders more complete out of band traces.
  */
 process.on('unhandledRejection', reason => {
@@ -165,7 +182,7 @@ describe('DataStore sanity testing checks', () => {
 				await new Promise(unsleep =>
 					setTimeout(() => {
 						lastCycle = cycle;
-						unsleep();
+						unsleep(undefined);
 					}, 20 * cycle)
 				);
 			}, numberOfCycles);
@@ -554,7 +571,7 @@ describe('DataStore sanity testing checks', () => {
 								`a title from polite cycle ${cycle}`
 							);
 							sub.unsubscribe();
-							resolve();
+							resolve(undefined);
 						}
 					);
 					DataStore.save(
@@ -576,7 +593,7 @@ describe('DataStore sanity testing checks', () => {
 							// omitted:
 							// sub.unsubscribe();
 							// (that's what makes it impolite)
-							resolve();
+							resolve(undefined);
 						}
 					);
 					DataStore.save(
@@ -618,7 +635,7 @@ describe('DataStore sanity testing checks', () => {
 								`a title from polite cycle ${cycle} post 2`,
 							]);
 							sub.unsubscribe();
-							resolve();
+							resolve(undefined);
 						}
 					});
 				});
@@ -648,7 +665,7 @@ describe('DataStore sanity testing checks', () => {
 								`a title from polite unsynced cycle ${cycle} post 1`
 							);
 							sub.unsubscribe();
-							doneTesting();
+							doneTesting(undefined);
 						}
 					});
 				});
@@ -693,7 +710,7 @@ describe('DataStore sanity testing checks', () => {
 							]);
 
 							// missing unsubscribe is what makes it "less polite"
-							doneTesting();
+							doneTesting(undefined);
 						}
 					});
 				});
@@ -776,7 +793,8 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		expect(await DataStore.query(Model)).toHaveLength(0);
 	});
 
-	test('subscribe to all models', async done => {
+	test('subscribe to all models', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const sub = DataStore.observe().subscribe(
 				({ element, opType, model }) => {
@@ -799,9 +817,11 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('subscribe to model instance', async done => {
+	test('subscribe to model instance', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const original = await DataStore.save(
 				new Model({
@@ -839,9 +859,11 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('subscribe to Model', async done => {
+	test('subscribe to Model', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const original = await DataStore.save(
 				new Model({
@@ -877,9 +899,11 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('subscribe with criteria', async done => {
+	test('subscribe with criteria', async () => {
+		const { done, donePromise } = makeDone();
 		const original = await DataStore.save(
 			new Model({
 				field1: 'somevalue',
@@ -910,9 +934,11 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		await DataStore.save(
 			Model.copyOf(original, m => (m.field1 = 'new field 1 value'))
 		);
+		await donePromise;
 	});
 
-	test('subscribe with criteria on deletes', async done => {
+	test('subscribe with criteria on deletes', async () => {
+		const { done, donePromise } = makeDone();
 		const original = await DataStore.save(
 			new Model({
 				field1: 'somevalue',
@@ -941,9 +967,11 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		);
 
 		await DataStore.delete(original);
+		await donePromise;
 	});
 
-	test('subscribe with belongsTo criteria', async done => {
+	test('subscribe with belongsTo criteria', async () => {
+		const { done, donePromise } = makeDone();
 		const targetPost = await DataStore.save(
 			new Post({
 				title: 'this is my post. hooray!',
@@ -977,9 +1005,11 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 				post: targetPost,
 			})
 		);
+		await donePromise;
 	});
 
-	test('subscribe with hasMany criteria', async done => {
+	test('subscribe with hasMany criteria', async () => {
+		const { done, donePromise } = makeDone();
 		// want to set up a few posts and a few "non-target" comments
 		// to ensure we can observe post based on a single comment that's
 		// somewhat "buried" alongside other comments.
@@ -1032,6 +1062,7 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		await DataStore.save(
 			Post.copyOf(targetPost, p => (p.title = 'expected update'))
 		);
+		await donePromise;
 	});
 });
 
@@ -1112,7 +1143,8 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		jest.useRealTimers();
 	});
 
-	test('publishes preexisting local data immediately', async done => {
+	test('publishes preexisting local data immediately', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			for (let i = 0; i < 5; i++) {
 				await DataStore.save(
@@ -1133,9 +1165,11 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('publishes data saved after first snapshot', async done => {
+	test('publishes data saved after first snapshot', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const expecteds = [0, 5];
 
@@ -1167,9 +1201,11 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('can filter items', async done => {
+	test('can filter items', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const expecteds = [0, 5];
 
@@ -1201,10 +1237,12 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
 	// Fix for: https://github.com/aws-amplify/amplify-js/issues/9325
-	test('can remove newly-unmatched items out of the snapshot on subsequent saves', async done => {
+	test('can remove newly-unmatched items out of the snapshot on subsequent saves', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			// watch for post snapshots.
 			// the first "real" snapshot should include all five posts with "include"
@@ -1295,9 +1333,11 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('publishes preexisting local data AND follows up with subsequent saves', async done => {
+	test('publishes preexisting local data AND follows up with subsequent saves', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const expecteds = [5, 15];
 
@@ -1337,9 +1377,11 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('removes deleted items from the snapshot', async done => {
+	test('removes deleted items from the snapshot', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const expecteds = [5, 4];
 
@@ -1373,6 +1415,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
 	test('removes deleted items from the snapshot with a predicate', done => {
@@ -1413,7 +1456,8 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		})();
 	});
 
-	test('attaches related belongsTo properties consistently with query() on INSERT', async done => {
+	test('attaches related belongsTo properties consistently with query() on INSERT', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const expecteds = [5, 15];
 
@@ -1464,9 +1508,11 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('attaches related hasOne properties consistently with query() on INSERT', async done => {
+	test('attaches related hasOne properties consistently with query() on INSERT', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const expecteds = [5, 15];
 
@@ -1522,9 +1568,11 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('attaches related belongsTo properties consistently with query() on UPDATE', async done => {
+	test('attaches related belongsTo properties consistently with query() on UPDATE', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const expecteds = [
 				['old post 0', 'old post 1', 'old post 2', 'old post 3', 'old post 4'],
@@ -1582,9 +1630,11 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 
-	test('attaches related hasOne properties consistently with query() on UPDATE', async done => {
+	test('attaches related hasOne properties consistently with query() on UPDATE', async () => {
+		const { done, donePromise } = makeDone();
 		try {
 			const expecteds = [
 				[
@@ -1656,6 +1706,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+		await donePromise;
 	});
 });
 
@@ -1909,7 +1960,8 @@ describe('Model behavior', () => {
 	});
 
 	// ref: https://github.com/aws-amplify/amplify-js/issues/11101
-	test('returns fresh snapshot when sorting by descending', async done => {
+	test('returns fresh snapshot when sorting by descending', async () => {
+		const { done, donePromise } = makeDone();
 		const { DataStore, Post } = getDataStore();
 
 		const expectedTitles = ['create', 'update', 'update2'];
@@ -1956,6 +2008,7 @@ describe('Model behavior', () => {
 				updated.updatedAt = new Date().toISOString();
 			})
 		);
+		await donePromise;
 	});
 });
 

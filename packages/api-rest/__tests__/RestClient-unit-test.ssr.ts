@@ -12,6 +12,7 @@ jest
 
 jest.mock('axios', () => {
 	return {
+		__esModule: true,
 		default: signed_params => {
 			return new Promise((res, rej) => {
 				const withCredentialsSuffix =

@@ -722,7 +722,7 @@ export class GroupCondition {
 	 * Turn this predicate group into something a storage adapter
 	 * understands how to use.
 	 */
-	toStoragePredicate<T>(): StoragePredicate<T> {
+	toStoragePredicate<T extends PersistentModel>(): StoragePredicate<T> {
 		return FlatModelPredicateCreator.createFromAST<T>(
 			this.model.schema,
 			this.toAST()
