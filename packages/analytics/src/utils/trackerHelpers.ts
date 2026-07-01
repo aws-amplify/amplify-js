@@ -7,7 +7,7 @@ import {
 	TrackerType,
 } from '../types/trackers';
 import { EventTracker, PageViewTracker, SessionTracker } from '../trackers';
-import { ConfigureAutoTrackInput } from '../providers/pinpoint';
+import { AnalyticsConfigureAutoTrackInput } from '../types/inputs';
 
 /**
  * Updates a provider's trackers as appropriate for the provided auto-track configuration.
@@ -16,7 +16,7 @@ import { ConfigureAutoTrackInput } from '../providers/pinpoint';
  * This utility will mutate the provider's configured trackers via `providerTrackers`.
  */
 export const updateProviderTrackers = (
-	input: ConfigureAutoTrackInput,
+	input: AnalyticsConfigureAutoTrackInput,
 	providerEventRecorder: TrackerEventRecorder,
 	providerTrackers: Partial<Record<TrackerType, TrackerInterface>>,
 ) => {
