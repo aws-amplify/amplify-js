@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Hub, decodeJWT } from '@aws-amplify/core';
+import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { handleFailure } from '../../../../../src/providers/cognito/utils/oauth/handleFailure';
 import { validateState } from '../../../../../src/providers/cognito/utils/oauth/validateState';
@@ -82,6 +83,7 @@ describe('completeOAuthFlow', () => {
 		(oAuthStore.clearOAuthInflightData as jest.Mock).mockClear();
 		(oAuthStore.clearOAuthData as jest.Mock).mockClear();
 		(oAuthStore.storeOAuthSignIn as jest.Mock).mockClear();
+		(oAuthStore.loadOAuthState as jest.Mock).mockReset();
 	});
 
 	it('handles error presented in the redirect url', async () => {
@@ -97,6 +99,72 @@ describe('completeOAuthFlow', () => {
 				domain: 'localhost:3000',
 			}),
 		).rejects.toThrow(expectedErrorMessage);
+	});
+
+	it('dispatches customOAuthState from the persisted state before throwing on error', async () => {
+		const expectedErrorMessage = 'some error message';
+		(oAuthStore.loadOAuthState as jest.Mock).mockResolvedValueOnce(
+			'someState-2f696e766974652f616263',
+		);
+
+		await expect(
+			completeOAuthFlow({
+				currentUrl: `http://localhost:3000?error=true&error_description=${expectedErrorMessage}`,
+				userAgentValue: 'UserAgent',
+				clientId: 'clientId',
+				redirectUri: 'http://localhost:3000/',
+				responseType: 'code',
+				domain: 'localhost:3000',
+			}),
+		).rejects.toThrow(expectedErrorMessage);
+
+		expect(mockHubDispatch).toHaveBeenCalledWith(
+			'auth',
+			{
+				event: 'customOAuthState',
+				data: '/invite/abc',
+			},
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	});
+
+	it('does not dispatch customOAuthState on error when the persisted state has no custom state', async () => {
+		const expectedErrorMessage = 'some error message';
+		(oAuthStore.loadOAuthState as jest.Mock).mockResolvedValueOnce(
+			'someStateWithoutCustom',
+		);
+
+		await expect(
+			completeOAuthFlow({
+				currentUrl: `http://localhost:3000?error=true&error_description=${expectedErrorMessage}`,
+				userAgentValue: 'UserAgent',
+				clientId: 'clientId',
+				redirectUri: 'http://localhost:3000/',
+				responseType: 'code',
+				domain: 'localhost:3000',
+			}),
+		).rejects.toThrow(expectedErrorMessage);
+
+		expect(mockHubDispatch).not.toHaveBeenCalled();
+	});
+
+	it('does not dispatch customOAuthState on error when there is no persisted state', async () => {
+		const expectedErrorMessage = 'some error message';
+		(oAuthStore.loadOAuthState as jest.Mock).mockResolvedValueOnce(null);
+
+		await expect(
+			completeOAuthFlow({
+				currentUrl: `http://localhost:3000?error=true&error_description=${expectedErrorMessage}`,
+				userAgentValue: 'UserAgent',
+				clientId: 'clientId',
+				redirectUri: 'http://localhost:3000/',
+				responseType: 'code',
+				domain: 'localhost:3000',
+			}),
+		).rejects.toThrow(expectedErrorMessage);
+
+		expect(mockHubDispatch).not.toHaveBeenCalled();
 	});
 
 	describe('handleCodeFlow', () => {
