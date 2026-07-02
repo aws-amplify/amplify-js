@@ -12,6 +12,7 @@ export enum AnalyticsValidationErrorCode {
 	UnsupportedPlatform = 'UnsupportedPlatform',
 	NoTrackingId = 'NoTrackingId',
 	InvalidFlushSize = 'InvalidFlushSize',
+	NoEndpoint = 'NoEndpoint',
 }
 
 export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
@@ -39,5 +40,10 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 		},
 		[AnalyticsValidationErrorCode.NoTrackingId]: {
 			message: 'A trackingId is required to use Amazon Personalize',
+		},
+		[AnalyticsValidationErrorCode.NoEndpoint]: {
+			message: 'Missing endpoint.',
+			recoverySuggestion:
+				'Ensure Analytics.CustomerProfiles.endpoint is configured.',
 		},
 	};

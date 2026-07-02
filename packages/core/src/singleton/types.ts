@@ -6,7 +6,10 @@ import {
 	GraphQLProviderConfig,
 	LibraryAPIOptions,
 } from './API/types';
-import { AnalyticsConfig } from './Analytics/types';
+import {
+	AnalyticsConfig,
+	ConnectCustomerProfilesProviderConfig,
+} from './Analytics/types';
 import {
 	AuthConfig,
 	AuthIdentityPoolConfig,
@@ -80,6 +83,7 @@ export {
 	StorageConfig,
 	BucketInfo,
 	AnalyticsConfig,
+	ConnectCustomerProfilesProviderConfig,
 	CognitoIdentityPoolConfig,
 	GeoConfig,
 };

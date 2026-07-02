@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/analytics/customer-profiles",
+	"main": "../dist/cjs/providers/customer-profiles/index.js",
+	"browser": "../dist/esm/providers/customer-profiles/index.mjs",
+	"module": "../dist/esm/providers/customer-profiles/index.mjs",
+	"react-native": "../dist/cjs/providers/customer-profiles/index.js",
+	"typings": "../dist/esm/providers/customer-profiles/index.d.ts"
+}

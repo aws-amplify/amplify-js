@@ -88,6 +88,10 @@ export interface AmplifyOutputsAnalyticsProperties {
 		aws_region: string;
 		app_id: string;
 	};
+	amazon_connect_customer_profiles?: {
+		aws_region: string;
+		endpoint: string;
+	};
 }
 
 export type AuthType =

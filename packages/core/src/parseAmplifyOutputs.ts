@@ -181,18 +181,30 @@ function parseAuth(
 export function parseAnalytics(
 	amplifyOutputsAnalyticsProperties?: AmplifyOutputsAnalyticsProperties,
 ): AnalyticsConfig | undefined {
-	if (!amplifyOutputsAnalyticsProperties?.amazon_pinpoint) {
+	const { amazon_pinpoint, amazon_connect_customer_profiles } =
+		amplifyOutputsAnalyticsProperties ?? {};
+
+	if (!amazon_pinpoint && !amazon_connect_customer_profiles) {
 		return undefined;
 	}
 
-	const { amazon_pinpoint } = amplifyOutputsAnalyticsProperties;
+	const analyticsConfig: Partial<AnalyticsConfig> = {};
 
-	return {
-		Pinpoint: {
+	if (amazon_pinpoint) {
+		analyticsConfig.Pinpoint = {
 			appId: amazon_pinpoint.app_id,
 			region: amazon_pinpoint.aws_region,
-		},
-	};
+		};
+	}
+
+	if (amazon_connect_customer_profiles) {
+		analyticsConfig.CustomerProfiles = {
+			endpoint: amazon_connect_customer_profiles.endpoint,
+			region: amazon_connect_customer_profiles.aws_region,
+		};
+	}
+
+	return analyticsConfig as AnalyticsConfig;
 }
 
 function parseGeo(

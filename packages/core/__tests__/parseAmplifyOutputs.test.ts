@@ -454,6 +454,60 @@ describe('parseAmplifyOutputs tests', () => {
 				},
 			});
 		});
+
+		it('should parse Amazon Connect Customer Profiles config', () => {
+			const amplifyOutputs: AmplifyOutputs = {
+				version: '1',
+				analytics: {
+					amazon_connect_customer_profiles: {
+						endpoint: 'https://example.com/prod',
+						aws_region: 'us-east-1',
+					},
+				},
+			};
+
+			const result = parseAmplifyOutputs(amplifyOutputs);
+
+			expect(result).toEqual({
+				Analytics: {
+					CustomerProfiles: {
+						endpoint: 'https://example.com/prod',
+						region: 'us-east-1',
+					},
+				},
+			});
+		});
+
+		it('should parse Pinpoint and Customer Profiles together', () => {
+			const amplifyOutputs: AmplifyOutputs = {
+				version: '1',
+				analytics: {
+					amazon_pinpoint: {
+						app_id: 'xxxxx',
+						aws_region: 'us-east-1',
+					},
+					amazon_connect_customer_profiles: {
+						endpoint: 'https://example.com/prod',
+						aws_region: 'us-west-2',
+					},
+				},
+			};
+
+			const result = parseAmplifyOutputs(amplifyOutputs);
+
+			expect(result).toEqual({
+				Analytics: {
+					Pinpoint: {
+						appId: 'xxxxx',
+						region: 'us-east-1',
+					},
+					CustomerProfiles: {
+						endpoint: 'https://example.com/prod',
+						region: 'us-west-2',
+					},
+				},
+			});
+		});
 	});
 
 	describe('geo tests', () => {

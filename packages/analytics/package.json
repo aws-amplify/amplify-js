@@ -37,6 +37,9 @@
 			],
 			"personalize": [
 				"./dist/esm/providers/personalize/index.d.ts"
+			],
+			"customer-profiles": [
+				"./dist/esm/providers/customer-profiles/index.d.ts"
 			]
 		}
 	},
@@ -71,6 +74,12 @@
 			"import": "./dist/esm/providers/personalize/index.mjs",
 			"require": "./dist/cjs/providers/personalize/index.js"
 		},
+		"./customer-profiles": {
+			"react-native": "./dist/cjs/providers/customer-profiles/index.js",
+			"types": "./dist/esm/providers/customer-profiles/index.d.ts",
+			"import": "./dist/esm/providers/customer-profiles/index.mjs",
+			"require": "./dist/cjs/providers/customer-profiles/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"repository": {
@@ -91,7 +100,8 @@
 		"pinpoint",
 		"kinesis",
 		"kinesis-firehose",
-		"personalize"
+		"personalize",
+		"customer-profiles"
 	],
 	"dependencies": {
 		"@aws-sdk/client-firehose": "^3.1012.0",
