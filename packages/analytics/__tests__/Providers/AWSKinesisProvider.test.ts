@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { Credentials } from '@aws-amplify/core';
 import { AWSKinesisProvider as KinesisProvider } from '../../src/Providers/AWSKinesisProvider';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';

@@ -40,3 +40,7 @@ xcuserdata/
 coverage/
 coverage-native/
 coverage-ts/
+
+### Build caches ###
+*.tsbuildinfo
+.turbo/

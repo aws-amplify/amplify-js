@@ -47,11 +47,11 @@
 	"dependencies": {
 		"@aws-amplify/core": "5.8.17",
 		"@aws-amplify/storage": "5.9.22",
-		"@aws-sdk/client-comprehend": "3.6.1",
-		"@aws-sdk/client-polly": "3.6.1",
-		"@aws-sdk/client-rekognition": "3.6.1",
-		"@aws-sdk/client-textract": "3.6.1",
-		"@aws-sdk/client-translate": "3.6.1",
+		"@aws-sdk/client-comprehend": "3.982.0",
+		"@aws-sdk/client-polly": "3.982.0",
+		"@aws-sdk/client-rekognition": "3.982.0",
+		"@aws-sdk/client-textract": "3.982.0",
+		"@aws-sdk/client-translate": "3.982.0",
 		"@aws-sdk/eventstream-marshaller": "3.6.1",
 		"@aws-sdk/util-utf8-node": "3.6.1",
 		"buffer": "4.9.2",
@@ -69,7 +69,7 @@
 			"name": "Predictions (Convert provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIConvertPredictionsProvider }",
-			"limit": "61 kB"
+			"limit": "65 kB"
 		},
 		{
 			"name": "Predictions (Identify provider)",
@@ -118,6 +118,15 @@
 			"jsx"
 		],
 		"testEnvironment": "jsdom",
+		"testEnvironmentOptions": {
+			"customExportConditions": [
+				"node",
+				"node-addons"
+			]
+		},
+		"setupFiles": [
+			"<rootDir>/../../jest.setup.js"
+		],
 		"coverageThreshold": {
 			"global": {
 				"branches": 0,

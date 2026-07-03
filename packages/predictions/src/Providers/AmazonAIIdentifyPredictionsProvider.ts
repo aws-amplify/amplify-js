@@ -20,6 +20,7 @@ import {
 	DetectModerationLabelsCommand,
 	DetectModerationLabelsCommandInput,
 	RecognizeCelebritiesCommand,
+	Attribute,
 } from '@aws-sdk/client-rekognition';
 import {
 	IdentifyLabelsInput,
@@ -35,7 +36,6 @@ import {
 	isIdentifyCelebrities,
 	isIdentifyFromCollection,
 	IdentifyFromCollection,
-	FeatureTypes,
 } from '../types';
 import {
 	Image,
@@ -49,6 +49,7 @@ import {
 	DetectDocumentTextCommandInput,
 	AnalyzeDocumentCommand,
 	AnalyzeDocumentCommandInput,
+	FeatureType,
 } from '@aws-sdk/client-textract';
 import { makeCamelCase, makeCamelCaseArray, blobToArrayBuffer } from './Utils';
 import {
@@ -159,7 +160,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 
 		// get default value if format isn't specified in the input.
 		const format = input.text.format || configFormat;
-		const featureTypes: FeatureTypes = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
+		const featureTypes: FeatureType[] = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
 		if (format === 'FORM' || format === 'ALL') featureTypes.push('FORMS');
 		if (format === 'TABLE' || format === 'ALL') featureTypes.push('TABLES');
 
@@ -372,7 +373,8 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				return Promise.reject(err);
 			});
 
-		const param = { Attributes: ['ALL'], Image: inputImage };
+		const attributes: Attribute[] = ['ALL'];
+		const param = { Attributes: attributes, Image: inputImage };
 
 		if (
 			isIdentifyCelebrities(input.entities) &&
