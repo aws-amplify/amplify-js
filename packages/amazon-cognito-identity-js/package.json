@@ -47,7 +47,7 @@
     "test": "jest --config ./jest.config.js",
     "format": "echo \"Not implemented\"",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json",
-    "postpublish": "npm dist-tag add $npm_package_name@$npm_package_version latest"
+    "postpublish": "npm dist-tag add $npm_package_name@$npm_package_version latest --loglevel=verbose"
   },
   "main": "lib/index.js",
   "react-native": {

@@ -30,6 +30,7 @@ jobs:
       - name: Set Xcode version
         run: |
           sudo xcode-select -s /Applications/Xcode_16.4.app
+          xcodebuild -version
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
@@ -60,8 +61,11 @@ jobs:
         env:
           HOMEBREW_NO_AUTO_UPDATE: '1'
         run: |
-          brew tap wix/brew
-          brew install applesimutils
+          # Homebrew 5.2+/6 refuses to load formulae from untrusted third-party
+          # taps. Installing with the fully-qualified name trusts only this
+          # formula (instead of `brew tap wix/brew` + short name, which now
+          # fails with "Refusing to load formula ... from untrusted tap").
+          brew install wix/brew/applesimutils
           yarn global add detox-cli
         working-directory: ${{ inputs.working_directory }}
         shell: bash
