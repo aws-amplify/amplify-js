@@ -31,6 +31,23 @@ jobs:
           github_user: ${{ vars.GH_USER}}
           github_email: ${{ vars.GH_EMAIL}}
 
+      - name: Promote amazon-cognito-identity-js to the "latest" dist-tag
+        working-directory: ./amplify-js
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # amazon-cognito-identity-js is the only unscoped package whose "latest"
+          # dist-tag must track the v5 line; the rest of the fleet rides "stable-5".
+          # This previously lived in the package's "postpublish" hook, where lerna
+          # ran it mid-parallel-publish, swallowed its output, and a single failure
+          # aborted the entire release. Running it here as an explicit, sequential
+          # step makes the result visible and retryable without re-publishing.
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
+          PKG=amazon-cognito-identity-js
+          VERSION=$(node -p "require('./packages/${PKG}/package.json').version")
+          echo "Setting ${PKG}@${VERSION} as latest"
+          npm dist-tag add "${PKG}@${VERSION}" latest
+
       - name: Set github commit user
         env:
           GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
@@ -51,4 +68,5 @@ jobs:
         env:
           TARGET_BRANCH: ${{ inputs.target }}
         run: |
-          git push origin $TARGET_BRANCH
+          git pull --rebase origin "$TARGET_BRANCH"
+          git push origin "$TARGET_BRANCH"
