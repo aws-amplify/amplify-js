@@ -10,6 +10,11 @@ module.exports = {
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
 		globalObject: 'this',
+		// The modern @aws-sdk/@smithy runtime causes webpack 5 to emit its
+		// "automatic publicPath" detection, which throws ("Automatic publicPath is
+		// not supported in this browser") when there is no script URL (e.g. jsdom,
+		// SSR). This UMD bundle loads no dynamic chunks, so pin publicPath to ''.
+		publicPath: '',
 		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
 			.devtoolModuleFilenameTemplate,
 	},

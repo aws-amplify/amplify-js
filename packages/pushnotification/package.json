@@ -31,7 +31,7 @@
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
     "@types/jest": "^29.5.8",
-    "@types/node": "^8.10.15",
+    "@types/node": "^18.19.0",
     "find": "^0.2.7",
     "rimraf": "^2.6.2"
   },

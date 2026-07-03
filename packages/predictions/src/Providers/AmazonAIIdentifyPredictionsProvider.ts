@@ -20,6 +20,7 @@ import {
 	DetectModerationLabelsCommand,
 	DetectModerationLabelsCommandInput,
 	RecognizeCelebritiesCommand,
+	Attribute,
 } from '@aws-sdk/client-rekognition';
 import {
 	IdentifyLabelsInput,
@@ -209,7 +210,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		} else {
 			const param: AnalyzeDocumentCommandInput = {
 				Document: inputDocument,
-				FeatureTypes: featureTypes,
+				FeatureTypes: featureTypes as AnalyzeDocumentCommandInput['FeatureTypes'],
 			};
 
 			try {
@@ -372,7 +373,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				return Promise.reject(err);
 			});
 
-		const param = { Attributes: ['ALL'], Image: inputImage };
+		const param = { Attributes: ['ALL'] as Attribute[], Image: inputImage };
 
 		if (
 			isIdentifyCelebrities(input.entities) &&

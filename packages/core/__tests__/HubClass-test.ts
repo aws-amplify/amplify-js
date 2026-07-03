@@ -1,5 +1,10 @@
 Symbol = undefined; // this should be undefined before loading Hub
-import { Hub, Logger } from '../src';
+// Import Hub/Logger from their modules directly rather than the package barrel
+// (`../src`). The barrel eagerly loads the AWS SDK client, whose modern runtime
+// calls `Symbol.for(...)` at import time and would crash while `Symbol` is
+// intentionally undefined here. The direct modules do not pull the SDK.
+import { Hub } from '../src/Hub';
+import { ConsoleLogger as Logger } from '../src/Logger';
 
 describe('Symbol undefined before load Hub', () => {
 	test('Symbol not supported', () => {
