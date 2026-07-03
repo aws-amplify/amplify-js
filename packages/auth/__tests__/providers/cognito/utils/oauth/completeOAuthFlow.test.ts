@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Hub, decodeJWT } from '@aws-amplify/core';
+import { urlSafeEncode } from '@aws-amplify/core/internals/utils';
 
 import { handleFailure } from '../../../../../src/providers/cognito/utils/oauth/handleFailure';
 import { validateState } from '../../../../../src/providers/cognito/utils/oauth/validateState';
@@ -97,6 +98,33 @@ describe('completeOAuthFlow', () => {
 				domain: 'localhost:3000',
 			}),
 		).rejects.toThrow(expectedErrorMessage);
+	});
+
+	it('dispatches customOAuthState before throwing on an error redirect', async () => {
+		const customState = 'my/return/path';
+		// saved state format from signInWithRedirect:
+		// `${randomState}-${urlSafeEncode(customState)}`
+		const savedState = `randomState-${urlSafeEncode(customState)}`;
+		(oAuthStore.loadOAuthState as jest.Mock).mockResolvedValueOnce(savedState);
+
+		await expect(
+			completeOAuthFlow({
+				currentUrl:
+					'http://localhost:3000?error=true&error_description=some%20error',
+				userAgentValue: 'UserAgent',
+				clientId: 'clientId',
+				redirectUri: 'http://localhost:3000/',
+				responseType: 'code',
+				domain: 'localhost:3000',
+			}),
+		).rejects.toThrow('some error');
+
+		expect(mockHubDispatch).toHaveBeenCalledWith(
+			'auth',
+			{ event: 'customOAuthState', data: customState },
+			'Auth',
+			expect.any(Symbol),
+		);
 	});
 
 	describe('handleCodeFlow', () => {

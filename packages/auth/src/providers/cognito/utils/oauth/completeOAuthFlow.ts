@@ -40,6 +40,13 @@ export const completeOAuthFlow = async ({
 	const errorMessage = urlParams.searchParams.get('error_description');
 
 	if (error) {
+		// Recover the customState (if any) from the state Amplify persisted when
+		// the flow started, so `customOAuthState` listeners can still access it on
+		// failure. The persisted state is trusted (set by `signInWithRedirect`),
+		// unlike the `state` query param on the error redirect URL.
+		const savedState = await oAuthStore.loadOAuthState();
+		dispatchCustomOAuthStateIfPresent(savedState);
+
 		throw createOAuthError(errorMessage ?? error);
 	}
 
@@ -192,6 +199,9 @@ const handleImplicitFlow = async ({
 		});
 
 	if (error) {
+		const savedState = await oAuthStore.loadOAuthState();
+		dispatchCustomOAuthStateIfPresent(savedState);
+
 		throw createOAuthError(error_description ?? error);
 	}
 
@@ -242,7 +252,13 @@ const completeFlow = async ({
 	// clear history before sending out final Hub events
 	clearHistory(redirectUri);
 
-	if (isCustomState(state)) {
+	dispatchCustomOAuthStateIfPresent(state);
+	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
+	await dispatchSignedInHubEvent();
+};
+
+const dispatchCustomOAuthStateIfPresent = (state?: string | null) => {
+	if (state && isCustomState(state)) {
 		Hub.dispatch(
 			'auth',
 			{
@@ -253,8 +269,6 @@ const completeFlow = async ({
 			AMPLIFY_SYMBOL,
 		);
 	}
-	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	await dispatchSignedInHubEvent();
 };
 
 const isCustomState = (state: string): boolean => {
