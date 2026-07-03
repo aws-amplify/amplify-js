@@ -17,7 +17,11 @@ on:
 jobs:
   e2e-test:
     name: E2E-Detox ${{ inputs.test_name }}
-    runs-on: macos-latest-large
+    # Pin to macOS 15 instead of macos-latest: `macos-latest` now resolves to
+    # macOS 26, which ships only Xcode 26.x and iOS 26 simulators. These React
+    # Native sample apps and the "iPhone 16" (iOS 18.x) simulator require the
+    # Xcode 16.4 / iOS 18 toolchain that ships on the macOS 15 image.
+    runs-on: macos-15-large
     timeout-minutes: ${{ inputs.timeout_minutes }}
 
     steps:
