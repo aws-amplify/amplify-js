@@ -52,3 +52,43 @@ jobs:
           TARGET_BRANCH: ${{ inputs.target }}
         run: |
           git push origin $TARGET_BRANCH
+
+  # amazon-cognito-identity-js is a v5-only package with no newer major line, so its
+  # `latest` dist-tag must track the v5 release. This is specific to the v5 LTS line:
+  # gate on target so it cannot regress `latest` if this workflow is reused for another
+  # LTS branch (see the TODO in push-lts-release.yml).
+  set-latest-tag:
+    name: Point amazon-cognito-identity-js latest at the v5 release
+    needs: deploy
+    if: github.repository_owner == 'aws-amplify' && inputs.target == 'v5-stable'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: amplify-js
+          ref: ${{ inputs.target }}
+
+      - name: Set amazon-cognito-identity-js latest dist-tag
+        working-directory: ./amplify-js
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          PKG=amazon-cognito-identity-js
+          VERSION=$(node -p "require('./packages/amazon-cognito-identity-js/package.json').version")
+          echo "Ensuring $PKG@$VERSION is set as the latest dist-tag"
+          # Wait for the freshly published version to be visible on the registry.
+          for i in $(seq 1 10); do
+            npm view "$PKG@$VERSION" version >/dev/null 2>&1 && break
+            echo "attempt $i: $PKG@$VERSION not visible yet; waiting 15s"
+            sleep 15
+          done
+          # Idempotent: dist-tag add overwrites, so re-running this job is safe.
+          for i in $(seq 1 5); do
+            npm dist-tag add "$PKG@$VERSION" latest && exit 0
+            echo "dist-tag attempt $i failed; retrying in 15s"
+            sleep 15
+          done
+          echo "::error::failed to set latest for $PKG@$VERSION after retries"
+          exit 1
