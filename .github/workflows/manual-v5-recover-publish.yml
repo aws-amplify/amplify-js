@@ -1,0 +1,93 @@
+name: Manual - recover partial v5-stable npm publish
+
+# One-off recovery for a partial `lerna publish` on the v5-stable line.
+#
+# Background: a release run can bump + git-tag every package but fail part way
+# through the npm publish step (for example when a package lifecycle script
+# errors). lerna then leaves some already-versioned packages unpublished, which
+# can make the `aws-amplify` meta package uninstallable because it pins exact
+# versions that never reached the registry.
+#
+# `lerna publish from-package` does NOT version anything. It reads each
+# package.json version and publishes only the packages whose current version is
+# not already on the registry - i.e. exactly the ones the failed run missed.
+# Re-running is safe: packages already on npm are skipped.
+#
+# This is a manual, credentialed action. Trigger it from the Actions tab against
+# the v5-stable branch after confirming which versions are missing from npm.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'List packages that would publish without publishing (recommended first run)'
+        type: boolean
+        required: false
+        default: true
+
+concurrency:
+  group: manual-v5-recover-publish
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    name: Publish missing v5-stable packages (from-package)
+    if: github.repository_owner == 'aws-amplify'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: amplify-js
+          ref: v5-stable
+          token: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
+          # Full history so lerna can read all git tags.
+          fetch-depth: 0
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Set github commit user
+        env:
+          GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+          GITHUB_USER: ${{ vars.GH_USER }}
+        run: |
+          git config --global user.email "$GITHUB_EMAIL"
+          git config --global user.name "$GITHUB_USER"
+
+      - name: Report packages missing from npm
+        working-directory: ./amplify-js
+        run: |
+          echo "Packages whose committed version is not yet on npm:"
+          node -e '
+            const fs = require("fs");
+            const cp = require("child_process");
+            let missing = 0;
+            for (const dir of fs.readdirSync("packages")) {
+              const p = `packages/${dir}/package.json`;
+              if (!fs.existsSync(p)) continue;
+              const j = JSON.parse(fs.readFileSync(p, "utf8"));
+              if (j.private) continue;
+              let onNpm = "";
+              try { onNpm = cp.execSync(`npm view ${j.name}@${j.version} version 2>/dev/null`).toString().trim(); } catch (e) {}
+              if (onNpm !== j.version) { console.log(`  MISSING  ${j.name}@${j.version}`); missing++; }
+            }
+            if (missing === 0) console.log("  (none - registry already matches the repo)");
+          '
+
+      - name: Publish missing packages to the stable-5 dist-tag
+        if: ${{ inputs.dry_run == false }}
+        working-directory: ./amplify-js
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          # from-package publishes only packages whose version is absent from the
+          # registry; --dist-tag=stable-5 keeps them off the v6 `latest` tag.
+          yarn publish:v5-recover
+
+      - name: Dry run notice
+        if: ${{ inputs.dry_run == true }}
+        run: |
+          echo "Dry run only - no packages were published."
+          echo "Re-run this workflow with dry_run=false to publish the packages listed above."
