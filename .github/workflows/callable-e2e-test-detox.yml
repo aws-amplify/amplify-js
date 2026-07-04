@@ -83,6 +83,20 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --record-logs all --take-screenshots failing --artifacts-location ./artifacts' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
+      - name: Upload Detox artifacts
+        # Captures per-test device/app logs (RN + Hermes JS errors, crashes) and
+        # screenshots so app-level failures can be diagnosed. Also grabs the
+        # simulator's CoreSimulator logs as a fallback.
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        if: failure()
+        with:
+          name: detox-artifacts-${{ inputs.test_name }}
+          if-no-files-found: ignore
+          path: |
+            ${{ inputs.working_directory }}/artifacts
+            /Users/runner/Library/Logs/CoreSimulator
+          retention-days: 7
+          overwrite: true
