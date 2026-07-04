@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.59](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@5.0.58...@aws-amplify/pushnotification@5.0.59) (2026-07-04)
+
+### Bug Fixes
+
+- **deps-v5:** eliminate vulnerable transitive uuid via [@aws-sdk](https://github.com/aws-sdk) 3.982.0 bump ([#14857](https://github.com/aws-amplify/amplify-js/issues/14857)) ([ad5eaac](https://github.com/aws-amplify/amplify-js/commit/ad5eaac57a6816259f74ccc90c35815b5394acc4)), closes [#14827](https://github.com/aws-amplify/amplify-js/issues/14827) [#14827](https://github.com/aws-amplify/amplify-js/issues/14827)
+
 ## [5.0.58](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@5.0.57...@aws-amplify/pushnotification@5.0.58) (2026-06-15)
 
 ### Bug Fixes

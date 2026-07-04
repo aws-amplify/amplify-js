@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.8.17...@aws-amplify/core@5.8.18) (2026-07-04)
+
+### Bug Fixes
+
+- **deps-v5:** eliminate vulnerable transitive uuid via [@aws-sdk](https://github.com/aws-sdk) 3.982.0 bump ([#14857](https://github.com/aws-amplify/amplify-js/issues/14857)) ([ad5eaac](https://github.com/aws-amplify/amplify-js/commit/ad5eaac57a6816259f74ccc90c35815b5394acc4)), closes [#14827](https://github.com/aws-amplify/amplify-js/issues/14827) [#14827](https://github.com/aws-amplify/amplify-js/issues/14827)
+
 ## [5.8.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.8.16...@aws-amplify/core@5.8.17) (2026-06-15)
 
 ### Bug Fixes
