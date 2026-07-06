@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Amplify, syncSessionStorage } from '@aws-amplify/core';
-import { setGlobalContext } from '@aws-amplify/core/internals/utils';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	resetActiveSignInState,
@@ -114,6 +117,7 @@ describe('signInStore', () => {
 
 	afterAll(() => {
 		jest.restoreAllMocks();
+		clearGlobalContext();
 	});
 
 	test('LocalSignInState is empty after initialization', async () => {

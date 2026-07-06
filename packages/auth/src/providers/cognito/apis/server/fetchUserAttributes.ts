@@ -2,13 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 import { FetchUserAttributesOutput } from '../../types';
 import { fetchUserAttributes as fetchUserAttributesInternal } from '../internal/fetchUserAttributes';
+
+import { resolveServerContext } from './resolveServerContext';
 
 /**
  * Fetches the current user attributes while authenticated.
@@ -23,10 +22,7 @@ import { fetchUserAttributes as fetchUserAttributesInternal } from '../internal/
 export const fetchUserAttributes = (
 	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 ): Promise<FetchUserAttributesOutput> => {
-	const ctx =
-		'resourcesConfig' in ctxOrContextSpec
-			? ctxOrContextSpec
-			: getAmplifyServerContext(ctxOrContextSpec).amplify;
+	const ctx = resolveServerContext(ctxOrContextSpec);
 
-	return fetchUserAttributesInternal(ctx as AmplifyContext);
+	return fetchUserAttributesInternal(ctx);
 };

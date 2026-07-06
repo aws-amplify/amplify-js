@@ -269,6 +269,7 @@ describe('autoSignIn()', () => {
 			expect(mockHandleUserAuthFlow).toHaveBeenCalledWith(
 				expect.objectContaining({
 					username: user1.username,
+					session: 'ASDFGHJKL',
 				}),
 			);
 			expect(autoSignInResult.isSignedIn).toBe(true);

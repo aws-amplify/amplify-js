@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Hub, decodeJWT } from '@aws-amplify/core';
-import { setGlobalContext } from '@aws-amplify/core/internals/utils';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { handleFailure } from '../../../../../src/providers/cognito/utils/oauth/handleFailure';
 import { validateState } from '../../../../../src/providers/cognito/utils/oauth/validateState';
@@ -72,6 +75,10 @@ describe('completeOAuthFlow', () => {
 					},
 				}) as any,
 		);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	afterEach(() => {

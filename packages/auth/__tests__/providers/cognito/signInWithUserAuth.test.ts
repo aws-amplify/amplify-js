@@ -4,6 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 import {
 	AmplifyErrorCode,
+	clearGlobalContext,
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
 
@@ -53,6 +54,10 @@ cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 Amplify.configure({ Auth: authConfig });
 const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 setGlobalContext(mockCtx);
+
+afterAll(() => {
+	clearGlobalContext();
+});
 
 describe('signInWithUserAuth API tests', () => {
 	// Update how we get the mock

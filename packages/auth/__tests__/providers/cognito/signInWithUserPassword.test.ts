@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { setGlobalContext } from '@aws-amplify/core/internals/utils';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
@@ -40,6 +43,10 @@ describe('signIn API happy path cases', () => {
 	beforeAll(() => {
 		setGlobalContext(mockCtx);
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	beforeEach(() => {
@@ -88,6 +95,14 @@ describe('signIn API happy path cases', () => {
 describe('Cognito ASF', () => {
 	const mockInitiateAuth = jest.fn();
 	const mockCreateInitiateAuthClient = jest.mocked(createInitiateAuthClient);
+
+	beforeAll(() => {
+		setGlobalContext(mockCtx);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	beforeEach(() => {
 		mockInitiateAuth.mockResolvedValueOnce({

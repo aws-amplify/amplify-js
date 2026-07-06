@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 import { GetCurrentUserOutput } from '../../types';
 import { InitiateAuthException } from '../../types/errors';
 import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrentUser';
+
+import { resolveServerContext } from './resolveServerContext';
 
 /**
  * Gets the current user from the idToken.
@@ -25,10 +24,7 @@ import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrent
 export const getCurrentUser = (
 	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 ): Promise<GetCurrentUserOutput> => {
-	const ctx =
-		'resourcesConfig' in ctxOrContextSpec
-			? ctxOrContextSpec
-			: getAmplifyServerContext(ctxOrContextSpec).amplify;
+	const ctx = resolveServerContext(ctxOrContextSpec);
 
-	return getCurrentUserInternal(ctx as AmplifyContext);
+	return getCurrentUserInternal(ctx);
 };
