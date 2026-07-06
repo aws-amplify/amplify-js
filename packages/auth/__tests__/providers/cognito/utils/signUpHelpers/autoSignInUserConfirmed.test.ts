@@ -72,6 +72,6 @@ describe('autoSignInUserConfirmed()', () => {
 		autoSignInUserConfirmed(signInInput)();
 
 		expect(mockSignIn).toHaveBeenCalledTimes(1);
-		expect(mockSignIn).toHaveBeenCalledWith(signInInput);
+		expect(mockSignIn).toHaveBeenCalledWith(mockCtx, signInInput);
 	});
 });

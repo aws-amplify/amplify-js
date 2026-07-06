@@ -116,7 +116,7 @@ export async function signInWithSRP(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: handledChallengeName as ChallengeName,
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});

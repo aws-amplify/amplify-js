@@ -6,7 +6,6 @@ import {
 	CognitoUserPoolConfig,
 	ConsoleLogger,
 	Hub,
-	clearCredentials,
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
@@ -87,7 +86,7 @@ export async function signOut(...args: any[]): Promise<void> {
 	} else {
 		// complete sign out
 		tokenOrchestrator.clearTokens();
-		await clearCredentials();
+		await ctx.clearCredentials();
 		Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
 	}
 }

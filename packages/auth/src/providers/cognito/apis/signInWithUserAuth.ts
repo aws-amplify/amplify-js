@@ -126,7 +126,7 @@ export async function signInWithUserAuth(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: response.ChallengeName as ChallengeName,
 			challengeParameters: response.ChallengeParameters as ChallengeParameters,
 			availableChallenges:

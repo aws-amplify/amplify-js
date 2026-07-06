@@ -111,7 +111,7 @@ export async function signInWithUserPassword(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: retiredChallengeName as ChallengeName,
 			challengeParameters: retriedChallengeParameters as ChallengeParameters,
 		});

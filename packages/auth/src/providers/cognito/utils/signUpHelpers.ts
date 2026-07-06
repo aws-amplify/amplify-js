@@ -123,7 +123,7 @@ async function handleAutoSignInWithCodeOrUserConfirmed(
 		const output =
 			signInInput?.options?.authFlowType === 'USER_AUTH'
 				? await signInWithUserAuth(getGlobalContext(), signInInput)
-				: await signIn(signInInput);
+				: await signIn(getGlobalContext(), signInInput);
 
 		resolve(output);
 		resetAutoSignIn();

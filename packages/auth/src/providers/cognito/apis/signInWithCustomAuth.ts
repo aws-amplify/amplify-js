@@ -107,7 +107,7 @@ export async function signInWithCustomAuth(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: retriedChallengeName as ChallengeName,
 			challengeParameters: retiredChallengeParameters as ChallengeParameters,
 		});

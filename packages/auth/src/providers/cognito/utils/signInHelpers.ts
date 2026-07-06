@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Amplify,
-	AmplifyContext,
-	CognitoUserPoolConfig,
-} from '@aws-amplify/core';
+import { AmplifyContext, CognitoUserPoolConfig } from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	AuthAction,
@@ -567,13 +563,16 @@ export async function handleCustomSRPAuthFlow(
 	);
 }
 
-export async function getSignInResult(params: {
-	challengeName: ChallengeName;
-	challengeParameters: ChallengeParameters;
-	availableChallenges?: ChallengeName[];
-}): Promise<AuthSignInOutput> {
+export async function getSignInResult(
+	ctx: AmplifyContext,
+	params: {
+		challengeName: ChallengeName;
+		challengeParameters: ChallengeParameters;
+		availableChallenges?: ChallengeName[];
+	},
+): Promise<AuthSignInOutput> {
 	const { challengeName, challengeParameters, availableChallenges } = params;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
 	switch (challengeName) {
@@ -702,12 +701,12 @@ export async function getSignInResult(params: {
 			};
 
 		case 'WEB_AUTHN': {
-			const result = await handleWebAuthnSignInResult(challengeParameters);
+			const result = await handleWebAuthnSignInResult(ctx, challengeParameters);
 			if (isWebAuthnResultAuthSignInOutput(result)) {
 				return result;
 			}
 
-			return getSignInResult(result);
+			return getSignInResult(ctx, result);
 		}
 		case 'PASSWORD':
 		case 'PASSWORD_SRP':

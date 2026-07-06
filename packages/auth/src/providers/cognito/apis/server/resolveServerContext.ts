@@ -19,8 +19,6 @@ export const resolveServerContext = (
 			? ctxOrContextSpec
 			: getAmplifyServerContext(ctxOrContextSpec).amplify;
 
-	// The `'resourcesConfig' in x` duck-type does not narrow the union to
-	// `AmplifyContext`, and the legacy server context resolves to `AmplifyClass`,
-	// which structurally satisfies `AmplifyContext` here — hence the explicit cast.
+	// `'resourcesConfig' in x` doesn't narrow the union; AmplifyClass satisfies AmplifyContext structurally.
 	return ctx as AmplifyContext;
 };

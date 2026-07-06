@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger, Hub, clearCredentials } from '@aws-amplify/core';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
@@ -20,7 +20,6 @@ import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
 	Hub: { dispatch: jest.fn() },
-	clearCredentials: jest.fn(),
 }));
 jest.mock('../../../src/providers/cognito/tokenProvider');
 jest.mock('../../../src/providers/cognito/utils/oauth');
@@ -57,7 +56,7 @@ describe('signOut', () => {
 	});
 
 	// assert mocks
-	const mockClearCredentials = clearCredentials as jest.Mock;
+	const mockClearCredentials = () => mockCtx.clearCredentials as jest.Mock;
 	const mockGetRegionFromUserPoolId = jest.mocked(getRegionFromUserPoolId);
 	const mockGlobalSignOut = jest.fn();
 	const mockCreateGlobalSignOutClient = jest.mocked(createGlobalSignOutClient);
@@ -86,7 +85,7 @@ describe('signOut', () => {
 	const expectSignOut = () => ({
 		toComplete: () => {
 			expect(mockTokenOrchestrator.clearTokens).toHaveBeenCalledTimes(1);
-			expect(mockClearCredentials).toHaveBeenCalledTimes(1);
+			expect(mockClearCredentials()).toHaveBeenCalledTimes(1);
 			expect(mockHub.dispatch).toHaveBeenCalledWith(
 				'auth',
 				{ event: 'signedOut' },
@@ -97,7 +96,7 @@ describe('signOut', () => {
 		not: {
 			toComplete: () => {
 				expect(mockTokenOrchestrator.clearTokens).not.toHaveBeenCalled();
-				expect(mockClearCredentials).not.toHaveBeenCalled();
+				expect(mockClearCredentials()).not.toHaveBeenCalled();
 				expect(mockHub.dispatch).not.toHaveBeenCalled();
 			},
 		},
@@ -122,7 +121,7 @@ describe('signOut', () => {
 	afterEach(() => {
 		mockGlobalSignOut.mockReset();
 		mockRevokeToken.mockReset();
-		mockClearCredentials.mockClear();
+		mockClearCredentials().mockClear();
 		mockGetRegionFromUserPoolId.mockClear();
 		mockHub.dispatch.mockClear();
 		mockTokenOrchestrator.clearTokens.mockClear();
