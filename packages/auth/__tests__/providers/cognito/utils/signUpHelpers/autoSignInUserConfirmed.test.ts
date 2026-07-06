@@ -1,14 +1,14 @@
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
+
 import { autoSignInUserConfirmed } from '../../../../../src/providers/cognito/utils/signUpHelpers';
 import { authAPITestParams } from '../../testUtils/authApiTestParams';
 import { signIn } from '../../../../../src/providers/cognito/apis/signIn';
 import { signInWithUserAuth } from '../../../../../src/providers/cognito/apis/signInWithUserAuth';
 import { SignInInput } from '../../../../../src/providers/cognito/types/inputs';
 import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
-
-import {
-	clearGlobalContext,
-	setGlobalContext,
-} from '@aws-amplify/core/internals/utils';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
