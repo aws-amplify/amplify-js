@@ -110,6 +110,12 @@
 			"import": "./dist/esm/analytics/personalize/index.mjs",
 			"require": "./dist/cjs/analytics/personalize/index.js"
 		},
+		"./analytics/customer-profiles": {
+			"react-native": "./dist/cjs/analytics/customer-profiles/index.js",
+			"types": "./dist/esm/analytics/customer-profiles/index.d.ts",
+			"import": "./dist/esm/analytics/customer-profiles/index.mjs",
+			"require": "./dist/cjs/analytics/customer-profiles/index.js"
+		},
 		"./storage": {
 			"react-native": "./dist/cjs/storage/index.js",
 			"types": "./dist/esm/storage/index.d.ts",
@@ -214,6 +220,9 @@
 			],
 			"analytics/personalize": [
 				"./dist/esm/analytics/personalize/index.d.ts"
+			],
+			"analytics/customer-profiles": [
+				"./dist/esm/analytics/customer-profiles/index.d.ts"
 			],
 			"storage": [
 				"./dist/esm/storage/index.d.ts"

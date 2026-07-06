@@ -13,6 +13,7 @@ import * as inAppMessagingPinpointTopLevelExports from '../src/in-app-messaging/
 import * as analyticsKinesisExports from '../src/analytics/kinesis';
 import * as analyticsKinesisFirehoseExports from '../src/analytics/kinesis-firehose';
 import * as analyticsPersonalizeExports from '../src/analytics/personalize';
+import * as analyticsCustomerProfilesExports from '../src/analytics/customer-profiles';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
 
@@ -105,6 +106,12 @@ describe('aws-amplify Exports', () => {
 		it('should only export expected symbols from the Personalize provider', () => {
 			expect(Object.keys(analyticsPersonalizeExports).sort()).toEqual(
 				['record', 'flushEvents'].sort(),
+			);
+		});
+
+		it('should only export expected symbols from the Customer Profiles provider', () => {
+			expect(Object.keys(analyticsCustomerProfilesExports).sort()).toEqual(
+				['identifyUser'].sort(),
 			);
 		});
 	});
