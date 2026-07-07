@@ -1,0 +1,169 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { assertIsInitialized } from '../../../../../src/pushNotifications/errors/errorHelpers';
+import { identifyUser } from '../../../../../src/pushNotifications/providers/customer-profiles/apis/identifyUser.native';
+import { IdentifyUserInput } from '../../../../../src/pushNotifications/providers/customer-profiles/types';
+import { getToken } from '../../../../../src/pushNotifications/utils';
+import {
+	getChannelType,
+	getInflightDeviceRegistration,
+	registerDeviceWithCustomerProfiles,
+} from '../../../../../src/pushNotifications/providers/customer-profiles/utils';
+import { accessToken, channelType } from '../../../../testUtils/data';
+
+jest.mock('@aws-amplify/react-native', () => ({
+	getOperatingSystem: jest.fn(),
+}));
+jest.mock('../../../../../src/pushNotifications/errors/errorHelpers');
+jest.mock(
+	'../../../../../src/pushNotifications/providers/customer-profiles/utils',
+);
+jest.mock('../../../../../src/pushNotifications/utils');
+
+describe('identifyUser (customer-profiles, native)', () => {
+	const mockAssertIsInitialized = assertIsInitialized as jest.Mock;
+	const mockGetChannelType = getChannelType as jest.Mock;
+	const mockGetToken = getToken as jest.Mock;
+	const mockGetInflightDeviceRegistration =
+		getInflightDeviceRegistration as jest.Mock;
+	const mockRegisterDeviceWithCustomerProfiles =
+		registerDeviceWithCustomerProfiles as jest.Mock;
+
+	beforeAll(() => {
+		mockGetChannelType.mockReturnValue(channelType);
+		mockGetToken.mockReturnValue(accessToken);
+	});
+
+	afterEach(() => {
+		mockAssertIsInitialized.mockReset();
+		mockGetInflightDeviceRegistration.mockReset();
+		mockRegisterDeviceWithCustomerProfiles.mockReset();
+	});
+
+	it('must be initialized', async () => {
+		mockAssertIsInitialized.mockImplementation(() => {
+			throw new Error();
+		});
+		await expect(
+			identifyUser({ userId: 'user-id', userProfile: {} }),
+		).rejects.toThrow();
+		expect(mockRegisterDeviceWithCustomerProfiles).not.toHaveBeenCalled();
+	});
+
+	it('registers the device (using the current token) and user profile with Customer Profiles', async () => {
+		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
+		const input: IdentifyUserInput = {
+			userId: 'user-id',
+			userProfile: {
+				customProperties: { hobbies: ['biking', 'climbing'] },
+				email: 'email',
+				name: 'name',
+				plan: 'plan',
+			},
+		};
+		await identifyUser(input);
+		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalledWith({
+			deviceToken: accessToken,
+			channelType,
+			userId: input.userId,
+			userProfile: input.userProfile,
+			options: undefined,
+		});
+	});
+
+	it('prefers an explicit options.address over the current token', async () => {
+		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
+		const input: IdentifyUserInput = {
+			userId: 'user-id',
+			userProfile: {},
+			options: { address: 'explicit-address' },
+		};
+		await identifyUser(input);
+		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalledWith({
+			deviceToken: 'explicit-address',
+			channelType,
+			userId: input.userId,
+			userProfile: input.userProfile,
+			options: input.options,
+		});
+	});
+
+	it('passes through service options', async () => {
+		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
+		const userAttributes = { hobbies: ['biking', 'climbing'] };
+		const input: IdentifyUserInput = {
+			userId: 'user-id',
+			userProfile: {},
+			options: { userAttributes },
+		};
+		await identifyUser(input);
+		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalledWith(
+			expect.objectContaining({ options: { userAttributes } }),
+		);
+	});
+
+	it('passes through guest-merge and device-registration options', async () => {
+		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
+		const options = {
+			previousGuestIdentityId: 'us-east-1:guest',
+			deviceId: 'device-id',
+			platform: 'ios',
+			appVersion: '1.2.3',
+		};
+		const input: IdentifyUserInput = {
+			userId: 'user-id',
+			userProfile: {},
+			options,
+		};
+		await identifyUser(input);
+		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalledWith(
+			expect.objectContaining({ options }),
+		);
+	});
+
+	it('awaits the inflight device registration before associating the user', async () => {
+		let resolveRegistration!: () => void;
+		const inflight = new Promise<void>(resolve => {
+			resolveRegistration = resolve;
+		});
+		mockGetInflightDeviceRegistration.mockReturnValue(inflight);
+
+		const identifyPromise = identifyUser({
+			userId: 'user-id',
+			userProfile: {},
+		});
+		// registration has not completed yet, so the user association must not have run
+		await Promise.resolve();
+		expect(mockRegisterDeviceWithCustomerProfiles).not.toHaveBeenCalled();
+
+		resolveRegistration();
+		await identifyPromise;
+		expect(mockGetInflightDeviceRegistration).toHaveBeenCalled();
+		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalled();
+	});
+
+	it('does not block when there is no inflight device registration', async () => {
+		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
+		await identifyUser({ userId: 'user-id', userProfile: {} });
+		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalled();
+	});
+
+	it('rejects if the inflight device registration rejects', async () => {
+		mockGetInflightDeviceRegistration.mockReturnValue(
+			Promise.reject(new Error('registration failed')),
+		);
+		await expect(
+			identifyUser({ userId: 'user-id', userProfile: {} }),
+		).rejects.toThrow();
+		expect(mockRegisterDeviceWithCustomerProfiles).not.toHaveBeenCalled();
+	});
+
+	it('rejects if the device registration POST rejects', async () => {
+		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
+		mockRegisterDeviceWithCustomerProfiles.mockRejectedValue(new Error());
+		await expect(
+			identifyUser({ userId: 'user-id', userProfile: {} }),
+		).rejects.toThrow();
+	});
+});

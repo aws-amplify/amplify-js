@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/notifications/push-notifications/customer-profiles",
+	"main": "../../dist/cjs/pushNotifications/providers/customer-profiles/index.js",
+	"browser": "../../dist/esm/pushNotifications/providers/customer-profiles/index.mjs",
+	"module": "../../dist/esm/pushNotifications/providers/customer-profiles/index.mjs",
+	"react-native": "../../dist/cjs/pushNotifications/providers/customer-profiles/index.js",
+	"typings": "../../dist/esm/pushNotifications/providers/customer-profiles/index.d.ts"
+}

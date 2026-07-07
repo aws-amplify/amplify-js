@@ -14,6 +14,7 @@ import { PushNotificationError } from './PushNotificationError';
 export enum PushNotificationValidationErrorCode {
 	NoAppId = 'NoAppId',
 	NoCredentials = 'NoCredentials',
+	NoEndpoint = 'NoEndpoint',
 	NoRegion = 'NoRegion',
 	NotInitialized = 'NotInitialized',
 }
@@ -25,6 +26,9 @@ const pushNotificationValidationErrorMap: AmplifyErrorMap<PushNotificationValida
 		},
 		[PushNotificationValidationErrorCode.NoCredentials]: {
 			message: 'Credentials should not be empty.',
+		},
+		[PushNotificationValidationErrorCode.NoEndpoint]: {
+			message: 'Missing endpoint.',
 		},
 		[PushNotificationValidationErrorCode.NoRegion]: {
 			message: 'Missing region.',

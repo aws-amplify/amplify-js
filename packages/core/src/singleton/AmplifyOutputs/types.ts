@@ -119,9 +119,13 @@ export interface AmplifyOutputsCustomProperties {
 }
 
 export interface AmplifyOutputsNotificationsProperties {
-	aws_region: string;
-	amazon_pinpoint_app_id: string;
-	channels: string[];
+	aws_region?: string;
+	amazon_pinpoint_app_id?: string;
+	channels?: string[];
+	amazon_connect_customer_profiles?: {
+		aws_region: string;
+		endpoint: string;
+	};
 }
 
 /** @deprecated This type is deprecated and will be removed in future versions. */

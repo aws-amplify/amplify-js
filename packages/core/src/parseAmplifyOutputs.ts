@@ -19,6 +19,7 @@ import {
 	PreferredChallenge,
 } from './singleton/Auth/types';
 import { NotificationsConfig } from './singleton/Notifications/types';
+import { PushNotificationConfig } from './singleton/Notifications/PushNotification/types';
 import {
 	AmplifyOutputsAnalyticsProperties,
 	AmplifyOutputsAuthProperties,
@@ -272,21 +273,27 @@ function parseNotifications(
 		return undefined;
 	}
 
-	const { aws_region, channels, amazon_pinpoint_app_id } =
-		amplifyOutputsNotificationsProperties;
+	const {
+		aws_region,
+		channels,
+		amazon_pinpoint_app_id,
+		amazon_connect_customer_profiles,
+	} = amplifyOutputsNotificationsProperties;
 
-	const hasInAppMessaging = channels.includes('IN_APP_MESSAGING');
+	const supportedChannels = channels ?? [];
+	const hasInAppMessaging = supportedChannels.includes('IN_APP_MESSAGING');
 	const hasPushNotification =
-		channels.includes('APNS') || channels.includes('FCM');
+		supportedChannels.includes('APNS') || supportedChannels.includes('FCM');
+	const hasCustomerProfilesPush = !!amazon_connect_customer_profiles;
 
-	if (!(hasInAppMessaging || hasPushNotification)) {
+	if (!(hasInAppMessaging || hasPushNotification || hasCustomerProfilesPush)) {
 		return undefined;
 	}
 
 	// At this point, we know the Amplify outputs contains at least one supported channel
 	const notificationsConfig: NotificationsConfig = {} as NotificationsConfig;
 
-	if (hasInAppMessaging) {
+	if (hasInAppMessaging && amazon_pinpoint_app_id && aws_region) {
 		notificationsConfig.InAppMessaging = {
 			Pinpoint: {
 				appId: amazon_pinpoint_app_id,
@@ -295,13 +302,28 @@ function parseNotifications(
 		};
 	}
 
-	if (hasPushNotification) {
-		notificationsConfig.PushNotification = {
-			Pinpoint: {
-				appId: amazon_pinpoint_app_id,
-				region: aws_region,
-			},
+	// Push device registration can be backed by Amazon Pinpoint and/or Amazon
+	// Connect Customer Profiles. Each provider is emitted independently when its
+	// configuration is present, mirroring how analytics is parsed.
+	const pushNotificationConfig: Partial<PushNotificationConfig> = {};
+
+	if (hasPushNotification && amazon_pinpoint_app_id && aws_region) {
+		pushNotificationConfig.Pinpoint = {
+			appId: amazon_pinpoint_app_id,
+			region: aws_region,
 		};
+	}
+
+	if (amazon_connect_customer_profiles) {
+		pushNotificationConfig.CustomerProfiles = {
+			endpoint: amazon_connect_customer_profiles.endpoint,
+			region: amazon_connect_customer_profiles.aws_region,
+		};
+	}
+
+	if (Object.keys(pushNotificationConfig).length > 0) {
+		notificationsConfig.PushNotification =
+			pushNotificationConfig as PushNotificationConfig;
 	}
 
 	return notificationsConfig;
