@@ -9,6 +9,20 @@ import {
 } from '../../../errors';
 
 /**
+ * Path of the authenticated (Cognito user-pool) identify route.
+ *
+ * @internal
+ */
+export const IDENTIFY_USER_PATH = '/identify-user';
+
+/**
+ * Path of the guest (Identity Pool unauthenticated, IAM/SigV4) identify route.
+ *
+ * @internal
+ */
+export const GUEST_IDENTIFY_USER_PATH = '/identify-user-guest';
+
+/**
  * @internal
  */
 export const resolveConfig = () => {

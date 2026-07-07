@@ -1,5 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { resolveConfig } from './resolveConfig';
+export {
+	resolveConfig,
+	IDENTIFY_USER_PATH,
+	GUEST_IDENTIFY_USER_PATH,
+} from './resolveConfig';
 export { resolveCredentials } from './resolveCredentials';

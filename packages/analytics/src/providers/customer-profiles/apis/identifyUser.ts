@@ -1,9 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
+
 import { AnalyticsError } from '../../../errors';
 import { IdentifyUserInput } from '../types';
-import { resolveConfig, resolveCredentials } from '../utils';
+import {
+	GUEST_IDENTIFY_USER_PATH,
+	IDENTIFY_USER_PATH,
+	resolveConfig,
+	resolveCredentials,
+} from '../utils';
+
+const CONTENT_TYPE = 'application/json';
+const SIGNING_SERVICE = 'execute-api';
 
 /**
  * Sends information about a user to the Amazon Connect Customer Profiles
@@ -11,17 +21,27 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * Customer Profile so that activity can be tracked across devices & platforms
  * by using the same `userId`.
  *
- * The request is a plain REST call authenticated with the caller's Cognito
- * user-pool access token:
+ * Two authorization modes are supported, selected automatically from the
+ * resolved auth session:
  *
- * `POST {endpoint}/identify-user` with header `Authorization: Bearer <token>`.
+ *  - Authenticated (Cognito user-pool): `POST {endpoint}/identify-user` with
+ *    header `Authorization: Bearer <accessToken>`. The profile is keyed on the
+ *    caller's `cognitoSub`.
+ *  - Guest (Identity Pool unauthenticated): `POST {endpoint}/identify-user-guest`
+ *    SigV4-signed (`execute-api`) with the guest credentials. The profile is
+ *    keyed on the caller's Identity Pool `identityId` — enabling pre-login use
+ *    cases such as registering a push-notification device token before sign-in.
+ *
+ * On sign-in, pass the prior guest `identityId` via
+ * `options.previousGuestIdentityId` on an authenticated call to fold the guest
+ * profile (and its devices) into the authenticated profile.
  *
  * @param {IdentifyUserInput} params The input object used to construct the
  *  request sent to the Customer Profiles endpoint.
  *
  * @throws validation: {@link AnalyticsError} - Thrown when the provided
- *  parameters or library configuration is incorrect, or when the Cognito
- *  user-pool token cannot be resolved.
+ *  parameters or library configuration is incorrect, or when neither a Cognito
+ *  user-pool token nor guest credentials can be resolved.
  * @throws service: {@link AnalyticsError} - Thrown when the endpoint responds
  *  with a non-2xx status code.
  *
@@ -46,19 +66,46 @@ export const identifyUser = async ({
 	userProfile,
 	options,
 }: IdentifyUserInput): Promise<void> => {
-	const { endpoint } = resolveConfig();
-	const { token } = await resolveCredentials();
+	const { endpoint, region } = resolveConfig();
+	const { token, credentials } = await resolveCredentials();
+
+	const body = JSON.stringify({ userId, userProfile, options });
 
 	let response: Response;
 	try {
-		response = await fetch(`${endpoint}/identify-user`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`,
-			},
-			body: JSON.stringify({ userId, userProfile, options }),
-		});
+		if (token) {
+			response = await fetch(`${endpoint}${IDENTIFY_USER_PATH}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': CONTENT_TYPE,
+					Authorization: `Bearer ${token}`,
+				},
+				body,
+			});
+		} else {
+			// Guest (Identity Pool) path: SigV4-sign with the guest credentials
+			// using the shared signer so the request is authorized identically
+			// to any other IAM (`execute-api`) request.
+			const url = new URL(`${endpoint}${GUEST_IDENTIFY_USER_PATH}`);
+			const signed = signRequest(
+				{
+					method: 'POST',
+					url,
+					headers: { 'content-type': CONTENT_TYPE },
+					body,
+				},
+				{
+					credentials: credentials!,
+					signingRegion: region,
+					signingService: SIGNING_SERVICE,
+				},
+			);
+			response = await fetch(url.toString(), {
+				method: 'POST',
+				headers: signed.headers,
+				body,
+			});
+		}
 	} catch (error) {
 		throw new AnalyticsError({
 			name: 'NetworkException',

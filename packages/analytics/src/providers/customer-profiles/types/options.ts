@@ -5,6 +5,17 @@ import { PinpointServiceOptions } from '@aws-amplify/core/internals/providers/pi
 
 type CustomerProfilesServiceOptions = PinpointServiceOptions & {
 	channelType?: 'GCM' | 'APNS' | 'APNS_SANDBOX' | 'IN_APP';
+	deviceId?: string;
+	platform?: string;
+	appVersion?: string;
+	/**
+	 * On an authenticated `identifyUser` call, the Identity Pool `identityId`
+	 * the caller used while they were a guest. When present the backend folds
+	 * the prior guest profile (keyed on `cognitoIdentityId`) into the
+	 * authenticated profile (keyed on `cognitoSub`), carrying over any devices
+	 * registered pre-login (merge-on-sign-in).
+	 */
+	previousGuestIdentityId?: string;
 };
 
 /**
@@ -12,8 +23,10 @@ type CustomerProfilesServiceOptions = PinpointServiceOptions & {
  *
  * Reuses the shared {@link PinpointServiceOptions} (`address`, `optOut`,
  * `userAttributes`) so callers migrating between providers use the same shape,
- * with an added optional `channelType`. Matches the frozen REST contract's
- * `options` object.
+ * with added optional `channelType`, `deviceId`, `platform`, and `appVersion`.
+ * `platform` / `appVersion` describe the registering device; when omitted the
+ * backend falls back to `userProfile.demographic.platform` / `.appVersion`.
+ * Matches the frozen REST contract's `options` object.
  *
  * The homomorphic `Pick<T, keyof T>` flattens the intersection into a mapped
  * type so TypeScript can prove it satisfies the `Record<string, unknown>`
