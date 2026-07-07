@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -14,20 +13,12 @@ import { getMFASettings } from '../../../src/providers/cognito/apis/updateMFAPre
 import { MFAPreference } from '../../../src/providers/cognito/types';
 import { createSetUserMFAPreferenceClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
 type MfaPreferenceValue = MFAPreference | undefined;
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	isBrowser: jest.fn(() => false),
-}));
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
@@ -68,8 +59,17 @@ const generateUpdateMFAPreferenceOptions = () => {
 const mfaChoices = generateUpdateMFAPreferenceOptions();
 
 describe('updateMFAPreference', () => {
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+
 	// assert mocks
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 	const mockSetUserMFAPreference = jest.fn();
 	const mockCreateSetUserMFAPreferenceClient = jest.mocked(
 		createSetUserMFAPreferenceClient,
@@ -79,8 +79,7 @@ describe('updateMFAPreference', () => {
 	);
 
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
-		mockFetchAuthSession.mockResolvedValue({
+		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
 	});
@@ -94,7 +93,7 @@ describe('updateMFAPreference', () => {
 
 	afterEach(() => {
 		mockSetUserMFAPreference.mockReset();
-		mockFetchAuthSession.mockClear();
+		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
 		mockCreateSetUserMFAPreferenceClient.mockClear();
 	});
 
@@ -102,7 +101,7 @@ describe('updateMFAPreference', () => {
 		'should update with email $email, sms $sms, and totp $totp',
 		async mfaChoice => {
 			const { totp, sms, email } = mfaChoice;
-			await updateMFAPreference(mfaChoice);
+			await updateMFAPreference(mockCtx, mfaChoice);
 			expect(mockSetUserMFAPreference).toHaveBeenCalledWith(
 				{
 					region: 'us-west-2',
@@ -120,7 +119,7 @@ describe('updateMFAPreference', () => {
 
 	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
 		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
-		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+		const customCtx = createMockAmplifyContext({
 			Auth: {
 				Cognito: {
 					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -130,7 +129,11 @@ describe('updateMFAPreference', () => {
 				},
 			},
 		});
-		await updateMFAPreference(mfaChoices[0]);
+		(customCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+			tokens: { accessToken: decodeJWT(mockAccessToken) },
+		});
+
+		await updateMFAPreference(customCtx, mfaChoices[0]);
 
 		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
 			endpointOverride: expectedUserPoolEndpoint,
@@ -145,7 +148,10 @@ describe('updateMFAPreference', () => {
 			);
 		});
 		try {
-			await updateMFAPreference({ sms: 'ENABLED', totp: 'PREFERRED' });
+			await updateMFAPreference(mockCtx, {
+				sms: 'ENABLED',
+				totp: 'PREFERRED',
+			});
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(

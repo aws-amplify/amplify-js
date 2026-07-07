@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
@@ -30,9 +30,10 @@ import { getNewDeviceMetadata } from '../../../providers/cognito/utils/getNewDev
 import { WebAuthnSignInResult } from './types';
 
 export async function handleWebAuthnSignInResult(
+	ctx: AmplifyContext,
 	challengeParameters: ChallengeParameters,
 ): Promise<WebAuthnSignInResult> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { username, signInSession, signInDetails, challengeName } =
 		signInStore.getState();
@@ -101,7 +102,7 @@ export async function handleWebAuthnSignInResult(
 			signInDetails,
 		});
 		signInStore.dispatch({ type: 'RESET_STATE' });
-		await dispatchSignedInHubEvent();
+		await dispatchSignedInHubEvent(ctx);
 
 		return {
 			isSignedIn: true,
