@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -25,10 +26,14 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws - {@link AuthValidationErrorCode} - Validation errors thrown when oldPassword or newPassword are empty.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
+export async function updatePassword(input: UpdatePasswordInput): Promise<void>;
 export async function updatePassword(
+	ctx: AmplifyContext,
 	input: UpdatePasswordInput,
-): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+): Promise<void>;
+export async function updatePassword(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[UpdatePasswordInput]>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { oldPassword, newPassword } = input;
@@ -41,7 +46,7 @@ export async function updatePassword(
 		!!newPassword,
 		AuthValidationErrorCode.EmptyUpdatePassword,
 	);
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await ctx.fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const changePassword = createChangePasswordClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({

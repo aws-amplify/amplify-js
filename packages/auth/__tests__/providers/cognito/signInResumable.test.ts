@@ -1,6 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Amplify, syncSessionStorage } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	resetActiveSignInState,
@@ -14,32 +18,16 @@ import {
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signIn } from '../../../src/providers/cognito';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
 const signInStoreImplementation = require('../../../src/client/utils/store/signInStore');
 
-jest.mock('@aws-amplify/core/internals/utils');
-jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: {
-		getConfig: jest.fn(() => ({})),
-		ADD_OAUTH_LISTENER: jest.fn(() => ({})),
-	},
-	syncSessionStorage: {
-		setItem: jest.fn((key, value) => {
-			window.sessionStorage.setItem(key, value);
-		}),
-		getItem: jest.fn((key: string) => {
-			return window.sessionStorage.getItem(key);
-		}),
-		removeItem: jest.fn((key: string) => {
-			window.sessionStorage.removeItem(key);
-		}),
-	},
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
 }));
+jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 
 const signInStateKeys: Record<string, string> = {
 	username: 'CognitoSignInState.username',
@@ -108,12 +96,19 @@ describe('signInStore', () => {
 	const { username } = authAPITestParams.user1;
 	const { password } = authAPITestParams.user1;
 
+	const mockCtx = createMockAmplifyContext({
+		Auth: authConfig,
+	});
+
 	beforeEach(() => {
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 	});
 
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
+		setGlobalContext(mockCtx);
+		Amplify.configure({
+			Auth: authConfig,
+		});
 	});
 
 	afterEach(() => {
@@ -122,6 +117,7 @@ describe('signInStore', () => {
 
 	afterAll(() => {
 		jest.restoreAllMocks();
+		clearGlobalContext();
 	});
 
 	test('LocalSignInState is empty after initialization', async () => {

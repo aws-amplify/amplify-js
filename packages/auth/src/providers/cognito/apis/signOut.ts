@@ -2,11 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	Amplify,
+	AmplifyContext,
 	CognitoUserPoolConfig,
 	ConsoleLogger,
 	Hub,
-	clearCredentials,
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
@@ -15,6 +14,7 @@ import {
 	JWT,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { getAuthUserAgentValue } from '../../../utils';
@@ -43,8 +43,14 @@ const logger = new ConsoleLogger('Auth');
  * @param input - The SignOutInput object
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signOut(input?: SignOutInput): Promise<void> {
-	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
+export async function signOut(input?: SignOutInput): Promise<void>;
+export async function signOut(
+	ctx: AmplifyContext,
+	input?: SignOutInput,
+): Promise<void>;
+export async function signOut(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[SignOutInput | undefined]>(args);
+	const cognitoConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 
 	if (input?.global) {
@@ -80,7 +86,7 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 	} else {
 		// complete sign out
 		tokenOrchestrator.clearTokens();
-		await clearCredentials();
+		await ctx.clearCredentials();
 		Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
 	}
 }

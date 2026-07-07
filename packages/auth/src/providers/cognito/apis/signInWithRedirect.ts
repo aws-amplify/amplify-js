@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, OAuthConfig } from '@aws-amplify/core';
+import { AmplifyContext, OAuthConfig } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	isBrowser,
+	resolveCtxArgs,
 	urlSafeEncode,
 } from '@aws-amplify/core/internals/utils';
 
@@ -40,14 +41,21 @@ import { OpenAuthSession } from '../../../utils/types';
  */
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput,
-): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+): Promise<void>;
+export async function signInWithRedirect(
+	ctx: AmplifyContext,
+	input?: SignInWithRedirectInput,
+): Promise<void>;
+export async function signInWithRedirect(...args: any[]): Promise<void> {
+	const [ctx, input] =
+		resolveCtxArgs<[SignInWithRedirectInput | undefined]>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	oAuthStore.setAuthConfig(authConfig);
 
 	if (!input?.options?.prompt) {
-		await assertUserNotAuthenticated();
+		await assertUserNotAuthenticated(ctx);
 	}
 
 	let provider = 'COGNITO'; // Default

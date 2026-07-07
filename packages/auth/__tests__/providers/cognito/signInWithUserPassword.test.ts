@@ -1,11 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInWithUserPassword } from '../../../src/providers/cognito/apis/signInWithUserPassword';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
@@ -31,15 +35,18 @@ const authConfig = {
 		userPoolEndpoint: 'https://custom-endpoint.com',
 	},
 };
+const mockCtx = createMockAmplifyContext({ Auth: authConfig });
 
 describe('signIn API happy path cases', () => {
 	let handleUserPasswordFlowSpy: jest.SpyInstance;
 
 	beforeAll(() => {
-		Amplify.configure({
-			Auth: authConfig,
-		});
+		setGlobalContext(mockCtx);
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	beforeEach(() => {
@@ -70,7 +77,7 @@ describe('signIn API happy path cases', () => {
 	test('handleUserPasswordAuthFlow should be called with clientMetadata from request', async () => {
 		const { username } = authAPITestParams.user1;
 		const { password } = authAPITestParams.user1;
-		await signInWithUserPassword({
+		await signInWithUserPassword(mockCtx, {
 			username,
 			password,
 			options: authAPITestParams.configWithClientMetadata,
@@ -88,6 +95,14 @@ describe('signIn API happy path cases', () => {
 describe('Cognito ASF', () => {
 	const mockInitiateAuth = jest.fn();
 	const mockCreateInitiateAuthClient = jest.mocked(createInitiateAuthClient);
+
+	beforeAll(() => {
+		setGlobalContext(mockCtx);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	beforeEach(() => {
 		mockInitiateAuth.mockResolvedValueOnce({
