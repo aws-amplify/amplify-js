@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Hub, decodeJWT } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { handleFailure } from '../../../../../src/providers/cognito/utils/oauth/handleFailure';
 import { validateState } from '../../../../../src/providers/cognito/utils/oauth/validateState';
@@ -12,14 +16,15 @@ import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorTypes } from '../../../../../src/types/Auth';
 import { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/cognito/tokenProvider');
 jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
 	Hub: {
 		dispatch: jest.fn(),
 	},
 	decodeJWT: jest.fn(),
-	ConsoleLogger: jest.fn(),
 }));
 jest.mock('../../../../../src/providers/cognito/utils/oauth//handleFailure');
 jest.mock('../../../../../src/providers/cognito/utils/oauth/validateState');
@@ -59,6 +64,7 @@ describe('completeOAuthFlow', () => {
 	const mockReplaceState = jest.fn();
 
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		(global as any).fetch = mockFetch;
 		windowSpy.mockImplementation(
 			() =>
@@ -69,6 +75,10 @@ describe('completeOAuthFlow', () => {
 					},
 				}) as any,
 		);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	afterEach(() => {

@@ -1,18 +1,28 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 import { FetchUserAttributesOutput } from '../../types';
 import { fetchUserAttributes as fetchUserAttributesInternal } from '../internal/fetchUserAttributes';
 
+import { resolveServerContext } from './resolveServerContext';
+
+/**
+ * Fetches the current user attributes while authenticated.
+ *
+ * This is the server-side entry point. Accepts either an {@link AmplifyContext}
+ * (new pattern) or a legacy {@link AmplifyServer.ContextSpec} for backward compatibility.
+ *
+ * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
+ * @throws GetUserException - Cognito service errors thrown when the service is not able to get the user.
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ */
 export const fetchUserAttributes = (
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 ): Promise<FetchUserAttributesOutput> => {
-	return fetchUserAttributesInternal(
-		getAmplifyServerContext(contextSpec).amplify,
-	);
+	const ctx = resolveServerContext(ctxOrContextSpec);
+
+	return fetchUserAttributesInternal(ctx);
 };

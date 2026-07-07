@@ -1,18 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import { ChallengeName } from '../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { getSignInResult } from '../../../../../src/providers/cognito/utils/signInHelpers';
 import { AuthSignInOutput } from '../../../../../src/types';
-import { setUpGetConfig } from '../../testUtils/setUpGetConfig';
 import { createAssociateSoftwareTokenClient } from '../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
 jest.mock(
 	'../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
@@ -39,8 +33,17 @@ describe('getSignInResult', () => {
 		Promise.resolve({ Session: '123456', SecretCode: 'TEST', $metadata: {} }),
 	);
 
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
 		mockCreateAssociateSoftwareTokenClient.mockReturnValue(
 			mockAssociateSoftwareToken,
 		);
@@ -49,7 +52,7 @@ describe('getSignInResult', () => {
 	it.each(basicGetSignInResultTestCases)(
 		'should return the correct sign in step for challenge %s',
 		async (challengeName, signInStep) => {
-			const { nextStep } = await getSignInResult({
+			const { nextStep } = await getSignInResult(mockCtx, {
 				challengeName,
 				challengeParameters: {},
 			});
@@ -59,7 +62,7 @@ describe('getSignInResult', () => {
 	);
 
 	it('should return the correct sign in step for challenge MFA_SETUP when multiple available', async () => {
-		const { nextStep } = await getSignInResult({
+		const { nextStep } = await getSignInResult(mockCtx, {
 			challengeName: 'MFA_SETUP',
 			challengeParameters: {
 				MFAS_CAN_SETUP: '["SOFTWARE_TOKEN_MFA", "EMAIL_OTP"]',
@@ -71,7 +74,7 @@ describe('getSignInResult', () => {
 	});
 
 	it('should return the correct sign in step for challenge MFA_SETUP when only totp available', async () => {
-		const { nextStep } = await getSignInResult({
+		const { nextStep } = await getSignInResult(mockCtx, {
 			challengeName: 'MFA_SETUP',
 			challengeParameters: {
 				MFAS_CAN_SETUP: '["SOFTWARE_TOKEN_MFA"]',
@@ -81,7 +84,7 @@ describe('getSignInResult', () => {
 	});
 
 	it('should return the correct sign in step for challenge MFA_SETUP when only email available', async () => {
-		const { nextStep } = await getSignInResult({
+		const { nextStep } = await getSignInResult(mockCtx, {
 			challengeName: 'MFA_SETUP',
 			challengeParameters: {
 				MFAS_CAN_SETUP: '["EMAIL_OTP"]',
