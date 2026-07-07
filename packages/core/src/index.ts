@@ -78,4 +78,8 @@ export { I18n } from './I18n';
 export { ConsoleLogger } from './Logger';
 
 // Service worker
-export { ServiceWorker } from './ServiceWorker';
+export {
+	ServiceWorker,
+	ServiceWorkerOptions,
+	ServiceWorkerStateChangeHandler,
+} from './ServiceWorker';
