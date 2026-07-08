@@ -107,6 +107,12 @@ export const configureAutoTrack = (
 		});
 	};
 
-	// Initialize or update this provider's trackers
-	updateProviderTrackers(input, emitTrackingEvent, configuredTrackers);
+	// Initialize or update this provider's trackers. The 'kinesis' namespace keeps
+	// page-view tracking state isolated from other providers (e.g. Pinpoint).
+	updateProviderTrackers(
+		input,
+		emitTrackingEvent,
+		configuredTrackers,
+		'kinesis',
+	);
 };

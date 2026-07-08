@@ -180,6 +180,7 @@ describe('Kinesis API: configureAutoTrack', () => {
 		expect(MockPageViewTracker).toHaveBeenCalledWith(
 			expect.any(Function),
 			testInput.options,
+			'kinesis',
 		);
 	});
 

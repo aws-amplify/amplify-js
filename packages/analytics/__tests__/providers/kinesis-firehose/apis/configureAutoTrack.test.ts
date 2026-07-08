@@ -152,6 +152,7 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 		expect(MockPageViewTracker).toHaveBeenCalledWith(
 			expect.any(Function),
 			testInput.options,
+			'kinesis-firehose',
 		);
 	});
 
