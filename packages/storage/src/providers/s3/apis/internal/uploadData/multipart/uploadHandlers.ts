@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	AmplifyClassV6,
+	AmplifyContext,
 	KeyValueStorageInterface,
 	StorageAccessLevel,
 } from '@aws-amplify/core';
@@ -370,7 +370,7 @@ export const getMultipartUploadHandlers = (
 };
 
 const resolveAccessLevel = (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	accessLevel?: StorageAccessLevel,
 ) =>
 	accessLevel ??

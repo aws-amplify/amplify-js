@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 /**
  * Read a `Blob` (or `File`) into an `ArrayBuffer`. Implementation differs
@@ -23,7 +23,7 @@ export type ToBase64 = (input: string | ArrayBufferView) => string;
  * Per-invocation context passed into foundation-layer functions by the
  * client or server layer. It carries dependencies that are either
  * environment-specific or environment-scoped (e.g. a request-scoped
- * `AmplifyClassV6` on the server).
+ * `AmplifyContext` on the server).
  *
  * All environment-specific behavior the foundation needs MUST be injected
  * through this object so the foundation layer stays free of any
@@ -34,7 +34,7 @@ export interface FoundationContext {
 	 * The Amplify instance. On the client this is the global singleton;
 	 * on the server this is a request-scoped instance from the server adapter.
 	 */
-	amplify: AmplifyClassV6;
+	amplify: AmplifyContext;
 
 	/**
 	 * Reads a `Blob` into an `ArrayBuffer`.

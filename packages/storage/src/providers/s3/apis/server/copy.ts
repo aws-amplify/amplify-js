@@ -1,9 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 import {
 	CopyInput,
@@ -13,10 +11,12 @@ import {
 } from '../../types';
 import { copy as copyInternal } from '../internal/copy';
 
+import { resolveServerContext } from './resolveServerContext';
+
 /**
  * Copy an object from a source to a destination object within the same bucket.
  *
- * @param contextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context.
  * @param input - The `CopyWithPathInput` object.
  * @returns Output containing the destination object path.
  * @throws service: `S3Exception` - Thrown when checking for existence of the object
@@ -24,7 +24,7 @@ import { copy as copyInternal } from '../internal/copy';
  * source or destination path is not defined.
  */
 export function copy(
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput>;
 /**
@@ -34,7 +34,7 @@ export function copy(
  * Copy an object from a source to a destination object within the same bucket. Can optionally copy files across
  * different accessLevel or identityId (if source object's accessLevel is 'protected').
  *
- * @param contextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context.
  * @param input - The `CopyInput` object.
  * @returns Output containing the destination object key.
  * @throws service: `S3Exception` - Thrown when checking for existence of the object
@@ -42,13 +42,15 @@ export function copy(
  * source or destination key is not defined.
  */
 export function copy(
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: CopyInput,
 ): Promise<CopyOutput>;
 
 export function copy(
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: CopyInput | CopyWithPathInput,
 ) {
-	return copyInternal(getAmplifyServerContext(contextSpec).amplify, input);
+	const ctx = resolveServerContext(ctxOrContextSpec);
+
+	return copyInternal(ctx, input);
 }

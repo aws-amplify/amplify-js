@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify, defaultStorage } from '@aws-amplify/core';
+import { AmplifyContext, defaultStorage } from '@aws-amplify/core';
 
 import {
 	abortMultipartUpload,
@@ -50,7 +50,23 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const defaultIdentityId = 'defaultIdentityId';
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
+const mockGetConfig = jest.fn();
+const mockFetchAuthSession = jest.fn();
+let mockLibraryOptions: AmplifyContext['libraryOptions'] = {};
+// Multipart upload handlers resolve config/credentials off the AmplifyContext
+// supplied via the FoundationContext. Back resourcesConfig/libraryOptions so
+// tests can vary them, and fetchAuthSession so credentials can be controlled.
+const mockAmplifyCtx: AmplifyContext = {
+	get resourcesConfig() {
+		return mockGetConfig();
+	},
+	get libraryOptions() {
+		return mockLibraryOptions;
+	},
+	fetchAuthSession: mockFetchAuthSession,
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
 const bucket = 'bucket';
 const region = 'region';
 const defaultKey = 'key';
@@ -69,7 +85,7 @@ const mockHeadObject = jest.mocked(headObject);
 const mockCalculateContentCRC32 = jest.mocked(calculateContentCRC32);
 
 const mockCtx: FoundationContext = {
-	amplify: Amplify,
+	amplify: mockAmplifyCtx,
 	readFile: realReadFile,
 	toBase64: realToBase64,
 };
@@ -188,7 +204,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			credentials,
 			identityId: defaultIdentityId,
 		});
-		(Amplify.getConfig as jest.Mock).mockReturnValue({
+		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
 					bucket,
@@ -353,7 +369,7 @@ describe('getMultipartUploadHandlers with key', () => {
 
 		it('should use md5 if no using crc32', async () => {
 			mockMultipartUploadSuccess();
-			Amplify.libraryOptions = {
+			mockLibraryOptions = {
 				Storage: {
 					S3: {
 						isObjectLockEnabled: true,
@@ -1085,7 +1101,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			credentials,
 			identityId: defaultIdentityId,
 		});
-		(Amplify.getConfig as jest.Mock).mockReturnValue({
+		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
 					bucket,
@@ -1242,7 +1258,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 		it('should use md5 if no using crc32', async () => {
 			mockMultipartUploadSuccess();
-			Amplify.libraryOptions = {
+			mockLibraryOptions = {
 				Storage: {
 					S3: {
 						isObjectLockEnabled: true,

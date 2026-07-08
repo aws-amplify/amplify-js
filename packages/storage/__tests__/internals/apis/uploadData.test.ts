@@ -1,17 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-
 import { uploadData as advancedUploadData } from '../../../src/internals';
 import { uploadData as uploadDataInternal } from '../../../src/providers/s3/apis/internal/uploadData';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../src/providers/s3/apis/internal/uploadData');
 const mockedUploadDataInternal = jest.mocked(uploadDataInternal);
 const mockedUploadTask = 'UPLOAD_TASK';
+const mockCtx = createMockAmplifyContext();
 
 const expectedCtx = {
-	amplify: Amplify,
+	amplify: mockCtx,
 	readFile: expect.any(Function),
 	toBase64: expect.any(Function),
 };
@@ -43,7 +43,7 @@ describe('uploadData (internal)', () => {
 		const onProgress = jest.fn();
 		const metadata = { foo: 'bar' };
 
-		const result = advancedUploadData({
+		const result = advancedUploadData(mockCtx, {
 			path: 'input/path/to/mock/object',
 			data: 'data',
 			options: {
