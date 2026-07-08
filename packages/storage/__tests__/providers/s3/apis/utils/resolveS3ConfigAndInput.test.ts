@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { resolveS3ConfigAndInput } from '../../../../../src/providers/s3/utils';
 import { resolvePrefix } from '../../../../../src/utils/resolvePrefix';
@@ -17,20 +17,29 @@ import { INVALID_STORAGE_INPUT } from '../../../../../src/errors/constants';
 import { BucketInfo } from '../../../../../src/providers/s3/types/options';
 import { StorageError } from '../../../../../src/errors/StorageError';
 
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn(),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
 jest.mock('../../../../../src/utils/resolvePrefix');
 
-const mockGetConfig = jest.mocked(Amplify.getConfig);
+// resolveS3ConfigAndInput reads config/library options off the AmplifyContext
+// and calls ctx.fetchAuthSession(). We back resourcesConfig with a jest.fn so
+// individual tests can vary the returned config (and assert it was read) just
+// like the previous Amplify.getConfig() mock, and libraryOptions with a mutable
+// holder that tests can reassign.
+const mockGetConfig = jest.fn();
+let mockLibraryOptions: AmplifyContext['libraryOptions'] = {};
+const mockFetchAuthSession = jest.fn();
 const mockDefaultResolvePrefix = resolvePrefix as jest.Mock;
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
+
+const mockCtx: AmplifyContext = {
+	get resourcesConfig() {
+		return mockGetConfig();
+	},
+	get libraryOptions() {
+		return mockLibraryOptions;
+	},
+	fetchAuthSession: mockFetchAuthSession,
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
 
 const bucket = 'bucket';
 const region = 'region';
@@ -44,7 +53,7 @@ const targetIdentityId = 'targetIdentityId';
 describe('resolveS3ConfigAndInput', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		Amplify.libraryOptions = {};
+		mockLibraryOptions = {};
 	});
 	mockFetchAuthSession.mockResolvedValue({
 		credentials,
@@ -63,7 +72,7 @@ describe('resolveS3ConfigAndInput', () => {
 
 	it('should call fetchAuthSession for credentials and identityId', async () => {
 		expect.assertions(1);
-		await resolveS3ConfigAndInput(Amplify, {});
+		await resolveS3ConfigAndInput(mockCtx, {});
 		expect(mockFetchAuthSession).toHaveBeenCalled();
 	});
 
@@ -74,7 +83,7 @@ describe('resolveS3ConfigAndInput', () => {
 		});
 		const {
 			s3Config: { credentials: credentialsProvider },
-		} = await resolveS3ConfigAndInput(Amplify, {});
+		} = await resolveS3ConfigAndInput(mockCtx, {});
 		if (typeof credentialsProvider === 'function') {
 			await expect(credentialsProvider()).rejects.toMatchObject(
 				validationErrorMap[StorageValidationErrorCode.NoCredentials],
@@ -88,12 +97,12 @@ describe('resolveS3ConfigAndInput', () => {
 		mockFetchAuthSession.mockResolvedValueOnce({
 			credentials,
 		});
-		expect(async () => resolveS3ConfigAndInput(Amplify, {})).not.toThrow();
+		expect(async () => resolveS3ConfigAndInput(mockCtx, {})).not.toThrow();
 	});
 
 	it('should resolve bucket from S3 config', async () => {
 		const { bucket: resolvedBucket } = await resolveS3ConfigAndInput(
-			Amplify,
+			mockCtx,
 			{},
 		);
 		expect(resolvedBucket).toEqual(bucket);
@@ -108,13 +117,13 @@ describe('resolveS3ConfigAndInput', () => {
 				},
 			},
 		});
-		await expect(resolveS3ConfigAndInput(Amplify, {})).rejects.toMatchObject(
+		await expect(resolveS3ConfigAndInput(mockCtx, {})).rejects.toMatchObject(
 			validationErrorMap[StorageValidationErrorCode.NoBucket],
 		);
 	});
 
 	it('should resolve region from S3 config', async () => {
-		const { s3Config } = await resolveS3ConfigAndInput(Amplify, {});
+		const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {});
 		expect(s3Config.region).toEqual(region);
 		expect(mockGetConfig).toHaveBeenCalled();
 	});
@@ -127,7 +136,7 @@ describe('resolveS3ConfigAndInput', () => {
 				},
 			},
 		});
-		await expect(resolveS3ConfigAndInput(Amplify, {})).rejects.toMatchObject(
+		await expect(resolveS3ConfigAndInput(mockCtx, {})).rejects.toMatchObject(
 			validationErrorMap[StorageValidationErrorCode.NoRegion],
 		);
 	});
@@ -142,41 +151,41 @@ describe('resolveS3ConfigAndInput', () => {
 				},
 			},
 		});
-		const { s3Config } = await resolveS3ConfigAndInput(Amplify, {});
+		const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {});
 		expect(s3Config.customEndpoint).toEqual('http://localhost:20005');
 		expect(s3Config.forcePathStyle).toEqual(true);
 		expect(mockGetConfig).toHaveBeenCalled();
 	});
 
 	it('should resolve isObjectLockEnabled from S3 library options', async () => {
-		Amplify.libraryOptions = {
+		mockLibraryOptions = {
 			Storage: {
 				S3: {
 					isObjectLockEnabled: true,
 				},
 			},
 		};
-		const { isObjectLockEnabled } = await resolveS3ConfigAndInput(Amplify, {});
+		const { isObjectLockEnabled } = await resolveS3ConfigAndInput(mockCtx, {});
 		expect(isObjectLockEnabled).toEqual(true);
 	});
 
 	it('should use default prefix resolver', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
-		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {});
+		const { keyPrefix } = await resolveS3ConfigAndInput(mockCtx, {});
 		expect(mockDefaultResolvePrefix).toHaveBeenCalled();
 		expect(keyPrefix).toEqual('prefix');
 	});
 
 	it('should use prefix resolver from S3 library options if supplied', async () => {
 		const customResolvePrefix = jest.fn().mockResolvedValueOnce('prefix');
-		Amplify.libraryOptions = {
+		mockLibraryOptions = {
 			Storage: {
 				S3: {
 					prefixResolver: customResolvePrefix,
 				},
 			},
 		};
-		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {});
+		const { keyPrefix } = await resolveS3ConfigAndInput(mockCtx, {});
 		expect(customResolvePrefix).toHaveBeenCalled();
 		expect(keyPrefix).toEqual('prefix');
 		expect(mockDefaultResolvePrefix).not.toHaveBeenCalled();
@@ -184,7 +193,7 @@ describe('resolveS3ConfigAndInput', () => {
 
 	it('should resolve prefix with given access level', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
-		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {
+		const { keyPrefix } = await resolveS3ConfigAndInput(mockCtx, {
 			options: { accessLevel: 'someLevel' as any },
 		});
 		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
@@ -196,14 +205,14 @@ describe('resolveS3ConfigAndInput', () => {
 
 	it('should resolve prefix with default access level from S3 library options', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
-		Amplify.libraryOptions = {
+		mockLibraryOptions = {
 			Storage: {
 				S3: {
 					defaultAccessLevel: 'someLevel' as any,
 				},
 			},
 		};
-		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {});
+		const { keyPrefix } = await resolveS3ConfigAndInput(mockCtx, {});
 		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
 			accessLevel: 'someLevel',
 			targetIdentityId,
@@ -213,7 +222,7 @@ describe('resolveS3ConfigAndInput', () => {
 
 	it('should resolve prefix with `guest` access level if no access level is given', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
-		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {});
+		const { keyPrefix } = await resolveS3ConfigAndInput(mockCtx, {});
 		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
 			accessLevel: 'guest', // default access level
 			targetIdentityId,
@@ -234,7 +243,7 @@ describe('resolveS3ConfigAndInput', () => {
 					},
 				},
 			});
-			const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
+			const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {
 				options: {
 					locationCredentialsProvider: mockLocationCredentialsProvider,
 				},
@@ -252,7 +261,7 @@ describe('resolveS3ConfigAndInput', () => {
 		});
 
 		it('should not throw when path is pass as a string', async () => {
-			const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
+			const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {
 				path: 'my-path',
 				options: {
 					locationCredentialsProvider: mockLocationCredentialsProvider,
@@ -291,7 +300,7 @@ describe('resolveS3ConfigAndInput', () => {
 			const testCases = [...deprecatedInputs, ...callbackPathInputs];
 
 			it.each(testCases)('should throw when input is %s', async input => {
-				const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
+				const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {
 					...input,
 					options: {
 						locationCredentialsProvider: mockLocationCredentialsProvider,
@@ -319,7 +328,7 @@ describe('resolveS3ConfigAndInput', () => {
 		const {
 			bucket: resolvedBucket,
 			s3Config: { region: resolvedRegion },
-		} = await resolveS3ConfigAndInput(Amplify, {
+		} = await resolveS3ConfigAndInput(mockCtx, {
 			options: { bucket: bucketInfo },
 		});
 
@@ -330,7 +339,7 @@ describe('resolveS3ConfigAndInput', () => {
 
 	it('should throw when unable to lookup bucket from the config when bucket API option is passed', async () => {
 		try {
-			await resolveS3ConfigAndInput(Amplify, {
+			await resolveS3ConfigAndInput(mockCtx, {
 				options: { bucket: 'error-bucket' },
 			});
 		} catch (error: any) {

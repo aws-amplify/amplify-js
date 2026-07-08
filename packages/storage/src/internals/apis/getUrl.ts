@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { getUrl as getUrlInternal } from '../../providers/s3/apis/internal/getUrl';
 import { GetUrlInput } from '../types/inputs';
@@ -10,8 +10,8 @@ import { GetUrlOutput } from '../types/outputs';
 /**
  * @internal
  */
-export const getUrl = (input: GetUrlInput) =>
-	getUrlInternal(Amplify, {
+export const getUrl = (ctx: AmplifyContext, input: GetUrlInput) =>
+	getUrlInternal(ctx, {
 		path: input.path,
 		options: {
 			useAccelerateEndpoint: input?.options?.useAccelerateEndpoint,
