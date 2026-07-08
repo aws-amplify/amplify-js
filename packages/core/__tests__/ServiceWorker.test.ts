@@ -295,6 +295,32 @@ describe('ServiceWorker test', () => {
 			errorSpy.mockRestore();
 		});
 
+		test('logs and swallows errors thrown by an async onStateChange handler', async () => {
+			const errorSpy = jest
+				.spyOn(ConsoleLogger.prototype, 'error')
+				.mockImplementation(() => undefined);
+			const thrown = new Error('async handler boom');
+			const onStateChange = jest.fn(async () => {
+				throw thrown;
+			});
+			const handleStateChange =
+				await registerAndGetStateChangeHandler(onStateChange);
+
+			// An async handler that rejects must not reject out of the async
+			// listener (the listener awaits the handler inside the try/catch).
+			await expect(handleStateChange()).resolves.toBeUndefined();
+
+			expect(onStateChange).toHaveBeenCalledWith('activated');
+			expect(errorSpy).toHaveBeenCalledWith(
+				'onStateChange handler threw',
+				thrown,
+			);
+			// The built-in path stays suppressed even when the handler rejects.
+			expect(record).not.toHaveBeenCalled();
+
+			errorSpy.mockRestore();
+		});
+
 		test('invokes the handler once per statechange event', async () => {
 			const onStateChange = jest.fn();
 			const handleStateChange =

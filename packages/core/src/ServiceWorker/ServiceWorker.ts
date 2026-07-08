@@ -264,9 +264,12 @@ export class ServiceWorkerClass {
 			this._logger.debug(`ServiceWorker statechange: ${currentState}`);
 
 			// Notify a consumer-provided handler, isolating any error it throws so
-			// it cannot surface as an unhandled rejection from the listener.
+			// it cannot surface as an unhandled rejection from the listener. The
+			// handler is awaited so a rejected promise from an async handler is
+			// caught here too (`await undefined` resolves immediately for sync or
+			// absent handlers).
 			try {
-				onStateChange?.(currentState);
+				await onStateChange?.(currentState);
 			} catch (e) {
 				this._logger.error('onStateChange handler threw', e);
 			}
