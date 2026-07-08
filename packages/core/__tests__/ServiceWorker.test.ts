@@ -251,6 +251,9 @@ describe('ServiceWorker test', () => {
 			const onStateChange = jest.fn();
 			const handleStateChange =
 				await registerAndGetStateChangeHandler(onStateChange);
+			// Ignore the initial-state emit fired during register(); this test
+			// isolates the statechange-listener path (covered separately below).
+			onStateChange.mockClear();
 
 			await handleStateChange();
 
@@ -280,6 +283,9 @@ describe('ServiceWorker test', () => {
 			});
 			const handleStateChange =
 				await registerAndGetStateChangeHandler(onStateChange);
+			// Ignore the initial-state emit fired during register().
+			onStateChange.mockClear();
+			errorSpy.mockClear();
 
 			// A throwing handler must not reject out of the async listener.
 			await expect(handleStateChange()).resolves.toBeUndefined();
@@ -305,6 +311,10 @@ describe('ServiceWorker test', () => {
 			});
 			const handleStateChange =
 				await registerAndGetStateChangeHandler(onStateChange);
+			// Let the initial-state emit's async rejection settle, then ignore it.
+			await new Promise(resolve => setTimeout(resolve, 0));
+			onStateChange.mockClear();
+			errorSpy.mockClear();
 
 			// An async handler that rejects must not reject out of the async
 			// listener (the listener awaits the handler inside the try/catch).
@@ -325,6 +335,8 @@ describe('ServiceWorker test', () => {
 			const onStateChange = jest.fn();
 			const handleStateChange =
 				await registerAndGetStateChangeHandler(onStateChange);
+			// Ignore the initial-state emit fired during register().
+			onStateChange.mockClear();
 
 			await handleStateChange();
 			await handleStateChange();
@@ -361,6 +373,11 @@ describe('ServiceWorker test', () => {
 				onStateChange: handlerB,
 			});
 
+			// Both registrations fire an initial-state emit; ignore those here so
+			// this test isolates the per-listener capture behavior.
+			handlerA.mockClear();
+			handlerB.mockClear();
+
 			const [, listenerA] =
 				workerA.addEventListener.mock.calls.find(
 					call => call[0] === 'statechange',
@@ -373,6 +390,31 @@ describe('ServiceWorker test', () => {
 			expect(handlerA).toHaveBeenCalledTimes(1);
 			expect(handlerA).toHaveBeenCalledWith('activated');
 			expect(handlerB).not.toHaveBeenCalled();
+			expect(record).not.toHaveBeenCalled();
+		});
+
+		test('emits the current state to the handler on register when the worker is already in a state', async () => {
+			const onStateChange = jest.fn();
+
+			// registerAndGetStateChangeHandler resolves after register() completes;
+			// the initial-state emit runs synchronously during _setupListeners, so
+			// the handler has already been notified with the current state without
+			// any statechange event being dispatched.
+			await registerAndGetStateChangeHandler(onStateChange);
+
+			expect(onStateChange).toHaveBeenCalledTimes(1);
+			expect(onStateChange).toHaveBeenCalledWith('activated');
+			// The initial emit must NOT trigger the built-in Pinpoint path; that
+			// path stays unchanged for consumers that do not pass a handler.
+			expect(fetchAuthSession).not.toHaveBeenCalled();
+			expect(record).not.toHaveBeenCalled();
+		});
+
+		test('does not record to Pinpoint on register when no handler is provided (no initial emit)', async () => {
+			// Without a handler there is no initial emit, and the built-in path is
+			// only exercised on an actual statechange event, not on register().
+			await registerAndGetStateChangeHandler();
+
 			expect(record).not.toHaveBeenCalled();
 		});
 	});

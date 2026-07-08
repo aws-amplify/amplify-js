@@ -92,7 +92,11 @@ export class ServiceWorkerClass {
 	 *  - API Doc: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
 	 * @param {ServiceWorkerOptions} [options] Optional registration options. When
 	 * `onStateChange` is provided it is invoked on every service worker state
-	 * change and replaces the built-in Pinpoint auto-recording.
+	 * change and replaces the built-in Pinpoint auto-recording. It is also
+	 * invoked once with the worker's current state at registration time, so an
+	 * already-active worker (which dispatches no `statechange` event) is still
+	 * observed. This initial emit applies only to `onStateChange`; the built-in
+	 * Pinpoint path is unaffected.
 	 * @returns {Promise}
 	 *	- resolve(ServiceWorkerRegistration)
 	 *	- reject(Error)
@@ -264,15 +268,8 @@ export class ServiceWorkerClass {
 			this._logger.debug(`ServiceWorker statechange: ${currentState}`);
 
 			// Notify a consumer-provided handler, isolating any error it throws so
-			// it cannot surface as an unhandled rejection from the listener. The
-			// handler is awaited so a rejected promise from an async handler is
-			// caught here too (`await undefined` resolves immediately for sync or
-			// absent handlers).
-			try {
-				await onStateChange?.(currentState);
-			} catch (e) {
-				this._logger.error('onStateChange handler threw', e);
-			}
+			// it cannot surface as an unhandled rejection from the listener.
+			await this._notifyStateChange(onStateChange, currentState);
 
 			// When no handler is provided, fall back to the built-in (deprecated)
 			// Pinpoint auto-recording. A supplied handler overrides it, preventing
@@ -309,8 +306,44 @@ export class ServiceWorkerClass {
 				}
 			}
 		});
+
+		// A worker that is already in a state when this listener is attached
+		// (e.g. `activated` on a repeat visit, where `register()` resolves via
+		// the `registration.active` branch) emits no `statechange` event, so the
+		// consumer hook would otherwise never observe the current state. Notify
+		// the hook once with the current state to close that gap. The built-in
+		// Pinpoint path is intentionally NOT invoked here: doing so would change
+		// existing (no-hook) behavior, which must remain identical to today.
+		const initialState = this.serviceWorker.state;
+		if (onStateChange && initialState) {
+			this._logger.debug(`ServiceWorker initial state: ${initialState}`);
+			this._notifyStateChange(onStateChange, initialState).catch(() => {
+				// _notifyStateChange already logs handler errors; this catch only
+				// satisfies the no-floating-promises contract for the fire-and-forget
+				// initial emit.
+			});
+		}
+
 		this.serviceWorker.addEventListener('message', event => {
 			this._logger.debug(`ServiceWorker message event: ${event}`);
 		});
+	}
+
+	/**
+	 * Invoke the consumer `onStateChange` handler with the given state, isolating
+	 * any error it throws (or rejects with, for an async handler) so it cannot
+	 * surface as an unhandled rejection. Awaiting the handler means a rejected
+	 * promise from an async handler is caught here too; `await undefined`
+	 * resolves immediately for sync or absent handlers.
+	 */
+	private async _notifyStateChange(
+		onStateChange: ServiceWorkerStateChangeHandler | undefined,
+		state: ServiceWorkerState,
+	) {
+		try {
+			await onStateChange?.(state);
+		} catch (e) {
+			this._logger.error('onStateChange handler threw', e);
+		}
 	}
 }
