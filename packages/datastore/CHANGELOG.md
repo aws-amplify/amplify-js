@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.7.26...@aws-amplify/datastore@4.7.27) (2026-07-09)
+
+### Bug Fixes
+
+- **deps-v5:** bump immer to ^11.1.9 in datastore to fix prototype pollution ([#14868](https://github.com/aws-amplify/amplify-js/issues/14868)) ([8407cd1](https://github.com/aws-amplify/amplify-js/commit/8407cd1b4c33f9bf8a9bf2ae06c6b7c89bdf76c4))
+
 ## [4.7.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.7.25...@aws-amplify/datastore@4.7.26) (2026-07-04)
 
 **Note:** Version bump only for package @aws-amplify/datastore
