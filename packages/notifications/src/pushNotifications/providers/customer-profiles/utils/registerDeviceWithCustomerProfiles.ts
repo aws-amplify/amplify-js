@@ -7,6 +7,7 @@ import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import { PushNotificationError } from '../../../errors';
 import { ChannelType, IdentifyUserOptions } from '../types';
 
+import { getDeviceId } from './getDeviceId';
 import {
 	GUEST_IDENTIFY_USER_PATH,
 	IDENTIFY_USER_PATH,
@@ -56,12 +57,22 @@ export const registerDeviceWithCustomerProfiles = async ({
 	const { endpoint, region } = resolveConfig();
 	const { token, credentials } = await resolveCredentials();
 
+	// Device-registration fields are nested under `options` to match the
+	// backend `IdentifyUserRequest` contract: the endpoint keys the device
+	// object on `options.deviceId`, reads the token from `options.address`, and
+	// the push-capability channel from `options.channelType`. A stable per-install
+	// `deviceId` is resolved (and persisted) when the caller does not supply one,
+	// so token refreshes upsert the same device object instead of duplicating it.
+	const deviceId = options?.deviceId ?? (await getDeviceId());
 	const body = JSON.stringify({
 		userId,
-		deviceToken,
-		channelType,
-		userProfile,
-		options,
+		userProfile: userProfile ?? {},
+		options: {
+			...options,
+			deviceId,
+			address: deviceToken,
+			channelType,
+		},
 	});
 
 	let response: Response;
