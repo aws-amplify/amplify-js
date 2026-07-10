@@ -16,6 +16,9 @@ on:
       # Branch naming pattern: feat/{PREID}/whatever
       # Example: feat/alpha/main, feat/beta/my-feature, feat/rc/test
       - feat/preid/whatever
+      # Preid derives from the 2nd path segment (see parse-preid):
+      # publishes under npm dist-tag "connect-customer-profiles-push"
+      - feat/connect-customer-profiles-push
 
 jobs:
   # Job 1: Parse preid from branch name
