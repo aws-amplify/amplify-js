@@ -24,12 +24,32 @@ const mockInternalResult: any = {
 	state: 'IN_PROGRESS',
 	result: Promise.resolve({ path: 'x' }),
 };
-const mockAmplifyClass = 'AMPLIFY_CLASS' as any;
+const mockResourcesConfig = {} as any;
+// Realistic `AmplifyClass` shape: getConfig()/libraryOptions/Auth.*, without the
+// top-level context methods (fetchAuthSession/clearCredentials/getTokens).
+const mockAmplifyClass = {
+	getConfig: jest.fn(() => mockResourcesConfig),
+	libraryOptions: {},
+	Auth: {
+		fetchAuthSession: jest.fn(),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	},
+} as any;
+// The context the internal impl should receive after resolveServerContext
+// adapts the AmplifyClass into an AmplifyContext.
+const expectedResolvedCtx = {
+	resourcesConfig: mockResourcesConfig,
+	libraryOptions: mockAmplifyClass.libraryOptions,
+	fetchAuthSession: expect.any(Function),
+	clearCredentials: expect.any(Function),
+	getTokens: expect.any(Function),
+};
 const mockAmplifyContextSpec = {
 	token: { value: Symbol('123') },
 };
 const expectedCtx = {
-	amplify: mockAmplifyClass,
+	amplify: expectedResolvedCtx,
 	readFile: expect.any(Function),
 	toBase64: expect.any(Function),
 };
@@ -91,10 +111,15 @@ describe('server-side uploadData', () => {
 		};
 		uploadData(mockAmplifyContextSpec as any, input);
 		expect(mockGetAmplifyServerContext).toBeCalledWith(mockAmplifyContextSpec);
-		// Ensure the amplify passed to internal uploadData is from the server context
-		expect((mockInternalUploadDataImpl.mock.calls[0][0] as any).amplify).toBe(
-			mockAmplifyClass,
-		);
+		// Ensure the amplify passed to internal uploadData is the AmplifyContext
+		// resolved from the server context (bridged to the AmplifyClass), and that
+		// it exposes the top-level context methods the internal impl relies on.
+		const passedAmplify = (mockInternalUploadDataImpl.mock.calls[0][0] as any)
+			.amplify;
+		expect(passedAmplify.resourcesConfig).toBe(mockResourcesConfig);
+		expect(typeof passedAmplify.fetchAuthSession).toBe('function');
+		expect(typeof passedAmplify.clearCredentials).toBe('function');
+		expect(typeof passedAmplify.getTokens).toBe('function');
 	});
 
 	it('should return a task type that does NOT expose pause/resume at the type level', () => {

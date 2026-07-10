@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import {
 	ListAllInput,
@@ -57,13 +58,35 @@ export function list(input?: ListPaginateInput): Promise<ListPaginateOutput>;
  * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
  */
 export function list(input?: ListAllInput): Promise<ListAllOutput>;
-
 export function list(
-	input?:
-		| ListAllInput
-		| ListPaginateInput
-		| ListAllWithPathInput
-		| ListPaginateWithPathInput,
-) {
-	return listInternal(Amplify, input ?? {});
+	ctx: AmplifyContext,
+	input: ListPaginateWithPathInput,
+): Promise<ListPaginateWithPathOutput>;
+export function list(
+	ctx: AmplifyContext,
+	input: ListAllWithPathInput,
+): Promise<ListAllWithPathOutput>;
+export function list(
+	ctx: AmplifyContext,
+	input?: ListPaginateInput,
+): Promise<ListPaginateOutput>;
+export function list(
+	ctx: AmplifyContext,
+	input?: ListAllInput,
+): Promise<ListAllOutput>;
+
+export function list(...args: any[]) {
+	const [ctx, input] =
+		resolveCtxArgs<
+			[
+				(
+					| ListAllInput
+					| ListPaginateInput
+					| ListAllWithPathInput
+					| ListPaginateWithPathInput
+				)?,
+			]
+		>(args);
+
+	return listInternal(ctx, input ?? {});
 }

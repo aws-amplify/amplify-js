@@ -1,10 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 import {
 	RemoveInput,
@@ -15,17 +13,19 @@ import {
 } from '../../types';
 import { remove as removeInternal } from '../internal/remove';
 
+import { resolveServerContext } from './resolveServerContext';
+
 /**
  * Remove a file or folder from your S3 bucket.
  * @param input - The `RemoveWithPathInput` object.
- * @param contextSpec - The context spec used to get the Amplify server context.
+ * @param ctxOrContextSpec - The context spec used to get the Amplify server context.
  * @return Operation handle with result promise and cancellation capability.
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object.
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
  * when there is no path or path is empty or path has a leading slash.
  */
 export function remove(
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: RemoveWithPathInput,
 ): RemoveOperation<RemoveWithPathOutput>;
 /**
@@ -34,24 +34,25 @@ export function remove(
  *
  * Remove a file from your S3 bucket.
  * @param input - The `RemoveInput` object.
- * @param contextSpec - The context spec used to get the Amplify server context.
+ * @param ctxOrContextSpec - The context spec used to get the Amplify server context.
  * @return Operation handle with result promise and cancellation capability.
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
  * when there is no key or its empty.
  */
 export function remove(
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: RemoveInput,
 ): RemoveOperation<RemoveOutput>;
 
 export function remove(
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: RemoveInput | RemoveWithPathInput,
 ) {
+	const ctx = resolveServerContext(ctxOrContextSpec);
 	if ('key' in input) {
-		return removeInternal(getAmplifyServerContext(contextSpec).amplify, input);
+		return removeInternal(ctx, input);
 	} else {
-		return removeInternal(getAmplifyServerContext(contextSpec).amplify, input);
+		return removeInternal(ctx, input);
 	}
 }

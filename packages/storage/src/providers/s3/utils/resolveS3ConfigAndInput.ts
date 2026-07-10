@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
+import { AmplifyContext, StorageAccessLevel } from '@aws-amplify/core';
 import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -22,7 +22,7 @@ import {
 	StorageBucket,
 } from '../types/options';
 
-import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
+import { DEFAULT_ACCESS_LEVEL } from './constants';
 
 interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
@@ -54,7 +54,7 @@ type StorageInput = DeprecatedStorageInput | CallbackPathStorageInput;
 /**
  * resolve the common input options for S3 API handlers from Amplify configuration and library options.
  *
- * @param {AmplifyClassV6} amplify The Amplify instance.
+ * @param {AmplifyContext} amplify The Amplify instance.
  * @param {S3ApiOptions} apiOptions The input options for S3 provider.
  * @returns {Promise<ResolvedS3ConfigAndInput>} The resolved common input options for S3 API handlers.
  * @throws A `StorageError` with `error.name` from `StorageValidationErrorCode` indicating invalid
@@ -63,7 +63,7 @@ type StorageInput = DeprecatedStorageInput | CallbackPathStorageInput;
  * @internal
  */
 export const resolveS3ConfigAndInput = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	apiInput?: StorageInput & { options?: S3ApiOptions },
 ): Promise<ResolvedS3ConfigAndInput> => {
 	const { options: apiOptions } = apiInput ?? {};
@@ -71,7 +71,7 @@ export const resolveS3ConfigAndInput = async (
 	 * IdentityId is always cached in memory so we can safely make calls here. It
 	 * should be stable even for unauthenticated users, regardless of credentials.
 	 */
-	const { identityId } = await amplify.Auth.fetchAuthSession();
+	const { identityId } = await amplify.fetchAuthSession();
 
 	/**
 	 * A credentials provider function instead of a static credentials object is
@@ -92,7 +92,7 @@ export const resolveS3ConfigAndInput = async (
 		// we support refreshing only the credentials.
 		const { credentials } = isLocationCredentialsProvider(apiOptions)
 			? await apiOptions.locationCredentialsProvider(options)
-			: await amplify.Auth.fetchAuthSession();
+			: await amplify.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			StorageValidationErrorCode.NoCredentials,
@@ -105,8 +105,10 @@ export const resolveS3ConfigAndInput = async (
 		bucket: defaultBucket,
 		region: defaultRegion,
 		dangerouslyConnectToHttpEndpointForTesting,
+		endpointProvider,
+		forcePathStyle: configForcePathStyle,
 		buckets,
-	} = amplify.getConfig()?.Storage?.S3 ?? {};
+	} = amplify.resourcesConfig?.Storage?.S3 ?? {};
 
 	const { bucket = defaultBucket, region = defaultRegion } =
 		(apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets)) || {};
@@ -129,18 +131,28 @@ export const resolveS3ConfigAndInput = async (
 
 	const keyPrefix = await prefixResolver({ accessLevel, targetIdentityId });
 
+	// Resolve custom endpoint: apiOptions > endpointProvider > dangerouslyConnect
+	let resolvedEndpoint: string | undefined = apiOptions?.customEndpoint;
+	let resolvedForcePathStyle: boolean | undefined = configForcePathStyle;
+
+	if (!resolvedEndpoint && endpointProvider) {
+		resolvedEndpoint = await endpointProvider({ bucket, region });
+	}
+
+	if (!resolvedEndpoint && dangerouslyConnectToHttpEndpointForTesting) {
+		resolvedEndpoint = dangerouslyConnectToHttpEndpointForTesting;
+		resolvedForcePathStyle = true;
+	}
+
 	return {
 		s3Config: {
 			credentials: credentialsProvider,
 			region,
 			useAccelerateEndpoint: apiOptions?.useAccelerateEndpoint,
-			...(apiOptions?.customEndpoint
-				? { customEndpoint: apiOptions.customEndpoint }
-				: {}),
-			...(dangerouslyConnectToHttpEndpointForTesting
+			...(resolvedEndpoint
 				? {
-						customEndpoint: LOCAL_TESTING_S3_ENDPOINT,
-						forcePathStyle: true,
+						customEndpoint: resolvedEndpoint,
+						forcePathStyle: resolvedForcePathStyle ?? false,
 					}
 				: {}),
 		},

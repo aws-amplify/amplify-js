@@ -16,7 +16,27 @@ jest.mock('@aws-amplify/core/internals/adapter-core');
 const mockInternalGetPropertiesImpl = jest.mocked(internalGetPropertiesImpl);
 const mockGetAmplifyServerContext = jest.mocked(getAmplifyServerContext);
 const mockInternalResult = 'RESULT' as any;
-const mockAmplifyClass = 'AMPLIFY_CLASS' as any;
+const mockResourcesConfig = {} as any;
+// Realistic `AmplifyClass` shape: getConfig()/libraryOptions/Auth.*, without the
+// top-level context methods (fetchAuthSession/clearCredentials/getTokens).
+const mockAmplifyClass = {
+	getConfig: jest.fn(() => mockResourcesConfig),
+	libraryOptions: {},
+	Auth: {
+		fetchAuthSession: jest.fn(),
+		clearCredentials: jest.fn(),
+		getTokens: jest.fn(),
+	},
+} as any;
+// The context the internal impl should receive after resolveServerContext
+// adapts the AmplifyClass into an AmplifyContext.
+const expectedResolvedCtx = {
+	resourcesConfig: mockResourcesConfig,
+	libraryOptions: mockAmplifyClass.libraryOptions,
+	fetchAuthSession: expect.any(Function),
+	clearCredentials: expect.any(Function),
+	getTokens: expect.any(Function),
+};
 const mockAmplifyContextSpec = {
 	token: { value: Symbol('123') },
 };
@@ -41,7 +61,7 @@ describe('server-side getProperties', () => {
 			mockInternalResult,
 		);
 		expect(mockInternalGetPropertiesImpl).toBeCalledWith(
-			mockAmplifyClass,
+			expectedResolvedCtx,
 			input,
 		);
 	});
@@ -54,7 +74,7 @@ describe('server-side getProperties', () => {
 			mockInternalResult,
 		);
 		expect(mockInternalGetPropertiesImpl).toBeCalledWith(
-			mockAmplifyClass,
+			expectedResolvedCtx,
 			input,
 		);
 	});

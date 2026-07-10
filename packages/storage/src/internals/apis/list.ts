@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { list as listInternal } from '../../providers/s3/apis/internal/list';
 import { ListAllInput, ListInput, ListPaginateInput } from '../types/inputs';
@@ -14,18 +14,25 @@ import { ListOutput } from '../types/outputs';
 /**
  * @internal
  */
-export function list(input: ListAllInput): Promise<ListAllWithPathOutput>;
+export function list(
+	ctx: AmplifyContext,
+	input: ListAllInput,
+): Promise<ListAllWithPathOutput>;
 /**
  * @internal
  */
 export function list(
+	ctx: AmplifyContext,
 	input: ListPaginateInput,
 ): Promise<ListPaginateWithPathOutput>;
 /**
  * @internal
  */
-export function list(input: ListInput): Promise<ListOutput> {
-	return listInternal(Amplify, {
+export function list(
+	ctx: AmplifyContext,
+	input: ListInput,
+): Promise<ListOutput> {
+	return listInternal(ctx, {
 		path: input.path,
 		options: {
 			bucket: input.options?.bucket,
