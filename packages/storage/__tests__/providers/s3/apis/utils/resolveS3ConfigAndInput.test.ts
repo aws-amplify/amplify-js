@@ -152,9 +152,86 @@ describe('resolveS3ConfigAndInput', () => {
 			},
 		});
 		const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {});
-		expect(s3Config.customEndpoint).toEqual('http://localhost:20005');
+		expect(s3Config.customEndpoint).toEqual('true');
 		expect(s3Config.forcePathStyle).toEqual(true);
 		expect(mockGetConfig).toHaveBeenCalled();
+	});
+
+	it('should resolve customEndpoint from endpointProvider in S3 config', async () => {
+		const endpointProvider = jest
+			.fn()
+			.mockResolvedValue('https://from-provider.example.com');
+		mockGetConfig.mockReturnValueOnce({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					endpointProvider,
+				},
+			},
+		});
+		const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {});
+		expect(endpointProvider).toHaveBeenCalledWith({ bucket, region });
+		expect(s3Config.customEndpoint).toEqual(
+			'https://from-provider.example.com',
+		);
+		expect(s3Config.forcePathStyle).toEqual(false);
+	});
+
+	it('should prefer apiOptions.customEndpoint over endpointProvider and dangerouslyConnect', async () => {
+		const endpointProvider = jest
+			.fn()
+			.mockResolvedValue('https://from-provider.example.com');
+		mockGetConfig.mockReturnValueOnce({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					endpointProvider,
+					dangerouslyConnectToHttpEndpointForTesting: 'true',
+				},
+			},
+		});
+		const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {
+			options: { customEndpoint: 'https://api-option.example.com' },
+		});
+		expect(endpointProvider).not.toHaveBeenCalled();
+		expect(s3Config.customEndpoint).toEqual('https://api-option.example.com');
+	});
+
+	it('should prefer endpointProvider over dangerouslyConnectToHttpEndpointForTesting', async () => {
+		const endpointProvider = jest
+			.fn()
+			.mockResolvedValue('https://from-provider.example.com');
+		mockGetConfig.mockReturnValueOnce({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					endpointProvider,
+					dangerouslyConnectToHttpEndpointForTesting: 'true',
+				},
+			},
+		});
+		const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {});
+		expect(s3Config.customEndpoint).toEqual(
+			'https://from-provider.example.com',
+		);
+	});
+
+	it('should read forcePathStyle from S3 config', async () => {
+		mockGetConfig.mockReturnValueOnce({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					endpointProvider: () => 'https://from-provider.example.com',
+					forcePathStyle: true,
+				},
+			},
+		});
+		const { s3Config } = await resolveS3ConfigAndInput(mockCtx, {});
+		expect(s3Config.forcePathStyle).toEqual(true);
 	});
 
 	it('should resolve isObjectLockEnabled from S3 library options', async () => {

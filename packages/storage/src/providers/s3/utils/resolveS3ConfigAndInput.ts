@@ -22,7 +22,7 @@ import {
 	StorageBucket,
 } from '../types/options';
 
-import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
+import { DEFAULT_ACCESS_LEVEL } from './constants';
 
 interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
@@ -105,6 +105,8 @@ export const resolveS3ConfigAndInput = async (
 		bucket: defaultBucket,
 		region: defaultRegion,
 		dangerouslyConnectToHttpEndpointForTesting,
+		endpointProvider,
+		forcePathStyle: configForcePathStyle,
 		buckets,
 	} = amplify.resourcesConfig?.Storage?.S3 ?? {};
 
@@ -129,18 +131,28 @@ export const resolveS3ConfigAndInput = async (
 
 	const keyPrefix = await prefixResolver({ accessLevel, targetIdentityId });
 
+	// Resolve custom endpoint: apiOptions > endpointProvider > dangerouslyConnect
+	let resolvedEndpoint: string | undefined = apiOptions?.customEndpoint;
+	let resolvedForcePathStyle: boolean | undefined = configForcePathStyle;
+
+	if (!resolvedEndpoint && endpointProvider) {
+		resolvedEndpoint = await endpointProvider({ bucket, region });
+	}
+
+	if (!resolvedEndpoint && dangerouslyConnectToHttpEndpointForTesting) {
+		resolvedEndpoint = dangerouslyConnectToHttpEndpointForTesting;
+		resolvedForcePathStyle = true;
+	}
+
 	return {
 		s3Config: {
 			credentials: credentialsProvider,
 			region,
 			useAccelerateEndpoint: apiOptions?.useAccelerateEndpoint,
-			...(apiOptions?.customEndpoint
-				? { customEndpoint: apiOptions.customEndpoint }
-				: {}),
-			...(dangerouslyConnectToHttpEndpointForTesting
+			...(resolvedEndpoint
 				? {
-						customEndpoint: LOCAL_TESTING_S3_ENDPOINT,
-						forcePathStyle: true,
+						customEndpoint: resolvedEndpoint,
+						forcePathStyle: resolvedForcePathStyle ?? false,
 					}
 				: {}),
 		},

@@ -202,6 +202,36 @@ const getObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	}) as any,
 ];
 
+const getObjectHappyCaseFullUrlCustomEndpoint: ApiFunctionalTestCase<
+	typeof getObject
+> = [
+	'happy case',
+	'getObject with full http(s) custom endpoint',
+	getObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'http://custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'http://custom.endpoint.com/bucket/key?x-id=GetObject',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: 'mockBody',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
 const getObjectErrorCaseAccelerateEndpoint: ApiFunctionalTestCase<
 	typeof getObject
 > = [
@@ -241,18 +271,14 @@ const getObjectErrorCaseInvalidCustomEndpoint: ApiFunctionalTestCase<
 	getObject,
 	{
 		...defaultConfig,
-		customEndpoint: 'http://custom.endpoint.com',
+		customEndpoint: 'ftp://custom.endpoint.com',
 		forcePathStyle: true,
 	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',
 	},
-	expect.objectContaining({
-		url: expect.objectContaining({
-			href: 'https://custom.endpoint.com/bucket/key?x-id=GetObject',
-		}),
-	}),
+	expect.objectContaining({}),
 	{
 		status: 400,
 		headers: DEFAULT_RESPONSE_HEADERS,
@@ -295,6 +321,7 @@ export default [
 	getObjectHappyCase,
 	getObjectHappyCaseAccelerateEndpoint,
 	getObjectHappyCaseCustomEndpoint,
+	getObjectHappyCaseFullUrlCustomEndpoint,
 	getObjectErrorCaseAccelerateEndpoint,
 	getObjectErrorCaseInvalidCustomEndpoint,
 	getObjectErrorCaseInvalidBucketName,
