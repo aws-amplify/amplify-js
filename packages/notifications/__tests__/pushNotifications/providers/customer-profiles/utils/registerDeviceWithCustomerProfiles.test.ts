@@ -5,6 +5,7 @@ import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { registerDeviceWithCustomerProfiles } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/registerDeviceWithCustomerProfiles';
+import { getDeviceId } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/getDeviceId';
 import {
 	accessToken,
 	channelType,
@@ -12,6 +13,10 @@ import {
 	userId,
 } from '../../../../testUtils/data';
 
+jest.mock('@aws-amplify/react-native', () => ({
+	getOperatingSystem: jest.fn(),
+	loadAsyncStorage: jest.fn(),
+}));
 jest.mock('@aws-amplify/core', () => {
 	const actual = jest.requireActual('@aws-amplify/core');
 
@@ -20,13 +25,18 @@ jest.mock('@aws-amplify/core', () => {
 		fetchAuthSession: jest.fn(),
 	};
 });
-
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
+jest.mock(
+	'../../../../../src/pushNotifications/providers/customer-profiles/utils/getDeviceId',
+);
+
+const DEVICE_ID = 'persisted-device-id';
 
 describe('registerDeviceWithCustomerProfiles', () => {
 	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
 	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 	const mockSignRequest = signRequest as jest.Mock;
+	const mockGetDeviceId = getDeviceId as jest.Mock;
 	const mockFetch = jest.fn();
 
 	beforeAll(() => {
@@ -42,6 +52,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 		mockFetchAuthSession.mockResolvedValue({
 			tokens: { accessToken: { toString: () => accessToken } },
 		});
+		mockGetDeviceId.mockResolvedValue(DEVICE_ID);
 		mockFetch.mockResolvedValue({ ok: true, status: 200 });
 	});
 
@@ -49,10 +60,11 @@ describe('registerDeviceWithCustomerProfiles', () => {
 		getConfigSpy.mockReset();
 		mockFetchAuthSession.mockReset();
 		mockSignRequest.mockReset();
+		mockGetDeviceId.mockReset();
 		mockFetch.mockReset();
 	});
 
-	it('POSTs the device token and channel type to the Customer Profiles identify-user endpoint with a Bearer token', async () => {
+	it('POSTs the device registration to the Customer Profiles identify-user endpoint with a Bearer token', async () => {
 		await registerDeviceWithCustomerProfiles({
 			deviceToken: 'device-token',
 			channelType,
@@ -66,10 +78,42 @@ describe('registerDeviceWithCustomerProfiles', () => {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${accessToken}`,
 		});
+		// Device-registration fields are nested under `options` per the backend
+		// `IdentifyUserRequest` contract, with a resolved stable `deviceId`.
+		// `userId` is omitted from the serialized body when not provided.
 		expect(JSON.parse(request.body)).toStrictEqual({
+			userProfile: {},
+			options: {
+				deviceId: DEVICE_ID,
+				address: 'device-token',
+				channelType,
+			},
+		});
+	});
+
+	it('resolves a stable per-install deviceId when the caller does not supply one', async () => {
+		await registerDeviceWithCustomerProfiles({
 			deviceToken: 'device-token',
 			channelType,
 		});
+
+		expect(mockGetDeviceId).toHaveBeenCalledTimes(1);
+		expect(JSON.parse(mockFetch.mock.calls[0][1].body).options.deviceId).toBe(
+			DEVICE_ID,
+		);
+	});
+
+	it('uses a caller-supplied deviceId without resolving a new one', async () => {
+		await registerDeviceWithCustomerProfiles({
+			deviceToken: 'device-token',
+			channelType,
+			options: { deviceId: 'caller-device-id' },
+		});
+
+		expect(mockGetDeviceId).not.toHaveBeenCalled();
+		expect(JSON.parse(mockFetch.mock.calls[0][1].body).options.deviceId).toBe(
+			'caller-device-id',
+		);
 	});
 
 	it('includes user identity information when identifying a user', async () => {
@@ -85,10 +129,13 @@ describe('registerDeviceWithCustomerProfiles', () => {
 
 		expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toStrictEqual({
 			userId,
-			deviceToken: 'device-token',
-			channelType,
 			userProfile,
-			options,
+			options: {
+				userAttributes: { hobbies: ['climbing'] },
+				deviceId: DEVICE_ID,
+				address: 'device-token',
+				channelType,
+			},
 		});
 	});
 
@@ -201,14 +248,18 @@ describe('registerDeviceWithCustomerProfiles', () => {
 			expect(req.headers).not.toHaveProperty('Authorization');
 		});
 
-		it('sends the device token and channel type in the guest request body', async () => {
+		it('sends the device registration in the guest request body', async () => {
 			await registerDeviceWithCustomerProfiles({
 				deviceToken: 'device-token',
 				channelType,
 			});
 			expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toStrictEqual({
-				deviceToken: 'device-token',
-				channelType,
+				userProfile: {},
+				options: {
+					deviceId: DEVICE_ID,
+					address: 'device-token',
+					channelType,
+				},
 			});
 		});
 

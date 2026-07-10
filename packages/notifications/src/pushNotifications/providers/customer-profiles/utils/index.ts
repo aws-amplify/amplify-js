@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { getChannelType } from './getChannelType';
 export { getDeviceId } from './getDeviceId';
 export {
+	getChannelType,
 	getInflightDeviceRegistration,
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
-} from './inflightDeviceRegistration';
+} from '../../shared/utils';
 export { registerDeviceWithCustomerProfiles } from './registerDeviceWithCustomerProfiles';
 export {
 	resolveConfig,
