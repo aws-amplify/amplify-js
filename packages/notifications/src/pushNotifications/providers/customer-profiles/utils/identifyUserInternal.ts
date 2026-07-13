@@ -34,18 +34,21 @@ export interface IdentifyUserInternalInput {
  * Two callers converge here:
  *  - Device-token registration (native `TOKEN_RECEIVED` and `identifyUser`):
  *    a `deviceToken` (and `channelType`) is supplied, so the device object is
- *    registered. A stable per-install `deviceId` is resolved (and persisted)
- *    when the caller does not supply one, so token refreshes upsert the same
- *    device object (find-or-create) instead of duplicating it. The device
- *    fields are nested under `options` to match the backend
- *    `IdentifyUserRequest` contract: the endpoint keys the device object on
- *    `options.deviceId`, reads the token from `options.address`, and the
- *    push-capability channel from `options.channelType`.
+ *    registered. The stable per-install `deviceId` (find-or-create key) is
+ *    resolved and persisted by the native caller and passed in via
+ *    `options.deviceId`, so token refreshes upsert the same device object
+ *    instead of duplicating it. The device fields are nested under `options`
+ *    to match the backend `IdentifyUserRequest` contract: the endpoint keys
+ *    the device object on `options.deviceId`, reads the token from
+ *    `options.address`, and the push-capability channel from
+ *    `options.channelType`.
  *  - Device-less profile identify (browser/web `identifyUser`): no
- *    `deviceToken` is supplied, so NO device fields are attached and NO
- *    React-Native-only module (`getDeviceId`) is imported/called. The request
- *    body is simply `{ userId, userProfile, options }`, associating the user's
- *    profile without registering a device.
+ *    `deviceToken` is supplied, so NO device fields are attached. This engine
+ *    imports NO React-Native-only module (`getDeviceId` is resolved entirely
+ *    in the `.native` callers and injected), so the web bundle stays free of
+ *    `@aws-amplify/react-native` with neither a static nor a dynamic import.
+ *    The request body is simply `{ userId, userProfile, options }`,
+ *    associating the user's profile without registering a device.
  *
  * Two authorization modes are supported, selected automatically from the
  * resolved auth session:
@@ -74,7 +77,7 @@ export const identifyUserInternal = async ({
 	const { endpoint, region } = resolveConfig();
 	const { token, credentials } = await resolveCredentials();
 
-	const resolvedOptions = await resolveRequestOptions({
+	const resolvedOptions = resolveRequestOptions({
 		deviceToken,
 		channelType,
 		options,
@@ -144,35 +147,29 @@ export const identifyUserInternal = async ({
 
 /**
  * Builds the `options` object for the request body. When a device token is
- * being registered, the device-registration fields (`deviceId`, `address`,
- * `channelType`) are attached and a stable per-install `deviceId` is resolved
- * (find-or-create). When no device token is present (device-less web
- * identify), the caller-supplied `options` are passed through unchanged and no
- * React-Native-only module is imported or called, keeping the web bundle free
- * of `@aws-amplify/react-native`.
+ * being registered, the device-registration fields (`address`, `channelType`)
+ * are attached alongside the caller-resolved stable `deviceId` (find-or-create
+ * key, supplied via `options.deviceId` by the native caller). When no device
+ * token is present (device-less web identify), the caller-supplied `options`
+ * are passed through unchanged. This engine imports no React-Native-only
+ * module (`getDeviceId`), so the web bundle stays free of
+ * `@aws-amplify/react-native` — no static and no dynamic import.
  */
-const resolveRequestOptions = async ({
+const resolveRequestOptions = ({
 	deviceToken,
 	channelType,
 	options,
 }: Pick<
 	IdentifyUserInternalInput,
 	'deviceToken' | 'channelType' | 'options'
->): Promise<IdentifyUserOptions & { channelType?: ChannelType }> => {
+>): IdentifyUserOptions & { channelType?: ChannelType } => {
 	const isRegisteringDevice = !!deviceToken || !!options?.deviceId;
 	if (!isRegisteringDevice) {
 		return { ...options };
 	}
 
-	// Deferred import so the React-Native-only `getDeviceId` (AsyncStorage) is
-	// never pulled into the web module graph — it is only reached on the
-	// device-registration path, which never runs on the browser.
-	const { getDeviceId } = await import('./getDeviceId');
-	const deviceId = options?.deviceId ?? (await getDeviceId());
-
 	return {
 		...options,
-		deviceId,
 		address: deviceToken,
 		channelType,
 	};

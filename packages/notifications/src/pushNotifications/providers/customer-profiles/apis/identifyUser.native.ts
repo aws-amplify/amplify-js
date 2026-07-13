@@ -5,6 +5,7 @@ import { assertIsInitialized } from '../../../errors/errorHelpers';
 import { getToken } from '../../../utils';
 import {
 	getChannelType,
+	getDeviceId,
 	getInflightDeviceRegistration,
 	identifyUserInternal,
 } from '../utils';
@@ -22,11 +23,14 @@ export const identifyUser: IdentifyUser = async ({
 		// wait for successful device registration before associating the user with their device
 		await inflightDeviceRegistration;
 	}
+	// Resolve the stable per-install deviceId in the native layer (find-or-create
+	// key) and inject it into `options` so the engine never imports getDeviceId.
+	const deviceId = options?.deviceId ?? (await getDeviceId());
 	await identifyUserInternal({
 		deviceToken: address ?? getToken(),
 		channelType: getChannelType(),
 		userId,
 		userProfile,
-		options,
+		options: { ...options, deviceId },
 	});
 };

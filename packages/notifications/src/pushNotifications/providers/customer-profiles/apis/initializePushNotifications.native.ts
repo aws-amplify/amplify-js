@@ -11,6 +11,7 @@ import {
 import { getToken, initialize, isInitialized, setToken } from '../../../utils';
 import {
 	getChannelType,
+	getDeviceId,
 	identifyUserInternal,
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
@@ -155,9 +156,14 @@ const addNativeListeners = (): void => {
 
 const registerDevice = async (address: string): Promise<void> => {
 	try {
+		// Resolve the stable per-install deviceId in the native layer
+		// (find-or-create key) and inject it so the engine never imports
+		// getDeviceId.
+		const deviceId = await getDeviceId();
 		await identifyUserInternal({
 			deviceToken: address,
 			channelType: getChannelType(),
+			options: { deviceId },
 		});
 		// always resolve inflight device registration promise here even though the promise is only awaited on by
 		// `identifyUser` when device registration is still in flight

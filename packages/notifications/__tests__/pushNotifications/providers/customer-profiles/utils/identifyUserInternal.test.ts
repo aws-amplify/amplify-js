@@ -68,6 +68,7 @@ describe('identifyUserInternal', () => {
 		await identifyUserInternal({
 			deviceToken: 'device-token',
 			channelType,
+			options: { deviceId: DEVICE_ID },
 		});
 
 		expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -79,7 +80,8 @@ describe('identifyUserInternal', () => {
 			Authorization: `Bearer ${accessToken}`,
 		});
 		// Device-registration fields are nested under `options` per the backend
-		// `IdentifyUserRequest` contract, with a resolved stable `deviceId`.
+		// `IdentifyUserRequest` contract. The stable `deviceId` (find-or-create
+		// key) is resolved by the native caller and injected via `options`.
 		// `userId` is omitted from the serialized body when not provided.
 		expect(JSON.parse(request.body)).toStrictEqual({
 			userProfile: {},
@@ -89,21 +91,12 @@ describe('identifyUserInternal', () => {
 				channelType,
 			},
 		});
+		// The engine never resolves a deviceId itself — it imports no
+		// React-Native-only module (statically or dynamically).
+		expect(mockGetDeviceId).not.toHaveBeenCalled();
 	});
 
-	it('resolves a stable per-install deviceId when the caller does not supply one', async () => {
-		await identifyUserInternal({
-			deviceToken: 'device-token',
-			channelType,
-		});
-
-		expect(mockGetDeviceId).toHaveBeenCalledTimes(1);
-		expect(JSON.parse(mockFetch.mock.calls[0][1].body).options.deviceId).toBe(
-			DEVICE_ID,
-		);
-	});
-
-	it('uses a caller-supplied deviceId without resolving a new one', async () => {
+	it('never resolves a deviceId itself — device fields come from the injected options', async () => {
 		await identifyUserInternal({
 			deviceToken: 'device-token',
 			channelType,
@@ -116,9 +109,25 @@ describe('identifyUserInternal', () => {
 		);
 	});
 
+	it('attaches address + channelType even when no deviceId is injected', async () => {
+		await identifyUserInternal({
+			deviceToken: 'device-token',
+			channelType,
+		});
+
+		expect(mockGetDeviceId).not.toHaveBeenCalled();
+		const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+		expect(body.options.address).toBe('device-token');
+		expect(body.options.channelType).toBe(channelType);
+		expect(body.options).not.toHaveProperty('deviceId');
+	});
+
 	it('includes user identity information when identifying a user', async () => {
 		const userProfile = { email: 'user@example.com' };
-		const options = { userAttributes: { hobbies: ['climbing'] } };
+		const options = {
+			userAttributes: { hobbies: ['climbing'] },
+			deviceId: DEVICE_ID,
+		};
 		await identifyUserInternal({
 			deviceToken: 'device-token',
 			channelType,
@@ -301,6 +310,7 @@ describe('identifyUserInternal', () => {
 			await identifyUserInternal({
 				deviceToken: 'device-token',
 				channelType,
+				options: { deviceId: DEVICE_ID },
 			});
 			expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toStrictEqual({
 				userProfile: {},

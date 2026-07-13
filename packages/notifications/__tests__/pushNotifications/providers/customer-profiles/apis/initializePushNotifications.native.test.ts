@@ -13,6 +13,7 @@ import {
 } from '../../../../../src/pushNotifications/utils';
 import {
 	getChannelType,
+	getDeviceId,
 	identifyUserInternal,
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
@@ -49,6 +50,8 @@ const mockCompleteNotification = jest.fn();
 const mockGetConstants = jest.fn();
 const mockRegisterHeadlessTask = jest.fn();
 
+const DEVICE_ID = 'persisted-device-id';
+
 describe('initializePushNotifications (customer-profiles, native)', () => {
 	let initializePushNotifications: () => void;
 	const { NativeEvent } = pushModuleConstants;
@@ -57,6 +60,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 	// assert mocks
 	const mockIdentifyUserInternal = identifyUserInternal as jest.Mock;
 	const mockGetChannelType = getChannelType as jest.Mock;
+	const mockGetDeviceId = getDeviceId as jest.Mock;
 	const mockGetToken = getToken as jest.Mock;
 	const mockInitialize = initialize as jest.Mock;
 	const mockIsInitialized = isInitialized as jest.Mock;
@@ -98,6 +102,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		} = require('../../../../../src/pushNotifications/providers/customer-profiles/apis/initializePushNotifications.native'));
 		mockAddMessageEventListener.mockReturnValue(mockEventListenerRemover);
 		mockGetChannelType.mockReturnValue(channelType);
+		mockGetDeviceId.mockResolvedValue(DEVICE_ID);
 	});
 
 	beforeEach(() => {
@@ -261,6 +266,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 						expect(mockIdentifyUserInternal).toHaveBeenCalledWith({
 							deviceToken: pushToken,
 							channelType,
+							options: { deviceId: DEVICE_ID },
 						});
 						expect(mockResolveInflightDeviceRegistration).toHaveBeenCalled();
 						expect(mockRejectInflightDeviceRegistration).not.toHaveBeenCalled();

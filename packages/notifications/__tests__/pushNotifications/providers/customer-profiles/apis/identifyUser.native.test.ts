@@ -7,6 +7,7 @@ import { IdentifyUserInput } from '../../../../../src/pushNotifications/provider
 import { getToken } from '../../../../../src/pushNotifications/utils';
 import {
 	getChannelType,
+	getDeviceId,
 	getInflightDeviceRegistration,
 	identifyUserInternal,
 } from '../../../../../src/pushNotifications/providers/customer-profiles/utils';
@@ -21,10 +22,13 @@ jest.mock(
 );
 jest.mock('../../../../../src/pushNotifications/utils');
 
+const DEVICE_ID = 'persisted-device-id';
+
 describe('identifyUser (customer-profiles, native)', () => {
 	const mockAssertIsInitialized = assertIsInitialized as jest.Mock;
 	const mockGetChannelType = getChannelType as jest.Mock;
 	const mockGetToken = getToken as jest.Mock;
+	const mockGetDeviceId = getDeviceId as jest.Mock;
 	const mockGetInflightDeviceRegistration =
 		getInflightDeviceRegistration as jest.Mock;
 	const mockIdentifyUserInternal = identifyUserInternal as jest.Mock;
@@ -32,12 +36,14 @@ describe('identifyUser (customer-profiles, native)', () => {
 	beforeAll(() => {
 		mockGetChannelType.mockReturnValue(channelType);
 		mockGetToken.mockReturnValue(accessToken);
+		mockGetDeviceId.mockResolvedValue(DEVICE_ID);
 	});
 
 	afterEach(() => {
 		mockAssertIsInitialized.mockReset();
 		mockGetInflightDeviceRegistration.mockReset();
 		mockIdentifyUserInternal.mockReset();
+		mockGetDeviceId.mockClear();
 	});
 
 	it('must be initialized', async () => {
@@ -67,7 +73,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 			channelType,
 			userId: input.userId,
 			userProfile: input.userProfile,
-			options: undefined,
+			options: { deviceId: DEVICE_ID },
 		});
 	});
 
@@ -84,7 +90,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 			channelType,
 			userId: input.userId,
 			userProfile: input.userProfile,
-			options: input.options,
+			options: { address: 'explicit-address', deviceId: DEVICE_ID },
 		});
 	});
 
@@ -98,7 +104,31 @@ describe('identifyUser (customer-profiles, native)', () => {
 		};
 		await identifyUser(input);
 		expect(mockIdentifyUserInternal).toHaveBeenCalledWith(
-			expect.objectContaining({ options: { userAttributes } }),
+			expect.objectContaining({
+				options: { userAttributes, deviceId: DEVICE_ID },
+			}),
+		);
+	});
+
+	it('resolves the stable per-install deviceId in the native layer and injects it into options', async () => {
+		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
+		await identifyUser({ userId: 'user-id', userProfile: {} });
+		expect(mockGetDeviceId).toHaveBeenCalledTimes(1);
+		expect(mockIdentifyUserInternal).toHaveBeenCalledWith(
+			expect.objectContaining({ options: { deviceId: DEVICE_ID } }),
+		);
+	});
+
+	it('prefers a caller-supplied options.deviceId without resolving a new one', async () => {
+		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
+		await identifyUser({
+			userId: 'user-id',
+			userProfile: {},
+			options: { deviceId: 'caller-device-id' },
+		});
+		expect(mockGetDeviceId).not.toHaveBeenCalled();
+		expect(mockIdentifyUserInternal).toHaveBeenCalledWith(
+			expect.objectContaining({ options: { deviceId: 'caller-device-id' } }),
 		);
 	});
 
