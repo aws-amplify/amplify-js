@@ -106,7 +106,7 @@ export async function signInWithSRP(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent(ctx);
+			await dispatchSignedInHubEvent(ctx, activeUsername);
 
 			resetAutoSignIn();
 

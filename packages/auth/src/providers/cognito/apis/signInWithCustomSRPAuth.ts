@@ -104,7 +104,7 @@ export async function signInWithCustomSRPAuth(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent(ctx);
+			await dispatchSignedInHubEvent(ctx, activeUsername);
 
 			return {
 				isSignedIn: true,

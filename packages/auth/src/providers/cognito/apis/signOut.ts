@@ -5,11 +5,9 @@ import {
 	AmplifyContext,
 	CognitoUserPoolConfig,
 	ConsoleLogger,
-	Hub,
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
-	AMPLIFY_SYMBOL,
 	AuthAction,
 	JWT,
 	assertOAuthConfig,
@@ -18,7 +16,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import { getAuthUserAgentValue } from '../../../utils';
-import { SignOutInput } from '../types';
+import { GetCurrentUserOutput, SignOutInput } from '../types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import {
@@ -27,6 +25,7 @@ import {
 } from '../utils/types';
 import { handleOAuthSignOut } from '../utils/oauth';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
+import { dispatchSignOutBoundaryEvents } from '../utils/dispatchSignOutHubEvents';
 import { AuthError } from '../../../errors/AuthError';
 import { OAUTH_SIGNOUT_EXCEPTION } from '../../../errors/constants';
 import {
@@ -34,6 +33,8 @@ import {
 	createRevokeTokenClient,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
+
+import { getCurrentUser } from './getCurrentUser';
 
 const logger = new ConsoleLogger('Auth');
 export async function signOut(
@@ -84,10 +85,34 @@ export async function signOut(...args: any[]): Promise<void> {
 			});
 		}
 	} else {
-		// complete sign out
-		tokenOrchestrator.clearTokens();
+		// Multi-session sign-out: remove only the active user's namespaced tokens
+		// and drop them from the roster, then emit the boundary events.
+		// capture the active user before any local token/roster mutation so we can
+		// emit the correct boundary events after removal.
+		let active: GetCurrentUserOutput | undefined;
+		try {
+			active = await getCurrentUser(ctx);
+		} catch {
+			// no resolvable active user (e.g. tokens already gone); fall back below.
+		}
+		const tokenStore = tokenOrchestrator.getTokenStore();
+		const activeUsername =
+			active?.username ?? (await tokenStore.getLastAuthUser());
+
+		// clear only the active user's namespaced tokens and drop them from the roster
+		await tokenStore.clearTokensForUser(activeUsername);
+		const removeResult = await tokenStore.removeSession(activeUsername);
+		// Bust the previous active user's identity-pool credentials (ctx-scoped).
 		await ctx.clearCredentials();
-		Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
+
+		// emit the shared sign-out boundary events (userSignedOut, then either
+		// signedOut or switchActiveUser). The promoted user's identity is resolved
+		// inside the helper from stored tokens rather than via getCurrentUser().
+		await dispatchSignOutBoundaryEvents(
+			tokenStore,
+			active ? { username: active.username, userId: active.userId } : undefined,
+			removeResult,
+		);
 	}
 }
 
