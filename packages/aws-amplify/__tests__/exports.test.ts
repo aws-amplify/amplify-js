@@ -183,6 +183,8 @@ describe('aws-amplify Exports', () => {
 					'associateWebAuthnCredential',
 					'listWebAuthnCredentials',
 					'deleteWebAuthnCredential',
+					'listCurrentUsers',
+					'setCurrentUser',
 				].sort(),
 			);
 		});
@@ -230,6 +232,9 @@ describe('aws-amplify Exports', () => {
 					'refreshAuthTokens',
 					'refreshAuthTokensWithoutDedupe',
 					'validateState',
+					'createAuthSessionSwitcher',
+					'listCurrentUsers',
+					'setCurrentUser',
 				].sort(),
 			);
 		});

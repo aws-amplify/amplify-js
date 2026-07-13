@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
 import {
+	JWT,
 	assertTokenProviderConfig,
 	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
@@ -96,12 +97,11 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
 		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
-		const lastAuthUser = tokens.username;
-		await this.getKeyValueStorage().setItem(
-			this.getLastAuthUserKey(),
-			lastAuthUser,
-		);
 
+		// Note: storeTokens intentionally does NOT manage the active user pointer
+		// (LastAuthUser / AuthUserList). The active pointer is owned exclusively by
+		// the roster methods (persistAuthUserList). This prevents token refresh from
+		// reordering the session roster.
 		const authKeys = await this.getAuthKeys();
 		await this.getKeyValueStorage().setItem(
 			authKeys.accessToken,
@@ -171,8 +171,53 @@ export class DefaultTokenStore implements AuthTokenStore {
 			this.getKeyValueStorage().removeItem(authKeys.refreshToken),
 			this.getKeyValueStorage().removeItem(authKeys.signInDetails),
 			this.getKeyValueStorage().removeItem(this.getLastAuthUserKey()),
+			this.getKeyValueStorage().removeItem(this.getAuthUserListKey()),
 			this.getKeyValueStorage().removeItem(authKeys.oauthMetadata),
 		]);
+	}
+
+	/**
+	 * Clears ONLY the per-user token namespace for the provided username.
+	 *
+	 * Unlike {@link clearTokens}, this does NOT touch the active pointer keys
+	 * (LastAuthUser / AuthUserList); roster management is handled separately by
+	 * {@link removeSession}.
+	 *
+	 * @param username - The username whose namespaced token keys should be removed.
+	 */
+	async clearTokensForUser(username: string): Promise<void> {
+		const authKeys = await this.getAuthKeys(username);
+		// Not calling clear because it can remove data that is not managed by AuthTokenStore
+		await Promise.all([
+			this.getKeyValueStorage().removeItem(authKeys.accessToken),
+			this.getKeyValueStorage().removeItem(authKeys.idToken),
+			this.getKeyValueStorage().removeItem(authKeys.clockDrift),
+			this.getKeyValueStorage().removeItem(authKeys.refreshToken),
+			this.getKeyValueStorage().removeItem(authKeys.signInDetails),
+			this.getKeyValueStorage().removeItem(authKeys.deviceKey),
+			this.getKeyValueStorage().removeItem(authKeys.deviceGroupKey),
+			this.getKeyValueStorage().removeItem(authKeys.randomPasswordKey),
+			this.getKeyValueStorage().removeItem(authKeys.oauthMetadata),
+		]);
+	}
+
+	/**
+	 * Loads and decodes the stored idToken for a specific user without
+	 * triggering a refresh. Returns undefined if absent/undecodable.
+	 *
+	 * @param username - The username whose stored idToken should be read.
+	 */
+	async getStoredIdToken(username: string): Promise<JWT | undefined> {
+		try {
+			const authKeys = await this.getAuthKeys(username);
+			const idTokenString = await this.getKeyValueStorage().getItem(
+				authKeys.idToken,
+			);
+
+			return idTokenString ? decodeJWT(idTokenString) : undefined;
+		} catch (err) {
+			return undefined;
+		}
 	}
 
 	async getDeviceMetadata(username?: string): Promise<DeviceMetadata | null> {
@@ -224,12 +269,109 @@ export class DefaultTokenStore implements AuthTokenStore {
 		return `${AUTH_KEY_PREFIX}.${identifier}.LastAuthUser`;
 	}
 
-	async getLastAuthUser(): Promise<string> {
-		const lastAuthUser =
-			(await this.getKeyValueStorage().getItem(this.getLastAuthUserKey())) ??
-			'username';
+	/**
+	 * Builds the storage key for the clientId-scoped session roster
+	 * (comma-separated ordered list of usernames, active user first).
+	 *
+	 * Mirrors {@link getLastAuthUserKey} but is NOT scoped to a username.
+	 */
+	private getAuthUserListKey() {
+		assertTokenProviderConfig(this.authConfig?.Cognito);
+		const identifier = this.authConfig.Cognito.userPoolClientId;
 
-		return lastAuthUser;
+		return `${AUTH_KEY_PREFIX}.${identifier}.AuthUserList`;
+	}
+
+	/**
+	 * Returns the ordered session roster (active user first).
+	 *
+	 * If the AuthUserList key is present it is parsed directly. If it is absent
+	 * but a legacy LastAuthUser value exists (and is not the literal 'username'
+	 * fallback), that single user is migrated into a roster and persisted.
+	 * Otherwise an empty roster is returned.
+	 */
+	async getAuthUserList(): Promise<string[]> {
+		const authUserListString = await this.getKeyValueStorage().getItem(
+			this.getAuthUserListKey(),
+		);
+
+		if (authUserListString) {
+			return authUserListString.split(',').filter(Boolean);
+		}
+
+		// Migration: fall back to a legacy single LastAuthUser value if present.
+		const legacyLastAuthUser = await this.getKeyValueStorage().getItem(
+			this.getLastAuthUserKey(),
+		);
+		if (legacyLastAuthUser && legacyLastAuthUser !== 'username') {
+			const migratedList = [legacyLastAuthUser];
+			await this.persistAuthUserList(migratedList);
+
+			return migratedList;
+		}
+
+		return [];
+	}
+
+	/**
+	 * Persists the session roster. This is the ONLY writer of the AuthUserList
+	 * and LastAuthUser keys, keeping the invariant LastAuthUser === list[0].
+	 *
+	 * When the roster is empty both keys are removed.
+	 *
+	 * @param list - The ordered roster to persist (active user first).
+	 */
+	private async persistAuthUserList(list: string[]): Promise<void> {
+		if (list.length === 0) {
+			// Remove LastAuthUser FIRST: if the subsequent AuthUserList delete
+			// fails, a lingering AuthUserList is harmless, but a lingering legacy
+			// LastAuthUser would re-migrate a removed user back into the roster.
+			await this.getKeyValueStorage().removeItem(this.getLastAuthUserKey());
+			await this.getKeyValueStorage().removeItem(this.getAuthUserListKey());
+
+			return;
+		}
+
+		await this.getKeyValueStorage().setItem(
+			this.getAuthUserListKey(),
+			list.join(','),
+		);
+		await this.getKeyValueStorage().setItem(this.getLastAuthUserKey(), list[0]);
+	}
+
+	/**
+	 * Adds (or re-activates) a session for the given username, deduping and
+	 * moving it to the front of the roster so it becomes the active user.
+	 *
+	 * @param username - The username to mark as the active session.
+	 */
+	async addActiveSession(username: string): Promise<void> {
+		const list = await this.getAuthUserList();
+		await this.persistAuthUserList([
+			username,
+			...list.filter(user => user !== username),
+		]);
+	}
+
+	/**
+	 * Removes a session for the given username from the roster.
+	 *
+	 * @param username - The username whose session should be removed.
+	 * @returns The new active user (roster head, if any) and whether the roster
+	 * is now empty.
+	 */
+	async removeSession(
+		username: string,
+	): Promise<{ newActiveUser?: string; isEmpty: boolean }> {
+		const list = await this.getAuthUserList();
+		const newList = list.filter(user => user !== username);
+		await this.persistAuthUserList(newList);
+
+		return { newActiveUser: newList[0], isEmpty: newList.length === 0 };
+	}
+
+	async getLastAuthUser(): Promise<string> {
+		return (await this.getAuthUserList())[0] ?? 'username';
 	}
 
 	async setOAuthMetadata(metadata: OAuthMetadata): Promise<void> {

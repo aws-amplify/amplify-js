@@ -16,6 +16,7 @@ import {
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { createCognitoUserPoolEndpointResolver } from '../../../providers/cognito/factories';
 import { cacheCognitoTokens } from '../../../providers/cognito/tokenProvider/cacheTokens';
+import { tokenOrchestrator } from '../../../providers/cognito/tokenProvider';
 import { dispatchSignedInHubEvent } from '../../../providers/cognito/utils/dispatchSignedInHubEvent';
 import { setActiveSignInState, signInStore } from '../../../client/utils/store';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -101,7 +102,7 @@ export async function handleWebAuthnSignInResult(
 			signInDetails,
 		});
 		signInStore.dispatch({ type: 'RESET_STATE' });
-		await dispatchSignedInHubEvent();
+		await dispatchSignedInHubEvent(tokenOrchestrator.getTokenStore(), username);
 
 		return {
 			isSignedIn: true,
