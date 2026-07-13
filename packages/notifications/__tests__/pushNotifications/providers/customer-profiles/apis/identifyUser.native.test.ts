@@ -8,7 +8,7 @@ import { getToken } from '../../../../../src/pushNotifications/utils';
 import {
 	getChannelType,
 	getInflightDeviceRegistration,
-	registerDeviceWithCustomerProfiles,
+	identifyUserInternal,
 } from '../../../../../src/pushNotifications/providers/customer-profiles/utils';
 import { accessToken, channelType } from '../../../../testUtils/data';
 
@@ -27,8 +27,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 	const mockGetToken = getToken as jest.Mock;
 	const mockGetInflightDeviceRegistration =
 		getInflightDeviceRegistration as jest.Mock;
-	const mockRegisterDeviceWithCustomerProfiles =
-		registerDeviceWithCustomerProfiles as jest.Mock;
+	const mockIdentifyUserInternal = identifyUserInternal as jest.Mock;
 
 	beforeAll(() => {
 		mockGetChannelType.mockReturnValue(channelType);
@@ -38,7 +37,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 	afterEach(() => {
 		mockAssertIsInitialized.mockReset();
 		mockGetInflightDeviceRegistration.mockReset();
-		mockRegisterDeviceWithCustomerProfiles.mockReset();
+		mockIdentifyUserInternal.mockReset();
 	});
 
 	it('must be initialized', async () => {
@@ -48,7 +47,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 		await expect(
 			identifyUser({ userId: 'user-id', userProfile: {} }),
 		).rejects.toThrow();
-		expect(mockRegisterDeviceWithCustomerProfiles).not.toHaveBeenCalled();
+		expect(mockIdentifyUserInternal).not.toHaveBeenCalled();
 	});
 
 	it('registers the device (using the current token) and user profile with Customer Profiles', async () => {
@@ -63,7 +62,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 			},
 		};
 		await identifyUser(input);
-		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalledWith({
+		expect(mockIdentifyUserInternal).toHaveBeenCalledWith({
 			deviceToken: accessToken,
 			channelType,
 			userId: input.userId,
@@ -80,7 +79,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 			options: { address: 'explicit-address' },
 		};
 		await identifyUser(input);
-		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalledWith({
+		expect(mockIdentifyUserInternal).toHaveBeenCalledWith({
 			deviceToken: 'explicit-address',
 			channelType,
 			userId: input.userId,
@@ -98,7 +97,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 			options: { userAttributes },
 		};
 		await identifyUser(input);
-		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalledWith(
+		expect(mockIdentifyUserInternal).toHaveBeenCalledWith(
 			expect.objectContaining({ options: { userAttributes } }),
 		);
 	});
@@ -117,7 +116,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 			options,
 		};
 		await identifyUser(input);
-		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalledWith(
+		expect(mockIdentifyUserInternal).toHaveBeenCalledWith(
 			expect.objectContaining({ options }),
 		);
 	});
@@ -135,18 +134,18 @@ describe('identifyUser (customer-profiles, native)', () => {
 		});
 		// registration has not completed yet, so the user association must not have run
 		await Promise.resolve();
-		expect(mockRegisterDeviceWithCustomerProfiles).not.toHaveBeenCalled();
+		expect(mockIdentifyUserInternal).not.toHaveBeenCalled();
 
 		resolveRegistration();
 		await identifyPromise;
 		expect(mockGetInflightDeviceRegistration).toHaveBeenCalled();
-		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalled();
+		expect(mockIdentifyUserInternal).toHaveBeenCalled();
 	});
 
 	it('does not block when there is no inflight device registration', async () => {
 		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
 		await identifyUser({ userId: 'user-id', userProfile: {} });
-		expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalled();
+		expect(mockIdentifyUserInternal).toHaveBeenCalled();
 	});
 
 	it('rejects if the inflight device registration rejects', async () => {
@@ -156,12 +155,12 @@ describe('identifyUser (customer-profiles, native)', () => {
 		await expect(
 			identifyUser({ userId: 'user-id', userProfile: {} }),
 		).rejects.toThrow();
-		expect(mockRegisterDeviceWithCustomerProfiles).not.toHaveBeenCalled();
+		expect(mockIdentifyUserInternal).not.toHaveBeenCalled();
 	});
 
 	it('rejects if the device registration POST rejects', async () => {
 		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
-		mockRegisterDeviceWithCustomerProfiles.mockRejectedValue(new Error());
+		mockIdentifyUserInternal.mockRejectedValue(new Error());
 		await expect(
 			identifyUser({ userId: 'user-id', userProfile: {} }),
 		).rejects.toThrow();

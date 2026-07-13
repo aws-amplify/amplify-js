@@ -1,24 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-
-import { PushNotificationValidationErrorCode } from '../../../errors';
-import { IdentifyUser, IdentifyUserInput } from '../types';
+import { identifyUserInternal } from '../utils/identifyUserInternal';
+import { IdentifyUser } from '../types';
 
 /**
  * Sends information about a user to Amazon Connect Customer Profiles. Sending user information allows you to associate
- * a user with their Customer Profile and the device(s) registered for push notifications, so that activity can be
- * tracked across devices & platforms by using the same `userId`.
+ * a user with their Customer Profile so that activity can be tracked across devices & platforms by using the same
+ * `userId`.
+ *
+ * On the browser there is no push device token, so this performs a device-less profile identify: the user's `userId`
+ * and `userProfile` (e.g. email) are associated with their Customer Profile without registering a device. To register
+ * a device for push notifications, call `identifyUser` from a React Native application where a device token is
+ * available.
  *
  * @param {IdentifyUserInput} input The input object used to construct the request sent to the Amazon Connect Customer
  *  Profiles endpoint.
  * @throws service - Thrown when the Customer Profiles endpoint responds with a non-2xx status or the request fails to
  *  complete.
- * @throws validation: {@link PushNotificationValidationErrorCode} - Thrown when the provided parameters or library
+ * @throws validation - Thrown when the provided parameters or library
  *  configuration is incorrect.
- * @throws platform: {@link PlatformNotSupportedError} - Thrown if called against an unsupported platform. Currently,
- * only React Native is supported by this API.
  * @returns A promise that will resolve when the operation is complete.
  * @example
  * ```ts
@@ -50,7 +51,6 @@ import { IdentifyUser, IdentifyUserInput } from '../types';
  *         }
  *     },
  *     options: {
- *         address: 'device-address',
  *         optOut: 'NONE',
  *         userAttributes: {
  *             interests: ['food']
@@ -58,6 +58,19 @@ import { IdentifyUser, IdentifyUserInput } from '../types';
  *     },
  * });
  */
-export const identifyUser: IdentifyUser = async () => {
-	throw new PlatformNotSupportedError();
+export const identifyUser: IdentifyUser = async ({
+	userId,
+	userProfile,
+	options,
+}) => {
+	// Browser has no push device token — send a device-less profile identify.
+	// No `deviceToken`/`channelType` is passed, so `identifyUserInternal`
+	// attaches no device fields and never imports/calls any React-Native-only
+	// module (`getDeviceId`), keeping the web bundle free of
+	// `@aws-amplify/react-native`.
+	await identifyUserInternal({
+		userId,
+		userProfile,
+		options,
+	});
 };

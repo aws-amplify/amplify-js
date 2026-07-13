@@ -8,7 +8,7 @@ export {
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
 } from '../../shared/utils';
-export { registerDeviceWithCustomerProfiles } from './registerDeviceWithCustomerProfiles';
+export { identifyUserInternal } from './identifyUserInternal';
 export {
 	resolveConfig,
 	IDENTIFY_USER_PATH,

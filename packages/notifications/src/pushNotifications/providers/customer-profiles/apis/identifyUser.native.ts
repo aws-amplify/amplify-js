@@ -6,7 +6,7 @@ import { getToken } from '../../../utils';
 import {
 	getChannelType,
 	getInflightDeviceRegistration,
-	registerDeviceWithCustomerProfiles,
+	identifyUserInternal,
 } from '../utils';
 import { IdentifyUser } from '../types';
 
@@ -22,7 +22,7 @@ export const identifyUser: IdentifyUser = async ({
 		// wait for successful device registration before associating the user with their device
 		await inflightDeviceRegistration;
 	}
-	await registerDeviceWithCustomerProfiles({
+	await identifyUserInternal({
 		deviceToken: address ?? getToken(),
 		channelType: getChannelType(),
 		userId,

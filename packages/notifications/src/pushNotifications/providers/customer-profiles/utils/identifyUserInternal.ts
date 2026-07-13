@@ -7,7 +7,6 @@ import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import { PushNotificationError } from '../../../errors';
 import { ChannelType, IdentifyUserOptions } from '../types';
 
-import { getDeviceId } from './getDeviceId';
 import {
 	GUEST_IDENTIFY_USER_PATH,
 	IDENTIFY_USER_PATH,
@@ -18,17 +17,35 @@ import { resolveCredentials } from './resolveCredentials';
 const CONTENT_TYPE = 'application/json';
 const SIGNING_SERVICE = 'execute-api';
 
-export interface RegisterDeviceInput {
+export interface IdentifyUserInternalInput {
 	deviceToken?: string;
-	channelType: ChannelType;
+	channelType?: ChannelType;
 	userId?: string;
 	userProfile?: UserProfile;
 	options?: IdentifyUserOptions;
 }
 
 /**
- * Registers a push-notification device (and, optionally, the identifying user
- * information) with the Amazon Connect Customer Profiles endpoint.
+ * Sends an identify-user request to the Amazon Connect Customer Profiles
+ * endpoint. This is the single transport-agnostic engine behind the CP
+ * provider — mirroring how the Pinpoint provider funnels both device-token
+ * registration and explicit user identification through `updateEndpoint`.
+ *
+ * Two callers converge here:
+ *  - Device-token registration (native `TOKEN_RECEIVED` and `identifyUser`):
+ *    a `deviceToken` (and `channelType`) is supplied, so the device object is
+ *    registered. A stable per-install `deviceId` is resolved (and persisted)
+ *    when the caller does not supply one, so token refreshes upsert the same
+ *    device object (find-or-create) instead of duplicating it. The device
+ *    fields are nested under `options` to match the backend
+ *    `IdentifyUserRequest` contract: the endpoint keys the device object on
+ *    `options.deviceId`, reads the token from `options.address`, and the
+ *    push-capability channel from `options.channelType`.
+ *  - Device-less profile identify (browser/web `identifyUser`): no
+ *    `deviceToken` is supplied, so NO device fields are attached and NO
+ *    React-Native-only module (`getDeviceId`) is imported/called. The request
+ *    body is simply `{ userId, userProfile, options }`, associating the user's
+ *    profile without registering a device.
  *
  * Two authorization modes are supported, selected automatically from the
  * resolved auth session:
@@ -47,32 +64,25 @@ export interface RegisterDeviceInput {
  *
  * @internal
  */
-export const registerDeviceWithCustomerProfiles = async ({
+export const identifyUserInternal = async ({
 	deviceToken,
 	channelType,
 	userId,
 	userProfile,
 	options,
-}: RegisterDeviceInput): Promise<void> => {
+}: IdentifyUserInternalInput): Promise<void> => {
 	const { endpoint, region } = resolveConfig();
 	const { token, credentials } = await resolveCredentials();
 
-	// Device-registration fields are nested under `options` to match the
-	// backend `IdentifyUserRequest` contract: the endpoint keys the device
-	// object on `options.deviceId`, reads the token from `options.address`, and
-	// the push-capability channel from `options.channelType`. A stable per-install
-	// `deviceId` is resolved (and persisted) when the caller does not supply one,
-	// so token refreshes upsert the same device object instead of duplicating it.
-	const deviceId = options?.deviceId ?? (await getDeviceId());
+	const resolvedOptions = await resolveRequestOptions({
+		deviceToken,
+		channelType,
+		options,
+	});
 	const body = JSON.stringify({
 		userId,
 		userProfile: userProfile ?? {},
-		options: {
-			...options,
-			deviceId,
-			address: deviceToken,
-			channelType,
-		},
+		options: resolvedOptions,
 	});
 
 	let response: Response;
@@ -124,10 +134,46 @@ export const registerDeviceWithCustomerProfiles = async ({
 
 	if (!response.ok) {
 		throw new PushNotificationError({
-			name: 'DeviceRegistrationException',
-			message: `Failed to register the device with Amazon Connect Customer Profiles. The endpoint responded with status ${response.status}.`,
+			name: 'IdentifyUserException',
+			message: `Failed to identify the user with Amazon Connect Customer Profiles. The endpoint responded with status ${response.status}.`,
 			recoverySuggestion:
 				'Ensure the configured Customer Profiles endpoint is reachable and that the request is authorized.',
 		});
 	}
+};
+
+/**
+ * Builds the `options` object for the request body. When a device token is
+ * being registered, the device-registration fields (`deviceId`, `address`,
+ * `channelType`) are attached and a stable per-install `deviceId` is resolved
+ * (find-or-create). When no device token is present (device-less web
+ * identify), the caller-supplied `options` are passed through unchanged and no
+ * React-Native-only module is imported or called, keeping the web bundle free
+ * of `@aws-amplify/react-native`.
+ */
+const resolveRequestOptions = async ({
+	deviceToken,
+	channelType,
+	options,
+}: Pick<
+	IdentifyUserInternalInput,
+	'deviceToken' | 'channelType' | 'options'
+>): Promise<IdentifyUserOptions & { channelType?: ChannelType }> => {
+	const isRegisteringDevice = !!deviceToken || !!options?.deviceId;
+	if (!isRegisteringDevice) {
+		return { ...options };
+	}
+
+	// Deferred import so the React-Native-only `getDeviceId` (AsyncStorage) is
+	// never pulled into the web module graph — it is only reached on the
+	// device-registration path, which never runs on the browser.
+	const { getDeviceId } = await import('./getDeviceId');
+	const deviceId = options?.deviceId ?? (await getDeviceId());
+
+	return {
+		...options,
+		deviceId,
+		address: deviceToken,
+		channelType,
+	};
 };

@@ -11,7 +11,7 @@ import {
 import { getToken, initialize, isInitialized, setToken } from '../../../utils';
 import {
 	getChannelType,
-	registerDeviceWithCustomerProfiles,
+	identifyUserInternal,
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
 } from '../utils';
@@ -155,7 +155,7 @@ const addNativeListeners = (): void => {
 
 const registerDevice = async (address: string): Promise<void> => {
 	try {
-		await registerDeviceWithCustomerProfiles({
+		await identifyUserInternal({
 			deviceToken: address,
 			channelType: getChannelType(),
 		});

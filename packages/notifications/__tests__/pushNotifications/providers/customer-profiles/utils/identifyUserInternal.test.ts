@@ -4,7 +4,7 @@
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { registerDeviceWithCustomerProfiles } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/registerDeviceWithCustomerProfiles';
+import { identifyUserInternal } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/identifyUserInternal';
 import { getDeviceId } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/getDeviceId';
 import {
 	accessToken,
@@ -32,7 +32,7 @@ jest.mock(
 
 const DEVICE_ID = 'persisted-device-id';
 
-describe('registerDeviceWithCustomerProfiles', () => {
+describe('identifyUserInternal', () => {
 	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
 	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 	const mockSignRequest = signRequest as jest.Mock;
@@ -65,7 +65,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 	});
 
 	it('POSTs the device registration to the Customer Profiles identify-user endpoint with a Bearer token', async () => {
-		await registerDeviceWithCustomerProfiles({
+		await identifyUserInternal({
 			deviceToken: 'device-token',
 			channelType,
 		});
@@ -92,7 +92,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 	});
 
 	it('resolves a stable per-install deviceId when the caller does not supply one', async () => {
-		await registerDeviceWithCustomerProfiles({
+		await identifyUserInternal({
 			deviceToken: 'device-token',
 			channelType,
 		});
@@ -104,7 +104,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 	});
 
 	it('uses a caller-supplied deviceId without resolving a new one', async () => {
-		await registerDeviceWithCustomerProfiles({
+		await identifyUserInternal({
 			deviceToken: 'device-token',
 			channelType,
 			options: { deviceId: 'caller-device-id' },
@@ -119,7 +119,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 	it('includes user identity information when identifying a user', async () => {
 		const userProfile = { email: 'user@example.com' };
 		const options = { userAttributes: { hobbies: ['climbing'] } };
-		await registerDeviceWithCustomerProfiles({
+		await identifyUserInternal({
 			deviceToken: 'device-token',
 			channelType,
 			userId,
@@ -140,7 +140,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 	});
 
 	it('does not call the Pinpoint UpdateEndpoint client (network POST only)', async () => {
-		await registerDeviceWithCustomerProfiles({
+		await identifyUserInternal({
 			deviceToken: 'device-token',
 			channelType,
 		});
@@ -151,7 +151,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 	it('resolves when the endpoint responds with a 2xx status', async () => {
 		mockFetch.mockResolvedValue({ ok: true, status: 204 });
 		await expect(
-			registerDeviceWithCustomerProfiles({
+			identifyUserInternal({
 				deviceToken: 'device-token',
 				channelType,
 			}),
@@ -161,7 +161,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 	it('throws when the endpoint responds with a non-2xx status', async () => {
 		mockFetch.mockResolvedValue({ ok: false, status: 500 });
 		await expect(
-			registerDeviceWithCustomerProfiles({
+			identifyUserInternal({
 				deviceToken: 'device-token',
 				channelType,
 			}),
@@ -171,7 +171,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 	it('throws when the network request fails', async () => {
 		mockFetch.mockRejectedValue(new Error('network down'));
 		await expect(
-			registerDeviceWithCustomerProfiles({
+			identifyUserInternal({
 				deviceToken: 'device-token',
 				channelType,
 			}),
@@ -184,12 +184,61 @@ describe('registerDeviceWithCustomerProfiles', () => {
 			credentials: undefined,
 		});
 		await expect(
-			registerDeviceWithCustomerProfiles({
+			identifyUserInternal({
 				deviceToken: 'device-token',
 				channelType,
 			}),
 		).rejects.toThrow();
 		expect(mockFetch).not.toHaveBeenCalled();
+	});
+
+	describe('device-less profile identify (browser/web)', () => {
+		it('sends userId + userProfile with NO device fields and does not resolve a deviceId', async () => {
+			const userProfile = { email: 'user@example.com' };
+			const options = { userAttributes: { interests: ['food'] } };
+			await identifyUserInternal({ userId, userProfile, options });
+
+			expect(mockGetDeviceId).not.toHaveBeenCalled();
+			expect(mockFetch).toHaveBeenCalledTimes(1);
+			const [url, request] = mockFetch.mock.calls[0];
+			expect(url).toBe(`${customerProfilesConfig.endpoint}/identify-user`);
+			const body = JSON.parse(request.body);
+			expect(body).toStrictEqual({
+				userId,
+				userProfile,
+				options: { userAttributes: { interests: ['food'] } },
+			});
+			expect(body.options).not.toHaveProperty('deviceId');
+			expect(body.options).not.toHaveProperty('address');
+			expect(body.options).not.toHaveProperty('channelType');
+		});
+
+		it('defaults userProfile to an empty object and options to an empty object when omitted', async () => {
+			await identifyUserInternal({ userId });
+
+			expect(mockGetDeviceId).not.toHaveBeenCalled();
+			expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toStrictEqual({
+				userId,
+				userProfile: {},
+				options: {},
+			});
+		});
+
+		it('still registers a device when only options.deviceId is supplied (no deviceToken)', async () => {
+			await identifyUserInternal({
+				userId,
+				options: { deviceId: 'caller-device-id' },
+			});
+
+			// A caller-supplied deviceId marks this as a device-registration call,
+			// so no new deviceId is resolved but the device fields are attached.
+			// address/channelType are undefined here and dropped by JSON.stringify.
+			expect(mockGetDeviceId).not.toHaveBeenCalled();
+			const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+			expect(body.options.deviceId).toBe('caller-device-id');
+			expect(body.options).not.toHaveProperty('address');
+			expect(body.options).not.toHaveProperty('channelType');
+		});
 	});
 
 	describe('guest (Identity Pool) path', () => {
@@ -218,7 +267,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 		});
 
 		it('SigV4-signs a POST to the guest route with the guest credentials', async () => {
-			await registerDeviceWithCustomerProfiles({
+			await identifyUserInternal({
 				deviceToken: 'device-token',
 				channelType,
 			});
@@ -249,7 +298,7 @@ describe('registerDeviceWithCustomerProfiles', () => {
 		});
 
 		it('sends the device registration in the guest request body', async () => {
-			await registerDeviceWithCustomerProfiles({
+			await identifyUserInternal({
 				deviceToken: 'device-token',
 				channelType,
 			});
@@ -263,10 +312,26 @@ describe('registerDeviceWithCustomerProfiles', () => {
 			});
 		});
 
+		it('sends a device-less guest identify (SigV4) with no device fields', async () => {
+			const userProfile = { email: 'guest@example.com' };
+			await identifyUserInternal({ userId, userProfile });
+
+			expect(mockGetDeviceId).not.toHaveBeenCalled();
+			expect(mockSignRequest).toHaveBeenCalledTimes(1);
+			expect(mockSignRequest.mock.calls[0][0].url.toString()).toBe(
+				`${customerProfilesConfig.endpoint}/identify-user-guest`,
+			);
+			expect(JSON.parse(mockFetch.mock.calls[0][1].body)).toStrictEqual({
+				userId,
+				userProfile,
+				options: {},
+			});
+		});
+
 		it('throws when the guest endpoint responds with a non-2xx status', async () => {
 			mockFetch.mockResolvedValue({ ok: false, status: 403 });
 			await expect(
-				registerDeviceWithCustomerProfiles({
+				identifyUserInternal({
 					deviceToken: 'device-token',
 					channelType,
 				}),

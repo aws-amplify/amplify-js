@@ -13,7 +13,7 @@ import {
 } from '../../../../../src/pushNotifications/utils';
 import {
 	getChannelType,
-	registerDeviceWithCustomerProfiles,
+	identifyUserInternal,
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
 } from '../../../../../src/pushNotifications/providers/customer-profiles/utils';
@@ -55,8 +55,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 	// create mocks
 	const mockEventListenerRemover = { remove: jest.fn() };
 	// assert mocks
-	const mockRegisterDeviceWithCustomerProfiles =
-		registerDeviceWithCustomerProfiles as jest.Mock;
+	const mockIdentifyUserInternal = identifyUserInternal as jest.Mock;
 	const mockGetChannelType = getChannelType as jest.Mock;
 	const mockGetToken = getToken as jest.Mock;
 	const mockInitialize = initialize as jest.Mock;
@@ -113,7 +112,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		mockRegisterHeadlessTask.mockReset();
 		mockAddMessageEventListener.mockReset();
 		mockAddTokenEventListener.mockReset();
-		mockRegisterDeviceWithCustomerProfiles.mockReset();
+		mockIdentifyUserInternal.mockReset();
 		mockInitialize.mockClear();
 		mockSetToken.mockClear();
 		mockCompleteNotification.mockClear();
@@ -259,9 +258,10 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 							'tokenReceived',
 							pushToken,
 						);
-						expect(mockRegisterDeviceWithCustomerProfiles).toHaveBeenCalledWith(
-							{ deviceToken: pushToken, channelType },
-						);
+						expect(mockIdentifyUserInternal).toHaveBeenCalledWith({
+							deviceToken: pushToken,
+							channelType,
+						});
 						expect(mockResolveInflightDeviceRegistration).toHaveBeenCalled();
 						expect(mockRejectInflightDeviceRegistration).not.toHaveBeenCalled();
 						done();
@@ -303,7 +303,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 
 		it('throws if device registration fails', done => {
 			expect.assertions(3);
-			mockRegisterDeviceWithCustomerProfiles.mockImplementation(() => {
+			mockIdentifyUserInternal.mockImplementation(() => {
 				throw new Error();
 			});
 			mockAddTokenEventListener.mockImplementation(
