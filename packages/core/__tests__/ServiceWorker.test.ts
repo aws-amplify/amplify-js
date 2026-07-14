@@ -217,9 +217,9 @@ describe('ServiceWorker test', () => {
 
 		beforeEach(() => {
 			jest.clearAllMocks();
-			jest.spyOn(Amplify, 'getConfig').mockReturnValue({
+			Amplify.configure({
 				Analytics: { Pinpoint: pinpointConfig },
-			} as any);
+			});
 			(fetchAuthSession as jest.Mock).mockResolvedValue({ credentials });
 		});
 
@@ -265,7 +265,7 @@ describe('ServiceWorker test', () => {
 		});
 
 		test('does not record when Pinpoint is not configured and no handler is provided', async () => {
-			jest.spyOn(Amplify, 'getConfig').mockReturnValue({} as any);
+			Amplify.configure({});
 			const handleStateChange = await registerAndGetStateChangeHandler();
 
 			await handleStateChange();
