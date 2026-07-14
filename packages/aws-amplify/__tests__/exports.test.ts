@@ -92,13 +92,13 @@ describe('aws-amplify Exports', () => {
 
 		it('should only export expected symbols from the Kinesis provider', () => {
 			expect(Object.keys(analyticsKinesisExports).sort()).toEqual(
-				['record', 'flushEvents'].sort(),
+				['record', 'flushEvents', 'configureAutoTrack'].sort(),
 			);
 		});
 
 		it('should only export expected symbols from the Kinesis Firehose provider', () => {
 			expect(Object.keys(analyticsKinesisFirehoseExports).sort()).toEqual(
-				['record', 'flushEvents'].sort(),
+				['record', 'flushEvents', 'configureAutoTrack'].sort(),
 			);
 		});
 
