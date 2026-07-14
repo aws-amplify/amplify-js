@@ -55,6 +55,9 @@ runs:
           echo "Starting attempt $i."
           select_staging_branch && break
           echo "Attempt $i failed."
+          if [ "$i" -eq 3 ]; then
+            echo "::warning::Failed to check out staging branch '$BRANCH' after 3 attempts, falling back to default branch."
+          fi
           sleep 5
         done
 
