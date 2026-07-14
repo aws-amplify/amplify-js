@@ -135,7 +135,7 @@ describe('identifyUser (customer-profiles, native)', () => {
 	it('passes through guest-merge and device-registration options', async () => {
 		mockGetInflightDeviceRegistration.mockReturnValue(undefined);
 		const options = {
-			previousGuestIdentityId: 'us-east-1:guest',
+			guestIdentityId: 'us-east-1:guest',
 			deviceId: 'device-id',
 			platform: 'ios',
 			appVersion: '1.2.3',

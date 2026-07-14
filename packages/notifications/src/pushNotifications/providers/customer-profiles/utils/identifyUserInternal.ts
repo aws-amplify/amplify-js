@@ -59,7 +59,7 @@ export interface IdentifyUserInternalInput {
  *    SigV4-signed (`execute-api`) with the guest credentials. The backend keys
  *    the profile on the caller's Identity Pool `identityId`, enabling a device
  *    token to be registered before sign-in. On a later authenticated call, pass
- *    the prior guest `identityId` via `options.previousGuestIdentityId` to fold
+ *    the prior guest `identityId` via `options.guestIdentityId` to fold
  *    the guest profile (and its devices) into the authenticated profile.
  *
  * @throws service/network: {@link PushNotificationError} - Thrown when the

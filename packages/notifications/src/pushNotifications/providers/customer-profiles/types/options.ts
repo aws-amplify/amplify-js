@@ -20,5 +20,5 @@ export type IdentifyUserOptions = PinpointServiceOptions & {
 	 * authenticated profile (keyed on `cognitoSub`), carrying over any devices
 	 * registered pre-login (merge-on-sign-in).
 	 */
-	previousGuestIdentityId?: string;
+	guestIdentityId?: string;
 };
