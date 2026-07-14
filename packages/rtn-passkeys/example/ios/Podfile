@@ -35,6 +35,19 @@ target 'AmplifyRtnPasskeysExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Xcode 26's Clang rejects fmt 11.0.2's consteval compile-time format-string
+    # checks ("call to consteval function ... is not a constant expression").
+    # Building ONLY the fmt pod as C++17 disables that path (consteval is C++20+)
+    # and falls back to runtime validation, while the rest of React Native keeps
+    # C++20. Drop this once RN ships a newer fmt that builds under Xcode 26.
+    # Upstream: facebook/react-native#55601, expo/expo#44229
+    installer.pods_project.targets.each do |target|
+      if target.name == 'fmt'
+        target.build_configurations.each do |build_config|
+          build_config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+        end
+      end
+    end
   end
 end
-

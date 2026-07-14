@@ -85,7 +85,7 @@
 		"@aws-amplify/core": "^6.16.2"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.16.3"
+		"@aws-amplify/core": "6.16.4"
 	},
 	"size-limit": [
 		{

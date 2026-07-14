@@ -76,7 +76,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@babel/core": "^7.29.0",
+		"@babel/core": "^7.29.6",
 		"@babel/preset-env": "^7.0.0",
 		"@changesets/changelog-github": "^0.5.2",
 		"@changesets/cli": "^2.27.1",
@@ -127,17 +127,21 @@
 		"webpack-cli": "^5.0.0"
 	},
 	"resolutions": {
+		"@babel/core": "^7.29.6",
 		"@react-native-community/cli": "^18.0.1",
 		"fast-xml-parser": "^5.7.2",
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
 		"xml2js": "0.5.0",
-		"**/form-data": "4.0.5",
+		"**/form-data": "4.0.6",
 		"qs": "^6.14.1",
-		"js-yaml": "4.1.1",
+		"js-yaml": "4.2.0",
+		"launch-editor": "^2.14.1",
 		"serialize-javascript": "^7.0.5",
-		"@tootallnate/once": "3.0.1"
+		"@tootallnate/once": "3.0.1",
+		"uuid": "^11.1.1",
+		"joi": "^18.2.1"
 	},
 	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

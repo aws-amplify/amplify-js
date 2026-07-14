@@ -81,7 +81,7 @@
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.16.3"
+		"@aws-amplify/core": "6.16.4"
 	},
 	"size-limit": [
 		{
