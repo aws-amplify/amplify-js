@@ -5,13 +5,11 @@ import { Hub, clearCredentials } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { setCurrentUser } from '../../../src/providers/cognito/apis/setCurrentUser';
-import { getCurrentUser } from '../../../src/providers/cognito/apis/internal/getCurrentUser';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
 import { AuthTokenStore } from '../../../src/providers/cognito/tokenProvider/types';
 import { USER_NOT_SIGNED_IN_EXCEPTION } from '../../../src/errors/constants';
 
 jest.mock('@aws-amplify/core', () => ({
-	Amplify: {},
 	Hub: {
 		dispatch: jest.fn(),
 	},
@@ -21,20 +19,20 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	AMPLIFY_SYMBOL: Symbol('AMPLIFY_SYMBOL'),
 }));
-jest.mock('../../../src/providers/cognito/apis/internal/getCurrentUser');
 jest.mock('../../../src/providers/cognito/tokenProvider');
 
 const mockTokenOrchestrator = tokenOrchestrator as jest.Mocked<
 	typeof tokenOrchestrator
 >;
-const mockGetCurrentUser = getCurrentUser as jest.Mock;
 const mockClearCredentials = clearCredentials as jest.Mock;
 const mockDispatch = Hub.dispatch as jest.Mock;
 const mockGetAuthUserList = jest.fn();
 const mockAddActiveSession = jest.fn();
+const mockGetStoredIdToken = jest.fn();
 const mockTokenStore = {
 	getAuthUserList: mockGetAuthUserList,
 	addActiveSession: mockAddActiveSession,
+	getStoredIdToken: mockGetStoredIdToken,
 };
 
 describe('setCurrentUser', () => {
@@ -50,7 +48,7 @@ describe('setCurrentUser', () => {
 		mockGetAuthUserList.mockReset();
 		mockAddActiveSession.mockReset();
 		mockClearCredentials.mockReset();
-		mockGetCurrentUser.mockReset();
+		mockGetStoredIdToken.mockReset();
 		mockDispatch.mockClear();
 		mockTokenOrchestrator.getTokenStore.mockReset();
 	});
@@ -79,9 +77,8 @@ describe('setCurrentUser', () => {
 
 	it('reorders the roster, clears credentials, and dispatches switchActiveUser', async () => {
 		mockGetAuthUserList.mockResolvedValue(['alice', 'bob']);
-		mockGetCurrentUser.mockResolvedValue({
-			username: 'bob',
-			userId: 'bob-id',
+		mockGetStoredIdToken.mockResolvedValue({
+			payload: { sub: 'bob-id' },
 		});
 
 		await setCurrentUser('bob');
@@ -90,6 +87,8 @@ describe('setCurrentUser', () => {
 		expect(mockAddActiveSession).toHaveBeenCalledWith('bob');
 		// busts the previous active user's identity-pool credentials.
 		expect(mockClearCredentials).toHaveBeenCalledTimes(1);
+		// resolves from stored id token, not getCurrentUser.
+		expect(mockGetStoredIdToken).toHaveBeenCalledWith('bob');
 		// switchActiveUser fires when the active pointer moves between users.
 		expect(mockDispatch).toHaveBeenCalledWith(
 			'auth',
@@ -100,5 +99,17 @@ describe('setCurrentUser', () => {
 			'Auth',
 			AMPLIFY_SYMBOL,
 		);
+	});
+
+	it('skips dispatch when the stored id token has no sub claim', async () => {
+		mockGetAuthUserList.mockResolvedValue(['alice', 'bob']);
+		mockGetStoredIdToken.mockResolvedValue(undefined);
+
+		await setCurrentUser('bob');
+
+		expect(mockAddActiveSession).toHaveBeenCalledWith('bob');
+		expect(mockClearCredentials).toHaveBeenCalledTimes(1);
+		// No dispatch when userId can't be resolved.
+		expect(mockDispatch).not.toHaveBeenCalled();
 	});
 });

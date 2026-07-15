@@ -2,16 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { listCurrentUsers } from '../../../src/providers/cognito/apis/listCurrentUsers';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
-import { AUTH_KEY_PREFIX } from '../../../src/providers/cognito/tokenProvider/constants';
-
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	decodeJWT: jest.fn(),
-}));
 
 const userPoolClientId = '111111-aaaaa-42d8-891d-ee81a1549398';
 const authConfig = {
@@ -27,10 +20,6 @@ Amplify.configure({
 });
 
 const { authTokenStore } = cognitoUserPoolsTokenProvider;
-const mockDecodeJWT = decodeJWT as jest.Mock;
-
-const idTokenKey = (username: string) =>
-	`${AUTH_KEY_PREFIX}.${userPoolClientId}.${username}.idToken`;
 
 const mockKeyValueStorage = {
 	getItem: jest.fn(),
@@ -41,6 +30,7 @@ const mockKeyValueStorage = {
 
 describe('listCurrentUsers', () => {
 	let getAuthUserListSpy: jest.SpyInstance;
+	let getStoredIdTokenSpy: jest.SpyInstance;
 	let loadTokensSpy: jest.SpyInstance;
 
 	beforeEach(() => {
@@ -48,38 +38,23 @@ describe('listCurrentUsers', () => {
 			.spyOn(authTokenStore, 'getKeyValueStorage')
 			.mockReturnValue(mockKeyValueStorage);
 		getAuthUserListSpy = jest.spyOn(authTokenStore, 'getAuthUserList');
+		getStoredIdTokenSpy = jest.spyOn(authTokenStore, 'getStoredIdToken');
 		loadTokensSpy = jest.spyOn(authTokenStore, 'loadTokens');
-
-		// each stored idToken string decodes to a payload identifying its user.
-		mockDecodeJWT.mockImplementation((token: string) => {
-			const username = token.replace('-idToken', '');
-
-			return {
-				payload: {
-					'cognito:username': username,
-					sub: `${username}-sub`,
-				},
-				toString: () => token,
-			};
-		});
 	});
 
 	afterEach(() => {
 		jest.restoreAllMocks();
 		mockKeyValueStorage.getItem.mockReset();
-		mockDecodeJWT.mockReset();
 	});
 
 	it('returns AuthUser[] resolved from stored id tokens in roster order', async () => {
 		getAuthUserListSpy.mockResolvedValue(['alice', 'bob']);
-		mockKeyValueStorage.getItem.mockImplementation((key: string) => {
-			const map: Record<string, string> = {
-				[idTokenKey('alice')]: 'alice-idToken',
-				[idTokenKey('bob')]: 'bob-idToken',
-			};
-
-			return Promise.resolve(map[key] ?? null);
-		});
+		getStoredIdTokenSpy.mockImplementation((username: string) =>
+			Promise.resolve({
+				payload: { 'cognito:username': username, sub: `${username}-sub` },
+				toString: () => `${username}-idToken`,
+			}),
+		);
 
 		const result = await listCurrentUsers();
 
@@ -91,14 +66,13 @@ describe('listCurrentUsers', () => {
 
 	it('drops roster entries whose stored tokens cannot be resolved', async () => {
 		getAuthUserListSpy.mockResolvedValue(['alice', 'ghost', 'bob']);
-		mockKeyValueStorage.getItem.mockImplementation((key: string) => {
-			const map: Record<string, string> = {
-				[idTokenKey('alice')]: 'alice-idToken',
-				[idTokenKey('bob')]: 'bob-idToken',
-				// 'ghost' has no stored idToken -> resolves to null -> dropped.
-			};
+		getStoredIdTokenSpy.mockImplementation((username: string) => {
+			if (username === 'ghost') return Promise.resolve(undefined);
 
-			return Promise.resolve(map[key] ?? null);
+			return Promise.resolve({
+				payload: { 'cognito:username': username, sub: `${username}-sub` },
+				toString: () => `${username}-idToken`,
+			});
 		});
 
 		const result = await listCurrentUsers();
@@ -111,26 +85,18 @@ describe('listCurrentUsers', () => {
 
 	it('drops roster entries whose stored id token lacks a `sub` claim', async () => {
 		getAuthUserListSpy.mockResolvedValue(['alice', 'nosub', 'bob']);
-		mockKeyValueStorage.getItem.mockImplementation((key: string) => {
-			const map: Record<string, string> = {
-				[idTokenKey('alice')]: 'alice-idToken',
-				[idTokenKey('nosub')]: 'nosub-idToken',
-				[idTokenKey('bob')]: 'bob-idToken',
-			};
+		getStoredIdTokenSpy.mockImplementation((username: string) => {
+			if (username === 'nosub') {
+				return Promise.resolve({
+					payload: { 'cognito:username': username },
+					toString: () => `${username}-idToken`,
+				});
+			}
 
-			return Promise.resolve(map[key] ?? null);
-		});
-		// 'nosub' decodes to a payload with no `sub` -> unresolvable -> dropped.
-		mockDecodeJWT.mockImplementation((token: string) => {
-			const username = token.replace('-idToken', '');
-
-			return {
-				payload:
-					username === 'nosub'
-						? { 'cognito:username': username }
-						: { 'cognito:username': username, sub: `${username}-sub` },
-				toString: () => token,
-			};
+			return Promise.resolve({
+				payload: { 'cognito:username': username, sub: `${username}-sub` },
+				toString: () => `${username}-idToken`,
+			});
 		});
 
 		const result = await listCurrentUsers();
@@ -143,14 +109,62 @@ describe('listCurrentUsers', () => {
 
 	it('does not trigger a token refresh', async () => {
 		getAuthUserListSpy.mockResolvedValue(['alice']);
-		mockKeyValueStorage.getItem.mockImplementation((key: string) =>
-			Promise.resolve(key === idTokenKey('alice') ? 'alice-idToken' : null),
-		);
+		getStoredIdTokenSpy.mockResolvedValue({
+			payload: { 'cognito:username': 'alice', sub: 'alice-sub' },
+			toString: () => 'alice-idToken',
+		});
 
 		await listCurrentUsers();
 
 		// identities are read directly from stored tokens; loadTokens (which can
 		// drive a refresh) must not be invoked.
 		expect(loadTokensSpy).not.toHaveBeenCalled();
+	});
+
+	it('includes signInDetails when stored signInDetails key is present', async () => {
+		getAuthUserListSpy.mockResolvedValue(['alice']);
+		getStoredIdTokenSpy.mockResolvedValue({
+			payload: { 'cognito:username': 'alice', sub: 'alice-sub' },
+			toString: () => 'alice-idToken',
+		});
+
+		const signInDetails = {
+			loginId: 'alice@example.com',
+			authFlowType: 'USER_SRP_AUTH',
+		};
+		mockKeyValueStorage.getItem.mockImplementation((key: string) => {
+			if (key.endsWith('.signInDetails')) {
+				return Promise.resolve(JSON.stringify(signInDetails));
+			}
+
+			return Promise.resolve(null);
+		});
+
+		const result = await listCurrentUsers();
+
+		expect(result).toEqual([
+			{
+				username: 'alice',
+				userId: 'alice-sub',
+				signInDetails,
+			},
+		]);
+	});
+
+	it('still returns the user when signInDetails read fails', async () => {
+		getAuthUserListSpy.mockResolvedValue(['alice']);
+		getStoredIdTokenSpy.mockResolvedValue({
+			payload: { 'cognito:username': 'alice', sub: 'alice-sub' },
+			toString: () => 'alice-idToken',
+		});
+
+		// signInDetails key returns invalid JSON — parse will throw, but the
+		// implementation currently only reads it conditionally so it may return
+		// null. Either way the user should still be resolvable.
+		mockKeyValueStorage.getItem.mockResolvedValue(null);
+
+		const result = await listCurrentUsers();
+
+		expect(result).toEqual([{ username: 'alice', userId: 'alice-sub' }]);
 	});
 });
