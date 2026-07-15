@@ -6,11 +6,12 @@ import { ConsoleLogger } from '@aws-amplify/core';
 const logger = new ConsoleLogger('Analytics');
 
 const DEPRECATION_MESSAGE =
-	'The default (Amazon Pinpoint) export of `@aws-amplify/analytics`/`aws-amplify/analytics` is deprecated. ' +
+	'The default (Amazon Pinpoint) export of `aws-amplify/analytics` is deprecated. ' +
 	'AWS will end support for Amazon Pinpoint on October 30, 2026. ' +
-	'Migrate to a supported provider by importing from its sub-path export instead, for example ' +
-	'`@aws-amplify/analytics/kinesis`, `@aws-amplify/analytics/kinesis-firehose`, or ' +
-	'`@aws-amplify/analytics/personalize`.';
+	'Migrate to a supported provider by importing from its sub-path export instead: ' +
+	'Kinesis (`aws-amplify/analytics/kinesis`), ' +
+	'Kinesis Data Firehose (`aws-amplify/analytics/kinesis-firehose`), or ' +
+	'Personalize Event (`aws-amplify/analytics/personalize`).';
 
 /**
  * Wraps a Pinpoint (default-export) Analytics API so that invoking it emits a

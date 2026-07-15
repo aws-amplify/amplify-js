@@ -17,32 +17,32 @@ import { deprecatePinpoint } from './utils';
 /**
  * @deprecated The default (Amazon Pinpoint) Analytics APIs are deprecated. AWS will end support for
  * Amazon Pinpoint on October 30, 2026. Migrate to a supported provider by importing from its sub-path
- * export instead — for example `@aws-amplify/analytics/kinesis`, `@aws-amplify/analytics/kinesis-firehose`,
- * or `@aws-amplify/analytics/personalize`.
+ * export instead — for example `aws-amplify/analytics/kinesis`, `aws-amplify/analytics/kinesis-firehose`,
+ * or `aws-amplify/analytics/personalize`.
  */
 export const record = deprecatePinpoint(recordPinpoint);
 
 /**
  * @deprecated The default (Amazon Pinpoint) Analytics APIs are deprecated. AWS will end support for
  * Amazon Pinpoint on October 30, 2026. Migrate to a supported provider by importing from its sub-path
- * export instead — for example `@aws-amplify/analytics/kinesis`, `@aws-amplify/analytics/kinesis-firehose`,
- * or `@aws-amplify/analytics/personalize`.
+ * export instead — for example `aws-amplify/analytics/kinesis`, `aws-amplify/analytics/kinesis-firehose`,
+ * or `aws-amplify/analytics/personalize`.
  */
 export const identifyUser = deprecatePinpoint(identifyUserPinpoint);
 
 /**
  * @deprecated The default (Amazon Pinpoint) Analytics APIs are deprecated. AWS will end support for
  * Amazon Pinpoint on October 30, 2026. Migrate to a supported provider by importing from its sub-path
- * export instead — for example `@aws-amplify/analytics/kinesis`, `@aws-amplify/analytics/kinesis-firehose`,
- * or `@aws-amplify/analytics/personalize`.
+ * export instead — for example `aws-amplify/analytics/kinesis`, `aws-amplify/analytics/kinesis-firehose`,
+ * or `aws-amplify/analytics/personalize`.
  */
 export const configureAutoTrack = deprecatePinpoint(configureAutoTrackPinpoint);
 
 /**
  * @deprecated The default (Amazon Pinpoint) Analytics APIs are deprecated. AWS will end support for
  * Amazon Pinpoint on October 30, 2026. Migrate to a supported provider by importing from its sub-path
- * export instead — for example `@aws-amplify/analytics/kinesis`, `@aws-amplify/analytics/kinesis-firehose`,
- * or `@aws-amplify/analytics/personalize`.
+ * export instead — for example `aws-amplify/analytics/kinesis`, `aws-amplify/analytics/kinesis-firehose`,
+ * or `aws-amplify/analytics/personalize`.
  */
 export const flushEvents = deprecatePinpoint(flushEventsPinpoint);
 

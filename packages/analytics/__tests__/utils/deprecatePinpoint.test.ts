@@ -34,7 +34,7 @@ describe('deprecatePinpoint', () => {
 			expect.stringContaining('Amazon Pinpoint'),
 		);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
-			expect.stringContaining('@aws-amplify/analytics/kinesis'),
+			expect.stringContaining('aws-amplify/analytics/kinesis'),
 		);
 	});
 
