@@ -492,6 +492,19 @@ describe('TokenStore', () => {
 				expect(await tokenStore.getAuthUserList()).toEqual([]);
 			});
 
+			it('still returns the migrated list when persistAuthUserList throws (read-only storage)', async () => {
+				store[lastAuthUserKey] = 'legacyUser';
+				// Simulate read-only storage: setItem throws on write.
+				mockKeyValueStorage.setItem.mockRejectedValue(
+					new Error('Storage is read-only'),
+				);
+
+				const result = await tokenStore.getAuthUserList();
+
+				// Migration still returns the derived list even though persist failed.
+				expect(result).toEqual(['legacyUser']);
+			});
+
 			it('returns an empty roster when nothing is stored', async () => {
 				expect(await tokenStore.getAuthUserList()).toEqual([]);
 			});

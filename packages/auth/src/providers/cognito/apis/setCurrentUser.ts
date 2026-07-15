@@ -1,14 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, Hub, clearCredentials } from '@aws-amplify/core';
+import { Hub, clearCredentials } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
 import { USER_NOT_SIGNED_IN_EXCEPTION } from '../../../errors/constants';
 import { tokenOrchestrator } from '../tokenProvider';
-
-import { getCurrentUser } from './internal/getCurrentUser';
 
 /**
  * Switches the active user to a different signed-in user without requiring
@@ -52,19 +50,22 @@ export async function setCurrentUser(username: string): Promise<void> {
 	// credential requests resolve against the newly active user.
 	await clearCredentials();
 
-	// Resolve the now-active user for the event payload.
-	const currentUser = await getCurrentUser(Amplify);
-	const data = {
-		username: currentUser.username,
-		userId: currentUser.userId,
-	};
+	// Resolve the now-active user's identity from their stored id token (no
+	// refresh). Skip the dispatch if the id token is undecodable — emitting an
+	// event with userId:'' would violate the AuthUser contract.
+	const idToken = await tokenStore.getStoredIdToken(username);
+	const userId = (idToken?.payload?.sub as string) ?? '';
+
+	if (!userId) {
+		return;
+	}
 
 	// switchActiveUser fires when the active pointer moves between users.
 	Hub.dispatch(
 		'auth',
 		{
 			event: 'switchActiveUser',
-			data,
+			data: { username, userId },
 		},
 		'Auth',
 		AMPLIFY_SYMBOL,

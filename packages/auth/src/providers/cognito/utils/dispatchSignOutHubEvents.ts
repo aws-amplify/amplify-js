@@ -61,6 +61,14 @@ export async function dispatchSignOutBoundaryEvents(
 		tokenStore,
 		removeResult.newActiveUser,
 	);
+
+	// If the promoted user's identity can't be resolved (undecodable/missing
+	// idToken), skip the dispatch — emitting userId:'' would violate the
+	// AuthUser contract.
+	if (!promoted.userId) {
+		return;
+	}
+
 	Hub.dispatch(
 		'auth',
 		{ event: 'switchActiveUser', data: promoted },

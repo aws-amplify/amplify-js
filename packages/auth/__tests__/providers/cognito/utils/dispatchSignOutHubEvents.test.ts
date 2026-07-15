@@ -116,7 +116,7 @@ describe('dispatchSignOutBoundaryEvents()', () => {
 		);
 	});
 
-	it('falls back to an empty userId (no throw) when the promoted id token is unavailable', async () => {
+	it('skips switchActiveUser dispatch when the promoted id token is unavailable', async () => {
 		mockGetStoredIdToken.mockResolvedValue(undefined);
 
 		await dispatchSignOutBoundaryEvents(mockTokenStore, undefined, {
@@ -124,9 +124,9 @@ describe('dispatchSignOutBoundaryEvents()', () => {
 			isEmpty: false,
 		});
 
-		expect(mockDispatch).toHaveBeenCalledWith(
+		expect(mockDispatch).not.toHaveBeenCalledWith(
 			'auth',
-			{ event: 'switchActiveUser', data: { username: 'bob', userId: '' } },
+			expect.objectContaining({ event: 'switchActiveUser' }),
 			'Auth',
 			AMPLIFY_SYMBOL,
 		);

@@ -305,7 +305,14 @@ export class DefaultTokenStore implements AuthTokenStore {
 		);
 		if (legacyLastAuthUser && legacyLastAuthUser !== 'username') {
 			const migratedList = [legacyLastAuthUser];
-			await this.persistAuthUserList(migratedList);
+			// Best-effort persist: on read-only/ephemeral SSR storage the write
+			// may fail — that's acceptable because the migrated list is still
+			// returned to the caller; the next mutable-storage call will retry.
+			try {
+				await this.persistAuthUserList(migratedList);
+			} catch {
+				// Storage is read-only (e.g. SSR); degrade gracefully.
+			}
 
 			return migratedList;
 		}
@@ -336,6 +343,10 @@ export class DefaultTokenStore implements AuthTokenStore {
 			this.getAuthUserListKey(),
 			list.join(','),
 		);
+		// Best-effort / compatibility-only: LastAuthUser is kept in sync for
+		// legacy consumers, but AuthUserList is authoritative when present
+		// (getAuthUserList prefers it). A lost LastAuthUser write does not
+		// affect roster correctness.
 		await this.getKeyValueStorage().setItem(this.getLastAuthUserKey(), list[0]);
 	}
 

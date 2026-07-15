@@ -25,6 +25,8 @@ import { resolveSessionSwitcher } from './resolveSessionSwitcher';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  * @throws {@link AuthError} - Thrown with name `TokenProviderNotFoundException`
  * when no token provider is configured on the resolved context.
+ * @remarks Unlike the client variant, AuthUser objects returned in the server
+ * context do not include signInDetails.
  */
 export const listCurrentUsers = async (
 	contextSpec: AmplifyServer.ContextSpec,

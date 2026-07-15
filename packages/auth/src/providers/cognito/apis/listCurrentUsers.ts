@@ -2,14 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import {
-	assertTokenProviderConfig,
-	decodeJWT,
-} from '@aws-amplify/core/internals/utils';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthUser } from '../types/models';
 import { cognitoUserPoolsTokenProvider } from '../tokenProvider';
-import { AUTH_KEY_PREFIX } from '../tokenProvider/constants';
 
 /**
  * Lists all the users currently signed in for the configured user pool, in
@@ -38,42 +34,35 @@ export async function listCurrentUsers(): Promise<AuthUser[]> {
 	// fail to resolve become undefined and are filtered out below (self-healing).
 	const resolvedUsers = await Promise.all(
 		roster.map(async rosterUsername => {
-			try {
-				const idTokenKey = `${AUTH_KEY_PREFIX}.${userPoolClientId}.${rosterUsername}.idToken`;
-				const idTokenString = await keyValueStorage.getItem(idTokenKey);
+			const idToken = await authTokenStore.getStoredIdToken(rosterUsername);
 
-				if (!idTokenString) {
-					return undefined;
-				}
-
-				const idToken = decodeJWT(idTokenString);
-				const { 'cognito:username': cognitoUsername, sub } =
-					idToken?.payload ?? {};
-
-				// Drop users whose stored id token lacks a `sub` claim: without
-				// `sub` the AuthUser userId contract (always a string) cannot be
-				// satisfied, so treat them as unresolvable.
-				if (!sub) {
-					return undefined;
-				}
-
-				const authUser: AuthUser = {
-					username: (cognitoUsername as string) ?? rosterUsername,
-					userId: sub as string,
-				};
-
-				const signInDetailsKey = `${AUTH_KEY_PREFIX}.${userPoolClientId}.${rosterUsername}.signInDetails`;
-				const signInDetailsString =
-					await keyValueStorage.getItem(signInDetailsKey);
-				if (signInDetailsString) {
-					authUser.signInDetails = JSON.parse(signInDetailsString);
-				}
-
-				return authUser;
-			} catch (err) {
-				// Skip any user whose stored tokens cannot be resolved.
+			if (!idToken) {
 				return undefined;
 			}
+
+			const { 'cognito:username': cognitoUsername, sub } =
+				idToken.payload ?? {};
+
+			// Drop users whose stored id token lacks a `sub` claim: without
+			// `sub` the AuthUser userId contract (always a string) cannot be
+			// satisfied, so treat them as unresolvable.
+			if (!sub) {
+				return undefined;
+			}
+
+			const authUser: AuthUser = {
+				username: (cognitoUsername as string) ?? rosterUsername,
+				userId: sub as string,
+			};
+
+			const signInDetailsKey = `CognitoIdentityServiceProvider.${userPoolClientId}.${rosterUsername}.signInDetails`;
+			const signInDetailsString =
+				await keyValueStorage.getItem(signInDetailsKey);
+			if (signInDetailsString) {
+				authUser.signInDetails = JSON.parse(signInDetailsString);
+			}
+
+			return authUser;
 		}),
 	);
 
