@@ -19,3 +19,4 @@ export {
 } from './userAgent';
 export { updateProviderTrackers } from './trackerHelpers';
 export { validateTrackerConfiguration } from './trackerConfigHelpers';
+export { deprecatePinpoint } from './deprecatePinpoint';
