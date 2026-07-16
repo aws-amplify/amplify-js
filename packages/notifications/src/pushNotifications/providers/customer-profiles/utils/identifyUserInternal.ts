@@ -58,9 +58,8 @@ export interface IdentifyUserInternalInput {
  *  - Guest (Identity Pool unauthenticated): `POST {endpoint}/identify-user-guest`
  *    SigV4-signed (`execute-api`) with the guest credentials. The backend keys
  *    the profile on the caller's Identity Pool `identityId`, enabling a device
- *    token to be registered before sign-in. On a later authenticated call, pass
- *    the prior guest `identityId` via `options.guestIdentityId` to fold
- *    the guest profile (and its devices) into the authenticated profile.
+ *    token to be registered before sign-in. Guest and authenticated profiles
+ *    are kept separate.
  *
  * @throws service/network: {@link PushNotificationError} - Thrown when the
  *  request cannot be completed or the endpoint responds with a non-2xx status.

@@ -13,12 +13,4 @@ export type IdentifyUserOptions = PinpointServiceOptions & {
 	deviceId?: string;
 	platform?: string;
 	appVersion?: string;
-	/**
-	 * On an authenticated `identifyUser` call, the Identity Pool `identityId`
-	 * the caller used while they were a guest. When present the backend folds
-	 * the prior guest profile (keyed on `cognitoIdentityId`) into the
-	 * authenticated profile (keyed on `cognitoSub`), carrying over any devices
-	 * registered pre-login (merge-on-sign-in).
-	 */
-	guestIdentityId?: string;
 };
