@@ -96,8 +96,7 @@ jobs:
         run: |
           for i in 1 2 3; do
             echo "pod install attempt $i"
-            cd ios && pod install && break || true
-            cd ..
+            (cd ios && pod install) && break
             if [ "$i" -eq 3 ]; then
               echo "::error::pod install failed after 3 attempts"
               exit 1
