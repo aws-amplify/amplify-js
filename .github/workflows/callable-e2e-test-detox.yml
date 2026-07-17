@@ -122,6 +122,8 @@ jobs:
         run: |
           # Install applesimutils with retries
           brew tap wix/brew
+          # Newer Homebrew (macos-15 image ≥2026-06) requires explicit tap trust
+          brew trust wix/brew || true
           for i in 1 2 3; do
             echo "brew install applesimutils attempt $i"
             brew install applesimutils && break || true
