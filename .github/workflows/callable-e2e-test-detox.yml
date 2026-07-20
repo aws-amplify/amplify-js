@@ -21,7 +21,9 @@ on:
 jobs:
   e2e-test:
     name: E2E-Detox ${{ inputs.test_name }}
-    runs-on: macos-latest-large
+    # Pin to macos-15-large: macos-latest rolled to macOS-26 (2026-07-15) which
+    # removed all Xcode 16.x versions. macos-15 image ships Xcode 16.0–16.4.
+    runs-on: macos-15-large
     timeout-minutes: ${{ inputs.timeout_minutes }}
 
     steps:
@@ -32,8 +34,44 @@ jobs:
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
       - name: Set Xcode version
+        # Prefer Xcode 16.4; fall back to newest 16.x if the exact version is
+        # missing (e.g. runner image update removed it). Fails loudly if no
+        # Xcode 16.x is available at all.
         run: |
-          sudo xcode-select -s /Applications/Xcode_16.4.app
+          XCODE_PATH="/Applications/Xcode_16.4.app"
+          if [ ! -d "$XCODE_PATH" ]; then
+            echo "::warning::Xcode_16.4.app not found. Available Xcode installations:"
+            ls -d /Applications/Xcode_*.app 2>/dev/null || echo "  (none found)"
+            # Fall back to the newest Xcode 16.x
+            XCODE_PATH=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -n1)
+            if [ -z "$XCODE_PATH" ]; then
+              echo "::error::No Xcode 16.x found in /Applications. Cannot proceed."
+              exit 1
+            fi
+            echo "Falling back to: $XCODE_PATH"
+          fi
+          sudo xcode-select -s "$XCODE_PATH"
+          echo "Active Xcode: $(xcode-select -p)"
+      - name: Ensure iPhone 15 simulator exists
+        # The 'iPhone 15' device name is required by detox config in the samples
+        # repo. If the runner image doesn't ship one, create it with the newest
+        # available iOS runtime. Passkeys tests handle their own sim (iOS 17.4).
+        if: ${{ !contains(inputs.test_name, 'integ_rn_ios_passkeys') }}
+        run: |
+          if xcrun simctl list devices available | grep -q '"iPhone 15"'; then
+            echo "iPhone 15 simulator already available."
+          else
+            echo "iPhone 15 simulator not found — creating one."
+            # Pick the newest iOS runtime available on this image
+            RUNTIME=$(xcrun simctl list runtimes iOS | grep -oE 'com\.apple\.CoreSimulator\.SimRuntime\.iOS-[0-9]+-[0-9]+' | sort -V | tail -n1)
+            if [ -z "$RUNTIME" ]; then
+              echo "::error::No iOS runtime found. Cannot create simulator."
+              exit 1
+            fi
+            echo "Using runtime: $RUNTIME"
+            xcrun simctl create "iPhone 15" "com.apple.CoreSimulator.SimDeviceType.iPhone-15" "$RUNTIME"
+            echo "iPhone 15 simulator created successfully."
+          fi
       - name: Download iOS platform and create simulator
         if: ${{ contains(inputs.test_name, 'integ_rn_ios_passkeys') }}
         run: |
@@ -54,8 +92,18 @@ jobs:
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
         shell: bash
       - name: Install CocoaPods
+        # Retry to guard against transient network failures (CDN/specs fetch)
         run: |
-          cd ios && pod install
+          for i in 1 2 3; do
+            echo "pod install attempt $i"
+            (cd ios && pod install) && break
+            if [ "$i" -eq 3 ]; then
+              echo "::error::pod install failed after 3 attempts"
+              exit 1
+            fi
+            echo "Attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Start iOS simulator (background)
@@ -68,12 +116,35 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Configure Detox
+        # Retry brew/npm installs to guard against transient network failures
         env:
           HOMEBREW_NO_AUTO_UPDATE: '1'
         run: |
+          # Install applesimutils with retries
           brew tap wix/brew
-          brew install applesimutils
-          yarn global add detox-cli
+          # Newer Homebrew (macos-15 image ≥2026-06) requires explicit tap trust
+          brew trust wix/brew || true
+          for i in 1 2 3; do
+            echo "brew install applesimutils attempt $i"
+            brew install applesimutils && break || true
+            if [ "$i" -eq 3 ]; then
+              echo "::error::brew install applesimutils failed after 3 attempts"
+              exit 1
+            fi
+            echo "Attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
+          # Install detox-cli with retries
+          for i in 1 2 3; do
+            echo "yarn global add detox-cli attempt $i"
+            yarn global add detox-cli && break || true
+            if [ "$i" -eq 3 ]; then
+              echo "::error::yarn global add detox-cli failed after 3 attempts"
+              exit 1
+            fi
+            echo "Attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Detox Build
