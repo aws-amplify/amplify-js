@@ -2,6 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
+import {
+	Category,
+	PushNotificationAction,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core/internals/utils';
 
 import { PushNotificationError } from '../../../errors';
 
@@ -10,6 +15,7 @@ import { resolveCredentials } from './resolveCredentials';
 
 const CONTENT_TYPE = 'application/json';
 const SIGNING_SERVICE = 'execute-api';
+const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 /**
  * SigV4-signs (`execute-api`) and POSTs a JSON body to `{endpoint}{path}` on the
@@ -36,7 +42,15 @@ export const signedFetch = async (
 		{
 			method: 'POST',
 			url,
-			headers: { 'content-type': CONTENT_TYPE },
+			headers: {
+				'content-type': CONTENT_TYPE,
+				// Attach the Amplify telemetry user-agent BEFORE signing so it is
+				// covered by the SigV4 signature and the sent headers match.
+				[USER_AGENT_HEADER]: getAmplifyUserAgent({
+					category: Category.PushNotification,
+					action: PushNotificationAction.IdentifyUser,
+				}),
+			},
 			body: serializedBody,
 		},
 		{

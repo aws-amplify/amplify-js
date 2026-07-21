@@ -70,6 +70,13 @@ describe('signedFetch (customer-profiles transport)', () => {
 			signingService: 'execute-api',
 		});
 
+		// The Amplify telemetry user-agent is attached BEFORE signing so the
+		// signature covers it (well-formed: contains the aws-amplify version and
+		// the push-notification category tag).
+		expect(request.headers['x-amz-user-agent']).toBeDefined();
+		expect(request.headers['x-amz-user-agent']).toContain('aws-amplify/');
+		expect(request.headers['x-amz-user-agent']).toContain('pushnotification');
+
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 		const [url, req] = mockFetch.mock.calls[0];
 		expect(url).toBe(`${customerProfilesConfig.endpoint}/identify-user`);
@@ -87,6 +94,20 @@ describe('signedFetch (customer-profiles transport)', () => {
 		const [, req] = mockFetch.mock.calls[0];
 		expect(req.headers).toBe(signedHeaders);
 		expect(req.headers).not.toHaveProperty('Authorization');
+	});
+
+	it('attaches a well-formed x-amz-user-agent header on all three routes', async () => {
+		for (const path of [
+			'/identify-user',
+			'/register-device',
+			'/remove-device',
+		]) {
+			mockSignRequest.mockClear();
+			await signedFetch(path, {});
+			const ua = mockSignRequest.mock.calls[0][0].headers['x-amz-user-agent'];
+			expect(ua).toContain('aws-amplify/');
+			expect(ua).toContain('pushnotification');
+		}
 	});
 
 	it('throws a network error when fetch rejects', async () => {
