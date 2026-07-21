@@ -568,7 +568,7 @@ describe('parseAmplifyOutputs tests', () => {
 						aws_region: 'us-west-2',
 						amazon_pinpoint_app_id: 'appid123',
 						channels: ['APNS', 'FCM'],
-						amazon_connect_customer_profiles: {
+						amazon_connect: {
 							endpoint: 'https://example.com/prod',
 							aws_region: 'us-east-1',
 						},
@@ -596,7 +596,7 @@ describe('parseAmplifyOutputs tests', () => {
 				const amplifyOutputs: AmplifyOutputs = {
 					version: '1',
 					notifications: {
-						amazon_connect_customer_profiles: {
+						amazon_connect: {
 							endpoint: 'https://example.com/prod',
 							aws_region: 'us-east-1',
 						},

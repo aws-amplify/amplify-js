@@ -273,18 +273,14 @@ function parseNotifications(
 		return undefined;
 	}
 
-	const {
-		aws_region,
-		channels,
-		amazon_pinpoint_app_id,
-		amazon_connect_customer_profiles,
-	} = amplifyOutputsNotificationsProperties;
+	const { aws_region, channels, amazon_pinpoint_app_id, amazon_connect } =
+		amplifyOutputsNotificationsProperties;
 
 	const supportedChannels = channels ?? [];
 	const hasInAppMessaging = supportedChannels.includes('IN_APP_MESSAGING');
 	const hasPushNotification =
 		supportedChannels.includes('APNS') || supportedChannels.includes('FCM');
-	const hasCustomerProfilesPush = !!amazon_connect_customer_profiles;
+	const hasCustomerProfilesPush = !!amazon_connect;
 
 	if (!(hasInAppMessaging || hasPushNotification || hasCustomerProfilesPush)) {
 		return undefined;
@@ -314,10 +310,10 @@ function parseNotifications(
 		};
 	}
 
-	if (amazon_connect_customer_profiles) {
+	if (amazon_connect) {
 		pushNotificationConfig.CustomerProfiles = {
-			endpoint: amazon_connect_customer_profiles.endpoint,
-			region: amazon_connect_customer_profiles.aws_region,
+			endpoint: amazon_connect.endpoint,
+			region: amazon_connect.aws_region,
 		};
 	}
 

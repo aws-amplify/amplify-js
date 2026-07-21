@@ -122,7 +122,7 @@ export interface AmplifyOutputsNotificationsProperties {
 	aws_region?: string;
 	amazon_pinpoint_app_id?: string;
 	channels?: string[];
-	amazon_connect_customer_profiles?: {
+	amazon_connect?: {
 		aws_region: string;
 		endpoint: string;
 	};
