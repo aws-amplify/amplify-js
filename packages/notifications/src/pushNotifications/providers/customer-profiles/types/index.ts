@@ -11,6 +11,8 @@ export {
 	OnNotificationReceivedInBackground,
 	OnNotificationReceivedInForeground,
 	OnTokenReceived,
+	RegisterDevice,
+	RemoveDevice,
 	RequestPermissions,
 	SetBadgeCount,
 } from './apis';
@@ -20,6 +22,7 @@ export {
 	OnNotificationReceivedInBackgroundInput,
 	OnNotificationReceivedInForegroundInput,
 	OnTokenReceivedInput,
+	RegisterDeviceInput,
 	RequestPermissionsInput,
 	SetBadgeCountInput,
 } from './inputs';
@@ -31,9 +34,10 @@ export {
 	OnNotificationReceivedInForegroundOutput,
 	OnTokenReceivedOutput,
 } from './outputs';
-export { IdentifyUserOptions } from './options';
 export {
 	ChannelType,
 	InflightDeviceRegistration,
 	InflightDeviceRegistrationResolver,
+	UserProfile,
+	UserProfileLocation,
 } from './pushNotifications';

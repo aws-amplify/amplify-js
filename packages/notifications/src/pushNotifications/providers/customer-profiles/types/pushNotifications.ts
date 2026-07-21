@@ -6,3 +6,29 @@ export {
 	InflightDeviceRegistration,
 	InflightDeviceRegistrationResolver,
 } from '../../shared/types';
+
+/**
+ * Geographic location associated with a Customer Profile. Mirrors the backend
+ * `Address` block on the Amazon Connect Customer Profile.
+ */
+export interface UserProfileLocation {
+	city?: string;
+	country?: string;
+	postalCode?: string;
+	region?: string;
+}
+
+/**
+ * Profile information sent to Amazon Connect Customer Profiles by `identifyUser`.
+ *
+ * This is a provider-scoped shape that intentionally does NOT reuse the shared
+ * `@aws-amplify/core` (Pinpoint) `UserProfile`. It maps directly to the backend
+ * Customer Profiles contract.
+ */
+export interface UserProfile {
+	email?: string;
+	name?: string;
+	phone?: string;
+	customAttributes?: Record<string, string>;
+	location?: UserProfileLocation;
+}

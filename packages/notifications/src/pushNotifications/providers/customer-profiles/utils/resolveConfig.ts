@@ -6,23 +6,29 @@ import { Amplify } from '@aws-amplify/core';
 import { PushNotificationValidationErrorCode, assert } from '../../../errors';
 
 /**
- * Path of the device-registration route on the Amazon Connect Customer Profiles
- * REST endpoint. The endpoint associates a device token (keyed on the caller's
- * verified Cognito `sub`) with their Customer Profile.
+ * Path of the identify-user route on the Amazon Connect Customer Profiles REST
+ * endpoint. Associates the caller's `userProfile` with their Customer Profile.
+ * The backend derives `principalId` server-side from the SigV4 signer identity.
  *
  * @internal
  */
 export const IDENTIFY_USER_PATH = '/identify-user';
 
 /**
- * Path of the guest (Identity Pool unauthenticated, IAM/SigV4) device-registration
- * route on the Amazon Connect Customer Profiles REST endpoint. The endpoint
- * associates a device token (keyed on the caller's Identity Pool `identityId`)
- * with their guest Customer Profile.
+ * Path of the register-device route. Registers (upserts) a push device object,
+ * keyed on the caller's server-derived `principalId`.
  *
  * @internal
  */
-export const GUEST_IDENTIFY_USER_PATH = '/identify-user-guest';
+export const REGISTER_DEVICE_PATH = '/register-device';
+
+/**
+ * Path of the remove-device route. De-registers a push device object. The
+ * backend gates removal on the caller's server-derived `principalId`.
+ *
+ * @internal
+ */
+export const REMOVE_DEVICE_PATH = '/remove-device';
 
 /**
  * @internal

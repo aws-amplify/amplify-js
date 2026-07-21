@@ -11,6 +11,8 @@ export {
 	onNotificationReceivedInBackground,
 	onNotificationReceivedInForeground,
 	onTokenReceived,
+	registerDevice,
+	removeDevice,
 	requestPermissions,
 	setBadgeCount,
 } from './apis';
@@ -20,9 +22,12 @@ export {
 	OnNotificationReceivedInBackgroundInput,
 	OnNotificationReceivedInForegroundInput,
 	OnTokenReceivedInput,
+	RegisterDeviceInput,
 	RequestPermissionsInput,
 	SetBadgeCountInput,
-} from './types/inputs';
+	UserProfile,
+	UserProfileLocation,
+} from './types';
 export {
 	GetBadgeCountOutput,
 	GetLaunchNotificationOutput,

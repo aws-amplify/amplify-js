@@ -14,3 +14,5 @@ export {
 } from '../../shared/apis';
 export { identifyUser } from './identifyUser';
 export { initializePushNotifications } from './initializePushNotifications';
+export { registerDevice } from './registerDevice';
+export { removeDevice } from './removeDevice';

@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Hub } from '@aws-amplify/core';
+
 import {
 	notifyEventListeners,
 	notifyEventListenersAndAwaitHandlers,
@@ -12,21 +14,25 @@ import {
 	setToken,
 } from '../../../../../src/pushNotifications/utils';
 import {
-	getChannelType,
-	getDeviceId,
-	identifyUserInternal,
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
 } from '../../../../../src/pushNotifications/providers/customer-profiles/utils';
+import { registerDevice } from '../../../../../src/pushNotifications/providers/customer-profiles/apis/registerDevice';
+import { removeDevice } from '../../../../../src/pushNotifications/providers/customer-profiles/apis/removeDevice';
 import {
-	channelType,
 	completionHandlerId,
 	pushModuleConstants,
 	pushToken,
 	simplePushMessage,
 } from '../../../../testUtils/data';
 
-jest.mock('@aws-amplify/core');
+jest.mock('@aws-amplify/core', () => ({
+	ConsoleLogger: jest.fn(() => ({
+		info: jest.fn(),
+		error: jest.fn(),
+	})),
+	Hub: { listen: jest.fn() },
+}));
 jest.mock('@aws-amplify/react-native', () => ({
 	getOperatingSystem: jest.fn(),
 	loadAmplifyPushNotification: jest.fn(() => ({
@@ -41,6 +47,12 @@ jest.mock('../../../../../src/eventListeners');
 jest.mock(
 	'../../../../../src/pushNotifications/providers/customer-profiles/utils',
 );
+jest.mock(
+	'../../../../../src/pushNotifications/providers/customer-profiles/apis/registerDevice',
+);
+jest.mock(
+	'../../../../../src/pushNotifications/providers/customer-profiles/apis/removeDevice',
+);
 jest.mock('../../../../../src/pushNotifications/utils');
 
 // module level mocks
@@ -50,17 +62,15 @@ const mockCompleteNotification = jest.fn();
 const mockGetConstants = jest.fn();
 const mockRegisterHeadlessTask = jest.fn();
 
-const DEVICE_ID = 'persisted-device-id';
-
 describe('initializePushNotifications (customer-profiles, native)', () => {
 	let initializePushNotifications: () => void;
 	const { NativeEvent } = pushModuleConstants;
 	// create mocks
 	const mockEventListenerRemover = { remove: jest.fn() };
 	// assert mocks
-	const mockIdentifyUserInternal = identifyUserInternal as jest.Mock;
-	const mockGetChannelType = getChannelType as jest.Mock;
-	const mockGetDeviceId = getDeviceId as jest.Mock;
+	const mockRegisterDevice = registerDevice as jest.Mock;
+	const mockRemoveDevice = removeDevice as jest.Mock;
+	const mockHubListen = Hub.listen as jest.Mock;
 	const mockGetToken = getToken as jest.Mock;
 	const mockInitialize = initialize as jest.Mock;
 	const mockIsInitialized = isInitialized as jest.Mock;
@@ -101,8 +111,8 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 			initializePushNotifications,
 		} = require('../../../../../src/pushNotifications/providers/customer-profiles/apis/initializePushNotifications.native'));
 		mockAddMessageEventListener.mockReturnValue(mockEventListenerRemover);
-		mockGetChannelType.mockReturnValue(channelType);
-		mockGetDeviceId.mockResolvedValue(DEVICE_ID);
+		mockRegisterDevice.mockResolvedValue(undefined);
+		mockRemoveDevice.mockResolvedValue(undefined);
 	});
 
 	beforeEach(() => {
@@ -117,7 +127,9 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		mockRegisterHeadlessTask.mockReset();
 		mockAddMessageEventListener.mockReset();
 		mockAddTokenEventListener.mockReset();
-		mockIdentifyUserInternal.mockReset();
+		mockRegisterDevice.mockReset();
+		mockRemoveDevice.mockReset();
+		mockHubListen.mockReset();
 		mockInitialize.mockClear();
 		mockSetToken.mockClear();
 		mockCompleteNotification.mockClear();
@@ -126,6 +138,10 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		mockNotifyEventListenersAndAwaitHandlers.mockClear();
 		mockRejectInflightDeviceRegistration.mockClear();
 		mockResolveInflightDeviceRegistration.mockClear();
+		// restore default resolved values cleared by mockReset above
+		mockRegisterDevice.mockResolvedValue(undefined);
+		mockRemoveDevice.mockResolvedValue(undefined);
+		mockAddMessageEventListener.mockReturnValue(mockEventListenerRemover);
 	});
 
 	it('only enables once', () => {
@@ -263,10 +279,8 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 							'tokenReceived',
 							pushToken,
 						);
-						expect(mockIdentifyUserInternal).toHaveBeenCalledWith({
-							deviceToken: pushToken,
-							channelType,
-							options: { deviceId: DEVICE_ID },
+						expect(mockRegisterDevice).toHaveBeenCalledWith({
+							token: pushToken,
 						});
 						expect(mockResolveInflightDeviceRegistration).toHaveBeenCalled();
 						expect(mockRejectInflightDeviceRegistration).not.toHaveBeenCalled();
@@ -309,7 +323,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 
 		it('throws if device registration fails', done => {
 			expect.assertions(3);
-			mockIdentifyUserInternal.mockImplementation(() => {
+			mockRegisterDevice.mockImplementation(() => {
 				throw new Error();
 			});
 			mockAddTokenEventListener.mockImplementation(
@@ -325,6 +339,46 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 				},
 			);
 			initializePushNotifications();
+		});
+	});
+
+	describe('sign-out de-registration', () => {
+		it('removes the device when an auth signedOut event is received', async () => {
+			initializePushNotifications();
+
+			expect(mockHubListen).toHaveBeenCalledWith('auth', expect.any(Function));
+			const authHandler = mockHubListen.mock.calls.find(
+				call => call[0] === 'auth',
+			)![1];
+			authHandler({ payload: { event: 'signedOut' } });
+			await Promise.resolve();
+
+			expect(mockRemoveDevice).toHaveBeenCalledTimes(1);
+		});
+
+		it('does not remove the device for non-signedOut auth events', () => {
+			initializePushNotifications();
+
+			const authHandler = mockHubListen.mock.calls.find(
+				call => call[0] === 'auth',
+			)![1];
+			authHandler({ payload: { event: 'signedIn' } });
+
+			expect(mockRemoveDevice).not.toHaveBeenCalled();
+		});
+
+		it('swallows errors from removeDevice on sign-out', async () => {
+			mockRemoveDevice.mockRejectedValue(new Error('remove failed'));
+			initializePushNotifications();
+
+			const authHandler = mockHubListen.mock.calls.find(
+				call => call[0] === 'auth',
+			)![1];
+			expect(() =>
+				authHandler({ payload: { event: 'signedOut' } }),
+			).not.toThrow();
+			await Promise.resolve();
+			expect(mockRemoveDevice).toHaveBeenCalled();
 		});
 	});
 });

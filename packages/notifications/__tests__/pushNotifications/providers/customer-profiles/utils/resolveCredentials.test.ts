@@ -9,46 +9,36 @@ import { resolveCredentials } from '../../../../../src/pushNotifications/provide
 jest.mock('@aws-amplify/core');
 
 describe('Push Notifications Customer Profiles Provider Util: resolveCredentials', () => {
-	const token = 'user-pool-access-token';
 	const credentials = {
 		accessKeyId: 'access-key-id',
 		secretAccessKey: 'secret-access-key',
 		sessionToken: 'session-token',
 	};
-	const identityId = 'us-east-1:guest-identity-id';
 	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 
 	beforeEach(() => {
 		mockFetchAuthSession.mockReset();
 	});
 
-	it('resolves the Cognito user-pool access token (authenticated)', async () => {
+	it('resolves Identity Pool credentials for an authenticated session', async () => {
 		mockFetchAuthSession.mockResolvedValue({
-			tokens: { accessToken: { toString: () => token } },
+			tokens: { accessToken: { toString: () => 'ignored' } },
 			credentials,
-			identityId,
+			identityId: 'us-east-1:auth-identity-id',
 		});
-		expect(await resolveCredentials()).toStrictEqual({
-			token,
-			credentials,
-			identityId,
-		});
+		expect(await resolveCredentials()).toStrictEqual({ credentials });
 	});
 
-	it('resolves guest credentials + identityId when no token is present', async () => {
+	it('resolves Identity Pool credentials for a guest session', async () => {
 		mockFetchAuthSession.mockResolvedValue({
 			tokens: undefined,
 			credentials,
-			identityId,
+			identityId: 'us-east-1:guest-identity-id',
 		});
-		expect(await resolveCredentials()).toStrictEqual({
-			token: undefined,
-			credentials,
-			identityId,
-		});
+		expect(await resolveCredentials()).toStrictEqual({ credentials });
 	});
 
-	it('throws if neither a token nor credentials can be resolved', async () => {
+	it('throws if no credentials can be resolved', async () => {
 		mockFetchAuthSession.mockResolvedValue({
 			tokens: undefined,
 			credentials: undefined,

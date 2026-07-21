@@ -6,30 +6,21 @@ import { fetchAuthSession } from '@aws-amplify/core';
 import { PushNotificationValidationErrorCode, assert } from '../../../errors';
 
 /**
- * Resolves the caller's identity used to authorize device-registration requests
- * to the Amazon Connect Customer Profiles endpoint.
+ * Resolves the Identity Pool credentials used to SigV4-sign requests to the
+ * Amazon Connect Customer Profiles endpoint.
  *
- * Two mutually-exclusive shapes are returned:
- *  - Authenticated (Cognito user-pool): a bearer `token` is present. The authed
- *    route (`POST /identify-user`) is used with `Authorization: Bearer <token>`
- *    and the backend keys the profile on the token's verified `sub`.
- *  - Guest (Identity Pool unauthenticated): no `token`, but `credentials` +
- *    `identityId` are present. The guest route (`POST /identify-user-guest`) is
- *    used, SigV4-signed with the guest credentials (service `execute-api`), and
- *    the backend keys the profile on the caller's `identityId`.
+ * The same credentials are used for authenticated (Cognito user-pool users
+ * assume the Identity Pool auth role) and guest (Identity Pool unauth role)
+ * callers — both are signed identically with `execute-api` SigV4. The backend
+ * derives `principalId` from the signer identity, so no identity field is sent
+ * by the client.
  *
  * @internal
  */
 export const resolveCredentials = async () => {
-	const { tokens, credentials, identityId } = await fetchAuthSession();
-	const token = tokens?.accessToken?.toString();
+	const { credentials } = await fetchAuthSession();
 
-	// Either an authenticated bearer token, or guest Identity Pool credentials
-	// must be resolvable — otherwise there is no way to authorize the request.
-	assert(
-		!!token || !!credentials,
-		PushNotificationValidationErrorCode.NoCredentials,
-	);
+	assert(!!credentials, PushNotificationValidationErrorCode.NoCredentials);
 
-	return { token, credentials, identityId };
+	return { credentials };
 };

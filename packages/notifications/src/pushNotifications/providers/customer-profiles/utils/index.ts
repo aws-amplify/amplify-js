@@ -8,10 +8,17 @@ export {
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
 } from '../../shared/utils';
-export { identifyUserInternal } from './identifyUserInternal';
+export {
+	DeviceRegistration,
+	identifyUserInternal,
+	registerDeviceInternal,
+	removeDeviceInternal,
+} from './identifyUserInternal';
+export { signedFetch } from './signedFetch';
 export {
 	resolveConfig,
 	IDENTIFY_USER_PATH,
-	GUEST_IDENTIFY_USER_PATH,
+	REGISTER_DEVICE_PATH,
+	REMOVE_DEVICE_PATH,
 } from './resolveConfig';
 export { resolveCredentials } from './resolveCredentials';

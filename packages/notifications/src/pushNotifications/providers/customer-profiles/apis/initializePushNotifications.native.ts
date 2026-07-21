@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '@aws-amplify/core';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
 
 import {
@@ -10,12 +10,12 @@ import {
 } from '../../../../eventListeners';
 import { getToken, initialize, isInitialized, setToken } from '../../../utils';
 import {
-	getChannelType,
-	getDeviceId,
-	identifyUserInternal,
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
 } from '../utils';
+
+import { registerDevice } from './registerDevice';
+import { removeDevice } from './removeDevice';
 
 const {
 	addMessageEventListener,
@@ -36,6 +36,7 @@ export const initializePushNotifications = (): void => {
 		return;
 	}
 	addNativeListeners();
+	addAuthListener();
 	initialize();
 };
 
@@ -145,7 +146,7 @@ const addNativeListeners = (): void => {
 			setToken(token);
 			notifyEventListeners('tokenReceived', token);
 			try {
-				await registerDevice(token);
+				await registerReceivedDevice(token);
 			} catch (err) {
 				logger.error('Failed to register device for push notifications', err);
 				throw err;
@@ -154,19 +155,27 @@ const addNativeListeners = (): void => {
 	);
 };
 
-const registerDevice = async (address: string): Promise<void> => {
+const addAuthListener = (): void => {
+	// Deterministically de-register the device from the current principal at
+	// sign-out (the backend remove-device is principalId-gated), closing the
+	// logged-out-then-campaign-fires window. Best-effort — failures are logged.
+	Hub.listen('auth', ({ payload }) => {
+		if (payload.event === 'signedOut') {
+			removeDevice().catch(err => {
+				logger.error(
+					'Failed to remove device for push notifications on sign-out',
+					err,
+				);
+			});
+		}
+	});
+};
+
+const registerReceivedDevice = async (token: string): Promise<void> => {
 	try {
-		// Resolve the stable per-install deviceId in the native layer
-		// (find-or-create key) and inject it so the engine never imports
-		// getDeviceId.
-		const deviceId = await getDeviceId();
-		await identifyUserInternal({
-			deviceToken: address,
-			channelType: getChannelType(),
-			options: { deviceId },
-		});
+		await registerDevice({ token });
 		// always resolve inflight device registration promise here even though the promise is only awaited on by
-		// `identifyUser` when device registration is still in flight
+		// consumers when device registration is still in flight
 		resolveInflightDeviceRegistration();
 	} catch (underlyingError) {
 		rejectInflightDeviceRegistration(underlyingError);
