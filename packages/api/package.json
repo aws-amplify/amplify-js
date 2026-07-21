@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "6.3.27",
+	"version": "6.3.28",
 	"description": "Api category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -69,7 +69,7 @@
 	},
 	"homepage": "https://docs.amplify.aws/",
 	"devDependencies": {
-		"@aws-amplify/core": "6.16.4",
+		"@aws-amplify/core": "6.17.0",
 		"jest-fetch-mock": "3.0.3"
 	},
 	"files": [
@@ -81,7 +81,7 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-amplify/api-graphql": "4.8.8",
+		"@aws-amplify/api-graphql": "4.8.9",
 		"@aws-amplify/api-rest": "4.6.4",
 		"@aws-amplify/data-schema": "^1.7.0",
 		"rxjs": "^7.8.1",

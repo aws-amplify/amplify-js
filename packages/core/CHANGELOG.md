@@ -1,5 +1,11 @@
 # Change Log
 
+## 6.17.0
+
+### Minor Changes
+
+- [#14867](https://github.com/aws-amplify/amplify-js/pull/14867) [`aaeb630`](https://github.com/aws-amplify/amplify-js/commit/aaeb630870119a9b55d24e3e55c17287eb911e93) Thanks [@soberm](https://github.com/soberm)! - feat(core): add optional onStateChange telemetry hook to ServiceWorker.register(); deprecate implicit Pinpoint auto-recording of SW lifecycle events (opt-in, backwards compatible)
+
 ## 6.16.4
 
 ### Patch Changes

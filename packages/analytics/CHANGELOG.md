@@ -1,5 +1,17 @@
 # Change Log
 
+## 7.1.0
+
+### Minor Changes
+
+- [#14854](https://github.com/aws-amplify/amplify-js/pull/14854) [`eed1462`](https://github.com/aws-amplify/amplify-js/commit/eed1462e44ba54667828d779207d9f2eaea9cad7) Thanks [@soberm](https://github.com/soberm)! - feat(analytics): add configureAutoTrack support for Kinesis and Kinesis Firehose providers
+
+### Patch Changes
+
+- [#14877](https://github.com/aws-amplify/amplify-js/pull/14877) [`49d9e82`](https://github.com/aws-amplify/amplify-js/commit/49d9e82c5e9df3066046db4ce91aab1ca3db99e5) Thanks [@soberm](https://github.com/soberm)! - feat(analytics): warn on deprecated default (Pinpoint) exports
+
+  The default (Amazon Pinpoint) Analytics APIs (`record`, `identifyUser`, `configureAutoTrack`, `flushEvents`) now emit a one-time `ConsoleLogger` deprecation warning at runtime, pointing customers to the supported sub-path exports (`aws-amplify/analytics/kinesis`, `aws-amplify/analytics/kinesis-firehose`, `aws-amplify/analytics/personalize`). AWS ends support for Amazon Pinpoint on October 30, 2026. This is non-breaking: types and signatures are preserved.
+
 ## 7.0.94
 
 ### Patch Changes
