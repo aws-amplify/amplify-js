@@ -156,6 +156,12 @@
 			"import": "./dist/esm/push-notifications/pinpoint/index.mjs",
 			"require": "./dist/cjs/push-notifications/pinpoint/index.js"
 		},
+		"./push-notifications/customer-profiles": {
+			"react-native": "./dist/cjs/push-notifications/customer-profiles/index.js",
+			"types": "./dist/esm/push-notifications/customer-profiles/index.d.ts",
+			"import": "./dist/esm/push-notifications/customer-profiles/index.mjs",
+			"require": "./dist/cjs/push-notifications/customer-profiles/index.js"
+		},
 		"./adapter-core": {
 			"types": "./dist/esm/adapter-core/index.d.ts",
 			"import": "./dist/esm/adapter-core/index.mjs",
@@ -238,6 +244,9 @@
 			],
 			"push-notifications/pinpoint": [
 				"./dist/esm/push-notifications/pinpoint/index.d.ts"
+			],
+			"push-notifications/customer-profiles": [
+				"./dist/esm/push-notifications/customer-profiles/index.d.ts"
 			],
 			"adapter-core": [
 				"./dist/esm/adapter-core/index.d.ts"

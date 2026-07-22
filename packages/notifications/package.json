@@ -38,6 +38,9 @@
 			],
 			"push-notifications/pinpoint": [
 				"./dist/esm/pushNotifications/providers/pinpoint/index.d.ts"
+			],
+			"push-notifications/customer-profiles": [
+				"./dist/esm/pushNotifications/providers/customer-profiles/index.d.ts"
 			]
 		}
 	},
@@ -70,6 +73,12 @@
 			"types": "./dist/esm/pushNotifications/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/pushNotifications/providers/pinpoint/index.mjs",
 			"require": "./dist/cjs/pushNotifications/providers/pinpoint/index.js"
+		},
+		"./push-notifications/customer-profiles": {
+			"react-native": "./dist/cjs/pushNotifications/providers/customer-profiles/index.js",
+			"types": "./dist/esm/pushNotifications/providers/customer-profiles/index.d.ts",
+			"import": "./dist/esm/pushNotifications/providers/customer-profiles/index.mjs",
+			"require": "./dist/cjs/pushNotifications/providers/customer-profiles/index.js"
 		},
 		"./package.json": "./package.json"
 	},

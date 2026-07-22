@@ -12,22 +12,44 @@ import { isInitialized } from '../utils/initializationManager';
 import { PushNotificationError } from './PushNotificationError';
 
 export enum PushNotificationValidationErrorCode {
+	InvalidEndpoint = 'InvalidEndpoint',
+	InvalidUserProfile = 'InvalidUserProfile',
 	NoAppId = 'NoAppId',
 	NoCredentials = 'NoCredentials',
+	NoEndpoint = 'NoEndpoint',
 	NoRegion = 'NoRegion',
+	NoToken = 'NoToken',
 	NotInitialized = 'NotInitialized',
 }
 
 const pushNotificationValidationErrorMap: AmplifyErrorMap<PushNotificationValidationErrorCode> =
 	{
+		[PushNotificationValidationErrorCode.InvalidEndpoint]: {
+			message: 'The configured Customer Profiles endpoint is invalid.',
+			recoverySuggestion:
+				'Ensure the endpoint in your Amplify configuration is a valid https:// URL.',
+		},
+		[PushNotificationValidationErrorCode.InvalidUserProfile]: {
+			message: 'The provided user profile is invalid.',
+			recoverySuggestion:
+				"Ensure each user profile field and every customAttributes key and value is a string of at most 255 characters. The 'principalId' key is reserved and cannot be used.",
+		},
 		[PushNotificationValidationErrorCode.NoAppId]: {
 			message: 'Missing application id.',
 		},
 		[PushNotificationValidationErrorCode.NoCredentials]: {
 			message: 'Credentials should not be empty.',
 		},
+		[PushNotificationValidationErrorCode.NoEndpoint]: {
+			message: 'Missing endpoint.',
+		},
 		[PushNotificationValidationErrorCode.NoRegion]: {
 			message: 'Missing region.',
+		},
+		[PushNotificationValidationErrorCode.NoToken]: {
+			message: 'No push notification token available.',
+			recoverySuggestion:
+				'Pass a token to `registerDevice`, or ensure a token has been received via `onTokenReceived` before registering the device.',
 		},
 		[PushNotificationValidationErrorCode.NotInitialized]: {
 			message: 'Push notification has not been initialized.',

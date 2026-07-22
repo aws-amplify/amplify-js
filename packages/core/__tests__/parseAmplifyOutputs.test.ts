@@ -560,6 +560,61 @@ describe('parseAmplifyOutputs tests', () => {
 					},
 				});
 			});
+
+			it('should configure Pinpoint and Customer Profiles push notifications together', () => {
+				const amplifyOutputs: AmplifyOutputs = {
+					version: '1',
+					notifications: {
+						aws_region: 'us-west-2',
+						amazon_pinpoint_app_id: 'appid123',
+						channels: ['APNS', 'FCM'],
+						amazon_connect: {
+							endpoint: 'https://example.com/prod',
+							aws_region: 'us-east-1',
+						},
+					},
+				};
+
+				const result = parseAmplifyOutputs(amplifyOutputs);
+				expect(result).toEqual({
+					Notifications: {
+						PushNotification: {
+							Pinpoint: {
+								appId: 'appid123',
+								region: 'us-west-2',
+							},
+							CustomerProfiles: {
+								endpoint: 'https://example.com/prod',
+								region: 'us-east-1',
+							},
+						},
+					},
+				});
+			});
+
+			it('should configure Customer Profiles push notifications without Pinpoint channels', () => {
+				const amplifyOutputs: AmplifyOutputs = {
+					version: '1',
+					notifications: {
+						amazon_connect: {
+							endpoint: 'https://example.com/prod',
+							aws_region: 'us-east-1',
+						},
+					},
+				};
+
+				const result = parseAmplifyOutputs(amplifyOutputs);
+				expect(result).toEqual({
+					Notifications: {
+						PushNotification: {
+							CustomerProfiles: {
+								endpoint: 'https://example.com/prod',
+								region: 'us-east-1',
+							},
+						},
+					},
+				});
+			});
 		});
 	});
 });
