@@ -29,6 +29,10 @@ export interface UserProfile {
 	email?: string;
 	name?: string;
 	phone?: string;
+	/**
+	 * Each key and value must be ≤ 255 characters. 'principalId' is reserved
+	 * and rejected.
+	 */
 	customAttributes?: Record<string, string>;
 	location?: UserProfileLocation;
 }

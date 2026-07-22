@@ -11,6 +11,7 @@ import {
 	REMOVE_DEVICE_PATH,
 } from './resolveConfig';
 import { signedFetch } from './signedFetch';
+import { validateUserProfile } from './validateUserProfile';
 
 /**
  * The push-device object registered with Amazon Connect Customer Profiles.
@@ -39,6 +40,7 @@ export const identifyUserInternal = async ({
 }: {
 	userProfile?: UserProfile;
 }): Promise<void> => {
+	validateUserProfile(userProfile);
 	await signedFetch(
 		IDENTIFY_USER_PATH,
 		{ userProfile: userProfile ?? {} },

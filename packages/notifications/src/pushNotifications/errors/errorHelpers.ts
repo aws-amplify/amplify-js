@@ -13,6 +13,7 @@ import { PushNotificationError } from './PushNotificationError';
 
 export enum PushNotificationValidationErrorCode {
 	InvalidEndpoint = 'InvalidEndpoint',
+	InvalidUserProfile = 'InvalidUserProfile',
 	NoAppId = 'NoAppId',
 	NoCredentials = 'NoCredentials',
 	NoEndpoint = 'NoEndpoint',
@@ -27,6 +28,11 @@ const pushNotificationValidationErrorMap: AmplifyErrorMap<PushNotificationValida
 			message: 'The configured Customer Profiles endpoint is invalid.',
 			recoverySuggestion:
 				'Ensure the endpoint in your Amplify configuration is a valid https:// URL.',
+		},
+		[PushNotificationValidationErrorCode.InvalidUserProfile]: {
+			message: 'The provided user profile is invalid.',
+			recoverySuggestion:
+				"Ensure each user profile field and every customAttributes key and value is a string of at most 255 characters. The 'principalId' key is reserved and cannot be used.",
 		},
 		[PushNotificationValidationErrorCode.NoAppId]: {
 			message: 'Missing application id.',

@@ -15,6 +15,7 @@ export {
 	removeDeviceInternal,
 } from './identifyUserInternal';
 export { signedFetch } from './signedFetch';
+export { validateUserProfile } from './validateUserProfile';
 export {
 	resolveConfig,
 	IDENTIFY_USER_PATH,

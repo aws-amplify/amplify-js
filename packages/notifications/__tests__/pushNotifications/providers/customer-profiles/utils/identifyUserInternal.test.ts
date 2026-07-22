@@ -16,6 +16,7 @@ import {
 	REMOVE_DEVICE_PATH,
 } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/resolveConfig';
 import { channelType } from '../../../../testUtils/data';
+import { PushNotificationValidationErrorCode } from '../../../../../src/pushNotifications/errors';
 
 jest.mock(
 	'../../../../../src/pushNotifications/providers/customer-profiles/utils/signedFetch',
@@ -54,6 +55,17 @@ describe('customer-profiles transport callers', () => {
 				{ userProfile: {} },
 				PushNotificationAction.IdentifyUser,
 			);
+		});
+
+		it('validates the userProfile before calling signedFetch (invalid profile short-circuits the request)', async () => {
+			await expect(
+				identifyUserInternal({
+					userProfile: { customAttributes: { principalId: 'x' } },
+				}),
+			).rejects.toMatchObject({
+				name: PushNotificationValidationErrorCode.InvalidUserProfile,
+			});
+			expect(mockSignedFetch).not.toHaveBeenCalled();
 		});
 	});
 
