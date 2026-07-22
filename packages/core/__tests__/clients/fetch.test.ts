@@ -1,3 +1,4 @@
+import { AmplifyErrorCode } from '../../src/types';
 import { fetchTransferHandler } from '../../src/clients/handlers/fetch';
 
 describe(fetchTransferHandler.name, () => {
@@ -131,4 +132,45 @@ describe(fetchTransferHandler.name, () => {
 			expect(mockFetch.mock.calls[0][1].body).toBe('Mock Body');
 		},
 	);
+
+	it('should throw NetworkError when fetch rejects with TypeError (browser)', async () => {
+		mockFetch.mockRejectedValue(new TypeError('Failed to fetch'));
+
+		await expect(fetchTransferHandler(mockRequest, {})).rejects.toMatchObject({
+			name: AmplifyErrorCode.NetworkError,
+			message: 'A network error has occurred.',
+			underlyingError: expect.any(TypeError),
+		});
+	});
+
+	it('should throw NetworkError when fetch rejects with plain Error (React Native native network failure)', async () => {
+		mockFetch.mockRejectedValue(new Error('Network request failed'));
+
+		await expect(fetchTransferHandler(mockRequest, {})).rejects.toMatchObject({
+			name: AmplifyErrorCode.NetworkError,
+			message: 'A network error has occurred.',
+			underlyingError: expect.any(Error),
+		});
+	});
+
+	it('should rethrow AbortError without wrapping', async () => {
+		const abortError = Object.assign(new Error('The user aborted a request.'), {
+			name: 'AbortError',
+		});
+		mockFetch.mockRejectedValue(abortError);
+
+		await expect(fetchTransferHandler(mockRequest, {})).rejects.toBe(
+			abortError,
+		);
+	});
+
+	it('should include the original error as underlyingError', async () => {
+		const cause = new Error('Network request failed');
+		mockFetch.mockRejectedValue(cause);
+
+		await expect(fetchTransferHandler(mockRequest, {})).rejects.toMatchObject({
+			name: AmplifyErrorCode.NetworkError,
+			underlyingError: cause,
+		});
+	});
 });
