@@ -4,7 +4,7 @@ Guidance for AI coding agents working in the **AWS Amplify JS** monorepo. Read t
 
 ## Repository Overview
 
-Amplify JS is a **Yarn + Turborepo** monorepo. Every category lives under `packages/<category>/`, each with its own `src/` and `package.json`. Packages are published under the `@aws-amplify/*` scope (plus the umbrella `aws-amplify` package).
+Amplify JS is a **Yarn + Turborepo** monorepo. Every package lives under `packages/<name>/`, each with its own `src/` and `package.json`. Packages are published under the `@aws-amplify/*` scope (plus the umbrella `aws-amplify` package).
 
 Key packages:
 
@@ -22,12 +22,12 @@ Key packages:
 
 | Requirement | Version |
 |---|---|
-| Node.js | 18.18.0 |
+| Node.js | 24 (pinned in CI; repo has no local `engines`/`.nvmrc`) |
 | Yarn | 1.22.x |
 
 ## Build & Test Commands (MANDATORY: use `yarn`)
 
-**Always drive builds/tests/lint through `yarn`. NEVER invoke `tsc`, `eslint`, `jest`, `turbo`, `npx`, or `tsx` directly** — the workspace scripts wire up the correct config and dependency graph.
+**Always drive builds/tests/lint through `yarn`. NEVER invoke `tsc`, `eslint`, `jest`, `npx`, or `tsx` directly** — the workspace scripts wire up the correct config and dependency graph. Single-package targeting goes through Turbo's `--filter` (see below).
 
 ```bash
 # Install
@@ -35,14 +35,15 @@ yarn
 
 # Build
 yarn build                              # all packages
-yarn build --scope @aws-amplify/auth    # single package
+yarn turbo run build --filter=@aws-amplify/auth   # single package (+ its deps)
 
 # Test
 yarn test                               # full suite (use before final confirmation)
-yarn test --scope @aws-amplify/auth     # single package
+yarn turbo run test --filter=@aws-amplify/auth    # single package
 
 # Lint
 yarn lint                               # lint all packages
+yarn turbo run lint --filter=@aws-amplify/auth    # single package
 
 # Bundle size
 yarn test:size                          # size-limit check (only runs for packages that define it)
@@ -58,12 +59,14 @@ git clean -xdf
 
 Run `yarn` from the **monorepo root or a package root**. During implementation you may narrow with file/suite/test filters, but always run the full `test` / `lint` / `build` for final confirmation.
 
+> **Single-package targeting must go through Turbo directly** — `yarn turbo run <task> --filter=@aws-amplify/<pkg>`. Do **not** pass `--filter` to the top-level `yarn build` / `yarn test` scripts: they are compound (`&&`) scripts, so the flag is misrouted to the trailing command and Turbo still runs unfiltered. (`--scope` is a Lerna flag — not valid for Turbo 2.x at all.)
+
 ## Testing Conventions
 
 - **Do NOT mock `getConfig` on the Amplify singleton.** Mock the actual underlying modules/functions instead (real Amplify config approach).
 - Write or update unit tests for any added/modified code. Be especially vigilant with shared code (race conditions).
 - Passing unit tests are required for any PR that changes functionality.
-- **Bundle-size (`size-limit`) checks only apply to packages that define a `size-limit` key** (`aws-amplify`, `core`, `datastore`, `geo`, `interactions`, `predictions`, `pubsub`). Running `yarn test:size` from the root only exercises those; `--scope`-ing it to a package without the key (e.g. `auth`, `storage`) is a no-op.
+- **Bundle-size (`size-limit`) checks only apply to packages that configure them.** Eight packages declare a `size-limit` key (`aws-amplify`, `core`, `datastore`, `geo`, `interactions`, `predictions`, `pubsub`, `api-graphql`), but `yarn test:size` only exercises the seven that also define a `test:size` script (all of the above except `api-graphql`). Filtering it to a package without size-limit configured (e.g. `auth`, `storage`) is a no-op.
 
 ## Code Conventions
 
@@ -76,7 +79,7 @@ Run `yarn` from the **monorepo root or a package root**. During implementation y
 
 The repo installs Husky hooks that run automatically — an agent committing or pushing will trigger them:
 
-- **`pre-commit`** — runs lint-staged (formatting/lint) and unit tests on staged changes. Do not bypass with `--no-verify`.
+- **`pre-commit`** — runs `lint-staged` (`eslint --fix` on staged `*.ts`/`*.tsx`). Do not bypass with `--no-verify`.
 - **`pre-push`** — runs a **git-secrets** scan and **blocks the push if git-secrets is not installed**. Install and register it before pushing:
 
 ```bash
