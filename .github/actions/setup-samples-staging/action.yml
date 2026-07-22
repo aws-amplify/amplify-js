@@ -34,15 +34,32 @@ runs:
       env:
         BRANCH: ${{ github.ref_name }}
       run: |
-        if git ls-remote --exit-code --heads origin refs/heads/$BRANCH; then
-            # Corresponding branch on sample repo exists, check it out
-            git fetch origin $BRANCH
-            git checkout $BRANCH
-            echo "Checked out branch: $BRANCH"
-        else
-            # Corresponding branch doesn't exist, default to main
-            echo "Branch '$BRANCH' does not exist"
-        fi
+        # Retry to guard against transient git/network failures (e.g. exit code 128)
+        select_staging_branch() {
+          status=0
+          git ls-remote --exit-code --heads origin refs/heads/$BRANCH || status=$?
+          if [ "$status" -eq 0 ]; then
+              # Corresponding branch on sample repo exists, check it out
+              git fetch origin $BRANCH &&
+              git checkout $BRANCH &&
+              echo "Checked out branch: $BRANCH"
+          elif [ "$status" -eq 2 ]; then
+              # Corresponding branch doesn't exist, default to main
+              echo "Branch '$BRANCH' does not exist"
+          else
+              # Transient git failure, signal the loop below to retry
+              return 1
+          fi
+        }
+        for i in {1..3}; do
+          echo "Starting attempt $i."
+          select_staging_branch && break
+          echo "Attempt $i failed."
+          if [ "$i" -eq 3 ]; then
+            echo "::warning::Failed to check out staging branch '$BRANCH' after 3 attempts, falling back to default branch."
+          fi
+          sleep 5
+        done
 
     - name: Install
       shell: bash
