@@ -19,6 +19,7 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { oAuthStore } from '../utils/oauth/oAuthStore';
 import { addInflightPromise } from '../utils/oauth/inflightPromise';
+import { dispatchSignOutBoundaryEvents } from '../utils/dispatchSignOutHubEvents';
 import { ClientMetadata, CognitoAuthSignInDetails } from '../types';
 
 import {
@@ -172,23 +173,46 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			});
 			newTokens.signInDetails = signInDetails;
 			await this.setTokens({ tokens: newTokens });
-			Hub.dispatch('auth', { event: 'tokenRefresh' }, 'Auth', AMPLIFY_SYMBOL);
+			const userId = newTokens.idToken?.payload?.sub;
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'tokenRefresh',
+					data: userId ? { username, userId: userId as string } : undefined,
+				},
+				'Auth',
+				AMPLIFY_SYMBOL,
+			);
 
 			return newTokens;
 		} catch (err) {
-			return this.handleErrors(err);
+			// capture the failing user's id (from the pre-clear tokens) so the
+			// boundary events can carry it before the namespace is removed.
+			const userId = tokens.idToken?.payload?.sub as string | undefined;
+
+			return this.handleErrors(err, username, userId);
 		}
 	}
 
-	private handleErrors(err: unknown) {
+	private async handleErrors(
+		err: unknown,
+		username: string,
+		userId?: string,
+	): Promise<CognitoAuthTokens | null> {
 		assertServiceError(err);
 
 		// Only clear tokens for definitive authentication failures
 		// Do NOT clear tokens for transient errors like service issues, rate limits, etc.
 		const shouldClearTokens = this.isAuthenticationError(err);
 
+		let removeResult: { newActiveUser?: string; isEmpty: boolean } | undefined;
 		if (shouldClearTokens) {
-			this.clearTokens();
+			// Scope the clear to ONLY the failing user's namespace and drop them
+			// from the roster. A blanket clearTokens() would remove AuthUserList and
+			// orphan every other parked session (multi-session support).
+			const tokenStore = this.getTokenStore();
+			await tokenStore.clearTokensForUser(username);
+			removeResult = await tokenStore.removeSession(username);
 		}
 
 		Hub.dispatch(
@@ -200,6 +224,17 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			'Auth',
 			AMPLIFY_SYMBOL,
 		);
+
+		if (removeResult) {
+			// emit the sign-out boundary events for the removed/promoted session.
+			// Resolve everything from stored tokens; do NOT call getCurrentUser()/
+			// getTokens() here as that would recurse back into token refresh.
+			await dispatchSignOutBoundaryEvents(
+				this.getTokenStore(),
+				userId ? { username, userId } : undefined,
+				removeResult,
+			);
+		}
 
 		if (err.name.startsWith('NotAuthorizedException')) {
 			return null;

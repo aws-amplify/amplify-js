@@ -25,6 +25,7 @@ import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/fac
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
+jest.mock('../../../src/providers/cognito/utils/dispatchSignedInHubEvent');
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
@@ -106,12 +107,6 @@ describe('confirmSignIn API happy path cases', () => {
 
 		const smsCode = '123456';
 
-		mockedGetCurrentUser.mockImplementationOnce(async () => {
-			return {
-				username: 'username',
-				userId: 'userId',
-			};
-		});
 		const confirmSignInResult = await confirmSignIn({
 			challengeResponse: smsCode,
 		});

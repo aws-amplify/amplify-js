@@ -18,6 +18,8 @@ export {
 	updateUserAttributes,
 	updateUserAttribute,
 	getCurrentUser,
+	listCurrentUsers,
+	setCurrentUser,
 	confirmUserAttribute,
 	signInWithRedirect,
 	fetchUserAttributes,

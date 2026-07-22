@@ -129,10 +129,42 @@ describe('TokenStore', () => {
 		});
 
 		it('should return string username when no last auth user exists', async () => {
-			mockKeyValueStorage.getItem.mockResolvedValueOnce(null);
+			// getLastAuthUser now resolves via getAuthUserList, which reads both the
+			// AuthUserList key and the legacy LastAuthUser key; both must be empty.
+			mockKeyValueStorage.getItem.mockResolvedValue(null);
 
 			const result = await tokenStore.getLastAuthUser();
 			expect(result).toBe('username');
+		});
+	});
+
+	describe('getStoredIdToken', () => {
+		it('reads and decodes the stored idToken for a specific user', async () => {
+			const result = await tokenStore.getStoredIdToken(userSub);
+
+			expect(mockKeyValueStorage.getItem).toHaveBeenCalledWith(
+				`${authIDP}.${userPoolClientId}.${userSub}.idToken`,
+			);
+			expect(mockedDecodeJWT).toHaveBeenCalledWith(
+				mockAuthToken.idToken.toString(),
+			);
+			expect(result?.payload.sub).toBe(userSub);
+		});
+
+		it('returns undefined when no idToken is stored', async () => {
+			const result = await tokenStore.getStoredIdToken('absentUser');
+
+			expect(result).toBeUndefined();
+		});
+
+		it('returns undefined (no throw) when decoding fails', async () => {
+			mockedDecodeJWT.mockImplementationOnce(() => {
+				throw new Error('bad token');
+			});
+
+			const result = await tokenStore.getStoredIdToken(userSub);
+
+			expect(result).toBeUndefined();
 		});
 	});
 
@@ -275,8 +307,11 @@ describe('TokenStore', () => {
 			};
 			const getItemSpy = jest.spyOn(keyValStorage, 'getItem');
 			await tokenStore.storeTokens(mockAuthMetadataWithDeviceMetadata);
+			// isolate the getDeviceMetadata reads from storeTokens' internal
+			// getLastAuthUser lookup (which now also consults the roster key).
+			getItemSpy.mockClear();
 			await tokenStore.getDeviceMetadata(userSub);
-			expect(getItemSpy).toHaveBeenCalledTimes(4);
+			expect(getItemSpy).toHaveBeenCalledTimes(3);
 			expect(getItemSpy).toHaveBeenCalledWith(
 				`${authIDP}.${userPoolClientId}.${userSub}.deviceKey`,
 			);
@@ -401,6 +436,200 @@ describe('TokenStore', () => {
 
 			const finalTokens = await tokenStore.loadTokens();
 			expect(finalTokens?.refreshToken).toBe(newMockAuthToken.refreshToken);
+		});
+	});
+
+	describe('session roster (multi-session)', () => {
+		const authUserListKey = `${authIDP}.${userPoolClientId}.AuthUserList`;
+		const lastAuthUserKey = `${authIDP}.${userPoolClientId}.LastAuthUser`;
+		// stateful in-memory storage so roster reads reflect prior writes.
+		let store: Record<string, string>;
+
+		beforeEach(() => {
+			store = {};
+			mockKeyValueStorage.getItem.mockImplementation((key: string) =>
+				Promise.resolve(key in store ? store[key] : null),
+			);
+			mockKeyValueStorage.setItem.mockImplementation(
+				(key: string, value: string) => {
+					store[key] = value;
+
+					return Promise.resolve();
+				},
+			);
+			mockKeyValueStorage.removeItem.mockImplementation((key: string) => {
+				delete store[key];
+
+				return Promise.resolve();
+			});
+		});
+
+		describe('getAuthUserList', () => {
+			it('parses a comma-separated roster preserving order', async () => {
+				store[authUserListKey] = 'alice,bob,carol';
+
+				expect(await tokenStore.getAuthUserList()).toEqual([
+					'alice',
+					'bob',
+					'carol',
+				]);
+			});
+
+			it('migrates a legacy LastAuthUser when AuthUserList is absent', async () => {
+				store[lastAuthUserKey] = 'legacyUser';
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['legacyUser']);
+				// migration should persist the derived roster to both keys.
+				expect(store[authUserListKey]).toBe('legacyUser');
+				expect(store[lastAuthUserKey]).toBe('legacyUser');
+			});
+
+			it('ignores the "username" fallback sentinel and returns an empty roster', async () => {
+				store[lastAuthUserKey] = 'username';
+
+				expect(await tokenStore.getAuthUserList()).toEqual([]);
+			});
+
+			it('still returns the migrated list when persistAuthUserList throws (read-only storage)', async () => {
+				store[lastAuthUserKey] = 'legacyUser';
+				// Simulate read-only storage: setItem throws on write.
+				mockKeyValueStorage.setItem.mockRejectedValue(
+					new Error('Storage is read-only'),
+				);
+
+				const result = await tokenStore.getAuthUserList();
+
+				// Migration still returns the derived list even though persist failed.
+				expect(result).toEqual(['legacyUser']);
+			});
+
+			it('returns an empty roster when nothing is stored', async () => {
+				expect(await tokenStore.getAuthUserList()).toEqual([]);
+			});
+		});
+
+		describe('getLastAuthUser', () => {
+			it('returns the roster head (AuthUserList[0])', async () => {
+				store[authUserListKey] = 'active,parked';
+
+				expect(await tokenStore.getLastAuthUser()).toBe('active');
+			});
+		});
+
+		describe('addActiveSession', () => {
+			it('adds a new user to the front of the roster', async () => {
+				store[authUserListKey] = 'bob,carol';
+
+				await tokenStore.addActiveSession('alice');
+
+				expect(store[authUserListKey]).toBe('alice,bob,carol');
+				// invariant: LastAuthUser === AuthUserList[0]
+				expect(store[lastAuthUserKey]).toBe('alice');
+			});
+
+			it('dedupes and moves an existing user to the front', async () => {
+				store[authUserListKey] = 'bob,carol,dave';
+
+				await tokenStore.addActiveSession('dave');
+
+				expect(store[authUserListKey]).toBe('dave,bob,carol');
+				expect(store[lastAuthUserKey]).toBe('dave');
+			});
+		});
+
+		describe('removeSession', () => {
+			it('removes a user and returns the promoted head', async () => {
+				store[authUserListKey] = 'alice,bob,carol';
+				store[lastAuthUserKey] = 'alice';
+
+				const result = await tokenStore.removeSession('alice');
+
+				expect(result).toEqual({ newActiveUser: 'bob', isEmpty: false });
+				expect(store[authUserListKey]).toBe('bob,carol');
+				expect(store[lastAuthUserKey]).toBe('bob');
+			});
+
+			it('clears BOTH keys when the roster becomes empty', async () => {
+				store[authUserListKey] = 'alice';
+				store[lastAuthUserKey] = 'alice';
+
+				const result = await tokenStore.removeSession('alice');
+
+				expect(result).toEqual({ newActiveUser: undefined, isEmpty: true });
+				expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+					authUserListKey,
+				);
+				expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+					lastAuthUserKey,
+				);
+				expect(store[authUserListKey]).toBeUndefined();
+				expect(store[lastAuthUserKey]).toBeUndefined();
+			});
+
+			it('removes LastAuthUser BEFORE AuthUserList when the roster empties', async () => {
+				store[authUserListKey] = 'alice';
+				store[lastAuthUserKey] = 'alice';
+
+				await tokenStore.removeSession('alice');
+
+				// ordering guards against a failed AuthUserList delete leaving a
+				// lingering legacy LastAuthUser that would re-migrate a removed user.
+				const removeOrder = mockKeyValueStorage.removeItem.mock.calls
+					.map(([key]) => key)
+					.filter(key => key === lastAuthUserKey || key === authUserListKey);
+				expect(removeOrder).toEqual([lastAuthUserKey, authUserListKey]);
+			});
+		});
+
+		describe('clearTokensForUser', () => {
+			it('removes only the target user namespace and not the roster keys', async () => {
+				const targetUser = 'alice';
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'alice';
+
+				await tokenStore.clearTokensForUser(targetUser);
+
+				const namespacedKeys = [
+					'accessToken',
+					'idToken',
+					'clockDrift',
+					'refreshToken',
+					'signInDetails',
+					'deviceKey',
+					'deviceGroupKey',
+					'randomPasswordKey',
+					'oauthMetadata',
+				];
+				namespacedKeys.forEach(key => {
+					expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+						`${authIDP}.${userPoolClientId}.${targetUser}.${key}`,
+					);
+				});
+				// roster pointers must remain untouched.
+				expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
+					lastAuthUserKey,
+				);
+				expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
+					authUserListKey,
+				);
+			});
+		});
+
+		describe('storeTokens', () => {
+			it('does not write the LastAuthUser or AuthUserList roster keys', async () => {
+				await tokenStore.storeTokens(mockAuthToken);
+
+				expect(mockKeyValueStorage.setItem).not.toHaveBeenCalledWith(
+					lastAuthUserKey,
+					expect.anything(),
+				);
+				expect(mockKeyValueStorage.setItem).not.toHaveBeenCalledWith(
+					authUserListKey,
+					expect.anything(),
+				);
+			});
 		});
 	});
 });
