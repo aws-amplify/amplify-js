@@ -12,6 +12,7 @@ import { isInitialized } from '../utils/initializationManager';
 import { PushNotificationError } from './PushNotificationError';
 
 export enum PushNotificationValidationErrorCode {
+	InvalidEndpoint = 'InvalidEndpoint',
 	NoAppId = 'NoAppId',
 	NoCredentials = 'NoCredentials',
 	NoEndpoint = 'NoEndpoint',
@@ -22,6 +23,11 @@ export enum PushNotificationValidationErrorCode {
 
 const pushNotificationValidationErrorMap: AmplifyErrorMap<PushNotificationValidationErrorCode> =
 	{
+		[PushNotificationValidationErrorCode.InvalidEndpoint]: {
+			message: 'The configured Customer Profiles endpoint is invalid.',
+			recoverySuggestion:
+				'Ensure the endpoint in your Amplify configuration is a valid https:// URL.',
+		},
 		[PushNotificationValidationErrorCode.NoAppId]: {
 			message: 'Missing application id.',
 		},

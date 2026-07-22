@@ -3,7 +3,11 @@
 
 import { Amplify } from '@aws-amplify/core';
 
-import { PushNotificationValidationErrorCode, assert } from '../../../errors';
+import {
+	PushNotificationError,
+	PushNotificationValidationErrorCode,
+	assert,
+} from '../../../errors';
 
 /**
  * Path of the identify-user route on the Amazon Connect Customer Profiles REST
@@ -38,6 +42,23 @@ export const resolveConfig = () => {
 		Amplify.getConfig().Notifications?.PushNotification?.CustomerProfiles ?? {};
 	assert(!!endpoint, PushNotificationValidationErrorCode.NoEndpoint);
 	assert(!!region, PushNotificationValidationErrorCode.NoRegion);
+
+	let parsedEndpoint: URL;
+	try {
+		parsedEndpoint = new URL(endpoint);
+	} catch (underlyingError) {
+		throw new PushNotificationError({
+			name: PushNotificationValidationErrorCode.InvalidEndpoint,
+			message: 'The configured Customer Profiles endpoint is invalid.',
+			recoverySuggestion:
+				'Ensure the endpoint in your Amplify configuration is a valid https:// URL.',
+			underlyingError,
+		});
+	}
+	assert(
+		parsedEndpoint.protocol === 'https:',
+		PushNotificationValidationErrorCode.InvalidEndpoint,
+	);
 
 	return { endpoint, region };
 };
