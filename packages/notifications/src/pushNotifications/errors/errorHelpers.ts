@@ -16,6 +16,7 @@ export enum PushNotificationValidationErrorCode {
 	NoCredentials = 'NoCredentials',
 	NoEndpoint = 'NoEndpoint',
 	NoRegion = 'NoRegion',
+	NoToken = 'NoToken',
 	NotInitialized = 'NotInitialized',
 }
 
@@ -32,6 +33,11 @@ const pushNotificationValidationErrorMap: AmplifyErrorMap<PushNotificationValida
 		},
 		[PushNotificationValidationErrorCode.NoRegion]: {
 			message: 'Missing region.',
+		},
+		[PushNotificationValidationErrorCode.NoToken]: {
+			message: 'No push notification token available.',
+			recoverySuggestion:
+				'Pass a token to `registerDevice`, or ensure a token has been received via `onTokenReceived` before registering the device.',
 		},
 		[PushNotificationValidationErrorCode.NotInitialized]: {
 			message: 'Push notification has not been initialized.',

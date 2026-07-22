@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
+
 import { ChannelType, UserProfile } from '../types';
 
 import {
@@ -37,7 +39,11 @@ export const identifyUserInternal = async ({
 }: {
 	userProfile?: UserProfile;
 }): Promise<void> => {
-	await signedFetch(IDENTIFY_USER_PATH, { userProfile: userProfile ?? {} });
+	await signedFetch(
+		IDENTIFY_USER_PATH,
+		{ userProfile: userProfile ?? {} },
+		PushNotificationAction.IdentifyUser,
+	);
 };
 
 /**
@@ -49,7 +55,11 @@ export const identifyUserInternal = async ({
 export const registerDeviceInternal = async (
 	device: DeviceRegistration,
 ): Promise<void> => {
-	await signedFetch(REGISTER_DEVICE_PATH, { device });
+	await signedFetch(
+		REGISTER_DEVICE_PATH,
+		{ device },
+		PushNotificationAction.RegisterDevice,
+	);
 };
 
 /**
@@ -59,5 +69,9 @@ export const registerDeviceInternal = async (
  * @internal
  */
 export const removeDeviceInternal = async (deviceId: string): Promise<void> => {
-	await signedFetch(REMOVE_DEVICE_PATH, { deviceId });
+	await signedFetch(
+		REMOVE_DEVICE_PATH,
+		{ deviceId },
+		PushNotificationAction.RemoveDevice,
+	);
 };

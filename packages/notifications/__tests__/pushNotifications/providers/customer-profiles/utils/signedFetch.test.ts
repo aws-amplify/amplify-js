@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
+import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
 
 import { PushNotificationError } from '../../../../../src/pushNotifications/errors';
 import { signedFetch } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/signedFetch';
@@ -55,7 +56,11 @@ describe('signedFetch (customer-profiles transport)', () => {
 
 	it('SigV4-signs an execute-api POST and sends the signed request', async () => {
 		const body = { userProfile: { email: 'a@b.com' } };
-		await signedFetch('/identify-user', body);
+		await signedFetch(
+			'/identify-user',
+			body,
+			PushNotificationAction.IdentifyUser,
+		);
 
 		expect(mockSignRequest).toHaveBeenCalledTimes(1);
 		const [request, signOptions] = mockSignRequest.mock.calls[0];
@@ -85,42 +90,52 @@ describe('signedFetch (customer-profiles transport)', () => {
 		expect(req.body).toBe(JSON.stringify(body));
 	});
 
-	it('works identically for auth and guest (same signer, same credentials shape)', async () => {
-		await signedFetch('/register-device', { device: {} });
+	it('does NOT send a Bearer/JWT Authorization into signing; fetch uses exactly the signer-returned headers', async () => {
+		await signedFetch(
+			'/register-device',
+			{ device: {} },
+			PushNotificationAction.RegisterDevice,
+		);
 		expect(mockSignRequest.mock.calls[0][1]).toMatchObject({
 			signingService: 'execute-api',
 		});
-		// no Bearer/Authorization branch — only signed headers are used
+		// The request handed to the signer carries NO Authorization/authorization
+		// header (SigV4 only — never a Cognito Bearer JWT).
+		const signerRequestHeaders = mockSignRequest.mock.calls[0][0].headers;
+		expect(signerRequestHeaders).not.toHaveProperty('Authorization');
+		expect(signerRequestHeaders).not.toHaveProperty('authorization');
+		// fetch is sent with EXACTLY the headers signRequest returned (identity).
 		const [, req] = mockFetch.mock.calls[0];
 		expect(req.headers).toBe(signedHeaders);
-		expect(req.headers).not.toHaveProperty('Authorization');
 	});
 
-	it('attaches a well-formed x-amz-user-agent header on all three routes', async () => {
-		for (const path of [
-			'/identify-user',
-			'/register-device',
-			'/remove-device',
-		]) {
+	it('encodes the PER-ROUTE PushNotificationAction in the x-amz-user-agent', async () => {
+		const cases: [string, PushNotificationAction][] = [
+			['/identify-user', PushNotificationAction.IdentifyUser],
+			['/register-device', PushNotificationAction.RegisterDevice],
+			['/remove-device', PushNotificationAction.RemoveDevice],
+		];
+		for (const [path, action] of cases) {
 			mockSignRequest.mockClear();
-			await signedFetch(path, {});
+			await signedFetch(path, {}, action);
 			const ua = mockSignRequest.mock.calls[0][0].headers['x-amz-user-agent'];
 			expect(ua).toContain('aws-amplify/');
-			expect(ua).toContain('pushnotification');
+			// category/action pair renders as `pushnotification/<action>`.
+			expect(ua).toContain(`pushnotification/${action}`);
 		}
 	});
 
 	it('throws a network error when fetch rejects', async () => {
 		mockFetch.mockRejectedValue(new Error('offline'));
-		await expect(signedFetch('/identify-user', {})).rejects.toBeInstanceOf(
-			PushNotificationError,
-		);
+		await expect(
+			signedFetch('/identify-user', {}, PushNotificationAction.IdentifyUser),
+		).rejects.toBeInstanceOf(PushNotificationError);
 	});
 
 	it('throws when the endpoint responds with a non-2xx status', async () => {
 		mockFetch.mockResolvedValue({ ok: false, status: 403 });
-		await expect(signedFetch('/remove-device', {})).rejects.toBeInstanceOf(
-			PushNotificationError,
-		);
+		await expect(
+			signedFetch('/remove-device', {}, PushNotificationAction.RemoveDevice),
+		).rejects.toBeInstanceOf(PushNotificationError);
 	});
 });

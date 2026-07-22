@@ -3,7 +3,11 @@
 
 import { getClientInfo } from '@aws-amplify/core/internals/utils';
 
-import { assertIsInitialized } from '../../../errors/errorHelpers';
+import { PushNotificationError } from '../../../errors';
+import {
+	PushNotificationValidationErrorCode,
+	assertIsInitialized,
+} from '../../../errors/errorHelpers';
 import { getToken } from '../../../utils';
 import {
 	DeviceRegistration,
@@ -20,17 +24,31 @@ import { RegisterDevice } from '../types';
  * empty (unsourced) — sourcing a real bundle version would require a native
  * bridge / third-party dependency and is deliberately deferred.
  *
+ * @throws validation: {@link PushNotificationError} - `NoToken` when neither an
+ *  explicit token nor a previously-received token is available.
  * @internal
  */
 export const buildDeviceRegistration = async (
 	token?: string,
-): Promise<DeviceRegistration> => ({
-	token: token ?? getToken(),
-	deviceId: await getDeviceId(),
-	platform: getClientInfo().platform ?? '',
-	appVersion: '',
-	channelType: getChannelType(),
-});
+): Promise<DeviceRegistration> => {
+	const resolved = token ?? getToken();
+	if (!resolved) {
+		throw new PushNotificationError({
+			name: PushNotificationValidationErrorCode.NoToken,
+			message: 'No push notification token available.',
+			recoverySuggestion:
+				'Pass a token to `registerDevice`, or ensure a token has been received via `onTokenReceived` before registering the device.',
+		});
+	}
+
+	return {
+		token: resolved,
+		deviceId: await getDeviceId(),
+		platform: getClientInfo().platform ?? '',
+		appVersion: '',
+		channelType: getChannelType(),
+	};
+};
 
 /**
  * Registers a push device with Amazon Connect Customer Profiles. The device is

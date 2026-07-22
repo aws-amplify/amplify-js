@@ -12,6 +12,13 @@ import { IdentifyUser } from '../types';
  * no `userId` is sent. Use `registerDevice` / `removeDevice` for push device
  * lifecycle.
  *
+ * Intentionally does NOT call `assertIsInitialized`: identify is a pure SigV4
+ * HTTP call whose only prerequisites (endpoint/region + Identity Pool
+ * credentials) are validated by `signedFetch` → `resolveConfig` /
+ * `resolveCredentials`, so it is safe to call before `initializePushNotifications`.
+ * (This native override exists only to drop the web build's device-registration
+ * step; the request shape is otherwise identical to the web `identifyUser`.)
+ *
  * @param {IdentifyUserInput} input The input object used to construct the request
  *  sent to the Amazon Connect Customer Profiles endpoint.
  * @throws service - Thrown when the Customer Profiles endpoint responds with a

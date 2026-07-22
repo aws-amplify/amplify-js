@@ -3,7 +3,8 @@
 
 import { fetchAuthSession } from '@aws-amplify/core';
 
-import { PushNotificationValidationErrorCode, assert } from '../../../errors';
+import { PushNotificationError } from '../../../errors';
+import { PushNotificationValidationErrorCode } from '../../../errors/errorHelpers';
 
 /**
  * Resolves the Identity Pool credentials used to SigV4-sign requests to the
@@ -20,7 +21,14 @@ import { PushNotificationValidationErrorCode, assert } from '../../../errors';
 export const resolveCredentials = async () => {
 	const { credentials } = await fetchAuthSession();
 
-	assert(!!credentials, PushNotificationValidationErrorCode.NoCredentials);
+	// Explicit throw (not assert) so TypeScript narrows `credentials` to
+	// non-undefined for the returned value.
+	if (!credentials) {
+		throw new PushNotificationError({
+			name: PushNotificationValidationErrorCode.NoCredentials,
+			message: 'Credentials should not be empty.',
+		});
+	}
 
 	return { credentials };
 };

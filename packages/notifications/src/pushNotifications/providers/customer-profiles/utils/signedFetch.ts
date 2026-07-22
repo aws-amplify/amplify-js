@@ -32,6 +32,7 @@ const USER_AGENT_HEADER = 'x-amz-user-agent';
 export const signedFetch = async (
 	path: string,
 	body: unknown,
+	action: PushNotificationAction,
 ): Promise<void> => {
 	const { endpoint, region } = resolveConfig();
 	const { credentials } = await resolveCredentials();
@@ -48,7 +49,7 @@ export const signedFetch = async (
 				// covered by the SigV4 signature and the sent headers match.
 				[USER_AGENT_HEADER]: getAmplifyUserAgent({
 					category: Category.PushNotification,
-					action: PushNotificationAction.IdentifyUser,
+					action,
 				}),
 			},
 			body: serializedBody,

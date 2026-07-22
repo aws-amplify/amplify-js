@@ -7,6 +7,11 @@ import { loadAsyncStorage } from '@aws-amplify/react-native';
 const DEVICE_ID_STORAGE_KEY =
 	'@aws-amplify/notifications/customer-profiles/deviceId';
 
+// In-module cache of the resolved deviceId. Lives for the lifetime of the JS
+// module instance (the app session): populated on first resolve, reused by all
+// later calls, and naturally discarded on app reload/restart (the persisted
+// AsyncStorage value is then re-read). Never invalidated at runtime because the
+// per-install deviceId is immutable.
 let cachedDeviceId: string | undefined;
 
 /**

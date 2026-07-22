@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
+
 import {
 	DeviceRegistration,
 	identifyUserInternal,
@@ -36,18 +38,22 @@ describe('customer-profiles transport callers', () => {
 			await identifyUserInternal({ userProfile });
 
 			expect(mockSignedFetch).toHaveBeenCalledTimes(1);
-			expect(mockSignedFetch).toHaveBeenCalledWith(IDENTIFY_USER_PATH, {
-				userProfile,
-			});
+			expect(mockSignedFetch).toHaveBeenCalledWith(
+				IDENTIFY_USER_PATH,
+				{ userProfile },
+				PushNotificationAction.IdentifyUser,
+			);
 			const [, body] = mockSignedFetch.mock.calls[0];
 			expect(body).not.toHaveProperty('userId');
 		});
 
 		it('defaults userProfile to an empty object when omitted', async () => {
 			await identifyUserInternal({});
-			expect(mockSignedFetch).toHaveBeenCalledWith(IDENTIFY_USER_PATH, {
-				userProfile: {},
-			});
+			expect(mockSignedFetch).toHaveBeenCalledWith(
+				IDENTIFY_USER_PATH,
+				{ userProfile: {} },
+				PushNotificationAction.IdentifyUser,
+			);
 		});
 	});
 
@@ -63,9 +69,11 @@ describe('customer-profiles transport callers', () => {
 			await registerDeviceInternal(device);
 
 			expect(mockSignedFetch).toHaveBeenCalledTimes(1);
-			expect(mockSignedFetch).toHaveBeenCalledWith(REGISTER_DEVICE_PATH, {
-				device,
-			});
+			expect(mockSignedFetch).toHaveBeenCalledWith(
+				REGISTER_DEVICE_PATH,
+				{ device },
+				PushNotificationAction.RegisterDevice,
+			);
 		});
 	});
 
@@ -74,9 +82,11 @@ describe('customer-profiles transport callers', () => {
 			await removeDeviceInternal('device-id');
 
 			expect(mockSignedFetch).toHaveBeenCalledTimes(1);
-			expect(mockSignedFetch).toHaveBeenCalledWith(REMOVE_DEVICE_PATH, {
-				deviceId: 'device-id',
-			});
+			expect(mockSignedFetch).toHaveBeenCalledWith(
+				REMOVE_DEVICE_PATH,
+				{ deviceId: 'device-id' },
+				PushNotificationAction.RemoveDevice,
+			);
 		});
 	});
 });

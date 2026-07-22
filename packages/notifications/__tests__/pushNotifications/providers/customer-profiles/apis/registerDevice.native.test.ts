@@ -4,7 +4,11 @@
 import { getClientInfo } from '@aws-amplify/core/internals/utils';
 
 import { assertIsInitialized } from '../../../../../src/pushNotifications/errors/errorHelpers';
-import { registerDevice } from '../../../../../src/pushNotifications/providers/customer-profiles/apis/registerDevice.native';
+import {
+	buildDeviceRegistration,
+	registerDevice,
+} from '../../../../../src/pushNotifications/providers/customer-profiles/apis/registerDevice.native';
+import { PushNotificationError } from '../../../../../src/pushNotifications/errors';
 import { getToken } from '../../../../../src/pushNotifications/utils';
 import {
 	getChannelType,
@@ -18,7 +22,12 @@ jest.mock('@aws-amplify/react-native', () => ({
 	getOperatingSystem: jest.fn(),
 	loadAsyncStorage: jest.fn(),
 }));
-jest.mock('../../../../../src/pushNotifications/errors/errorHelpers');
+jest.mock('../../../../../src/pushNotifications/errors/errorHelpers', () => ({
+	...jest.requireActual(
+		'../../../../../src/pushNotifications/errors/errorHelpers',
+	),
+	assertIsInitialized: jest.fn(),
+}));
 jest.mock(
 	'../../../../../src/pushNotifications/providers/customer-profiles/utils',
 );
@@ -73,14 +82,18 @@ describe('registerDevice (customer-profiles, native)', () => {
 		});
 	});
 
-	it('falls back to the current token when none is supplied', async () => {
-		// simulate the auto-registration path where the internal builder resolves
-		// the last-received token
-		await registerDevice({ token: undefined as unknown as string });
-
+	it('falls back to the current token when none is supplied (auto-registration path)', async () => {
+		const built = await buildDeviceRegistration();
 		expect(mockGetToken).toHaveBeenCalled();
-		expect(mockRegisterDeviceInternal).toHaveBeenCalledWith(
-			expect.objectContaining({ token: pushToken }),
+		expect(built).toEqual(
+			expect.objectContaining({ token: pushToken, deviceId: DEVICE_ID }),
+		);
+	});
+
+	it('throws NoToken when neither a supplied nor a current token is available', async () => {
+		mockGetToken.mockReturnValue(undefined);
+		await expect(buildDeviceRegistration()).rejects.toBeInstanceOf(
+			PushNotificationError,
 		);
 	});
 
