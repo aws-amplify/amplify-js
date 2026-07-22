@@ -143,7 +143,14 @@ jobs:
             $E2E_YARN_SCRIPT \
             -n $E2E_RETRY_COUNT
           else
-            yarn "$E2E_YARN_SCRIPT" "$E2E_YARN_SCRIPT_ARGS" "$E2E_SPEC"
+            # Route the specialized yarn script through the same retry wrapper as
+            # the dev path. Prod runs previously had no retry; flaky-test analysis
+            # (2026-07) showed prod-only failures with zero retry protection.
+            ../amplify-js/scripts/retry-yarn-script.sh -s \
+            "$E2E_YARN_SCRIPT \
+            $E2E_YARN_SCRIPT_ARGS \
+            $E2E_SPEC" \
+            -n $E2E_RETRY_COUNT
           fi
       - name: Upload artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
