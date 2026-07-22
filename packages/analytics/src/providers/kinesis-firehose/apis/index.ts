@@ -3,3 +3,4 @@
 
 export { record } from './record';
 export { flushEvents } from './flushEvents';
+export { configureAutoTrack } from './configureAutoTrack';

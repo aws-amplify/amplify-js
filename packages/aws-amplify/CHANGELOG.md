@@ -1,5 +1,25 @@
 # Change Log
 
+## 6.19.0
+
+### Minor Changes
+
+- [#14854](https://github.com/aws-amplify/amplify-js/pull/14854) [`eed1462`](https://github.com/aws-amplify/amplify-js/commit/eed1462e44ba54667828d779207d9f2eaea9cad7) Thanks [@soberm](https://github.com/soberm)! - feat(analytics): add configureAutoTrack support for Kinesis and Kinesis Firehose providers
+
+- [#14867](https://github.com/aws-amplify/amplify-js/pull/14867) [`aaeb630`](https://github.com/aws-amplify/amplify-js/commit/aaeb630870119a9b55d24e3e55c17287eb911e93) Thanks [@soberm](https://github.com/soberm)! - feat(core): add optional onStateChange telemetry hook to ServiceWorker.register(); deprecate implicit Pinpoint auto-recording of SW lifecycle events (opt-in, backwards compatible)
+
+### Patch Changes
+
+- [#14877](https://github.com/aws-amplify/amplify-js/pull/14877) [`49d9e82`](https://github.com/aws-amplify/amplify-js/commit/49d9e82c5e9df3066046db4ce91aab1ca3db99e5) Thanks [@soberm](https://github.com/soberm)! - feat(analytics): warn on deprecated default (Pinpoint) exports
+
+  The default (Amazon Pinpoint) Analytics APIs (`record`, `identifyUser`, `configureAutoTrack`, `flushEvents`) now emit a one-time `ConsoleLogger` deprecation warning at runtime, pointing customers to the supported sub-path exports (`aws-amplify/analytics/kinesis`, `aws-amplify/analytics/kinesis-firehose`, `aws-amplify/analytics/personalize`). AWS ends support for Amazon Pinpoint on October 30, 2026. This is non-breaking: types and signatures are preserved.
+
+- Updated dependencies [[`eed1462`](https://github.com/aws-amplify/amplify-js/commit/eed1462e44ba54667828d779207d9f2eaea9cad7), [`49d9e82`](https://github.com/aws-amplify/amplify-js/commit/49d9e82c5e9df3066046db4ce91aab1ca3db99e5), [`9a3041c`](https://github.com/aws-amplify/amplify-js/commit/9a3041c9fdb19ecead6c62b89c29f0b4854ac65c), [`aaeb630`](https://github.com/aws-amplify/amplify-js/commit/aaeb630870119a9b55d24e3e55c17287eb911e93)]:
+  - @aws-amplify/analytics@7.1.0
+  - @aws-amplify/datastore@5.1.9
+  - @aws-amplify/core@6.17.0
+  - @aws-amplify/api@6.3.28
+
 ## 6.18.0
 
 ### Minor Changes
