@@ -434,6 +434,56 @@ describe('signInWithRedirect', () => {
 		});
 	});
 
+	describe('preferredRedirectUrl', () => {
+		it('passes preferredRedirectUrl to getRedirectUrl and uses it in the authorization URL', async () => {
+			const preferredUrl = 'http://localhost:3000/';
+			await signInWithRedirect({
+				provider: 'Google',
+				options: {
+					preferredRedirectUrl: preferredUrl,
+				},
+			});
+
+			const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
+			expect(oauthUrl).toContain(
+				`redirect_uri=${encodeURIComponent(preferredUrl)}`,
+			);
+		});
+
+		it('uses preferredRedirectUrl when multiple redirect URLs are configured', async () => {
+			const preferredUrl = 'https://myapp.example.com/callback';
+			const mockConfigWithMultipleRedirects = {
+				Auth: {
+					Cognito: {
+						...mockAuthConfigWithOAuth.Auth.Cognito,
+						loginWith: {
+							...mockAuthConfigWithOAuth.Auth.Cognito.loginWith,
+							oauth: {
+								...mockAuthConfigWithOAuth.Auth.Cognito.loginWith.oauth,
+								redirectSignIn: ['http://localhost:3000/', preferredUrl],
+							},
+						},
+					},
+				},
+			};
+			(Amplify.getConfig as jest.Mock).mockReturnValueOnce(
+				mockConfigWithMultipleRedirects,
+			);
+
+			await signInWithRedirect({
+				provider: 'Google',
+				options: {
+					preferredRedirectUrl: preferredUrl,
+				},
+			});
+
+			const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
+			expect(oauthUrl).toContain(
+				`redirect_uri=${encodeURIComponent(preferredUrl)}`,
+			);
+		});
+	});
+
 	describe('errors', () => {
 		it('rethrows error thrown from `assertTokenProviderConfig`', async () => {
 			const mockError = new Error('mock error');
