@@ -137,6 +137,19 @@ Examples: `auth/fix/refresh-token-race-condition`, `storage/feat/presigned-urls`
 
 The `ci - Unit and Bundle tests have passed` gate turns green only when all above pass.
 
+## Maintenance Branch: `v5-stable`
+
+The `v5-stable` branch hosts Amplify JS v5 maintenance releases (security patches, critical fixes). **Its tooling differs from `main` — do not apply the conventions above when working on it:**
+
+| | `main` | `v5-stable` |
+|---|---|---|
+| Monorepo tooling | Yarn + Turborepo | Yarn + **Lerna** |
+| Setup | `yarn` | `yarn && yarn bootstrap` |
+| Versioning | Changesets (`.changeset/`) | **No changesets** — Lerna-managed versions |
+| Base branch for PRs | `main` | `v5-stable` |
+
+When backporting a fix to v5, branch off `v5-stable`, target PRs at `v5-stable`, and skip the changeset step. Check that branch's `package.json` scripts before running commands.
+
 ## Do / Don't Summary
 
 **Do**
