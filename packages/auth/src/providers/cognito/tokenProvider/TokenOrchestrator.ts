@@ -126,11 +126,11 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			!!tokens?.idToken &&
 			isTokenExpired({
 				expiresAt: (tokens.idToken?.payload?.exp ?? 0) * 1000,
-				clockDrift: tokens.clockDrift ?? 0,
+				clockDrift: tokens.clockDrift || 0,
 			});
 		const accessTokenExpired = isTokenExpired({
 			expiresAt: (tokens.accessToken?.payload?.exp ?? 0) * 1000,
-			clockDrift: tokens.clockDrift ?? 0,
+			clockDrift: tokens.clockDrift || 0,
 		});
 
 		if (options?.forceRefresh || idTokenExpired || accessTokenExpired) {
