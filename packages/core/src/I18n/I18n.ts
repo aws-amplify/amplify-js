@@ -85,7 +85,7 @@ export class I18n {
 	 * @method
 	 * Get value according to specified language
 	 * @param {String} key
-	 * @param {String} language - Specified langurage to be used
+	 * @param {String} language - Specified language to be used
 	 * @param {String} defVal - Default value
 	 */
 	getByLanguage(key: string, language: string, defVal: string | null = null) {
