@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.7.27...@aws-amplify/datastore@4.7.28) (2026-07-22)
+
+### Bug Fixes
+
+- **datastore:** declare tslib ^2.1.0 to fix \_\_spreadArray is not a function ([#14878](https://github.com/aws-amplify/amplify-js/issues/14878)) ([e7f555e](https://github.com/aws-amplify/amplify-js/commit/e7f555ef4d8d3d7a114f67643ccb311ca21d9692))
+
 ## [4.7.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.7.26...@aws-amplify/datastore@4.7.27) (2026-07-09)
 
 ### Bug Fixes
