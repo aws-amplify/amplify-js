@@ -599,6 +599,10 @@ export class AWSS3Provider implements StorageProvider {
 		object: PutObjectInput['Body'],
 		config?: T
 	): S3ProviderPutOutput<T> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK || !this._isWithCredentials(this._config)) {
+			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
+		}
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, level, resumable } = opt;
 		const {
