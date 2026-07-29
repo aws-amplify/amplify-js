@@ -8,6 +8,12 @@ import { RemoveDevice } from '../types';
 /**
  * De-registers the current push device from Amazon Connect Customer Profiles.
  *
+ * @remarks
+ * Call this API while the user is still signed in — de-registration is signed
+ * with the current credentials and the backend only removes a device that the
+ * calling principal owns. To stop delivery to a device on sign-out, await
+ * `removeDevice()` **before** calling `signOut()`.
+ *
  * @throws platform: {@link PlatformNotSupportedError} - Thrown if called against
  *  an unsupported platform. Currently, only React Native is supported by this
  *  API.
