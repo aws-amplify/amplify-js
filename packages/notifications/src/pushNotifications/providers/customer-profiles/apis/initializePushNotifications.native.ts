@@ -15,7 +15,6 @@ import {
 } from '../utils';
 
 import { registerDevice } from './registerDevice';
-import { removeDevice } from './removeDevice';
 
 const {
 	addMessageEventListener,
@@ -156,14 +155,23 @@ const addNativeListeners = (): void => {
 };
 
 const addAuthListener = (): void => {
-	// Deterministically de-register the device from the current principal at
-	// sign-out (the backend remove-device is principalId-gated), closing the
-	// logged-out-then-campaign-fires window. Best-effort — failures are logged.
+	// Re-register the device at sign-in so it is re-homed from the guest
+	// principal to the now-authenticated one. The push token is unchanged across
+	// a sign-in, so the native token listener short-circuits and would never
+	// re-register on its own. The backend register-device is an idempotent
+	// last-writer-wins upsert keyed on `deviceId`, so this moves the existing
+	// registration rather than creating a duplicate. Best-effort — failures are
+	// logged.
 	Hub.listen('auth', ({ payload }) => {
-		if (payload.event === 'signedOut') {
-			removeDevice().catch(err => {
+		if (payload.event === 'signedIn') {
+			const token = getToken();
+			if (!token) {
+				// no token yet — the TOKEN_RECEIVED path performs first registration
+				return;
+			}
+			registerDevice({ token }).catch(err => {
 				logger.error(
-					'Failed to remove device for push notifications on sign-out',
+					'Failed to re-register device for push notifications on sign-in',
 					err,
 				);
 			});

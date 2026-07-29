@@ -342,43 +342,77 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		});
 	});
 
-	describe('sign-out de-registration', () => {
-		it('removes the device when an auth signedOut event is received', async () => {
+	describe('sign-in re-registration', () => {
+		const getAuthHandler = () => {
+			expect(mockHubListen).toHaveBeenCalledWith('auth', expect.any(Function));
+
+			return mockHubListen.mock.calls.find(call => call[0] === 'auth')![1];
+		};
+
+		it('re-registers the current token when an auth signedIn event is received', async () => {
+			mockGetToken.mockReturnValue(pushToken);
 			initializePushNotifications();
 
-			expect(mockHubListen).toHaveBeenCalledWith('auth', expect.any(Function));
+			getAuthHandler()({ payload: { event: 'signedIn' } });
+			await Promise.resolve();
+
+			expect(mockRegisterDevice).toHaveBeenCalledTimes(1);
+			expect(mockRegisterDevice).toHaveBeenCalledWith({ token: pushToken });
+		});
+
+		it('does NOT re-register when no token has been received yet', () => {
+			mockGetToken.mockReturnValue(undefined);
+			initializePushNotifications();
+
+			getAuthHandler()({ payload: { event: 'signedIn' } });
+
+			expect(mockRegisterDevice).not.toHaveBeenCalled();
+		});
+
+		it('swallows errors from the sign-in re-registration', async () => {
+			mockGetToken.mockReturnValue(pushToken);
+			mockRegisterDevice.mockRejectedValue(new Error('register failed'));
+			initializePushNotifications();
+
+			const authHandler = getAuthHandler();
+			expect(() =>
+				authHandler({ payload: { event: 'signedIn' } }),
+			).not.toThrow();
+			await Promise.resolve();
+
+			expect(mockRegisterDevice).toHaveBeenCalledTimes(1);
+		});
+
+		it('ignores auth events other than signedIn', () => {
+			mockGetToken.mockReturnValue(pushToken);
+			initializePushNotifications();
+
+			const authHandler = getAuthHandler();
+			authHandler({ payload: { event: 'tokenRefresh' } });
+			authHandler({ payload: { event: 'signInWithRedirect' } });
+
+			expect(mockRegisterDevice).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('sign-out', () => {
+		// De-registration cannot be performed after sign-out: `signOut` clears the
+		// credentials before the `signedOut` event fires, so the listener would
+		// sign as a brand-new guest identity and the principal-gated backend
+		// removal would silently no-op. Applications call `removeDevice()` BEFORE
+		// `signOut()` instead.
+		it('does NOT remove the device when an auth signedOut event is received', async () => {
+			mockGetToken.mockReturnValue(pushToken);
+			initializePushNotifications();
+
 			const authHandler = mockHubListen.mock.calls.find(
 				call => call[0] === 'auth',
 			)![1];
 			authHandler({ payload: { event: 'signedOut' } });
 			await Promise.resolve();
 
-			expect(mockRemoveDevice).toHaveBeenCalledTimes(1);
-		});
-
-		it('does not remove the device for non-signedOut auth events', () => {
-			initializePushNotifications();
-
-			const authHandler = mockHubListen.mock.calls.find(
-				call => call[0] === 'auth',
-			)![1];
-			authHandler({ payload: { event: 'signedIn' } });
-
 			expect(mockRemoveDevice).not.toHaveBeenCalled();
-		});
-
-		it('swallows errors from removeDevice on sign-out', async () => {
-			mockRemoveDevice.mockRejectedValue(new Error('remove failed'));
-			initializePushNotifications();
-
-			const authHandler = mockHubListen.mock.calls.find(
-				call => call[0] === 'auth',
-			)![1];
-			expect(() =>
-				authHandler({ payload: { event: 'signedOut' } }),
-			).not.toThrow();
-			await Promise.resolve();
-			expect(mockRemoveDevice).toHaveBeenCalled();
+			expect(mockRegisterDevice).not.toHaveBeenCalled();
 		});
 	});
 });
