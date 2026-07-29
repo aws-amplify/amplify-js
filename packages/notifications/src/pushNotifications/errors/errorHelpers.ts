@@ -27,7 +27,7 @@ const pushNotificationValidationErrorMap: AmplifyErrorMap<PushNotificationValida
 		[PushNotificationValidationErrorCode.InvalidEndpoint]: {
 			message: 'The configured Customer Profiles endpoint is invalid.',
 			recoverySuggestion:
-				'Ensure the endpoint in your Amplify configuration is a valid https:// URL.',
+				'Ensure the endpoint in your Amplify configuration is a valid https:// URL on the API Gateway host for the configured region, for example https://<api-id>.execute-api.<region>.amazonaws.com.',
 		},
 		[PushNotificationValidationErrorCode.InvalidUserProfile]: {
 			message: 'The provided user profile is invalid.',

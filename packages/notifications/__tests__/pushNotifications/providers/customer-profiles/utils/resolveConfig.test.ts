@@ -67,7 +67,7 @@ describe('resolveConfig (customer-profiles)', () => {
 	it('throws InvalidEndpoint for an http:// (non-https) endpoint', () => {
 		mockCustomerProfilesConfig({
 			...customerProfilesConfig,
-			endpoint: 'http://customer-profiles.example.com/prod',
+			endpoint: 'http://abcd1234.execute-api.us-east-1.amazonaws.com/prod',
 		});
 		expectToThrowWithCode(PushNotificationValidationErrorCode.InvalidEndpoint);
 	});
@@ -86,5 +86,104 @@ describe('resolveConfig (customer-profiles)', () => {
 			endpoint: 'not a url',
 		});
 		expectToThrowWithCode(PushNotificationValidationErrorCode.InvalidEndpoint);
+	});
+
+	it('accepts an execute-api host without a stage path', () => {
+		mockCustomerProfilesConfig({
+			...customerProfilesConfig,
+			endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com',
+		});
+		expect(resolveConfig().endpoint).toBe(
+			'https://abcd1234.execute-api.us-east-1.amazonaws.com',
+		);
+	});
+
+	describe('endpoint host allowlist', () => {
+		// SigV4 execute-api credentials travel with every request to this
+		// endpoint, so a non-API-Gateway host MUST be rejected outright.
+		it.each([
+			['an unrelated host', 'https://evil.com'],
+			['an unrelated host with a plausible path', 'https://evil.com/prod'],
+			[
+				'a host that only looks like execute-api',
+				'https://attacker.execute-api-fake.com',
+			],
+			[
+				'an execute-api lookalike on another domain',
+				'https://abcd1234.execute-api.us-east-1.amazonaws.com.evil.com',
+			],
+			[
+				'an execute-api host in a different region',
+				'https://abcd1234.execute-api.eu-west-1.amazonaws.com',
+			],
+			[
+				'an execute-api host with an empty api id',
+				'https://execute-api.us-east-1.amazonaws.com',
+			],
+			[
+				'credentials embedded to spoof the host',
+				'https://abcd1234.execute-api.us-east-1.amazonaws.com@evil.com',
+			],
+		])('throws InvalidEndpoint for %s', (_, endpoint) => {
+			mockCustomerProfilesConfig({ ...customerProfilesConfig, endpoint });
+			expectToThrowWithCode(
+				PushNotificationValidationErrorCode.InvalidEndpoint,
+			);
+		});
+
+		it('accepts the execute-api host of the configured region', () => {
+			mockCustomerProfilesConfig({
+				endpoint: 'https://xyz789.execute-api.eu-west-2.amazonaws.com/prod',
+				region: 'eu-west-2',
+			});
+			expect(resolveConfig()).toStrictEqual({
+				endpoint: 'https://xyz789.execute-api.eu-west-2.amazonaws.com/prod',
+				region: 'eu-west-2',
+			});
+		});
+	});
+
+	describe('trailing slash normalization', () => {
+		it('strips a trailing slash from a host-only endpoint', () => {
+			mockCustomerProfilesConfig({
+				...customerProfilesConfig,
+				endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com/',
+			});
+			expect(resolveConfig().endpoint).toBe(
+				'https://abcd1234.execute-api.us-east-1.amazonaws.com',
+			);
+		});
+
+		it('strips trailing slashes while PRESERVING a stage path', () => {
+			mockCustomerProfilesConfig({
+				...customerProfilesConfig,
+				endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod/',
+			});
+			expect(resolveConfig().endpoint).toBe(
+				'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod',
+			);
+		});
+
+		it('strips repeated trailing slashes', () => {
+			mockCustomerProfilesConfig({
+				...customerProfilesConfig,
+				endpoint:
+					'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod///',
+			});
+			expect(resolveConfig().endpoint).toBe(
+				'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod',
+			);
+		});
+
+		it('produces an endpoint that composes with a route path without a double slash', () => {
+			mockCustomerProfilesConfig({
+				...customerProfilesConfig,
+				endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com/',
+			});
+			const { endpoint } = resolveConfig();
+			expect(new URL(`${endpoint}/identify-user`).toString()).toBe(
+				'https://abcd1234.execute-api.us-east-1.amazonaws.com/identify-user',
+			);
+		});
 	});
 });
