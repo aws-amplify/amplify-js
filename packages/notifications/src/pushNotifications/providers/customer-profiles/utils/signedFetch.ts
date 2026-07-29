@@ -63,7 +63,7 @@ export const signedFetch = async (
 
 	let response: Response;
 	try {
-		response = await fetch(url.toString(), {
+		response = await fetch(signed.url.toString(), {
 			method: 'POST',
 			headers: signed.headers,
 			body: serializedBody,

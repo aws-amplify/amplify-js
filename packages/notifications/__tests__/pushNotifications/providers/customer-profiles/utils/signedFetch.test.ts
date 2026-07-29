@@ -28,7 +28,7 @@ describe('signedFetch (customer-profiles transport)', () => {
 		authorization: 'AWS4-HMAC-SHA256 Credential=...',
 		'x-amz-date': '20260721T000000Z',
 		'x-amz-security-token': credentials.sessionToken,
-		host: 'customer-profiles.example.com',
+		host: 'abcd1234.execute-api.us-east-1.amazonaws.com',
 		'content-type': 'application/json',
 	};
 	const mockSignRequest = signRequest as jest.Mock;
@@ -43,7 +43,11 @@ describe('signedFetch (customer-profiles transport)', () => {
 	beforeEach(() => {
 		mockResolveConfig.mockReturnValue(customerProfilesConfig);
 		mockResolveCredentials.mockResolvedValue({ credentials });
-		mockSignRequest.mockReturnValue({ headers: signedHeaders });
+		// signRequest returns an HttpRequest whose `url` is authoritative.
+		mockSignRequest.mockImplementation(request => ({
+			...request,
+			headers: signedHeaders,
+		}));
 		mockFetch.mockResolvedValue({ ok: true, status: 200 });
 	});
 
@@ -123,6 +127,30 @@ describe('signedFetch (customer-profiles transport)', () => {
 			// category/action pair renders as `pushnotification/<action>`.
 			expect(ua).toContain(`pushnotification/${action}`);
 		}
+	});
+
+	it('fetches the SIGNED request url, not the pre-signing url', async () => {
+		// The signer may rewrite the url (e.g. canonicalized/encoded query), and
+		// the signature covers the url it returns — so fetch MUST use `signed.url`.
+		const signedUrl = new URL(
+			`${customerProfilesConfig.endpoint}/identify-user?X-Amz-Signature=abc`,
+		);
+		mockSignRequest.mockReturnValue({
+			url: signedUrl,
+			headers: signedHeaders,
+		});
+
+		await signedFetch(
+			'/identify-user',
+			{},
+			PushNotificationAction.IdentifyUser,
+		);
+
+		expect(mockFetch).toHaveBeenCalledTimes(1);
+		expect(mockFetch.mock.calls[0][0]).toBe(signedUrl.toString());
+		expect(mockFetch.mock.calls[0][0]).not.toBe(
+			`${customerProfilesConfig.endpoint}/identify-user`,
+		);
 	});
 
 	it('throws a network error when fetch rejects', async () => {
