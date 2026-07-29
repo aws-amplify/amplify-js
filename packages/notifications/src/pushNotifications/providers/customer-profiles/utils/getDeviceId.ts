@@ -7,12 +7,27 @@ import { loadAsyncStorage } from '@aws-amplify/react-native';
 const DEVICE_ID_STORAGE_KEY =
 	'@aws-amplify/notifications/customer-profiles/deviceId';
 
-// In-module cache of the resolved deviceId. Lives for the lifetime of the JS
-// module instance (the app session): populated on first resolve, reused by all
-// later calls, and naturally discarded on app reload/restart (the persisted
-// AsyncStorage value is then re-read). Never invalidated at runtime because the
-// per-install deviceId is immutable.
-let cachedDeviceId: string | undefined;
+// In-module cache of the in-flight (and, once settled, resolved) deviceId
+// resolution. Lives for the lifetime of the JS module instance (the app
+// session): created on first call, shared by all later calls, and naturally
+// discarded on app reload/restart (the persisted AsyncStorage value is then
+// re-read). Never invalidated at runtime on success because the per-install
+// deviceId is immutable; cleared on failure so a transient storage error does
+// not permanently wedge subsequent calls.
+let deviceIdPromise: Promise<string> | undefined;
+
+const resolveOrCreateDeviceId = async (): Promise<string> => {
+	const asyncStorage = loadAsyncStorage();
+	const stored = await asyncStorage.getItem(DEVICE_ID_STORAGE_KEY);
+	if (stored) {
+		return stored;
+	}
+
+	const deviceId = amplifyUuid();
+	await asyncStorage.setItem(DEVICE_ID_STORAGE_KEY, deviceId);
+
+	return deviceId;
+};
 
 /**
  * Resolves a stable, per-install device identifier used as the UNIQUE key for
@@ -22,27 +37,19 @@ let cachedDeviceId: string | undefined;
  * device object rather than creating a duplicate.
  *
  * The id is generated once (UUID v4) and persisted to AsyncStorage; subsequent
- * calls return the persisted value. An in-module cache avoids repeated storage
- * reads within a single app session.
+ * calls return the persisted value. The resolution is memoized as a single
+ * in-flight promise, so concurrent first-calls share one resolution and cannot
+ * each generate and persist a different id.
  *
  * @internal
  */
-export const getDeviceId = async (): Promise<string> => {
-	if (cachedDeviceId) {
-		return cachedDeviceId;
+export const getDeviceId = (): Promise<string> => {
+	if (!deviceIdPromise) {
+		deviceIdPromise = resolveOrCreateDeviceId().catch(error => {
+			deviceIdPromise = undefined;
+			throw error;
+		});
 	}
 
-	const asyncStorage = loadAsyncStorage();
-	const stored = await asyncStorage.getItem(DEVICE_ID_STORAGE_KEY);
-	if (stored) {
-		cachedDeviceId = stored;
-
-		return stored;
-	}
-
-	const deviceId = amplifyUuid();
-	await asyncStorage.setItem(DEVICE_ID_STORAGE_KEY, deviceId);
-	cachedDeviceId = deviceId;
-
-	return deviceId;
+	return deviceIdPromise;
 };
