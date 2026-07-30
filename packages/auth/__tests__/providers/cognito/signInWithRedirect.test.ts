@@ -203,6 +203,43 @@ describe('signInWithRedirect', () => {
 		);
 	});
 
+	it('omits identity_provider when prompt is NONE and no provider is specified', async () => {
+		await signInWithRedirect({ options: { prompt: 'NONE' } });
+		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
+		expect(oauthUrl).not.toContain('identity_provider');
+		expect(oauthUrl).toStrictEqual(
+			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&scope=phone+email+openid+profile+aws.cognito.signin.user.admin&prompt=none&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
+		);
+	});
+
+	it('keeps identity_provider when prompt is NONE and a provider is specified', async () => {
+		await signInWithRedirect({
+			provider: 'Google',
+			options: { prompt: 'NONE' },
+		});
+		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
+		expect(oauthUrl).toContain('identity_provider=Google');
+	});
+
+	it('keeps idp_identifier only when prompt is NONE and an idpIdentifier is specified', async () => {
+		await signInWithRedirect({
+			provider: { idpIdentifier: 'example.com' },
+			options: { prompt: 'NONE' },
+		});
+		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
+		expect(oauthUrl).toContain('idp_identifier=example.com');
+		expect(oauthUrl).not.toContain('identity_provider');
+	});
+
+	it('keeps the default identity_provider for prompt values other than NONE', async () => {
+		for (const prompt of promptTypes.filter(value => value !== 'NONE')) {
+			await signInWithRedirect({ options: { prompt } });
+			const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
+			expect(oauthUrl).toContain('identity_provider=COGNITO');
+			mockOpenAuthSession.mockClear();
+		}
+	});
+
 	it('uses custom state if specified', async () => {
 		const expectedCustomState = 'verify_me';
 		await signInWithRedirect({ customState: expectedCustomState });
