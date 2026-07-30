@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.8.10
+
+### Patch Changes
+
+- Updated dependencies [[`bcdc02b`](https://github.com/aws-amplify/amplify-js/commit/bcdc02ba2a1b9b8e6ab8b384a4586cf9605b41c1)]:
+  - @aws-amplify/core@6.18.0
+
 ## 4.8.9
 
 ### Patch Changes
