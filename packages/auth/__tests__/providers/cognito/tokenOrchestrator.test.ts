@@ -5,7 +5,10 @@ import { Hub, ResourcesConfig } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { TokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
-import { addInflightPromise } from '../../../src/providers/cognito/utils/oauth/inflightPromise';
+import {
+	addInflightPromise,
+	resolveAndClearInflightPromises,
+} from '../../../src/providers/cognito/utils/oauth/inflightPromise';
 import { oAuthStore } from '../../../src/providers/cognito/utils/oauth';
 
 jest.mock('../../../src/providers/cognito/utils/oauth/oAuthStore');
@@ -42,6 +45,7 @@ const validAuthConfig: ResourcesConfig = {
 
 jest.mock('../../../src/providers/cognito/utils/oauth/inflightPromise', () => ({
 	addInflightPromise: jest.fn(),
+	resolveAndClearInflightPromises: jest.fn(),
 }));
 
 const currentDate = new Date();
@@ -149,6 +153,96 @@ describe('TokenOrchestrator', () => {
 
 			expect(addInflightPromise).toHaveBeenCalledWith(expect.any(Function));
 			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
+		});
+	});
+
+	describe('inflight OAuth timeout', () => {
+		const INFLIGHT_OAUTH_TIMEOUT_MS = 60_000;
+		let orchestrator: TokenOrchestrator;
+
+		beforeEach(() => {
+			jest.useFakeTimers({ doNotFake: ['nextTick'] });
+			jest.clearAllMocks();
+			// never resolved externally: simulates a cancelled native sign-in sheet
+			mockAddInflightPromise.mockImplementation(() => undefined);
+			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
+			(oAuthStore.clearOAuthInflightData as jest.Mock).mockResolvedValue(
+				undefined,
+			);
+			mockAuthTokenStore.loadTokens.mockResolvedValue(null);
+			mockAuthTokenStore.getLastAuthUser.mockResolvedValue('test-username');
+			orchestrator = new TokenOrchestrator();
+			orchestrator.setAuthConfig(validAuthConfig.Auth!);
+			orchestrator.setAuthTokenStore(mockAuthTokenStore);
+			orchestrator.setTokenRefresher(mockTokenRefresher);
+		});
+
+		afterEach(() => {
+			jest.useRealTimers();
+		});
+
+		it('does not settle the inflight wait before the timeout elapses', async () => {
+			let settled = false;
+			const wait = orchestrator.waitForInflightOAuth().then(() => {
+				settled = true;
+			});
+
+			await Promise.resolve();
+			jest.advanceTimersByTime(INFLIGHT_OAUTH_TIMEOUT_MS - 1);
+			await new Promise(resolve => {
+				process.nextTick(resolve);
+			});
+
+			expect(settled).toBe(false);
+			expect(oAuthStore.clearOAuthInflightData).not.toHaveBeenCalled();
+
+			jest.advanceTimersByTime(1);
+			await wait;
+			expect(settled).toBe(true);
+		});
+
+		it('clears the persisted inflight flag and settles waiters on timeout', async () => {
+			const wait = orchestrator.waitForInflightOAuth();
+
+			await new Promise(resolve => {
+				process.nextTick(resolve);
+			});
+			jest.advanceTimersByTime(INFLIGHT_OAUTH_TIMEOUT_MS);
+
+			await expect(wait).resolves.toBeUndefined();
+			expect(oAuthStore.clearOAuthInflightData).toHaveBeenCalledTimes(1);
+			expect(resolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
+		});
+
+		it('getTokens returns no session on timeout instead of hanging', async () => {
+			const tokensPromise = orchestrator.getTokens();
+
+			await new Promise(resolve => {
+				process.nextTick(resolve);
+			});
+			jest.advanceTimersByTime(INFLIGHT_OAUTH_TIMEOUT_MS);
+
+			await expect(tokensPromise).resolves.toBeNull();
+			expect(oAuthStore.clearOAuthInflightData).toHaveBeenCalledTimes(1);
+		});
+
+		it('does not clear inflight data when the OAuth flow completes normally', async () => {
+			mockAddInflightPromise.mockImplementation(resolver => {
+				resolver();
+			});
+			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+
+			const tokens = await orchestrator.getTokens();
+
+			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
+
+			jest.advanceTimersByTime(INFLIGHT_OAUTH_TIMEOUT_MS * 2);
+			await new Promise(resolve => {
+				process.nextTick(resolve);
+			});
+
+			expect(oAuthStore.clearOAuthInflightData).not.toHaveBeenCalled();
+			expect(jest.getTimerCount()).toBe(0);
 		});
 	});
 

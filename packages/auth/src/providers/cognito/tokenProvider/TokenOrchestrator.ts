@@ -18,7 +18,10 @@ import {
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { oAuthStore } from '../utils/oauth/oAuthStore';
-import { addInflightPromise } from '../utils/oauth/inflightPromise';
+import {
+	addInflightPromise,
+	resolveAndClearInflightPromises,
+} from '../utils/oauth/inflightPromise';
 import { ClientMetadata, CognitoAuthSignInDetails } from '../types';
 
 import {
@@ -29,6 +32,15 @@ import {
 	OAuthMetadata,
 	TokenRefresher,
 } from './types';
+
+/**
+ * Upper bound for how long token fetching may be blocked by an inflight OAuth
+ * flow. Some platforms (e.g. a dismissed native "Sign in with Apple" sheet on
+ * iOS Safari) provide no reliable cancellation signal, which would otherwise
+ * leave the inflight flag set forever and hang every subsequent auth call.
+ * See https://github.com/aws-amplify/amplify-js/issues/14900
+ */
+const INFLIGHT_OAUTH_TIMEOUT_MS = 60_000;
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
@@ -50,8 +62,35 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				// to block async calls that require fetching tokens before the oauth flow completes
 				// e.g. getCurrentUser, fetchAuthSession etc.
 
-				this.inflightPromise = new Promise<void>((resolve, _reject) => {
-					addInflightPromise(resolve);
+				this.inflightPromise = new Promise<void>(resolve => {
+					let settled = false;
+					let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+					addInflightPromise(() => {
+						settled = true;
+						if (timeoutId !== undefined) {
+							clearTimeout(timeoutId);
+							timeoutId = undefined;
+						}
+						resolve();
+					});
+
+					if (settled) {
+						return;
+					}
+
+					timeoutId = setTimeout(() => {
+						timeoutId = undefined;
+						const clearAndSettle = async () => {
+							try {
+								await oAuthStore.clearOAuthInflightData();
+							} finally {
+								resolveAndClearInflightPromises();
+								resolve();
+							}
+						};
+						clearAndSettle().catch(() => undefined);
+					}, INFLIGHT_OAUTH_TIMEOUT_MS);
 				});
 
 				return this.inflightPromise;
