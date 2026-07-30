@@ -44,6 +44,12 @@ const INFLIGHT_OAUTH_TIMEOUT_MS = 60_000;
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
+	/**
+	 * Incremented every time a new inflight OAuth wait is armed. A pending
+	 * timeout captures the value current at arming time so a stale timer can
+	 * never clear the inflight state of a flow that started after it.
+	 */
+	private inflightOAuthGeneration = 0;
 	clientMetadataProvider?: ClientMetadataProvider;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
@@ -61,6 +67,8 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				// when there is valid oauth config and there is an inflight oauth flow, try
 				// to block async calls that require fetching tokens before the oauth flow completes
 				// e.g. getCurrentUser, fetchAuthSession etc.
+
+				const generation = ++this.inflightOAuthGeneration;
 
 				this.inflightPromise = new Promise<void>(resolve => {
 					let settled = false;
@@ -81,11 +89,26 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 					timeoutId = setTimeout(() => {
 						timeoutId = undefined;
+
+						if (settled) {
+							return;
+						}
+
+						if (generation !== this.inflightOAuthGeneration) {
+							// a newer flow owns the inflight state, so never touch it; still
+							// settle this superseded promise so its callers cannot hang
+							resolve();
+
+							return;
+						}
+
 						const clearAndSettle = async () => {
 							try {
 								await oAuthStore.clearOAuthInflightData();
 							} finally {
-								resolveAndClearInflightPromises();
+								if (!settled && generation === this.inflightOAuthGeneration) {
+									resolveAndClearInflightPromises();
+								}
 								resolve();
 							}
 						};

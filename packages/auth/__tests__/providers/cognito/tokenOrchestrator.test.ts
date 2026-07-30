@@ -179,6 +179,10 @@ describe('TokenOrchestrator', () => {
 
 		afterEach(() => {
 			jest.useRealTimers();
+			// restore the immediately-resolving default so later suites are unaffected
+			mockAddInflightPromise.mockImplementation(resolver => {
+				resolver();
+			});
 		});
 
 		it('does not settle the inflight wait before the timeout elapses', async () => {
@@ -243,6 +247,65 @@ describe('TokenOrchestrator', () => {
 
 			expect(oAuthStore.clearOAuthInflightData).not.toHaveBeenCalled();
 			expect(jest.getTimerCount()).toBe(0);
+		});
+
+		it('does not let a stale timeout clear the inflight data of a newer flow', async () => {
+			const firstWait = orchestrator.waitForInflightOAuth();
+			await new Promise(resolve => {
+				process.nextTick(resolve);
+			});
+
+			jest.advanceTimersByTime(INFLIGHT_OAUTH_TIMEOUT_MS / 2);
+
+			// a second flow starts and takes ownership of the inflight state
+			orchestrator.inflightPromise = undefined;
+			const secondWait = orchestrator.waitForInflightOAuth();
+			await new Promise(resolve => {
+				process.nextTick(resolve);
+			});
+
+			// the first flow's timer fires: it must not touch the second flow's state
+			jest.advanceTimersByTime(INFLIGHT_OAUTH_TIMEOUT_MS / 2);
+			await expect(firstWait).resolves.toBeUndefined();
+			expect(oAuthStore.clearOAuthInflightData).not.toHaveBeenCalled();
+			expect(resolveAndClearInflightPromises).not.toHaveBeenCalled();
+
+			// the second flow's own timer still self-heals on schedule
+			jest.advanceTimersByTime(INFLIGHT_OAUTH_TIMEOUT_MS / 2);
+			await expect(secondWait).resolves.toBeUndefined();
+			expect(oAuthStore.clearOAuthInflightData).toHaveBeenCalledTimes(1);
+			expect(resolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
+		});
+
+		it('does not clear inflight data when the wait was already settled', async () => {
+			// simulate a future code path that settles the wait without cancelling
+			// the timer: the `settled` guard must still prevent a second clear
+			const clearTimeoutSpy = jest
+				.spyOn(global, 'clearTimeout')
+				.mockImplementation(() => undefined);
+			let registeredResolver: (() => void) | undefined;
+			mockAddInflightPromise.mockImplementation(resolver => {
+				registeredResolver = resolver;
+			});
+
+			const wait = orchestrator.waitForInflightOAuth();
+			await new Promise(resolve => {
+				process.nextTick(resolve);
+			});
+
+			registeredResolver!();
+			await expect(wait).resolves.toBeUndefined();
+			expect(jest.getTimerCount()).toBe(1);
+
+			jest.advanceTimersByTime(INFLIGHT_OAUTH_TIMEOUT_MS);
+			await new Promise(resolve => {
+				process.nextTick(resolve);
+			});
+
+			expect(oAuthStore.clearOAuthInflightData).not.toHaveBeenCalled();
+			expect(resolveAndClearInflightPromises).not.toHaveBeenCalled();
+
+			clearTimeoutSpy.mockRestore();
 		});
 	});
 
