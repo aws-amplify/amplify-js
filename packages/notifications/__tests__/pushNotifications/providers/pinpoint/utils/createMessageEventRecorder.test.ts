@@ -5,7 +5,7 @@ import { record } from '@aws-amplify/core/internals/providers/pinpoint';
 
 import { resolveCredentials } from '../../../../../src/pushNotifications/utils';
 import { getAnalyticsEvent } from '../../../../../src/pushNotifications/providers/pinpoint/utils/getAnalyticsEvent';
-import { getChannelType } from '../../../../../src/pushNotifications/providers/pinpoint/utils/getChannelType';
+import { getChannelType } from '../../../../../src/pushNotifications/providers/shared/utils/getChannelType';
 import { resolveConfig } from '../../../../../src/pushNotifications/providers/pinpoint/utils/resolveConfig';
 import { createMessageEventRecorder } from '../../../../../src/pushNotifications/providers/pinpoint/utils/createMessageEventRecorder';
 import {
@@ -24,7 +24,7 @@ jest.mock(
 	'../../../../../src/pushNotifications/providers/pinpoint/utils/getAnalyticsEvent',
 );
 jest.mock(
-	'../../../../../src/pushNotifications/providers/pinpoint/utils/getChannelType',
+	'../../../../../src/pushNotifications/providers/shared/utils/getChannelType',
 );
 jest.mock(
 	'../../../../../src/pushNotifications/providers/pinpoint/utils/resolveConfig',

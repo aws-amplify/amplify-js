@@ -128,6 +128,8 @@ export enum PubSubAction {
 export enum PushNotificationAction {
 	InitializePushNotifications = '1',
 	IdentifyUser = '2',
+	RegisterDevice = '3',
+	RemoveDevice = '4',
 }
 export enum StorageAction {
 	UploadData = '1',
