@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 import {
 	getRetryDecider,
@@ -16,6 +15,7 @@ import {
 import { authenticatedHandler } from '../../../src/apis/common/baseHandlers/authenticatedHandler';
 import { unauthenticatedHandler } from '../../../src/apis/common/baseHandlers/unauthenticatedHandler';
 import { RestApiError, isCancelError } from '../../../src/errors';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 jest.mock('../../../src/apis/common/baseHandlers/authenticatedHandler');
@@ -26,11 +26,10 @@ const mockUnauthenticatedHandler = jest.mocked(unauthenticatedHandler);
 const mockParseJsonError = jest.mocked(parseJsonError);
 const mockGetRetryDecider = jest.mocked(getRetryDecider);
 const mockFetchAuthSession = jest.fn();
-const mockAmplifyInstance = {
-	Auth: {
-		fetchAuthSession: mockFetchAuthSession,
-	},
-} as any as AmplifyClassV6;
+const mockAmplifyInstance = createMockAmplifyContext(
+	{},
+	{ fetchAuthSession: mockFetchAuthSession },
+);
 
 const successResponse = {
 	statusCode: 200,
@@ -427,18 +426,21 @@ describe('internal post', () => {
 
 	it('should use jittered-exponential-backoff retry strategy, even when configuring using library options', async () => {
 		expect.assertions(2);
-		const mockAmplifyInstanceWithNoRetry = {
-			...mockAmplifyInstance,
-			libraryOptions: {
-				API: {
-					REST: {
-						retryStrategy: {
-							strategy: 'no-retry',
+		const mockAmplifyInstanceWithNoRetry = createMockAmplifyContext(
+			{},
+			{
+				fetchAuthSession: mockFetchAuthSession,
+				libraryOptions: {
+					API: {
+						REST: {
+							retryStrategy: {
+								strategy: 'no-retry',
+							},
 						},
 					},
 				},
 			},
-		} as any as AmplifyClassV6;
+		);
 		await post(mockAmplifyInstanceWithNoRetry, {
 			url: apiGatewayUrl,
 			options: {

@@ -1,10 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 import {
 	DeleteInput,
@@ -30,10 +28,15 @@ import {
 	post as commonPost,
 	put as commonPut,
 } from './common/publicApis';
+import { resolveServerContext } from './server/resolveServerContext';
 
 /**
  * GET HTTP request (server-side)
- * @param {AmplifyServer.ContextSpec} contextSpec - The context spec used to get the Amplify server context.
+ *
+ * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
+ * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ *
+ * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {GetInput} input - Input for GET operation.
  * @throws - {@link RestApiError}
  * @example
@@ -56,14 +59,17 @@ import {
  * ```
  */
 export const get = (
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: GetInput,
-): GetOperation =>
-	commonGet(getAmplifyServerContext(contextSpec).amplify, input);
+): GetOperation => commonGet(resolveServerContext(ctxOrContextSpec), input);
 
 /**
  * POST HTTP request (server-side)
- * @param {AmplifyServer.ContextSpec} contextSpec - The context spec used to get the Amplify server context.
+ *
+ * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
+ * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ *
+ * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {PostInput} input - Input for POST operation.
  * @throws - {@link RestApiError}
  * @example
@@ -86,14 +92,17 @@ export const get = (
  * ```
  */
 export const post = (
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: PostInput,
-): PostOperation =>
-	commonPost(getAmplifyServerContext(contextSpec).amplify, input);
+): PostOperation => commonPost(resolveServerContext(ctxOrContextSpec), input);
 
 /**
  * PUT HTTP request (server-side)
- * @param {AmplifyServer.ContextSpec} contextSpec - The context spec used to get the Amplify server context.
+ *
+ * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
+ * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ *
+ * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {PutInput} input - Input for PUT operation.
  * @throws - {@link RestApiError}
  * @example
@@ -116,14 +125,17 @@ export const post = (
  * ```
  */
 export const put = (
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: PutInput,
-): PutOperation =>
-	commonPut(getAmplifyServerContext(contextSpec).amplify, input);
+): PutOperation => commonPut(resolveServerContext(ctxOrContextSpec), input);
 
 /**
  * DELETE HTTP request (server-side)
- * @param {AmplifyServer.ContextSpec} contextSpec - The context spec used to get the Amplify server context.
+ *
+ * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
+ * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ *
+ * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {DeleteInput} input - Input for DELETE operation.
  * @throws - {@link RestApiError}
  * @example
@@ -145,14 +157,17 @@ export const put = (
  * ```
  */
 export const del = (
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: DeleteInput,
-): DeleteOperation =>
-	commonDel(getAmplifyServerContext(contextSpec).amplify, input);
+): DeleteOperation => commonDel(resolveServerContext(ctxOrContextSpec), input);
 
 /**
  * HEAD HTTP request (server-side)
- * @param {AmplifyServer.ContextSpec} contextSpec - The context spec used to get the Amplify server context.
+ *
+ * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
+ * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ *
+ * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {HeadInput} input - Input for HEAD operation.
  * @throws - {@link RestApiError}
  * @example
@@ -174,14 +189,17 @@ export const del = (
  * ```
  */
 export const head = (
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: HeadInput,
-): HeadOperation =>
-	commonHead(getAmplifyServerContext(contextSpec).amplify, input);
+): HeadOperation => commonHead(resolveServerContext(ctxOrContextSpec), input);
 
 /**
  * PATCH HTTP request (server-side)
- * @param {AmplifyServer.ContextSpec} contextSpec - The context spec used to get the Amplify server context.
+ *
+ * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
+ * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ *
+ * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {PatchInput} input - Input for PATCH operation.
  * @throws - {@link RestApiError}
  * @example
@@ -204,7 +222,6 @@ export const head = (
  * ```
  */
 export const patch = (
-	contextSpec: AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 	input: PatchInput,
-): PatchOperation =>
-	commonPatch(getAmplifyServerContext(contextSpec).amplify, input);
+): PatchOperation => commonPatch(resolveServerContext(ctxOrContextSpec), input);

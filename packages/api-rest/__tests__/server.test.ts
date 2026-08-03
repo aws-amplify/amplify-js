@@ -13,6 +13,8 @@ import {
 	put as commonPut,
 } from '../src/apis/common/publicApis';
 
+import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
+
 jest.mock('../src/apis/common/publicApis');
 jest.mock('@aws-amplify/core/internals/adapter-core');
 
@@ -24,7 +26,7 @@ const input = {
 const contextSpec = { token: { value: 'token' } } as any;
 const mockGetAmplifyServerContext = getAmplifyServerContext as jest.Mock;
 
-describe('REST API handlers', () => {
+describe('REST API server handlers', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockGetAmplifyServerContext.mockReturnValue({
@@ -32,57 +34,103 @@ describe('REST API handlers', () => {
 		});
 	});
 
-	it('get should call common get API with server-side Amplify context', async () => {
-		get(contextSpec, input);
-		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
-		expect(commonGet).toHaveBeenCalledWith(
-			'mockedAmplifyServerSideContext',
-			input,
-		);
+	describe('legacy ContextSpec path', () => {
+		it('get should call common get API with server-side Amplify context', () => {
+			get(contextSpec, input);
+			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
+			expect(commonGet).toHaveBeenCalledWith(
+				'mockedAmplifyServerSideContext',
+				input,
+			);
+		});
+
+		it('post should call common post API with server-side Amplify context', () => {
+			post(contextSpec, input);
+			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
+			expect(commonPost).toHaveBeenCalledWith(
+				'mockedAmplifyServerSideContext',
+				input,
+			);
+		});
+
+		it('put should call common put API with server-side Amplify context', () => {
+			put(contextSpec, input);
+			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
+			expect(commonPut).toHaveBeenCalledWith(
+				'mockedAmplifyServerSideContext',
+				input,
+			);
+		});
+
+		it('del should call common del API with server-side Amplify context', () => {
+			del(contextSpec, input);
+			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
+			expect(commonDel).toHaveBeenCalledWith(
+				'mockedAmplifyServerSideContext',
+				input,
+			);
+		});
+
+		it('patch should call common patch API with server-side Amplify context', () => {
+			patch(contextSpec, input);
+			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
+			expect(commonPatch).toHaveBeenCalledWith(
+				'mockedAmplifyServerSideContext',
+				input,
+			);
+		});
+
+		it('head should call common head API with server-side Amplify context', () => {
+			head(contextSpec, input);
+			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
+			expect(commonHead).toHaveBeenCalledWith(
+				'mockedAmplifyServerSideContext',
+				input,
+			);
+		});
 	});
 
-	it('post should call common post API with server-side Amplify context', async () => {
-		post(contextSpec, input);
-		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
-		expect(commonPost).toHaveBeenCalledWith(
-			'mockedAmplifyServerSideContext',
-			input,
-		);
-	});
+	describe('AmplifyContext path', () => {
+		it('get should pass AmplifyContext directly without calling getAmplifyServerContext', () => {
+			const ctx = createMockAmplifyContext();
+			get(ctx, input);
+			expect(mockGetAmplifyServerContext).not.toHaveBeenCalled();
+			expect(commonGet).toHaveBeenCalledWith(ctx, input);
+		});
 
-	it('put should call common put API with server-side Amplify context', async () => {
-		put(contextSpec, input);
-		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
-		expect(commonPut).toHaveBeenCalledWith(
-			'mockedAmplifyServerSideContext',
-			input,
-		);
-	});
+		it('post should pass AmplifyContext directly without calling getAmplifyServerContext', () => {
+			const ctx = createMockAmplifyContext();
+			post(ctx, input);
+			expect(mockGetAmplifyServerContext).not.toHaveBeenCalled();
+			expect(commonPost).toHaveBeenCalledWith(ctx, input);
+		});
 
-	it('del should call common del API with server-side Amplify context', async () => {
-		del(contextSpec, input);
-		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
-		expect(commonDel).toHaveBeenCalledWith(
-			'mockedAmplifyServerSideContext',
-			input,
-		);
-	});
+		it('put should pass AmplifyContext directly without calling getAmplifyServerContext', () => {
+			const ctx = createMockAmplifyContext();
+			put(ctx, input);
+			expect(mockGetAmplifyServerContext).not.toHaveBeenCalled();
+			expect(commonPut).toHaveBeenCalledWith(ctx, input);
+		});
 
-	it('patch should call common patch API with server-side Amplify context', async () => {
-		patch(contextSpec, input);
-		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
-		expect(commonPatch).toHaveBeenCalledWith(
-			'mockedAmplifyServerSideContext',
-			input,
-		);
-	});
+		it('del should pass AmplifyContext directly without calling getAmplifyServerContext', () => {
+			const ctx = createMockAmplifyContext();
+			del(ctx, input);
+			expect(mockGetAmplifyServerContext).not.toHaveBeenCalled();
+			expect(commonDel).toHaveBeenCalledWith(ctx, input);
+		});
 
-	it('head should call common head API with server-side Amplify context', async () => {
-		head(contextSpec, input);
-		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
-		expect(commonHead).toHaveBeenCalledWith(
-			'mockedAmplifyServerSideContext',
-			input,
-		);
+		it('patch should pass AmplifyContext directly without calling getAmplifyServerContext', () => {
+			const ctx = createMockAmplifyContext();
+			patch(ctx, input);
+			expect(mockGetAmplifyServerContext).not.toHaveBeenCalled();
+			expect(commonPatch).toHaveBeenCalledWith(ctx, input);
+		});
+
+		it('head should pass AmplifyContext directly without calling getAmplifyServerContext', () => {
+			const ctx = createMockAmplifyContext();
+			head(ctx, input);
+			expect(mockGetAmplifyServerContext).not.toHaveBeenCalled();
+			expect(commonHead).toHaveBeenCalledWith(ctx, input);
+		});
 	});
 });
