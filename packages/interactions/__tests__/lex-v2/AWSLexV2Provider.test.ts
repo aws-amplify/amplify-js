@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { fetchAuthSession } from '@aws-amplify/core';
 import {
 	IntentState,
 	LexRuntimeV2Client,
@@ -12,8 +11,7 @@ import { gzip, strToU8 } from 'fflate';
 import { encode } from 'base-64';
 import { lexProvider } from '../../src/lex-v2/AWSLexV2Provider';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
-
-jest.mock('@aws-amplify/core');
+import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
 (global as any).Response = class Response {
 	arrayBuffer(blob: Blob) {
@@ -46,7 +44,8 @@ const credentials = {
 	identityId: 'identity-id',
 };
 
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockCtx = createMockAmplifyContext();
+const mockFetchAuthSession = mockCtx.fetchAuthSession as jest.Mock;
 
 const arrayBufferToBase64 = (buffer: Uint8Array) => {
 	var binary = '';
@@ -232,7 +231,7 @@ describe('Interactions', () => {
 		afterEach(() => mockFetchAuthSession.mockReset());
 
 		test('send simple text message to bot and fulfill', async () => {
-			let response = await provider.sendMessage(botConfig.BookTrip, 'hi');
+			let response = await provider.sendMessage(mockCtx, botConfig.BookTrip, 'hi');
 			expect(response).toEqual({
 				sessionState: {
 					intent: {
@@ -242,7 +241,7 @@ describe('Interactions', () => {
 				messages: [{ content: 'echo:hi' }],
 			});
 
-			response = await provider.sendMessage(botConfig.BookTrip, 'done');
+			response = await provider.sendMessage(mockCtx, botConfig.BookTrip, 'done');
 			expect(response).toEqual({
 				sessionState: {
 					intent: {
@@ -256,7 +255,7 @@ describe('Interactions', () => {
 		});
 
 		test('send obj text message to bot and fulfill', async () => {
-			let response = await provider.sendMessage(botConfig.BookTrip, {
+			let response = await provider.sendMessage(mockCtx, botConfig.BookTrip, {
 				content: 'hi',
 				options: {
 					messageType: 'text',
@@ -272,7 +271,7 @@ describe('Interactions', () => {
 				audioStream: new Uint8Array(),
 			});
 
-			response = await provider.sendMessage(botConfig.BookTrip, {
+			response = await provider.sendMessage(mockCtx, botConfig.BookTrip, {
 				content: 'done',
 				options: {
 					messageType: 'text',
@@ -302,7 +301,7 @@ describe('Interactions', () => {
 				},
 			};
 
-			let response = await provider.sendMessage(botconfig.BookTrip, {
+			let response = await provider.sendMessage(mockCtx, botconfig.BookTrip, {
 				content: createBlob(),
 				options: {
 					messageType: 'voice',
@@ -319,7 +318,7 @@ describe('Interactions', () => {
 			});
 
 			botconfig.BookTrip.botId = '0DNZS5QI8M:done';
-			response = await provider.sendMessage(botconfig.BookTrip, {
+			response = await provider.sendMessage(mockCtx, botconfig.BookTrip, {
 				content: createBlob(),
 				options: {
 					messageType: 'voice',
@@ -342,7 +341,7 @@ describe('Interactions', () => {
 			mockFetchAuthSession.mockReturnValue(Promise.reject(new Error()));
 
 			await expect(
-				provider.sendMessage(botConfig.BookTrip, 'hi'),
+				provider.sendMessage(mockCtx, botConfig.BookTrip, 'hi'),
 			).rejects.toThrow('No credentials');
 			expect.assertions(1);
 		});
@@ -350,7 +349,7 @@ describe('Interactions', () => {
 		test('send obj text and obj voice messages in wrong format', async () => {
 			// obj text in wrong format
 			await expect(
-				provider.sendMessage(botConfig.BookTrip, {
+				provider.sendMessage(mockCtx, botConfig.BookTrip, {
 					content: createBlob(),
 					options: {
 						messageType: 'text',
@@ -360,7 +359,7 @@ describe('Interactions', () => {
 
 			// obj voice in wrong format
 			await expect(
-				provider.sendMessage(botConfig.BookTrip, {
+				provider.sendMessage(mockCtx, botConfig.BookTrip, {
 					content: 'Hi',
 					options: {
 						messageType: 'voice',
@@ -434,16 +433,19 @@ describe('Interactions', () => {
 			};
 
 			const inProgressResp = (await provider.sendMessage(
+				mockCtx,
 				botConfig.BookTrip,
 				'in progress. callback isnt fired',
 			)) as RecognizeTextCommandOutput;
 
 			const completeSuccessResp = (await provider.sendMessage(
+				mockCtx,
 				botConfig.BookTrip,
 				'done',
 			)) as RecognizeTextCommandOutput;
 
 			const completeFailResp = (await provider.sendMessage(
+				mockCtx,
 				botConfig.BookTrip,
 				'error',
 			)) as RecognizeTextCommandOutput;
