@@ -6,6 +6,10 @@ import { AmplifyContext, AuthTokens } from '@aws-amplify/core';
 import { resolveLocationsForCurrentSession } from '../../../../src/internals/apis/listPaths/resolveLocationsForCurrentSession';
 import { getHighestPrecedenceUserGroup } from '../../../../src/internals/apis/listPaths/getHighestPrecedenceUserGroup';
 import { listPaths } from '../../../../src/internals';
+import {
+	StorageValidationErrorCode,
+	validationErrorMap,
+} from '../../../../src/errors/types/validation';
 
 jest.mock(
 	'../../../../src/internals/apis/listPaths/resolveLocationsForCurrentSession',
@@ -198,6 +202,38 @@ describe('listPaths', () => {
 			isAuthenticated: true,
 			identityId: 'identityId',
 			userGroup: 'admin',
+		});
+	});
+
+	it('should throw StorageValidationError with NoS3Config when Storage.S3 is missing', async () => {
+		mockGetConfig.mockReturnValue({
+			...mockAuthConfig,
+			Storage: undefined,
+		});
+
+		await expect(listPaths(mockCtx)).rejects.toMatchObject({
+			name: StorageValidationErrorCode.NoS3Config,
+			message:
+				validationErrorMap[StorageValidationErrorCode.NoS3Config].message,
+		});
+	});
+
+	it('should throw StorageValidationError with NoAuthConfig when Auth.Cognito is missing', async () => {
+		mockGetConfig.mockReturnValue({
+			Auth: undefined,
+			Storage: {
+				S3: {
+					bucket: 'bucket1',
+					region: 'region1',
+					buckets: mockBuckets,
+				},
+			},
+		});
+
+		await expect(listPaths(mockCtx)).rejects.toMatchObject({
+			name: StorageValidationErrorCode.NoAuthConfig,
+			message:
+				validationErrorMap[StorageValidationErrorCode.NoAuthConfig].message,
 		});
 	});
 });
