@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { AmplifyContext, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAccessLevel } from '@aws-amplify/core';
 
 import {
 	deleteObject,
@@ -20,6 +20,7 @@ import {
 } from '../../../../../src/providers/s3/types';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import './testUtils';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 
@@ -28,19 +29,9 @@ const mockDeleteObjects = deleteObjects as jest.Mock;
 const mockListObjectsV2 = listObjectsV2 as jest.Mock;
 const mockHeadObject = headObject as jest.Mock;
 const mockGetConfig = jest.fn();
-const mockFetchAuthSession = jest.fn();
-// Internal workers now receive an AmplifyContext. Back resourcesConfig with a
-// jest.fn so existing per-test config mocking keeps working, and expose
-// fetchAuthSession as a jest.fn for credential/identityId control.
-const mockCtx: AmplifyContext = {
-	get resourcesConfig() {
-		return mockGetConfig();
-	},
-	libraryOptions: {},
-	fetchAuthSession: mockFetchAuthSession,
-	clearCredentials: jest.fn(),
-	getTokens: jest.fn(),
-};
+// Live getter delegates to mockGetConfig so per-test config variance works.
+const mockCtx = createMockAmplifyContext({ getConfig: mockGetConfig });
+const mockFetchAuthSession = jest.mocked(mockCtx.fetchAuthSession);
 
 const inputKey = 'key';
 const bucket = 'bucket';

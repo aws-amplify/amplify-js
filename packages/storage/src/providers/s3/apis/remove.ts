@@ -37,18 +37,28 @@ export function remove(
  * when there is no key or its empty.
  */
 export function remove(input: RemoveInput): RemoveOperation<RemoveOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `RemoveWithPathInput` object.
+ */
 export function remove(
 	ctx: AmplifyContext,
 	input: RemoveWithPathInput,
 ): RemoveOperation<RemoveWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `RemoveInput` object.
+ */
 export function remove(
 	ctx: AmplifyContext,
 	input: RemoveInput,
 ): RemoveOperation<RemoveOutput>;
 
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
 export function remove(...args: any[]) {
 	const [ctx, input] =
 		resolveCtxArgs<[RemoveInput | RemoveWithPathInput]>(args);
+	// Narrowing is required: removeInternal is overloaded and TypeScript cannot resolve the union argument without discriminating.
 	if ('key' in input) {
 		return removeInternal(ctx, input);
 	} else {

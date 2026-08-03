@@ -76,4 +76,28 @@ describe('client-side uploadData', () => {
 			},
 		});
 	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalUploadDataImpl.mockReturnValue(mockInternalResult);
+		const input = {
+			path: 'path',
+			data: 'data',
+		};
+		expect(uploadData(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalUploadDataImpl).toBeCalledWith(
+			{
+				amplify: explicitCtx,
+				readFile: expect.any(Function),
+				toBase64: expect.any(Function),
+			},
+			{
+				...input,
+				options: {
+					resumableUploadsCache: defaultStorage,
+				},
+			},
+		);
+	});
 });

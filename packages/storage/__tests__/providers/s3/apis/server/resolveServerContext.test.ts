@@ -50,10 +50,10 @@ describe('resolveServerContext', () => {
 			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(mockContextSpec);
 		});
 
-		it('should source resourcesConfig from amplify.getConfig()', () => {
+		it('should source resourcesConfig from amplify.getConfig() via live getter', () => {
 			const resolved = resolveServerContext(mockContextSpec);
-			expect(mockAmplifyClass.getConfig).toHaveBeenCalledTimes(1);
 			expect(resolved.resourcesConfig).toBe(mockResourcesConfig);
+			expect(mockAmplifyClass.getConfig).toHaveBeenCalledTimes(1);
 		});
 
 		it('should source libraryOptions from amplify.libraryOptions', () => {

@@ -52,15 +52,24 @@ export function getUrl(
  *
  */
 export function getUrl(input: GetUrlInput): Promise<GetUrlOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetUrlWithPathInput` object.
+ */
 export function getUrl(
 	ctx: AmplifyContext,
 	input: GetUrlWithPathInput,
 ): Promise<GetUrlWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetUrlInput` object.
+ */
 export function getUrl(
 	ctx: AmplifyContext,
 	input: GetUrlInput,
 ): Promise<GetUrlOutput>;
 
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
 export function getUrl(...args: any[]) {
 	const [ctx, input] =
 		resolveCtxArgs<[GetUrlInput | GetUrlWithPathInput]>(args);

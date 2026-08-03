@@ -56,4 +56,16 @@ describe('client-side copy', () => {
 		expect(copy(input)).toEqual(mockInternalResult);
 		expect(mockInternalCopyImpl).toBeCalledWith(mockCtx, input);
 	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalCopyImpl.mockReturnValue(mockInternalResult);
+		const input: CopyWithPathInput = {
+			source: { path: 'source-path' },
+			destination: { path: 'dest-path' },
+		};
+		expect(copy(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalCopyImpl).toBeCalledWith(explicitCtx, input);
+	});
 });

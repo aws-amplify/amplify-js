@@ -83,4 +83,15 @@ describe('client-side list', () => {
 		expect(list(input)).toEqual(mockInternalResult);
 		expect(mockInternalListImpl).toBeCalledWith(mockCtx, input);
 	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalListImpl.mockReturnValue(mockInternalResult);
+		const input: ListAllWithPathInput = {
+			path: 'abc',
+		};
+		expect(list(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalListImpl).toBeCalledWith(explicitCtx, input);
+	});
 });

@@ -7,14 +7,34 @@ import {
 	ResourcesConfig,
 } from '@aws-amplify/core';
 
+export interface MockAmplifyContextOptions {
+	/** When provided, resourcesConfig becomes a live getter delegating to this fn. */
+	getConfig?(): ResourcesConfig;
+}
+
 /**
  * Creates a mock AmplifyContext for testing.
  */
 export function createMockAmplifyContext(
-	resourcesConfig: ResourcesConfig = {},
+	resourcesConfigOrOpts?: ResourcesConfig | MockAmplifyContextOptions,
 ): AmplifyContext {
+	// Determine whether we received the options form or raw ResourcesConfig.
+	const isOpts =
+		resourcesConfigOrOpts != null &&
+		'getConfig' in resourcesConfigOrOpts &&
+		typeof (resourcesConfigOrOpts as MockAmplifyContextOptions).getConfig ===
+			'function';
+
 	const ctx: AmplifyContext = {
-		resourcesConfig,
+		// Use a live getter when getConfig is supplied so per-test config changes propagate.
+		get resourcesConfig() {
+			if (isOpts) {
+				return (resourcesConfigOrOpts as MockAmplifyContextOptions)
+					.getConfig!();
+			}
+
+			return (resourcesConfigOrOpts as ResourcesConfig) ?? {};
+		},
 		libraryOptions: {},
 		fetchAuthSession: jest.fn().mockResolvedValue({}),
 		clearCredentials: jest.fn().mockResolvedValue(undefined),

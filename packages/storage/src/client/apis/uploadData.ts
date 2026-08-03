@@ -123,15 +123,24 @@ export function uploadData(
  * ```
  */
 export function uploadData(input: UploadDataInput): UploadDataOutput;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `UploadDataWithPathInput` object.
+ */
 export function uploadData(
 	ctx: AmplifyContext,
 	input: UploadDataWithPathInput,
 ): UploadDataWithPathOutput;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `UploadDataInput` object.
+ */
 export function uploadData(
 	ctx: AmplifyContext,
 	input: UploadDataInput,
 ): UploadDataOutput;
 
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
 export function uploadData(...args: any[]) {
 	const [ctx, input] =
 		resolveCtxArgs<[UploadDataInput | UploadDataWithPathInput]>(args);

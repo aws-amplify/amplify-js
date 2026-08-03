@@ -50,4 +50,15 @@ describe('client-side getUrl', () => {
 		expect(getUrl(input)).toEqual(mockInternalResult);
 		expect(mockInternalGetUrlImpl).toBeCalledWith(mockCtx, input);
 	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalGetUrlImpl.mockReturnValue(mockInternalResult);
+		const input: GetUrlWithPathInput = {
+			path: 'abc',
+		};
+		expect(getUrl(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalGetUrlImpl).toBeCalledWith(explicitCtx, input);
+	});
 });

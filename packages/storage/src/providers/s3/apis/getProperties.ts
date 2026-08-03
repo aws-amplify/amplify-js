@@ -40,15 +40,24 @@ export function getProperties(
 export function getProperties(
 	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetPropertiesWithPathInput` object.
+ */
 export function getProperties(
 	ctx: AmplifyContext,
 	input: GetPropertiesWithPathInput,
 ): Promise<GetPropertiesWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetPropertiesInput` object.
+ */
 export function getProperties(
 	ctx: AmplifyContext,
 	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput>;
 
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
 export function getProperties(...args: any[]) {
 	const [ctx, input] =
 		resolveCtxArgs<[GetPropertiesInput | GetPropertiesWithPathInput]>(args);

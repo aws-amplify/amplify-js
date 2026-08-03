@@ -50,4 +50,15 @@ describe('client-side remove', () => {
 		expect(remove(input)).toEqual(mockInternalResult);
 		expect(mockInternalRemoveImpl).toBeCalledWith(mockCtx, input);
 	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalRemoveImpl.mockReturnValue(mockInternalResult);
+		const input: RemoveWithPathInput = {
+			path: 'abc',
+		};
+		expect(remove(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalRemoveImpl).toBeCalledWith(explicitCtx, input);
+	});
 });

@@ -54,4 +54,16 @@ describe('client-side downloadData', () => {
 		expect(downloadData(input)).toEqual(mockInternalResult);
 		expect(mockInternalDownloadDataImpl).toBeCalledWith(mockCtx, input);
 	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalDownloadDataImpl.mockReturnValue(mockInternalResult);
+		const input = {
+			path: 'path',
+			data: 'data',
+		};
+		expect(downloadData(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalDownloadDataImpl).toBeCalledWith(explicitCtx, input);
+	});
 });

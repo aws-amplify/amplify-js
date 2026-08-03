@@ -53,4 +53,15 @@ describe('client-side getProperties', () => {
 		expect(getProperties(input)).toEqual(mockInternalResult);
 		expect(mockInternalGetPropertiesImpl).toBeCalledWith(mockCtx, input);
 	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalGetPropertiesImpl.mockReturnValue(mockInternalResult);
+		const input: GetPropertiesWithPathInput = {
+			path: 'abc',
+		};
+		expect(getProperties(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalGetPropertiesImpl).toBeCalledWith(explicitCtx, input);
+	});
 });

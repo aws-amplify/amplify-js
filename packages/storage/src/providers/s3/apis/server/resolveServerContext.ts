@@ -31,10 +31,15 @@ export const resolveServerContext = (
 	// Annotate the object so the bridged lambdas receive contextual parameter
 	// types (avoids implicit-any) and the shape is checked against AmplifyContext.
 	const resolved: AmplifyContext = {
-		resourcesConfig: amplify.getConfig(),
+		get resourcesConfig() {
+			return amplify.getConfig();
+		},
 		libraryOptions: amplify.libraryOptions,
+		// AmplifyContext.fetchAuthSession has OPTIONAL options while
+		// AuthClass.Auth.fetchAuthSession requires it, hence the `?? {}` default.
 		fetchAuthSession: options => amplify.Auth.fetchAuthSession(options ?? {}),
 		clearCredentials: () => amplify.Auth.clearCredentials(),
+		// getTokens needs no default — options is required on both interfaces.
 		getTokens: options => amplify.Auth.getTokens(options),
 	};
 

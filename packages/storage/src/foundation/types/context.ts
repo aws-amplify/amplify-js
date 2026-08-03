@@ -31,8 +31,9 @@ export type ToBase64 = (input: string | ArrayBufferView) => string;
  */
 export interface FoundationContext {
 	/**
-	 * The Amplify instance. On the client this is the global singleton;
-	 * on the server this is a request-scoped instance from the server adapter.
+	 * The AmplifyContext providing configuration and auth operations.
+	 * On the client this is the global context created by `Amplify.configure()`;
+	 * on the server this is a context resolved per request via the server adapter.
 	 */
 	amplify: AmplifyContext;
 

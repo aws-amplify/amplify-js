@@ -58,23 +58,40 @@ export function list(input?: ListPaginateInput): Promise<ListPaginateOutput>;
  * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
  */
 export function list(input?: ListAllInput): Promise<ListAllOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `ListPaginateWithPathInput` object.
+ */
 export function list(
 	ctx: AmplifyContext,
 	input: ListPaginateWithPathInput,
 ): Promise<ListPaginateWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `ListAllWithPathInput` object.
+ */
 export function list(
 	ctx: AmplifyContext,
 	input: ListAllWithPathInput,
 ): Promise<ListAllWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `ListPaginateInput` object.
+ */
 export function list(
 	ctx: AmplifyContext,
 	input?: ListPaginateInput,
 ): Promise<ListPaginateOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `ListAllInput` object.
+ */
 export function list(
 	ctx: AmplifyContext,
 	input?: ListAllInput,
 ): Promise<ListAllOutput>;
 
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
 export function list(...args: any[]) {
 	const [ctx, input] =
 		resolveCtxArgs<

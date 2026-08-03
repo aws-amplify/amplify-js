@@ -18,7 +18,7 @@ export const listPaths = async (
 		return { locations: [] };
 	}
 
-	const { tokens, identityId } = await ctx.fetchAuthSession({});
+	const { tokens, identityId } = await ctx.fetchAuthSession();
 	const currentUserGroups = tokens?.accessToken.payload['cognito:groups'] as
 		| string[]
 		| undefined;
