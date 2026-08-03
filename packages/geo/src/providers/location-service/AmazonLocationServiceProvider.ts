@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
-import { Amplify, ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	ConsoleLogger,
+	getGlobalContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 import { GeoAction } from '@aws-amplify/core/internals/utils';
 import {
 	BatchDeleteGeofenceCommand,
@@ -70,13 +75,20 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	private _config;
 	private _credentials;
+	private _ctx: AmplifyContext;
 
 	/**
 	 * Initialize Geo with AWS configurations
 	 * @param {Object} config - Configuration object for Geo
+	 * @param {AmplifyContext} ctx - The AmplifyContext to use for auth and config
 	 */
-	constructor(config?: GeoConfig) {
+	constructor(config?: GeoConfig, ctx?: AmplifyContext) {
 		this._config = config || {};
+		if (isAmplifyContext(ctx)) {
+			this._ctx = ctx;
+		} else {
+			this._ctx = getGlobalContext();
+		}
 		logger.debug('Geo Options', this._config);
 	}
 
@@ -713,7 +725,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	private async _ensureCredentials(): Promise<boolean> {
 		try {
-			const { credentials } = await fetchAuthSession();
+			const { credentials } = await this._ctx.fetchAuthSession();
 			if (!credentials) return false;
 			logger.debug(
 				'Set credentials for storage. Credentials are:',
@@ -730,7 +742,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	}
 
 	private _refreshConfig() {
-		this._config = Amplify.getConfig().Geo?.LocationService;
+		this._config = this._ctx.resourcesConfig.Geo?.LocationService;
 		if (!this._config) {
 			const errorString =
 				"No Geo configuration found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";

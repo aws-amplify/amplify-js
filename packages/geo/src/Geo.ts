@@ -1,6 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify, ConsoleLogger } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	ConsoleLogger,
+	getGlobalContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 
 import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
 import { validateCoordinates } from './util';
@@ -33,17 +38,62 @@ export class GeoClass {
 	 * @private
 	 */
 	private _config?: GeoConfig;
-	private _pluggables: GeoProvider[];
+	private _pluggables: GeoProvider[] | undefined;
+	private _ctx: AmplifyContext | undefined;
 
-	constructor() {
+	constructor(ctx?: AmplifyContext) {
 		this._config = undefined;
-		this._pluggables = [];
+		this._pluggables = undefined;
 
-		const amplifyConfig = Amplify.getConfig() ?? {};
+		if (isAmplifyContext(ctx)) {
+			this._ctx = ctx;
+			this._initialize();
+		}
+		// When no ctx is passed, initialization is deferred until first use
+		// so the module-level singleton can be created without a global context.
+	}
+
+	/**
+	 * Resolve the AmplifyContext — uses the provided ctx or falls back to global.
+	 * @private
+	 */
+	private _getCtx(): AmplifyContext {
+		if (this._ctx) {
+			return this._ctx;
+		}
+
+		return getGlobalContext();
+	}
+
+	/**
+	 * Ensure the class is initialized (pluggables created, config read).
+	 * Called eagerly when ctx is provided, lazily otherwise.
+	 * @private
+	 */
+	private _ensureInitialized(): void {
+		if (this._pluggables) {
+			return;
+		}
+		this._initialize();
+	}
+
+	/**
+	 * Perform initialization: read config and create default provider.
+	 *
+	 * Note: The provider captures the resolved context at first use.
+	 * A full reconfiguration with a NEW context object requires constructing
+	 * a new GeoClass instance (matches previous singleton behavior).
+	 * @private
+	 */
+	private _initialize(): void {
+		this._pluggables = [];
+		const ctx = this._getCtx();
+		const amplifyConfig = ctx.resourcesConfig ?? {};
 		this._config = Object.assign({}, this._config, amplifyConfig.Geo);
 
 		const locationProvider = new AmazonLocationServiceProvider(
 			amplifyConfig.Geo,
+			ctx,
 		);
 		this._pluggables.push(locationProvider);
 
@@ -63,8 +113,9 @@ export class GeoClass {
 	 * @param {Object} pluggable an instance of the plugin
 	 */
 	public addPluggable(pluggable: GeoProvider) {
+		this._ensureInitialized();
 		if (pluggable && pluggable.getCategory() === 'Geo') {
-			this._pluggables.push(pluggable);
+			this._pluggables!.push(pluggable);
 		}
 	}
 
@@ -73,7 +124,8 @@ export class GeoClass {
 	 * @param providerName the name of the plugin
 	 */
 	public getPluggable(providerName: string) {
-		const targetPluggable = this._pluggables.find(
+		this._ensureInitialized();
+		const targetPluggable = this._pluggables!.find(
 			pluggable => pluggable.getProviderName() === providerName,
 		);
 		if (targetPluggable === undefined) {
@@ -87,7 +139,8 @@ export class GeoClass {
 	 * @param providerName the name of the plugin
 	 */
 	public removePluggable(providerName: string) {
-		this._pluggables = this._pluggables.filter(
+		this._ensureInitialized();
+		this._pluggables = this._pluggables!.filter(
 			pluggable => pluggable.getProviderName() !== providerName,
 		);
 	}
