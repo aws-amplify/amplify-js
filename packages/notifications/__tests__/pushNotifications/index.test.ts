@@ -2,9 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import * as defaultExports from '../../src/pushNotifications';
 import * as customerProfilesExports from '../../src/pushNotifications/providers/customer-profiles';
+import { createMockAmplifyContext } from '../testUtils/createMockAmplifyContext';
 
 const DEPRECATED_RUNTIME_APIS = [
 	'getBadgeCount',
@@ -22,6 +27,14 @@ const DEPRECATED_RUNTIME_APIS = [
 
 describe('push-notifications default (Pinpoint) entry point', () => {
 	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
+
+	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	beforeEach(() => {
 		loggerWarnSpy.mockClear();

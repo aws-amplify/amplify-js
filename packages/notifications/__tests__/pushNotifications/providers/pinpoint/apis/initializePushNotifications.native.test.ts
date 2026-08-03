@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	notifyEventListeners,
@@ -27,8 +31,8 @@ import {
 	pushToken,
 	simplePushMessage,
 } from '../../../../testUtils/data';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
-jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('@aws-amplify/react-native', () => ({
 	getOperatingSystem: jest.fn(),
@@ -96,6 +100,7 @@ describe('initializePushNotifications (native)', () => {
 	};
 
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		({
 			initializePushNotifications,
 		} = require('../../../../../src/pushNotifications/providers/pinpoint/apis/initializePushNotifications.native'));
@@ -107,6 +112,10 @@ describe('initializePushNotifications (native)', () => {
 	beforeEach(() => {
 		mockGetConstants.mockReturnValue(pushModuleConstants);
 		mockIsInitialized.mockReturnValue(false);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	afterEach(() => {

@@ -1,11 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+import {
+	PlatformNotSupportedError,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/pinpoint';
-import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
 
 import { PushNotificationValidationErrorCode } from '../../../errors';
-import { IdentifyUser, IdentifyUserInput } from '../types';
+import { IdentifyUserInput } from '../types';
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
@@ -60,6 +64,15 @@ import { IdentifyUser, IdentifyUserInput } from '../types';
  *     },
  * });
  */
-export const identifyUser: IdentifyUser = async () => {
+export async function identifyUser(input: IdentifyUserInput): Promise<void>;
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function identifyUser(
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void>;
+export async function identifyUser(...args: any[]): Promise<void> {
+	resolveCtxArgs<[IdentifyUserInput]>(args);
 	throw new PlatformNotSupportedError();
-};
+}

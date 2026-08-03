@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger, Hub } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger, Hub } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
 
 import {
@@ -28,18 +29,38 @@ const logger = new ConsoleLogger('Notifications.PushNotification');
 
 const BACKGROUND_TASK_TIMEOUT = 25; // seconds
 
-export const initializePushNotifications = (): void => {
+/**
+ * Initialize and set up the push notification category. The category must be first initialized before all other
+ * functionalities become available.
+ *
+ * @remarks
+ * It is recommended that this be called as early in your app as possible at the root of your application to allow
+ * background processing of notifications.
+ * @example
+ * ```ts
+ * Amplify.configure(config);
+ * initializePushNotifications();
+ * ```
+ */
+export function initializePushNotifications(): void;
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export function initializePushNotifications(ctx: AmplifyContext): void;
+export function initializePushNotifications(...args: any[]): void {
+	const [ctx] = resolveCtxArgs<[]>(args);
+
 	if (isInitialized()) {
 		logger.info('Push notifications have already been enabled');
 
 		return;
 	}
-	addNativeListeners();
-	addAuthListener();
+	addNativeListeners(ctx);
+	addAuthListener(ctx);
 	initialize();
-};
+}
 
-const addNativeListeners = (): void => {
+const addNativeListeners = (ctx: AmplifyContext): void => {
 	let launchNotificationOpenedListener:
 		| ReturnType<typeof addMessageEventListener>
 		| undefined;
@@ -145,7 +166,7 @@ const addNativeListeners = (): void => {
 			setToken(token);
 			notifyEventListeners('tokenReceived', token);
 			try {
-				await registerReceivedDevice(token);
+				await registerReceivedDevice(ctx, token);
 			} catch (err) {
 				logger.error('Failed to register device for push notifications', err);
 				throw err;
@@ -154,7 +175,7 @@ const addNativeListeners = (): void => {
 	);
 };
 
-const addAuthListener = (): void => {
+const addAuthListener = (ctx: AmplifyContext): void => {
 	// Re-register the device at sign-in so it is re-homed from the guest
 	// principal to the now-authenticated one. The push token is unchanged across
 	// a sign-in, so the native token listener short-circuits and would never
@@ -169,7 +190,7 @@ const addAuthListener = (): void => {
 				// no token yet — the TOKEN_RECEIVED path performs first registration
 				return;
 			}
-			registerDevice({ token }).catch(err => {
+			registerDevice(ctx, { token }).catch(err => {
 				logger.error(
 					'Failed to re-register device for push notifications on sign-in',
 					err,
@@ -179,9 +200,12 @@ const addAuthListener = (): void => {
 	});
 };
 
-const registerReceivedDevice = async (token: string): Promise<void> => {
+const registerReceivedDevice = async (
+	ctx: AmplifyContext,
+	token: string,
+): Promise<void> => {
 	try {
-		await registerDevice({ token });
+		await registerDevice(ctx, { token });
 		// always resolve inflight device registration promise here even though the promise is only awaited on by
 		// consumers when device registration is still in flight
 		resolveInflightDeviceRegistration();

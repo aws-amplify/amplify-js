@@ -1,16 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { PushNotificationValidationErrorCode, assert } from '../../../errors';
 
 /**
  * @internal
  */
-export const resolveConfig = () => {
+export const resolveConfig = (ctx: AmplifyContext) => {
 	const { appId, region } =
-		Amplify.getConfig().Notifications?.PushNotification?.Pinpoint ?? {};
+		ctx.resourcesConfig.Notifications?.PushNotification?.Pinpoint ?? {};
 	assert(!!appId, PushNotificationValidationErrorCode.NoAppId);
 	assert(!!region, PushNotificationValidationErrorCode.NoRegion);
 

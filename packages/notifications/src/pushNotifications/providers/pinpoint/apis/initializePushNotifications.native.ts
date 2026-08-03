@@ -1,8 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '@aws-amplify/core';
-import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
+import {
+	PushNotificationAction,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
 
@@ -40,18 +43,40 @@ const logger = new ConsoleLogger('Notifications.PushNotification');
 
 const BACKGROUND_TASK_TIMEOUT = 25; // seconds
 
-export const initializePushNotifications = (): void => {
+/**
+ * Initialize and set up the push notification category. The category must be first initialized before all other
+ * functionalities become available.
+ *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
+ * @remarks
+ * It is recommended that this be called as early in your app as possible at the root of your application to allow
+ * background processing of notifications.
+ * @example
+ * ```ts
+ * Amplify.configure(config);
+ * initializePushNotifications();
+ * ```
+ */
+export function initializePushNotifications(): void;
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export function initializePushNotifications(ctx: AmplifyContext): void;
+export function initializePushNotifications(...args: any[]): void {
+	const [ctx] = resolveCtxArgs<[]>(args);
+
 	if (isInitialized()) {
 		logger.info('Push notifications have already been enabled');
 
 		return;
 	}
-	addNativeListeners();
-	addAnalyticsListeners();
+	addNativeListeners(ctx);
+	addAnalyticsListeners(ctx);
 	initialize();
-};
+}
 
-const addNativeListeners = (): void => {
+const addNativeListeners = (ctx: AmplifyContext): void => {
 	let launchNotificationOpenedListener:
 		| ReturnType<typeof addMessageEventListener>
 		| undefined;
@@ -157,7 +182,7 @@ const addNativeListeners = (): void => {
 			setToken(token);
 			notifyEventListeners('tokenReceived', token);
 			try {
-				await registerDevice(token);
+				await registerDevice(ctx, token);
 			} catch (err) {
 				logger.error('Failed to register device for push notifications', err);
 				throw err;
@@ -166,21 +191,22 @@ const addNativeListeners = (): void => {
 	);
 };
 
-const addAnalyticsListeners = (): void => {
+const addAnalyticsListeners = (ctx: AmplifyContext): void => {
 	let launchNotificationOpenedListenerRemover: EventListenerRemover | undefined;
 
 	// wire up default Pinpoint message event handling
 	addEventListener(
 		'backgroundMessageReceived',
-		createMessageEventRecorder('received_background'),
+		createMessageEventRecorder(ctx, 'received_background'),
 	);
 	addEventListener(
 		'foregroundMessageReceived',
-		createMessageEventRecorder('received_foreground'),
+		createMessageEventRecorder(ctx, 'received_foreground'),
 	);
 	launchNotificationOpenedListenerRemover = addEventListener(
 		'launchNotificationOpened',
 		createMessageEventRecorder(
+			ctx,
 			'opened_notification',
 			// once we are done with it we can remove the listener
 			() => {
@@ -192,6 +218,7 @@ const addAnalyticsListeners = (): void => {
 	addEventListener(
 		'notificationOpened',
 		createMessageEventRecorder(
+			ctx,
 			'opened_notification',
 			// if we are in this state, we no longer need the listener as the app was launched via some other means
 			() => {
@@ -202,9 +229,12 @@ const addAnalyticsListeners = (): void => {
 	);
 };
 
-const registerDevice = async (address: string): Promise<void> => {
-	const { credentials, identityId } = await resolveCredentials();
-	const { appId, region } = resolveConfig();
+const registerDevice = async (
+	ctx: AmplifyContext,
+	address: string,
+): Promise<void> => {
+	const { credentials, identityId } = await resolveCredentials(ctx);
+	const { appId, region } = resolveConfig(ctx);
 	try {
 		await updateEndpoint({
 			address,
