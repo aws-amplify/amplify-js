@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
+
 import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
@@ -73,9 +76,16 @@ const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
  * });
  * ```
  */
-export const configureAutoTrack = (
+export function configureAutoTrack(
 	input: KinesisFirehoseConfigureAutoTrackInput,
-): void => {
+): void;
+export function configureAutoTrack(
+	ctx: AmplifyContext,
+	input: KinesisFirehoseConfigureAutoTrackInput,
+): void;
+export function configureAutoTrack(...args: any[]): void {
+	const [ctx, input] =
+		resolveCtxArgs<[KinesisFirehoseConfigureAutoTrackInput]>(args);
 	validateTrackerConfiguration(input);
 
 	if (input.enable) {
@@ -90,7 +100,7 @@ export const configureAutoTrack = (
 		eventName: string,
 		attributes: TrackerAttributes,
 	) => {
-		record({
+		record(ctx, {
 			streamName: input.options!.streamName,
 			data: {
 				name: eventName,
@@ -107,4 +117,4 @@ export const configureAutoTrack = (
 		configuredTrackers,
 		'kinesis-firehose',
 	);
-};
+}

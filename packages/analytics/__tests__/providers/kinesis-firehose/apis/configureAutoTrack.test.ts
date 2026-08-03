@@ -8,9 +8,12 @@ import {
 	SessionTracker,
 } from '../../../../src/trackers';
 import { record } from '../../../../src/providers/kinesis-firehose/apis/record';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/trackers');
 jest.mock('../../../../src/providers/kinesis-firehose/apis/record');
+
+const mockCtx = createMockAmplifyContext();
 
 const MOCK_STREAM_NAME = 'stream0';
 
@@ -51,6 +54,10 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis-firehose/apis');
+			// The isolated registry has its own global context storage; register the
+			// mock context so `resolveCtxArgs` can resolve it.
+			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+			setGlobalContext(mockCtx);
 
 			try {
 				configureAutoTrack({
@@ -70,6 +77,10 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis-firehose/apis');
+			// The isolated registry has its own global context storage; register the
+			// mock context so `resolveCtxArgs` can resolve it.
+			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+			setGlobalContext(mockCtx);
 
 			try {
 				configureAutoTrack({
@@ -90,6 +101,10 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis-firehose/apis');
+			// The isolated registry has its own global context storage; register the
+			// mock context so `resolveCtxArgs` can resolve it.
+			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+			setGlobalContext(mockCtx);
 
 			expect(() => {
 				configureAutoTrack({
@@ -105,6 +120,10 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis-firehose/apis');
+			// The isolated registry has its own global context storage; register the
+			// mock context so `resolveCtxArgs` can resolve it.
+			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+			setGlobalContext(mockCtx);
 
 			configureAutoTrack(MOCK_INPUT);
 		});
@@ -125,6 +144,10 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis-firehose/apis');
+			// The isolated registry has its own global context storage; register the
+			// mock context so `resolveCtxArgs` can resolve it.
+			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+			setGlobalContext(mockCtx);
 
 			configureAutoTrack(testInput);
 		});
@@ -145,6 +168,10 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis-firehose/apis');
+			// The isolated registry has its own global context storage; register the
+			// mock context so `resolveCtxArgs` can resolve it.
+			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+			setGlobalContext(mockCtx);
 
 			configureAutoTrack(testInput);
 		});
@@ -161,6 +188,10 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis-firehose/apis');
+			// The isolated registry has its own global context storage; register the
+			// mock context so `resolveCtxArgs` can resolve it.
+			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+			setGlobalContext(mockCtx);
 
 			configureAutoTrack(MOCK_INPUT);
 		});
@@ -169,7 +200,7 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 		const emitTrackingEvent = MockEventTracker.mock.calls[0][0];
 		emitTrackingEvent('my-event', { foo: 'bar' });
 
-		expect(mockRecord).toHaveBeenCalledWith({
+		expect(mockRecord).toHaveBeenCalledWith(mockCtx, {
 			streamName: MOCK_STREAM_NAME,
 			data: {
 				name: 'my-event',
@@ -183,6 +214,10 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis-firehose/apis');
+			// The isolated registry has its own global context storage; register the
+			// mock context so `resolveCtxArgs` can resolve it.
+			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+			setGlobalContext(mockCtx);
 
 			// Enable the tracker
 			configureAutoTrack(MOCK_INPUT);
@@ -213,7 +248,7 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 				.calls[0][0];
 			emitTrackingEvent('reconfigured-event', { a: 'b' });
 
-			expect(mockRecord).toHaveBeenCalledWith({
+			expect(mockRecord).toHaveBeenCalledWith(mockCtx, {
 				streamName: 'stream1',
 				data: {
 					name: 'reconfigured-event',
@@ -233,6 +268,10 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis-firehose/apis');
+			// The isolated registry has its own global context storage; register the
+			// mock context so `resolveCtxArgs` can resolve it.
+			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+			setGlobalContext(mockCtx);
 
 			// Enable the tracker
 			configureAutoTrack(MOCK_INPUT);
