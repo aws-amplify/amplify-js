@@ -50,7 +50,7 @@ export async function signInWithRedirect(
 		await assertUserNotAuthenticated();
 	}
 
-	let provider = 'COGNITO'; // Default
+	let provider: string | undefined = 'COGNITO'; // Default
 	let idpIdentifier: string | undefined;
 
 	if (typeof input?.provider === 'string') {
@@ -59,6 +59,13 @@ export async function signInWithRedirect(
 		provider = input.provider.custom;
 	} else if (input?.provider?.idpIdentifier) {
 		({ idpIdentifier } = input.provider);
+	} else if (input?.options?.prompt === 'NONE') {
+		// `identity_provider` acts as a provider selector, so pinning it to the
+		// default `COGNITO` would restrict a silent `prompt=none` attempt to
+		// native Cognito sessions and fail with `login_required` for users whose
+		// existing session came from a federated IdP. Omitting it lets Cognito
+		// resume whichever session is already active.
+		provider = undefined;
 	}
 
 	return oauthSignIn({
@@ -89,7 +96,7 @@ const oauthSignIn = async ({
 	authSessionOpener,
 }: {
 	oauthConfig: OAuthConfig;
-	provider: string;
+	provider?: string;
 	idpIdentifier?: string;
 	clientId: string;
 	customState?: string;
@@ -127,7 +134,7 @@ const oauthSignIn = async ({
 	// Add either identity_provider or idp_identifier, but not both
 	if (idpIdentifier) {
 		params.append('idp_identifier', idpIdentifier);
-	} else {
+	} else if (provider) {
 		params.append('identity_provider', provider);
 	}
 
