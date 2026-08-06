@@ -23,3 +23,6 @@
 - test_name: 'integ_rn_ios_passkeys'
   working_directory: amplify-js-samples-staging/samples/react-native/auth/Passkeys
   timeout_minutes: 120
+- test_name: 'integ_rn_ios_push_notifications_customer_profiles'
+  working_directory: amplify-js-samples-staging/samples/react-native/push-notifications/CustomerProfilesPushApp
+  timeout_minutes: 120
