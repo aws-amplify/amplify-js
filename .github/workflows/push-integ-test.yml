@@ -11,6 +11,15 @@ on:
       - chore/push-notifications-tests
 
 jobs:
-  e2e:
+  # Runs only the Customer Profiles push notifications detox test instead of the
+  # full release-verification matrix. The detox job is self-sufficient: it checks
+  # out amplify-js, installs and builds it, sets up samples-staging and publishes
+  # to Verdaccio itself, so the prebuild jobs (which only warm shared caches) are
+  # not needed here.
+  customer-profiles-push-notifications:
     secrets: inherit
-    uses: ./.github/workflows/callable-release-verification.yml
+    uses: ./.github/workflows/callable-e2e-test-detox.yml
+    with:
+      test_name: integ_rn_ios_push_notifications_customer_profiles
+      working_directory: amplify-js-samples-staging/samples/react-native/push-notifications/CustomerProfilesPushApp
+      timeout_minutes: 120
