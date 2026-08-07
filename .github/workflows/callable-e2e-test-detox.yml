@@ -165,14 +165,3 @@ jobs:
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
-      - name: Upload Detox artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
-        if: always()
-        with:
-          name: ${{ inputs.test_name }}-detox-artifacts
-          if-no-files-found: ignore
-          path: |
-            ${{ inputs.working_directory }}/artifacts
-            ${{ inputs.working_directory }}/reports
-          retention-days: 3
-          overwrite: true
