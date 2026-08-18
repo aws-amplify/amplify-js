@@ -267,6 +267,14 @@ describe('parseAmplifyOutputs tests', () => {
 		expect(result.Auth?.Cognito.loginWith?.email).toBe(true);
 		expect(result.Auth?.Cognito.loginWith?.phone).toBe(true);
 		expect(result.Auth?.Cognito.loginWith?.username).toBe(false);
+
+		// Username
+		testAmplifyOutputs.auth.username_attributes = [];
+		result = parseAmplifyOutputs(testAmplifyOutputs);
+
+		expect(result.Auth?.Cognito.loginWith?.email).toBe(false);
+		expect(result.Auth?.Cognito.loginWith?.phone).toBe(false);
+		expect(result.Auth?.Cognito.loginWith?.username).toBe(true);
 	});
 
 	describe('storage tests', () => {
