@@ -27,6 +27,11 @@ const mockAuthTokenStore = {
 	clearDeviceMetadata: jest.fn(),
 	setOAuthMetadata: jest.fn(),
 	getOAuthMetadata: jest.fn(),
+	getAuthUserList: jest.fn(),
+	addActiveSession: jest.fn(),
+	removeSession: jest.fn(),
+	clearTokensForUser: jest.fn(),
+	getStoredIdToken: jest.fn(),
 };
 const mockTokenRefresher = jest.fn();
 const validAuthConfig: ResourcesConfig = {
@@ -135,7 +140,10 @@ describe('TokenOrchestrator', () => {
 			});
 			expect(Hub.dispatch).toHaveBeenCalledWith(
 				'auth',
-				{ event: 'tokenRefresh' },
+				{
+					event: 'tokenRefresh',
+					data: { username: 'test-username', userId: '1234567890' },
+				},
 				'Auth',
 				AMPLIFY_SYMBOL,
 			);

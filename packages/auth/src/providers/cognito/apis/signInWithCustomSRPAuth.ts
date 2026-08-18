@@ -102,7 +102,10 @@ export async function signInWithCustomSRPAuth(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(
+				tokenOrchestrator.getTokenStore(),
+				activeUsername,
+			);
 
 			return {
 				isSignedIn: true,

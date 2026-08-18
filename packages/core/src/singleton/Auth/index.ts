@@ -9,6 +9,7 @@ import {
 	CredentialsAndIdentityId,
 	FetchAuthSessionOptions,
 	LibraryAuthOptions,
+	TokenProvider,
 } from './types';
 
 const logger = new ConsoleLogger('Auth');
@@ -108,6 +109,25 @@ export class AuthClass {
 		return (
 			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined
 		);
+	}
+
+	/**
+	 * Returns the currently configured token provider, if any.
+	 *
+	 * This is an additive accessor exposing the token provider that was supplied
+	 * via {@link LibraryAuthOptions} at configure time (for a server context, the
+	 * per-request provider built by the adapter). It is intended for provider
+	 * implementations that surface additional, provider-specific capabilities on
+	 * top of the generic {@link TokenProvider} contract (e.g. Cognito session
+	 * switching); callers must narrow to the concrete provider type themselves.
+	 *
+	 * @internal
+	 *
+	 * @returns The configured {@link TokenProvider}, or `undefined` when none has
+	 * been configured.
+	 */
+	getTokenProvider(): TokenProvider | undefined {
+		return this.authOptions?.tokenProvider;
 	}
 }
 

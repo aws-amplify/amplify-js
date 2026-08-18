@@ -138,8 +138,10 @@ const handleCodeFlow = async ({
 		throw createOAuthError(errorMessage ?? error);
 	}
 
-	const username =
-		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
+	const username = resolveUsername({
+		accessToken: access_token,
+		idToken: id_token,
+	});
 
 	await cacheCognitoTokens({
 		username,
@@ -153,6 +155,7 @@ const handleCodeFlow = async ({
 	return completeFlow({
 		redirectUri,
 		state: validatedState,
+		username,
 		preferPrivateSession,
 	});
 };
@@ -201,8 +204,10 @@ const handleImplicitFlow = async ({
 	}
 
 	const validatedState = await validateState(state);
-	const username =
-		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
+	const username = resolveUsername({
+		accessToken: access_token,
+		idToken: id_token,
+	});
 
 	await cacheCognitoTokens({
 		username,
@@ -215,6 +220,7 @@ const handleImplicitFlow = async ({
 	return completeFlow({
 		redirectUri,
 		state: validatedState,
+		username,
 		preferPrivateSession,
 	});
 };
@@ -222,11 +228,13 @@ const handleImplicitFlow = async ({
 const completeFlow = async ({
 	redirectUri,
 	state,
+	username,
 	preferPrivateSession,
 }: {
 	preferPrivateSession?: boolean;
 	redirectUri: string;
 	state: string;
+	username: string;
 }) => {
 	await tokenOrchestrator.setOAuthMetadata({
 		oauthSignIn: true,
@@ -254,7 +262,7 @@ const completeFlow = async ({
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	await dispatchSignedInHubEvent();
+	await dispatchSignedInHubEvent(tokenOrchestrator.getTokenStore(), username);
 };
 
 const isCustomState = (state: string): boolean => {
@@ -263,6 +271,40 @@ const isCustomState = (state: string): boolean => {
 
 const getCustomState = (state: string): string => {
 	return state.split('-').splice(1).join('-');
+};
+
+/**
+ * Resolves the signed-in username from the OAuth tokens' claims (the access
+ * token's `username` claim, falling back to the id token's `cognito:username`),
+ * mirroring how other sign-in paths derive the username.
+ *
+ * Throws an OAuth error rather than silently persisting the literal 'username'
+ * sentinel as a real roster entry when no username claim can be resolved.
+ */
+const resolveUsername = ({
+	accessToken,
+	idToken,
+}: {
+	accessToken?: string;
+	idToken?: string;
+}): string => {
+	const usernameFromAccessToken =
+		accessToken &&
+		(decodeJWT(accessToken).payload.username as string | undefined);
+	if (usernameFromAccessToken) {
+		return usernameFromAccessToken;
+	}
+
+	const usernameFromIdToken =
+		idToken &&
+		(decodeJWT(idToken).payload['cognito:username'] as string | undefined);
+	if (usernameFromIdToken) {
+		return usernameFromIdToken;
+	}
+
+	throw createOAuthError(
+		'Unable to resolve the username from the OAuth tokens.',
+	);
 };
 
 const clearHistory = (redirectUri: string) => {

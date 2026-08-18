@@ -122,7 +122,10 @@ export async function confirmSignIn(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(
+				tokenOrchestrator.getTokenStore(),
+				username,
+			);
 
 			return {
 				isSignedIn: true,

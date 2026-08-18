@@ -97,7 +97,10 @@ export async function signInWithCustomAuth(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(
+				tokenOrchestrator.getTokenStore(),
+				activeUsername,
+			);
 
 			return {
 				isSignedIn: true,

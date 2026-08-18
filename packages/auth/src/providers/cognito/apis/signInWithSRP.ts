@@ -104,7 +104,10 @@ export async function signInWithSRP(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(
+				tokenOrchestrator.getTokenStore(),
+				activeUsername,
+			);
 
 			resetAutoSignIn();
 

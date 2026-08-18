@@ -99,7 +99,10 @@ export async function signInWithUserPassword(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(
+				tokenOrchestrator.getTokenStore(),
+				activeUsername,
+			);
 
 			resetAutoSignIn();
 

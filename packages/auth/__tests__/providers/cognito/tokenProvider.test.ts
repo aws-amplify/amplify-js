@@ -98,6 +98,10 @@ describe('saving tokens', () => {
 			},
 		});
 		const lastAuthUser = 'amplify@user';
+		// storeTokens no longer manages the active-user pointer; establish the
+		// active session first so tokens are namespaced under this user and
+		// LastAuthUser is set (invariant LastAuthUser === AuthUserList[0]).
+		await tokenStore.addActiveSession(lastAuthUser);
 		await tokenStore.storeTokens({
 			accessToken: decodeJWT(
 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA',
