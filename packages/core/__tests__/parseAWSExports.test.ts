@@ -87,6 +87,7 @@ describe('parseAWSExports', () => {
 				Cognito: {
 					identityPoolId,
 					allowGuestAccess: false,
+					authSessionValidity: 15,
 					loginWith: {
 						email: false,
 						oauth: {
@@ -157,6 +158,7 @@ describe('parseAWSExports', () => {
 			parseAWSExports({
 				aws_project_region: 'us-west-2',
 				aws_cognito_identity_pool_id: identityPoolId,
+				aws_cognito_auth_session_validity: 15,
 				aws_cognito_sign_up_verification_method: signUpVerificationMethod,
 				aws_cognito_username_attributes: ['PHONE_NUMBER'],
 				aws_cognito_signup_attributes: ['PHONE_NUMBER'],
