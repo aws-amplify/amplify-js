@@ -1,0 +1,45 @@
+name: Daily v5 stable audit canary
+
+# Installs the published aws-amplify v5 LTS release (the `stable-5` dist-tag) into
+# a clean project and runs `npm audit`, so newly disclosed vulnerabilities in the
+# v5 dependency tree are caught proactively rather than via consumer reports.
+#
+# NOTE: scheduled workflows only run from the repository default branch (main),
+# so this lives on main even though it audits the stable-5 line.
+
+on:
+  # 15:30 UTC / 8:30am PDT daily (offset from the existing canary at 15:00 UTC)
+  schedule:
+    - cron: '30 15 * * *'
+  # Allow manual runs for ad-hoc verification.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-v5-stable:
+    name: npm audit (aws-amplify@stable-5)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 18
+
+      - name: Install published aws-amplify@stable-5
+        run: |
+          mkdir -p audit-canary && cd audit-canary
+          npm init -y > /dev/null 2>&1
+          # --ignore-scripts: do not execute lifecycle scripts from published deps.
+          npm install --omit=dev --ignore-scripts aws-amplify@stable-5
+
+      - name: Run npm audit (production dependencies)
+        working-directory: audit-canary
+        run: |
+          # Human-readable report first (does not fail the step).
+          npm audit --omit=dev || true
+          # Gate: fail the run on any advisory in the production tree.
+          # Tune the threshold with --audit-level=<low|moderate|high|critical> if
+          # low-severity noise becomes a problem on the LTS line.
+          npm audit --omit=dev
