@@ -23,7 +23,7 @@ import { resolveServerContext } from './resolveServerContext';
  * to true, this method will verify the given object already exists in S3 before returning a presigned
  * URL, and will throw `StorageError` if the object does not exist.
  *
- * @param ctxOrContextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @param input - The `GetUrlWithPathInput` object.
  * @returns Presigned URL and timestamp when the URL may expire.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
@@ -47,7 +47,7 @@ export function getUrl(
  * to true, this method will verify the given object already exists in S3 before returning a presigned
  * URL, and will throw `StorageError` if the object does not exist.
  *
- * @param ctxOrContextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @param input - The `GetUrlInput` object.
  * @returns Presigned URL and timestamp when the URL may expire.
  * @throws service: `S3Exception` - thrown when checking for existence of the object

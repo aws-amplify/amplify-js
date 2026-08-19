@@ -16,7 +16,7 @@ import { resolveServerContext } from './resolveServerContext';
 /**
  * Copy an object from a source to a destination object within the same bucket.
  *
- * @param ctxOrContextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @param input - The `CopyWithPathInput` object.
  * @returns Output containing the destination object path.
  * @throws service: `S3Exception` - Thrown when checking for existence of the object
@@ -34,7 +34,7 @@ export function copy(
  * Copy an object from a source to a destination object within the same bucket. Can optionally copy files across
  * different accessLevel or identityId (if source object's accessLevel is 'protected').
  *
- * @param ctxOrContextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @param input - The `CopyInput` object.
  * @returns Output containing the destination object key.
  * @throws service: `S3Exception` - Thrown when checking for existence of the object

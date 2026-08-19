@@ -18,7 +18,7 @@ import { resolveServerContext } from './resolveServerContext';
  * Gets the properties of a file. The properties include S3 system metadata and
  * the user metadata that was provided when uploading the file.
  *
- * @param ctxOrContextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @param input - The `GetPropertiesWithPathInput` object.
  * @returns Requested object properties.
  * @throws An `S3Exception` when the underlying S3 service returned error.
@@ -35,7 +35,7 @@ export function getProperties(
  * Gets the properties of a file. The properties include S3 system metadata and
  * the user metadata that was provided when uploading the file.
  *
- * @param ctxOrContextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @param input - The `GetPropertiesInput` object.
  * @returns Requested object properties.
  * @throws An `S3Exception` when the underlying S3 service returned error.

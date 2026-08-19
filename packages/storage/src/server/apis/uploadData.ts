@@ -23,7 +23,7 @@ import { resolveServerContext } from '../../providers/s3/apis/server/resolveServ
  * Server-side `uploadData` is intended for use in SSR contexts such as
  * Next.js Route Handlers and Server Actions.
  *
- * @param ctxOrContextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @param input - A `UploadDataWithPathInput` object.
  *
  * @returns An `UploadDataServerWithPathOutput` task. Await the `result`
@@ -64,7 +64,7 @@ export function uploadData(
  * operation to upload when the payload is less than 5MB. Otherwise, uses
  * multipart upload to upload the payload.
  *
- * @param ctxOrContextSpec - The isolated server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @param input - A `UploadDataInput` object.
  *
  * @returns An `UploadDataServerOutput` task. Await the `result` promise to

@@ -18,7 +18,7 @@ import { resolveServerContext } from './resolveServerContext';
 /**
  * Remove a file or folder from your S3 bucket.
  * @param input - The `RemoveWithPathInput` object.
- * @param ctxOrContextSpec - The context spec used to get the Amplify server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @return Operation handle with result promise and cancellation capability.
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object.
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
@@ -34,7 +34,7 @@ export function remove(
  *
  * Remove a file from your S3 bucket.
  * @param input - The `RemoveInput` object.
- * @param ctxOrContextSpec - The context spec used to get the Amplify server context.
+ * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
  * @return Operation handle with result promise and cancellation capability.
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
@@ -50,6 +50,7 @@ export function remove(
 	input: RemoveInput | RemoveWithPathInput,
 ) {
 	const ctx = resolveServerContext(ctxOrContextSpec);
+	// Narrowing is required: removeInternal is overloaded and TypeScript cannot resolve the union argument without discriminating.
 	if ('key' in input) {
 		return removeInternal(ctx, input);
 	} else {
