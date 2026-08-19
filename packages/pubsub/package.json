@@ -73,6 +73,9 @@
 		"iot",
 		"mqtt"
 	],
+	"engines": {
+		"node": ">=18"
+	},
 	"dependencies": {
 		"@aws-amplify/auth": "6.20.0",
 		"buffer": "4.9.2",
