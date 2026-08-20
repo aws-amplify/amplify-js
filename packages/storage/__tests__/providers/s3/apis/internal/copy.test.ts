@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAccessLevel } from '@aws-amplify/core';
 
 import { StorageError } from '../../../../../src/errors/StorageError';
 import { StorageValidationErrorCode } from '../../../../../src/errors/types/validation';
@@ -16,22 +16,14 @@ import {
 } from '../../../../../src/providers/s3/types';
 import './testUtils';
 import { BucketInfo } from '../../../../../src/providers/s3/types/options';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
-		return { debug: jest.fn() };
-	}),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
 const mockCopyObject = copyObject as jest.Mock;
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
+const mockGetConfig = jest.fn();
+// Live getter delegates to mockGetConfig so per-test config variance works.
+const mockCtx = createMockAmplifyContext({ getConfig: mockGetConfig });
+const mockFetchAuthSession = jest.mocked(mockCtx.fetchAuthSession);
 
 const sourceKey = 'sourceKey';
 const destinationKey = 'destinationKey';
@@ -75,7 +67,7 @@ describe('copy API', () => {
 
 	describe('Happy Cases', () => {
 		describe('With key', () => {
-			const copyWrapper = async (input: CopyInput) => copy(Amplify, input);
+			const copyWrapper = async (input: CopyInput) => copy(mockCtx, input);
 			beforeEach(() => {
 				mockCopyObject.mockImplementation(() => {
 					return {
@@ -296,7 +288,7 @@ describe('copy API', () => {
 
 		describe('With path', () => {
 			const copyWrapper = async (input: CopyWithPathInput) =>
-				copy(Amplify, input);
+				copy(mockCtx, input);
 
 			beforeEach(() => {
 				mockCopyObject.mockImplementation(() => {
@@ -495,7 +487,7 @@ describe('copy API', () => {
 			expect.assertions(3);
 			const missingSourceKey = 'SourceKeyNotFound';
 			try {
-				await copy(Amplify, {
+				await copy(mockCtx, {
 					source: { key: missingSourceKey },
 					destination: { key: destinationKey },
 				});
@@ -518,7 +510,7 @@ describe('copy API', () => {
 			expect.assertions(2);
 			try {
 				// @ts-expect-error mismatch copy input not allowed
-				await copy(Amplify, {
+				await copy(mockCtx, {
 					source: { path: 'sourcePath' },
 					destination: { key: 'destinationKey' },
 				});
@@ -533,7 +525,7 @@ describe('copy API', () => {
 			expect.assertions(2);
 			try {
 				// @ts-expect-error mismatch copy input not allowed
-				await copy(Amplify, {
+				await copy(mockCtx, {
 					source: { key: 'sourcePath' },
 					destination: { path: 'destinationKey' },
 				});
@@ -546,7 +538,7 @@ describe('copy API', () => {
 		it('should throw an error when only source has bucket option', async () => {
 			expect.assertions(2);
 			try {
-				await copy(Amplify, {
+				await copy(mockCtx, {
 					source: { path: 'source', bucket: 'bucket-1' },
 					destination: {
 						path: 'destination',
@@ -563,7 +555,7 @@ describe('copy API', () => {
 		it('should throw an error when only one destination has bucket option', async () => {
 			expect.assertions(2);
 			try {
-				await copy(Amplify, {
+				await copy(mockCtx, {
 					source: { key: 'source' },
 					destination: {
 						key: 'destination',

@@ -3,9 +3,11 @@
 
 import { downloadData as advancedDownloadData } from '../../../src/internals';
 import { downloadData as downloadDataInternal } from '../../../src/providers/s3/apis/internal/downloadData';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../src/providers/s3/apis/internal/downloadData');
 const mockedDownloadDataInternal = jest.mocked(downloadDataInternal);
+const mockCtx = createMockAmplifyContext();
 
 describe('downloadData (internal)', () => {
 	beforeEach(() => {
@@ -43,7 +45,7 @@ describe('downloadData (internal)', () => {
 		const onProgress = jest.fn();
 		const bytesRange = { start: 1024, end: 2048 };
 
-		const output = await advancedDownloadData({
+		const output = await advancedDownloadData(mockCtx, {
 			path: 'input/path/to/mock/object',
 			options: {
 				customEndpoint,
@@ -57,7 +59,7 @@ describe('downloadData (internal)', () => {
 		});
 
 		expect(mockedDownloadDataInternal).toHaveBeenCalledTimes(1);
-		expect(mockedDownloadDataInternal).toHaveBeenCalledWith({
+		expect(mockedDownloadDataInternal).toHaveBeenCalledWith(mockCtx, {
 			path: 'input/path/to/mock/object',
 			options: {
 				customEndpoint,

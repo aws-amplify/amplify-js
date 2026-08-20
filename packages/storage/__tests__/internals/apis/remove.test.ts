@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { remove as advancedRemove } from '../../../src/internals';
 import { remove as removeInternal } from '../../../src/providers/s3/apis/internal/remove';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../src/providers/s3/apis/internal/remove');
 const mockedRemoveInternal = jest.mocked(removeInternal);
+const mockCtx = createMockAmplifyContext();
 
 describe('remove (internal)', () => {
 	beforeEach(() => {
@@ -33,7 +34,7 @@ describe('remove (internal)', () => {
 			},
 		});
 
-		const result = await advancedRemove({
+		const result = await advancedRemove(mockCtx, {
 			path: 'input/path/to/mock/object',
 			options: {
 				customEndpoint,
@@ -45,19 +46,16 @@ describe('remove (internal)', () => {
 		});
 
 		expect(mockedRemoveInternal).toHaveBeenCalledTimes(1);
-		expect(mockedRemoveInternal).toHaveBeenCalledWith(
-			expect.any(AmplifyClassV6),
-			{
-				path: 'input/path/to/mock/object',
-				options: {
-					customEndpoint,
-					useAccelerateEndpoint,
-					bucket,
-					expectedBucketOwner,
-					locationCredentialsProvider,
-				},
+		expect(mockedRemoveInternal).toHaveBeenCalledWith(mockCtx, {
+			path: 'input/path/to/mock/object',
+			options: {
+				customEndpoint,
+				useAccelerateEndpoint,
+				bucket,
+				expectedBucketOwner,
+				locationCredentialsProvider,
 			},
-		);
+		});
 		expect(result).toEqual({
 			path: 'output/path/to/mock/object',
 		});

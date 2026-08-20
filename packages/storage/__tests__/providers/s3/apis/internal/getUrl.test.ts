@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAccessLevel } from '@aws-amplify/core';
 
 import { getUrl } from '../../../../../src/providers/s3/apis/internal/getUrl';
 import {
@@ -16,24 +16,16 @@ import {
 } from '../../../../../src/providers/s3/types';
 import './testUtils';
 import { BucketInfo } from '../../../../../src/providers/s3/types/options';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
-		return { debug: jest.fn() };
-	}),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
 
 const bucket = 'bucket';
 const region = 'region';
-const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
-const mockGetConfig = jest.mocked(Amplify.getConfig);
+const mockGetConfig = jest.fn();
+// Live getter delegates to mockGetConfig so per-test config variance works.
+const mockCtx = createMockAmplifyContext({ getConfig: mockGetConfig });
+const mockFetchAuthSession = jest.mocked(mockCtx.fetchAuthSession);
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -46,7 +38,7 @@ const validBucketOwner = '111122223333';
 const invalidBucketOwner = '123';
 
 describe('getUrl test with key', () => {
-	const getUrlWrapper = (input: GetUrlInput) => getUrl(Amplify, input);
+	const getUrlWrapper = (input: GetUrlInput) => getUrl(mockCtx, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -335,7 +327,7 @@ describe('getUrl test with key', () => {
 });
 
 describe('getUrl test with path', () => {
-	const getUrlWrapper = (input: GetUrlWithPathInput) => getUrl(Amplify, input);
+	const getUrlWrapper = (input: GetUrlWithPathInput) => getUrl(mockCtx, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -687,7 +679,7 @@ describe('getUrl test with path', () => {
 });
 
 describe(`getURL with path and Expected Bucket Owner`, () => {
-	const getUrlWrapper = (input: GetUrlWithPathInput) => getUrl(Amplify, input);
+	const getUrlWrapper = (input: GetUrlWithPathInput) => getUrl(mockCtx, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -801,7 +793,7 @@ describe(`getURL with path and Expected Bucket Owner`, () => {
 });
 
 describe('getUrl PUT method with expiresIn and credential expiration', () => {
-	const getUrlWrapper = (input: GetUrlWithPathInput) => getUrl(Amplify, input);
+	const getUrlWrapper = (input: GetUrlWithPathInput) => getUrl(mockCtx, input);
 	beforeAll(() => {
 		mockGetConfig.mockReturnValue({
 			Storage: {

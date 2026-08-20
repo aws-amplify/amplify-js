@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
-
 import { FoundationContext } from '../../../../../../src/foundation/types';
 import { uploadData } from '../../../../../../src/providers/s3/apis/internal/uploadData';
 import { MAX_OBJECT_SIZE } from '../../../../../../src/providers/s3/utils/constants';
@@ -17,6 +15,7 @@ import {
 	UploadDataInput,
 	UploadDataWithPathInput,
 } from '../../../../../../src';
+import { createMockAmplifyContext } from '../../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../../src/providers/s3/utils/');
 jest.mock(
@@ -26,7 +25,7 @@ jest.mock(
 	'../../../../../../src/providers/s3/apis/internal/uploadData/multipart',
 );
 
-const mockAmplifyInstance = {} as AmplifyClassV6;
+const mockAmplifyInstance = createMockAmplifyContext();
 const mockCtx: FoundationContext = {
 	amplify: mockAmplifyInstance,
 	readFile: jest.fn(),

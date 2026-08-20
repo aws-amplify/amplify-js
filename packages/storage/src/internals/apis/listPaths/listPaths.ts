@@ -1,22 +1,34 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
+import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { ListPathsOutput } from '../../types/credentials';
 
 import { resolveLocationsForCurrentSession } from './resolveLocationsForCurrentSession';
 import { getHighestPrecedenceUserGroup } from './getHighestPrecedenceUserGroup';
 
-export const listPaths = async (): Promise<ListPathsOutput> => {
-	const { buckets } = Amplify.getConfig().Storage!.S3!;
-	const { groups } = Amplify.getConfig().Auth!.Cognito;
+export const listPaths = async (
+	ctx: AmplifyContext,
+): Promise<ListPathsOutput> => {
+	const { Storage, Auth } = ctx.resourcesConfig;
+
+	const s3Config = Storage?.S3;
+	assertValidationError(!!s3Config, StorageValidationErrorCode.NoS3Config);
+
+	const authConfig = Auth?.Cognito;
+	assertValidationError(!!authConfig, StorageValidationErrorCode.NoAuthConfig);
+
+	const { buckets } = s3Config;
+	const { groups } = authConfig;
 
 	if (!buckets) {
 		return { locations: [] };
 	}
 
-	const { tokens, identityId } = await fetchAuthSession();
+	const { tokens, identityId } = await ctx.fetchAuthSession();
 	const currentUserGroups = tokens?.accessToken.payload['cognito:groups'] as
 		| string[]
 		| undefined;
