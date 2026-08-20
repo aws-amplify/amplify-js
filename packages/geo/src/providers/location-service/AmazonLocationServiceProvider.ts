@@ -75,19 +75,34 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	private _config;
 	private _credentials;
-	private _ctx: AmplifyContext;
+	private _explicitCtx: AmplifyContext | undefined;
+
+	/**
+	 * Resolve the AmplifyContext for this provider.
+	 * - If an explicit ctx was passed at construction, it is pinned (fixed context by design).
+	 * - Otherwise, the global context is resolved fresh per access so that reconfiguration
+	 *   (setGlobalContext with a new AmplifyContext) is honored across operations.
+	 * @private
+	 */
+	private get _ctx(): AmplifyContext {
+		if (this._explicitCtx) {
+			return this._explicitCtx;
+		}
+
+		return getGlobalContext();
+	}
 
 	/**
 	 * Initialize Geo with AWS configurations
 	 * @param {Object} config - Configuration object for Geo
-	 * @param {AmplifyContext} ctx - The AmplifyContext to use for auth and config
+	 * @param {AmplifyContext} ctx - The AmplifyContext to use for auth and config.
+	 *   When provided, the provider is pinned to this context.
+	 *   When omitted, the provider resolves the global context lazily per operation.
 	 */
 	constructor(config?: GeoConfig, ctx?: AmplifyContext) {
 		this._config = config || {};
 		if (isAmplifyContext(ctx)) {
-			this._ctx = ctx;
-		} else {
-			this._ctx = getGlobalContext();
+			this._explicitCtx = ctx;
 		}
 		logger.debug('Geo Options', this._config);
 	}
@@ -724,8 +739,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * @private
 	 */
 	private async _ensureCredentials(): Promise<boolean> {
+		// Resolve ctx outside try/catch so 'No AmplifyContext available' propagates
+		const ctx = this._ctx;
 		try {
-			const { credentials } = await this._ctx.fetchAuthSession();
+			const { credentials } = await ctx.fetchAuthSession();
 			if (!credentials) return false;
 			logger.debug(
 				'Set credentials for storage. Credentials are:',

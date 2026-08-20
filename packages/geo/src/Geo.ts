@@ -3,7 +3,6 @@
 import {
 	AmplifyContext,
 	ConsoleLogger,
-	getGlobalContext,
 	isAmplifyContext,
 } from '@aws-amplify/core';
 
@@ -54,18 +53,6 @@ export class GeoClass {
 	}
 
 	/**
-	 * Resolve the AmplifyContext — uses the provided ctx or falls back to global.
-	 * @private
-	 */
-	private _getCtx(): AmplifyContext {
-		if (this._ctx) {
-			return this._ctx;
-		}
-
-		return getGlobalContext();
-	}
-
-	/**
 	 * Ensure the class is initialized (pluggables created, config read).
 	 * Called eagerly when ctx is provided, lazily otherwise.
 	 * @private
@@ -80,22 +67,31 @@ export class GeoClass {
 	/**
 	 * Perform initialization: read config and create default provider.
 	 *
-	 * Note: The provider captures the resolved context at first use.
-	 * A full reconfiguration with a NEW context object requires constructing
-	 * a new GeoClass instance (matches previous singleton behavior).
+	 * When GeoClass was constructed with an explicit ctx, the provider is pinned
+	 * to that context (fixed context by design). When using the global fallback,
+	 * no ctx is passed to the provider so it resolves the global context lazily
+	 * per operation — reconfiguration via setGlobalContext is honored.
 	 * @private
 	 */
 	private _initialize(): void {
 		this._pluggables = [];
-		const ctx = this._getCtx();
-		const amplifyConfig = ctx.resourcesConfig ?? {};
-		this._config = Object.assign({}, this._config, amplifyConfig.Geo);
 
-		const locationProvider = new AmazonLocationServiceProvider(
-			amplifyConfig.Geo,
-			ctx,
-		);
-		this._pluggables.push(locationProvider);
+		if (this._ctx) {
+			// Explicit ctx path: read config eagerly and pin provider to this ctx
+			const amplifyConfig = this._ctx.resourcesConfig ?? {};
+			this._config = Object.assign({}, this._config, amplifyConfig.Geo);
+
+			const locationProvider = new AmazonLocationServiceProvider(
+				amplifyConfig.Geo,
+				this._ctx,
+			);
+			this._pluggables.push(locationProvider);
+		} else {
+			// Global fallback path: provider resolves ctx lazily per operation.
+			// Config is read lazily via _refreshConfig() inside the provider.
+			const locationProvider = new AmazonLocationServiceProvider();
+			this._pluggables.push(locationProvider);
+		}
 
 		logger.debug('Geo Options', this._config);
 	}

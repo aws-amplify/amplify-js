@@ -669,4 +669,127 @@ describe('Geo', () => {
 			);
 		});
 	});
+
+	describe('lazy context resolution', () => {
+		afterEach(() => {
+			clearGlobalContext();
+		});
+
+		test('reconfigure honored: global context change is picked up by the same GeoClass/provider instance', async () => {
+			// Restore the LocationClient mock for this test
+			const sendMock = jest.fn(async command => {
+				if (command instanceof SearchPlaceIndexForTextCommand) {
+					return {
+						Results: [{ Place: TestPlacePascalCase }],
+					};
+				}
+			});
+			LocationClient.prototype.send = sendMock;
+
+			const ctxA = createMockAmplifyContext(awsConfigGeoV4);
+			(ctxA.fetchAuthSession as jest.Mock).mockResolvedValue({ credentials });
+
+			setGlobalContext(ctxA);
+			const geo = new GeoClass();
+
+			// First operation uses ctxA's config
+			const resultsA = await geo.searchByText('test');
+			expect(resultsA).toEqual([testPlaceCamelCase]);
+			expect(ctxA.fetchAuthSession).toHaveBeenCalled();
+
+			// Reconfigure with a different context (different search index)
+			const altConfig = {
+				...awsConfigGeoV4,
+				Geo: {
+					LocationService: {
+						...awsConfigGeoV4.Geo!.LocationService,
+						searchIndices: {
+							items: ['altSearchIndex'],
+							default: 'altSearchIndex',
+						},
+					},
+				},
+			};
+			const ctxB = createMockAmplifyContext(altConfig);
+			(ctxB.fetchAuthSession as jest.Mock).mockResolvedValue({ credentials });
+
+			setGlobalContext(ctxB);
+
+			// Same geo instance's next operation should use ctxB's config
+			const resultsB = await geo.searchByText('test2');
+			expect(resultsB).toEqual([testPlaceCamelCase]);
+			expect(ctxB.fetchAuthSession).toHaveBeenCalled();
+
+			// Second call (index 1) should use ctxB's search index
+			const { input } = sendMock.mock.calls[1][0];
+			expect(input).toHaveProperty('IndexName', 'altSearchIndex');
+		});
+
+		test('explicit ctx pinned: GeoClass constructed with explicit ctx ignores global context changes', async () => {
+			// Restore the LocationClient mock for this test
+			LocationClient.prototype.send = jest.fn(async command => {
+				if (command instanceof SearchPlaceIndexForTextCommand) {
+					return {
+						Results: [{ Place: TestPlacePascalCase }],
+					};
+				}
+			});
+
+			const explicitCtx = createMockAmplifyContext(awsConfigGeoV4);
+			(explicitCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials,
+			});
+
+			const geo = new GeoClass(explicitCtx);
+
+			// Set a different global context
+			const altConfig = {
+				...awsConfigGeoV4,
+				Geo: {
+					LocationService: {
+						...awsConfigGeoV4.Geo!.LocationService,
+						searchIndices: {
+							items: ['globalSearchIndex'],
+							default: 'globalSearchIndex',
+						},
+					},
+				},
+			};
+			const globalCtx = createMockAmplifyContext(altConfig);
+			(globalCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials,
+			});
+			setGlobalContext(globalCtx);
+
+			// Operation should still use the explicit ctx
+			const results = await geo.searchByText('test');
+			expect(results).toEqual([testPlaceCamelCase]);
+			expect(explicitCtx.fetchAuthSession).toHaveBeenCalled();
+			expect(globalCtx.fetchAuthSession).not.toHaveBeenCalled();
+		});
+
+		test('no eager throw: constructing GeoClass and addPluggable before configure does not throw', () => {
+			clearGlobalContext();
+
+			// These should not throw even though global context is not set
+			expect(() => new GeoClass()).not.toThrow();
+			expect(() => new AmazonLocationServiceProvider()).not.toThrow();
+
+			const geo = new GeoClass();
+			const provider = new AmazonLocationServiceProvider();
+			expect(() => {
+				geo.addPluggable(provider);
+			}).not.toThrow();
+		});
+
+		test('no eager throw: operation throws when global context is not set', async () => {
+			clearGlobalContext();
+
+			const geo = new GeoClass();
+
+			await expect(geo.searchByText('test')).rejects.toThrow(
+				'No AmplifyContext available',
+			);
+		});
+	});
 });

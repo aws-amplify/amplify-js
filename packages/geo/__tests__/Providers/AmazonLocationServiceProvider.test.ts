@@ -8,6 +8,10 @@ import {
 	SearchPlaceIndexForTextCommand,
 } from '@aws-sdk/client-location';
 import { AmplifyContext, GeoConfig } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 import camelcaseKeys from 'camelcase-keys';
 
 import { AmazonLocationServiceProvider } from '../../src/providers/location-service/AmazonLocationServiceProvider';
@@ -1079,6 +1083,121 @@ describe('AmazonLocationServiceProvider', () => {
 				locationProvider.deleteGeofences(geofenceIds),
 			).rejects.toThrow(
 				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.',
+			);
+		});
+	});
+
+	describe('lazy context resolution', () => {
+		afterEach(() => {
+			clearGlobalContext();
+		});
+
+		test('reconfigure honored: provider without explicit ctx picks up new global context', async () => {
+			// Re-set the LocationClient mock for search operations
+			const sendMock = jest.fn(async command => {
+				if (command instanceof SearchPlaceIndexForTextCommand) {
+					return {
+						Results: [{ Place: TestPlacePascalCase }],
+					};
+				}
+			});
+			LocationClient.prototype.send = sendMock;
+
+			const ctxA = createMockAmplifyContext(awsConfigGeoV4);
+			(ctxA.fetchAuthSession as jest.Mock).mockResolvedValue({ credentials });
+
+			setGlobalContext(ctxA);
+
+			// Create provider without explicit ctx (global fallback)
+			const provider = new AmazonLocationServiceProvider();
+
+			// First operation uses ctxA
+			await provider.searchByText('test');
+			expect(ctxA.fetchAuthSession).toHaveBeenCalled();
+
+			// Reconfigure with a different context
+			const altConfig = {
+				...awsConfigGeoV4,
+				Geo: {
+					LocationService: {
+						...awsConfigGeoV4.Geo!.LocationService,
+						searchIndices: {
+							items: ['altSearchIndex'],
+							default: 'altSearchIndex',
+						},
+					},
+				},
+			};
+			const ctxB = createMockAmplifyContext(altConfig);
+			(ctxB.fetchAuthSession as jest.Mock).mockResolvedValue({ credentials });
+
+			setGlobalContext(ctxB);
+
+			// Same provider instance's next operation should use ctxB
+			await provider.searchByText('test2');
+			expect(ctxB.fetchAuthSession).toHaveBeenCalled();
+
+			// Second call (index 1) should use ctxB's search index
+			const { input } = sendMock.mock.calls[1][0];
+			expect(input).toHaveProperty('IndexName', 'altSearchIndex');
+		});
+
+		test('explicit ctx pinned: provider with explicit ctx ignores global changes', async () => {
+			// Re-set the LocationClient mock for search operations
+			LocationClient.prototype.send = jest.fn(async command => {
+				if (command instanceof SearchPlaceIndexForTextCommand) {
+					return {
+						Results: [{ Place: TestPlacePascalCase }],
+					};
+				}
+			});
+
+			const explicitCtx = createMockAmplifyContext(awsConfigGeoV4);
+			(explicitCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials,
+			});
+
+			const provider = new AmazonLocationServiceProvider(
+				undefined,
+				explicitCtx,
+			);
+
+			// Change global context
+			const altConfig = {
+				...awsConfigGeoV4,
+				Geo: {
+					LocationService: {
+						...awsConfigGeoV4.Geo!.LocationService,
+						searchIndices: {
+							items: ['globalSearchIndex'],
+							default: 'globalSearchIndex',
+						},
+					},
+				},
+			};
+			const globalCtx = createMockAmplifyContext(altConfig);
+			(globalCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials,
+			});
+			setGlobalContext(globalCtx);
+
+			// Provider should still use explicit ctx
+			await provider.searchByText('test');
+			expect(explicitCtx.fetchAuthSession).toHaveBeenCalled();
+			expect(globalCtx.fetchAuthSession).not.toHaveBeenCalled();
+		});
+
+		test('no eager throw: constructing provider without global context does not throw', () => {
+			clearGlobalContext();
+			expect(() => new AmazonLocationServiceProvider()).not.toThrow();
+		});
+
+		test('no eager throw: operation throws when global context is not set', async () => {
+			clearGlobalContext();
+			const provider = new AmazonLocationServiceProvider();
+
+			await expect(provider.searchByText('test')).rejects.toThrow(
+				'No AmplifyContext available',
 			);
 		});
 	});
