@@ -35,5 +35,15 @@ export function resolveCtxArgs<T extends unknown[]>(
 		return [args[0], ...args.slice(1)] as [AmplifyContext, ...T];
 	}
 
+	// Guard against mis-ordered calls (e.g. `send(input, ctx)` from untyped JS):
+	// a context anywhere but the first position would otherwise be silently
+	// treated as a regular argument while the call falls back to the global context.
+	if (args.some(isAmplifyContext)) {
+		throw new Error(
+			'AmplifyContext must be passed as the first argument. ' +
+				'Found an AmplifyContext in a later position — check the argument order.',
+		);
+	}
+
 	return [getGlobalContext(), ...args] as [AmplifyContext, ...T];
 }
