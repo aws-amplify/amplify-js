@@ -47,10 +47,6 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/pinpoint/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			try {
 				configureAutoTrack({
@@ -68,10 +64,6 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/pinpoint/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			configureAutoTrack(MOCK_INPUT);
 		});
@@ -92,10 +84,6 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/pinpoint/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			configureAutoTrack(testInput);
 		});
@@ -116,10 +104,6 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/pinpoint/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			configureAutoTrack(testInput);
 		});
@@ -130,15 +114,40 @@ describe('Pinpoint API: configureAutoTrack', () => {
 		);
 	});
 
+	it('accepts an explicitly provided context', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/pinpoint/apis');
+
+			configureAutoTrack(mockCtx, MOCK_INPUT);
+		});
+
+		expect(MockEventTracker).toHaveBeenCalledWith(
+			expect.any(Function),
+			MOCK_INPUT.options,
+		);
+	});
+
+	it('can be configured before Amplify.configure (no global context)', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/pinpoint/apis');
+
+			// The isolated registry has NO global context set — tracker setup must
+			// not resolve the context eagerly, so this must not throw.
+			expect(() => {
+				configureAutoTrack(MOCK_INPUT);
+			}).not.toThrow();
+		});
+	});
+
 	it('Reconfigures an existing tracker', () => {
 		jest.isolateModules(() => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/pinpoint/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			// Enable the tracker
 			configureAutoTrack(MOCK_INPUT);
@@ -165,10 +174,6 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/pinpoint/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			// Enable the tracker
 			configureAutoTrack(MOCK_INPUT);

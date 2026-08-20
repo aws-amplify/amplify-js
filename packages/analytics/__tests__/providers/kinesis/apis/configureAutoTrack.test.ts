@@ -56,10 +56,6 @@ describe('Kinesis API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			try {
 				configureAutoTrack({
@@ -79,10 +75,6 @@ describe('Kinesis API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			try {
 				configureAutoTrack({
@@ -107,10 +99,6 @@ describe('Kinesis API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			try {
 				configureAutoTrack({
@@ -133,10 +121,6 @@ describe('Kinesis API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			expect(() => {
 				configureAutoTrack({
@@ -152,10 +136,6 @@ describe('Kinesis API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			configureAutoTrack(MOCK_INPUT);
 		});
@@ -176,10 +156,6 @@ describe('Kinesis API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			configureAutoTrack(testInput);
 		});
@@ -200,10 +176,6 @@ describe('Kinesis API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			configureAutoTrack(testInput);
 		});
@@ -220,15 +192,35 @@ describe('Kinesis API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			configureAutoTrack(MOCK_INPUT);
 		});
 
-		// The recorder callback passed to the tracker should emit to the configured stream
+		// The recorder callback passed to the tracker should emit to the configured stream.
+		// No context was supplied, so record must be called WITHOUT a captured context —
+		// it resolves the global context lazily at emit time (live config).
+		const emitTrackingEvent = MockEventTracker.mock.calls[0][0];
+		emitTrackingEvent('my-event', { foo: 'bar' });
+
+		expect(mockRecord).toHaveBeenCalledWith({
+			streamName: MOCK_STREAM_NAME,
+			partitionKey: MOCK_PARTITION_KEY,
+			data: {
+				name: 'my-event',
+				attributes: { foo: 'bar' },
+			},
+		});
+	});
+
+	it('passes an explicitly provided context through to record', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/kinesis/apis');
+
+			configureAutoTrack(mockCtx, MOCK_INPUT);
+		});
+
 		const emitTrackingEvent = MockEventTracker.mock.calls[0][0];
 		emitTrackingEvent('my-event', { foo: 'bar' });
 
@@ -242,15 +234,25 @@ describe('Kinesis API: configureAutoTrack', () => {
 		});
 	});
 
+	it('can be configured before Amplify.configure (no global context)', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/kinesis/apis');
+
+			// The isolated registry has NO global context set — tracker setup must
+			// not resolve the context eagerly, so this must not throw.
+			expect(() => {
+				configureAutoTrack(MOCK_INPUT);
+			}).not.toThrow();
+		});
+	});
+
 	it('reconfigures an existing tracker and updates the stream coordinates', () => {
 		jest.isolateModules(() => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			// Enable the tracker
 			configureAutoTrack(MOCK_INPUT);
@@ -282,7 +284,7 @@ describe('Kinesis API: configureAutoTrack', () => {
 				.calls[0][0];
 			emitTrackingEvent('reconfigured-event', { a: 'b' });
 
-			expect(mockRecord).toHaveBeenCalledWith(mockCtx, {
+			expect(mockRecord).toHaveBeenCalledWith({
 				streamName: 'stream1',
 				partitionKey: 'partition1',
 				data: {
@@ -303,10 +305,6 @@ describe('Kinesis API: configureAutoTrack', () => {
 			const {
 				configureAutoTrack,
 			} = require('../../../../src/providers/kinesis/apis');
-			// The isolated registry has its own global context storage; register the
-			// mock context so `resolveCtxArgs` can resolve it.
-			const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-			setGlobalContext(mockCtx);
 
 			// Enable the tracker
 			configureAutoTrack(MOCK_INPUT);
