@@ -1,7 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext, ConsoleLogger, Hub } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	ConsoleLogger,
+	Hub,
+	getGlobalContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
 
@@ -48,19 +54,29 @@ export function initializePushNotifications(): void;
  */
 export function initializePushNotifications(ctx: AmplifyContext): void;
 export function initializePushNotifications(...args: any[]): void {
-	const [ctx] = resolveCtxArgs<[]>(args);
+	// Validate that config is available (throws if not configured yet)
+	resolveCtxArgs<[]>(args);
+
+	// Reconfigure support: the global context is a frozen snapshot swapped on
+	// each Amplify.configure() call. If the caller passed an explicit ctx we pin
+	// it for the lifetime of the listeners; otherwise we resolve the CURRENT
+	// global context at each event so listeners pick up reconfigured values.
+	const explicitCtx = isAmplifyContext(args[0])
+		? (args[0] as AmplifyContext)
+		: undefined;
+	const resolveCtx = (): AmplifyContext => explicitCtx ?? getGlobalContext();
 
 	if (isInitialized()) {
 		logger.info('Push notifications have already been enabled');
 
 		return;
 	}
-	addNativeListeners(ctx);
-	addAuthListener(ctx);
+	addNativeListeners(resolveCtx);
+	addAuthListener(resolveCtx);
 	initialize();
 }
 
-const addNativeListeners = (ctx: AmplifyContext): void => {
+const addNativeListeners = (resolveCtx: () => AmplifyContext): void => {
 	let launchNotificationOpenedListener:
 		| ReturnType<typeof addMessageEventListener>
 		| undefined;
@@ -166,7 +182,7 @@ const addNativeListeners = (ctx: AmplifyContext): void => {
 			setToken(token);
 			notifyEventListeners('tokenReceived', token);
 			try {
-				await registerReceivedDevice(ctx, token);
+				await registerReceivedDevice(resolveCtx(), token);
 			} catch (err) {
 				logger.error('Failed to register device for push notifications', err);
 				throw err;
@@ -175,7 +191,7 @@ const addNativeListeners = (ctx: AmplifyContext): void => {
 	);
 };
 
-const addAuthListener = (ctx: AmplifyContext): void => {
+const addAuthListener = (resolveCtx: () => AmplifyContext): void => {
 	// Re-register the device at sign-in so it is re-homed from the guest
 	// principal to the now-authenticated one. The push token is unchanged across
 	// a sign-in, so the native token listener short-circuits and would never
@@ -190,7 +206,7 @@ const addAuthListener = (ctx: AmplifyContext): void => {
 				// no token yet — the TOKEN_RECEIVED path performs first registration
 				return;
 			}
-			registerDevice(ctx, { token }).catch(err => {
+			registerDevice(resolveCtx(), { token }).catch(err => {
 				logger.error(
 					'Failed to re-register device for push notifications on sign-in',
 					err,

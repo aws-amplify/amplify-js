@@ -1,7 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext, Hub, HubCapsule } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	Hub,
+	HubCapsule,
+	getGlobalContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 import {
 	resolveCtxArgs,
 	sessionListener,
@@ -35,7 +41,17 @@ export function initializeInAppMessaging(): void;
  */
 export function initializeInAppMessaging(ctx: AmplifyContext): void;
 export function initializeInAppMessaging(...args: any[]): void {
-	const [ctx] = resolveCtxArgs<[]>(args);
+	// Validate that config is available (throws if not configured yet)
+	resolveCtxArgs<[]>(args);
+
+	// Reconfigure support: the global context is a frozen snapshot swapped on
+	// each Amplify.configure() call. If the caller passed an explicit ctx we pin
+	// it for the lifetime of the listeners; otherwise we resolve the CURRENT
+	// global context at each event so listeners pick up reconfigured values.
+	const explicitCtx = isAmplifyContext(args[0])
+		? (args[0] as AmplifyContext)
+		: undefined;
+	const resolveCtx = (): AmplifyContext => explicitCtx ?? getGlobalContext();
 
 	if (isInitialized()) {
 		return;
@@ -45,15 +61,23 @@ export function initializeInAppMessaging(...args: any[]): void {
 
 	// wire up default Pinpoint message event handling
 	addEventListener('messageDisplayed', (message: InAppMessage) => {
-		recordAnalyticsEvent(ctx, PinpointMessageEvent.MESSAGE_DISPLAYED, message);
+		recordAnalyticsEvent(
+			resolveCtx(),
+			PinpointMessageEvent.MESSAGE_DISPLAYED,
+			message,
+		);
 		incrementMessageCounts(message.id);
 	});
 	addEventListener('messageDismissed', (message: InAppMessage) => {
-		recordAnalyticsEvent(ctx, PinpointMessageEvent.MESSAGE_DISMISSED, message);
+		recordAnalyticsEvent(
+			resolveCtx(),
+			PinpointMessageEvent.MESSAGE_DISMISSED,
+			message,
+		);
 	});
 	addEventListener('messageActionTaken', (message: InAppMessage) => {
 		recordAnalyticsEvent(
-			ctx,
+			resolveCtx(),
 			PinpointMessageEvent.MESSAGE_ACTION_TAKEN,
 			message,
 		);

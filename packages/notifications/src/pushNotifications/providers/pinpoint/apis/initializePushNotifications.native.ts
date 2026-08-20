@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	ConsoleLogger,
+	getGlobalContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 import {
 	PushNotificationAction,
 	resolveCtxArgs,
@@ -64,19 +69,29 @@ export function initializePushNotifications(): void;
  */
 export function initializePushNotifications(ctx: AmplifyContext): void;
 export function initializePushNotifications(...args: any[]): void {
-	const [ctx] = resolveCtxArgs<[]>(args);
+	// Validate that config is available (throws if not configured yet)
+	resolveCtxArgs<[]>(args);
+
+	// Reconfigure support: the global context is a frozen snapshot swapped on
+	// each Amplify.configure() call. If the caller passed an explicit ctx we pin
+	// it for the lifetime of the listeners; otherwise we resolve the CURRENT
+	// global context at each event so listeners pick up reconfigured values.
+	const explicitCtx = isAmplifyContext(args[0])
+		? (args[0] as AmplifyContext)
+		: undefined;
+	const resolveCtx = (): AmplifyContext => explicitCtx ?? getGlobalContext();
 
 	if (isInitialized()) {
 		logger.info('Push notifications have already been enabled');
 
 		return;
 	}
-	addNativeListeners(ctx);
-	addAnalyticsListeners(ctx);
+	addNativeListeners(resolveCtx);
+	addAnalyticsListeners(resolveCtx);
 	initialize();
 }
 
-const addNativeListeners = (ctx: AmplifyContext): void => {
+const addNativeListeners = (resolveCtx: () => AmplifyContext): void => {
 	let launchNotificationOpenedListener:
 		| ReturnType<typeof addMessageEventListener>
 		| undefined;
@@ -182,7 +197,7 @@ const addNativeListeners = (ctx: AmplifyContext): void => {
 			setToken(token);
 			notifyEventListeners('tokenReceived', token);
 			try {
-				await registerDevice(ctx, token);
+				await registerDevice(resolveCtx(), token);
 			} catch (err) {
 				logger.error('Failed to register device for push notifications', err);
 				throw err;
@@ -191,22 +206,22 @@ const addNativeListeners = (ctx: AmplifyContext): void => {
 	);
 };
 
-const addAnalyticsListeners = (ctx: AmplifyContext): void => {
+const addAnalyticsListeners = (resolveCtx: () => AmplifyContext): void => {
 	let launchNotificationOpenedListenerRemover: EventListenerRemover | undefined;
 
 	// wire up default Pinpoint message event handling
 	addEventListener(
 		'backgroundMessageReceived',
-		createMessageEventRecorder(ctx, 'received_background'),
+		createMessageEventRecorder(resolveCtx, 'received_background'),
 	);
 	addEventListener(
 		'foregroundMessageReceived',
-		createMessageEventRecorder(ctx, 'received_foreground'),
+		createMessageEventRecorder(resolveCtx, 'received_foreground'),
 	);
 	launchNotificationOpenedListenerRemover = addEventListener(
 		'launchNotificationOpened',
 		createMessageEventRecorder(
-			ctx,
+			resolveCtx,
 			'opened_notification',
 			// once we are done with it we can remove the listener
 			() => {
@@ -218,7 +233,7 @@ const addAnalyticsListeners = (ctx: AmplifyContext): void => {
 	addEventListener(
 		'notificationOpened',
 		createMessageEventRecorder(
-			ctx,
+			resolveCtx,
 			'opened_notification',
 			// if we are in this state, we no longer need the listener as the app was launched via some other means
 			() => {

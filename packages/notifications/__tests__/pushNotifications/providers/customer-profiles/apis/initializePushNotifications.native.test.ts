@@ -32,6 +32,7 @@ import {
 } from '../../../../testUtils/data';
 
 jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
 	ConsoleLogger: jest.fn(() => ({
 		info: jest.fn(),
 		error: jest.fn(),

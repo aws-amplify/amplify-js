@@ -20,14 +20,20 @@ const logger = new ConsoleLogger('PushNotification.recordMessageEvent');
 
 /**
  * @internal
+ *
+ * Accepts either a resolved {@link AmplifyContext} or a getter that returns one.
+ * When a getter is provided the context is resolved at each event invocation,
+ * supporting reconfigure — the global context is a frozen snapshot swapped on
+ * every Amplify.configure() call.
  */
 export const createMessageEventRecorder =
 	(
-		ctx: AmplifyContext,
+		ctxOrGetter: AmplifyContext | (() => AmplifyContext),
 		event: PinpointMessageEvent,
 		callback?: () => void,
 	): OnPushNotificationMessageHandler =>
 	async message => {
+		const ctx = typeof ctxOrGetter === 'function' ? ctxOrGetter() : ctxOrGetter;
 		const { credentials } = await resolveCredentials(ctx);
 		const { appId, region } = resolveConfig(ctx);
 		await recordMessageEvent({
