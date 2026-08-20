@@ -71,4 +71,18 @@ describe('Interactions LexV2 API: onComplete', () => {
 			onComplete({ botName: v2BotConfig.name, callback: jest.fn }),
 		).toThrow(InteractionsError);
 	});
+
+	it('throws on mis-ordered args (context not first)', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const onCompleteUntyped = onComplete as unknown as (
+			...args: unknown[]
+		) => void;
+		expect(() =>
+			onCompleteUntyped(
+				{ botName: v2BotConfig.name, callback: jest.fn() },
+				explicitCtx,
+			),
+		).toThrow('AmplifyContext must be passed as the first argument');
+		expect(mockLexProvider).not.toHaveBeenCalled();
+	});
 });

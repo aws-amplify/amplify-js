@@ -105,6 +105,13 @@ describe('resolveCtxArgs', () => {
 			);
 		});
 
+		it('wins over the undefined-first-arg guard when a context exists later', () => {
+			const ctx = makeBrandedContext();
+			expect(() => resolveCtxArgs([undefined, ctx])).toThrow(
+				'AmplifyContext must be passed as the first argument',
+			);
+		});
+
 		it('does NOT throw for plain object args that are not branded contexts', () => {
 			const globalCtx = makeBrandedContext();
 			setGlobalContext(globalCtx);

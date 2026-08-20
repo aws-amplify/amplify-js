@@ -73,4 +73,15 @@ describe('Interactions LexV1 API: send', () => {
 			send({ botName: v1BotConfig.name, message: amplifyUuid() }),
 		).rejects.toBeInstanceOf(InteractionsError);
 	});
+
+	it('throws on mis-ordered args (context not first)', async () => {
+		const explicitCtx = createMockAmplifyContext();
+		const sendUntyped = send as unknown as (
+			...args: unknown[]
+		) => Promise<unknown>;
+		await expect(
+			sendUntyped({ botName: v1BotConfig.name, message: 'hi' }, explicitCtx),
+		).rejects.toThrow('AmplifyContext must be passed as the first argument');
+		expect(mockLexProvider).not.toHaveBeenCalled();
+	});
 });
