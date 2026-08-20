@@ -134,6 +134,8 @@ describe('syncMessages', () => {
 		});
 		await syncMessages(ctx);
 
+		expect(mockResolveConfig).toHaveBeenCalledWith(ctx);
+		expect(mockResolveCredentials).toHaveBeenCalledWith(ctx);
 		expect(mockDefaultStorage.setItem).toHaveBeenCalledWith(
 			expect.stringContaining(STORAGE_KEY_SUFFIX),
 			JSON.stringify(simpleInAppMessages),

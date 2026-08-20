@@ -29,6 +29,8 @@ import { dispatchEvent } from './dispatchEvent';
  *
  * @remarks
  * Make sure to call this early in your app at the root entry point after configuring Amplify.
+ * Initialization runs once per session; subsequent calls are no-ops, so a context
+ * passed on a later call will not replace the one captured at first initialization.
  * @example
  * ```ts
  * Amplify.configure(config);

@@ -96,4 +96,41 @@ describe('createMessageEventRecorder', () => {
 			recorder(simplePushMessage);
 		});
 	});
+
+	describe('getter re-resolution', () => {
+		it('resolves context per invocation when a getter is provided', done => {
+			const ctxA = createMockAmplifyContext();
+			const ctxB = createMockAmplifyContext();
+			let callCount = 0;
+			const ctxGetter = () => {
+				callCount += 1;
+
+				return callCount === 1 ? ctxA : ctxB;
+			};
+
+			const recorder = createMessageEventRecorder(
+				ctxGetter,
+				'received_background',
+			);
+
+			let recordCallCount = 0;
+			mockRecord.mockImplementation(() => {
+				recordCallCount += 1;
+				if (recordCallCount === 1) {
+					expect(mockResolveCredentials).toHaveBeenCalledWith(ctxA);
+					expect(mockResolveConfig).toHaveBeenCalledWith(ctxA);
+					mockResolveCredentials.mockClear();
+					mockResolveConfig.mockClear();
+					// Invoke recorder a second time
+					recorder(simplePushMessage);
+				} else {
+					expect(mockResolveCredentials).toHaveBeenCalledWith(ctxB);
+					expect(mockResolveConfig).toHaveBeenCalledWith(ctxB);
+					done();
+				}
+			});
+
+			recorder(simplePushMessage);
+		});
+	});
 });
