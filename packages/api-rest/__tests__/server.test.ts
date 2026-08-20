@@ -27,64 +27,89 @@ const contextSpec = { token: { value: 'token' } } as any;
 const mockGetAmplifyServerContext = getAmplifyServerContext as jest.Mock;
 
 describe('REST API server handlers', () => {
+	const mockAmplify = {
+		getConfig: jest.fn().mockReturnValue({ API: { REST: {} } }),
+		libraryOptions: {},
+		Auth: {
+			fetchAuthSession: jest.fn().mockResolvedValue({}),
+			clearCredentials: jest.fn().mockResolvedValue(undefined),
+			getTokens: jest.fn().mockResolvedValue(undefined),
+		},
+	};
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockGetAmplifyServerContext.mockReturnValue({
-			amplify: 'mockedAmplifyServerSideContext',
+			amplify: mockAmplify,
 		});
 	});
 
 	describe('legacy ContextSpec path', () => {
-		it('get should call common get API with server-side Amplify context', () => {
+		it('get should call common get API with bridged server-side Amplify context', () => {
 			get(contextSpec, input);
 			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 			expect(commonGet).toHaveBeenCalledWith(
-				'mockedAmplifyServerSideContext',
+				expect.objectContaining({
+					libraryOptions: mockAmplify.libraryOptions,
+					fetchAuthSession: expect.any(Function),
+					clearCredentials: expect.any(Function),
+					getTokens: expect.any(Function),
+				}),
 				input,
 			);
 		});
 
-		it('post should call common post API with server-side Amplify context', () => {
+		it('post should call common post API with bridged server-side Amplify context', () => {
 			post(contextSpec, input);
 			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 			expect(commonPost).toHaveBeenCalledWith(
-				'mockedAmplifyServerSideContext',
+				expect.objectContaining({
+					fetchAuthSession: expect.any(Function),
+				}),
 				input,
 			);
 		});
 
-		it('put should call common put API with server-side Amplify context', () => {
+		it('put should call common put API with bridged server-side Amplify context', () => {
 			put(contextSpec, input);
 			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 			expect(commonPut).toHaveBeenCalledWith(
-				'mockedAmplifyServerSideContext',
+				expect.objectContaining({
+					fetchAuthSession: expect.any(Function),
+				}),
 				input,
 			);
 		});
 
-		it('del should call common del API with server-side Amplify context', () => {
+		it('del should call common del API with bridged server-side Amplify context', () => {
 			del(contextSpec, input);
 			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 			expect(commonDel).toHaveBeenCalledWith(
-				'mockedAmplifyServerSideContext',
+				expect.objectContaining({
+					fetchAuthSession: expect.any(Function),
+				}),
 				input,
 			);
 		});
 
-		it('patch should call common patch API with server-side Amplify context', () => {
+		it('patch should call common patch API with bridged server-side Amplify context', () => {
 			patch(contextSpec, input);
 			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 			expect(commonPatch).toHaveBeenCalledWith(
-				'mockedAmplifyServerSideContext',
+				expect.objectContaining({
+					fetchAuthSession: expect.any(Function),
+				}),
 				input,
 			);
 		});
 
-		it('head should call common head API with server-side Amplify context', () => {
+		it('head should call common head API with bridged server-side Amplify context', () => {
 			head(contextSpec, input);
 			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 			expect(commonHead).toHaveBeenCalledWith(
-				'mockedAmplifyServerSideContext',
+				expect.objectContaining({
+					fetchAuthSession: expect.any(Function),
+				}),
 				input,
 			);
 		});
