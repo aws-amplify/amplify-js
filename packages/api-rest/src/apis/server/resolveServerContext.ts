@@ -7,6 +7,8 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 
+import { bridgeAmplifyClass } from '../../utils/bridgeAmplifyClass';
+
 /**
  * Resolves a server-side argument that may be either the new {@link AmplifyContext}
  * or a legacy {@link AmplifyServer.ContextSpec}, into a concrete `AmplifyContext`.
@@ -23,25 +25,8 @@ export const resolveServerContext = (
 	}
 
 	// Legacy server ContextSpec: unwrap the `AmplifyClass` and adapt it to the
-	// `AmplifyContext` shape. `AmplifyClass` exposes resourcesConfig/libraryOptions
-	// and a cross-category `Auth` utility, but NOT the top-level context methods
-	// (fetchAuthSession/clearCredentials/getTokens), so bridge them to `Auth.*` here.
+	// `AmplifyContext` shape via the shared bridge helper.
 	const { amplify } = getAmplifyServerContext(ctxOrContextSpec);
 
-	// Annotate the object so the bridged lambdas receive contextual parameter
-	// types (avoids implicit-any) and the shape is checked against AmplifyContext.
-	const resolved: AmplifyContext = {
-		get resourcesConfig() {
-			return amplify.getConfig();
-		},
-		libraryOptions: amplify.libraryOptions,
-		// AmplifyContext.fetchAuthSession has OPTIONAL options while
-		// AuthClass.Auth.fetchAuthSession requires it, hence the `?? {}` default.
-		fetchAuthSession: options => amplify.Auth.fetchAuthSession(options ?? {}),
-		clearCredentials: () => amplify.Auth.clearCredentials(),
-		// getTokens needs no default — options is required on both interfaces.
-		getTokens: options => amplify.Auth.getTokens(options),
-	};
-
-	return resolved;
+	return bridgeAmplifyClass(amplify);
 };
