@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import {
 	GetPropertiesInput,
@@ -39,9 +40,27 @@ export function getProperties(
 export function getProperties(
 	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput>;
-
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetPropertiesWithPathInput` object.
+ */
 export function getProperties(
-	input: GetPropertiesInput | GetPropertiesWithPathInput,
-) {
-	return getPropertiesInternal(Amplify, input);
+	ctx: AmplifyContext,
+	input: GetPropertiesWithPathInput,
+): Promise<GetPropertiesWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetPropertiesInput` object.
+ */
+export function getProperties(
+	ctx: AmplifyContext,
+	input: GetPropertiesInput,
+): Promise<GetPropertiesOutput>;
+
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
+export function getProperties(...args: any[]) {
+	const [ctx, input] =
+		resolveCtxArgs<[GetPropertiesInput | GetPropertiesWithPathInput]>(args);
+
+	return getPropertiesInternal(ctx, input);
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { putObject } from '../../../../../../src/providers/s3/utils/client/s3data';
 import { calculateContentMd5 } from '../../../../../../src/foundation/utils';
@@ -24,16 +24,6 @@ jest.mock('../../../../../../src/foundation/utils', () => {
 		calculateContentMd5: jest.fn(),
 	};
 });
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn(),
-	fetchAuthSession: jest.fn(),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
 
 const testPath = 'testPath/object';
 const credentials: AWSCredentials = {
@@ -42,7 +32,23 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const identityId = 'identityId';
-const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
+const mockGetConfig = jest.fn();
+const mockFetchAuthSession = jest.fn();
+let mockLibraryOptions: AmplifyContext['libraryOptions'] = {};
+// putObjectJob resolves config/credentials off the AmplifyContext supplied via
+// the FoundationContext. Back resourcesConfig/libraryOptions so tests can vary
+// them, and fetchAuthSession so credential/identityId can be controlled.
+const mockAmplifyCtx: AmplifyContext = {
+	get resourcesConfig() {
+		return mockGetConfig();
+	},
+	get libraryOptions() {
+		return mockLibraryOptions;
+	},
+	fetchAuthSession: mockFetchAuthSession,
+	clearCredentials: jest.fn(),
+	getTokens: jest.fn(),
+};
 const mockPutObject = jest.mocked(putObject);
 const bucket = 'bucket';
 const region = 'region';
@@ -50,7 +56,7 @@ const data = 'data';
 const dataLength = data.length;
 
 const mockCtx: FoundationContext = {
-	amplify: Amplify,
+	amplify: mockAmplifyCtx,
 	readFile: realReadFile,
 	toBase64: realToBase64,
 };
@@ -59,7 +65,7 @@ mockFetchAuthSession.mockResolvedValue({
 	credentials,
 	identityId,
 });
-jest.mocked(Amplify.getConfig).mockReturnValue({
+mockGetConfig.mockReturnValue({
 	Storage: {
 		S3: {
 			bucket,
@@ -157,7 +163,7 @@ describe('putObjectJob with key', () => {
 			.spyOn(CRC32, 'calculateContentCRC32')
 			.mockResolvedValue(undefined as any);
 
-		Amplify.libraryOptions = {
+		mockLibraryOptions = {
 			Storage: {
 				S3: {
 					isObjectLockEnabled: true,
@@ -383,7 +389,7 @@ describe('putObjectJob with path', () => {
 			.spyOn(CRC32, 'calculateContentCRC32')
 			.mockResolvedValue(undefined as any);
 
-		Amplify.libraryOptions = {
+		mockLibraryOptions = {
 			Storage: {
 				S3: {
 					isObjectLockEnabled: true,

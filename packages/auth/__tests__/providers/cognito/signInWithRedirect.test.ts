@@ -192,7 +192,7 @@ describe('signInWithRedirect', () => {
 	});
 
 	it('omits identity_provider when prompt is NONE and no provider is specified', async () => {
-		await signInWithRedirect({ options: { prompt: 'NONE' } });
+		await signInWithRedirect(mockCtx, { options: { prompt: 'NONE' } });
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).not.toContain('identity_provider');
 		expect(oauthUrl).toStrictEqual(
@@ -201,7 +201,7 @@ describe('signInWithRedirect', () => {
 	});
 
 	it('keeps identity_provider when prompt is NONE and a provider is specified', async () => {
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: 'Google',
 			options: { prompt: 'NONE' },
 		});
@@ -210,7 +210,7 @@ describe('signInWithRedirect', () => {
 	});
 
 	it('keeps idp_identifier only when prompt is NONE and an idpIdentifier is specified', async () => {
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: { idpIdentifier: 'example.com' },
 			options: { prompt: 'NONE' },
 		});
@@ -221,7 +221,7 @@ describe('signInWithRedirect', () => {
 
 	it('keeps the default identity_provider for prompt values other than NONE', async () => {
 		for (const prompt of promptTypes.filter(value => value !== 'NONE')) {
-			await signInWithRedirect({ options: { prompt } });
+			await signInWithRedirect(mockCtx, { options: { prompt } });
 			const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 			expect(oauthUrl).toContain('identity_provider=COGNITO');
 			mockOpenAuthSession.mockClear();

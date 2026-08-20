@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import {
 	CopyInput,
@@ -36,7 +37,26 @@ export function copy(input: CopyWithPathInput): Promise<CopyWithPathOutput>;
  * source or destination key is not defined.
  */
 export function copy(input: CopyInput): Promise<CopyOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `CopyWithPathInput` object.
+ */
+export function copy(
+	ctx: AmplifyContext,
+	input: CopyWithPathInput,
+): Promise<CopyWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `CopyInput` object.
+ */
+export function copy(
+	ctx: AmplifyContext,
+	input: CopyInput,
+): Promise<CopyOutput>;
 
-export function copy(input: CopyInput | CopyWithPathInput) {
-	return copyInternal(Amplify, input);
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
+export function copy(...args: any[]) {
+	const [ctx, input] = resolveCtxArgs<[CopyInput | CopyWithPathInput]>(args);
+
+	return copyInternal(ctx, input);
 }
