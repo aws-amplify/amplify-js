@@ -11,6 +11,8 @@ import { delay, FakeWebSocketInterface } from './helpers';
 import { ConnectionState as CS } from '../src/types/PubSub';
 
 import { AWSAppSyncEventProvider } from '../src/Providers/AWSAppSyncEventsProvider';
+import * as authHeadersModule from '../src/Providers/AWSWebSocketProvider/authHeaders';
+import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
@@ -48,6 +50,14 @@ jest.mock('@aws-amplify/core', () => {
 		fetchAuthSession: (_request: any, _options: any) => {
 			return Promise.resolve(session);
 		},
+		getGlobalContext: () => ({
+			resourcesConfig: {},
+			libraryOptions: {},
+			fetchAuthSession: async () => session,
+			clearCredentials: async () => undefined,
+			getTokens: async () => undefined,
+			[original.AMPLIFY_CONTEXT_BRAND]: true,
+		}),
 		Amplify: {
 			Auth: {
 				fetchAuthSession: async () => session,
@@ -599,6 +609,88 @@ describe('AppSyncEventProvider', () => {
 					},
 				}),
 			).rejects.toThrow('No auth token specified');
+		});
+	});
+
+	describe('ctx propagation', () => {
+		let fakeWebSocketInterface: FakeWebSocketInterface;
+		let provider: AWSAppSyncEventProvider;
+		let authSpy: jest.SpyInstance;
+
+		beforeEach(() => {
+			fakeWebSocketInterface = new FakeWebSocketInterface();
+			provider = new AWSAppSyncEventProvider();
+
+			Object.defineProperty(provider, 'socketStatus', {
+				value: constants.SOCKET_STATUS.CLOSED,
+			});
+
+			jest.spyOn(provider as any, '_getNewWebSocket').mockImplementation(() => {
+				fakeWebSocketInterface.newWebSocket();
+				return fakeWebSocketInterface.webSocket as WebSocket;
+			});
+
+			authSpy = jest.spyOn(authHeadersModule, 'awsRealTimeHeaderBasedAuth');
+		});
+
+		afterEach(async () => {
+			provider?.close();
+			await fakeWebSocketInterface?.closeInterface();
+			fakeWebSocketInterface?.teardown();
+			authSpy.mockRestore();
+		});
+
+		test('when ctx is supplied to connect, awsRealTimeHeaderBasedAuth uses that ctx', async () => {
+			const mockSession = {
+				tokens: { accessToken: { toString: () => 'per-request-token' } },
+				credentials: {
+					accessKeyId: 'per-request-key',
+					secretAccessKey: 'per-request-secret',
+				},
+			};
+			const explicitCtx = createMockAmplifyContext(
+				{},
+				{ fetchAuthSession: jest.fn().mockResolvedValue(mockSession) },
+			);
+
+			const connectPromise = provider.connect({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				authenticationType: 'apiKey',
+				apiKey: 'da2-test',
+				region: 'us-east-1',
+				ctx: explicitCtx,
+			});
+
+			await fakeWebSocketInterface?.readyForUse;
+			await fakeWebSocketInterface?.triggerOpen();
+			await fakeWebSocketInterface?.sendDataMessage({
+				type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
+			});
+			await connectPromise;
+
+			// awsRealTimeHeaderBasedAuth is called for the connection handshake
+			expect(authSpy).toHaveBeenCalled();
+			expect(authSpy.mock.calls[0][1]).toBe(explicitCtx);
+		});
+
+		test('when ctx is undefined, awsRealTimeHeaderBasedAuth falls back to global context', async () => {
+			const connectPromise = provider.connect({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				authenticationType: 'apiKey',
+				apiKey: 'da2-test',
+				region: 'us-east-1',
+			});
+
+			await fakeWebSocketInterface?.readyForUse;
+			await fakeWebSocketInterface?.triggerOpen();
+			await fakeWebSocketInterface?.sendDataMessage({
+				type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
+			});
+			await connectPromise;
+
+			expect(authSpy).toHaveBeenCalled();
+			// ctx should be undefined — authHeaders.ts falls back to getGlobalContext()
+			expect(authSpy.mock.calls[0][1]).toBeUndefined();
 		});
 	});
 });

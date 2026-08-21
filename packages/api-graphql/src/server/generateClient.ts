@@ -1,11 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
-import { ResourcesConfig } from '@aws-amplify/core';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+import { AmplifyContext, ResourcesConfig } from '@aws-amplify/core';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 import { generateClientWithAmplifyInstance } from '../internals/server';
@@ -17,6 +14,7 @@ import {
 	V6ClientSSRRequest,
 	__amplify,
 } from '../types';
+import { resolveServerContext } from '../utils/resolveServerContext';
 
 /**
  * Generates an GraphQL API client that works with Amplify server context.
@@ -49,11 +47,11 @@ export function generateClient<
 	const prevGraphql = client.graphql as unknown as GraphQLMethod<Options>;
 
 	const wrappedGraphql = (
-		contextSpec: AmplifyServer.ContextSpec,
+		contextSpec: AmplifyContext | AmplifyServer.ContextSpec,
 		innerOptions: GraphQLOptionsV6<unknown, string, Options>,
 		additionalHeaders?: CustomHeaders,
 	) => {
-		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
+		const amplifyInstance = resolveServerContext(contextSpec);
 
 		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },

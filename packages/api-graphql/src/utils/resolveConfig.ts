@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import { APIValidationErrorCode, assertValidationError } from './errors';
 
@@ -10,8 +10,8 @@ const logger = new ConsoleLogger('GraphQLAPI resolveConfig');
 /**
  * @internal
  */
-export const resolveConfig = (amplify: AmplifyClassV6) => {
-	const config = amplify.getConfig();
+export const resolveConfig = (amplify: AmplifyContext) => {
+	const config = amplify.resourcesConfig;
 
 	if (!config.API?.GraphQL) {
 		logger.warn(
