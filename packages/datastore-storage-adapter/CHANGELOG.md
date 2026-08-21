@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.72](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.0.71...@aws-amplify/datastore-storage-adapter@2.0.72) (2026-07-28)
+
+### Bug Fixes
+
+- declare tslib ^2.1.0 in datastore-storage-adapter and notifications (\_\_spreadArray) ([#14881](https://github.com/aws-amplify/amplify-js/issues/14881)) ([be16c37](https://github.com/aws-amplify/amplify-js/commit/be16c371f09f1cdaa856b036c982779f26998bf2))
+
 ## [2.0.71](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.0.70...@aws-amplify/datastore-storage-adapter@2.0.71) (2026-07-22)
 
 **Note:** Version bump only for package @aws-amplify/datastore-storage-adapter

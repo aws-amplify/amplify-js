@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.6.21...@aws-amplify/notifications@1.6.22) (2026-07-28)
+
+### Bug Fixes
+
+- declare tslib ^2.1.0 in datastore-storage-adapter and notifications (\_\_spreadArray) ([#14881](https://github.com/aws-amplify/amplify-js/issues/14881)) ([be16c37](https://github.com/aws-amplify/amplify-js/commit/be16c371f09f1cdaa856b036c982779f26998bf2))
+
 ## [1.6.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.6.20...@aws-amplify/notifications@1.6.21) (2026-07-04)
 
 **Note:** Version bump only for package @aws-amplify/notifications
