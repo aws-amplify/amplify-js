@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
-import { GeoConfig } from '@aws-amplify/core';
+import { ResourcesConfig } from '@aws-amplify/core';
 import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -50,7 +50,7 @@ export const awsConfig = {
 	credentials,
 };
 
-export const awsConfigGeoV4 = parseAWSExports(awsConfig) as GeoConfig;
+export const awsConfigGeoV4 = parseAWSExports(awsConfig) as ResourcesConfig;
 
 export const TestPlacePascalCase = {
 	AddressNumber: '123',
