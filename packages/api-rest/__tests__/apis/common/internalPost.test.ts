@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
 import { ApiError } from '@aws-amplify/core/internals/utils';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	getRetryDecider,
 	parseJsonError,
@@ -16,6 +16,7 @@ import {
 import { authenticatedHandler } from '../../../src/apis/common/baseHandlers/authenticatedHandler';
 import { unauthenticatedHandler } from '../../../src/apis/common/baseHandlers/unauthenticatedHandler';
 import { RestApiError, isCancelError } from '../../../src/errors';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 jest.mock('../../../src/apis/common/baseHandlers/authenticatedHandler');
@@ -26,11 +27,10 @@ const mockUnauthenticatedHandler = jest.mocked(unauthenticatedHandler);
 const mockParseJsonError = jest.mocked(parseJsonError);
 const mockGetRetryDecider = jest.mocked(getRetryDecider);
 const mockFetchAuthSession = jest.fn();
-const mockAmplifyInstance = {
-	Auth: {
-		fetchAuthSession: mockFetchAuthSession,
-	},
-} as any as AmplifyClassV6;
+const mockAmplifyInstance = createMockAmplifyContext(
+	{},
+	{ fetchAuthSession: mockFetchAuthSession },
+);
 
 const successResponse = {
 	statusCode: 200,
@@ -427,18 +427,21 @@ describe('internal post', () => {
 
 	it('should use jittered-exponential-backoff retry strategy, even when configuring using library options', async () => {
 		expect.assertions(2);
-		const mockAmplifyInstanceWithNoRetry = {
-			...mockAmplifyInstance,
-			libraryOptions: {
-				API: {
-					REST: {
-						retryStrategy: {
-							strategy: 'no-retry',
+		const mockAmplifyInstanceWithNoRetry = createMockAmplifyContext(
+			{},
+			{
+				fetchAuthSession: mockFetchAuthSession,
+				libraryOptions: {
+					API: {
+						REST: {
+							retryStrategy: {
+								strategy: 'no-retry',
+							},
 						},
 					},
 				},
 			},
-		} as any as AmplifyClassV6;
+		);
 		await post(mockAmplifyInstanceWithNoRetry, {
 			url: apiGatewayUrl,
 			options: {
@@ -453,5 +456,79 @@ describe('internal post', () => {
 		const { retryDecider } = callArgs[1];
 		const retryDeciderResult = await retryDecider();
 		expect(retryDeciderResult).toEqual(retryExpectedResponse);
+	});
+});
+
+describe('internal post - AmplifyClassV6 backward compatibility', () => {
+	const mockClassFetchAuthSession = jest.fn();
+	const mockClassClearCredentials = jest.fn();
+	const mockClassGetTokens = jest.fn();
+
+	/**
+	 * Simulates an AmplifyClassV6 instance as passed by api-graphql's
+	 * InternalGraphQLAPI. This object has NO top-level fetchAuthSession,
+	 * clearCredentials, or getTokens — they live on `.Auth`.
+	 * It is NOT branded with AMPLIFY_CONTEXT_BRAND.
+	 */
+	const mockAmplifyClassV6 = {
+		getConfig: jest.fn().mockReturnValue({}),
+		libraryOptions: {},
+		resourcesConfig: {},
+		Auth: {
+			fetchAuthSession: mockClassFetchAuthSession,
+			clearCredentials: mockClassClearCredentials,
+			getTokens: mockClassGetTokens,
+		},
+	} as unknown as AmplifyClassV6;
+
+	beforeEach(() => {
+		jest.resetAllMocks();
+		mockClassFetchAuthSession.mockResolvedValue({ credentials });
+		mockAuthenticatedHandler.mockResolvedValue(successResponse);
+		mockUnauthenticatedHandler.mockResolvedValue(successResponse);
+		mockGetRetryDecider.mockReturnValue(mockGetRetryDeciderResponse);
+	});
+
+	it('should bridge AmplifyClassV6 and call authenticatedHandler with credentials when signingServiceInfo is provided', async () => {
+		await post(mockAmplifyClassV6, {
+			url: apiGatewayUrl,
+			options: {
+				signingServiceInfo: {
+					region: 'us-east-1',
+					service: 'appsync',
+				},
+			},
+		});
+
+		// Verify the bridge correctly resolved credentials from Auth.fetchAuthSession
+		expect(mockClassFetchAuthSession).toHaveBeenCalled();
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+			{
+				url: apiGatewayUrl,
+				method: 'POST',
+				headers: {},
+			},
+			expect.objectContaining({
+				credentials,
+				region: 'us-east-1',
+				service: 'appsync',
+			}),
+		);
+	});
+
+	it('should bridge AmplifyClassV6 and call unauthenticatedHandler without signingServiceInfo', async () => {
+		await post(mockAmplifyClassV6, {
+			url: apiGatewayUrl,
+		});
+
+		expect(mockUnauthenticatedHandler).toHaveBeenCalledWith(
+			{
+				url: apiGatewayUrl,
+				method: 'POST',
+				headers: {},
+			},
+			expect.anything(),
+		);
+		expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 	});
 });
