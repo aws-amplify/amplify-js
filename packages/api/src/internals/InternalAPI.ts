@@ -10,7 +10,7 @@ import {
 	OperationTypeNode,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { Amplify, Cache } from '@aws-amplify/core';
+import { Cache, getGlobalContext } from '@aws-amplify/core';
 import {
 	ApiAction,
 	Category,
@@ -89,7 +89,7 @@ export class InternalAPIClass {
 		};
 
 		return this._graphqlApi.graphql(
-			Amplify,
+			getGlobalContext(),
 			options,
 			additionalHeaders,
 			apiUserAgentDetails,
