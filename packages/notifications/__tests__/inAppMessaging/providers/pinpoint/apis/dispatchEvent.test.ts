@@ -1,8 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 import { defaultStorage } from '@aws-amplify/core';
 
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 import {
 	dispatchEvent,
 	initializeInAppMessaging,
@@ -31,11 +36,16 @@ const mockProcessInAppMessages = processInAppMessages as jest.Mock;
 
 describe('dispatchEvent', () => {
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		initializeInAppMessaging();
 	});
 	beforeEach(() => {
 		mockGetConflictHandler.mockReturnValue(() => inAppMessages[0]);
 	});
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	afterEach(() => {
 		mockGetConflictHandler.mockReset();
 		mockDefaultStorage.setItem.mockClear();

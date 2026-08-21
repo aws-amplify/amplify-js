@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-
-import { InitializePushNotifications } from '../types';
 
 /**
  * Initialize and set up the push notification category. The category must be first initialized before all other
@@ -21,6 +20,11 @@ import { InitializePushNotifications } from '../types';
  * initializePushNotifications();
  * ```
  */
-export const initializePushNotifications: InitializePushNotifications = () => {
+export function initializePushNotifications(): void;
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export function initializePushNotifications(ctx: AmplifyContext): void;
+export function initializePushNotifications(..._args: any[]): void {
 	throw new PlatformNotSupportedError();
-};
+}

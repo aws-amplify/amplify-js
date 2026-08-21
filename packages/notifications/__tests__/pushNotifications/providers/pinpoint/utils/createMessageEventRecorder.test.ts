@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { record } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { resolveCredentials } from '../../../../../src/pushNotifications/utils';
 import { getAnalyticsEvent } from '../../../../../src/pushNotifications/providers/pinpoint/utils/getAnalyticsEvent';
@@ -15,6 +19,7 @@ import {
 	pinpointConfig,
 	simplePushMessage,
 } from '../../../../testUtils/data';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('@aws-amplify/react-native', () => ({
@@ -33,6 +38,7 @@ jest.mock('../../../../../src/pushNotifications/utils');
 
 describe('createMessageEventRecorder', () => {
 	// assert mocks
+	const mockCtx = createMockAmplifyContext();
 	const mockRecord = record as jest.Mock;
 	const mockGetAnalyticsEvent = getAnalyticsEvent as jest.Mock;
 	const mockGetChannelType = getChannelType as jest.Mock;
@@ -40,10 +46,15 @@ describe('createMessageEventRecorder', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;
 
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		mockGetAnalyticsEvent.mockReturnValue(analyticsEvent);
 		mockGetChannelType.mockReturnValue(channelType);
 		mockResolveCredentials.mockResolvedValue(credentials);
 		mockResolveConfig.mockReturnValue(pinpointConfig);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	afterEach(() => {
@@ -51,9 +62,9 @@ describe('createMessageEventRecorder', () => {
 	});
 
 	it('returns message event recorder', () => {
-		expect(createMessageEventRecorder('received_background')).toStrictEqual(
-			expect.any(Function),
-		);
+		expect(
+			createMessageEventRecorder(mockCtx, 'received_background'),
+		).toStrictEqual(expect.any(Function));
 	});
 
 	it('accepts and invokes a callback', done => {
@@ -63,6 +74,7 @@ describe('createMessageEventRecorder', () => {
 			done();
 		});
 		const recorder = createMessageEventRecorder(
+			mockCtx,
 			'received_background',
 			callback,
 		);
@@ -77,7 +89,47 @@ describe('createMessageEventRecorder', () => {
 				);
 				done();
 			});
-			const recorder = createMessageEventRecorder('received_background');
+			const recorder = createMessageEventRecorder(
+				mockCtx,
+				'received_background',
+			);
+			recorder(simplePushMessage);
+		});
+	});
+
+	describe('getter re-resolution', () => {
+		it('resolves context per invocation when a getter is provided', done => {
+			const ctxA = createMockAmplifyContext();
+			const ctxB = createMockAmplifyContext();
+			let callCount = 0;
+			const ctxGetter = () => {
+				callCount += 1;
+
+				return callCount === 1 ? ctxA : ctxB;
+			};
+
+			const recorder = createMessageEventRecorder(
+				ctxGetter,
+				'received_background',
+			);
+
+			let recordCallCount = 0;
+			mockRecord.mockImplementation(() => {
+				recordCallCount += 1;
+				if (recordCallCount === 1) {
+					expect(mockResolveCredentials).toHaveBeenCalledWith(ctxA);
+					expect(mockResolveConfig).toHaveBeenCalledWith(ctxA);
+					mockResolveCredentials.mockClear();
+					mockResolveConfig.mockClear();
+					// Invoke recorder a second time
+					recorder(simplePushMessage);
+				} else {
+					expect(mockResolveCredentials).toHaveBeenCalledWith(ctxB);
+					expect(mockResolveConfig).toHaveBeenCalledWith(ctxB);
+					done();
+				}
+			});
+
 			recorder(simplePushMessage);
 		});
 	});

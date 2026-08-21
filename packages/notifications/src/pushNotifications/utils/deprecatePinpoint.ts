@@ -29,12 +29,12 @@ const DEPRECATION_MESSAGE =
  *
  * @internal
  */
-export const deprecatePinpoint = <TArgs extends any[], TReturn>(
-	fn: (...args: TArgs) => TReturn,
-): ((...args: TArgs) => TReturn) => {
+export const deprecatePinpoint = <T extends (...args: any[]) => any>(
+	fn: T,
+): T => {
 	let warned = false;
 
-	return (...args: TArgs): TReturn => {
+	const wrapper = (...args: any[]): any => {
 		if (!warned) {
 			warned = true;
 			logger.warn(DEPRECATION_MESSAGE);
@@ -42,4 +42,6 @@ export const deprecatePinpoint = <TArgs extends any[], TReturn>(
 
 		return fn(...args);
 	};
+
+	return wrapper as unknown as T;
 };

@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getClientInfo } from '@aws-amplify/core/internals/utils';
+import {
+	clearGlobalContext,
+	getClientInfo,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { assertIsInitialized } from '../../../../../src/pushNotifications/errors/errorHelpers';
 import {
@@ -16,8 +20,12 @@ import {
 	registerDeviceInternal,
 } from '../../../../../src/pushNotifications/providers/customer-profiles/utils';
 import { channelType, pushToken } from '../../../../testUtils/data';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	getClientInfo: jest.fn(),
+}));
 jest.mock('@aws-amplify/react-native', () => ({
 	getOperatingSystem: jest.fn(),
 	loadAsyncStorage: jest.fn(),
@@ -42,6 +50,14 @@ describe('registerDevice (customer-profiles, native)', () => {
 	const mockGetDeviceId = getDeviceId as jest.Mock;
 	const mockGetToken = getToken as jest.Mock;
 	const mockRegisterDeviceInternal = registerDeviceInternal as jest.Mock;
+
+	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	beforeEach(() => {
 		mockGetClientInfo.mockReturnValue({ platform: 'ios' });
@@ -73,7 +89,7 @@ describe('registerDevice (customer-profiles, native)', () => {
 
 		expect(mockGetDeviceId).toHaveBeenCalledTimes(1);
 		expect(mockRegisterDeviceInternal).toHaveBeenCalledTimes(1);
-		expect(mockRegisterDeviceInternal).toHaveBeenCalledWith({
+		expect(mockRegisterDeviceInternal).toHaveBeenCalledWith(expect.anything(), {
 			token: pushToken,
 			deviceId: DEVICE_ID,
 			platform: 'ios',

@@ -1,8 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 import { Hub } from '@aws-amplify/core';
 
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 import {
 	notifyEventListeners,
 	notifyEventListenersAndAwaitHandlers,
@@ -27,6 +32,7 @@ import {
 } from '../../../../testUtils/data';
 
 jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
 	ConsoleLogger: jest.fn(() => ({
 		info: jest.fn(),
 		error: jest.fn(),
@@ -107,6 +113,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 	};
 
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		({
 			initializePushNotifications,
 		} = require('../../../../../src/pushNotifications/providers/customer-profiles/apis/initializePushNotifications.native'));
@@ -118,6 +125,10 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 	beforeEach(() => {
 		mockGetConstants.mockReturnValue(pushModuleConstants);
 		mockIsInitialized.mockReturnValue(false);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	afterEach(() => {
@@ -279,7 +290,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 							'tokenReceived',
 							pushToken,
 						);
-						expect(mockRegisterDevice).toHaveBeenCalledWith({
+						expect(mockRegisterDevice).toHaveBeenCalledWith(expect.anything(), {
 							token: pushToken,
 						});
 						expect(mockResolveInflightDeviceRegistration).toHaveBeenCalled();
@@ -357,7 +368,9 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 			await Promise.resolve();
 
 			expect(mockRegisterDevice).toHaveBeenCalledTimes(1);
-			expect(mockRegisterDevice).toHaveBeenCalledWith({ token: pushToken });
+			expect(mockRegisterDevice).toHaveBeenCalledWith(expect.anything(), {
+				token: pushToken,
+			});
 		});
 
 		it('does NOT re-register when no token has been received yet', () => {

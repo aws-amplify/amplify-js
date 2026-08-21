@@ -1,8 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, Hub, fetchAuthSession } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
+import { Hub, fetchAuthSession } from '@aws-amplify/core';
 
+import { createMockAmplifyContext } from '../../../testUtils/createMockAmplifyContext';
 import { customerProfilesConfig, pushToken } from '../../../testUtils/data';
 
 jest.mock('@aws-amplify/core', () => ({
@@ -70,10 +75,10 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	const mockFetch = jest.fn();
 
 	interface LoadedProvider {
-		initializePushNotifications(): void;
+		initializePushNotifications(ctx: any): void;
 		setToken(token: string): void;
-		registerDevice(input: { token: string }): Promise<void>;
-		removeDevice(): Promise<void>;
+		registerDevice(ctx: any, input: { token: string }): Promise<void>;
+		removeDevice(ctx: any): Promise<void>;
 	}
 
 	// The initializer, token manager, initialization manager and deviceId resolver
@@ -123,18 +128,31 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 		}));
 
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		(global as any).fetch = mockFetch;
 	});
 
-	beforeEach(() => {
-		jest.spyOn(Amplify, 'getConfig').mockReturnValue({
+	const makeTestCtx = () => {
+		const ctx = createMockAmplifyContext({
 			Notifications: {
 				PushNotification: { CustomerProfiles: customerProfilesConfig } as any,
 			},
 		});
+		// Wire the ctx's fetchAuthSession to the test's mock so credential
+		// assertions reflect the configured identity.
+		(ctx as any).fetchAuthSession = mockFetchAuthSession;
+
+		return ctx;
+	};
+
+	beforeEach(() => {
 		jest.spyOn(Hub, 'listen');
 		mockFetch.mockResolvedValue({ ok: true, status: 200 });
 		signInAs(AUTH_IDENTITY_ID);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	afterEach(() => {
@@ -146,7 +164,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	describe('sign-in re-registration (Hub listener)', () => {
 		it('re-registers the device, signing with the now-authenticated identity', async () => {
 			const { initializePushNotifications, setToken } = loadProvider();
-			initializePushNotifications();
+			initializePushNotifications(makeTestCtx());
 			setToken(pushToken);
 
 			// A returning user signs in: the push token is unchanged so the native
@@ -182,7 +200,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 
 		it('does NOT reach the network when no token has been received yet', async () => {
 			const { initializePushNotifications } = loadProvider();
-			initializePushNotifications();
+			initializePushNotifications(makeTestCtx());
 
 			getAuthListener()({ payload: { event: 'signedIn' } });
 			await flushMicrotasks();
@@ -193,7 +211,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 
 		it('does NOT attempt a removal on signedOut (removal after sign-out cannot work)', async () => {
 			const { initializePushNotifications, setToken } = loadProvider();
-			initializePushNotifications();
+			initializePushNotifications(makeTestCtx());
 			setToken(pushToken);
 
 			// After `signOut` the session is a brand-new guest identity — a removal
@@ -210,7 +228,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	describe('credential path: the identity that signs each call', () => {
 		const initializeProvider = (): LoadedProvider => {
 			const provider = loadProvider();
-			provider.initializePushNotifications();
+			provider.initializePushNotifications(makeTestCtx());
 			provider.setToken(pushToken);
 
 			return provider;
@@ -220,7 +238,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 			const { registerDevice } = initializeProvider();
 			signInAs(AUTH_IDENTITY_ID);
 
-			await registerDevice({ token: pushToken });
+			await registerDevice(makeTestCtx(), { token: pushToken });
 
 			const [request] = signedRequests();
 			expect(request.url).toBe(
@@ -234,6 +252,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 			);
 			// The client never sends an identity — the backend derives principalId
 			// from the signer.
+
 			expect(JSON.stringify(request.body)).not.toContain(AUTH_IDENTITY_ID);
 		});
 
@@ -241,11 +260,11 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 			const { registerDevice, removeDevice } = initializeProvider();
 
 			signInAs(AUTH_IDENTITY_ID);
-			await registerDevice({ token: pushToken });
+			await registerDevice(makeTestCtx(), { token: pushToken });
 
 			// Sign-out replaces the session with a fresh guest identity.
 			signInAs(GUEST_IDENTITY_ID);
-			await removeDevice();
+			await removeDevice(makeTestCtx());
 
 			const [registerRequest, removeRequest] = signedRequests();
 			expect(registerRequest.authorization).toContain(
@@ -268,8 +287,8 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 			const { registerDevice, removeDevice } = initializeProvider();
 			signInAs(AUTH_IDENTITY_ID);
 
-			await registerDevice({ token: pushToken });
-			await removeDevice();
+			await registerDevice(makeTestCtx(), { token: pushToken });
+			await removeDevice(makeTestCtx());
 
 			const [registerRequest, removeRequest] = signedRequests();
 			expect(registerRequest.body.device.deviceId).toBe(DEVICE_ID);
@@ -288,9 +307,9 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 				credentials: undefined,
 			});
 
-			await expect(registerDevice({ token: pushToken })).rejects.toThrow(
-				'Credentials should not be empty.',
-			);
+			await expect(
+				registerDevice(makeTestCtx(), { token: pushToken }),
+			).rejects.toThrow('Credentials should not be empty.');
 			expect(mockFetch).not.toHaveBeenCalled();
 		});
 	});
