@@ -1,5 +1,9 @@
 import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { record } from '../../../../src/providers/pinpoint';
 import {
@@ -12,6 +16,7 @@ import {
 	getAnalyticsUserAgentString,
 	isAnalyticsEnabled,
 } from '../../../../src/utils';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 import {
 	appId,
@@ -22,10 +27,21 @@ import {
 	region,
 } from './testUtils/data';
 
-jest.mock('@aws-amplify/core');
+// Partially mock core so `Hub.dispatch` can be asserted while keeping the real
+// AmplifyContext brand (required by `resolveCtxArgs` to recognize the mock context).
+jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
+	Hub: { dispatch: jest.fn() },
+}));
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/pinpoint/utils');
+
+setGlobalContext(createMockAmplifyContext());
+
+afterAll(() => {
+	clearGlobalContext();
+});
 
 describe('Pinpoint API: record', () => {
 	// create spies

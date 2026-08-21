@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	getEventBuffer,
@@ -14,9 +18,16 @@ import {
 } from '../../../testUtils/mockConstants';
 import { record } from '../../../../src/providers/kinesis-firehose';
 import { RecordInput as KinesisFirehoseRecordInput } from '../../../../src/providers/kinesis-firehose/types';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis-firehose/utils');
+
+setGlobalContext(createMockAmplifyContext());
+
+afterAll(() => {
+	clearGlobalContext();
+});
 
 describe('Analytics KinesisFirehose API: record', () => {
 	const mockRecordInput: KinesisFirehoseRecordInput = {

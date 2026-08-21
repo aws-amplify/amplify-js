@@ -1,15 +1,32 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import { deprecatePinpoint } from '../../src/utils/deprecatePinpoint';
+// The deprecated default export is imported on purpose — the test verifies the
+// wrapper's typing on the real wrapped API.
+// eslint-disable-next-line import/no-deprecated
+import { record } from '../../src';
+import { RecordInput } from '../../src/providers/pinpoint';
 
 describe('deprecatePinpoint', () => {
 	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
 
 	beforeEach(() => {
 		loggerWarnSpy.mockClear();
+	});
+
+	it('preserves context overloads on wrapped APIs (compile-time check)', () => {
+		// `record` from the package index is wrapped with deprecatePinpoint. Both
+		// the `fn(input)` and `fn(ctx, input)` call signatures must survive the
+		// wrapper — these assignments fail to compile if either overload is lost.
+		const inputOverload: (input: RecordInput) => void = record;
+		const ctxOverload: (ctx: AmplifyContext, input: RecordInput) => void =
+			record;
+
+		expect(inputOverload).toBe(record);
+		expect(ctxOverload).toBe(record);
 	});
 
 	it('delegates arguments and return value transparently', () => {

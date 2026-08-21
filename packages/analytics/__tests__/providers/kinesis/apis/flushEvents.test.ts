@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
 import { resolveCredentials } from '../../../../src/utils';
@@ -11,10 +15,17 @@ import {
 } from '../../../testUtils/mockConstants';
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
 import { flushEvents } from '../../../../src/providers/kinesis/apis';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
 jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
+
+setGlobalContext(createMockAmplifyContext());
+
+afterAll(() => {
+	clearGlobalContext();
+});
 
 describe('Analytics Kinesis API: flushEvents', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;

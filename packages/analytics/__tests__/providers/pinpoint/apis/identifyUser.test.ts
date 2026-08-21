@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { identifyUser } from '../../../../src/providers/pinpoint/apis';
 import { IdentifyUserInput } from '../../../../src/providers/pinpoint/types';
@@ -10,10 +14,17 @@ import {
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
 import { getAnalyticsUserAgentString } from '../../../../src/utils/userAgent';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('../../../../src/utils/userAgent');
+
+setGlobalContext(createMockAmplifyContext());
+
+afterAll(() => {
+	clearGlobalContext();
+});
 
 describe('Analytics Pinpoint Provider API: identifyUser', () => {
 	const credentials = {

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext, isAmplifyContext } from '@aws-amplify/core';
 import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/pinpoint';
 
 import { AnalyticsValidationErrorCode } from '../../../errors';
@@ -20,15 +21,25 @@ import { record } from './record';
 // Configured Tracker instances for Pinpoint
 const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
 
-// Callback that will emit an appropriate event to Pinpoint when required by the Tracker
+// Callback that will emit an appropriate event to Pinpoint when required by the Tracker.
+// When no explicit context was supplied to `configureAutoTrack`, the context is
+// deliberately NOT captured here — `record` resolves the global context lazily at
+// emit time, so auto-tracked events follow the live configuration and trackers can
+// be set up before `Amplify.configure()` is called.
 const emitTrackingEvent = (
+	ctx: AmplifyContext | undefined,
 	eventName: string,
 	attributes: TrackerAttributes,
 ) => {
-	record({
+	const input = {
 		name: eventName,
 		attributes,
-	});
+	};
+	if (ctx) {
+		record(ctx, input);
+	} else {
+		record(input);
+	}
 };
 
 /**
@@ -46,9 +57,27 @@ const emitTrackingEvent = (
  * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library
  *  configuration is incorrect.
  */
-export const configureAutoTrack = (input: ConfigureAutoTrackInput): void => {
+export function configureAutoTrack(input: ConfigureAutoTrackInput): void;
+export function configureAutoTrack(
+	ctx: AmplifyContext,
+	input: ConfigureAutoTrackInput,
+): void;
+export function configureAutoTrack(...args: any[]): void {
+	// Resolve the optional leading context WITHOUT falling back to the global
+	// context. The context is only needed when events are emitted; resolving it
+	// eagerly would (a) throw when trackers are configured before
+	// `Amplify.configure()` and (b) pin auto-tracked events to the configuration
+	// snapshot captured at setup time after a later `configure()` call.
+	const [ctx, input] = isAmplifyContext(args[0])
+		? [args[0] as AmplifyContext, args[1] as ConfigureAutoTrackInput]
+		: [undefined, args[0] as ConfigureAutoTrackInput];
+
 	validateTrackerConfiguration(input);
 
 	// Initialize or update this provider's trackers
-	updateProviderTrackers(input, emitTrackingEvent, configuredTrackers);
-};
+	updateProviderTrackers(
+		input,
+		emitTrackingEvent.bind(null, ctx),
+		configuredTrackers,
+	);
+}
