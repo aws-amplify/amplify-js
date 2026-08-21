@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { flushEvents as pinpointFlushEvents } from '@aws-amplify/core/internals/providers/pinpoint';
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import {
+	AnalyticsAction,
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
 
 import { flushEvents } from '../../../../src';
@@ -11,11 +15,18 @@ import {
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
 import { getAnalyticsUserAgentString } from '../../../../src/utils';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 import { config, credentials, identityId } from './testUtils/data';
 
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
+
+setGlobalContext(createMockAmplifyContext());
+
+afterAll(() => {
+	clearGlobalContext();
+});
 
 describe('Pinpoint API: flushEvents', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;

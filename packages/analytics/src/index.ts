@@ -4,8 +4,9 @@
 // This entry point intentionally re-exports the deprecated Pinpoint provider
 // APIs as the default Analytics surface. Removing them would be a breaking
 // change; instead each is wrapped to emit a one-time runtime deprecation
-// warning. The deprecated imports below are therefore expected.
-/* eslint-disable import/no-deprecated */
+// warning. The deprecated imports below are therefore expected. (Note: the
+// `import/no-deprecated` rule no longer detects these since the APIs became
+// overloaded function declarations, so no disable directive is needed.)
 import {
 	configureAutoTrack as configureAutoTrackPinpoint,
 	flushEvents as flushEventsPinpoint,

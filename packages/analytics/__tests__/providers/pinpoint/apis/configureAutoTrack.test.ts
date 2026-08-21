@@ -7,8 +7,13 @@ import {
 	PageViewTracker,
 	SessionTracker,
 } from '../../../../src/trackers';
+import { record } from '../../../../src/providers/pinpoint/apis/record';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/trackers');
+jest.mock('../../../../src/providers/pinpoint/apis/record');
+
+const mockCtx = createMockAmplifyContext();
 
 const MOCK_INPUT = {
 	enable: true,
@@ -21,6 +26,7 @@ const MOCK_INPUT = {
 } as ConfigureAutoTrackInput;
 
 describe('Pinpoint API: configureAutoTrack', () => {
+	const mockRecord = record as jest.Mock;
 	const MockEventTracker = EventTracker as jest.MockedClass<
 		typeof EventTracker
 	>;
@@ -35,6 +41,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 		MockEventTracker.mockClear();
 		MockPageViewTracker.mockClear();
 		MockSessionTracker.mockClear();
+		mockRecord.mockClear();
 	});
 
 	it('Validates the tracker configuration', () => {
@@ -109,6 +116,55 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			expect.any(Function),
 			testInput.options,
 		);
+	});
+
+	it('accepts an explicitly provided context and threads it through to record', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/pinpoint/apis');
+
+			configureAutoTrack(mockCtx, MOCK_INPUT);
+		});
+
+		expect(MockEventTracker).toHaveBeenCalledWith(
+			expect.any(Function),
+			MOCK_INPUT.options,
+		);
+
+		// Fire the recorder callback handed to the tracker and confirm the
+		// explicit context actually reaches record().
+		const emitTrackingEvent = MockEventTracker.mock.calls[0][0];
+		emitTrackingEvent('my-event', { foo: 'bar' });
+
+		expect(mockRecord).toHaveBeenCalledWith(mockCtx, {
+			name: 'my-event',
+			attributes: { foo: 'bar' },
+		});
+	});
+
+	it('can be configured before Amplify.configure (no global context)', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/pinpoint/apis');
+
+			// The isolated registry has NO global context set — tracker setup must
+			// not resolve the context eagerly, so this must not throw.
+			expect(() => {
+				configureAutoTrack(MOCK_INPUT);
+			}).not.toThrow();
+		});
+
+		// On the global-fallback path record is called WITHOUT a captured context,
+		// so it resolves the live global context lazily at emit time.
+		const emitTrackingEvent = MockEventTracker.mock.calls[0][0];
+		emitTrackingEvent('my-event', { foo: 'bar' });
+
+		expect(mockRecord).toHaveBeenCalledWith({
+			name: 'my-event',
+			attributes: { foo: 'bar' },
+		});
 	});
 
 	it('Reconfigures an existing tracker', () => {

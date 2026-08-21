@@ -8,9 +8,12 @@ import {
 	SessionTracker,
 } from '../../../../src/trackers';
 import { record } from '../../../../src/providers/kinesis-firehose/apis/record';
+import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/trackers');
 jest.mock('../../../../src/providers/kinesis-firehose/apis/record');
+
+const mockCtx = createMockAmplifyContext();
 
 const MOCK_STREAM_NAME = 'stream0';
 
@@ -165,7 +168,9 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 			configureAutoTrack(MOCK_INPUT);
 		});
 
-		// The recorder callback passed to the tracker should emit to the configured stream
+		// The recorder callback passed to the tracker should emit to the configured stream.
+		// No context was supplied, so record must be called WITHOUT a captured context —
+		// it resolves the global context lazily at emit time (live config).
 		const emitTrackingEvent = MockEventTracker.mock.calls[0][0];
 		emitTrackingEvent('my-event', { foo: 'bar' });
 
@@ -175,6 +180,41 @@ describe('Kinesis Firehose API: configureAutoTrack', () => {
 				name: 'my-event',
 				attributes: { foo: 'bar' },
 			},
+		});
+	});
+
+	it('passes an explicitly provided context through to record', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/kinesis-firehose/apis');
+
+			configureAutoTrack(mockCtx, MOCK_INPUT);
+		});
+
+		const emitTrackingEvent = MockEventTracker.mock.calls[0][0];
+		emitTrackingEvent('my-event', { foo: 'bar' });
+
+		expect(mockRecord).toHaveBeenCalledWith(mockCtx, {
+			streamName: MOCK_STREAM_NAME,
+			data: {
+				name: 'my-event',
+				attributes: { foo: 'bar' },
+			},
+		});
+	});
+
+	it('can be configured before Amplify.configure (no global context)', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/kinesis-firehose/apis');
+
+			// The isolated registry has NO global context set — tracker setup must
+			// not resolve the context eagerly, so this must not throw.
+			expect(() => {
+				configureAutoTrack(MOCK_INPUT);
+			}).not.toThrow();
 		});
 	});
 
