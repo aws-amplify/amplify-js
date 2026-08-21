@@ -11,7 +11,7 @@ import {
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import {
 	InteractionsMessage,
@@ -69,13 +69,14 @@ class AWSLexProvider {
 	}
 
 	async sendMessage(
+		ctx: AmplifyContext,
 		botConfig: AWSLexProviderOption,
 		message: string | InteractionsMessage,
 	): Promise<InteractionsResponse> {
 		// check if credentials are present
 		let session;
 		try {
-			session = await fetchAuthSession();
+			session = await ctx.fetchAuthSession();
 		} catch (error) {
 			return Promise.reject(new Error('No credentials'));
 		}

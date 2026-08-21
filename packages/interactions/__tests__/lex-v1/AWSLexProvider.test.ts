@@ -7,9 +7,7 @@ import {
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import { lexProvider } from '../../src/lex-v1/AWSLexProvider';
-import { fetchAuthSession } from '@aws-amplify/core';
-
-jest.mock('@aws-amplify/core');
+import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
 (global as any).Response = class Response {
 	arrayBuffer(blob: Blob) {
@@ -45,7 +43,8 @@ const credentials = {
 	identityId: 'identity-id',
 };
 
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockCtx = createMockAmplifyContext();
+const mockFetchAuthSession = mockCtx.fetchAuthSession as jest.Mock;
 
 LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof PostTextCommand) {
@@ -158,13 +157,13 @@ describe('Interactions', () => {
 		});
 
 		test('send simple text message to bot and fulfill', async () => {
-			let response = await provider.sendMessage(botConfig.BookTrip, 'hi');
+			let response = await provider.sendMessage(mockCtx, botConfig.BookTrip, 'hi');
 			expect(response).toEqual({
 				dialogState: 'ElicitSlot',
 				message: 'echo:hi',
 			});
 
-			response = await provider.sendMessage(botConfig.BookTrip, 'done');
+			response = await provider.sendMessage(mockCtx, botConfig.BookTrip, 'done');
 			expect(response).toEqual({
 				dialogState: 'ReadyForFulfillment',
 				message: 'echo:done',
@@ -177,7 +176,7 @@ describe('Interactions', () => {
 		});
 
 		test('send obj text message to bot and fulfill', async () => {
-			let response = await provider.sendMessage(botConfig.BookTrip, {
+			let response = await provider.sendMessage(mockCtx, botConfig.BookTrip, {
 				content: 'hi',
 				options: {
 					messageType: 'text',
@@ -189,7 +188,7 @@ describe('Interactions', () => {
 				audioStream: new Uint8Array(),
 			});
 
-			response = await provider.sendMessage(botConfig.BookTrip, {
+			response = await provider.sendMessage(mockCtx, botConfig.BookTrip, {
 				content: 'done',
 				options: {
 					messageType: 'text',
@@ -221,7 +220,7 @@ describe('Interactions', () => {
 				},
 			};
 
-			let response = await provider.sendMessage(botconfig['BookTrip:hi'], {
+			let response = await provider.sendMessage(mockCtx, botconfig['BookTrip:hi'], {
 				content: createBlob(),
 				options: {
 					messageType: 'voice',
@@ -233,7 +232,7 @@ describe('Interactions', () => {
 				audioStream: new Uint8Array(),
 			});
 
-			response = await provider.sendMessage(botconfig['BookTrip:done'], {
+			response = await provider.sendMessage(mockCtx, botconfig['BookTrip:done'], {
 				content: createBlob(),
 				options: {
 					messageType: 'voice',
@@ -255,7 +254,7 @@ describe('Interactions', () => {
 			mockFetchAuthSession.mockReturnValue(Promise.reject(new Error()));
 
 			await expect(
-				provider.sendMessage(botConfig.BookTrip, 'hi'),
+				provider.sendMessage(mockCtx, botConfig.BookTrip, 'hi'),
 			).rejects.toThrow('No credentials');
 			expect.assertions(1);
 		});
@@ -263,7 +262,7 @@ describe('Interactions', () => {
 		test('send obj text and obj voice messages in wrong format', async () => {
 			// obj text in wrong format
 			await expect(
-				provider.sendMessage(botConfig.BookTrip, {
+				provider.sendMessage(mockCtx, botConfig.BookTrip, {
 					content: createBlob(),
 					options: {
 						messageType: 'text',
@@ -273,7 +272,7 @@ describe('Interactions', () => {
 
 			// obj voice in wrong format
 			await expect(
-				provider.sendMessage(botConfig.BookTrip, {
+				provider.sendMessage(mockCtx, botConfig.BookTrip, {
 					content: 'Hi',
 					options: {
 						messageType: 'voice',
@@ -345,16 +344,19 @@ describe('Interactions', () => {
 
 			// mock responses
 			inProgressResp = (await provider.sendMessage(
+				mockCtx,
 				botConfig.BookTrip,
 				'hi',
 			)) as PostTextCommandOutput;
 
 			completeSuccessResp = (await provider.sendMessage(
+				mockCtx,
 				botConfig.BookTrip,
 				'done',
 			)) as PostTextCommandOutput;
 
 			completeFailResp = (await provider.sendMessage(
+				mockCtx,
 				botConfig.BookTrip,
 				'error',
 			)) as PostTextCommandOutput;
