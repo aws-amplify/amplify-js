@@ -14,7 +14,7 @@ import {
 	amplifyUuid,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import { convert, unGzipBase64AsJson } from '../utils';
 import {
@@ -65,18 +65,20 @@ class AWSLexV2Provider {
 	/**
 	 * Send a message to a bot
 	 * @async
+	 * @param {AmplifyContext} ctx - Amplify context used to resolve credentials
 	 * @param {AWSLexV2ProviderOption} botConfig - Bot configuration for sending the message
 	 * @param {string | InteractionsMessage} message - message to send to the bot
 	 * @return {Promise<InteractionsResponse>} A promise resolves to the response from the bot
 	 */
 	public async sendMessage(
+		ctx: AmplifyContext,
 		botConfig: AWSLexV2ProviderOption,
 		message: string | InteractionsMessage,
 	): Promise<InteractionsResponse> {
 		// check if credentials are present
 		let session;
 		try {
-			session = await fetchAuthSession();
+			session = await ctx.fetchAuthSession();
 		} catch (error) {
 			return Promise.reject(new Error('No credentials'));
 		}

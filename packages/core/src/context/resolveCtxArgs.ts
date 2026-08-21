@@ -25,14 +25,26 @@ import { getGlobalContext } from './globalContext';
 export function resolveCtxArgs<T extends unknown[]>(
 	args: unknown[],
 ): [AmplifyContext, ...T] {
+	if (isAmplifyContext(args[0])) {
+		return [args[0], ...args.slice(1)] as [AmplifyContext, ...T];
+	}
+
+	// Guard against mis-ordered calls (e.g. `send(input, ctx)` from untyped JS):
+	// a context anywhere but the first position would otherwise be silently
+	// treated as a regular argument while the call falls back to the global context.
+	// Checked before the undefined-first-arg guard so the more specific message
+	// wins whenever a context actually exists somewhere in `args`.
+	if (args.some(isAmplifyContext)) {
+		throw new Error(
+			'AmplifyContext must be passed as the first argument. ' +
+				'Found an AmplifyContext in a later position — check the argument order.',
+		);
+	}
+
 	if (args.length > 1 && args[0] === undefined) {
 		throw new Error(
 			'Undefined AmplifyContext passed. Call configure() first or omit the parameter.',
 		);
-	}
-
-	if (isAmplifyContext(args[0])) {
-		return [args[0], ...args.slice(1)] as [AmplifyContext, ...T];
 	}
 
 	return [getGlobalContext(), ...args] as [AmplifyContext, ...T];

@@ -89,6 +89,45 @@ describe('resolveCtxArgs', () => {
 		});
 	});
 
+	describe('mis-ordered context guard', () => {
+		it('throws when a context is passed in a later position (e.g. fn(input, ctx))', () => {
+			setGlobalContext(makeBrandedContext());
+			const ctx = makeBrandedContext();
+			expect(() => resolveCtxArgs([{ username: 'test' }, ctx])).toThrow(
+				'AmplifyContext must be passed as the first argument',
+			);
+		});
+
+		it('throws even when no global context is set', () => {
+			const ctx = makeBrandedContext();
+			expect(() => resolveCtxArgs(['arg1', ctx, 'arg2'])).toThrow(
+				'AmplifyContext must be passed as the first argument',
+			);
+		});
+
+		it('wins over the undefined-first-arg guard when a context exists later', () => {
+			const ctx = makeBrandedContext();
+			expect(() => resolveCtxArgs([undefined, ctx])).toThrow(
+				'AmplifyContext must be passed as the first argument',
+			);
+		});
+
+		it('does NOT throw for plain object args that are not branded contexts', () => {
+			const globalCtx = makeBrandedContext();
+			setGlobalContext(globalCtx);
+			const unbranded = {
+				resourcesConfig: {},
+				libraryOptions: {},
+				fetchAuthSession: jest.fn(),
+				clearCredentials: jest.fn(),
+				getTokens: jest.fn(),
+			};
+			const [resolved, opts] = resolveCtxArgs([unbranded]);
+			expect(resolved).toBe(globalCtx);
+			expect(opts).toBe(unbranded);
+		});
+	});
+
 	describe('multi-arg scenarios', () => {
 		it('returns all remaining args when context is first', () => {
 			const ctx = makeBrandedContext();
