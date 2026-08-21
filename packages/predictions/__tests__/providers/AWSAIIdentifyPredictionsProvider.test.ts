@@ -1,4 +1,3 @@
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
@@ -40,23 +39,13 @@ import {
 } from '../../src/types';
 import { BlockList } from '../../src/types/AWSTypes';
 
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
-const mockGetUrl = getUrl as jest.Mock;
-
-jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
-	Amplify: {
-		getConfig: jest.fn(),
-	},
-	ConsoleLogger: jest.fn(() => ({
-		debug: jest.fn(),
-	})),
-}));
+import { createMockAmplifyContext } from '../testUtils';
 
 jest.mock('@aws-amplify/storage', () => ({
 	getUrl: jest.fn(),
 }));
+
+const mockGetUrl = getUrl as jest.Mock;
 
 // valid response
 RekognitionClient.prototype.send = jest.fn(command => {
@@ -272,37 +261,38 @@ const options = {
 	},
 };
 
-mockFetchAuthSession.mockResolvedValue({
-	credentials,
-	identityId,
-});
-mockGetConfig.mockReturnValue({
-	Predictions: {
-		identify: options,
-	},
-});
-mockGetUrl.mockImplementation(({ key, options }) => {
-	console.log(key, options);
-	const level = options?.accessLevel || 'guest';
+mockGetUrl.mockImplementation((...args: any[]) => {
+	// Handle ctx-aware overload: getUrl(ctx, { key, options })
+	const input = args.length === 2 ? args[1] : args[0];
+	const { key, options: storageOptions } = input;
+	const level = storageOptions?.accessLevel || 'guest';
 	let url: URL;
 	if (level === 'guest') {
 		url = new URL(
 			`https://bucket-name.s3.us-west-2.amazonaws.com/public/${key}?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
 	} else {
-		const identityId = options?.targetIdentityId || 'identityId';
+		const targetIdentityId = storageOptions?.targetIdentityId || 'identityId';
 		url = new URL(
-			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${identityId}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
+			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${targetIdentityId}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
 	}
 	return Promise.resolve({ url });
 });
 
 describe('Predictions identify provider test', () => {
-	let predictionsProvider;
+	let predictionsProvider: AmazonAIIdentifyPredictionsProvider;
+	let ctx: ReturnType<typeof createMockAmplifyContext>;
 
 	beforeAll(() => {
-		predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
+		ctx = createMockAmplifyContext({
+			Predictions: { identify: options },
+		});
+		(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
+			credentials,
+			identityId,
+		});
+		predictionsProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
 	});
 	describe('identifyText tests', () => {
 		describe('identifyText::PLAIN tests', () => {
@@ -324,7 +314,7 @@ describe('Predictions identify provider test', () => {
 			});
 
 			test('error case no credentials', () => {
-				mockFetchAuthSession.mockResolvedValueOnce({});
+				(ctx.fetchAuthSession as jest.Mock).mockResolvedValueOnce({});
 
 				expect(predictionsProvider.identify(detectTextInput)).rejects.toThrow(
 					expect.objectContaining(
@@ -411,7 +401,7 @@ describe('Predictions identify provider test', () => {
 				).resolves.toMatchObject(expected);
 			});
 			test('error case credentials do not exist', () => {
-				mockFetchAuthSession.mockResolvedValueOnce({});
+				(ctx.fetchAuthSession as jest.Mock).mockResolvedValueOnce({});
 
 				expect(predictionsProvider.identify(detectLabelInput)).rejects.toThrow(
 					expect.objectContaining(
@@ -518,7 +508,7 @@ describe('Predictions identify provider test', () => {
 			});
 
 			test('error case credentials do not exist', () => {
-				mockFetchAuthSession.mockResolvedValueOnce({});
+				(ctx.fetchAuthSession as jest.Mock).mockResolvedValueOnce({});
 
 				expect(predictionsProvider.identify(detectFacesInput)).rejects.toThrow(
 					expect.objectContaining(
@@ -716,7 +706,7 @@ describe('Predictions identify provider test', () => {
 		test('error case invalid input source', () => {
 			const detectLabelInput = {
 				labels: { source: null, type: 'LABELS' },
-			};
+			} as unknown as IdentifyLabelsInput;
 			expect(predictionsProvider.identify(detectLabelInput)).rejects.toThrow(
 				'not configured correctly',
 			);
@@ -725,7 +715,7 @@ describe('Predictions identify provider test', () => {
 
 	describe('custom user agent', () => {
 		test('identify for label initializes a client with the correct custom user agent', async () => {
-			predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
+			predictionsProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
 			jest.spyOn(TextractClient.prototype, 'send');
 			jest.spyOn(RekognitionClient.prototype, 'send');
 			const fileInput = new File([Buffer.from('file')], 'file');
@@ -735,7 +725,7 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectLabelInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent,
+				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -744,7 +734,7 @@ describe('Predictions identify provider test', () => {
 			);
 		});
 		test('identify for entities initializes a client with the correct custom user agent', async () => {
-			predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
+			predictionsProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
 			jest.spyOn(TextractClient.prototype, 'send');
 			jest.spyOn(RekognitionClient.prototype, 'send');
 			const detectFacesInput: IdentifyEntitiesInput = {
@@ -758,7 +748,7 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectFacesInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent,
+				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -767,7 +757,7 @@ describe('Predictions identify provider test', () => {
 			);
 		});
 		test('identify for text initializes a client with the correct custom user agent', async () => {
-			predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
+			predictionsProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
 			jest.spyOn(TextractClient.prototype, 'send');
 			jest.spyOn(RekognitionClient.prototype, 'send');
 			const detectTextInput: IdentifyTextInput = {
@@ -776,7 +766,7 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectTextInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent,
+				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -784,7 +774,9 @@ describe('Predictions identify provider test', () => {
 				}),
 			);
 
-			expect(predictionsProvider.textractClient.config.customUserAgent).toEqual(
+			expect(
+				(predictionsProvider as any).textractClient.config.customUserAgent,
+			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
