@@ -197,6 +197,10 @@ export type CustomUserAgentStateMap = Record<string, CategoryUserAgentStateMap>;
 
 export type AdditionalDetails = [string, string?][];
 
+export type UserAgentPair = [name: string, version?: string];
+
+export type UserAgent = UserAgentPair[];
+
 export interface StorageUserAgentInput {
 	category: Category.Storage;
 	apis: StorageAction[];

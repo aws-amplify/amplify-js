@@ -1,13 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
-
-import { CustomUserAgentDetails, Framework } from './types';
+import { CustomUserAgentDetails, Framework, UserAgent } from './types';
 import { version } from './version';
 import { detectFramework, observeFrameworkChanges } from './detectFramework';
 import { getCustomUserAgent } from './customUserAgent';
-
 const BASE_USER_AGENT = `aws-amplify`;
 
 /** Sanitize Amplify version string be removing special character + and character post the special character  */
@@ -37,11 +34,10 @@ export const Platform = new PlatformBuilder();
 export const getAmplifyUserAgentObject = ({
 	category,
 	action,
-}: CustomUserAgentDetails = {}): AWSUserAgent => {
-	const userAgent: AWSUserAgent = [
+}: CustomUserAgentDetails = {}): UserAgent => {
+	const userAgent: UserAgent = [
 		[BASE_USER_AGENT, sanitizeAmplifyVersion(version)],
 	];
-
 	if (category) {
 		userAgent.push([category, action]);
 	}

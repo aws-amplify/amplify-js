@@ -104,9 +104,9 @@ export {
 	InAppMessagingUserAgentInput,
 	GeoUserAgentInput,
 	AiUserAgentInput,
+	UserAgent,
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
-
 // Error handling
 export {
 	AmplifyError,
