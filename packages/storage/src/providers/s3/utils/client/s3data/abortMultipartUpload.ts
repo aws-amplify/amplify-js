@@ -5,6 +5,7 @@ import {
 	Endpoint,
 	HttpRequest,
 	HttpResponse,
+	MetadataBearer,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
@@ -12,7 +13,6 @@ import {
 	AmplifyUrl,
 	AmplifyUrlSearchParams,
 } from '@aws-amplify/core/internals/utils';
-import { MetadataBearer } from '@aws-sdk/types';
 
 import {
 	assignStringVariables,
