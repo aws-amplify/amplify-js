@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { PushNotificationError } from '../../../errors';
 import { PushNotificationValidationErrorCode } from '../../../errors/errorHelpers';
@@ -18,8 +18,8 @@ import { PushNotificationValidationErrorCode } from '../../../errors/errorHelper
  *
  * @internal
  */
-export const resolveCredentials = async () => {
-	const { credentials } = await fetchAuthSession();
+export const resolveCredentials = async (ctx: AmplifyContext) => {
+	const { credentials } = await ctx.fetchAuthSession();
 
 	// Explicit throw (not assert) so TypeScript narrows `credentials` to
 	// non-undefined for the returned value.

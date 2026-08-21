@@ -2,13 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
-import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
+import {
+	PushNotificationAction,
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { PushNotificationError } from '../../../../../src/pushNotifications/errors';
 import { signedFetch } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/signedFetch';
 import { resolveConfig } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/resolveConfig';
 import { resolveCredentials } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/resolveCredentials';
 import { customerProfilesConfig } from '../../../../testUtils/data';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 jest.mock(
@@ -31,12 +36,14 @@ describe('signedFetch (customer-profiles transport)', () => {
 		host: 'abcd1234.execute-api.us-east-1.amazonaws.com',
 		'content-type': 'application/json',
 	};
+	const mockCtx = createMockAmplifyContext();
 	const mockSignRequest = signRequest as jest.Mock;
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockFetch = jest.fn();
 
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		(global as any).fetch = mockFetch;
 	});
 
@@ -51,6 +58,10 @@ describe('signedFetch (customer-profiles transport)', () => {
 		mockFetch.mockResolvedValue({ ok: true, status: 200 });
 	});
 
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	afterEach(() => {
 		mockSignRequest.mockReset();
 		mockResolveConfig.mockReset();
@@ -61,6 +72,7 @@ describe('signedFetch (customer-profiles transport)', () => {
 	it('SigV4-signs an execute-api POST and sends the signed request', async () => {
 		const body = { userProfile: { email: 'a@b.com' } };
 		await signedFetch(
+			mockCtx,
 			'/identify-user',
 			body,
 			PushNotificationAction.IdentifyUser,
@@ -96,6 +108,7 @@ describe('signedFetch (customer-profiles transport)', () => {
 
 	it('does NOT send a Bearer/JWT Authorization into signing; fetch uses exactly the signer-returned headers', async () => {
 		await signedFetch(
+			mockCtx,
 			'/register-device',
 			{ device: {} },
 			PushNotificationAction.RegisterDevice,
@@ -121,7 +134,7 @@ describe('signedFetch (customer-profiles transport)', () => {
 		];
 		for (const [path, action] of cases) {
 			mockSignRequest.mockClear();
-			await signedFetch(path, {}, action);
+			await signedFetch(mockCtx, path, {}, action);
 			const ua = mockSignRequest.mock.calls[0][0].headers['x-amz-user-agent'];
 			expect(ua).toContain('aws-amplify/');
 			// category/action pair renders as `pushnotification/<action>`.
@@ -141,6 +154,7 @@ describe('signedFetch (customer-profiles transport)', () => {
 		});
 
 		await signedFetch(
+			mockCtx,
 			'/identify-user',
 			{},
 			PushNotificationAction.IdentifyUser,
@@ -156,14 +170,24 @@ describe('signedFetch (customer-profiles transport)', () => {
 	it('throws a network error when fetch rejects', async () => {
 		mockFetch.mockRejectedValue(new Error('offline'));
 		await expect(
-			signedFetch('/identify-user', {}, PushNotificationAction.IdentifyUser),
+			signedFetch(
+				mockCtx,
+				'/identify-user',
+				{},
+				PushNotificationAction.IdentifyUser,
+			),
 		).rejects.toBeInstanceOf(PushNotificationError);
 	});
 
 	it('throws when the endpoint responds with a non-2xx status', async () => {
 		mockFetch.mockResolvedValue({ ok: false, status: 403 });
 		await expect(
-			signedFetch('/remove-device', {}, PushNotificationAction.RemoveDevice),
+			signedFetch(
+				mockCtx,
+				'/remove-device',
+				{},
+				PushNotificationAction.RemoveDevice,
+			),
 		).rejects.toBeInstanceOf(PushNotificationError);
 	});
 });

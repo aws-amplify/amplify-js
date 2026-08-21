@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	Category,
@@ -30,12 +31,13 @@ const USER_AGENT_HEADER = 'x-amz-user-agent';
  * @internal
  */
 export const signedFetch = async (
+	ctx: AmplifyContext,
 	path: string,
 	body: unknown,
 	action: PushNotificationAction,
 ): Promise<void> => {
-	const { endpoint, region } = resolveConfig();
-	const { credentials } = await resolveCredentials();
+	const { endpoint, region } = resolveConfig(ctx);
+	const { credentials } = await resolveCredentials(ctx);
 
 	const serializedBody = JSON.stringify(body);
 	const url = new URL(`${endpoint}${path}`);

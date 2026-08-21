@@ -1,9 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
+import {
+	PlatformNotSupportedError,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 
-import { RegisterDevice } from '../types';
+import { RegisterDeviceInput } from '../types';
 
 /**
  * Registers a push device with Amazon Connect Customer Profiles.
@@ -12,6 +16,15 @@ import { RegisterDevice } from '../types';
  *  an unsupported platform. Currently, only React Native is supported by this
  *  API.
  */
-export const registerDevice: RegisterDevice = () => {
+export async function registerDevice(input: RegisterDeviceInput): Promise<void>;
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function registerDevice(
+	ctx: AmplifyContext,
+	input: RegisterDeviceInput,
+): Promise<void>;
+export async function registerDevice(...args: any[]): Promise<void> {
+	resolveCtxArgs<[RegisterDeviceInput]>(args);
 	throw new PlatformNotSupportedError();
-};
+}

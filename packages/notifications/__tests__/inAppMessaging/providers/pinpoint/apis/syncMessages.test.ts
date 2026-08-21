@@ -7,6 +7,10 @@ import {
 	updateEndpoint,
 } from '@aws-amplify/core/internals/providers/pinpoint';
 import { getInAppMessages } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	initializeInAppMessaging,
@@ -20,9 +24,10 @@ import {
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import { simpleInAppMessages } from '../../../../testUtils/data';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
+import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
-jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('@aws-amplify/core');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
 
@@ -56,6 +61,7 @@ const mockedEmptyMessages = {
 
 describe('syncMessages', () => {
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		initializeInAppMessaging();
 		mockGetInAppMessagingUserAgentString.mockReturnValue(userAgentValue);
 		mockResolveConfig.mockReturnValue(config);
@@ -65,6 +71,10 @@ describe('syncMessages', () => {
 
 	beforeEach(() => {
 		mockResolveEndpointId.mockResolvedValue('endpoint-id');
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	afterEach(() => {
@@ -113,6 +123,22 @@ describe('syncMessages', () => {
 		mockDefaultStorage.setItem.mockRejectedValueOnce(Error);
 		await expect(syncMessages()).rejects.toStrictEqual(
 			expect.any(InAppMessagingError),
+		);
+	});
+
+	it('Gets in-app messages and stores them when called with explicit context', async () => {
+		const ctx = createMockAmplifyContext({
+			Notifications: {
+				InAppMessaging: { Pinpoint: { appId: 'app-id', region: 'region' } },
+			},
+		});
+		await syncMessages(ctx);
+
+		expect(mockResolveConfig).toHaveBeenCalledWith(ctx);
+		expect(mockResolveCredentials).toHaveBeenCalledWith(ctx);
+		expect(mockDefaultStorage.setItem).toHaveBeenCalledWith(
+			expect.stringContaining(STORAGE_KEY_SUFFIX),
+			JSON.stringify(simpleInAppMessages),
 		);
 	});
 });
