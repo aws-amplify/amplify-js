@@ -12,7 +12,7 @@ import {
  * Accepts partial/incomplete configs to test error paths.
  */
 export function createMockAmplifyContext(
-	resourcesConfig?: Partial<ResourcesConfig> | object,
+	resourcesConfig?: Partial<ResourcesConfig>,
 ): AmplifyContext {
 	const ctx: AmplifyContext = {
 		resourcesConfig: (resourcesConfig || {}) as ResourcesConfig,
