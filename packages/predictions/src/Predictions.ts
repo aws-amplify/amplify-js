@@ -38,15 +38,14 @@ export class PredictionsClass {
 	private interpretProvider: AmazonAIInterpretPredictionsProvider;
 
 	constructor(ctx?: AmplifyContext) {
-		if (isAmplifyContext(ctx)) {
-			this.convertProvider = new AmazonAIConvertPredictionsProvider(ctx);
-			this.identifyProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
-			this.interpretProvider = new AmazonAIInterpretPredictionsProvider(ctx);
-		} else {
-			this.convertProvider = new AmazonAIConvertPredictionsProvider();
-			this.identifyProvider = new AmazonAIIdentifyPredictionsProvider();
-			this.interpretProvider = new AmazonAIInterpretPredictionsProvider();
-		}
+		const resolvedCtx = isAmplifyContext(ctx) ? ctx : undefined;
+		this.convertProvider = new AmazonAIConvertPredictionsProvider(resolvedCtx);
+		this.identifyProvider = new AmazonAIIdentifyPredictionsProvider(
+			resolvedCtx,
+		);
+		this.interpretProvider = new AmazonAIInterpretPredictionsProvider(
+			resolvedCtx,
+		);
 	}
 
 	public getModuleName() {

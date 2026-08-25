@@ -96,6 +96,23 @@ describe('Predictions test', () => {
 		afterEach(() => {
 			jest.restoreAllMocks();
 		});
+
+		test('all three providers receive the same ctx instance', () => {
+			const ctx = createMockAmplifyContext();
+
+			const predictions = new PredictionsClass(ctx);
+
+			// Access the private providers and verify each received the exact same ctx (identity check)
+			type ProviderWithCtx = { _explicitCtx: unknown };
+			const convertProvider = (predictions as unknown as { convertProvider: ProviderWithCtx }).convertProvider;
+			const identifyProvider = (predictions as unknown as { identifyProvider: ProviderWithCtx }).identifyProvider;
+			const interpretProvider = (predictions as unknown as { interpretProvider: ProviderWithCtx }).interpretProvider;
+
+			expect(convertProvider._explicitCtx).toBe(ctx);
+			expect(identifyProvider._explicitCtx).toBe(ctx);
+			expect(interpretProvider._explicitCtx).toBe(ctx);
+		});
+
 		test('convert delegates to provider constructed with ctx', async () => {
 			const ctx = createMockAmplifyContext();
 			const input: TranslateTextInput = {

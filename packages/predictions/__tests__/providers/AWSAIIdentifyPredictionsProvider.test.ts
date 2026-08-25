@@ -294,6 +294,17 @@ describe('Predictions identify provider test', () => {
 		});
 		predictionsProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
 	});
+
+	test('explicit ctx is forwarded to storage getUrl (identity check)', async () => {
+		mockGetUrl.mockClear();
+		const input: IdentifyLabelsInput = {
+			labels: { source: { key: 'key' }, type: 'LABELS' },
+		};
+		await predictionsProvider.identify(input);
+		// Assert the ctx-aware overload was used and the SAME ctx instance was passed
+		expect(mockGetUrl.mock.calls[0][0]).toBe(ctx);
+	});
+
 	describe('identifyText tests', () => {
 		describe('identifyText::PLAIN tests', () => {
 			const detectTextInput: IdentifyTextInput = {
@@ -704,6 +715,7 @@ describe('Predictions identify provider test', () => {
 		});
 
 		test('error case invalid input source', () => {
+			// Intentionally bypasses compile-time checks to exercise the provider's runtime input validation
 			const detectLabelInput = {
 				labels: { source: null, type: 'LABELS' },
 			} as unknown as IdentifyLabelsInput;
