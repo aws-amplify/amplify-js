@@ -204,6 +204,34 @@ export function getDataStore({
 		DataStore: DataStoreType;
 	} = require('../../src/datastore/datastore');
 
+	// After jest.resetModules(), the fresh module graph has no global context.
+	// InternalAPI.graphql() now calls getGlobalContext() which throws unless
+	// a context exists. Establish one via setGlobalContext() on the FRESH core
+	// module (not Amplify.configure — that dispatches Hub events which can
+	// auto-start DataStore before its storage adapter is configured).
+	const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+	const testCtx = {
+		resourcesConfig: {
+			API: {
+				GraphQL: {
+					endpoint: 'https://0.0.0.0/graphql',
+					region: 'us-west-2',
+					defaultAuthMode: 'apiKey' as const,
+					apiKey: 'da2-fakeApiId123456',
+				},
+			},
+		},
+		libraryOptions: {},
+		fetchAuthSession: () => Promise.resolve({}),
+		clearCredentials: () => Promise.resolve(),
+		getTokens: () => Promise.resolve(undefined),
+	};
+	Object.defineProperty(testCtx, Symbol.for('amplify.context'), {
+		value: true,
+		enumerable: false,
+	});
+	setGlobalContext(testCtx);
+
 	let errorHandlerSubscriber: Observer<SyncError<any>> | null = null;
 
 	const errorHandler = new Observable<SyncError<any>>(subscriber => {
@@ -222,8 +250,10 @@ export function getDataStore({
 	});
 
 	// private, test-only DI's.
+	// Always inject the fake graphqlService so that subscription/mutation
+	// processors never attempt real network I/O (which hangs in test env).
+	(DataStore as any).amplifyContext.InternalAPI = graphqlService;
 	if (online) {
-		(DataStore as any).amplifyContext.InternalAPI = graphqlService;
 		(DataStore as any).connectivityMonitor = connectivityMonitor;
 		(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
 			'https://0.0.0.0/graphql';
