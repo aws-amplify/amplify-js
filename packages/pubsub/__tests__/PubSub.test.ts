@@ -649,7 +649,7 @@ describe('PubSub', () => {
 
 			// The global-ctx fetchAuthSession must NOT have been called because
 			// the explicit ctx path is used instead
-			expect(mockCtx.fetchAuthSession).toHaveBeenCalled();
+			expect(mockCtx.fetchAuthSession).toHaveBeenCalledTimes(1);
 			expect(mockGlobalCtxFetchAuthSession).not.toHaveBeenCalled();
 		});
 	});

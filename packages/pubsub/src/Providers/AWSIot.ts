@@ -17,7 +17,7 @@ export interface AWSIoTOptions extends MqttOptions {
 }
 
 export class AWSIoT extends MqttOverWS {
-	private _explicitCtx: AmplifyContext | undefined;
+	private readonly _explicitCtx: AmplifyContext | undefined;
 
 	constructor(options?: AWSIoTOptions);
 	constructor(ctx: AmplifyContext, options?: AWSIoTOptions);
