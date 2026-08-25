@@ -21,14 +21,15 @@ export class AWSIoT extends MqttOverWS {
 
 	constructor(options?: AWSIoTOptions);
 	constructor(ctx: AmplifyContext, options?: AWSIoTOptions);
-	constructor(...args: unknown[]) {
-		const hasCtx = isAmplifyContext(args[0]);
-		const options: AWSIoTOptions = hasCtx
-			? ((args[1] as AWSIoTOptions) ?? {})
-			: ((args[0] as AWSIoTOptions) ?? {});
-		super(options);
-		if (hasCtx) {
-			this._explicitCtx = args[0] as AmplifyContext;
+	constructor(
+		ctxOrOptions?: AmplifyContext | AWSIoTOptions,
+		maybeOptions?: AWSIoTOptions,
+	) {
+		if (isAmplifyContext(ctxOrOptions)) {
+			super(maybeOptions ?? {});
+			this._explicitCtx = ctxOrOptions;
+		} else {
+			super(ctxOrOptions ?? {});
 		}
 	}
 
