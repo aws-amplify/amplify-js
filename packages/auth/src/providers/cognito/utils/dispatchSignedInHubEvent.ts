@@ -23,19 +23,23 @@ export const dispatchSignedInHubEvent = async (
 		// The roster/pointer live in the module-level token store (client path);
 		// main's ctx-native sign-in likewise reaches `tokenOrchestrator` directly.
 		const tokenStore = tokenOrchestrator.getTokenStore();
-		// Capture the current roster head BEFORE adding the new active session so
-		// we can distinguish first sign-in (empty roster), a genuine active-user
-		// switch, and the active user simply re-authenticating.
-		const list = await tokenStore.getAuthUserList();
-		const head = list[0];
-		// Add/promote the signed-in user to the front of the roster BEFORE
-		// resolving the payload so getLastAuthUser reflects the new active user.
+		// Capture the RAW active pointer BEFORE adding the new active session so we
+		// can distinguish activating from no-active-user (first sign-in OR a parked
+		// roster after sign-out), a genuine active-user switch, and the active user
+		// simply re-authenticating. A parked-only roster reads as no active pointer.
+		const activePointer = await tokenStore.getActiveUsername();
+		// Add/promote the signed-in user to the front of the roster AND set the
+		// active pointer BEFORE resolving the payload so getLastAuthUser reflects
+		// the new active user.
 		await tokenStore.addActiveSession(username);
 
-		// Resolve the now-active user's identity via the ctx-native getCurrentUser.
-		const data = await getCurrentUser(ctx);
+		const currentUser = await getCurrentUser(ctx);
+		const data = {
+			username: currentUser.username,
+			userId: currentUser.userId,
+		};
 
-		// userSignedIn tracks roster membership and fires on every sign-in.
+		// userSignedIn tracks the specific user signing in and fires on every sign-in.
 		Hub.dispatch(
 			'auth',
 			{
@@ -46,8 +50,9 @@ export const dispatchSignedInHubEvent = async (
 			AMPLIFY_SYMBOL,
 		);
 
-		if (!head) {
-			// roster was empty -> non-empty: emit the signedIn boundary event.
+		if (!activePointer) {
+			// no active user before (empty pointer: first sign-in or activating a
+			// parked session after sign-out) -> emit the signedIn boundary event.
 			Hub.dispatch(
 				'auth',
 				{
@@ -57,7 +62,7 @@ export const dispatchSignedInHubEvent = async (
 				'Auth',
 				AMPLIFY_SYMBOL,
 			);
-		} else if (head !== username) {
+		} else if (activePointer !== username) {
 			// a different user was active -> the active pointer moved between users.
 			Hub.dispatch(
 				'auth',

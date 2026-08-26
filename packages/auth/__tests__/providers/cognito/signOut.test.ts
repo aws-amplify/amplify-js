@@ -1,17 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Amplify,
-	ConsoleLogger,
-	Hub,
-	clearCredentials,
-} from '@aws-amplify/core';
-import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
-import { getCurrentUser } from '../../../src/providers/cognito/apis/getCurrentUser';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
 import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWithRedirectStore';
 import { handleOAuthSignOut } from '../../../src/providers/cognito/utils/oauth';
@@ -29,7 +22,6 @@ jest.mock('@aws-amplify/core', () => ({
 	Hub: { dispatch: jest.fn() },
 }));
 jest.mock('../../../src/providers/cognito/tokenProvider');
-jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock('../../../src/providers/cognito/utils/oauth');
 jest.mock('../../../src/providers/cognito/utils/signInWithRedirectStore');
 jest.mock('../../../src/providers/cognito/utils/dispatchSignOutHubEvents');
@@ -65,7 +57,7 @@ describe('signOut', () => {
 	});
 
 	// assert mocks
-	const mockClearCredentials = () => mockCtx.clearCredentials;
+	const mockClearCredentials = mockCtx.clearCredentials;
 	const mockGetRegionFromUserPoolId = jest.mocked(getRegionFromUserPoolId);
 	const mockGlobalSignOut = jest.fn();
 	const mockCreateGlobalSignOutClient = jest.mocked(createGlobalSignOutClient);
@@ -84,22 +76,25 @@ describe('signOut', () => {
 	const mockLoadTokens = jest.fn();
 	const mockClearTokensForUser = jest.fn();
 	const mockRemoveSession = jest.fn();
+	const mockClearActiveUser = jest.fn();
 	const mockGetLastAuthUser = jest.fn();
-	const mockGetCurrentUser = getCurrentUser as jest.Mock;
+	const mockGetStoredIdToken = jest.fn();
 	const mockDispatchSignOutBoundaryEvents =
 		dispatchSignOutBoundaryEvents as jest.Mock;
 	const mockAuthTokenStore = {
 		loadTokens: mockLoadTokens,
 		clearTokensForUser: mockClearTokensForUser,
 		removeSession: mockRemoveSession,
+		clearActiveUser: mockClearActiveUser,
 		getLastAuthUser: mockGetLastAuthUser,
+		getStoredIdToken: mockGetStoredIdToken,
 	} as unknown as AuthTokenStore;
 	const mockDefaultOAuthStoreInstance = {
 		setAuthConfig: jest.fn(),
 	};
 	// create spies
 	const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
-	// active user resolved for the default single-user sign out scenario.
+	// active user resolved (from stored id token, no refresh) for sign out.
 	const activeUser = { username: 'user1', userId: 'user1-id' };
 	// create test helpers
 	const expectSignOut = () => ({
@@ -107,13 +102,13 @@ describe('signOut', () => {
 			// only the active user's namespace is cleared and dropped from the roster.
 			expect(mockClearTokensForUser).toHaveBeenCalledWith(activeUser.username);
 			expect(mockRemoveSession).toHaveBeenCalledWith(activeUser.username);
+			// the active pointer is cleared explicitly (no promotion of parked users).
+			expect(mockClearActiveUser).toHaveBeenCalledTimes(1);
 			expect(mockClearCredentials).toHaveBeenCalledTimes(1);
 			// all boundary Hub events are delegated to the shared helper, which
-			// receives the resolved active user and the removeSession result.
+			// receives ONLY the resolved signed-out user (signedOut fires ALWAYS).
 			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(
-				mockAuthTokenStore,
 				activeUser,
-				{ newActiveUser: undefined, isEmpty: true },
 			);
 		},
 		not: {
@@ -138,27 +133,28 @@ describe('signOut', () => {
 		mockedRevokeTokenClient.mockReturnValueOnce(mockRevokeToken);
 		mockTokenOrchestrator.getTokenStore.mockReturnValue(mockAuthTokenStore);
 		mockLoadTokens.mockResolvedValue(cognitoAuthTokens);
-		// default single-user sign out: active user resolves and roster empties.
-		mockGetCurrentUser.mockResolvedValue(activeUser);
-		mockClearTokensForUser.mockResolvedValue(undefined);
-		mockRemoveSession.mockResolvedValue({
-			newActiveUser: undefined,
-			isEmpty: true,
-		});
+		// active user resolves from the stored id token (no refresh).
 		mockGetLastAuthUser.mockResolvedValue(activeUser.username);
+		mockGetStoredIdToken.mockResolvedValue({
+			payload: { sub: activeUser.userId },
+		});
+		mockClearTokensForUser.mockResolvedValue(undefined);
+		mockRemoveSession.mockResolvedValue({ isEmpty: true });
+		mockClearActiveUser.mockResolvedValue(undefined);
 	});
 
 	afterEach(() => {
 		mockGlobalSignOut.mockReset();
 		mockRevokeToken.mockReset();
-		mockClearCredentials().mockClear();
+		mockClearCredentials.mockClear();
 		mockGetRegionFromUserPoolId.mockClear();
 		mockHub.dispatch.mockClear();
 		mockTokenOrchestrator.clearTokens.mockClear();
-		mockGetCurrentUser.mockReset();
 		mockClearTokensForUser.mockReset();
 		mockRemoveSession.mockReset();
+		mockClearActiveUser.mockReset();
 		mockGetLastAuthUser.mockReset();
+		mockGetStoredIdToken.mockReset();
 		loggerDebugSpy.mockClear();
 		mockCreateCognitoUserPoolEndpointResolver.mockClear();
 		mockDispatchSignOutBoundaryEvents.mockClear();
@@ -278,71 +274,48 @@ describe('signOut', () => {
 		});
 	});
 
-	describe('multi-session boundaries', () => {
-		it('delegates a parked-user promotion to the shared boundary helper (no second getCurrentUser)', async () => {
-			mockGetCurrentUser.mockResolvedValue(activeUser);
-			mockRemoveSession.mockResolvedValue({
-				newActiveUser: 'user2',
-				isEmpty: false,
-			});
+	describe('multi-session boundaries (no promotion)', () => {
+		it('clears the active pointer and fires signedOut while leaving parked sessions in the roster', async () => {
+			// parked users remain: removeSession reports the roster is NOT empty, but
+			// sign-out never promotes them — it clears the pointer and fires signedOut.
+			mockRemoveSession.mockResolvedValue({ isEmpty: false });
 
-			await signOut();
+			await signOut(mockCtx);
 
 			expect(mockClearTokensForUser).toHaveBeenCalledWith(activeUser.username);
+			expect(mockRemoveSession).toHaveBeenCalledWith(activeUser.username);
+			expect(mockClearActiveUser).toHaveBeenCalledTimes(1);
 			expect(mockClearCredentials).toHaveBeenCalledTimes(1);
-			// the promoted user's identity is resolved inside the helper from stored
-			// tokens, so getCurrentUser must NOT be called a second time.
-			expect(mockGetCurrentUser).toHaveBeenCalledTimes(1);
+			// signedOut ALWAYS; the helper receives only the signed-out user (no
+			// promotion result) so it can NEVER emit switchActiveUser.
 			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(
-				mockAuthTokenStore,
 				activeUser,
-				{
-					newActiveUser: 'user2',
-					isEmpty: false,
-				},
 			);
 		});
 
 		it('delegates the last-user sign out to the shared boundary helper', async () => {
-			mockGetCurrentUser.mockResolvedValue(activeUser);
-			mockRemoveSession.mockResolvedValue({
-				newActiveUser: undefined,
-				isEmpty: true,
-			});
+			mockRemoveSession.mockResolvedValue({ isEmpty: true });
 
-			await signOut();
+			await signOut(mockCtx);
 
+			expect(mockClearActiveUser).toHaveBeenCalledTimes(1);
 			expect(mockClearCredentials).toHaveBeenCalledTimes(1);
 			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(
-				mockAuthTokenStore,
 				activeUser,
-				{
-					newActiveUser: undefined,
-					isEmpty: true,
-				},
 			);
 		});
 
 		it('passes an undefined signedOutUser when no active user can be resolved', async () => {
-			// getCurrentUser throws (tokens already gone); fall back to getLastAuthUser.
-			mockGetCurrentUser.mockRejectedValue(new Error('no user'));
-			mockGetLastAuthUser.mockResolvedValue(activeUser.username);
-			mockRemoveSession.mockResolvedValue({
-				newActiveUser: undefined,
-				isEmpty: true,
-			});
+			// no stored id token -> the signed-out identity is unresolvable, but the
+			// pointer is still cleared and signedOut still fires (with no data).
+			mockGetStoredIdToken.mockResolvedValue(undefined);
+			mockRemoveSession.mockResolvedValue({ isEmpty: true });
 
-			await signOut();
+			await signOut(mockCtx);
 
 			expect(mockClearTokensForUser).toHaveBeenCalledWith(activeUser.username);
-			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(
-				mockAuthTokenStore,
-				undefined,
-				{
-					newActiveUser: undefined,
-					isEmpty: true,
-				},
-			);
+			expect(mockClearActiveUser).toHaveBeenCalledTimes(1);
+			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(undefined);
 		});
 	});
 

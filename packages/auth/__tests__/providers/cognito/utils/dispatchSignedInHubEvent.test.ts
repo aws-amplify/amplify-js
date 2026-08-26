@@ -16,7 +16,7 @@ import type { AuthTokenStore } from '../../../../src/providers/cognito/tokenProv
 
 // mock names are prefixed with `mock` so jest allows referencing them inside
 // the hoisted factory below.
-const mockGetAuthUserList = jest.fn();
+const mockGetActiveUsername = jest.fn();
 const mockAddActiveSession = jest.fn();
 
 jest.mock('../../../../src/providers/cognito/apis/getCurrentUser', () => ({
@@ -40,8 +40,10 @@ jest.mock('../../../../src/providers/cognito/tokenProvider', () => ({
 	},
 }));
 
+// The helper resolves the roster/pointer through the module-level token store
+// (mocked below) and reads the RAW active pointer (getActiveUsername).
 const mockTokenStore = {
-	getAuthUserList: mockGetAuthUserList,
+	getActiveUsername: mockGetActiveUsername,
 	addActiveSession: mockAddActiveSession,
 } as unknown as AuthTokenStore;
 
@@ -57,15 +59,15 @@ const mockGetCurrentUserPayload = {
 
 describe('dispatchSignedInHubEvent()', () => {
 	beforeEach(() => {
-		// default: roster starts empty and addActiveSession succeeds.
+		// default: no active pointer before, and addActiveSession succeeds.
 		mockGetTokenStore.mockReturnValue(mockTokenStore);
-		mockGetAuthUserList.mockResolvedValue([]);
+		mockGetActiveUsername.mockResolvedValue(undefined);
 		mockAddActiveSession.mockResolvedValue(undefined);
 		mockGetCurrentUser.mockResolvedValue(mockGetCurrentUserPayload);
 	});
 
 	afterEach(() => {
-		mockGetAuthUserList.mockReset();
+		mockGetActiveUsername.mockReset();
 		mockAddActiveSession.mockReset();
 		mockGetCurrentUser.mockReset();
 		mockGetTokenStore.mockReset();
@@ -92,13 +94,13 @@ describe('dispatchSignedInHubEvent()', () => {
 		);
 	});
 
-	it('dispatches `signedIn` on first sign-in from an empty roster', async () => {
-		// roster empty before the new session is added.
-		mockGetAuthUserList.mockResolvedValueOnce([]);
+	it('dispatches `signedIn` on first sign-in when no user is active', async () => {
+		// no active pointer before the new session is added.
+		mockGetActiveUsername.mockResolvedValueOnce(undefined);
 
 		await dispatchSignedInHubEvent(mockCtx, 'hello');
 
-		// userSignedIn tracks membership, signedIn marks the empty->non-empty boundary.
+		// userSignedIn tracks the user; signedIn marks the no-active->active boundary.
 		expect(mockDispatch).toHaveBeenNthCalledWith(
 			1,
 			'auth',
@@ -121,9 +123,31 @@ describe('dispatchSignedInHubEvent()', () => {
 		);
 	});
 
-	it('dispatches `switchActiveUser` (not `signedIn`) when a user is already active', async () => {
-		// roster already has an active user before the new session is added.
-		mockGetAuthUserList.mockResolvedValueOnce(['existing']);
+	it('dispatches `signedIn` when activating from a parked-only roster (empty pointer)', async () => {
+		// Roster holds parked sessions but nobody is active (pointer empty) after a
+		// prior sign-out: signing in reads as a signedIn boundary, not a switch.
+		mockGetActiveUsername.mockResolvedValueOnce(undefined);
+
+		await dispatchSignedInHubEvent(mockCtx, 'hello');
+
+		expect(mockDispatch).toHaveBeenNthCalledWith(
+			2,
+			'auth',
+			{ event: 'signedIn', data: mockGetCurrentUserPayload },
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).not.toHaveBeenCalledWith(
+			'auth',
+			expect.objectContaining({ event: 'switchActiveUser' }),
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	});
+
+	it('dispatches `switchActiveUser` (not `signedIn`) when a different user is already active', async () => {
+		// a different user is the active pointer before the new session is added.
+		mockGetActiveUsername.mockResolvedValueOnce('existing');
 
 		await dispatchSignedInHubEvent(mockCtx, 'hello');
 
@@ -150,8 +174,8 @@ describe('dispatchSignedInHubEvent()', () => {
 	});
 
 	it('dispatches `userSignedIn` only (no `signedIn`/`switchActiveUser`) when the active user re-authenticates', async () => {
-		// the signing-in user is already the active roster head.
-		mockGetAuthUserList.mockResolvedValueOnce(['hello']);
+		// the signing-in user is already the active pointer.
+		mockGetActiveUsername.mockResolvedValueOnce('hello');
 		mockGetCurrentUser.mockResolvedValue({
 			username: 'hello',
 			userId: 'userId',
