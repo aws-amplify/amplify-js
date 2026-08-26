@@ -188,15 +188,16 @@ export class DefaultTokenStore implements AuthTokenStore {
 	async clearTokensForUser(username: string): Promise<void> {
 		const authKeys = await this.getAuthKeys(username);
 		// Not calling clear because it can remove data that is not managed by AuthTokenStore
+		// Device-tracking keys (deviceKey/deviceGroupKey/randomPasswordKey) are
+		// deliberately PRESERVED here, mirroring legacy `clearTokens` semantics: a
+		// remembered device must survive sign-out so the next sign-in can skip MFA.
+		// Only forgetDevice/deleteUser clear device metadata (via clearDeviceMetadata).
 		await Promise.all([
 			this.getKeyValueStorage().removeItem(authKeys.accessToken),
 			this.getKeyValueStorage().removeItem(authKeys.idToken),
 			this.getKeyValueStorage().removeItem(authKeys.clockDrift),
 			this.getKeyValueStorage().removeItem(authKeys.refreshToken),
 			this.getKeyValueStorage().removeItem(authKeys.signInDetails),
-			this.getKeyValueStorage().removeItem(authKeys.deviceKey),
-			this.getKeyValueStorage().removeItem(authKeys.deviceGroupKey),
-			this.getKeyValueStorage().removeItem(authKeys.randomPasswordKey),
 			this.getKeyValueStorage().removeItem(authKeys.oauthMetadata),
 		]);
 	}
@@ -218,6 +219,24 @@ export class DefaultTokenStore implements AuthTokenStore {
 		} catch (err) {
 			return undefined;
 		}
+	}
+
+	/**
+	 * Returns true when a live session exists for the username, detected by the
+	 * presence of the ACCESS TOKEN key. This is the correct liveness signal for
+	 * pruning: loadTokens only requires an accessToken, and the idToken is
+	 * OPTIONAL (storeTokens removes the idToken key when a session lacks one), so
+	 * a valid accessToken+refreshToken session may legitimately have no idToken
+	 * and must NOT be evicted. Read-only, no decode.
+	 *
+	 * @param username - The username whose session presence should be checked.
+	 */
+	private async hasStoredSession(username: string): Promise<boolean> {
+		const authKeys = await this.getAuthKeys(username);
+
+		return (
+			(await this.getKeyValueStorage().getItem(authKeys.accessToken)) != null
+		);
 	}
 
 	async getDeviceMetadata(username?: string): Promise<DeviceMetadata | null> {
@@ -289,22 +308,84 @@ export class DefaultTokenStore implements AuthTokenStore {
 	 * but a legacy LastAuthUser value exists (and is not the literal 'username'
 	 * fallback), that single user is migrated into a roster and persisted.
 	 * Otherwise an empty roster is returned.
+	 *
+	 * Every read is also a reconciliation point. External writers (older Amplify
+	 * versions and amazon-cognito-identity-js sharing the same storage) mutate
+	 * LastAuthUser directly, drifting it from AuthUserList[0]; and a partial
+	 * persist (LastAuthUser written, AuthUserList not) leaves the same skew. When
+	 * LastAuthUser names a real user that isn't the current head, it is promoted
+	 * to the front and the roster is pruned of entries whose tokens are no longer
+	 * resolvable, then re-persisted (best-effort — SSR storage may be read-only).
+	 * The head LastAuthUser read happens on every call (a single cheap read); the
+	 * "no extra reads" guarantee is per-entry only — the per-entry token reads and
+	 * the re-persist run ONLY on the promotion path, so the hot path (already in
+	 * sync) does no per-entry storage reads / JWT decodes.
 	 */
 	async getAuthUserList(): Promise<string[]> {
 		const authUserListString = await this.getKeyValueStorage().getItem(
 			this.getAuthUserListKey(),
 		);
+		const lastAuthUser = await this.getKeyValueStorage().getItem(
+			this.getLastAuthUserKey(),
+		);
 
 		if (authUserListString) {
-			return authUserListString.split(',').filter(Boolean);
+			const parsedList = authUserListString.split(',').filter(Boolean);
+			let reconciledList = parsedList;
+
+			// Reconcile drift: LastAuthUser may have been advanced by an external
+			// writer or a partial persist. Ignore the 'username' sentinel/empty.
+			const shouldReconcile =
+				!!lastAuthUser &&
+				lastAuthUser !== 'username' &&
+				lastAuthUser !== parsedList[0];
+
+			if (shouldReconcile) {
+				// Promote to front (move if already present, otherwise prepend).
+				reconciledList = [
+					lastAuthUser,
+					...parsedList.filter(user => user !== lastAuthUser),
+				];
+
+				// Prune entries with no live session — only on the (rare) promotion
+				// path, to keep the hot path free of per-entry reads. Liveness is the
+				// ACCESS TOKEN key (idToken is optional), see hasStoredSession.
+				const prunedList: string[] = [];
+				for (const entry of reconciledList) {
+					if (await this.hasStoredSession(entry)) {
+						prunedList.push(entry);
+					}
+				}
+				reconciledList = prunedList;
+			}
+
+			// Re-persist when reconciliation changed the roster contents, OR when it
+			// ran but the stored LastAuthUser pointer still doesn't match the new
+			// head. The latter covers promotion+prune netting back to the original
+			// list (e.g. external LastAuthUser='C' with no tokens: [A,B]→[C,A,B]→
+			// [A,B]) where LastAuthUser would otherwise stay stale at 'C' and re-run
+			// the full prune on every read. When reconciledList is empty,
+			// persistAuthUserList([]) clears both keys — the intended outcome when
+			// no resolvable session remains.
+			if (
+				reconciledList.join(',') !== parsedList.join(',') ||
+				(shouldReconcile && reconciledList[0] !== lastAuthUser)
+			) {
+				// Best-effort: read-only/ephemeral SSR storage may reject the write;
+				// the reconciled list is still returned to the caller.
+				try {
+					await this.persistAuthUserList(reconciledList);
+				} catch {
+					// Storage is read-only (e.g. SSR); degrade gracefully.
+				}
+			}
+
+			return reconciledList;
 		}
 
 		// Migration: fall back to a legacy single LastAuthUser value if present.
-		const legacyLastAuthUser = await this.getKeyValueStorage().getItem(
-			this.getLastAuthUserKey(),
-		);
-		if (legacyLastAuthUser && legacyLastAuthUser !== 'username') {
-			const migratedList = [legacyLastAuthUser];
+		if (lastAuthUser && lastAuthUser !== 'username') {
+			const migratedList = [lastAuthUser];
 			// Best-effort persist: on read-only/ephemeral SSR storage the write
 			// may fail — that's acceptable because the migrated list is still
 			// returned to the caller; the next mutable-storage call will retry.
@@ -339,15 +420,17 @@ export class DefaultTokenStore implements AuthTokenStore {
 			return;
 		}
 
+		// Write LastAuthUser FIRST, then AuthUserList. On a partial failure the
+		// newer intent survives in LastAuthUser (the pointer legacy/external
+		// consumers read), and getAuthUserList's drift reconciliation repairs
+		// AuthUserList from it on the next read. LastAuthUser is also kept in
+		// sync for legacy consumers, though AuthUserList is authoritative when
+		// both are present.
+		await this.getKeyValueStorage().setItem(this.getLastAuthUserKey(), list[0]);
 		await this.getKeyValueStorage().setItem(
 			this.getAuthUserListKey(),
 			list.join(','),
 		);
-		// Best-effort / compatibility-only: LastAuthUser is kept in sync for
-		// legacy consumers, but AuthUserList is authoritative when present
-		// (getAuthUserList prefers it). A lost LastAuthUser write does not
-		// affect roster correctness.
-		await this.getKeyValueStorage().setItem(this.getLastAuthUserKey(), list[0]);
 	}
 
 	/**

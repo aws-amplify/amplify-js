@@ -122,7 +122,15 @@ describe('TokenStore', () => {
 	describe('getLastAuthUser', () => {
 		it('should return the last authenticated user', async () => {
 			const mockUser = 'mockUser';
-			mockKeyValueStorage.getItem.mockResolvedValueOnce(mockUser);
+			// Return the roster for AuthUserList and nothing for LastAuthUser so
+			// no drift reconciliation is triggered.
+			mockKeyValueStorage.getItem.mockImplementation(key =>
+				Promise.resolve(
+					key === `${authIDP}.${userPoolClientId}.AuthUserList`
+						? mockUser
+						: null,
+				),
+			);
 
 			const result = await tokenStore.getLastAuthUser();
 			expect(result).toBe(mockUser);
@@ -510,6 +518,137 @@ describe('TokenStore', () => {
 			});
 		});
 
+		describe('getAuthUserList drift reconciliation', () => {
+			const accessTokenKey = (user: string) =>
+				`${authIDP}.${userPoolClientId}.${user}.accessToken`;
+			// Make an entry's session live by giving it a stored ACCESS TOKEN
+			// (the liveness signal used by pruning; idToken is optional).
+			const setResolvable = (...users: string[]) => {
+				users.forEach(user => {
+					store[accessTokenKey(user)] = 'accessToken';
+				});
+			};
+
+			it('(a) promotes an external LastAuthUser absent from the list and re-persists', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'carol';
+				setResolvable('carol', 'alice', 'bob');
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['carol', 'alice', 'bob']);
+				expect(store[authUserListKey]).toBe('carol,alice,bob');
+				expect(store[lastAuthUserKey]).toBe('carol');
+			});
+
+			it('(b) promotes an external LastAuthUser present but not at the head', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'bob';
+				setResolvable('alice', 'bob');
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['bob', 'alice']);
+				expect(store[authUserListKey]).toBe('bob,alice');
+			});
+
+			it('(c) prunes an entry whose session is unresolvable on the promotion path', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'carol';
+				// bob has no stored access token and must be pruned.
+				setResolvable('carol', 'alice');
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['carol', 'alice']);
+				expect(store[authUserListKey]).toBe('carol,alice');
+			});
+
+			it('(c2) keeps an entry with an access token but no idToken (idToken optional)', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'carol';
+				// Only access tokens are set (setResolvable never sets idTokens): a
+				// valid access+refresh session with no idToken must survive pruning.
+				setResolvable('carol', 'alice', 'bob');
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['carol', 'alice', 'bob']);
+				expect(store[authUserListKey]).toBe('carol,alice,bob');
+			});
+
+			it('(d) leaves the hot path untouched when LastAuthUser === list[0]', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'alice';
+				mockKeyValueStorage.setItem.mockClear();
+				mockKeyValueStorage.getItem.mockClear();
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['alice', 'bob']);
+				// no reconciliation writes and no per-entry token reads: only the two
+				// roster keys are read (AuthUserList then LastAuthUser).
+				expect(mockKeyValueStorage.setItem).not.toHaveBeenCalled();
+				const readKeys = mockKeyValueStorage.getItem.mock.calls.map(
+					([key]) => key,
+				);
+				expect(readKeys).toEqual([authUserListKey, lastAuthUserKey]);
+			});
+
+			it('(e) ignores the "username" sentinel and does not reconcile', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'username';
+				mockKeyValueStorage.setItem.mockClear();
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['alice', 'bob']);
+				expect(mockKeyValueStorage.setItem).not.toHaveBeenCalled();
+			});
+
+			it('(f) returns the reconciled list even when re-persist fails', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'carol';
+				setResolvable('carol', 'alice', 'bob');
+				// Simulate read-only storage on the re-persist write.
+				mockKeyValueStorage.setItem.mockRejectedValue(
+					new Error('Storage is read-only'),
+				);
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['carol', 'alice', 'bob']);
+			});
+
+			it('(g) prunes an external LastAuthUser lacking tokens and corrects the stale pointer', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'carol';
+				// carol (the external pointer) has NO stored access token; alice/bob
+				// do. promote+prune nets back to [alice,bob], but the stale pointer
+				// must still be corrected from 'carol' to the new head 'alice'.
+				setResolvable('alice', 'bob');
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['alice', 'bob']);
+				expect(store[authUserListKey]).toBe('alice,bob');
+				expect(store[lastAuthUserKey]).toBe('alice');
+			});
+		});
+
+		describe('persistAuthUserList write order', () => {
+			it('writes LastAuthUser before AuthUserList on the non-empty branch', async () => {
+				await tokenStore.addActiveSession('alice');
+
+				// ordering lets LastAuthUser carry the newer intent on a partial
+				// failure; drift reconciliation repairs AuthUserList on next read.
+				const setOrder = mockKeyValueStorage.setItem.mock.calls
+					.map(([key]) => key)
+					.filter(key => key === lastAuthUserKey || key === authUserListKey);
+				expect(setOrder).toEqual([lastAuthUserKey, authUserListKey]);
+			});
+		});
+
 		describe('getLastAuthUser', () => {
 			it('returns the roster head (AuthUserList[0])', async () => {
 				store[authUserListKey] = 'active,parked';
@@ -584,26 +723,36 @@ describe('TokenStore', () => {
 		});
 
 		describe('clearTokensForUser', () => {
-			it('removes only the target user namespace and not the roster keys', async () => {
+			it('removes only the target user token namespace, preserving device keys and roster', async () => {
 				const targetUser = 'alice';
 				store[authUserListKey] = 'alice,bob';
 				store[lastAuthUserKey] = 'alice';
 
 				await tokenStore.clearTokensForUser(targetUser);
 
-				const namespacedKeys = [
+				// The six token keys are removed on sign-out.
+				const removedKeys = [
 					'accessToken',
 					'idToken',
 					'clockDrift',
 					'refreshToken',
 					'signInDetails',
+					'oauthMetadata',
+				];
+				removedKeys.forEach(key => {
+					expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+						`${authIDP}.${userPoolClientId}.${targetUser}.${key}`,
+					);
+				});
+				// Device-tracking keys are PRESERVED so a remembered device
+				// survives sign-out (next sign-in can skip MFA).
+				const preservedKeys = [
 					'deviceKey',
 					'deviceGroupKey',
 					'randomPasswordKey',
-					'oauthMetadata',
 				];
-				namespacedKeys.forEach(key => {
-					expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+				preservedKeys.forEach(key => {
+					expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
 						`${authIDP}.${userPoolClientId}.${targetUser}.${key}`,
 					);
 				});
