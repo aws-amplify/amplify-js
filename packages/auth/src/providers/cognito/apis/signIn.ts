@@ -8,7 +8,6 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInInput, SignInOutput } from '../types';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 
@@ -45,7 +44,6 @@ export async function signIn(...args: any[]): Promise<SignInOutput> {
 	resetAutoSignIn(false);
 
 	const authFlowType = input.options?.authFlowType;
-	await assertUserNotAuthenticated(ctx);
 	switch (authFlowType) {
 		case 'USER_SRP_AUTH':
 			return signInWithSRP(ctx, input);

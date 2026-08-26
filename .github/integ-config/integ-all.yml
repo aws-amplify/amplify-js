@@ -493,6 +493,13 @@ tests:
     sample_name: [javascript-auth]
     spec: functional-auth
     browser: *minimal_browser_list
+  - test_name: integ_react_auth_multi_session
+    desc: 'React Multi-session Auth'
+    framework: react
+    category: auth
+    sample_name: [multi-session]
+    spec: multi-session
+    browser: *minimal_browser_list
   - test_name: integ_react_auth_1_guest_to_authenticated_user
     desc: 'Guest to Authenticated User'
     framework: react
