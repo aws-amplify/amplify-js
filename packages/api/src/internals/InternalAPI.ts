@@ -16,7 +16,7 @@ import {
 	Category,
 	CustomUserAgentDetails,
 } from '@aws-amplify/core/internals/utils';
-import { Observable } from 'rxjs';
+import { Observable, defer } from 'rxjs';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 /**
@@ -88,12 +88,75 @@ export class InternalAPIClass {
 			...customUserAgentDetails,
 		};
 
-		return this._graphqlApi.graphql(
-			getGlobalContext(),
-			options,
-			additionalHeaders,
-			apiUserAgentDetails,
+		/**
+		 * IMPORTANT: do NOT resolve the global context eagerly (e.g. by passing
+		 * `getGlobalContext()` directly as an argument). Because this method is
+		 * synchronous, an eager call would throw SYNCHRONOUSLY out of `graphql()`
+		 * when no global context has been set — breaking callers that expect
+		 * setup errors on their async boundary. Most notably, DataStore's
+		 * subscription processor expects an Observable whose errors arrive via
+		 * `subscribe({ error })`, and query/mutation callers expect a rejected
+		 * Promise.
+		 *
+		 * Instead we determine the operation type first (which does not touch the
+		 * context) and defer context resolution to the appropriate boundary:
+		 *   - subscription -> resolved lazily inside `defer()` so a missing context
+		 *     surfaces on the Observable's error channel.
+		 *   - query/mutation -> resolved inside a try/catch so a missing context
+		 *     surfaces as a rejected Promise.
+		 */
+		const operationType = this.getGraphqlOperationTypeFromOptions(
+			options.query,
 		);
+
+		switch (operationType) {
+			case 'subscription':
+				return defer(() =>
+					this._graphqlApi.graphql(
+						getGlobalContext(),
+						options,
+						additionalHeaders,
+						apiUserAgentDetails,
+					),
+				);
+			default:
+				// `query` | `mutation`
+				try {
+					return this._graphqlApi.graphql(
+						getGlobalContext(),
+						options,
+						additionalHeaders,
+						apiUserAgentDetails,
+					);
+				} catch (error) {
+					return Promise.reject(error);
+				}
+		}
+	}
+
+	/**
+	 * Resolves the GraphQL operation type from the request options WITHOUT
+	 * touching the Amplify context. This lets {@link graphql} pick the correct
+	 * lazy-resolution strategy (rejected Promise vs. Observable error channel)
+	 * before any context is resolved.
+	 */
+	private getGraphqlOperationTypeFromOptions(
+		query: GraphQLOptions['query'],
+	): OperationTypeNode {
+		if (typeof query === 'string') {
+			return this._graphqlApi.getGraphqlOperationType(query);
+		}
+
+		// `query` is a `DocumentNode`. Read the operation type off its first
+		// operation definition directly, avoiding a `graphql` runtime dependency
+		// in this package.
+		for (const definition of query.definitions) {
+			if (definition.kind === 'OperationDefinition') {
+				return definition.operation;
+			}
+		}
+
+		throw new Error('invalid operation: no operation definition found');
 	}
 }
 

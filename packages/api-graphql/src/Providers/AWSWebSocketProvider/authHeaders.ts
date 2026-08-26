@@ -22,10 +22,10 @@ type AWSAppSyncRealTimeAuthInput =
 	};
 
 const awsAuthTokenHeader = async (
-	ctx: AmplifyContext,
+	resolveCtx: () => AmplifyContext,
 	{ host }: AWSAppSyncRealTimeAuthInput,
 ) => {
-	const session = await ctx.fetchAuthSession();
+	const session = await resolveCtx().fetchAuthSession();
 
 	return {
 		Authorization: session?.tokens?.accessToken?.toString(),
@@ -34,7 +34,7 @@ const awsAuthTokenHeader = async (
 };
 
 const awsRealTimeApiKeyHeader = async (
-	_ctx: AmplifyContext,
+	_resolveCtx: () => AmplifyContext,
 	{ apiKey, host }: AWSAppSyncRealTimeAuthInput,
 ) => {
 	const dt = new Date();
@@ -48,7 +48,7 @@ const awsRealTimeApiKeyHeader = async (
 };
 
 const awsRealTimeIAMHeader = async (
-	ctx: AmplifyContext,
+	resolveCtx: () => AmplifyContext,
 	{
 		payload,
 		canonicalUri,
@@ -61,7 +61,7 @@ const awsRealTimeIAMHeader = async (
 		service: 'appsync',
 	};
 
-	const creds = (await ctx.fetchAuthSession()).credentials;
+	const creds = (await resolveCtx().fetchAuthSession()).credentials;
 
 	const request = {
 		url: `${appSyncGraphqlEndpoint}${canonicalUri}`,
@@ -88,7 +88,7 @@ const awsRealTimeIAMHeader = async (
 };
 
 const customAuthHeader = async (
-	_ctx: AmplifyContext,
+	_resolveCtx: () => AmplifyContext,
 	{ host, additionalCustomHeaders }: AWSAppSyncRealTimeAuthInput,
 ) => {
 	/**
@@ -120,9 +120,13 @@ export const awsRealTimeHeaderBasedAuth = async (
 		payload,
 	} = authInput;
 
-	// Resolve context: use the explicitly provided ctx, or fall back to global context.
-	// NOTE: we do NOT capture getGlobalContext() eagerly — it's resolved fresh per call.
-	const resolvedCtx = ctx ?? getGlobalContext();
+	// Resolve context LAZILY. Only the auth handlers that actually consume the
+	// context (iam / oidc / userPool) invoke this thunk. apiKey / none / lambda
+	// ignore it, so they must keep working with no explicit ctx AND no global
+	// context — resolving (and potentially throwing) here would break them.
+	// NOTE: we also do NOT capture getGlobalContext() eagerly — it's resolved
+	// fresh, per invocation of the thunk.
+	const resolveCtx = (): AmplifyContext => ctx ?? getGlobalContext();
 
 	const headerHandler = {
 		apiKey: awsRealTimeApiKeyHeader,
@@ -148,7 +152,7 @@ export const awsRealTimeHeaderBasedAuth = async (
 
 		logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
 
-		const result = await handler(resolvedCtx, {
+		const result = await handler(resolveCtx, {
 			payload,
 			canonicalUri,
 			appSyncGraphqlEndpoint,
