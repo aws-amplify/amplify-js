@@ -30,6 +30,7 @@ describe('tokenOrchestrator', () => {
 	const mockTokenStore = {
 		storeTokens: jest.fn(),
 		getLastAuthUser: jest.fn(),
+		getActiveUsername: jest.fn(),
 		loadTokens: jest.fn(),
 		clearTokens: jest.fn(),
 		setKeyValueStorage: jest.fn(),
@@ -40,6 +41,7 @@ describe('tokenOrchestrator', () => {
 		getAuthUserList: jest.fn(),
 		addActiveSession: jest.fn(),
 		removeSession: jest.fn(),
+		clearActiveUser: jest.fn(),
 		clearTokensForUser: jest.fn(),
 		getStoredIdToken: jest.fn(),
 	};
@@ -178,10 +180,8 @@ describe('tokenOrchestrator', () => {
 			jest.clearAllMocks();
 			// terminal auth errors now scope the clear to a single user + roster.
 			mockTokenStore.clearTokensForUser.mockResolvedValue(undefined);
-			mockTokenStore.removeSession.mockResolvedValue({
-				newActiveUser: undefined,
-				isEmpty: true,
-			});
+			mockTokenStore.removeSession.mockResolvedValue({ isEmpty: true });
+			mockTokenStore.clearActiveUser.mockResolvedValue(undefined);
 		});
 
 		it('does not clear a user or emit boundary events for a network error', async () => {
@@ -211,12 +211,12 @@ describe('tokenOrchestrator', () => {
 				testUsername,
 			);
 			expect(mockTokenStore.removeSession).toHaveBeenCalledWith(testUsername);
+			expect(mockTokenStore.clearActiveUser).toHaveBeenCalledTimes(1);
 			expect(mockTokenStore.clearTokens).not.toHaveBeenCalled();
-			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(
-				mockTokenStore,
-				{ username: testUsername, userId: testUserId },
-				{ newActiveUser: undefined, isEmpty: true },
-			);
+			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith({
+				username: testUsername,
+				userId: testUserId,
+			});
 			expect(result).toBeNull();
 		});
 
@@ -287,11 +287,7 @@ describe('tokenOrchestrator', () => {
 
 			await invokeHandleErrors(error, testUsername, undefined);
 
-			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(
-				mockTokenStore,
-				undefined,
-				{ newActiveUser: undefined, isEmpty: true },
-			);
+			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(undefined);
 		});
 
 		it.each([

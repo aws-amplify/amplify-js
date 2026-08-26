@@ -26,7 +26,8 @@ import { tokenOrchestrator } from '../tokenProvider';
  */
 export async function setCurrentUser(username: string): Promise<void> {
 	const tokenStore = tokenOrchestrator.getTokenStore();
-	// Roster is ordered with the active user first.
+	// Roster membership is required; the roster may hold parked sessions while no
+	// user is active (empty pointer).
 	const list = await tokenStore.getAuthUserList();
 
 	if (!list.includes(username)) {
@@ -38,12 +39,16 @@ export async function setCurrentUser(username: string): Promise<void> {
 		});
 	}
 
+	// Read the RAW active pointer BEFORE mutating so we can both no-op when the
+	// target is already active and pick the correct boundary event below.
+	const activePointer = await tokenStore.getActiveUsername();
+
 	// Already the active user; nothing to switch and no event to emit.
-	if (list[0] === username) {
+	if (activePointer === username) {
 		return;
 	}
 
-	// Promote the target user to the front of the roster (new active user).
+	// Promote the target user to the front of the roster and set it active.
 	await tokenStore.addActiveSession(username);
 
 	// Bust the previous active user's identity-pool credentials so subsequent
@@ -60,14 +65,30 @@ export async function setCurrentUser(username: string): Promise<void> {
 		return;
 	}
 
-	// switchActiveUser fires when the active pointer moves between users.
-	Hub.dispatch(
-		'auth',
-		{
-			event: 'switchActiveUser',
-			data: { username, userId },
-		},
-		'Auth',
-		AMPLIFY_SYMBOL,
-	);
+	const data = { username, userId };
+
+	if (!activePointer) {
+		// No active user before (empty pointer — activating a parked session after
+		// a sign-out): this is a signedIn boundary, not a switch.
+		Hub.dispatch(
+			'auth',
+			{
+				event: 'signedIn',
+				data,
+			},
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	} else {
+		// A different user was active -> the active pointer moved between users.
+		Hub.dispatch(
+			'auth',
+			{
+				event: 'switchActiveUser',
+				data,
+			},
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	}
 }

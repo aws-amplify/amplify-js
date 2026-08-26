@@ -19,6 +19,7 @@ jest.mock('@aws-amplify/core', () => ({
 
 const mockAuthTokenStore = {
 	getLastAuthUser: jest.fn(),
+	getActiveUsername: jest.fn(),
 	loadTokens: jest.fn(),
 	storeTokens: jest.fn(),
 	clearTokens: jest.fn(),
@@ -30,6 +31,7 @@ const mockAuthTokenStore = {
 	getAuthUserList: jest.fn(),
 	addActiveSession: jest.fn(),
 	removeSession: jest.fn(),
+	clearActiveUser: jest.fn(),
 	clearTokensForUser: jest.fn(),
 	getStoredIdToken: jest.fn(),
 };

@@ -41,12 +41,12 @@ export const AuthTokenStorageKeys = {
 
 export interface AuthTokenStore {
 	getLastAuthUser(): Promise<string>;
+	getActiveUsername(): Promise<string | undefined>;
 	getAuthUserList(): Promise<string[]>;
 	getStoredIdToken(username: string): Promise<JWT | undefined>;
 	addActiveSession(username: string): Promise<void>;
-	removeSession(
-		username: string,
-	): Promise<{ newActiveUser?: string; isEmpty: boolean }>;
+	removeSession(username: string): Promise<{ isEmpty: boolean }>;
+	clearActiveUser(): Promise<void>;
 	loadTokens(): Promise<CognitoAuthTokens | null>;
 	storeTokens(tokens: CognitoAuthTokens): Promise<void>;
 	clearTokens(): Promise<void>;

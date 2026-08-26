@@ -5,7 +5,6 @@ import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { dispatchSignOutBoundaryEvents } from '../../../../src/providers/cognito/utils/dispatchSignOutHubEvents';
-import type { AuthTokenStore } from '../../../../src/providers/cognito/tokenProvider/types';
 
 jest.mock('@aws-amplify/core', () => ({
 	Hub: {
@@ -18,27 +17,16 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 }));
 
 const mockDispatch = Hub.dispatch as jest.Mock;
-const mockGetStoredIdToken = jest.fn();
-
-// The helper now RECEIVES the token store as a parameter (dependency injection)
-// instead of importing the tokenProvider singleton, so tests pass a mock store.
-const mockTokenStore = {
-	getStoredIdToken: mockGetStoredIdToken,
-} as unknown as AuthTokenStore;
 
 const signedOutUser = { username: 'alice', userId: 'alice-sub' };
 
 describe('dispatchSignOutBoundaryEvents()', () => {
 	afterEach(() => {
 		mockDispatch.mockClear();
-		mockGetStoredIdToken.mockReset();
 	});
 
-	it('dispatches only signedOut (with signedOutUser data) when the roster empties', async () => {
-		await dispatchSignOutBoundaryEvents(mockTokenStore, signedOutUser, {
-			newActiveUser: undefined,
-			isEmpty: true,
-		});
+	it('dispatches userSignedOut then signedOut (both with data) for a resolvable user', async () => {
+		await dispatchSignOutBoundaryEvents(signedOutUser);
 
 		expect(mockDispatch).toHaveBeenNthCalledWith(
 			1,
@@ -54,6 +42,11 @@ describe('dispatchSignOutBoundaryEvents()', () => {
 			'Auth',
 			AMPLIFY_SYMBOL,
 		);
+	});
+
+	it('never dispatches switchActiveUser (no-promotion model)', async () => {
+		await dispatchSignOutBoundaryEvents(signedOutUser);
+
 		expect(mockDispatch).not.toHaveBeenCalledWith(
 			'auth',
 			expect.objectContaining({ event: 'switchActiveUser' }),
@@ -63,10 +56,7 @@ describe('dispatchSignOutBoundaryEvents()', () => {
 	});
 
 	it('omits userSignedOut when no active user was resolved but still emits signedOut', async () => {
-		await dispatchSignOutBoundaryEvents(mockTokenStore, undefined, {
-			newActiveUser: undefined,
-			isEmpty: true,
-		});
+		await dispatchSignOutBoundaryEvents(undefined);
 
 		expect(mockDispatch).not.toHaveBeenCalledWith(
 			'auth',
@@ -82,53 +72,17 @@ describe('dispatchSignOutBoundaryEvents()', () => {
 		);
 	});
 
-	it('resolves the promoted user from the STORED id token for switchActiveUser', async () => {
-		mockGetStoredIdToken.mockResolvedValue({ payload: { sub: 'bob-sub' } });
+	it('always emits signedOut even when parked sessions remain (no promotion)', async () => {
+		// The roster may still hold parked users; signOut only clears the pointer,
+		// so signedOut fires unconditionally and switchActiveUser never does.
+		await dispatchSignOutBoundaryEvents(signedOutUser);
 
-		await dispatchSignOutBoundaryEvents(mockTokenStore, signedOutUser, {
-			newActiveUser: 'bob',
-			isEmpty: false,
-		});
-
-		expect(mockGetStoredIdToken).toHaveBeenCalledWith('bob');
-		expect(mockDispatch).toHaveBeenNthCalledWith(
-			1,
+		expect(mockDispatch).toHaveBeenCalledWith(
 			'auth',
-			{ event: 'userSignedOut', data: signedOutUser },
+			{ event: 'signedOut', data: signedOutUser },
 			'Auth',
 			AMPLIFY_SYMBOL,
 		);
-		expect(mockDispatch).toHaveBeenNthCalledWith(
-			2,
-			'auth',
-			{
-				event: 'switchActiveUser',
-				data: { username: 'bob', userId: 'bob-sub' },
-			},
-			'Auth',
-			AMPLIFY_SYMBOL,
-		);
-		expect(mockDispatch).not.toHaveBeenCalledWith(
-			'auth',
-			expect.objectContaining({ event: 'signedOut' }),
-			'Auth',
-			AMPLIFY_SYMBOL,
-		);
-	});
-
-	it('skips switchActiveUser dispatch when the promoted id token is unavailable', async () => {
-		mockGetStoredIdToken.mockResolvedValue(undefined);
-
-		await dispatchSignOutBoundaryEvents(mockTokenStore, undefined, {
-			newActiveUser: 'bob',
-			isEmpty: false,
-		});
-
-		expect(mockDispatch).not.toHaveBeenCalledWith(
-			'auth',
-			expect.objectContaining({ event: 'switchActiveUser' }),
-			'Auth',
-			AMPLIFY_SYMBOL,
-		);
+		expect(mockDispatch).toHaveBeenCalledTimes(2);
 	});
 });

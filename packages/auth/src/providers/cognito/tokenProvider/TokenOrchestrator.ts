@@ -205,14 +205,19 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		// Do NOT clear tokens for transient errors like service issues, rate limits, etc.
 		const shouldClearTokens = this.isAuthenticationError(err);
 
-		let removeResult: { newActiveUser?: string; isEmpty: boolean } | undefined;
+		let cleared = false;
+		let signedOutUser: { username: string; userId: string } | undefined;
 		if (shouldClearTokens) {
-			// Scope the clear to ONLY the failing user's namespace and drop them
-			// from the roster. A blanket clearTokens() would remove AuthUserList and
-			// orphan every other parked session (multi-session support).
+			// Scope the clear to ONLY the failing user's namespace, drop them from
+			// the roster (no promotion of a parked user) and clear the active
+			// pointer. A blanket clearTokens() would remove AuthUserList and orphan
+			// every other parked session (multi-session support).
 			const tokenStore = this.getTokenStore();
 			await tokenStore.clearTokensForUser(username);
-			removeResult = await tokenStore.removeSession(username);
+			await tokenStore.removeSession(username);
+			await tokenStore.clearActiveUser();
+			cleared = true;
+			signedOutUser = userId ? { username, userId } : undefined;
 		}
 
 		Hub.dispatch(
@@ -225,15 +230,13 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			AMPLIFY_SYMBOL,
 		);
 
-		if (removeResult) {
-			// emit the sign-out boundary events for the removed/promoted session.
-			// Resolve everything from stored tokens; do NOT call getCurrentUser()/
-			// getTokens() here as that would recurse back into token refresh.
-			await dispatchSignOutBoundaryEvents(
-				this.getTokenStore(),
-				userId ? { username, userId } : undefined,
-				removeResult,
-			);
+		if (cleared) {
+			// emit the sign-out boundary events for the removed session (userSignedOut
+			// when resolvable, then signedOut ALWAYS; never switchActiveUser). Resolve
+			// everything from the pre-clear tokens; do NOT call getCurrentUser()/
+			// getTokens() here as that would recurse back into token refresh. This
+			// path keeps its existing credential handling (no clearCredentials call).
+			await dispatchSignOutBoundaryEvents(signedOutUser);
 		}
 
 		if (err.name.startsWith('NotAuthorizedException')) {

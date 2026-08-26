@@ -120,13 +120,13 @@ describe('TokenStore', () => {
 	});
 
 	describe('getLastAuthUser', () => {
-		it('should return the last authenticated user', async () => {
+		it('should return the active pointer (LastAuthUser) read directly', async () => {
 			const mockUser = 'mockUser';
-			// Return the roster for AuthUserList and nothing for LastAuthUser so
-			// no drift reconciliation is triggered.
+			// getLastAuthUser reads the LastAuthUser pointer key DIRECTLY and never
+			// derives from the roster; only the pointer key is populated here.
 			mockKeyValueStorage.getItem.mockImplementation(key =>
 				Promise.resolve(
-					key === `${authIDP}.${userPoolClientId}.AuthUserList`
+					key === `${authIDP}.${userPoolClientId}.LastAuthUser`
 						? mockUser
 						: null,
 				),
@@ -136,9 +136,8 @@ describe('TokenStore', () => {
 			expect(result).toBe(mockUser);
 		});
 
-		it('should return string username when no last auth user exists', async () => {
-			// getLastAuthUser now resolves via getAuthUserList, which reads both the
-			// AuthUserList key and the legacy LastAuthUser key; both must be empty.
+		it('should return string username when no active pointer exists', async () => {
+			// Empty/absent pointer resolves to the legacy 'username' sentinel.
 			mockKeyValueStorage.getItem.mockResolvedValue(null);
 
 			const result = await tokenStore.getLastAuthUser();
@@ -620,19 +619,37 @@ describe('TokenStore', () => {
 				expect(result).toEqual(['carol', 'alice', 'bob']);
 			});
 
-			it('(g) prunes an external LastAuthUser lacking tokens and corrects the stale pointer', async () => {
+			it('(g) clears a stale external LastAuthUser whose user was pruned', async () => {
 				store[authUserListKey] = 'alice,bob';
 				store[lastAuthUserKey] = 'carol';
 				// carol (the external pointer) has NO stored access token; alice/bob
-				// do. promote+prune nets back to [alice,bob], but the stale pointer
-				// must still be corrected from 'carol' to the new head 'alice'.
+				// do. promote+prune nets back to [alice,bob]. Under the pointer model
+				// a pointer must never name a user absent from the roster, so the
+				// stale 'carol' pointer is CLEARED (not repointed at a new head).
 				setResolvable('alice', 'bob');
 
 				const result = await tokenStore.getAuthUserList();
 
 				expect(result).toEqual(['alice', 'bob']);
 				expect(store[authUserListKey]).toBe('alice,bob');
-				expect(store[lastAuthUserKey]).toBe('alice');
+				expect(store[lastAuthUserKey]).toBeUndefined();
+			});
+
+			it('(h) leaves an empty pointer with a non-empty roster untouched (parked sessions)', async () => {
+				// Legitimate post-sign-out state: parked sessions remain but nobody is
+				// active. An empty pointer must NOT trigger promotion/reconciliation.
+				store[authUserListKey] = 'alice,bob';
+				setResolvable('alice', 'bob');
+				mockKeyValueStorage.setItem.mockClear();
+				mockKeyValueStorage.removeItem.mockClear();
+
+				const result = await tokenStore.getAuthUserList();
+
+				expect(result).toEqual(['alice', 'bob']);
+				// no promotion: roster + pointer are left exactly as-is.
+				expect(mockKeyValueStorage.setItem).not.toHaveBeenCalled();
+				expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalled();
+				expect(store[lastAuthUserKey]).toBeUndefined();
 			});
 		});
 
@@ -650,10 +667,58 @@ describe('TokenStore', () => {
 		});
 
 		describe('getLastAuthUser', () => {
-			it('returns the roster head (AuthUserList[0])', async () => {
+			it('reads the active pointer directly (not the roster head)', async () => {
 				store[authUserListKey] = 'active,parked';
+				store[lastAuthUserKey] = 'active';
 
 				expect(await tokenStore.getLastAuthUser()).toBe('active');
+			});
+
+			it('returns the sentinel when the pointer is empty even with a parked roster', async () => {
+				// roster holds parked sessions but nobody is active -> sentinel, never
+				// the roster head.
+				store[authUserListKey] = 'parked,other';
+
+				expect(await tokenStore.getLastAuthUser()).toBe('username');
+			});
+		});
+
+		describe('getActiveUsername', () => {
+			it('returns the raw pointer when set', async () => {
+				store[lastAuthUserKey] = 'active';
+
+				expect(await tokenStore.getActiveUsername()).toBe('active');
+			});
+
+			it('returns undefined for an empty pointer even with a parked roster', async () => {
+				store[authUserListKey] = 'parked';
+
+				expect(await tokenStore.getActiveUsername()).toBeUndefined();
+			});
+
+			it('returns undefined for the legacy "username" sentinel', async () => {
+				store[lastAuthUserKey] = 'username';
+
+				expect(await tokenStore.getActiveUsername()).toBeUndefined();
+			});
+		});
+
+		describe('clearActiveUser', () => {
+			it('removes ONLY the pointer key, leaving the roster intact', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'alice';
+
+				await tokenStore.clearActiveUser();
+
+				expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
+					lastAuthUserKey,
+				);
+				expect(mockKeyValueStorage.removeItem).not.toHaveBeenCalledWith(
+					authUserListKey,
+				);
+				expect(store[lastAuthUserKey]).toBeUndefined();
+				// parked sessions survive.
+				expect(store[authUserListKey]).toBe('alice,bob');
 			});
 		});
 
@@ -679,15 +744,22 @@ describe('TokenStore', () => {
 		});
 
 		describe('removeSession', () => {
-			it('removes a user and returns the promoted head', async () => {
+			it('removes a user, returns { isEmpty:false } and NEVER touches the pointer', async () => {
 				store[authUserListKey] = 'alice,bob,carol';
 				store[lastAuthUserKey] = 'alice';
 
 				const result = await tokenStore.removeSession('alice');
 
-				expect(result).toEqual({ newActiveUser: 'bob', isEmpty: false });
+				// no promotion: only isEmpty is returned.
+				expect(result).toEqual({ isEmpty: false });
 				expect(store[authUserListKey]).toBe('bob,carol');
-				expect(store[lastAuthUserKey]).toBe('bob');
+				// the active pointer is left untouched (clearing/repointing is the
+				// caller's job via clearActiveUser / addActiveSession).
+				expect(store[lastAuthUserKey]).toBe('alice');
+				expect(mockKeyValueStorage.setItem).not.toHaveBeenCalledWith(
+					lastAuthUserKey,
+					expect.anything(),
+				);
 			});
 
 			it('clears BOTH keys when the roster becomes empty', async () => {
@@ -696,7 +768,7 @@ describe('TokenStore', () => {
 
 				const result = await tokenStore.removeSession('alice');
 
-				expect(result).toEqual({ newActiveUser: undefined, isEmpty: true });
+				expect(result).toEqual({ isEmpty: true });
 				expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
 					authUserListKey,
 				);

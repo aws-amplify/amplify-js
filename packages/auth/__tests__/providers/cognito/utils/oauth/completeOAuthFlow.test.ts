@@ -75,6 +75,7 @@ describe('completeOAuthFlow', () => {
 		// session roster and resolves the signed-in user for its event payload.
 		(tokenOrchestrator.getTokenStore as jest.Mock).mockReturnValue({
 			getAuthUserList: jest.fn().mockResolvedValue([]),
+			getActiveUsername: jest.fn().mockResolvedValue(undefined),
 			addActiveSession: jest.fn().mockResolvedValue(undefined),
 		});
 		(getCurrentUser as jest.Mock).mockResolvedValue({

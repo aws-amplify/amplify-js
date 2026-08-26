@@ -302,24 +302,30 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	/**
-	 * Returns the ordered session roster (active user first).
+	 * Returns the session roster (AuthUserList). The roster is the set of
+	 * signed-in sessions; it is NOT the active pointer. Under the pointer model
+	 * the roster may be non-empty while nobody is active (parked sessions after a
+	 * sign-out), so this method deliberately does NOT derive or promote an active
+	 * user — {@link getLastAuthUser} reads the LastAuthUser pointer directly.
 	 *
 	 * If the AuthUserList key is present it is parsed directly. If it is absent
 	 * but a legacy LastAuthUser value exists (and is not the literal 'username'
-	 * fallback), that single user is migrated into a roster and persisted.
-	 * Otherwise an empty roster is returned.
+	 * fallback), that single user is migrated into a roster and persisted; the
+	 * pointer is left as-is so that user remains active.
 	 *
-	 * Every read is also a reconciliation point. External writers (older Amplify
-	 * versions and amazon-cognito-identity-js sharing the same storage) mutate
-	 * LastAuthUser directly, drifting it from AuthUserList[0]; and a partial
-	 * persist (LastAuthUser written, AuthUserList not) leaves the same skew. When
-	 * LastAuthUser names a real user that isn't the current head, it is promoted
-	 * to the front and the roster is pruned of entries whose tokens are no longer
-	 * resolvable, then re-persisted (best-effort — SSR storage may be read-only).
-	 * The head LastAuthUser read happens on every call (a single cheap read); the
-	 * "no extra reads" guarantee is per-entry only — the per-entry token reads and
-	 * the re-persist run ONLY on the promotion path, so the hot path (already in
-	 * sync) does no per-entry storage reads / JWT decodes.
+	 * Every read is also a reconciliation point, but reconciliation now respects
+	 * pointer semantics. External writers (older Amplify versions and
+	 * amazon-cognito-identity-js sharing the same storage) mutate LastAuthUser
+	 * directly, and a partial persist can leave skew. Reconciliation runs ONLY
+	 * when the pointer is NON-EMPTY and NON-SENTINEL: if it names a user absent
+	 * from the roster it is added to the front (external sign-in); if present but
+	 * not the head it is moved to the head. An EMPTY pointer alongside a non-empty
+	 * roster is a LEGITIMATE state (parked sessions, nobody active) and is left
+	 * untouched — never promoted. On the (rare) promotion path the roster is
+	 * pruned of entries whose tokens are no longer resolvable, and if the pointer
+	 * user itself was pruned the pointer is CLEARED rather than left naming a
+	 * removed user. All writes are best-effort (SSR storage may be read-only). The
+	 * hot path (pointer already in sync, or empty) does no per-entry reads.
 	 */
 	async getAuthUserList(): Promise<string[]> {
 		const authUserListString = await this.getKeyValueStorage().getItem(
@@ -332,9 +338,14 @@ export class DefaultTokenStore implements AuthTokenStore {
 		if (authUserListString) {
 			const parsedList = authUserListString.split(',').filter(Boolean);
 			let reconciledList = parsedList;
+			// Whether the (non-empty) pointer must be cleared because its own user
+			// was pruned during reconciliation (a pointer must never name a user
+			// absent from the roster).
+			let clearStalePointer = false;
 
-			// Reconcile drift: LastAuthUser may have been advanced by an external
-			// writer or a partial persist. Ignore the 'username' sentinel/empty.
+			// Reconcile drift ONLY for a real active pointer. An empty pointer or the
+			// 'username' sentinel means "nobody active" and is a legitimate state
+			// under the pointer model, so it is never promoted from the roster.
 			const shouldReconcile =
 				!!lastAuthUser &&
 				lastAuthUser !== 'username' &&
@@ -357,24 +368,31 @@ export class DefaultTokenStore implements AuthTokenStore {
 					}
 				}
 				reconciledList = prunedList;
+
+				// If the pointer's own user was pruned, the stored pointer is now
+				// stale: mark it for clearing rather than leaving it pointing at a
+				// user no longer in the roster.
+				clearStalePointer = !reconciledList.includes(lastAuthUser);
 			}
 
-			// Re-persist when reconciliation changed the roster contents, OR when it
-			// ran but the stored LastAuthUser pointer still doesn't match the new
-			// head. The latter covers promotion+prune netting back to the original
-			// list (e.g. external LastAuthUser='C' with no tokens: [A,B]→[C,A,B]→
-			// [A,B]) where LastAuthUser would otherwise stay stale at 'C' and re-run
-			// the full prune on every read. When reconciledList is empty,
-			// persistAuthUserList([]) clears both keys — the intended outcome when
-			// no resolvable session remains.
+			// Re-persist when reconciliation changed the roster contents, or when a
+			// stale pointer must be cleared. persistAuthUserList writes only the
+			// roster (the pointer is single-writer — owned by addActiveSession), so
+			// a surviving promoted pointer is left as the external writer set it.
+			// When reconciledList is empty, persistAuthUserList([]) clears both keys.
 			if (
 				reconciledList.join(',') !== parsedList.join(',') ||
-				(shouldReconcile && reconciledList[0] !== lastAuthUser)
+				clearStalePointer
 			) {
 				// Best-effort: read-only/ephemeral SSR storage may reject the write;
 				// the reconciled list is still returned to the caller.
 				try {
 					await this.persistAuthUserList(reconciledList);
+					if (clearStalePointer && reconciledList.length > 0) {
+						// Non-empty roster keeps the pointer key (persist didn't touch
+						// it), so clear the stale pointer explicitly.
+						await this.clearActiveUser();
+					}
 				} catch {
 					// Storage is read-only (e.g. SSR); degrade gracefully.
 				}
@@ -402,14 +420,26 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	/**
-	 * Persists the session roster. This is the ONLY writer of the AuthUserList
-	 * and LastAuthUser keys, keeping the invariant LastAuthUser === list[0].
+	 * Persists the session roster (AuthUserList). This is the ONLY writer of the
+	 * AuthUserList key, and the SINGLE WRITER of the LastAuthUser pointer.
 	 *
-	 * When the roster is empty both keys are removed.
+	 * Pointer discipline: the LastAuthUser pointer is written here ONLY when the
+	 * caller explicitly passes `setPointerTo` (addActiveSession does this so the
+	 * pointer + roster head are written together). removeSession's persist omits
+	 * it, so removing a session NEVER promotes a parked user into the pointer.
 	 *
-	 * @param list - The ordered roster to persist (active user first).
+	 * When the roster is empty both keys are removed (pointer first) regardless of
+	 * `setPointerTo`.
+	 *
+	 * @param list - The roster to persist (by convention the active user, when
+	 * any, is the head).
+	 * @param options - When `setPointerTo` is provided, the LastAuthUser pointer
+	 * is set to it in the same write.
 	 */
-	private async persistAuthUserList(list: string[]): Promise<void> {
+	private async persistAuthUserList(
+		list: string[],
+		options?: { setPointerTo?: string },
+	): Promise<void> {
 		if (list.length === 0) {
 			// Remove LastAuthUser FIRST: if the subsequent AuthUserList delete
 			// fails, a lingering AuthUserList is harmless, but a lingering legacy
@@ -420,13 +450,18 @@ export class DefaultTokenStore implements AuthTokenStore {
 			return;
 		}
 
-		// Write LastAuthUser FIRST, then AuthUserList. On a partial failure the
-		// newer intent survives in LastAuthUser (the pointer legacy/external
-		// consumers read), and getAuthUserList's drift reconciliation repairs
-		// AuthUserList from it on the next read. LastAuthUser is also kept in
-		// sync for legacy consumers, though AuthUserList is authoritative when
-		// both are present.
-		await this.getKeyValueStorage().setItem(this.getLastAuthUserKey(), list[0]);
+		// Write the pointer FIRST (when requested), then AuthUserList. On a partial
+		// failure the newer intent survives in LastAuthUser (the pointer legacy/
+		// external consumers read), and getAuthUserList's drift reconciliation
+		// repairs AuthUserList from it on the next read. The pointer is written
+		// ONLY on this explicit-request path to preserve single-writer discipline;
+		// removeSession's persist leaves the pointer for clearActiveUser to manage.
+		if (options?.setPointerTo !== undefined) {
+			await this.getKeyValueStorage().setItem(
+				this.getLastAuthUserKey(),
+				options.setPointerTo,
+			);
+		}
 		await this.getKeyValueStorage().setItem(
 			this.getAuthUserListKey(),
 			list.join(','),
@@ -435,37 +470,68 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	/**
 	 * Adds (or re-activates) a session for the given username, deduping and
-	 * moving it to the front of the roster so it becomes the active user.
+	 * moving it to the front of the roster AND setting it as the active pointer
+	 * (LastAuthUser). The pointer and roster head are written together.
 	 *
 	 * @param username - The username to mark as the active session.
 	 */
 	async addActiveSession(username: string): Promise<void> {
 		const list = await this.getAuthUserList();
-		await this.persistAuthUserList([
-			username,
-			...list.filter(user => user !== username),
-		]);
+		await this.persistAuthUserList(
+			[username, ...list.filter(user => user !== username)],
+			{ setPointerTo: username },
+		);
 	}
 
 	/**
-	 * Removes a session for the given username from the roster.
+	 * Removes a session for the given username from the roster. Under the pointer
+	 * model this NEVER chooses or promotes a next active user and NEVER touches
+	 * the LastAuthUser pointer (clearing/repointing the active user is the
+	 * caller's responsibility via {@link clearActiveUser} / addActiveSession).
 	 *
 	 * @param username - The username whose session should be removed.
-	 * @returns The new active user (roster head, if any) and whether the roster
-	 * is now empty.
+	 * @returns Whether the roster is now empty.
 	 */
-	async removeSession(
-		username: string,
-	): Promise<{ newActiveUser?: string; isEmpty: boolean }> {
+	async removeSession(username: string): Promise<{ isEmpty: boolean }> {
 		const list = await this.getAuthUserList();
 		const newList = list.filter(user => user !== username);
 		await this.persistAuthUserList(newList);
 
-		return { newActiveUser: newList[0], isEmpty: newList.length === 0 };
+		return { isEmpty: newList.length === 0 };
+	}
+
+	/**
+	 * Reads the RAW active-user pointer (LastAuthUser) without the sentinel
+	 * fallback, returning `undefined` when the pointer is empty/absent or holds
+	 * the legacy 'username' sentinel. Used to distinguish "nobody active" from an
+	 * actual active user (see dispatchSignedInHubEvent / setCurrentUser); does NOT
+	 * derive from the roster.
+	 */
+	async getActiveUsername(): Promise<string | undefined> {
+		const lastAuthUser = await this.getKeyValueStorage().getItem(
+			this.getLastAuthUserKey(),
+		);
+
+		return lastAuthUser && lastAuthUser !== 'username'
+			? lastAuthUser
+			: undefined;
+	}
+
+	/**
+	 * Clears the active-user pointer (LastAuthUser key) ONLY, leaving the
+	 * AuthUserList roster intact so parked sessions survive. After this,
+	 * getLastAuthUser returns the 'username' sentinel and getCurrentUser/
+	 * fetchAuthSession behave as signed-out until setCurrentUser is called.
+	 */
+	async clearActiveUser(): Promise<void> {
+		await this.getKeyValueStorage().removeItem(this.getLastAuthUserKey());
 	}
 
 	async getLastAuthUser(): Promise<string> {
-		return (await this.getAuthUserList())[0] ?? 'username';
+		// Read the pointer DIRECTLY; return the legacy 'username' sentinel when the
+		// pointer is empty/absent EVEN IF the roster still holds parked sessions.
+		// Never falls back to the roster head.
+		return (await this.getActiveUsername()) ?? 'username';
 	}
 
 	async setOAuthMetadata(metadata: OAuthMetadata): Promise<void> {

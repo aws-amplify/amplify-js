@@ -27,10 +27,12 @@ const mockTokenOrchestrator = tokenOrchestrator as jest.Mocked<
 const mockClearCredentials = clearCredentials as jest.Mock;
 const mockDispatch = Hub.dispatch as jest.Mock;
 const mockGetAuthUserList = jest.fn();
+const mockGetActiveUsername = jest.fn();
 const mockAddActiveSession = jest.fn();
 const mockGetStoredIdToken = jest.fn();
 const mockTokenStore = {
 	getAuthUserList: mockGetAuthUserList,
+	getActiveUsername: mockGetActiveUsername,
 	addActiveSession: mockAddActiveSession,
 	getStoredIdToken: mockGetStoredIdToken,
 };
@@ -46,6 +48,7 @@ describe('setCurrentUser', () => {
 
 	afterEach(() => {
 		mockGetAuthUserList.mockReset();
+		mockGetActiveUsername.mockReset();
 		mockAddActiveSession.mockReset();
 		mockClearCredentials.mockReset();
 		mockGetStoredIdToken.mockReset();
@@ -65,8 +68,9 @@ describe('setCurrentUser', () => {
 		expect(mockDispatch).not.toHaveBeenCalled();
 	});
 
-	it('is a no-op when the target user is already active', async () => {
+	it('is a no-op when the target user is already the active pointer', async () => {
 		mockGetAuthUserList.mockResolvedValue(['bob', 'alice']);
+		mockGetActiveUsername.mockResolvedValue('bob');
 
 		await setCurrentUser('bob');
 
@@ -75,8 +79,9 @@ describe('setCurrentUser', () => {
 		expect(mockDispatch).not.toHaveBeenCalled();
 	});
 
-	it('reorders the roster, clears credentials, and dispatches switchActiveUser', async () => {
+	it('reorders the roster, clears credentials, and dispatches switchActiveUser when another user was active', async () => {
 		mockGetAuthUserList.mockResolvedValue(['alice', 'bob']);
+		mockGetActiveUsername.mockResolvedValue('alice');
 		mockGetStoredIdToken.mockResolvedValue({
 			payload: { sub: 'bob-id' },
 		});
@@ -101,8 +106,38 @@ describe('setCurrentUser', () => {
 		);
 	});
 
+	it('dispatches signedIn (not switchActiveUser) when activating a parked session with no active pointer', async () => {
+		// parked roster after a sign-out: nobody active (empty pointer).
+		mockGetAuthUserList.mockResolvedValue(['bob']);
+		mockGetActiveUsername.mockResolvedValue(undefined);
+		mockGetStoredIdToken.mockResolvedValue({
+			payload: { sub: 'bob-id' },
+		});
+
+		await setCurrentUser('bob');
+
+		expect(mockAddActiveSession).toHaveBeenCalledWith('bob');
+		expect(mockClearCredentials).toHaveBeenCalledTimes(1);
+		expect(mockDispatch).toHaveBeenCalledWith(
+			'auth',
+			{
+				event: 'signedIn',
+				data: { username: 'bob', userId: 'bob-id' },
+			},
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).not.toHaveBeenCalledWith(
+			'auth',
+			expect.objectContaining({ event: 'switchActiveUser' }),
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	});
+
 	it('skips dispatch when the stored id token has no sub claim', async () => {
 		mockGetAuthUserList.mockResolvedValue(['alice', 'bob']);
+		mockGetActiveUsername.mockResolvedValue('alice');
 		mockGetStoredIdToken.mockResolvedValue(undefined);
 
 		await setCurrentUser('bob');
