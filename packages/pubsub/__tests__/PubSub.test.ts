@@ -39,7 +39,7 @@ const mockGlobalCtxFetchAuthSession = jest.fn(() => ({
 	},
 }));
 
-import { Reachability } from '@aws-amplify/core/internals/utils';
+import { Reachability, Signer } from '@aws-amplify/core/internals/utils';
 import * as Paho from '../src/vendor/paho-mqtt';
 import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
 import { PubSub as MqttPubSub } from '../src/clients/mqtt';
@@ -607,10 +607,28 @@ describe('PubSub', () => {
 				endpoint: 'wss://iot.test.org:443/mqtt',
 			});
 
-			// Access the protected endpoint getter via bracket notation
-			await provider['endpoint'];
+			const signUrlSpy = jest.spyOn(Signer, 'signUrl');
 
-			expect(mockCtx.fetchAuthSession).toHaveBeenCalledTimes(1);
+			try {
+				// Access the protected endpoint getter via bracket notation
+				await provider['endpoint'];
+
+				expect(mockCtx.fetchAuthSession).toHaveBeenCalledTimes(1);
+				// The ctx credentials must be the ones used for URL signing —
+				// asserting the full chain from ctx.fetchAuthSession() to Signer.signUrl
+				expect(signUrlSpy).toHaveBeenCalledTimes(1);
+				expect(signUrlSpy).toHaveBeenCalledWith(
+					'wss://iot.test.org:443/mqtt',
+					{
+						access_key: 'ctxAccessKeyId',
+						secret_key: 'ctxSecretAccessKey',
+						session_token: 'ctxSessionToken',
+					},
+					{ service: 'iotdevicegateway', region: 'us-east-1' },
+				);
+			} finally {
+				signUrlSpy.mockRestore();
+			}
 		});
 
 		test('throws when explicit ctx returns no credentials', async () => {
