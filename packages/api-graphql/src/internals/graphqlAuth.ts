@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { GraphQLApiError } from '../utils/errors';
 import {
@@ -14,7 +14,7 @@ import {
 } from '../utils/errors/constants';
 
 export async function headerBasedAuth(
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	authMode: GraphQLAuthMode,
 	apiKey: string | undefined,
 	additionalHeaders: Record<string, string> = {},
@@ -31,7 +31,7 @@ export async function headerBasedAuth(
 			};
 			break;
 		case 'iam': {
-			const session = await amplify.Auth.fetchAuthSession();
+			const session = await amplify.fetchAuthSession();
 			if (session.credentials === undefined) {
 				throw new GraphQLApiError(NO_VALID_CREDENTIALS);
 			}
@@ -43,7 +43,7 @@ export async function headerBasedAuth(
 
 			try {
 				token = (
-					await amplify.Auth.fetchAuthSession()
+					await amplify.fetchAuthSession()
 				).tokens?.accessToken.toString();
 			} catch (e) {
 				// fetchAuthSession failed

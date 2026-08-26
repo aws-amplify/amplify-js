@@ -7,6 +7,8 @@ import {
 	PersistentModelConstructor,
 	initSchema as initSchemaType,
 } from '@aws-amplify/datastore';
+import { Amplify } from '@aws-amplify/core';
+import { clearGlobalContext, setGlobalContext } from '@aws-amplify/core/internals/utils';
 import {
 	Model,
 	Post,
@@ -99,6 +101,39 @@ describe('SQLiteAdapter', () => {
 			});
 			await DataStore.clear();
 
+			// Establish a global context so InternalAPI.graphql() → getGlobalContext()
+			// succeeds when the sync engine starts subscriptions.
+			const testCtx = {
+				resourcesConfig: {
+					API: {
+						GraphQL: {
+							endpoint:
+								'https://0.0.0.0/does/not/exist/graphql',
+							region: 'us-west-2',
+							defaultAuthMode: 'apiKey' as const,
+							apiKey: 'da2-fakeApiId123456',
+						},
+					},
+				},
+				libraryOptions: {},
+				fetchAuthSession: () => Promise.resolve({}),
+				clearCredentials: () => Promise.resolve(),
+				getTokens: () => Promise.resolve(undefined),
+			};
+			Object.defineProperty(testCtx, Symbol.for('amplify.context'), {
+				value: true,
+				enumerable: false,
+			});
+			setGlobalContext(testCtx);
+
+			// Prevent the subscription processor from making real network
+			// requests. Inject a no-op InternalAPI that returns empty observables.
+			const { NEVER } = require('rxjs');
+			(DataStore as any).amplifyContext.InternalAPI = {
+				graphql: () => NEVER,
+				getGraphqlOperationType: () => 'subscription',
+			};
+
 			// start() ensures storageAdapter is set
 			await DataStore.start();
 
@@ -110,6 +145,11 @@ describe('SQLiteAdapter', () => {
 			// prevents the mutation process from clearing the mutation queue, which
 			// allows us to observe the state of mutations.
 			(syncEngine as any).mutationsProcessor.isReady = () => false;
+		});
+
+		afterEach(async () => {
+			await DataStore.clear();
+			clearGlobalContext();
 		});
 
 		describe('sanity checks', () => {

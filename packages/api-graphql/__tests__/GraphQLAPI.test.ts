@@ -305,9 +305,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -374,9 +373,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -444,9 +442,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -518,9 +515,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -588,9 +584,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -654,9 +649,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -723,9 +717,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -793,9 +786,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -1036,9 +1028,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -1286,9 +1277,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -1377,9 +1367,8 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				{
 					abortController: expect.any(AbortController),
@@ -1507,9 +1496,8 @@ describe('API test', () => {
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				'iam',
 				'FAKE-KEY',
