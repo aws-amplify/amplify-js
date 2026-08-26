@@ -18,13 +18,34 @@ jest.mock('@aws-amplify/core', () => ({
 			},
 		};
 	},
+	// Provides the global-ctx fallback for tests that construct providers
+	// without an explicit AmplifyContext (lazy ctx resolution path).
+	// References mockGlobalCtxFetchAuthSession lazily (at call time) so
+	// explicit-ctx tests can assert it is NOT called.
+	getGlobalContext() {
+		return {
+			fetchAuthSession: mockGlobalCtxFetchAuthSession,
+		};
+	},
 }));
 
-import { Reachability } from '@aws-amplify/core/internals/utils';
+const mockGlobalCtxFetchAuthSession = jest.fn(() => ({
+	credentials: {
+		accessKeyId: 'accessKeyId',
+		sessionToken: 'sessionToken',
+		secretAccessKey: 'secretAccessKey',
+		identityId: 'identityId',
+		authenticated: true,
+	},
+}));
+
+import { Reachability, Signer } from '@aws-amplify/core/internals/utils';
 import * as Paho from '../src/vendor/paho-mqtt';
 import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
 import { PubSub as MqttPubSub } from '../src/clients/mqtt';
+import { AWSIoT } from '../src/Providers/AWSIot';
 import { HubConnectionListener } from './helpers';
+import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 import { Observable, Observer } from 'rxjs';
 import * as constants from '../src/Providers/constants';
 
@@ -568,5 +589,86 @@ describe('PubSub', () => {
 				spyDisconnect.mockClear();
 			},
 		);
+	});
+
+	describe('AWSIoT with explicit AmplifyContext', () => {
+		test('uses ctx.fetchAuthSession() for URL signing when constructed with explicit ctx', async () => {
+			const mockCtx = createMockAmplifyContext();
+			(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials: {
+					accessKeyId: 'ctxAccessKeyId',
+					secretAccessKey: 'ctxSecretAccessKey',
+					sessionToken: 'ctxSessionToken',
+				},
+			});
+
+			const provider = new AWSIoT(mockCtx, {
+				region: 'us-east-1',
+				endpoint: 'wss://iot.test.org:443/mqtt',
+			});
+
+			const signUrlSpy = jest.spyOn(Signer, 'signUrl');
+
+			try {
+				// Access the protected endpoint getter via bracket notation
+				await provider['endpoint'];
+
+				expect(mockCtx.fetchAuthSession).toHaveBeenCalledTimes(1);
+				// The ctx credentials must be the ones used for URL signing —
+				// asserting the full chain from ctx.fetchAuthSession() to Signer.signUrl
+				expect(signUrlSpy).toHaveBeenCalledTimes(1);
+				expect(signUrlSpy).toHaveBeenCalledWith(
+					'wss://iot.test.org:443/mqtt',
+					{
+						access_key: 'ctxAccessKeyId',
+						secret_key: 'ctxSecretAccessKey',
+						session_token: 'ctxSessionToken',
+					},
+					{ service: 'iotdevicegateway', region: 'us-east-1' },
+				);
+			} finally {
+				signUrlSpy.mockRestore();
+			}
+		});
+
+		test('throws when explicit ctx returns no credentials', async () => {
+			const mockCtx = createMockAmplifyContext();
+			(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials: undefined,
+			});
+
+			const provider = new AWSIoT(mockCtx, {
+				region: 'us-east-1',
+				endpoint: 'wss://iot.test.org:443/mqtt',
+			});
+
+			await expect(provider['endpoint']).rejects.toThrow(
+				'No auth session credentials',
+			);
+		});
+
+		test('does not fall back to global fetchAuthSession when explicit ctx is provided', async () => {
+			mockGlobalCtxFetchAuthSession.mockClear();
+			const mockCtx = createMockAmplifyContext();
+			(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials: {
+					accessKeyId: 'ctxAccessKeyId',
+					secretAccessKey: 'ctxSecretAccessKey',
+					sessionToken: 'ctxSessionToken',
+				},
+			});
+
+			const provider = new AWSIoT(mockCtx, {
+				region: 'us-east-1',
+				endpoint: 'wss://iot.test.org:443/mqtt',
+			});
+
+			await provider['endpoint'];
+
+			// The global-ctx fetchAuthSession must NOT have been called because
+			// the explicit ctx path is used instead
+			expect(mockCtx.fetchAuthSession).toHaveBeenCalledTimes(1);
+			expect(mockGlobalCtxFetchAuthSession).not.toHaveBeenCalled();
+		});
 	});
 });
