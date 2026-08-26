@@ -1,4 +1,3 @@
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
@@ -21,18 +20,7 @@ import {
 	TranslateTextInput,
 } from '../../src/types';
 
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
-
-jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
-	Amplify: {
-		getConfig: jest.fn(),
-	},
-	ConsoleLogger: jest.fn(() => ({
-		debug: jest.fn(),
-	})),
-}));
+import { createMockAmplifyContext } from '../testUtils';
 
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
 const resetTranslateMock = () => {
@@ -162,28 +150,24 @@ describe('Predictions convert provider test', () => {
 			jest.clearAllMocks();
 		});
 		test('happy case credentials exist', () => {
-			mockFetchAuthSession.mockResolvedValue({
+			const ctx = createMockAmplifyContext({
+				Predictions: { convert: options },
+			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 				credentials,
 				identityId,
 			});
-			mockGetConfig.mockReturnValue({
-				Predictions: {
-					convert: options,
-				},
-			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 			expect(
 				predictionsProvider.convert(validTranslateTextInput),
 			).resolves.toMatchObject({ language: 'es', text: 'translatedText' });
 		});
 		test('error case credentials do not exist', () => {
-			mockFetchAuthSession.mockResolvedValue({});
-			mockGetConfig.mockReturnValue({
-				Predictions: {
-					convert: options,
-				},
+			const ctx = createMockAmplifyContext({
+				Predictions: { convert: options },
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({});
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 
 			expect(
 				predictionsProvider.convert(validTranslateTextInput),
@@ -194,16 +178,14 @@ describe('Predictions convert provider test', () => {
 			);
 		});
 		test('error case credentials exist but service fails', () => {
-			mockFetchAuthSession.mockResolvedValue({
+			const ctx = createMockAmplifyContext({
+				Predictions: { convert: options },
+			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 				credentials,
 				identityId,
 			});
-			mockGetConfig.mockReturnValue({
-				Predictions: {
-					convert: options,
-				},
-			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 			jest.spyOn(TranslateClient.prototype, 'send').mockImplementation(() => {
 				return Promise.reject('error');
 			});
@@ -218,16 +200,14 @@ describe('Predictions convert provider test', () => {
 			jest.clearAllMocks();
 		});
 		test('happy case credentials exist', () => {
-			mockFetchAuthSession.mockResolvedValue({
+			const ctx = createMockAmplifyContext({
+				Predictions: { convert: options },
+			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 				credentials,
 				identityId,
 			});
-			mockGetConfig.mockReturnValue({
-				Predictions: {
-					convert: options,
-				},
-			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 			window.URL.createObjectURL = jest.fn();
 			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
 				return 'dummyURL';
@@ -243,13 +223,11 @@ describe('Predictions convert provider test', () => {
 			});
 		});
 		test('error case credentials do not exist', () => {
-			mockFetchAuthSession.mockResolvedValue({});
-			mockGetConfig.mockReturnValue({
-				Predictions: {
-					convert: options,
-				},
+			const ctx = createMockAmplifyContext({
+				Predictions: { convert: options },
 			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({});
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 			expect(
 				predictionsProvider.convert(validTextToSpeechInput),
 			).rejects.toThrow(
@@ -259,16 +237,14 @@ describe('Predictions convert provider test', () => {
 			);
 		});
 		test('error case credentials exist but service fails', () => {
-			mockFetchAuthSession.mockResolvedValue({
+			const ctx = createMockAmplifyContext({
+				Predictions: { convert: options },
+			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 				credentials,
 				identityId,
 			});
-			mockGetConfig.mockReturnValue({
-				Predictions: {
-					convert: options,
-				},
-			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 			jest.spyOn(PollyClient.prototype, 'send').mockImplementation(() => {
 				return Promise.reject('error');
 			});
@@ -283,11 +259,7 @@ describe('Predictions convert provider test', () => {
 			jest.clearAllMocks();
 		});
 		test('Error region not configured', () => {
-			mockFetchAuthSession.mockResolvedValue({
-				credentials,
-				identityId,
-			});
-			mockGetConfig.mockReturnValue({
+			const ctx = createMockAmplifyContext({
 				Predictions: {
 					convert: {
 						transcription: {
@@ -299,13 +271,17 @@ describe('Predictions convert provider test', () => {
 					},
 				},
 			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials,
+				identityId,
+			});
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
 				() => {
 					return 'Hello how are you';
 				},
 			);
 
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 
 			return expect(
 				predictionsProvider.convert(validSpeechToTextInput),
@@ -316,11 +292,7 @@ describe('Predictions convert provider test', () => {
 			);
 		});
 		test('Error languageCode not configured ', () => {
-			mockFetchAuthSession.mockResolvedValue({
-				credentials,
-				identityId,
-			});
-			mockGetConfig.mockReturnValue({
+			const ctx = createMockAmplifyContext({
 				Predictions: {
 					convert: {
 						transcription: {
@@ -330,13 +302,17 @@ describe('Predictions convert provider test', () => {
 					},
 				},
 			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials,
+				identityId,
+			});
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
 				() => {
 					return 'Hello how are you';
 				},
 			);
 
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 
 			expect(
 				predictionsProvider.convert(validSpeechToTextInput),
@@ -347,14 +323,12 @@ describe('Predictions convert provider test', () => {
 			);
 		});
 		test('Happy case ', () => {
-			mockFetchAuthSession.mockResolvedValue({
+			const ctx = createMockAmplifyContext({
+				Predictions: { convert: options },
+			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 				credentials,
 				identityId,
-			});
-			mockGetConfig.mockReturnValue({
-				Predictions: {
-					convert: options,
-				},
 			});
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
 				() => {
@@ -362,7 +336,7 @@ describe('Predictions convert provider test', () => {
 				},
 			);
 
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 
 			expect(
 				predictionsProvider.convert(validSpeechToTextInput),
@@ -373,11 +347,7 @@ describe('Predictions convert provider test', () => {
 			} as SpeechToTextOutput);
 		});
 		test('Downsized Happy case ', async () => {
-			mockFetchAuthSession.mockResolvedValue({
-				credentials,
-				identityId,
-			});
-			mockGetConfig.mockReturnValue({
+			const ctx = createMockAmplifyContext({
 				Predictions: {
 					convert: {
 						transcription: {
@@ -390,6 +360,10 @@ describe('Predictions convert provider test', () => {
 					},
 				},
 			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
+				credentials,
+				identityId,
+			});
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
 				() => {
 					return 'Bonjour, comment vas tu?';
@@ -400,7 +374,7 @@ describe('Predictions convert provider test', () => {
 				'downsampleBuffer',
 			);
 
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 
 			await predictionsProvider.convert(validSpeechToTextInput);
 			expect(downsampleBufferSpyon).toHaveBeenCalledWith(
@@ -415,16 +389,14 @@ describe('Predictions convert provider test', () => {
 			jest.clearAllMocks();
 		});
 		test('convert text to speech initializes a client with the correct custom user agent', async () => {
-			mockFetchAuthSession.mockResolvedValue({
+			const ctx = createMockAmplifyContext({
+				Predictions: { convert: options },
+			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 				credentials,
 				identityId,
 			});
-			mockGetConfig.mockReturnValue({
-				Predictions: {
-					convert: options,
-				},
-			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 			window.URL.createObjectURL = jest.fn();
 			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
 				return 'dummyURL';
@@ -444,16 +416,14 @@ describe('Predictions convert provider test', () => {
 			);
 		});
 		test('convert translate text initializes a client with the correct custom user agent', async () => {
-			mockFetchAuthSession.mockResolvedValue({
+			const ctx = createMockAmplifyContext({
+				Predictions: { convert: options },
+			});
+			(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 				credentials,
 				identityId,
 			});
-			mockGetConfig.mockReturnValue({
-				Predictions: {
-					convert: options,
-				},
-			});
-			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 
 			await predictionsProvider.convert(validTranslateTextInput);
 			// translateClient is a private property
