@@ -113,7 +113,7 @@ describe('Predictions test', () => {
 			expect(interpretProvider._explicitCtx).toBe(ctx);
 		});
 
-		test('convert delegates to provider constructed with ctx', async () => {
+		test('convert delegates to the convert provider', async () => {
 			const ctx = createMockAmplifyContext();
 			const input: TranslateTextInput = {
 				translateText: { source: { text: 'sourceText' } },
@@ -133,7 +133,7 @@ describe('Predictions test', () => {
 			expect(convertSpy).toHaveBeenCalledTimes(1);
 		});
 
-		test('identify delegates to provider constructed with ctx', async () => {
+		test('identify delegates to the identify provider', async () => {
 			const ctx = createMockAmplifyContext();
 			const input: IdentifyTextInput = {
 				text: { source: { key: 'key' }, format: 'PLAIN' },
@@ -157,7 +157,7 @@ describe('Predictions test', () => {
 			expect(identifySpy).toHaveBeenCalledTimes(1);
 		});
 
-		test('interpret delegates to provider constructed with ctx', async () => {
+		test('interpret delegates to the interpret provider', async () => {
 			const ctx = createMockAmplifyContext();
 			const input: InterpretTextInput = {
 				text: {
