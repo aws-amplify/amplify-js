@@ -8,7 +8,11 @@ import {
 	print,
 } from 'graphql';
 import { Observable, catchError } from 'rxjs';
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import {
+	AmplifyClassV6,
+	AmplifyContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	CustomUserAgentDetails,
@@ -27,7 +31,11 @@ import {
 
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { GraphQLOperation, GraphQLOptions, GraphQLResult } from '../types';
-import { resolveConfig, resolveLibraryOptions } from '../utils';
+import {
+	bridgeAmplifyClass,
+	resolveConfig,
+	resolveLibraryOptions,
+} from '../utils';
 import { repackageUnauthorizedError } from '../utils/errors/repackageAuthError';
 import { NO_ENDPOINT } from '../utils/errors/constants';
 import { GraphQLApiError, createGraphQLResultWithError } from '../utils/errors';
@@ -39,10 +47,25 @@ const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const isAmplifyInstance = (
 	amplify:
+		| AmplifyContext
 		| AmplifyClassV6
-		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
-): amplify is AmplifyClassV6 => {
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyContext>),
+): amplify is AmplifyContext | AmplifyClassV6 => {
 	return typeof amplify !== 'function';
+};
+
+/**
+ * Ensures the given amplify argument is an AmplifyContext.
+ * Bridges AmplifyClassV6 (legacy singleton) if needed.
+ */
+const ensureContext = (
+	amplify: AmplifyContext | AmplifyClassV6,
+): AmplifyContext => {
+	if (isAmplifyContext(amplify)) {
+		return amplify;
+	}
+
+	return bridgeAmplifyClass(amplify as AmplifyClassV6);
 };
 
 /**
@@ -86,8 +109,9 @@ export class InternalGraphQLAPIClass {
 	 */
 	graphql<T = any>(
 		amplify:
+			| AmplifyContext
 			| AmplifyClassV6
-			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
+			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyContext>),
 		{
 			query: paramQuery,
 			variables = {},
@@ -120,8 +144,9 @@ export class InternalGraphQLAPIClass {
 				let responsePromise: Promise<GraphQLResult<T>>;
 
 				if (isAmplifyInstance(amplify)) {
+					const ctx = ensureContext(amplify);
 					responsePromise = this._graphql<T>(
-						amplify,
+						ctx,
 						{ query, variables, authMode, apiKey, endpoint },
 						headers,
 						abortController,
@@ -131,7 +156,7 @@ export class InternalGraphQLAPIClass {
 				} else {
 					// NOTE: this wrapper function must be await-able so the Amplify server context manager can
 					// destroy the context only after it completes
-					const wrapper = async (amplifyInstance: AmplifyClassV6) => {
+					const wrapper = async (amplifyInstance: AmplifyContext) => {
 						const result = await this._graphql<T>(
 							amplifyInstance,
 							{ query, variables, authMode, apiKey, endpoint },
@@ -158,7 +183,7 @@ export class InternalGraphQLAPIClass {
 			}
 			case 'subscription':
 				return this._graphqlSubscribe(
-					amplify as AmplifyClassV6,
+					ensureContext(amplify as AmplifyContext | AmplifyClassV6),
 					{ query, variables, authMode, apiKey, endpoint },
 					headers,
 					customUserAgentDetails,
@@ -170,7 +195,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		amplify: AmplifyClassV6,
+		amplify: AmplifyContext,
 		{
 			query,
 			variables,
@@ -354,7 +379,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private _graphqlSubscribe(
-		amplify: AmplifyClassV6,
+		amplify: AmplifyContext,
 		{
 			query,
 			variables,
@@ -407,6 +432,7 @@ export class InternalGraphQLAPIClass {
 					additionalHeaders,
 					authToken,
 					libraryConfigHeaders,
+					ctx: amplify,
 				},
 				customUserAgentDetails,
 			)

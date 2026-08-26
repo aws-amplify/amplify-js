@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	DocumentType,
 	GraphQLAuthMode,
@@ -23,8 +23,8 @@ export const normalizeAuth = (
 	return explicitAuthMode;
 };
 
-export const configure = () => {
-	const config = Amplify.getConfig();
+export const configure = (ctx: AmplifyContext) => {
+	const config = ctx.resourcesConfig;
 
 	const eventsConfig = config.API?.Events;
 
