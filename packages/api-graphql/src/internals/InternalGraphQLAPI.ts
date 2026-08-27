@@ -16,6 +16,7 @@ import {
 import {
 	AmplifyUrl,
 	CustomUserAgentDetails,
+	bridgeAmplifyClass,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
 import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
@@ -31,11 +32,7 @@ import {
 
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { GraphQLOperation, GraphQLOptions, GraphQLResult } from '../types';
-import {
-	bridgeAmplifyClass,
-	resolveConfig,
-	resolveLibraryOptions,
-} from '../utils';
+import { resolveConfig, resolveLibraryOptions } from '../utils';
 import { repackageUnauthorizedError } from '../utils/errors/repackageAuthError';
 import { NO_ENDPOINT } from '../utils/errors/constants';
 import { GraphQLApiError, createGraphQLResultWithError } from '../utils/errors';

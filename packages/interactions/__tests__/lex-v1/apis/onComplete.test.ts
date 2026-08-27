@@ -47,7 +47,11 @@ describe('Interactions LexV1 API: onComplete', () => {
 			v1BotConfig.name,
 		);
 		expect(mockLexProvider).toHaveBeenCalledTimes(1);
-		expect(mockLexProvider).toHaveBeenCalledWith(v1BotConfig, mockCallback);
+		expect(mockLexProvider).toHaveBeenCalledWith(
+			mockCtx,
+			v1BotConfig,
+			mockCallback,
+		);
 	});
 
 	it('invokes provider onComplete API with explicit context', () => {
@@ -62,7 +66,11 @@ describe('Interactions LexV1 API: onComplete', () => {
 			v1BotConfig.name,
 		);
 		expect(mockLexProvider).toHaveBeenCalledTimes(1);
-		expect(mockLexProvider).toHaveBeenCalledWith(v1BotConfig, mockCallback);
+		expect(mockLexProvider).toHaveBeenCalledWith(
+			explicitCtx,
+			v1BotConfig,
+			mockCallback,
+		);
 	});
 
 	it('rejects when bot config does not exist', async () => {

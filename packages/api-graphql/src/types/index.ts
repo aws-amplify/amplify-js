@@ -1,6 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
+import {
+	AmplifyClassV6,
+	AmplifyContext,
+	ResourcesConfig,
+} from '@aws-amplify/core';
 import {
 	BaseClient,
 	ClientExtensions,
@@ -16,7 +20,6 @@ import {
 	DocumentType,
 	GraphQLAuthMode,
 } from '@aws-amplify/core/internals/utils';
-import { ContextSpec } from '@aws-amplify/core/internals/adapter-core';
 
 import { CommonPublicClientOptions } from '../internals/types';
 
@@ -486,7 +489,7 @@ export type GraphQLMethodSSR<Options extends CommonPublicClientOptions> = <
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string,
 >(
-	contextSpec: ContextSpec,
+	contextSpec: AmplifyContext,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>,
 	additionalHeaders?: CustomHeaders | undefined,
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;

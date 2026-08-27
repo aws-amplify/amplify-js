@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
-import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 import { readFile } from '../utils/readFile';
 import { toBase64 } from '../utils/toBase64';
@@ -13,7 +12,6 @@ import {
 	UploadDataWithPathInput,
 } from '../../providers/s3/types';
 import { uploadData as uploadDataInternal } from '../../providers/s3/apis/internal/uploadData';
-import { resolveServerContext } from '../../providers/s3/apis/server/resolveServerContext';
 
 /**
  * Upload data to the specified S3 object path. By default uses a single PUT
@@ -23,7 +21,7 @@ import { resolveServerContext } from '../../providers/s3/apis/server/resolveServ
  * Server-side `uploadData` is intended for use in SSR contexts such as
  * Next.js Route Handlers and Server Actions.
  *
- * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
+ * @param ctx - The resolved `AmplifyContext` to operate on.
  * @param input - A `UploadDataWithPathInput` object.
  *
  * @returns An `UploadDataServerWithPathOutput` task. Await the `result`
@@ -52,7 +50,7 @@ import { resolveServerContext } from '../../providers/s3/apis/server/resolveServ
  * ```
  */
 export function uploadData(
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctx: AmplifyContext,
 	input: UploadDataWithPathInput,
 ): UploadDataServerWithPathOutput;
 
@@ -64,7 +62,7 @@ export function uploadData(
  * operation to upload when the payload is less than 5MB. Otherwise, uses
  * multipart upload to upload the payload.
  *
- * @param ctxOrContextSpec - The isolated server context, or a resolved `AmplifyContext`.
+ * @param ctx - The resolved `AmplifyContext` to operate on.
  * @param input - A `UploadDataInput` object.
  *
  * @returns An `UploadDataServerOutput` task. Await the `result` promise to
@@ -74,20 +72,18 @@ export function uploadData(
  * @throws StorageValidationErrorCode when API call parameters are invalid.
  */
 export function uploadData(
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctx: AmplifyContext,
 	input: UploadDataInput,
 ): UploadDataServerOutput;
 
 export function uploadData(
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctx: AmplifyContext,
 	input: UploadDataInput | UploadDataWithPathInput,
 ): UploadDataServerOutput | UploadDataServerWithPathOutput {
 	// The internal uploadData returns an UploadTask which has pause/resume. On
 	// the server path we intentionally hide pause/resume from the type because
 	// they are not supported across isolated server requests. The runtime
 	// object still exposes them as no-ops (delegated to createUploadTask).
-	const ctx = resolveServerContext(ctxOrContextSpec);
-
 	return uploadDataInternal(
 		{
 			amplify: ctx,

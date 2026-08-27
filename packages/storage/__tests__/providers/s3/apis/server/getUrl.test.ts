@@ -1,45 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getAmplifyServerContext } from '@aws-amplify/core/internals/adapter-core';
-
 import { GetUrlInput, GetUrlWithPathInput } from '../../../../../src';
 import { getUrl } from '../../../../../src/providers/s3/apis/server';
 import { getUrl as internalGetUrlImpl } from '../../../../../src/providers/s3/apis/internal/getUrl';
+import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/s3/apis/internal/getUrl');
-jest.mock('@aws-amplify/core/internals/adapter-core');
 
 const mockInternalGetUrlImpl = jest.mocked(internalGetUrlImpl);
-const mockGetAmplifyServerContext = jest.mocked(getAmplifyServerContext);
 const mockInternalResult = 'RESULT' as any;
-const mockResourcesConfig = {} as any;
-// Realistic `AmplifyClass` shape: getConfig()/libraryOptions/Auth.*, without the
-// top-level context methods (fetchAuthSession/clearCredentials/getTokens).
-const mockAmplifyClass = {
-	getConfig: jest.fn(() => mockResourcesConfig),
-	libraryOptions: {},
-	Auth: {
-		fetchAuthSession: jest.fn(),
-		clearCredentials: jest.fn(),
-		getTokens: jest.fn(),
-	},
-} as any;
-// The context the internal impl should receive after resolveServerContext
-// adapts the AmplifyClass into an AmplifyContext.
-const expectedResolvedCtx = {
-	resourcesConfig: mockResourcesConfig,
-	libraryOptions: mockAmplifyClass.libraryOptions,
-	fetchAuthSession: expect.any(Function),
-	clearCredentials: expect.any(Function),
-	getTokens: expect.any(Function),
-};
 
+// Phase C4: the server entry is a bare re-export of the ctx-native main API.
+// The caller supplies a branded `AmplifyContext` directly (no server-context
+// registry / `getAmplifyServerContext`), which flows straight to the internal
+// implementation.
 describe('server-side getUrl', () => {
 	beforeEach(() => {
-		mockGetAmplifyServerContext.mockReturnValue({
-			amplify: mockAmplifyClass,
-		});
 		mockInternalGetUrlImpl.mockReturnValue(mockInternalResult);
 	});
 
@@ -48,32 +25,20 @@ describe('server-side getUrl', () => {
 	});
 
 	it('should pass through input with key and output to internal implementation', async () => {
+		const ctx = createMockAmplifyContext();
 		const input: GetUrlInput = {
 			key: 'source-key',
 		};
-		expect(
-			getUrl(
-				{
-					token: { value: Symbol('123') },
-				},
-				input,
-			),
-		).toEqual(mockInternalResult);
-		expect(mockInternalGetUrlImpl).toBeCalledWith(expectedResolvedCtx, input);
+		expect(getUrl(ctx, input)).toEqual(mockInternalResult);
+		expect(mockInternalGetUrlImpl).toBeCalledWith(ctx, input);
 	});
 
 	it('should pass through input with path and output to internal implementation', async () => {
+		const ctx = createMockAmplifyContext();
 		const input: GetUrlWithPathInput = {
 			path: 'abc',
 		};
-		expect(
-			getUrl(
-				{
-					token: { value: Symbol('123') },
-				},
-				input,
-			),
-		).toEqual(mockInternalResult);
-		expect(mockInternalGetUrlImpl).toBeCalledWith(expectedResolvedCtx, input);
+		expect(getUrl(ctx, input)).toEqual(mockInternalResult);
+		expect(mockInternalGetUrlImpl).toBeCalledWith(ctx, input);
 	});
 });

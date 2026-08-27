@@ -1,6 +1,6 @@
 import { parse, print, DocumentNode } from 'graphql';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
-import { Amplify } from 'aws-amplify';
+import { Amplify } from '@aws-amplify/core';
 
 /**
  * Performs an `expect()` on a jest spy with some basic nested argument checks
