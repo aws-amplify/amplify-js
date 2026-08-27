@@ -81,7 +81,7 @@ export class AmplifyClass {
 
 		// Publish a branded AmplifyContext so that context-based APIs
 		// (fetchAuthSession, clearCredentials) can resolve the global context.
-		// Must be set BEFORE Hub.dispatch so listeners can call getActiveContext().
+		// Must be set BEFORE Hub.dispatch so listeners can call getGlobalContext().
 		const ctx: AmplifyContext = {
 			resourcesConfig: this.resourcesConfig,
 			libraryOptions: this.libraryOptions,

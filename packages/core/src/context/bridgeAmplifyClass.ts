@@ -43,11 +43,21 @@ export const bridgeAmplifyClass = (amplify: AmplifyClass): AmplifyContext => {
 
 	// Branding makes downstream isAmplifyContext checks (e.g. internalPost)
 	// recognize an already-bridged context, preventing double-bridging which
-	// would break the Auth.* closures.
+	// would break the Auth.* closures. Explicit descriptor (non-writable /
+	// non-configurable) mirrors the other AmplifyContext producers.
 	Object.defineProperty(resolved, AMPLIFY_CONTEXT_BRAND, {
 		value: true,
 		enumerable: false,
+		configurable: false,
+		writable: false,
 	});
+
+	// Freeze for parity with the other producers (createAmplifyContext, singleton
+	// Amplify.ts) so the method closures cannot be reassigned downstream. Frozen
+	// AFTER defining the getters/brand: the `resourcesConfig` / `libraryOptions`
+	// accessors remain live (getters still evaluate on a frozen object), while
+	// the data-valued method properties become non-writable.
+	Object.freeze(resolved);
 
 	return resolved;
 };

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AMPLIFY_CONTEXT_BRAND } from '../../src';
+import { InvalidAmplifyContextError } from '../../src/errors/InvalidAmplifyContextError';
 import {
 	clearGlobalContext,
 	resolveCtxArgs,
@@ -94,6 +95,9 @@ describe('resolveCtxArgs', () => {
 			setGlobalContext(makeBrandedContext());
 			const ctx = makeBrandedContext();
 			expect(() => resolveCtxArgs([{ username: 'test' }, ctx])).toThrow(
+				InvalidAmplifyContextError,
+			);
+			expect(() => resolveCtxArgs([{ username: 'test' }, ctx])).toThrow(
 				'AmplifyContext must be passed as the first argument',
 			);
 		});
@@ -101,12 +105,18 @@ describe('resolveCtxArgs', () => {
 		it('throws even when no global context is set', () => {
 			const ctx = makeBrandedContext();
 			expect(() => resolveCtxArgs(['arg1', ctx, 'arg2'])).toThrow(
+				InvalidAmplifyContextError,
+			);
+			expect(() => resolveCtxArgs(['arg1', ctx, 'arg2'])).toThrow(
 				'AmplifyContext must be passed as the first argument',
 			);
 		});
 
 		it('wins over the undefined-first-arg guard when a context exists later', () => {
 			const ctx = makeBrandedContext();
+			expect(() => resolveCtxArgs([undefined, ctx])).toThrow(
+				InvalidAmplifyContextError,
+			);
 			expect(() => resolveCtxArgs([undefined, ctx])).toThrow(
 				'AmplifyContext must be passed as the first argument',
 			);

@@ -113,5 +113,12 @@ describe('bridgeAmplifyClass', () => {
 			expect(descriptor?.value).toBe(true);
 			expect(descriptor?.enumerable).toBe(false);
 		});
+
+		it('returns a frozen context for parity with the other producers', () => {
+			const { raw } = buildBareAmplifyClass();
+			const ctx = bridgeAmplifyClass(raw as unknown as AmplifyClass);
+
+			expect(Object.isFrozen(ctx)).toBe(true);
+		});
 	});
 });
