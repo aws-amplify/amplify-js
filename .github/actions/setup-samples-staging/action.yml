@@ -32,7 +32,10 @@ runs:
       shell: bash
       working-directory: ./amplify-js-samples-staging
       env:
-        BRANCH: ${{ github.ref_name }}
+        # On pull_request events, ref_name is the synthetic '<pr>/merge' ref which
+        # never exists on the samples repo — use the PR head branch instead and
+        # fall back to ref_name for push-triggered runs.
+        BRANCH: ${{ github.head_ref || github.ref_name }}
       run: |
         if git ls-remote --exit-code --heads origin refs/heads/$BRANCH; then
             # Corresponding branch on sample repo exists, check it out
