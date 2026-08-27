@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyContext } from '@aws-amplify/core';
-import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+import { ContextSpec } from '@aws-amplify/core/internals/adapter-core';
 
 import { post as internalPost } from '../apis/common/internalPost';
 import { resolveServerContext } from '../apis/server/resolveServerContext';
@@ -22,7 +22,7 @@ import { InternalPostInput } from '../types';
  * internal post call and the abort controller supplied to the internal post call.
  *
  * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
- * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ * {@link ContextSpec} for backward compatibility.
  *
  * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param input - The internal post input
@@ -30,7 +30,7 @@ import { InternalPostInput } from '../types';
  * @internal
  */
 export const post = (
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | ContextSpec,
 	input: InternalPostInput,
 ) => {
 	return internalPost(resolveServerContext(ctxOrContextSpec), input);

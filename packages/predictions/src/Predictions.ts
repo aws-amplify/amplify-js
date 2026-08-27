@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext, isAmplifyContext } from '@aws-amplify/core';
+import { assertOptionalCtxArg } from '@aws-amplify/core/internals/utils';
 
 import {
 	AmazonAIConvertPredictionsProvider,
@@ -38,6 +39,10 @@ export class PredictionsClass {
 	private interpretProvider: AmazonAIInterpretPredictionsProvider;
 
 	constructor(ctx?: AmplifyContext) {
+		// Reject a defined-but-unbranded value passed in the context position
+		// with a typed error before resolving the (optional) explicit context.
+		assertOptionalCtxArg(ctx);
+
 		const resolvedCtx = isAmplifyContext(ctx) ? ctx : undefined;
 		this.convertProvider = new AmazonAIConvertPredictionsProvider(resolvedCtx);
 		this.identifyProvider = new AmazonAIIdentifyPredictionsProvider(

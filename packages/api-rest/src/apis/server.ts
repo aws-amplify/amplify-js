@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
-import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+import { ContextSpec } from '@aws-amplify/core/internals/adapter-core';
 
 import {
 	DeleteInput,
@@ -34,7 +34,7 @@ import { resolveServerContext } from './server/resolveServerContext';
  * GET HTTP request (server-side)
  *
  * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
- * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ * {@link ContextSpec} for backward compatibility.
  *
  * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {GetInput} input - Input for GET operation.
@@ -59,7 +59,7 @@ import { resolveServerContext } from './server/resolveServerContext';
  * ```
  */
 export const get = (
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | ContextSpec,
 	input: GetInput,
 ): GetOperation => commonGet(resolveServerContext(ctxOrContextSpec), input);
 
@@ -67,7 +67,7 @@ export const get = (
  * POST HTTP request (server-side)
  *
  * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
- * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ * {@link ContextSpec} for backward compatibility.
  *
  * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {PostInput} input - Input for POST operation.
@@ -92,7 +92,7 @@ export const get = (
  * ```
  */
 export const post = (
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | ContextSpec,
 	input: PostInput,
 ): PostOperation => commonPost(resolveServerContext(ctxOrContextSpec), input);
 
@@ -100,7 +100,7 @@ export const post = (
  * PUT HTTP request (server-side)
  *
  * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
- * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ * {@link ContextSpec} for backward compatibility.
  *
  * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {PutInput} input - Input for PUT operation.
@@ -125,7 +125,7 @@ export const post = (
  * ```
  */
 export const put = (
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | ContextSpec,
 	input: PutInput,
 ): PutOperation => commonPut(resolveServerContext(ctxOrContextSpec), input);
 
@@ -133,7 +133,7 @@ export const put = (
  * DELETE HTTP request (server-side)
  *
  * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
- * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ * {@link ContextSpec} for backward compatibility.
  *
  * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {DeleteInput} input - Input for DELETE operation.
@@ -157,7 +157,7 @@ export const put = (
  * ```
  */
 export const del = (
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | ContextSpec,
 	input: DeleteInput,
 ): DeleteOperation => commonDel(resolveServerContext(ctxOrContextSpec), input);
 
@@ -165,7 +165,7 @@ export const del = (
  * HEAD HTTP request (server-side)
  *
  * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
- * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ * {@link ContextSpec} for backward compatibility.
  *
  * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {HeadInput} input - Input for HEAD operation.
@@ -189,7 +189,7 @@ export const del = (
  * ```
  */
 export const head = (
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | ContextSpec,
 	input: HeadInput,
 ): HeadOperation => commonHead(resolveServerContext(ctxOrContextSpec), input);
 
@@ -197,7 +197,7 @@ export const head = (
  * PATCH HTTP request (server-side)
  *
  * Accepts either an {@link AmplifyContext} (new pattern) or a legacy
- * {@link AmplifyServer.ContextSpec} for backward compatibility.
+ * {@link ContextSpec} for backward compatibility.
  *
  * @param ctxOrContextSpec - AmplifyContext or legacy ContextSpec
  * @param {PatchInput} input - Input for PATCH operation.
@@ -222,6 +222,6 @@ export const head = (
  * ```
  */
 export const patch = (
-	ctxOrContextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+	ctxOrContextSpec: AmplifyContext | ContextSpec,
 	input: PatchInput,
 ): PatchOperation => commonPatch(resolveServerContext(ctxOrContextSpec), input);

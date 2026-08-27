@@ -11,11 +11,6 @@
  */
 
 import { getRetryDecider } from '@aws-amplify/core/internals/aws-client-utils';
-import {
-	createAmplifyServerContext,
-	destroyAmplifyServerContext,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
 
 import { authenticatedHandler } from '../../src/apis/common/baseHandlers/authenticatedHandler';
 import { unauthenticatedHandler } from '../../src/apis/common/baseHandlers/unauthenticatedHandler';
@@ -58,7 +53,7 @@ const restApiConfig = {
 	},
 };
 
-describe('server e2e — legacy ContextSpec through real transferHandler', () => {
+describe('server e2e — branded AmplifyContext through real transferHandler', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
@@ -66,45 +61,6 @@ describe('server e2e — legacy ContextSpec through real transferHandler', () =>
 		mockGetRetryDecider.mockReturnValue(() =>
 			Promise.resolve({ retryable: false }),
 		);
-	});
-
-	it('should call authenticatedHandler when legacy ContextSpec is bridged (regression test)', async () => {
-		// Create a REAL server context — internally creates an AmplifyClass instance
-		const contextSpec = createAmplifyServerContext(restApiConfig, {});
-
-		// Access the internal AmplifyClass instance and mock Auth.fetchAuthSession
-		// to return credentials. The AmplifyClass does NOT have a top-level
-		// fetchAuthSession — that's the whole point of the bridge.
-		const { amplify } = getAmplifyServerContext(contextSpec);
-		jest
-			.spyOn(amplify.Auth, 'fetchAuthSession')
-			.mockResolvedValue({ credentials });
-
-		try {
-			await get(contextSpec, {
-				apiName: 'testApi',
-				path: '/items',
-			}).response;
-
-			// The bridge's fetchAuthSession delegates to amplify.Auth.fetchAuthSession,
-			// which returned credentials → authenticatedHandler must have been used.
-			expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-				expect.objectContaining({
-					url: expect.objectContaining({
-						href: 'https://abc123.execute-api.us-west-2.amazonaws.com/development/items',
-					}),
-					method: 'GET',
-				}),
-				expect.objectContaining({
-					credentials,
-					region: 'us-west-2',
-					service: 'execute-api',
-				}),
-			);
-			expect(mockUnauthenticatedHandler).not.toHaveBeenCalled();
-		} finally {
-			destroyAmplifyServerContext(contextSpec);
-		}
 	});
 
 	it('should call authenticatedHandler when branded AmplifyContext is passed directly', async () => {

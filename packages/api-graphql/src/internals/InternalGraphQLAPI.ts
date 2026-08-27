@@ -182,8 +182,19 @@ export class InternalGraphQLAPIClass {
 				return responsePromise;
 			}
 			case 'subscription':
+				// Use the same checked guard as the query/mutation branch instead of
+				// an unchecked cast. The callback-function form (used only by the
+				// server context manager for await-able query/mutation operations) is
+				// not supported for subscriptions, so reject it explicitly rather than
+				// casting it into the context union.
+				if (!isAmplifyInstance(amplify)) {
+					throw new Error(
+						'Subscriptions do not support the server context callback form.',
+					);
+				}
+
 				return this._graphqlSubscribe(
-					ensureContext(amplify as AmplifyContext | AmplifyClassV6),
+					ensureContext(amplify),
 					{ query, variables, authMode, apiKey, endpoint },
 					headers,
 					customUserAgentDetails,

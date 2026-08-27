@@ -1,27 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AMPLIFY_CONTEXT_BRAND, isAmplifyContext } from '@aws-amplify/core';
 import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+	AMPLIFY_CONTEXT_BRAND,
+	AmplifyClassV6,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 
 import { resolveServerContext } from '../../src/utils/resolveServerContext';
 
 import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
-// Mock only the adapter-core boundary (same pattern as the api-rest server
-// tests). `isAmplifyContext` / branding come from the real core module and the
+// The legacy server-context registry (getAmplifyServerContext) was removed in
+// Phase C1. `isAmplifyContext` / branding come from the real core module and the
 // bridge runs for real.
-jest.mock('@aws-amplify/core/internals/adapter-core');
-
-const mockGetAmplifyServerContext = getAmplifyServerContext as jest.Mock;
-
 describe('resolveServerContext', () => {
-	beforeEach(() => {
-		jest.clearAllMocks();
-	});
-
 	it('returns an already-branded AmplifyContext unchanged (same reference)', () => {
 		const ctx = createMockAmplifyContext();
 
@@ -29,11 +21,9 @@ describe('resolveServerContext', () => {
 
 		expect(result).toBe(ctx);
 		expect(isAmplifyContext(result)).toBe(true);
-		// Brand-check branch short-circuits before touching adapter-core.
-		expect(mockGetAmplifyServerContext).not.toHaveBeenCalled();
 	});
 
-	it('resolves a legacy ContextSpec via getAmplifyServerContext and brands the result', async () => {
+	it('bridges a bare AmplifyClass instance and brands the result', async () => {
 		const auth = {
 			fetchAuthSession: jest.fn().mockResolvedValue({}),
 			clearCredentials: jest.fn().mockResolvedValue(undefined),
@@ -43,16 +33,10 @@ describe('resolveServerContext', () => {
 			getConfig: jest.fn().mockReturnValue({ API: { GraphQL: {} } }),
 			libraryOptions: {},
 			Auth: auth,
-		};
-		mockGetAmplifyServerContext.mockReturnValue({ amplify: mockAmplify });
+		} as unknown as AmplifyClassV6;
 
-		const contextSpec = {
-			token: { value: Symbol('test') },
-		} as unknown as AmplifyServer.ContextSpec;
+		const result = resolveServerContext(mockAmplify);
 
-		const result = resolveServerContext(contextSpec);
-
-		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 		expect(isAmplifyContext(result)).toBe(true);
 		expect(AMPLIFY_CONTEXT_BRAND in result).toBe(true);
 

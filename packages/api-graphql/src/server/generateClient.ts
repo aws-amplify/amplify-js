@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+import { ContextSpec } from '@aws-amplify/core/internals/adapter-core';
 import { AmplifyContext, ResourcesConfig } from '@aws-amplify/core';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
@@ -47,7 +47,7 @@ export function generateClient<
 	const prevGraphql = client.graphql as unknown as GraphQLMethod<Options>;
 
 	const wrappedGraphql = (
-		contextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+		contextSpec: AmplifyContext | ContextSpec,
 		innerOptions: GraphQLOptionsV6<unknown, string, Options>,
 		additionalHeaders?: CustomHeaders,
 	) => {

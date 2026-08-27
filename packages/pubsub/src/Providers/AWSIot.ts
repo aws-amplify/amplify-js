@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Signer } from '@aws-amplify/core/internals/utils';
+import {
+	Signer,
+	assertOptionalCtxArg,
+} from '@aws-amplify/core/internals/utils';
 import {
 	AmplifyContext,
 	getGlobalContext,
@@ -29,6 +32,14 @@ export class AWSIoT extends MqttOverWS {
 			super(maybeOptions ?? {});
 			this._explicitCtx = ctxOrOptions;
 		} else {
+			// When a second argument is supplied the caller used the
+			// `(ctx, options)` overload, so the first argument is required to be a
+			// branded AmplifyContext. Guard against a defined-but-unbranded value
+			// being silently swallowed as `options`. In the single-argument form
+			// `ctxOrOptions` is legitimately the options object, so no assertion.
+			if (maybeOptions !== undefined) {
+				assertOptionalCtxArg(ctxOrOptions);
+			}
 			super(ctxOrOptions ?? {});
 		}
 	}
