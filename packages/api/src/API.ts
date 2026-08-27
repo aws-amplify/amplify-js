@@ -34,6 +34,7 @@ export function generateClient<
  * @example
  * ```ts
  * import { generateClient } from 'aws-amplify/api';
+ * // `listTodos` is a generated GraphQL query document (from your API's codegen output).
  *
  * const client = generateClient(ctx);
  * const result = await client.graphql({ query: listTodos });

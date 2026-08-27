@@ -26,6 +26,10 @@ const _postSpy = jest.spyOn((GraphQLAPI as any)._api, 'post');
  * GraphQL POST.
  */
 function getFirstPost() {
+	// Guard against silently indexing into an empty `mock.calls` array: assert a
+	// single POST was recorded before reading `calls[0]`.
+	expect(_postSpy).toHaveBeenCalledTimes(1);
+
 	const postOptions = _postSpy.mock.calls[0][1] as {
 		url: URL;
 		options: {
@@ -60,6 +64,9 @@ function configureGlobalSingleton() {
 describe('generateClient - AmplifyContext overload', () => {
 	beforeEach(() => {
 		configureGlobalSingleton();
+		// The mocked POST returns a plain (non-promise) object. Downstream code
+		// `await`s the response, and `await` resolves non-thenable values as-is,
+		// so `mockReturnValue` (rather than `mockResolvedValue`) is intentional.
 		_postSpy.mockReturnValue({
 			body: {
 				json() {
@@ -81,8 +88,26 @@ describe('generateClient - AmplifyContext overload', () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(() => {
+		// Restore the module-scope spy so it does not leak into other suites.
+		_postSpy.mockRestore();
+	});
+
 	test('generateClient() binds to the global singleton path', async () => {
 		const client = generateClient();
+
+		await client.graphql({ query: `query A { queryA { a b c } }` });
+
+		const { endpoint, apiKey } = getFirstPost();
+		expect(endpoint).toEqual(GLOBAL_ENDPOINT);
+		expect(apiKey).toEqual(GLOBAL_API_KEY);
+	});
+
+	test('generateClient(options) with a plain options object resolves config from the global singleton (not mistaken for a context)', async () => {
+		// A plain options object is not a branded AmplifyContext, so the client
+		// must fall back to the global singleton for config resolution and must
+		// not throw or treat the options object as a context.
+		const client = generateClient({ authMode: 'apiKey' });
 
 		await client.graphql({ query: `query A { queryA { a b c } }` });
 
