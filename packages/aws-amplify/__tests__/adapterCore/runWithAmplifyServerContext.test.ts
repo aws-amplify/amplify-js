@@ -1,112 +1,77 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	createAmplifyServerContext,
-	destroyAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+/**
+ * The server-context registry (createAmplifyServerContext /
+ * destroyAmplifyServerContext) was removed in the context migration. The
+ * deprecated `runWithAmplifyServerContext` shim now simply resolves the current
+ * global `AmplifyContext` and invokes the operation with it. These tests
+ * exercise that behavior against the REAL core global context.
+ */
+import { getGlobalContext, isAmplifyContext } from '@aws-amplify/core';
+import { clearGlobalContext } from '@aws-amplify/core/internals/utils';
 
 import { runWithAmplifyServerContext } from '../../src/adapter-core';
+import { Amplify } from '../../src';
 
-// mock serverContext
-jest.mock('@aws-amplify/core/internals/adapter-core');
-const mockCreateAmplifyServerContext = createAmplifyServerContext as jest.Mock;
-const mockDestroyAmplifyServerContext =
-	destroyAmplifyServerContext as jest.Mock;
-const mockAmplifyConfig = {};
-const mockTokenProvider = {
-	getTokens: jest.fn(),
-};
-const mockCredentialAndIdentityProvider = {
-	getCredentialsAndIdentityId: jest.fn(),
-	clearCredentialsAndIdentityId: jest.fn(),
-};
-const mockContextSpec = {
-	token: { value: Symbol('AmplifyServerContextToken') },
+const mockResourceConfig = {
+	Auth: {
+		Cognito: {
+			userPoolClientId: 'userPoolClientId',
+			userPoolId: 'userPoolId',
+		},
+	},
 };
 
-describe('runWithAmplifyServerContext', () => {
+describe('runWithAmplifyServerContext (deprecated shim)', () => {
 	beforeEach(() => {
-		mockCreateAmplifyServerContext.mockReturnValueOnce(mockContextSpec);
+		clearGlobalContext();
+		Amplify.configure(mockResourceConfig);
 	});
 
 	afterEach(() => {
-		mockDestroyAmplifyServerContext.mockReset();
+		clearGlobalContext();
 	});
 
-	it('should run the operation with the context', () => {
+	it('runs the operation with the branded global AmplifyContext', async () => {
 		const mockOperation = jest.fn();
-		runWithAmplifyServerContext(
-			mockAmplifyConfig,
-			{
-				Auth: {
-					tokenProvider: mockTokenProvider,
-					credentialsProvider: mockCredentialAndIdentityProvider,
-				},
-			},
-			mockOperation,
-		);
 
-		expect(mockOperation).toHaveBeenCalledWith(mockContextSpec);
+		await runWithAmplifyServerContext({ operation: mockOperation });
+
+		expect(mockOperation).toHaveBeenCalledTimes(1);
+		const passedContext = mockOperation.mock.calls[0][0];
+		expect(passedContext).toBe(getGlobalContext());
+		expect(isAmplifyContext(passedContext)).toBe(true);
 	});
 
-	it('should destroy the context after the operation completed', async () => {
+	it('accepts an explicit `nextServerContext: null`', async () => {
 		const mockOperation = jest.fn();
-		await runWithAmplifyServerContext(
-			mockAmplifyConfig,
-			{
-				Auth: {
-					tokenProvider: mockTokenProvider,
-					credentialsProvider: mockCredentialAndIdentityProvider,
-				},
-			},
-			mockOperation,
-		);
 
-		expect(mockDestroyAmplifyServerContext).toHaveBeenCalledWith(
-			mockContextSpec,
-		);
+		await runWithAmplifyServerContext({
+			nextServerContext: null,
+			operation: mockOperation,
+		});
+
+		expect(mockOperation).toHaveBeenCalledWith(getGlobalContext());
 	});
 
-	it('should destroy the context when the operation throws', async () => {
-		const testError = new Error('some error');
-		const mockOperation = jest.fn();
-		mockOperation.mockRejectedValueOnce(testError);
-
-		await expect(
-			runWithAmplifyServerContext(
-				mockAmplifyConfig,
-				{
-					Auth: {
-						tokenProvider: mockTokenProvider,
-						credentialsProvider: mockCredentialAndIdentityProvider,
-					},
-				},
-				mockOperation,
-			),
-		).rejects.toThrow(testError);
-
-		expect(mockDestroyAmplifyServerContext).toHaveBeenCalledWith(
-			mockContextSpec,
-		);
-	});
-
-	it('should return the result returned by the operation callback function', async () => {
-		const mockResultValue = {
-			url: 'http://123.com',
-		};
+	it('returns the result returned by the operation callback', async () => {
+		const mockResultValue = { url: 'http://123.com' };
 		const mockOperation = jest.fn(() => Promise.resolve(mockResultValue));
-		const result = await runWithAmplifyServerContext(
-			mockAmplifyConfig,
-			{
-				Auth: {
-					tokenProvider: mockTokenProvider,
-					credentialsProvider: mockCredentialAndIdentityProvider,
-				},
-			},
-			mockOperation,
-		);
+
+		const result = await runWithAmplifyServerContext({
+			operation: mockOperation,
+		});
 
 		expect(result).toStrictEqual(mockResultValue);
+	});
+
+	it('propagates errors thrown by the operation', async () => {
+		const testError = new Error('some error');
+		const mockOperation = jest.fn(() => Promise.reject(testError));
+
+		await expect(
+			runWithAmplifyServerContext({ operation: mockOperation }),
+		).rejects.toThrow(testError);
 	});
 });
