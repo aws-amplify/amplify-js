@@ -300,7 +300,24 @@ const amplifyConfig = {
 			},
 		},
 		nonModels: {},
-		queries: {},
+		queries: {
+			echoTodo: {
+				name: 'echoTodo',
+				isArray: false,
+				type: {
+					model: 'Todo',
+				},
+				isRequired: false,
+				arguments: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+					},
+				},
+			},
+		},
 		mutations: {},
 		subscriptions: {},
 	},
