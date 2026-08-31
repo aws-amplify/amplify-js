@@ -16,6 +16,8 @@ import {
 import {
 	AmplifyUrl,
 	CustomUserAgentDetails,
+	InvalidAmplifyContextError,
+	bridgeAmplifyClass,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
 import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
@@ -31,11 +33,7 @@ import {
 
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { GraphQLOperation, GraphQLOptions, GraphQLResult } from '../types';
-import {
-	bridgeAmplifyClass,
-	resolveConfig,
-	resolveLibraryOptions,
-} from '../utils';
+import { resolveConfig, resolveLibraryOptions } from '../utils';
 import { repackageUnauthorizedError } from '../utils/errors/repackageAuthError';
 import { NO_ENDPOINT } from '../utils/errors/constants';
 import { GraphQLApiError, createGraphQLResultWithError } from '../utils/errors';
@@ -182,8 +180,19 @@ export class InternalGraphQLAPIClass {
 				return responsePromise;
 			}
 			case 'subscription':
+				// Use the same checked guard as the query/mutation branch instead of
+				// an unchecked cast. The callback-function form (used only by the
+				// server context manager for await-able query/mutation operations) is
+				// not supported for subscriptions, so reject it explicitly rather than
+				// casting it into the context union.
+				if (!isAmplifyInstance(amplify)) {
+					throw new InvalidAmplifyContextError(
+						'Subscriptions do not support the server context callback form.',
+					);
+				}
+
 				return this._graphqlSubscribe(
-					ensureContext(amplify as AmplifyContext | AmplifyClassV6),
+					ensureContext(amplify),
 					{ query, variables, authMode, apiKey, endpoint },
 					headers,
 					customUserAgentDetails,

@@ -55,10 +55,24 @@ interface lexV2BaseReqParams {
 }
 
 class AWSLexV2Provider {
-	private readonly _botsCompleteCallback: Record<
-		string,
-		InteractionsOnCompleteCallback
-	> = {};
+	// Per-context onComplete callback registry. Keyed on the *resolved*
+	// `AmplifyContext` object identity so a callback registered against one
+	// context never fires for another (context isolation) — previously this was
+	// a single process-global map keyed only by bot name, which leaked callbacks
+	// across independent contexts.
+	//
+	// NOTE (re-configure semantics): `Amplify.configure()` publishes a NEW frozen
+	// global context object on every call. A callback registered against the
+	// global context before a re-configure is therefore keyed on the OLD context
+	// object and will NOT be found after re-configure (the new global context is
+	// a different object). Callers relying on the global context must re-register
+	// `onComplete` after reconfiguring; callers passing an explicit context keep
+	// their callbacks for that context's lifetime. Using a `WeakMap` lets the
+	// per-context records be garbage-collected once a context is unreferenced.
+	private readonly _botsCompleteCallbackByCtx = new WeakMap<
+		AmplifyContext,
+		Record<string, InteractionsOnCompleteCallback>
+	>();
 
 	private defaultSessionId: string = amplifyUuid();
 
@@ -102,6 +116,7 @@ class AWSLexV2Provider {
 
 		if (typeof message === 'string') {
 			response = await this._handleRecognizeTextCommand(
+				ctx,
 				botConfig,
 				message,
 				reqBaseParams,
@@ -109,6 +124,7 @@ class AWSLexV2Provider {
 			);
 		} else {
 			response = await this._handleRecognizeUtteranceCommand(
+				ctx,
 				botConfig,
 				message,
 				reqBaseParams,
@@ -122,20 +138,28 @@ class AWSLexV2Provider {
 	/**
 	 * Attach a onComplete callback function to a bot.
 	 * The callback is called once the bot's intent is fulfilled
+	 * @param {AmplifyContext} ctx - Amplify context the callback is scoped to
 	 * @param {AWSLexV2ProviderOption} botConfig - Bot configuration to attach the onComplete callback
 	 * @param {InteractionsOnCompleteCallback} callback - called when Intent Fulfilled
 	 */
 	public onComplete(
+		ctx: AmplifyContext,
 		{ name }: AWSLexV2ProviderOption,
 		callback: InteractionsOnCompleteCallback,
 	) {
-		this._botsCompleteCallback[name] = callback;
+		const existing = this._botsCompleteCallbackByCtx.get(ctx);
+		if (existing) {
+			existing[name] = callback;
+		} else {
+			this._botsCompleteCallbackByCtx.set(ctx, { [name]: callback });
+		}
 	}
 
 	/**
 	 * call onComplete callback for a bot if configured
 	 */
 	_reportBotStatus(
+		ctx: AmplifyContext,
 		data: AWSLexV2ProviderSendResponse,
 		{ name }: AWSLexV2ProviderOption,
 	) {
@@ -143,7 +167,8 @@ class AWSLexV2Provider {
 
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', sessionState?.intent?.state);
-		const callback = this._botsCompleteCallback[name];
+		// Only fire callbacks registered against this exact context (isolation).
+		const callback = this._botsCompleteCallbackByCtx.get(ctx)?.[name];
 		if (!callback) {
 			return;
 		}
@@ -187,6 +212,7 @@ class AWSLexV2Provider {
 	 * used for sending simple text message
 	 */
 	private async _handleRecognizeTextCommand(
+		ctx: AmplifyContext,
 		botConfig: AWSLexV2ProviderOption,
 		data: string,
 		baseParams: lexV2BaseReqParams,
@@ -203,7 +229,7 @@ class AWSLexV2Provider {
 			const recognizeTextCommand = new RecognizeTextCommand(params);
 			const resultData = await client.send(recognizeTextCommand);
 
-			this._reportBotStatus(resultData, botConfig);
+			this._reportBotStatus(ctx, resultData, botConfig);
 
 			return resultData;
 		} catch (err) {
@@ -216,6 +242,7 @@ class AWSLexV2Provider {
 	 * used for obj text or obj voice message
 	 */
 	private async _handleRecognizeUtteranceCommand(
+		ctx: AmplifyContext,
 		botConfig: AWSLexV2ProviderOption,
 		data: InteractionsMessage,
 		baseParams: lexV2BaseReqParams,
@@ -261,7 +288,7 @@ class AWSLexV2Provider {
 			const resultData = await client.send(recognizeUtteranceCommand);
 
 			const response = await this._formatUtteranceCommandOutput(resultData);
-			this._reportBotStatus(response, botConfig);
+			this._reportBotStatus(ctx, response, botConfig);
 
 			return response;
 		} catch (err) {

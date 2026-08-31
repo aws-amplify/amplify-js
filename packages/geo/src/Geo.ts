@@ -5,6 +5,7 @@ import {
 	ConsoleLogger,
 	isAmplifyContext,
 } from '@aws-amplify/core';
+import { assertOptionalCtxArg } from '@aws-amplify/core/internals/utils';
 
 import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
 import { validateCoordinates } from './util';
@@ -43,6 +44,11 @@ export class GeoClass {
 	constructor(ctx?: AmplifyContext) {
 		this._config = undefined;
 		this._pluggables = undefined;
+
+		// Reject a defined-but-unbranded value passed in the context position
+		// (e.g. a plain options object) with a typed error, before the
+		// isAmplifyContext branch below decides eager vs. deferred init.
+		assertOptionalCtxArg(ctx);
 
 		if (isAmplifyContext(ctx)) {
 			this._ctx = ctx;

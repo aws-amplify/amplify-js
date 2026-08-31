@@ -23,5 +23,5 @@ export function onComplete(...args: any[]): void {
 		InteractionsValidationErrorCode.NoBotConfig,
 		`Bot ${botName} does not exist.`,
 	);
-	lexProvider.onComplete(botConfig, callback);
+	lexProvider.onComplete(ctx, botConfig, callback);
 }

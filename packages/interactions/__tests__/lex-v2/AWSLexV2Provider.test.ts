@@ -473,9 +473,10 @@ describe('Interactions', () => {
 				const inProgressCallback = mockCallbackProvider(
 					ACTION_TYPE.IN_PROGRESS,
 				);
-				provider.onComplete(config, inProgressCallback);
+				provider.onComplete(mockCtx, config, inProgressCallback);
 
 				provider._reportBotStatus(
+					mockCtx,
 					mockResponseProvider(ACTION_TYPE.IN_PROGRESS),
 					config,
 				);
@@ -491,8 +492,9 @@ describe('Interactions', () => {
 					ACTION_TYPE.COMPLETE,
 				);
 
-				provider.onComplete(config, completeSuccessCallback);
+				provider.onComplete(mockCtx, config, completeSuccessCallback);
 				provider._reportBotStatus(
+					mockCtx,
 					mockResponseProvider(ACTION_TYPE.COMPLETE),
 					config,
 				);
@@ -506,9 +508,10 @@ describe('Interactions', () => {
 			test(`task complete; callback with error resp`, async () => {
 				let config = { ...botConfig.BookTrip, name: amplifyUuid() };
 				const completeFailCallback = mockCallbackProvider(ACTION_TYPE.ERROR);
-				provider.onComplete(config, completeFailCallback);
+				provider.onComplete(mockCtx, config, completeFailCallback);
 
 				provider._reportBotStatus(
+					mockCtx,
 					mockResponseProvider(ACTION_TYPE.ERROR),
 					config,
 				);
@@ -517,6 +520,55 @@ describe('Interactions', () => {
 				expect(completeFailCallback).toHaveBeenCalledTimes(1);
 				// 1 assertion from callback
 				expect.assertions(2);
+			});
+
+			test('callbacks are isolated per resolved context (F6.4)', () => {
+				const ctxA = createMockAmplifyContext();
+				const ctxB = createMockAmplifyContext();
+				const config = { ...botConfig.BookTrip, name: amplifyUuid() };
+				const callbackA = mockCallbackProvider(ACTION_TYPE.COMPLETE);
+
+				// Registered against ctxA only.
+				provider.onComplete(ctxA, config, callbackA);
+
+				// A report resolved against a *different* context must NOT fire it.
+				provider._reportBotStatus(
+					ctxB,
+					mockResponseProvider(ACTION_TYPE.COMPLETE),
+					config,
+				);
+				jest.runAllTimers();
+				expect(callbackA).toHaveBeenCalledTimes(0);
+
+				// A report resolved against the registering context fires it.
+				provider._reportBotStatus(
+					ctxA,
+					mockResponseProvider(ACTION_TYPE.COMPLETE),
+					config,
+				);
+				jest.runAllTimers();
+				expect(callbackA).toHaveBeenCalledTimes(1);
+			});
+
+			test('re-configure replaces the context object, so global-ctx callbacks do not carry over (F6.4)', () => {
+				// Simulates `Amplify.configure()` publishing a NEW frozen global
+				// context object: a callback registered against the pre-reconfigure
+				// context is keyed on that (now stale) object and must not fire for
+				// the new context.
+				const preReconfigureCtx = createMockAmplifyContext();
+				const postReconfigureCtx = createMockAmplifyContext();
+				const config = { ...botConfig.BookTrip, name: amplifyUuid() };
+				const callback = mockCallbackProvider(ACTION_TYPE.COMPLETE);
+
+				provider.onComplete(preReconfigureCtx, config, callback);
+
+				provider._reportBotStatus(
+					postReconfigureCtx,
+					mockResponseProvider(ACTION_TYPE.COMPLETE),
+					config,
+				);
+				jest.runAllTimers();
+				expect(callback).toHaveBeenCalledTimes(0);
 			});
 		});
 	});

@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { InvalidAmplifyContextError } from '../errors/InvalidAmplifyContextError';
+import { NoAmplifyContextError } from '../errors/NoAmplifyContextError';
+
 import { AmplifyContext } from './AmplifyContext';
 import { isAmplifyContext } from './contextBrand';
 import { getGlobalContext } from './globalContext';
@@ -35,14 +38,17 @@ export function resolveCtxArgs<T extends unknown[]>(
 	// Checked before the undefined-first-arg guard so the more specific message
 	// wins whenever a context actually exists somewhere in `args`.
 	if (args.some(isAmplifyContext)) {
-		throw new Error(
+		throw new InvalidAmplifyContextError(
 			'AmplifyContext must be passed as the first argument. ' +
 				'Found an AmplifyContext in a later position — check the argument order.',
 		);
 	}
 
 	if (args.length > 1 && args[0] === undefined) {
-		throw new Error(
+		// Unconfigured/undefined leading context — throw the typed error (stable
+		// name/code) so categories can catch it uniformly. The fallback path
+		// below also throws NoAmplifyContextError via getGlobalContext().
+		throw new NoAmplifyContextError(
 			'Undefined AmplifyContext passed. Call configure() first or omit the parameter.',
 		);
 	}

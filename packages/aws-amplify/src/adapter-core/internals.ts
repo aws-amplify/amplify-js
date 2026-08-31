@@ -3,10 +3,10 @@
 
 export {
 	KeyValueStorageMethodValidator,
-	AmplifyServerContextError,
-	getAmplifyServerContext,
-	AmplifyServer,
 	CookieStorage,
+	// Retained for backwards compatibility; `getAmplifyServerContext` and
+	// `AmplifyServer` were removed with the server-context registry.
+	AmplifyServerContextError,
 } from '@aws-amplify/core/internals/adapter-core';
 export { OAuthConfig } from '@aws-amplify/core';
 export {
@@ -14,6 +14,7 @@ export {
 	assertTokenProviderConfig,
 	urlSafeEncode,
 	decodeJWT,
+	AmplifyError,
 	LegacyConfig,
 	AmplifyOutputsUnknown,
 } from '@aws-amplify/core/internals/utils';

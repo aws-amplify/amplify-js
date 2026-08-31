@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { getGlobalContext, hasGlobalContext } from '@aws-amplify/core';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import {
 	HttpRequest,
@@ -19,10 +19,19 @@ const disableCacheMiddlewareFactory: Middleware<
 	Record<string, unknown>
 > = () => (next, _) =>
 	async function disableCacheMiddleware(request) {
+		// Read any custom Auth headers off the global AmplifyContext's library
+		// options. Guarded with `hasGlobalContext()` because this handler can run
+		// in edge paths BEFORE `Amplify.configure()` — an unconfigured state must
+		// degrade to no custom headers (preserving the previous
+		// `Amplify.libraryOptions?.Auth?.headers?.()` no-op behavior), NOT throw.
+		const customHeaders = hasGlobalContext()
+			? await getGlobalContext().libraryOptions?.Auth?.headers?.()
+			: undefined;
+
 		request.headers = {
 			...request.headers,
 			'cache-control': 'no-store',
-			...(await Amplify.libraryOptions?.Auth?.headers?.()),
+			...customHeaders,
 		};
 
 		return next(request);

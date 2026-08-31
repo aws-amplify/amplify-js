@@ -3,5 +3,3 @@
 
 export { resolveConfig } from './resolveConfig';
 export { resolveLibraryOptions } from './resolveLibraryOptions';
-export { bridgeAmplifyClass } from './bridgeAmplifyClass';
-export { resolveServerContext } from './resolveServerContext';

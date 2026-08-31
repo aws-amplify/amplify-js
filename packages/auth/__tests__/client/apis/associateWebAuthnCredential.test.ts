@@ -1,5 +1,11 @@
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { Amplify } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	decodeJWT,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	createCompleteWebAuthnRegistrationClient,
@@ -17,17 +23,13 @@ import {
 import { serializePkcWithAttestationToJson } from '../../../src/client/utils/passkey/serde';
 import * as utils from '../../../src/client/utils';
 import { getIsPasskeySupported } from '../../../src/client/utils/passkey/getIsPasskeySupported';
-import { setUpGetConfig } from '../../providers/cognito/testUtils/setUpGetConfig';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import {
 	assertCredentialIsPkcWithAuthenticatorAssertionResponse,
 	assertCredentialIsPkcWithAuthenticatorAttestationResponse,
 } from '../../../src/client/utils/passkey/types';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -57,8 +59,6 @@ describe('associateWebAuthnCredential', () => {
 	);
 	const registerPasskeySpy = jest.spyOn(utils, 'registerPasskey');
 
-	const mockFetchAuthSession = jest.mocked(fetchAuthSession);
-
 	const mockGetIsPasskeySupported = jest.mocked(getIsPasskeySupported);
 
 	const mockStartWebAuthnRegistration = jest.fn();
@@ -76,9 +76,24 @@ describe('associateWebAuthnCredential', () => {
 	const mockAssertCredentialIsPkcWithAuthenticatorAttestationResponse =
 		jest.mocked(assertCredentialIsPkcWithAuthenticatorAttestationResponse);
 
+	// Facade parity: configure ONLY the global AmplifyContext (with real config),
+	// deliberately NOT the core `Amplify` singleton. This reproduces facade-only
+	// configuration — the case older suites masked by configuring the singleton
+	// directly — and proves the API resolves config + auth from the global context.
+	const mockCtx = createMockAmplifyContext({
+		Auth: {
+			Cognito: {
+				userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				identityPoolId: 'us-west-2:xxxxxx',
+			},
+		},
+	});
+	const mockCtxFetchAuthSession = mockCtx.fetchAuthSession as jest.Mock;
+
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
-		mockFetchAuthSession.mockResolvedValue({
+		setGlobalContext(mockCtx);
+		mockCtxFetchAuthSession.mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
 		mockCreateStartWebAuthnRegistrationClient.mockReturnValue(
@@ -102,10 +117,37 @@ describe('associateWebAuthnCredential', () => {
 		);
 	});
 
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	afterEach(() => {
-		mockFetchAuthSession.mockClear();
+		mockCtxFetchAuthSession.mockClear();
 		mockStartWebAuthnRegistration.mockClear();
 		navigatorCredentialsCreateSpy.mockClear();
+	});
+
+	it('resolves config from the global context under facade-only configuration (core singleton unconfigured)', async () => {
+		// Guard: the core singleton must NOT hold the Cognito config in this
+		// scenario — the API must still succeed by reading the global context.
+		expect(Amplify.getConfig().Auth?.Cognito).toBeUndefined();
+
+		mockStartWebAuthnRegistration.mockImplementation(() => ({
+			CredentialCreationOptions: passkeyCredentialCreateOptions,
+		}));
+
+		await associateWebAuthnCredential();
+
+		expect(mockCtxFetchAuthSession).toHaveBeenCalled();
+		expect(mockStartWebAuthnRegistration).toHaveBeenCalledWith(
+			{
+				region: 'us-west-2',
+				userAgentValue: expect.any(String),
+			},
+			{
+				AccessToken: mockAccessToken,
+			},
+		);
 	});
 
 	it('should pass the correct service options when retrieving credential creation options', async () => {

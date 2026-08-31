@@ -6,10 +6,10 @@ import {
 	AmplifyContext,
 	isAmplifyContext,
 } from '@aws-amplify/core';
+import { bridgeAmplifyClass } from '@aws-amplify/core/internals/utils';
 
 import { InternalPostInput, RestApiResponse } from '../../types';
 import { createCancellableOperation } from '../../utils';
-import { bridgeAmplifyClass } from '../../utils/bridgeAmplifyClass';
 import { CanceledError } from '../../errors';
 import { isIamAuthApplicableForGraphQL } from '../../utils/isIamAuthApplicable';
 

@@ -7,6 +7,7 @@ import {
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import { lexProvider } from '../../src/lex-v1/AWSLexProvider';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
 (global as any).Response = class Response {
@@ -298,7 +299,7 @@ describe('Interactions', () => {
 
 		test('Configure onComplete callback for a configured bot successfully', () => {
 			expect(() =>
-				provider.onComplete(botConfig.BookTrip, callback),
+				provider.onComplete(mockCtx, botConfig.BookTrip, callback),
 			).not.toThrow();
 			expect.assertions(1);
 		});
@@ -368,23 +369,99 @@ describe('Interactions', () => {
 
 		test('Configure onComplete callback using `Interactions.onComplete` API', async () => {
 			// 1. In progress, callback shouldn't be called
-			provider.onComplete(botConfig.BookTrip, inProgressCallback);
-			provider.reportBotStatus(inProgressResp, botConfig.BookTrip);
+			provider.onComplete(mockCtx, botConfig.BookTrip, inProgressCallback);
+			provider.reportBotStatus(mockCtx, inProgressResp, botConfig.BookTrip);
 			jest.runAllTimers();
 			expect(inProgressCallback).toHaveBeenCalledTimes(0);
 
 			// 2. task complete; success, callback be called with response
-			provider.onComplete(botConfig.BookTrip, completeSuccessCallback);
-			provider.reportBotStatus(completeSuccessResp, botConfig.BookTrip);
+			provider.onComplete(
+				mockCtx,
+				botConfig.BookTrip,
+				completeSuccessCallback,
+			);
+			provider.reportBotStatus(
+				mockCtx,
+				completeSuccessResp,
+				botConfig.BookTrip,
+			);
 			jest.runAllTimers();
 			expect(completeSuccessCallback).toHaveBeenCalledTimes(1);
 
 			// 3. task complete; error, callback be called with error
-			provider.onComplete(botConfig.BookTrip, completeFailCallback);
-			provider.reportBotStatus(completeFailResp, botConfig.BookTrip);
+			provider.onComplete(mockCtx, botConfig.BookTrip, completeFailCallback);
+			provider.reportBotStatus(mockCtx, completeFailResp, botConfig.BookTrip);
 			jest.runAllTimers();
 			expect(completeFailCallback).toHaveBeenCalledTimes(1);
 			expect.assertions(6);
+		});
+	});
+
+	// F6.4: onComplete callbacks are keyed on the *resolved* AmplifyContext.
+	// Kept in a dedicated describe with fresh (uuid-named) bot configs so it does
+	// not inherit the reportBotStatus beforeEach, whose shared-mockCtx setup can
+	// fire onComplete callbacks registered by earlier tests.
+	describe('context isolation (F6.4)', () => {
+		jest.useFakeTimers();
+		let provider;
+
+		beforeEach(() => {
+			mockFetchAuthSession.mockReturnValue(credentials);
+			provider = lexProvider;
+		});
+
+		afterEach(() => {
+			mockFetchAuthSession.mockReset();
+		});
+
+		test('callbacks are isolated per resolved context (F6.4)', async () => {
+			const ctxA = createMockAmplifyContext();
+			const ctxB = createMockAmplifyContext();
+			const config = { ...botConfig.BookTrip, name: amplifyUuid() };
+			const callbackA = jest.fn();
+
+			// The completed response payload is context-independent; build it once.
+			const completeResp = (await provider.sendMessage(
+				mockCtx,
+				config,
+				'done',
+			)) as PostTextCommandOutput;
+
+			// Registered against ctxA only.
+			provider.onComplete(ctxA, config, callbackA);
+
+			// A report resolved against a *different* context must NOT fire it.
+			provider.reportBotStatus(ctxB, completeResp, config);
+			jest.runAllTimers();
+			expect(callbackA).toHaveBeenCalledTimes(0);
+
+			// A report resolved against the registering context fires it.
+			provider.reportBotStatus(ctxA, completeResp, config);
+			jest.runAllTimers();
+			expect(callbackA).toHaveBeenCalledTimes(1);
+		});
+
+		test('re-configure replaces the context object, so global-ctx callbacks do not carry over (F6.4)', async () => {
+			// Simulates `Amplify.configure()` publishing a NEW frozen global
+			// context object: a callback registered against the pre-reconfigure
+			// context is keyed on that (now stale) object and must not fire for
+			// the new context.
+			const preReconfigureCtx = createMockAmplifyContext();
+			const postReconfigureCtx = createMockAmplifyContext();
+			const config = { ...botConfig.BookTrip, name: amplifyUuid() };
+			const callback = jest.fn();
+
+			const completeResp = (await provider.sendMessage(
+				mockCtx,
+				config,
+				'done',
+			)) as PostTextCommandOutput;
+
+			provider.onComplete(preReconfigureCtx, config, callback);
+
+			provider.reportBotStatus(postReconfigureCtx, completeResp, config);
+			jest.runAllTimers();
+			expect(callback).toHaveBeenCalledTimes(0);
 		});
 	});
 });

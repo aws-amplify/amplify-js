@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Hub, isAmplifyContext } from '@aws-amplify/core';
+import { bridgeAmplifyClass } from '@aws-amplify/core/internals/utils';
 import {
 	CustomMutations,
 	CustomQueries,
@@ -20,7 +21,6 @@ import {
 	__headers,
 	getInternals,
 } from '../types';
-import { bridgeAmplifyClass } from '../utils/bridgeAmplifyClass';
 
 import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
 import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
