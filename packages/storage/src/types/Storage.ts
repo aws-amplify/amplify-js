@@ -31,6 +31,11 @@ type Last<T extends any[]> = T[Exclude<keyof T, keyof Tail<T>>];
 // Utility type to extract the last parameter type of a function
 type LastParameter<F extends (...args: any) => any> = Last<Parameters<F>>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface StorageOptions {
 	credentials?: ICredentials;
 	region?: string;
@@ -50,20 +55,45 @@ export interface StorageOptions {
 	dangerouslyConnectToHttpEndpointForTesting?: boolean;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageAccessLevel = 'public' | 'protected' | 'private';
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type CustomPrefix = {
 	[key in StorageAccessLevel]?: string;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageCopyTarget = {
 	key: string;
 	level?: string;
 	identityId?: string;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageCopySource = StorageCopyTarget;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
 
 /**
@@ -94,6 +124,11 @@ type StorageOperationConfig<
 			provider: ReturnType<T['getProviderName']>;
 	  };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageGetConfig<T extends Record<string, any>> =
 	T extends StorageProvider
 		? StorageOperationConfig<T, 'get'>
@@ -102,6 +137,11 @@ export type StorageGetConfig<T extends Record<string, any>> =
 				T
 		  >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageGetPropertiesConfig<T extends Record<string, any>> =
 	T extends StorageProviderWithGetProperties
 		? StorageOperationConfig<T, 'getProperties'>
@@ -110,6 +150,11 @@ export type StorageGetPropertiesConfig<T extends Record<string, any>> =
 				T
 		  >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StoragePutConfig<T extends Record<string, any>> =
 	T extends StorageProvider
 		? StorageOperationConfig<T, 'put'>
@@ -118,6 +163,11 @@ export type StoragePutConfig<T extends Record<string, any>> =
 				T
 		  >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageRemoveConfig<T extends Record<string, any>> =
 	T extends StorageProvider
 		? StorageOperationConfig<T, 'remove'>
@@ -126,6 +176,11 @@ export type StorageRemoveConfig<T extends Record<string, any>> =
 				T
 		  >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageListConfig<T extends Record<string, any>> =
 	T extends StorageProvider
 		? StorageOperationConfig<T, 'list'>
@@ -134,6 +189,11 @@ export type StorageListConfig<T extends Record<string, any>> =
 				T
 		  >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageCopyConfig<T extends Record<string, any>> =
 	T extends StorageProviderWithCopy
 		? StorageOperationConfig<T, 'copy'>
@@ -168,33 +228,63 @@ type PickProviderOutput<
 		: Promise<any>
 	: DefaultOutput;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageGetOutput<T extends StorageProvider | Record<string, any>> =
 	PickProviderOutput<Promise<S3ProviderGetOuput<T>>, T, 'get'>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StoragePutOutput<T> = PickProviderOutput<
 	S3ProviderPutOutput<T>,
 	T,
 	'put'
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageRemoveOutput<T> = PickProviderOutput<
 	Promise<S3ProviderRemoveOutput>,
 	T,
 	'remove'
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageListOutput<T> = PickProviderOutput<
 	Promise<S3ProviderListOutput>,
 	T,
 	'list'
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageCopyOutput<T> = PickProviderOutput<
 	Promise<S3ProviderCopyOutput>,
 	T,
 	'copy'
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type StorageGetPropertiesOutput<T> = PickProviderOutput<
 	Promise<S3ProviderGetPropertiesOutput>,
 	T,
@@ -204,6 +294,9 @@ export type StorageGetPropertiesOutput<T> = PickProviderOutput<
 /**
  * Utility type to allow custom provider to use any config keys, if provider is set to AWSS3 then it should use
  * AWSS3Provider's config.
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export type StorageOperationConfigMap<
 	Default,

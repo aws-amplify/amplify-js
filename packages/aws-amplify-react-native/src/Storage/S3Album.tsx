@@ -30,6 +30,11 @@ interface IS3AlbumState {
 	images: any[];
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
 	constructor(props: IS3AlbumProps) {
 		super(props);

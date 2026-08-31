@@ -46,6 +46,11 @@ import {
 
 const logger = new Logger('AWSCloudWatch');
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 class AWSCloudWatchProvider implements LoggingProvider {
 	static readonly PROVIDER_NAME = AWS_CLOUDWATCH_PROVIDER_NAME;
 	static readonly CATEGORY = AWS_CLOUDWATCH_CATEGORY;

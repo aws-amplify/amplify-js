@@ -4,6 +4,11 @@ export const MAX_DELAY_MS = 5000;
 
 export const NON_RETRYABLE_CODES = [400, 401, 403];
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const CONNECTION_STATE_CHANGE = 'ConnectionStateChange';
 
 export enum MESSAGE_TYPES {
