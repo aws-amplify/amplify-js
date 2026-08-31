@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import { AmplifyContext, ResourcesConfig } from '@aws-amplify/core';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
@@ -14,7 +13,6 @@ import {
 	V6ClientSSRRequest,
 	__amplify,
 } from '../types';
-import { resolveServerContext } from '../utils/resolveServerContext';
 
 /**
  * Generates an GraphQL API client that works with Amplify server context.
@@ -47,14 +45,17 @@ export function generateClient<
 	const prevGraphql = client.graphql as unknown as GraphQLMethod<Options>;
 
 	const wrappedGraphql = (
-		contextSpec: AmplifyContext | AmplifyServer.ContextSpec,
+		contextSpec: AmplifyContext,
 		innerOptions: GraphQLOptionsV6<unknown, string, Options>,
 		additionalHeaders?: CustomHeaders,
 	) => {
-		const amplifyInstance = resolveServerContext(contextSpec);
-
+		// Phase C4: the server-context registry is gone. The caller supplies the
+		// per-request `AmplifyContext` directly (branded via `Amplify.configure`,
+		// `createAmplifyContext`, or the adapter's per-request builder). Bind it as
+		// the client instance; `InternalGraphQLAPI` bridges a bare `AmplifyClass`
+		// if one is ever passed through.
 		return prevGraphql.call(
-			{ [__amplify]: amplifyInstance },
+			{ [__amplify]: contextSpec },
 			innerOptions,
 			additionalHeaders,
 		);

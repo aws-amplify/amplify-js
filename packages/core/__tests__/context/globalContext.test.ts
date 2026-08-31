@@ -6,6 +6,11 @@ import {
 	getGlobalContext,
 	hasGlobalContext,
 } from '../../src';
+import {
+	AmplifyError,
+	NO_AMPLIFY_CONTEXT_ERROR_NAME,
+	NoAmplifyContextError,
+} from '../../src/errors';
 import { clearGlobalContext, setGlobalContext } from '../../src/libraryUtils';
 import { AmplifyContext } from '../../src/context/AmplifyContext';
 
@@ -50,6 +55,20 @@ describe('globalContext', () => {
 	describe('getGlobalContext', () => {
 		it('throws when no context is set', () => {
 			expect(() => getGlobalContext()).toThrow('No AmplifyContext available');
+		});
+
+		it('throws a typed NoAmplifyContextError (F4.1) with the stable name', () => {
+			let caught: unknown;
+			try {
+				getGlobalContext();
+			} catch (error) {
+				caught = error;
+			}
+			expect(caught).toBeInstanceOf(NoAmplifyContextError);
+			expect(caught).toBeInstanceOf(AmplifyError);
+			expect((caught as NoAmplifyContextError).name).toBe(
+				NO_AMPLIFY_CONTEXT_ERROR_NAME,
+			);
 		});
 
 		it('returns the context set by setGlobalContext', () => {

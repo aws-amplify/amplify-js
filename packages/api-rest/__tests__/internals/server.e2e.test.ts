@@ -12,11 +12,6 @@
  */
 
 import { getRetryDecider } from '@aws-amplify/core/internals/aws-client-utils';
-import {
-	createAmplifyServerContext,
-	destroyAmplifyServerContext,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
 
 import { authenticatedHandler } from '../../src/apis/common/baseHandlers/authenticatedHandler';
 import { unauthenticatedHandler } from '../../src/apis/common/baseHandlers/unauthenticatedHandler';
@@ -47,7 +42,7 @@ const mockSuccessResponse = {
 	},
 };
 
-describe('internals/server e2e — legacy ContextSpec through real internalPost + transferHandler', () => {
+describe('internals/server e2e — branded AmplifyContext through real internalPost + transferHandler', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
@@ -55,51 +50,6 @@ describe('internals/server e2e — legacy ContextSpec through real internalPost 
 		mockGetRetryDecider.mockReturnValue(() =>
 			Promise.resolve({ retryable: false }),
 		);
-	});
-
-	it('should call authenticatedHandler when legacy ContextSpec is bridged via internals post (regression test)', async () => {
-		const contextSpec = createAmplifyServerContext({}, {});
-		const { amplify } = getAmplifyServerContext(contextSpec);
-		jest
-			.spyOn(amplify.Auth, 'fetchAuthSession')
-			.mockResolvedValue({ credentials });
-
-		try {
-			const appsyncUrl = new URL(
-				'https://abc123.appsync-api.us-west-2.amazonaws.com/graphql',
-			);
-
-			// Drive the real chain: internals/server post → resolveServerContext →
-			// internalPost → transferHandler. The bridge must be branded so that
-			// internalPost's isAmplifyContext(amplify) returns true and does NOT
-			// double-bridge (which would lose the Auth.* closures).
-			await post(contextSpec, {
-				url: appsyncUrl,
-				options: {
-					signingServiceInfo: {
-						service: 'appsync',
-						region: 'us-west-2',
-					},
-				},
-			});
-
-			// The bridge's fetchAuthSession delegates to amplify.Auth.fetchAuthSession,
-			// which returned credentials → authenticatedHandler must have been used.
-			expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
-				expect.objectContaining({
-					url: appsyncUrl,
-					method: 'POST',
-				}),
-				expect.objectContaining({
-					credentials,
-					region: 'us-west-2',
-					service: 'appsync',
-				}),
-			);
-			expect(mockUnauthenticatedHandler).not.toHaveBeenCalled();
-		} finally {
-			destroyAmplifyServerContext(contextSpec);
-		}
 	});
 
 	it('should call authenticatedHandler when branded AmplifyContext is passed directly to internals post', async () => {

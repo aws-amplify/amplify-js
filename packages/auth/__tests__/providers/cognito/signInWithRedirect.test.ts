@@ -1,9 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
 import {
-	ADD_OAUTH_LISTENER,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	isBrowser,
@@ -19,7 +17,6 @@ import {
 	oAuthStore,
 } from '../../../src/providers/cognito/utils/oauth';
 import { getAuthUserAgentValue, openAuthSession } from '../../../src/utils';
-import { attemptCompleteOAuthFlow } from '../../../src/providers/cognito/utils/oauth/attemptCompleteOAuthFlow';
 import { createOAuthError } from '../../../src/providers/cognito/utils/oauth/createOAuthError';
 import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWithRedirect';
 import type { OAuthStore } from '../../../src/providers/cognito/utils/types';
@@ -39,8 +36,6 @@ jest.mock('@aws-amplify/core', () => ({
 	Amplify: {
 		...jest.requireActual('@aws-amplify/core').Amplify,
 		getConfig: jest.fn(),
-		[jest.requireActual('@aws-amplify/core/internals/utils')
-			.ADD_OAUTH_LISTENER]: jest.fn(),
 	},
 }));
 
@@ -294,17 +289,10 @@ describe('signInWithRedirect', () => {
 	});
 
 	describe('specifications on Web', () => {
-		describe('side effect', () => {
-			it('attaches oauth listener to the Amplify singleton', async () => {
-				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(
-					false,
-				);
-
-				expect(Amplify[ADD_OAUTH_LISTENER]).toHaveBeenCalledWith(
-					attemptCompleteOAuthFlow,
-				);
-			});
-		});
+		// NOTE (Phase C4): the OAuth listener is no longer attached to the
+		// singleton via `ADD_OAUTH_LISTENER`. It is registered as a `configure`
+		// Hub side effect at module load of `enableOAuthListener` — covered by
+		// `utils/oauth/enableOAuthListener.test.ts`.
 
 		it('invokes handleFailure when user cancels the oauth flow', async () => {
 			const error = new Error('OAuth flow was cancelled.');

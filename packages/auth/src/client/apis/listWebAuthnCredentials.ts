@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { getGlobalContext } from '@aws-amplify/core';
 
 import { ListWebAuthnCredentialsException } from '../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import {
@@ -24,5 +24,8 @@ import { listWebAuthnCredentials as listWebAuthnCredentialsFoundation } from '..
 export async function listWebAuthnCredentials(
 	input?: ListWebAuthnCredentialsInput,
 ): Promise<ListWebAuthnCredentialsOutput> {
-	return listWebAuthnCredentialsFoundation(Amplify, input);
+	// Resolve the global AmplifyContext fresh per operation so facade-only
+	// configuration is honored (the core `Amplify` singleton is never
+	// configured under the new facade).
+	return listWebAuthnCredentialsFoundation(getGlobalContext(), input);
 }

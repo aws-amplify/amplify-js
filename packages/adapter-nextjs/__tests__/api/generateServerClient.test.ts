@@ -95,10 +95,6 @@ describe('generateServerClient', () => {
 			graphql: mockGraphql,
 		}));
 
-		jest.mock('aws-amplify/adapter-core/internals', () => ({
-			getAmplifyServerContext: jest.fn(),
-		}));
-
 		const client = generateServerClientUsingReqRes({
 			config: mockAmplifyConfig,
 		});

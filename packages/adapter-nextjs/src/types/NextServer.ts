@@ -6,11 +6,10 @@ import { NextRequest, NextResponse } from 'next/server.js';
 import { cookies } from 'next/headers.js';
 import {
 	AmplifyOutputsUnknown,
-	AmplifyServer,
 	CookieStorage,
 	LegacyConfig,
 } from 'aws-amplify/adapter-core/internals';
-import { ResourcesConfig } from 'aws-amplify';
+import { AmplifyContext, ResourcesConfig } from 'aws-amplify';
 
 import { CreateAuthRouteHandlers } from '../auth/types';
 
@@ -70,8 +69,13 @@ export declare namespace NextServer {
 
 	export interface RunWithContextInput<OperationResult> {
 		nextServerContext: Context | null;
+		// The operation receives the per-request, branded `AmplifyContext` built by
+		// the server runner. It is named `contextSpec` for backward compatibility
+		// with existing caller code; the deprecated `ContextSpec` alias
+		// (`AmplifyServer.ContextSpec`) resolves to `AmplifyContext`, so callbacks
+		// typed against either continue to compile.
 		operation(
-			contextSpec: AmplifyServer.ContextSpec,
+			contextSpec: AmplifyContext,
 		): OperationResult | Promise<OperationResult>;
 	}
 

@@ -1,7 +1,6 @@
 import * as raw from '../src';
 import { graphql, cancel, isCancelError } from '../src/internals/v6';
-import { Amplify } from 'aws-amplify';
-import { Amplify as AmplifyCore } from '@aws-amplify/core';
+import { Amplify, Amplify as AmplifyCore } from '@aws-amplify/core';
 import * as typedQueries from './fixtures/with-types/queries';
 import * as typedSubscriptions from './fixtures/with-types/subscriptions';
 import { expectGet } from './utils/expects';
@@ -36,29 +35,26 @@ let mockCredentials: any = {
 	secretAccessKey: 'mock-secret-access-key',
 };
 
-jest.mock('aws-amplify', () => {
-	const originalModule = jest.requireActual('aws-amplify');
+// Phase C4: the umbrella `aws-amplify` package is intentionally not built yet
+// (C2). Mock the core singleton directly instead — override only the singleton's
+// `Auth.fetchAuthSession` so graphql auth headers resolve to deterministic
+// tokens/credentials; everything else (configure/getConfig/libraryOptions/
+// branding) remains the real core implementation.
+jest.mock('@aws-amplify/core', () => {
+	const originalModule = jest.requireActual('@aws-amplify/core');
 
-	const mockedModule = {
-		...originalModule,
-		Amplify: {
-			...originalModule.Amplify,
-			Auth: {
-				...originalModule.Amplify.Auth,
-				fetchAuthSession: jest.fn(() => {
-					return {
-						tokens: {
-							accessToken: {
-								toString: () => mockAccessToken,
-							},
-						},
-						credentials: mockCredentials,
-					};
-				}),
+	originalModule.Amplify.Auth.fetchAuthSession = jest.fn(() => {
+		return {
+			tokens: {
+				accessToken: {
+					toString: () => mockAccessToken,
+				},
 			},
-		},
-	};
-	return mockedModule;
+			credentials: mockCredentials,
+		};
+	});
+
+	return originalModule;
 });
 
 const client = {

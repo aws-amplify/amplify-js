@@ -28,7 +28,6 @@ export {
 	AmplifyOutputs,
 	AmplifyOutputsUnknown,
 } from './singleton/AmplifyOutputs/types';
-export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { AuthClass } from './singleton/Auth';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
@@ -116,6 +115,10 @@ export {
 	ApiError,
 	ApiErrorParams,
 	ApiErrorResponse,
+	NoAmplifyContextError,
+	NO_AMPLIFY_CONTEXT_ERROR_NAME,
+	InvalidAmplifyContextError,
+	INVALID_AMPLIFY_CONTEXT_ERROR_NAME,
 } from './errors';
 export {
 	AmplifyErrorCode,
@@ -154,3 +157,9 @@ export { setGlobalContext, clearGlobalContext } from './context/globalContext';
 
 // Context argument resolution
 export { resolveCtxArgs } from './context/resolveCtxArgs';
+
+// Optional-context constructor argument guard (constructor / single-slot pattern)
+export { assertOptionalCtxArg } from './context/assertCtxArg';
+
+// AmplifyClass -> AmplifyContext bridge (single shared implementation)
+export { bridgeAmplifyClass } from './context/bridgeAmplifyClass';
