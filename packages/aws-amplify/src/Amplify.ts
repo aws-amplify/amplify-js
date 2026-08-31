@@ -52,11 +52,13 @@ export const Amplify = {
 	 * publishing the resulting branded context as the global {@link AmplifyContext}.
 	 *
 	 * If `libraryOptions` is omitted on a reconfigure, the previously configured
-	 * `libraryOptions` are preserved (mirroring the previous singleton merge
-	 * behavior); when provided they replace the previous ones. When
+	 * non-Auth `libraryOptions` are preserved (mirroring the previous singleton
+	 * merge behavior); when provided they replace the previous ones. When
 	 * `resourceConfig.Auth` is present and the caller does not supply
 	 * `libraryOptions.Auth`, the default Cognito token/credentials providers are
-	 * wired using cookie storage (`ssr: true`) or `localStorage` (default).
+	 * wired using cookie storage (`ssr: true`) or `localStorage` (default), and
+	 * the singleton token provider's auth config is re-synced on every call so a
+	 * reconfigure with a new `userPoolId` retargets token refresh.
 	 *
 	 * @param resourceConfig The {@link ResourcesConfig} object that is typically imported from the
 	 * `amplifyconfiguration.json` / `amplify_outputs.json` file. It can also be an object literal
@@ -149,41 +151,61 @@ export const Amplify = {
  * behavior (process-wide **singleton** Cognito providers, `setAuthConfig` /
  * `setKeyValueStorage` refresh).
  *
- * - No new `libraryOptions` but previous ones exist → preserve previous.
- * - No `Auth` in the resource config → pass options through unchanged.
+ * - No `Auth` in the resource config → pass options through unchanged
+ *   (preserving previously-resolved options when the caller supplies none).
  * - Caller-provided `libraryOptions.Auth` → take precedence (no defaults).
- * - Otherwise → refresh the singleton token provider's auth config + storage
- *   and inject the singleton token/credentials providers.
+ * - Otherwise (Auth present, no caller-supplied Auth providers) → on **every**
+ *   call, including reconfigures with or without other `libraryOptions`, refresh
+ *   the singleton token provider's auth config + storage and inject the
+ *   singleton token/credentials providers. Non-Auth library options are still
+ *   carried forward from the previous configuration when the caller passes none.
  */
 function resolveLibraryOptions(
 	resourceConfig: ResourcesConfig,
 	libraryOptions?: LibraryOptions,
 	previousLibraryOptions?: LibraryOptions,
 ): LibraryOptions {
-	// If no new libraryOptions were provided, preserve the previously configured
-	// ones (the core AmplifyClass singleton used to perform this merge).
-	if (!libraryOptions && previousLibraryOptions) {
-		return previousLibraryOptions;
-	}
-
+	// Pass-through: with no Auth in the resource config the singleton token
+	// provider is never involved, so simply preserve the previously configured
+	// libraryOptions when the caller supplies none (the core AmplifyClass
+	// singleton used to perform this merge), otherwise use what was given.
 	if (!resourceConfig.Auth) {
+		if (!libraryOptions && previousLibraryOptions) {
+			return previousLibraryOptions;
+		}
+
 		return libraryOptions ?? {};
 	}
 
+	// Caller-provided Auth providers always take precedence; never touch the
+	// singleton token provider in that case.
 	if (libraryOptions?.Auth) {
 		return libraryOptions;
 	}
 
+	// Auth is present and the caller did NOT supply their own Auth providers.
+	// Carry non-Auth library options forward from the previous configuration
+	// when the caller passes none (Phase C preservation), but ALWAYS re-sync the
+	// singleton token provider below so the Auth providers never go stale.
+	const baseLibraryOptions = libraryOptions ?? previousLibraryOptions ?? {};
+
 	const cookieBasedKeyValueStorage = new CookieStorage({ sameSite: 'lax' });
-	const resolvedKeyValueStorage = libraryOptions?.ssr
+	const resolvedKeyValueStorage = baseLibraryOptions.ssr
 		? cookieBasedKeyValueStorage
 		: defaultStorage;
-	const resolvedCredentialsProvider = libraryOptions?.ssr
+	const resolvedCredentialsProvider = baseLibraryOptions.ssr
 		? new CognitoAWSCredentialsAndIdentityIdProvider(
 				new DefaultIdentityIdStore(cookieBasedKeyValueStorage),
 			)
 		: cognitoCredentialsProvider;
 
+	// Re-push the resolved auth config + key-value storage into the process-wide
+	// singleton token provider on EVERY configure call. AuthClass.getTokens
+	// delegates to this provider's own authConfig, which is only ever updated
+	// here; skipping this on a reconfigure (e.g. a new userPoolId with no
+	// libraryOptions) would leave token refresh pinned to the previous pool
+	// while getConfig()/credentials reflect the new one. Restores the #14819
+	// contract.
 	cognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
 	cognitoUserPoolsTokenProvider.setKeyValueStorage(
 		// TODO: allow configure with a public interface
@@ -191,7 +213,7 @@ function resolveLibraryOptions(
 	);
 
 	return {
-		...libraryOptions,
+		...baseLibraryOptions,
 		Auth: {
 			tokenProvider: cognitoUserPoolsTokenProvider,
 			credentialsProvider: resolvedCredentialsProvider,

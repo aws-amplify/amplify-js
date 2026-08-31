@@ -7,7 +7,10 @@
  * `DefaultAmplify` in `initSingleton.ts`). Per repo convention these exercise
  * the REAL `@aws-amplify/core` singleton/global-context and real config
  * objects — only the `Hub` boundary is spied on. Nothing internal (getConfig,
- * providers, parsers) is mocked.
+ * providers, parsers) is mocked. The reconfigure tests additionally spy the
+ * singleton token provider's `setAuthConfig` (preserving its real
+ * implementation) to observe that it is re-synced on reconfigure — a provider
+ * boundary, not a mock.
  */
 import {
 	CredentialsAndIdentityIdProvider,
@@ -21,6 +24,7 @@ import {
 	clearGlobalContext,
 } from '@aws-amplify/core/internals/utils';
 
+import { cognitoUserPoolsTokenProvider } from '../src/auth/cognito';
 import { Amplify } from '../src';
 
 const mockResourceConfig: ResourcesConfig = {
@@ -159,6 +163,10 @@ describe('Amplify facade (formerly DefaultAmplify)', () => {
 		});
 
 		it('passes through when libraryOptions.Auth is provided (no default providers)', () => {
+			const setAuthConfigSpy = jest.spyOn(
+				cognitoUserPoolsTokenProvider,
+				'setAuthConfig',
+			);
 			const mockTokenProvider: TokenProvider = {
 				getTokens: jest.fn().mockResolvedValue(undefined),
 			};
@@ -177,6 +185,8 @@ describe('Amplify facade (formerly DefaultAmplify)', () => {
 			const { Auth } = getGlobalContext().libraryOptions;
 			expect(Auth?.tokenProvider).toBe(mockTokenProvider);
 			expect(Auth?.credentialsProvider).toBe(mockCredentialsProvider);
+			// Caller-supplied Auth providers must never touch the singleton.
+			expect(setAuthConfigSpy).not.toHaveBeenCalled();
 		});
 
 		it('configures with default providers when only resource config is passed (no Auth options)', () => {
@@ -198,9 +208,14 @@ describe('Amplify facade (formerly DefaultAmplify)', () => {
 			);
 		});
 
-		it('preserves previous library options on reconfigure when none are provided', () => {
+		it('preserves previous NON-Auth library options on reconfigure while re-syncing Auth', () => {
+			const setAuthConfigSpy = jest.spyOn(
+				cognitoUserPoolsTokenProvider,
+				'setAuthConfig',
+			);
 			Amplify.configure(mockResourceConfig, { ssr: true });
 			const previousAuth = getGlobalContext().libraryOptions.Auth;
+			setAuthConfigSpy.mockClear();
 
 			const updatedResourceConfig: ResourcesConfig = {
 				Auth: {
@@ -216,9 +231,39 @@ describe('Amplify facade (formerly DefaultAmplify)', () => {
 			expect(Amplify.getConfig().Auth?.Cognito?.userPoolClientId).toBe(
 				'newClientId',
 			);
-			// ... but the previously-configured library options are preserved.
+			// ... the previously-configured NON-Auth options are preserved ...
 			expect(getGlobalContext().libraryOptions.ssr).toBe(true);
-			expect(getGlobalContext().libraryOptions.Auth).toBe(previousAuth);
+			// ... but the Auth providers are re-synced (NOT the stale previous
+			// object), and setAuthConfig is re-pushed with the NEW Auth config so
+			// token refresh retargets the new pool (osama's stale-token case).
+			expect(getGlobalContext().libraryOptions.Auth).not.toBe(previousAuth);
+			expect(setAuthConfigSpy).toHaveBeenCalledWith(updatedResourceConfig.Auth);
+		});
+
+		it('re-syncs Cognito auth config on reconfigure with non-Auth library options', () => {
+			const setAuthConfigSpy = jest.spyOn(
+				cognitoUserPoolsTokenProvider,
+				'setAuthConfig',
+			);
+			Amplify.configure(mockResourceConfig);
+			setAuthConfigSpy.mockClear();
+
+			const updatedResourceConfig: ResourcesConfig = {
+				Auth: {
+					Cognito: {
+						userPoolClientId: 'newClientId',
+						userPoolId: 'newPoolId',
+					},
+				},
+			};
+			Amplify.configure(updatedResourceConfig, {
+				Storage: { S3: { defaultAccessLevel: 'guest' } },
+			});
+
+			expect(setAuthConfigSpy).toHaveBeenCalledWith(updatedResourceConfig.Auth);
+			expect(
+				getGlobalContext().libraryOptions.Storage?.S3?.defaultAccessLevel,
+			).toBe('guest');
 		});
 
 		it('replaces library options on reconfigure when new options are provided', () => {

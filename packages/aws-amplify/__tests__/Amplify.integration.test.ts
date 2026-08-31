@@ -7,7 +7,7 @@
  * provider. Only the provider's `setAuthConfig` / `setKeyValueStorage` methods
  * are spied on (a boundary), preserving their real implementations.
  */
-import { ResourcesConfig } from '@aws-amplify/core';
+import { ResourcesConfig, getGlobalContext } from '@aws-amplify/core';
 import { clearGlobalContext } from '@aws-amplify/core/internals/utils';
 
 import { cognitoUserPoolsTokenProvider } from '../src/auth/cognito';
@@ -90,19 +90,42 @@ describe('Amplify.configure integration', () => {
 		);
 	});
 
-	// Behavioral change vs. the old DefaultAmplify (documented in the C2 handoff):
-	// reconfiguring with ONLY a resource config now PRESERVES the previously
-	// resolved library options (the facade no longer re-pushes default providers
-	// on every call), while still updating the published resourcesConfig.
-	it('preserves previous library options but updates resourcesConfig when only a resource config is passed', () => {
+	// Regression guard for the stale-token-provider-on-reconfigure bug
+	// (restores the #14819 contract): reconfiguring with ONLY a new resource
+	// config must still re-push setAuthConfig with the NEW Auth so user-pool
+	// token refresh retargets the new pool — even though getConfig() alone would
+	// mask the staleness. The previously-resolved NON-Auth library options are
+	// still preserved (the Phase C behavior stays; only the Auth staleness goes).
+	it('re-syncs the token provider to the new pool on reconfigure with only a resource config', () => {
 		Amplify.configure(poolAConfig);
+		expect(setAuthConfigSpy).toHaveBeenCalledWith(poolAConfig.Auth);
 
 		setAuthConfigSpy.mockClear();
 		setKeyValueStorageSpy.mockClear();
 
 		Amplify.configure(poolBConfig);
 
-		expect(setAuthConfigSpy).not.toHaveBeenCalled();
+		// Assert on the provider, not just getConfig(): the singleton token
+		// provider's authConfig now targets pool-b.
+		expect(setAuthConfigSpy).toHaveBeenCalledWith(poolBConfig.Auth);
+		expect(setKeyValueStorageSpy).toHaveBeenCalled();
 		expect(Amplify.getConfig().Auth?.Cognito?.userPoolId).toBe('pool-b');
+	});
+
+	it('preserves previous NON-Auth library options on reconfigure with only a resource config', () => {
+		Amplify.configure(poolAConfig, {
+			Storage: { S3: { defaultAccessLevel: 'private' } },
+		});
+
+		setAuthConfigSpy.mockClear();
+
+		Amplify.configure(poolBConfig);
+
+		// Auth staleness is fixed ...
+		expect(setAuthConfigSpy).toHaveBeenCalledWith(poolBConfig.Auth);
+		// ... but the custom non-Auth option from configure #1 survives.
+		expect(
+			getGlobalContext().libraryOptions.Storage?.S3?.defaultAccessLevel,
+		).toBe('private');
 	});
 });
