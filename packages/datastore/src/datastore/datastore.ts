@@ -2471,6 +2471,10 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
+		// NOTE: reads the legacy core `Amplify` singleton's config. DataStore is
+		// deprecated and is NOT supported under facade-only configuration (where
+		// the singleton stays unconfigured and the global AmplifyContext is the
+		// source of truth). Intentionally left as-is; do not migrate.
 		const currentAppSyncConfig = Amplify.getConfig().API?.GraphQL;
 
 		const appSyncConfig = {
