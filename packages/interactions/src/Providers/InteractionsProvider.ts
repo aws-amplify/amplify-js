@@ -11,6 +11,11 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('AbstractInteractionsProvider');
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export abstract class AbstractInteractionsProvider
 	implements InteractionsProvider {
 	protected _config: InteractionsOptions;

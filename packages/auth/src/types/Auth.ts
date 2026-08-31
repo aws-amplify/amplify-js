@@ -8,6 +8,9 @@ import {
 
 /**
  * Parameters for user sign up
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export interface SignUpParams {
 	username: string;
@@ -44,6 +47,11 @@ export interface AuthOptions {
 	signUpVerificationMethod?: 'code' | 'link';
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum CognitoHostedUIIdentityProvider {
 	Cognito = 'COGNITO',
 	Google = 'Google',
@@ -227,6 +235,11 @@ export interface AutoSignInOptions {
 	validationData?: { [key: string]: any };
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum GRAPHQL_AUTH_MODE {
 	API_KEY = 'API_KEY',
 	AWS_IAM = 'AWS_IAM',

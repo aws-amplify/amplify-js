@@ -12,6 +12,11 @@ const IOT_SERVICE_NAME = 'iotdevicegateway';
 // Best practice regex to parse the service and region from an AWS endpoint
 const AWS_ENDPOINT_REGEX = /([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com(.cn)?$/;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export class Signer {
 	/**
     * Sign a HTTP request, add 'Authorization' header to request param

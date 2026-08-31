@@ -21,13 +21,28 @@ import { InternalAPI } from '@aws-amplify/api/internals';
 import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 
 //#region Schema types
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type Schema = UserSchema & {
 	version: string;
 	codegenVersion: string;
 };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type UserSchema = {
 	models: SchemaModels;
 	nonModels?: SchemaNonModels;
@@ -36,16 +51,41 @@ export type UserSchema = {
 	enums: SchemaEnums;
 	modelTopologicalOrdering?: Map<string, string[]>;
 };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type InternalSchema = {
 	namespaces: SchemaNamespaces;
 	version: string;
 	codegenVersion: string;
 };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SchemaNamespaces = Record<string, SchemaNamespace>;
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SchemaNamespace = UserSchema & {
 	name: string;
 };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SchemaModels = Record<string, SchemaModel>;
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SchemaModel = {
 	name: string;
 	pluralName: string;
@@ -64,17 +104,37 @@ export type SchemaModel = {
 	syncable?: boolean;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isSchemaModel(obj: any): obj is SchemaModel {
 	return obj && (<SchemaModel>obj).pluralName !== undefined;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isSchemaModelWithAttributes(
 	m: SchemaModel | SchemaNonModel
 ): m is SchemaModel {
 	return isSchemaModel(m) && (m as SchemaModel).attributes !== undefined;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SchemaNonModels = Record<string, SchemaNonModel>;
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SchemaNonModel = {
 	name: string;
 	fields: ModelFields;
@@ -84,11 +144,21 @@ type SchemaEnum = {
 	name: string;
 	values: string[];
 };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelMeta<T extends PersistentModel> = {
 	builder: PersistentModelConstructor<T>;
 	schema: SchemaModel;
 	pkField: string[];
 };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
@@ -97,6 +167,11 @@ type AssociatedWith = {
 	targetNames?: string[];
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isAssociatedWith(obj: any): obj is AssociatedWith {
 	return obj && obj.associatedWith;
 }
@@ -107,6 +182,11 @@ type TargetNameAssociation = {
 	targetNames?: string[];
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isTargetNameAssociation(
 	obj: any
 ): obj is TargetNameAssociation {
@@ -116,6 +196,11 @@ export function isTargetNameAssociation(
 type FieldAssociation = {
 	connectionType: 'HAS_ONE' | 'BELONGS_TO' | 'HAS_MANY';
 };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isFieldAssociation(
 	obj: any,
 	fieldName: string
@@ -123,9 +208,24 @@ export function isFieldAssociation(
 	return obj?.fields[fieldName]?.association?.connectionType;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelAttributes = ModelAttribute[];
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelAttribute = { type: string; properties?: Record<string, any> };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelAuthRule = {
 	allow: string;
 	provider?: string;
@@ -137,6 +237,11 @@ export type ModelAuthRule = {
 	groupsField?: string;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelAttributeAuth = {
 	type: 'auth';
 	properties: {
@@ -144,6 +249,11 @@ export type ModelAttributeAuth = {
 	};
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isModelAttributeAuth(
 	attr: ModelAttribute
 ): attr is ModelAttributeAuth {
@@ -179,6 +289,11 @@ type ModelAttributeCompositeKey = {
 	};
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isModelAttributeKey(
 	attr: ModelAttribute
 ): attr is ModelAttributeKey {
@@ -190,12 +305,22 @@ export function isModelAttributeKey(
 	);
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isModelAttributePrimaryKey(
 	attr: ModelAttribute
 ): attr is ModelAttributePrimaryKey {
 	return isModelAttributeKey(attr) && attr.properties.name === undefined;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isModelAttributeCompositeKey(
 	attr: ModelAttribute
 ): attr is ModelAttributeCompositeKey {
@@ -206,6 +331,11 @@ export function isModelAttributeCompositeKey(
 	);
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelAttributeAuthProperty = {
 	allow: ModelAttributeAuthAllow;
 	identityClaim?: string;
@@ -216,6 +346,11 @@ export type ModelAttributeAuthProperty = {
 	provider?: ModelAttributeAuthProvider;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum ModelAttributeAuthAllow {
 	CUSTOM = 'custom',
 	OWNER = 'owner',
@@ -224,6 +359,11 @@ export enum ModelAttributeAuthAllow {
 	PUBLIC = 'public',
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum ModelAttributeAuthProvider {
 	FUNCTION = 'function',
 	USER_POOLS = 'userPools',
@@ -232,7 +372,17 @@ export enum ModelAttributeAuthProvider {
 	API_KEY = 'apiKey',
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelFields = Record<string, ModelField>;
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum GraphQLScalarType {
 	ID,
 	String,
@@ -250,6 +400,11 @@ export enum GraphQLScalarType {
 	AWSIPAddress,
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export namespace GraphQLScalarType {
 	export function getJSType(
 		scalar: keyof Omit<
@@ -312,6 +467,11 @@ export namespace GraphQLScalarType {
 	}
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type AuthorizationRule = {
 	identityClaim: string;
 	ownerField: string;
@@ -323,6 +483,11 @@ export type AuthorizationRule = {
 	areSubscriptionsPublic: boolean;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isGraphQLScalarType(
 	obj: any
 ): obj is keyof Omit<
@@ -332,10 +497,20 @@ export function isGraphQLScalarType(
 	return obj && GraphQLScalarType[obj] !== undefined;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelFieldType = {
 	model: string;
 	modelConstructor?: ModelMeta<PersistentModel>;
 };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isModelFieldType<T extends PersistentModel>(
 	obj: any
 ): obj is ModelFieldType {
@@ -345,7 +520,17 @@ export function isModelFieldType<T extends PersistentModel>(
 	return false;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type NonModelFieldType = { nonModel: string };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isNonModelFieldType(obj: any): obj is NonModelFieldType {
 	const typeField: keyof NonModelFieldType = 'nonModel';
 	if (obj && obj[typeField]) return true;
@@ -354,6 +539,11 @@ export function isNonModelFieldType(obj: any): obj is NonModelFieldType {
 }
 
 type EnumFieldType = { enum: string };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	const modelField: keyof EnumFieldType = 'enum';
 	if (obj && obj[modelField]) return true;
@@ -361,6 +551,11 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	return false;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelField = {
 	name: string;
 	type:
@@ -381,11 +576,21 @@ export type ModelField = {
 //#endregion
 
 //#region Model definition
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type NonModelTypeConstructor<T> = {
 	new (init: T): T;
 };
 
 // Class for model
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PersistentModelConstructor<T extends PersistentModel> = {
 	new (init: ModelInit<T, PersistentModelMetaData<T>>): T;
 	copyOf(
@@ -399,6 +604,9 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
  * Internal use of Amplify only.
  *
  * Indicates to use lazy models or eager models.
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export declare class LazyLoadingDisabled {
 	disabled: true;
@@ -409,9 +617,17 @@ export declare class LazyLoadingDisabled {
  * Internal use of Amplify only.
  *
  * Indicates to use lazy models or eager models.
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export declare class LazyLoading {}
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type TypeConstructorMap = Record<
 	string,
 	PersistentModelConstructor<any> | NonModelTypeConstructor<unknown>
@@ -420,40 +636,78 @@ export type TypeConstructorMap = Record<
 /**
  * Each identifier type is represented using nominal types, see:
  * https://basarat.gitbook.io/typescript/main-1/nominaltyping
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export declare const __identifierBrand__: unique symbol;
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type IdentifierBrand<T, K> = T & { [__identifierBrand__]: K };
 
 // datastore generates a uuid for you
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
 	{ field: F extends string ? F : never; type: T },
 	'ManagedIdentifier'
 >;
 
 // you can provide a value, if not, datastore generates a uuid for you
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type OptionallyManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
 	{ field: F extends string ? F : never; type: T },
 	'OptionallyManagedIdentifier'
 >;
 
 // You provide the values
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type CompositeIdentifier<T, K extends Array<keyof T>> = IdentifierBrand<
 	{ fields: K; type: T },
 	'CompositeIdentifier'
 >;
 
 // You provide the value
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type CustomIdentifier<T, K extends keyof T> = CompositeIdentifier<
 	T,
 	[K]
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type Identifier<T> =
 	| ManagedIdentifier<T, any>
 	| OptionallyManagedIdentifier<T, any>
 	| CompositeIdentifier<T, any>
 	| CustomIdentifier<T, any>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type IdentifierFields<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = never
@@ -469,6 +723,11 @@ export type IdentifierFields<
 	: Extract<MetadataOrDefault<T, M>['identifier'], { field: any }>['field']) &
 	string;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type IdentifierFieldsForInit<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
@@ -486,8 +745,18 @@ export type IdentifierFieldsForInit<
 	: never;
 
 // Instance of model
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export declare const __modelMeta__: unique symbol;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PersistentModelMetaData<T> = {
 	identifier?: Identifier<T>;
 	readOnlyFields?: string;
@@ -497,6 +766,11 @@ export interface AsyncCollection<T> extends AsyncIterable<T> {
 	toArray(options?: { max?: number }): Promise<T[]>;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
 	? undefined extends InnerPromiseType
 		? InnerPromiseType | null
@@ -507,6 +781,11 @@ export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
 	? T | null
 	: T;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PredicateFieldType<T> = NonNullable<
 	Scalar<
 		T extends Promise<infer InnerPromiseType>
@@ -540,11 +819,21 @@ type PickOptionalFields<T> = Pick<
 	KeysOfSuperType<T, undefined> | OptionalRelativesOf<T>
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type DefaultPersistentModelMetaData = {
 	identifier: ManagedIdentifier<{ id: string }, 'id'>;
 	readOnlyFields: never;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type MetadataOrDefault<
 	T extends PersistentModel,
 	_ extends PersistentModelMetaData<T> = never
@@ -554,8 +843,18 @@ export type MetadataOrDefault<
 	? T[typeof __modelMeta__]
 	: DefaultPersistentModelMetaData;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PersistentModel = Readonly<Record<string, any>>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type MetadataReadOnlyFields<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
@@ -569,6 +868,11 @@ export type MetadataReadOnlyFields<
 // This type omits readOnlyFields in the constructor init object
 // This type requires some identifiers in the constructor init object (e.g. CustomIdentifier)
 // This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelInitBase<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
@@ -583,6 +887,11 @@ export type ModelInitBase<
 		? Partial<Pick<T, IdentifierFieldsForInit<T, M>>>
 		: Required<Pick<T, IdentifierFieldsForInit<T, M>>>);
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelInit<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
@@ -608,6 +917,11 @@ type DeepWritable<T> = {
 		: DeepWritable<T[P]>;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type MutableModel<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
@@ -618,12 +932,22 @@ export type MutableModel<
 > &
 	Readonly<Pick<T, IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>>>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelInstanceMetadata = {
 	_version: number;
 	_lastChangedAt: number;
 	_deleted: boolean;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type IdentifierFieldValue<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
@@ -633,11 +957,21 @@ export type IdentifierFieldValue<
 		: never
 	: T[Extract<MetadataOrDefault<T, M>['identifier'], { field: any }>['field']];
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
 > = Pick<T, IdentifierFields<T, M>> | IdentifierFieldValue<T, M>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isIdentifierObject<T extends PersistentModel>(
 	obj: any,
 	modelDefinition: SchemaModel
@@ -651,17 +985,32 @@ export function isIdentifierObject<T extends PersistentModel>(
 //#endregion
 
 //#region Subscription messages
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum OpType {
 	INSERT = 'INSERT',
 	UPDATE = 'UPDATE',
 	DELETE = 'DELETE',
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SubscriptionMessage<T extends PersistentModel> = Pick<
 	InternalSubscriptionMessage<T>,
 	'opType' | 'element' | 'model' | 'condition'
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type InternalSubscriptionMessage<T extends PersistentModel> = {
 	opType: OpType;
 	element: T;
@@ -670,6 +1019,11 @@ export type InternalSubscriptionMessage<T extends PersistentModel> = {
 	savedElement?: T;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type DataStoreSnapshot<T extends PersistentModel> = {
 	items: T[];
 	isSynced: boolean;
@@ -678,6 +1032,11 @@ export type DataStoreSnapshot<T extends PersistentModel> = {
 
 //#region Predicates
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PredicateExpression<
 	M extends PersistentModel,
 	FT
@@ -712,6 +1071,11 @@ type ArrayOperators<T> = {
 	contains: T;
 	notContains: T;
 };
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type AllOperators = NumberOperators<any> &
 	StringOperators<any> &
 	ArrayOperators<any>;
@@ -739,6 +1103,11 @@ type TypeName<T> = T extends string
 	? 'boolean[]'
 	: never;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PredicateGroups<T extends PersistentModel> = {
 	and: (
 		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
@@ -751,47 +1120,92 @@ export type PredicateGroups<T extends PersistentModel> = {
 	) => ModelPredicate<T>;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelPredicate<M extends PersistentModel> = {
 	[K in keyof M]-?: PredicateExpression<M, NonNullable<M[K]>>;
 } & PredicateGroups<M>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ProducerModelPredicate<M extends PersistentModel> = (
 	condition: ModelPredicate<M>
 ) => ModelPredicate<M>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PredicatesGroup<T extends PersistentModel> = {
 	type: keyof PredicateGroups<T>;
 	predicates: (PredicateObject<T> | PredicatesGroup<T>)[];
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isPredicateObj<T extends PersistentModel>(
 	obj: any
 ): obj is PredicateObject<T> {
 	return obj && (<PredicateObject<T>>obj).field !== undefined;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function isPredicateGroup<T extends PersistentModel>(
 	obj: any
 ): obj is PredicatesGroup<T> {
 	return obj && (<PredicatesGroup<T>>obj).type !== undefined;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PredicateObject<T extends PersistentModel> = {
 	field: keyof T;
 	operator: keyof AllOperators;
 	operand: any;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum QueryOne {
 	FIRST,
 	LAST,
 }
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type GraphQLField = {
 	[field: string]: {
 		[operator: string]: string | number | [number, number];
 	};
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type GraphQLCondition = Partial<
 	| GraphQLField
 	| {
@@ -801,6 +1215,11 @@ export type GraphQLCondition = Partial<
 	  }
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type GraphQLFilter = Partial<
 	| GraphQLField
 	| {
@@ -818,31 +1237,61 @@ export type GraphQLFilter = Partial<
 
 //#region Pagination
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ProducerPaginationInput<T extends PersistentModel> = {
 	sort?: ProducerSortPredicate<T>;
 	limit?: number;
 	page?: number;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ObserveQueryOptions<T extends PersistentModel> = Pick<
 	ProducerPaginationInput<T>,
 	'sort'
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PaginationInput<T extends PersistentModel> = {
 	sort?: SortPredicate<T>;
 	limit?: number;
 	page?: number;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ProducerSortPredicate<M extends PersistentModel> = (
 	condition: SortPredicate<M>
 ) => SortPredicate<M>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SortPredicate<T extends PersistentModel> = {
 	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SortPredicateExpression<
 	M extends PersistentModel,
 	FT
@@ -850,14 +1299,29 @@ export type SortPredicateExpression<
 	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
 	: never;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum SortDirection {
 	ASCENDING = 'ASCENDING',
 	DESCENDING = 'DESCENDING',
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SortPredicatesGroup<T extends PersistentModel> =
 	SortPredicateObject<T>[];
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SortPredicateObject<T extends PersistentModel> = {
 	field: keyof T;
 	sortDirection: keyof typeof SortDirection;
@@ -867,6 +1331,11 @@ export type SortPredicateObject<T extends PersistentModel> = {
 
 //#region System Components
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SystemComponent = {
 	setUp(
 		schema: InternalSchema,
@@ -880,10 +1349,20 @@ export type SystemComponent = {
 	): Promise<void>;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type NamespaceResolver = (
 	modelConstructor: PersistentModelConstructor<any>
 ) => string;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ControlMessageType<T> = {
 	type: T;
 	data?: any;
@@ -892,6 +1371,11 @@ export type ControlMessageType<T> = {
 //#endregion
 
 //#region Relationship types
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type RelationType = {
 	fieldName: string;
 	modelName: string;
@@ -905,8 +1389,18 @@ type IndexOptions = {
 	unique?: boolean;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type IndexesType = Array<[string, string[], IndexOptions?]>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type RelationshipType = {
 	[modelName: string]: {
 		indexes: IndexesType;
@@ -917,11 +1411,21 @@ export type RelationshipType = {
 //#endregion
 
 //#region Key type
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type KeyType = {
 	primaryKey?: string[];
 	compositeKeys?: Set<string>[];
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelKeys = {
 	[modelName: string]: KeyType;
 };
@@ -929,6 +1433,11 @@ export type ModelKeys = {
 //#endregion
 
 //#region DataStore config types
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type DataStoreConfig = {
 	DataStore?: {
 		authModeStrategyType?: AuthModeStrategyType;
@@ -952,31 +1461,61 @@ export type DataStoreConfig = {
 	storageAdapter?: Adapter;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type AuthProviders = {
 	functionAuthProvider: () => { token: string } | Promise<{ token: string }>;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum AuthModeStrategyType {
 	DEFAULT = 'DEFAULT',
 	MULTI_AUTH = 'MULTI_AUTH',
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type AuthModeStrategyReturn =
 	| GRAPHQL_AUTH_MODE
 	| GRAPHQL_AUTH_MODE[]
 	| undefined
 	| null;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type AuthModeStrategyParams = {
 	schema: InternalSchema;
 	modelName: string;
 	operation: ModelOperation;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type AuthModeStrategy = (
 	authModeStrategyParams: AuthModeStrategyParams
 ) => AuthModeStrategyReturn | Promise<AuthModeStrategyReturn>;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum ModelOperation {
 	CREATE = 'CREATE',
 	READ = 'READ',
@@ -984,6 +1523,11 @@ export enum ModelOperation {
 	DELETE = 'DELETE',
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelAuthModes = Record<
 	string,
 	{
@@ -991,6 +1535,11 @@ export type ModelAuthModes = Record<
 	}
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SyncExpression = Promise<{
 	modelConstructor: any;
 	conditionProducer: (c?: any) => any;
@@ -1028,6 +1577,11 @@ type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
 	...args: A
 ) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export async function syncExpression<
 	T extends PersistentModel,
 	A extends Option<T>
@@ -1044,6 +1598,11 @@ export async function syncExpression<
 	};
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SyncConflict = {
 	modelConstructor: PersistentModelConstructor<any>;
 	localModel: PersistentModel;
@@ -1052,6 +1611,11 @@ export type SyncConflict = {
 	attempts: number;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type SyncError<T extends PersistentModel> = {
 	message: string;
 	errorType: ErrorType;
@@ -1065,6 +1629,11 @@ export type SyncError<T extends PersistentModel> = {
 	cause?: Error;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ErrorType =
 	| 'ConfigError'
 	| 'BadModel'
@@ -1073,34 +1642,69 @@ export type ErrorType =
 	| 'Transient'
 	| 'Unknown';
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum ProcessName {
 	'sync' = 'sync',
 	'mutate' = 'mutate',
 	'subscribe' = 'subscribe',
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const DISCARD = Symbol('DISCARD');
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ConflictHandler = (
 	conflict: SyncConflict
 ) =>
 	| Promise<PersistentModel | typeof DISCARD>
 	| PersistentModel
 	| typeof DISCARD;
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ErrorHandler = (error: SyncError<PersistentModel>) => void;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type DeferredCallbackResolverOptions = {
 	callback: () => void;
 	maxInterval?: number;
 	errorHandler?: (error: string) => void;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum LimitTimerRaceResolvedValues {
 	LIMIT = 'LIMIT',
 	TIMER = 'TIMER',
 }
 //#endregion
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type AmplifyContext = {
 	Auth: typeof Auth;
 	InternalAPI: typeof InternalAPI;
@@ -1109,6 +1713,11 @@ export type AmplifyContext = {
 
 // #region V5 predicate types
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type MatchableTypes =
 	| string
 	| string[]
@@ -1117,12 +1726,27 @@ export type MatchableTypes =
 	| boolean
 	| boolean[];
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type AllFieldOperators = keyof AllOperators;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type NonNeverKeys<T> = {
 	[K in keyof T]: T[K] extends never ? never : K;
 }[keyof T];
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type WithoutNevers<T> = Pick<T, NonNeverKeys<T>>;
 
 /**
@@ -1147,23 +1771,46 @@ export type WithoutNevers<T> = Pick<T, NonNeverKeys<T>>;
  *   m.myModelField.ne('something')
  * ]))
  * ```
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export type RecursiveModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: RecursiveModelPredicate<RT>
 ) => PredicateInternalsKey;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type RecursiveModelPredicateAggregateExtender<
 	RT extends PersistentModel
 > = (lambda: RecursiveModelPredicate<RT>) => PredicateInternalsKey[];
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
 	predicates: RecursiveModelPredicateAggregateExtender<RT>
 ) => PredicateInternalsKey;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
 	predicate: RecursiveModelPredicateExtender<RT>
 ) => PredicateInternalsKey;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type RecursiveModelPredicate<RT extends PersistentModel> = {
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
 		? RecursiveModelPredicate<PredicateFieldType<RT[K]>>
@@ -1194,15 +1841,28 @@ export type RecursiveModelPredicate<RT extends PersistentModel> = {
  * 	m.field.eq('whatever else')
  * ]))
  * ```
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export type ModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: V5ModelPredicate<RT>
 ) => PredicateInternalsKey;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
 	lambda: V5ModelPredicate<RT>
 ) => PredicateInternalsKey[];
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ValuePredicate<
 	RT extends PersistentModel,
 	MT extends MatchableTypes
@@ -1215,6 +1875,11 @@ export type ValuePredicate<
 		: (operand: Scalar<MT>) => PredicateInternalsKey;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type V5ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
 		? never
@@ -1225,10 +1890,20 @@ export type V5ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	not: ModelPredicateNegation<RT>;
 } & PredicateInternalsKey;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelPredicateOperator<RT extends PersistentModel> = (
 	predicates: ModelPredicateAggregateExtender<RT>
 ) => PredicateInternalsKey;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ModelPredicateNegation<RT extends PersistentModel> = (
 	predicate: ModelPredicateExtender<RT>
 ) => PredicateInternalsKey;
@@ -1236,6 +1911,9 @@ export type ModelPredicateNegation<RT extends PersistentModel> = (
 /**
  * A pointer used by DataStore internally to lookup predicate details
  * that should not be exposed on public customer interfaces.
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export class PredicateInternalsKey {
 	private __isPredicateInternalsKeySentinel: boolean = true;

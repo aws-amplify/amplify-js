@@ -4,6 +4,11 @@ import { DelayFunction } from '../types';
 import { ConsoleLogger as Logger } from '../Logger/ConsoleLogger';
 const logger = new Logger('Util');
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export class NonRetryableError extends Error {
 	public readonly nonRetryable = true;
 	constructor(message: string) {
@@ -11,6 +16,11 @@ export class NonRetryableError extends Error {
 	}
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const isNonRetryableError = (obj: any): obj is NonRetryableError => {
 	const key: keyof NonRetryableError = 'nonRetryable';
 	return obj && obj[key];
@@ -19,6 +29,9 @@ export const isNonRetryableError = (obj: any): obj is NonRetryableError => {
 /**
  * @private
  * Internal use of Amplify only
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export async function retry<T>(
 	functionToRetry: (...args: any[]) => T,
@@ -95,6 +108,9 @@ const MAX_DELAY_MS = 5 * 60 * 1000;
 /**
  * @private
  * Internal use of Amplify only
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export function jitteredBackoff(
 	maxDelayMs: number = MAX_DELAY_MS
@@ -111,6 +127,9 @@ export function jitteredBackoff(
 /**
  * @private
  * Internal use of Amplify only
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export const jitteredExponentialRetry = <T>(
 	functionToRetry: (...args: any[]) => T,

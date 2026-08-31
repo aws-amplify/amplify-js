@@ -1,24 +1,54 @@
 declare module 'amazon-cognito-identity-js' {
 	//import * as AWS from "aws-sdk";
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export type NodeCallback<E, T> = (err?: E, result?: T) => void;
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export type UpdateAttributesNodeCallback<E, T, K> = (
 		err?: E,
 		result?: T,
 		details?: K
 	) => void;
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export namespace NodeCallback {
 		export type Any = NodeCallback<Error | undefined, any>;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface CodeDeliveryDetails {
 		AttributeName: string;
 		DeliveryMedium: string;
 		Destination: string;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export type ClientMetadata = { [key: string]: string } | undefined;
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface IAuthenticationCallback {
 		onSuccess: (
 			session: CognitoUserSession,
@@ -45,10 +75,20 @@ declare module 'amazon-cognito-identity-js' {
 		) => void;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface IMfaSettings {
 		PreferredMfa: boolean;
 		Enabled: boolean;
 	}
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface IAuthenticationDetailsData {
 		Username: string;
 		Password?: string;
@@ -56,6 +96,11 @@ declare module 'amazon-cognito-identity-js' {
 		ClientMetadata?: ClientMetadata;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class AuthenticationDetails {
 		constructor(data: IAuthenticationDetailsData);
 
@@ -64,6 +109,11 @@ declare module 'amazon-cognito-identity-js' {
 		public getValidationData(): any[];
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface ICognitoStorage {
 		setItem(key: string, value: string): void;
 		getItem(key: string): string | null;
@@ -71,16 +121,31 @@ declare module 'amazon-cognito-identity-js' {
 		clear(): void;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface ICognitoUserData {
 		Username: string;
 		Pool: CognitoUserPool;
 		Storage?: ICognitoStorage;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface GetSessionOptions {
 		clientMetadata: Record<string, string>;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export type ChallengeName =
 		| 'CUSTOM_CHALLENGE'
 		| 'MFA_SETUP'
@@ -89,6 +154,11 @@ declare module 'amazon-cognito-identity-js' {
 		| 'SMS_MFA'
 		| 'SOFTWARE_TOKEN_MFA';
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class CognitoUser {
 		constructor(data: ICognitoUserData);
 
@@ -284,11 +354,21 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface MFAOption {
 		DeliveryMedium: 'SMS' | 'EMAIL';
 		AttributeName: string;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface UserData {
 		MFAOptions: MFAOption[];
 		PreferredMfaSetting: string;
@@ -297,11 +377,21 @@ declare module 'amazon-cognito-identity-js' {
 		Username: string;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface ICognitoUserAttributeData {
 		Name: string;
 		Value: string;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class CognitoUserAttribute implements ICognitoUserAttributeData {
 		constructor(data: ICognitoUserAttributeData);
 
@@ -316,6 +406,11 @@ declare module 'amazon-cognito-identity-js' {
 		public toJSON(): Object;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface ISignUpResult {
 		user: CognitoUser;
 		userConfirmed: boolean;
@@ -323,6 +418,11 @@ declare module 'amazon-cognito-identity-js' {
 		codeDeliveryDetails: CodeDeliveryDetails;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface ICognitoUserPoolData {
 		UserPoolId: string;
 		ClientId: string;
@@ -331,6 +431,11 @@ declare module 'amazon-cognito-identity-js' {
 		AdvancedSecurityDataCollectionFlag?: boolean;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class CognitoUserPool {
 		constructor(
 			data: ICognitoUserPoolData,
@@ -355,12 +460,22 @@ declare module 'amazon-cognito-identity-js' {
 		public getCurrentUser(): CognitoUser | null;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface ICognitoUserSessionData {
 		IdToken: CognitoIdToken;
 		AccessToken: CognitoAccessToken;
 		RefreshToken?: CognitoRefreshToken;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class CognitoUserSession {
 		constructor(data: ICognitoUserSessionData);
 
@@ -374,6 +489,11 @@ declare module 'amazon-cognito-identity-js' {
         public config: AWS.CognitoIdentityServiceProvider.Types.ClientConfiguration;
     }
     */
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class CognitoAccessToken {
 		payload: { [key: string]: any };
 
@@ -385,6 +505,11 @@ declare module 'amazon-cognito-identity-js' {
 		public decodePayload(): { [id: string]: any };
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class CognitoIdToken {
 		payload: { [key: string]: any };
 
@@ -396,12 +521,22 @@ declare module 'amazon-cognito-identity-js' {
 		public decodePayload(): { [id: string]: any };
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class CognitoRefreshToken {
 		constructor({ RefreshToken }: { RefreshToken: string });
 
 		public getToken(): string;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export interface ICookieStorageData {
 		domain?: string;
 		path?: string;
@@ -409,6 +544,11 @@ declare module 'amazon-cognito-identity-js' {
 		secure?: boolean;
 		sameSite?: 'strict' | 'lax' | 'none';
 	}
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class CookieStorage implements ICognitoStorage {
 		constructor(data?: ICookieStorageData);
 		setItem(key: string, value: string): void;
@@ -417,12 +557,27 @@ declare module 'amazon-cognito-identity-js' {
 		clear(): void;
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class UserAgent {
 		constructor();
 	}
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export const appendToCognitoUserAgent: (content: string) => void;
 
+	/**
+	 * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+	 * See the migration guide:
+	 * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+	 */
 	export class WordArray {
 		constructor(words?: string[], sigBytes?: number);
 		random(nBytes: number): WordArray;

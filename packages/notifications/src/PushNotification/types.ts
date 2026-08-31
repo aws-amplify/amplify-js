@@ -55,6 +55,11 @@ export interface PushNotificationConfig {
 	AWSPinpoint?: AWSPinpointProviderConfig;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface PushNotificationMessage {
 	title?: string;
 	body?: string;
@@ -77,6 +82,11 @@ interface ApnsPlatformOptions {
 	subtitle?: string;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface PushNotificationPermissions
 	extends Partial<Record<string, boolean>> {
 	alert?: boolean;
@@ -84,6 +94,11 @@ export interface PushNotificationPermissions
 	sound?: boolean;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum PushNotificationPermissionStatus {
 	DENIED = 'DENIED',
 	GRANTED = 'GRANTED',

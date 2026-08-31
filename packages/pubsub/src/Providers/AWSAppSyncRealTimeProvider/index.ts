@@ -77,6 +77,11 @@ const base64urlEncode = (str: string): string => {
 	return base64UrlStr;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ObserverQuery = {
 	observer: PubSubContentObserver;
 	query: string;
@@ -112,6 +117,11 @@ type ParsedMessagePayload = {
 	};
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
 	appSyncGraphqlEndpoint?: string;
 	authenticationType?: GraphqlAuthModes;
@@ -130,6 +140,11 @@ type AWSAppSyncRealTimeAuthInput =
 		host?: string | undefined;
 	};
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyncRealTimeProviderOptions> {
 	private awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
