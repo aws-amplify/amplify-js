@@ -38,4 +38,17 @@ describe('AWSIoT constructor context guard (F3.1)', () => {
 			() => new AWSIoT(makeBrandedContext(), { region: 'us-east-1' }),
 		).not.toThrow();
 	});
+
+	it('forwards options passed via the (undefined ctx, options) overload instead of discarding them', () => {
+		// Subclass to expose the protected `options` accessor for assertion
+		// without resorting to unsafe casts.
+		class ProbeAWSIoT extends AWSIoT {
+			get exposedOptions() {
+				return this.options;
+			}
+		}
+
+		const instance = new ProbeAWSIoT(undefined, { region: 'us-west-2' });
+		expect(instance.exposedOptions.region).toBe('us-west-2');
+	});
 });

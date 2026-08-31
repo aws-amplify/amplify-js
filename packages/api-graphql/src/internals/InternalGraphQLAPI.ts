@@ -16,6 +16,7 @@ import {
 import {
 	AmplifyUrl,
 	CustomUserAgentDetails,
+	InvalidAmplifyContextError,
 	bridgeAmplifyClass,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
@@ -185,7 +186,7 @@ export class InternalGraphQLAPIClass {
 				// not supported for subscriptions, so reject it explicitly rather than
 				// casting it into the context union.
 				if (!isAmplifyInstance(amplify)) {
-					throw new Error(
+					throw new InvalidAmplifyContextError(
 						'Subscriptions do not support the server context callback form.',
 					);
 				}

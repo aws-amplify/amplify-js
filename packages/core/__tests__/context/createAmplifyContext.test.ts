@@ -7,6 +7,7 @@ import {
 	createAmplifyContext,
 	isAmplifyContext,
 } from '../../src';
+import * as parseAmplifyConfigModule from '../../src/utils/parseAmplifyConfig';
 
 // Real, typed resource configuration (no mocking of Amplify.getConfig or
 // internals — only the injected Auth providers, which are legitimate inputs,
@@ -140,6 +141,33 @@ describe('createAmplifyContext', () => {
 			const ctx1 = createAmplifyContext(resourcesConfig);
 			const ctx2 = createAmplifyContext(resourcesConfig);
 			expect(ctx1).not.toBe(ctx2);
+		});
+	});
+
+	describe('skipConfigParse (internal single-parse option)', () => {
+		afterEach(() => {
+			jest.restoreAllMocks();
+		});
+
+		it('parses the config by default (parseAmplifyConfig is invoked)', () => {
+			const spy = jest.spyOn(parseAmplifyConfigModule, 'parseAmplifyConfig');
+			createAmplifyContext(resourcesConfig);
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+
+		it('does not re-parse when skipConfigParse is set (trusts a pre-parsed ResourcesConfig)', () => {
+			const spy = jest.spyOn(parseAmplifyConfigModule, 'parseAmplifyConfig');
+			const ctx = createAmplifyContext(resourcesConfig, undefined, {
+				skipConfigParse: true,
+			});
+
+			// The redundant parse is skipped, yet the resulting context is
+			// identical to the parsed path (the input was already normalized).
+			expect(spy).not.toHaveBeenCalled();
+			expect(isAmplifyContext(ctx)).toBe(true);
+			expect(ctx.resourcesConfig.Auth?.Cognito?.userPoolId).toBe(
+				'us-east-1_test',
+			);
 		});
 	});
 });

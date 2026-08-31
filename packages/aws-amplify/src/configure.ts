@@ -70,9 +70,16 @@ export function createAmplifyContext(
 	);
 
 	// Delegate to core for branding + freezing + the per-context AuthClass.
+	// We already parsed `resourceConfig` above (the parsed shape is required by
+	// `resolveLocalLibraryOptions` to inject default Cognito providers), so tell
+	// core to skip re-parsing. This removes a redundant `parseAmplifyConfig` call
+	// on every context creation — and two per SSR request via adapter-nextjs —
+	// without changing behavior, because `parseAmplifyConfig` is a no-op on an
+	// already-normalized `ResourcesConfig`.
 	return createCoreAmplifyContext(
 		resolvedResourceConfig,
 		resolvedLibraryOptions,
+		{ skipConfigParse: true },
 	);
 }
 

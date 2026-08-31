@@ -23,7 +23,7 @@ export class AWSIoT extends MqttOverWS {
 	private readonly _explicitCtx: AmplifyContext | undefined;
 
 	constructor(options?: AWSIoTOptions);
-	constructor(ctx: AmplifyContext, options?: AWSIoTOptions);
+	constructor(ctx: AmplifyContext | undefined, options?: AWSIoTOptions);
 	constructor(
 		ctxOrOptions?: AmplifyContext | AWSIoTOptions,
 		maybeOptions?: AWSIoTOptions,
@@ -40,7 +40,11 @@ export class AWSIoT extends MqttOverWS {
 			if (maybeOptions !== undefined) {
 				assertOptionalCtxArg(ctxOrOptions);
 			}
-			super(ctxOrOptions ?? {});
+			// `ctxOrOptions` reaching this branch is either the single-argument
+			// options object or `undefined`. In the `(undefined, options)` form the
+			// caller omitted the context but still supplied options in the second
+			// slot, so fall back to `maybeOptions` rather than discarding it.
+			super(ctxOrOptions ?? maybeOptions ?? {});
 		}
 	}
 

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AMPLIFY_CONTEXT_BRAND, AmplifyContext } from '@aws-amplify/core';
+import { InvalidAmplifyContextError } from '@aws-amplify/core/internals/utils';
 
 import { InternalGraphQLAPIClass } from '../../src/internals/InternalGraphQLAPI';
 
@@ -30,6 +31,11 @@ describe('InternalGraphQLAPI subscription context guard (F3.2)', () => {
 		expect(() =>
 			api.graphql(callbackForm, { query: SUBSCRIPTION_QUERY }),
 		).toThrow('Subscriptions do not support the server context callback form');
+		// The guard uses the typed error family (InvalidAmplifyContextError)
+		// rather than a bare Error, so callers can catch it by type.
+		expect(() =>
+			api.graphql(callbackForm, { query: SUBSCRIPTION_QUERY }),
+		).toThrow(InvalidAmplifyContextError);
 	});
 
 	it('routes a branded AmplifyContext through the checked ensureContext path', () => {

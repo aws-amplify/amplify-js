@@ -44,6 +44,12 @@ import { AMPLIFY_CONTEXT_BRAND } from './contextBrand';
  *   legacy `aws-exports`, or `amplify_outputs`).
  * @param libraryOptions - Optional library options (e.g. Auth token/credentials
  *   providers, `ssr`).
+ * @param internalOptions - Internal-only options. `skipConfigParse` lets a
+ *   trusted caller (the `aws-amplify` wrapper) that has *already* normalized the
+ *   config via `parseAmplifyConfig` opt out of a redundant re-parse. Since
+ *   `parseAmplifyConfig` is a no-op on an already-parsed `ResourcesConfig`, this
+ *   only removes duplicate work (which otherwise runs on every context creation,
+ *   and twice per SSR request through adapter-nextjs) — behavior is identical.
  * @returns A branded, frozen {@link AmplifyContext}.
  *
  * @example
@@ -60,8 +66,17 @@ import { AMPLIFY_CONTEXT_BRAND } from './contextBrand';
 export function createAmplifyContext(
 	resourceConfig: ResourcesConfig | LegacyConfig | AmplifyOutputsUnknown,
 	libraryOptions?: LibraryOptions,
+	internalOptions?: {
+		/** @internal Skip re-parsing an already-normalized `ResourcesConfig`. */
+		skipConfigParse?: boolean;
+	},
 ): AmplifyContext {
-	const resolvedResourceConfig = parseAmplifyConfig(resourceConfig);
+	// `parseAmplifyConfig` returns an already-parsed `ResourcesConfig` unchanged,
+	// so skipping it when the caller has pre-parsed keeps behavior identical while
+	// avoiding a redundant parse.
+	const resolvedResourceConfig = internalOptions?.skipConfigParse
+		? (resourceConfig as ResourcesConfig)
+		: parseAmplifyConfig(resourceConfig);
 	const resolvedLibraryOptions: LibraryOptions = libraryOptions ?? {};
 
 	// Fresh, per-context Auth instance (not the global singleton) so that
