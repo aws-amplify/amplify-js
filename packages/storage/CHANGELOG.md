@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.9.23...@aws-amplify/storage@5.9.24) (2026-09-01)
+
+### Bug Fixes
+
+- mark v5 public APIs as deprecated for maintenance mode ([#14929](https://github.com/aws-amplify/amplify-js/issues/14929)) ([471d55a](https://github.com/aws-amplify/amplify-js/commit/471d55a07a965f3ef9287ba511954d84e51c9714))
+
 ## [5.9.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.9.22...@aws-amplify/storage@5.9.23) (2026-07-04)
 
 **Note:** Version bump only for package @aws-amplify/storage

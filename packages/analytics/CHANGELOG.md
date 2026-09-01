@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.5.20...@aws-amplify/analytics@6.5.21) (2026-09-01)
+
+### Bug Fixes
+
+- mark v5 public APIs as deprecated for maintenance mode ([#14929](https://github.com/aws-amplify/amplify-js/issues/14929)) ([471d55a](https://github.com/aws-amplify/amplify-js/commit/471d55a07a965f3ef9287ba511954d84e51c9714))
+
 ## [6.5.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.5.19...@aws-amplify/analytics@6.5.20) (2026-07-04)
 
 ### Bug Fixes

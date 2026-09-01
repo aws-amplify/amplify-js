@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.1.16...@aws-amplify/rtn-push-notification@1.1.17) (2026-09-01)
+
+### Bug Fixes
+
+- mark v5 public APIs as deprecated for maintenance mode ([#14929](https://github.com/aws-amplify/amplify-js/issues/14929)) ([471d55a](https://github.com/aws-amplify/amplify-js/commit/471d55a07a965f3ef9287ba511954d84e51c9714))
+
 ## [1.1.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.1.15...@aws-amplify/rtn-push-notification@1.1.16) (2026-06-15)
 
 ### Bug Fixes
