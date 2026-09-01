@@ -34,6 +34,7 @@ const mockAuthTokenStore = {
 	clearActiveUser: jest.fn(),
 	clearTokensForUser: jest.fn(),
 	getStoredIdToken: jest.fn(),
+	reassertActiveUserPointer: jest.fn(),
 };
 const mockTokenRefresher = jest.fn();
 const validAuthConfig: ResourcesConfig = {

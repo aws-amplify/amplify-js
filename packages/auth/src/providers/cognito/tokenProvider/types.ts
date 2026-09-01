@@ -47,6 +47,7 @@ export interface AuthTokenStore {
 	addActiveSession(username: string): Promise<void>;
 	removeSession(username: string): Promise<{ isEmpty: boolean }>;
 	clearActiveUser(): Promise<void>;
+	reassertActiveUserPointer(username: string): Promise<void>;
 	loadTokens(): Promise<CognitoAuthTokens | null>;
 	storeTokens(tokens: CognitoAuthTokens): Promise<void>;
 	clearTokens(): Promise<void>;
@@ -54,7 +55,7 @@ export interface AuthTokenStore {
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
 	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null>;
 	clearDeviceMetadata(username?: string): Promise<void>;
-	setOAuthMetadata(metadata: OAuthMetadata): Promise<void>;
+	setOAuthMetadata(metadata: OAuthMetadata, username?: string): Promise<void>;
 	getOAuthMetadata(): Promise<OAuthMetadata | null>;
 }
 
@@ -70,7 +71,7 @@ export interface AuthTokenOrchestrator {
 	clearTokens(): Promise<void>;
 	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null>;
 	clearDeviceMetadata(username?: string): Promise<void>;
-	setOAuthMetadata(metadata: OAuthMetadata): Promise<void>;
+	setOAuthMetadata(metadata: OAuthMetadata, username?: string): Promise<void>;
 	getOAuthMetadata(): Promise<OAuthMetadata | null>;
 }
 

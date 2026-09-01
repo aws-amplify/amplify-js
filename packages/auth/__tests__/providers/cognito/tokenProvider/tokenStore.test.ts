@@ -357,6 +357,23 @@ describe('TokenStore', () => {
 				JSON.stringify(mockMetadata),
 			);
 		});
+
+		it('namespaces metadata under an explicitly passed username, not the active pointer', async () => {
+			const setItemSpy = jest
+				.spyOn(keyValStorage, 'setItem')
+				.mockResolvedValue(undefined);
+			const mockMetadata = { oauthSignIn: true };
+
+			// The OAuth flow persists metadata BEFORE the pointer advances, so it
+			// passes the signed-in username explicitly; the key must use it (not the
+			// stale LastAuthUser) so a cookie-sharing subdomain can read it later.
+			await tokenStore.setOAuthMetadata(mockMetadata, 'oauthUser');
+
+			expect(setItemSpy).toHaveBeenCalledWith(
+				`${authIDP}.${userPoolClientId}.oauthUser.oauthMetadata`,
+				JSON.stringify(mockMetadata),
+			);
+		});
 	});
 
 	describe('getOAuthMetadata', () => {
@@ -719,6 +736,49 @@ describe('TokenStore', () => {
 				expect(store[lastAuthUserKey]).toBeUndefined();
 				// parked sessions survive.
 				expect(store[authUserListKey]).toBe('alice,bob');
+			});
+		});
+
+		describe('reassertActiveUserPointer', () => {
+			it('re-writes the pointer key for the active user without touching the roster', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'alice';
+				mockKeyValueStorage.setItem.mockClear();
+
+				await tokenStore.reassertActiveUserPointer('alice');
+
+				// pointer re-written (drives SSR cookie migration to path '/')...
+				expect(mockKeyValueStorage.setItem).toHaveBeenCalledWith(
+					lastAuthUserKey,
+					'alice',
+				);
+				expect(store[lastAuthUserKey]).toBe('alice');
+				// ...and the roster is never re-written (no reorder on refresh).
+				expect(mockKeyValueStorage.setItem).not.toHaveBeenCalledWith(
+					authUserListKey,
+					expect.anything(),
+				);
+				expect(store[authUserListKey]).toBe('alice,bob');
+			});
+
+			it('is a no-op for a non-active (parked) user, never promoting it', async () => {
+				store[authUserListKey] = 'alice,bob';
+				store[lastAuthUserKey] = 'alice';
+				mockKeyValueStorage.setItem.mockClear();
+
+				await tokenStore.reassertActiveUserPointer('bob');
+
+				expect(mockKeyValueStorage.setItem).not.toHaveBeenCalled();
+				expect(store[lastAuthUserKey]).toBe('alice');
+			});
+
+			it('is a no-op when there is no active pointer (sentinel)', async () => {
+				store[lastAuthUserKey] = 'username';
+				mockKeyValueStorage.setItem.mockClear();
+
+				await tokenStore.reassertActiveUserPointer('username');
+
+				expect(mockKeyValueStorage.setItem).not.toHaveBeenCalled();
 			});
 		});
 

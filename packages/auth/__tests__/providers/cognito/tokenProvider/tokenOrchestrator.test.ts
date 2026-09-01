@@ -44,6 +44,7 @@ describe('tokenOrchestrator', () => {
 		clearActiveUser: jest.fn(),
 		clearTokensForUser: jest.fn(),
 		getStoredIdToken: jest.fn(),
+		reassertActiveUserPointer: jest.fn(),
 	};
 
 	beforeAll(() => {
@@ -102,6 +103,14 @@ describe('tokenOrchestrator', () => {
 			);
 			// async #2
 			expect(mockTokenStore.storeTokens).toHaveBeenCalledWith(mockTokens);
+
+			// storeTokens no longer writes the LastAuthUser pointer, so the refresh
+			// path must re-assert it for the active user; this drives SSR cookie
+			// migration to re-set the pointer cookie at path '/' (regression:
+			// stale path-scoped LastAuthUser cookie survived a server-side refresh).
+			expect(mockTokenStore.reassertActiveUserPointer).toHaveBeenCalledWith(
+				testUsername,
+			);
 
 			// ensure the result is correct
 			expect(newTokens).toEqual(mockTokens);

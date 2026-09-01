@@ -533,6 +533,36 @@ export class DefaultTokenStore implements AuthTokenStore {
 		await this.getKeyValueStorage().removeItem(this.getLastAuthUserKey());
 	}
 
+	/**
+	 * Re-writes the active-user pointer (LastAuthUser) cookie to the CURRENT
+	 * active user, leaving the roster (AuthUserList) and its order untouched.
+	 *
+	 * The token-refresh path calls this after persisting refreshed tokens. SSR
+	 * cookie migration re-sets every WRITTEN key at path '/' (deleting stale
+	 * path-scoped duplicates), but storeTokens no longer writes the pointer
+	 * (single-writer discipline moved it to the roster methods). Without this
+	 * re-assert, a server-side forced refresh would migrate every token cookie
+	 * EXCEPT LastAuthUser, leaving a stale path-scoped LastAuthUser duplicate
+	 * (the remove-path-cookies regression). This restores the pre-multi-session
+	 * behavior where storeTokens re-wrote LastAuthUser on every refresh.
+	 *
+	 * The write is value-idempotent (guarded to the already-active user) and
+	 * deliberately does NOT go through persistAuthUserList: a refresh must never
+	 * reorder the roster nor promote a parked (non-active) session, so this is a
+	 * no-op when `username` is not the current active pointer.
+	 *
+	 * @param username - The user whose tokens were just refreshed.
+	 */
+	async reassertActiveUserPointer(username: string): Promise<void> {
+		if ((await this.getActiveUsername()) !== username) {
+			return;
+		}
+		await this.getKeyValueStorage().setItem(
+			this.getLastAuthUserKey(),
+			username,
+		);
+	}
+
 	async getLastAuthUser(): Promise<string> {
 		// Read the pointer DIRECTLY; return the legacy 'username' sentinel when the
 		// pointer is empty/absent EVEN IF the roster still holds parked sessions.
@@ -540,8 +570,20 @@ export class DefaultTokenStore implements AuthTokenStore {
 		return (await this.getActiveUsername()) ?? 'username';
 	}
 
-	async setOAuthMetadata(metadata: OAuthMetadata): Promise<void> {
-		const { oauthMetadata: oauthMetadataKey } = await this.getAuthKeys();
+	async setOAuthMetadata(
+		metadata: OAuthMetadata,
+		username?: string,
+	): Promise<void> {
+		// Namespace under the token owner (`username`), NOT the active pointer.
+		// The OAuth sign-in flow persists metadata BEFORE addActiveSession moves
+		// the pointer, so a no-arg getAuthKeys() would write under the stale/
+		// sentinel pointer namespace; the metadata would then be unreachable via
+		// getOAuthMetadata (which reads under the now-advanced pointer), and a
+		// second subdomain sharing cookie storage — which has no local
+		// isOAuthSignIn flag — could not detect the OAuth session on sign-out.
+		// Mirrors storeTokens' username-scoped keying (per HLD §4.3).
+		const { oauthMetadata: oauthMetadataKey } =
+			await this.getAuthKeys(username);
 		await this.getKeyValueStorage().setItem(
 			oauthMetadataKey,
 			JSON.stringify(metadata),

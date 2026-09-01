@@ -205,6 +205,15 @@ describe('completeOAuthFlow', () => {
 			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
 			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
 
+			// OAuth metadata must be namespaced under the signed-in user (resolved
+			// from the token claims), NOT the still-stale active pointer — otherwise
+			// a second cookie-sharing subdomain cannot detect the OAuth session on
+			// sign-out (regression: hosted-UI logout never called).
+			expect(tokenOrchestrator.setOAuthMetadata).toHaveBeenCalledWith(
+				{ oauthSignIn: true },
+				'testuser',
+			);
+
 			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
 
 			expect(mockReplaceState).toHaveBeenCalledWith(
