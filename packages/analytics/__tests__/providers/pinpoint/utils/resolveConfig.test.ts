@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { resolveConfig } from '../../../../src/providers/pinpoint/utils';
-import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
 	const pinpointConfig = {

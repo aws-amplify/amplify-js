@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+import {
+	createMockAmplifyContext,
+	withTokens,
+} from '@aws-amplify/core/internals/testing';
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
@@ -9,7 +13,6 @@ import { VerifySoftwareTokenException } from '../../../src/providers/cognito/typ
 import { verifyTOTPSetup } from '../../../src/providers/cognito';
 import { createVerifySoftwareTokenClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 
@@ -42,9 +45,7 @@ describe('verifyTOTPSetup', () => {
 	);
 
 	beforeAll(() => {
-		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(mockCtx, decodeJWT(mockAccessToken));
 	});
 
 	beforeEach(() => {
@@ -56,7 +57,7 @@ describe('verifyTOTPSetup', () => {
 
 	afterEach(() => {
 		mockVerifySoftwareToken.mockReset();
-		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
+		mockCtx.fetchAuthSession.mockClear();
 		mockCreateVerifySoftwareTokenClient.mockClear();
 	});
 
@@ -88,9 +89,7 @@ describe('verifyTOTPSetup', () => {
 				},
 			},
 		});
-		(customCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(customCtx, decodeJWT(mockAccessToken));
 
 		await verifyTOTPSetup(customCtx, {
 			code,

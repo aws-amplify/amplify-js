@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { del, get, head, patch, post, put } from '../src/server';
 import {
 	del as commonDel,
@@ -10,8 +12,6 @@ import {
 	post as commonPost,
 	put as commonPut,
 } from '../src/apis/common/publicApis';
-
-import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 jest.mock('../src/apis/common/publicApis');
 

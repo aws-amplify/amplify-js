@@ -20,7 +20,7 @@ import {
 	TranslateTextInput,
 } from '../../src/types';
 
-import { createMockAmplifyContext } from '../testUtils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
 const resetTranslateMock = () => {
@@ -404,11 +404,12 @@ describe('Predictions convert provider test', () => {
 
 			await predictionsProvider.convert(validTextToSpeechInput);
 
-			// pollyClient is a private property
-			// Used this strategy to easily check that the customUserAgent is set correctly on the client
-			expect(
-				(predictionsProvider as any).pollyClient.config.customUserAgent,
-			).toEqual(
+			// Assert via the client instance captured by the mocked `send`
+			// (`config` is public SDK client API) instead of peeking the
+			// provider's private client field.
+			const pollyClient = (PollyClient.prototype.send as jest.Mock).mock
+				.contexts[0] as PollyClient;
+			expect(pollyClient.config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
@@ -426,11 +427,12 @@ describe('Predictions convert provider test', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
 
 			await predictionsProvider.convert(validTranslateTextInput);
-			// translateClient is a private property
-			// Used this strategy to easily check that the customUserAgent is set correctly on the client
-			expect(
-				(predictionsProvider as any).translateClient.config.customUserAgent,
-			).toEqual(
+			// Assert via the client instance captured by the mocked `send`
+			// (`config` is public SDK client API) instead of peeking the
+			// provider's private client field.
+			const translateClient = (TranslateClient.prototype.send as jest.Mock)
+				.mock.contexts[0] as TranslateClient;
+			expect(translateClient.config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,

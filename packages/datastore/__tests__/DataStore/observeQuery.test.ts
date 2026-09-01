@@ -18,6 +18,8 @@ import {
 	Metadata,
 	Model,
 	BasicModelRequiredTS,
+	createTestCtx,
+	injectNoOpInternalAPI,
 	getDataStore,
 	configureSync,
 	unconfigureSync,
@@ -122,36 +124,12 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		// Establish one so that InternalAPI.graphql() → getGlobalContext() succeeds
 		// when the sync engine starts subscriptions.
 		const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-		const testCtx = {
-			resourcesConfig: {
-				API: {
-					GraphQL: {
-						endpoint: 'https://0.0.0.0/graphql',
-						region: 'us-west-2',
-						defaultAuthMode: 'apiKey' as const,
-						apiKey: 'da2-fakeApiId123456',
-					},
-				},
-			},
-			libraryOptions: {},
-			fetchAuthSession: () => Promise.resolve({}),
-			clearCredentials: () => Promise.resolve(),
-			getTokens: () => Promise.resolve(undefined),
-		};
-		Object.defineProperty(testCtx, Symbol.for('amplify.context'), {
-			value: true,
-			enumerable: false,
-		});
-		setGlobalContext(testCtx);
+		setGlobalContext(createTestCtx());
 
 		// Prevent the subscription processor from making real network requests
 		// (which hang in the test environment). Inject a fake InternalAPI that
 		// returns empty observables for subscriptions.
-		const { NEVER } = require('rxjs');
-		(DataStore as any).amplifyContext.InternalAPI = {
-			graphql: () => NEVER,
-			getGraphqlOperationType: () => 'subscription',
-		};
+		injectNoOpInternalAPI(DataStore);
 
 		jest.useFakeTimers();
 		await configureSync(DataStore);

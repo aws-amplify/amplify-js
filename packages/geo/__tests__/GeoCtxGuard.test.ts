@@ -1,10 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { InvalidAmplifyContextError } from '@aws-amplify/core/internals/utils';
 
 import { GeoClass } from '../src/Geo';
-
-import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 describe('GeoClass constructor context guard (F3.1)', () => {
 	it('throws InvalidAmplifyContextError when a defined-but-unbranded object is passed', () => {

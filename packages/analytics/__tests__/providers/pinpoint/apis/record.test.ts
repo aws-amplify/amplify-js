@@ -1,3 +1,4 @@
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
 import {
@@ -16,7 +17,6 @@ import {
 	getAnalyticsUserAgentString,
 	isAnalyticsEnabled,
 } from '../../../../src/utils';
-import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 import {
 	appId,

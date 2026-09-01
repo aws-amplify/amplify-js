@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { ConsoleLogger } from '@aws-amplify/core';
 import {
 	clearGlobalContext,
@@ -17,7 +18,6 @@ import {
 	mockKinesisConfig,
 } from '../../../testUtils/mockConstants';
 import { flushEvents } from '../../../../src/providers/kinesis-firehose/apis';
-import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis-firehose/utils');

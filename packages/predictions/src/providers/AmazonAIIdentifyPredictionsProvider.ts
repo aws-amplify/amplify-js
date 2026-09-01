@@ -3,12 +3,12 @@
 import {
 	AmplifyContext,
 	ConsoleLogger,
-	getGlobalContext,
 	isAmplifyContext,
 } from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
+	createCtxResolver,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
 import { getUrl } from '@aws-amplify/storage';
@@ -70,22 +70,14 @@ const logger = new ConsoleLogger('AmazonAIIdentifyPredictionsProvider');
 export class AmazonAIIdentifyPredictionsProvider {
 	private rekognitionClient?: RekognitionClient;
 	private textractClient?: TextractClient;
-	private _explicitCtx: AmplifyContext | undefined;
-
 	/**
-	 * Resolve the AmplifyContext for this provider.
+	 * Resolve the AmplifyContext for this provider (fresh per operation).
 	 * - If an explicit ctx was passed at construction, it is pinned (fixed context by design).
 	 * - Otherwise, the global context is resolved fresh per access so that reconfiguration
 	 *   (setGlobalContext with a new AmplifyContext) is honored across operations.
 	 * @private
 	 */
-	private get _ctx(): AmplifyContext {
-		if (this._explicitCtx) {
-			return this._explicitCtx;
-		}
-
-		return getGlobalContext();
-	}
+	private readonly _resolveCtx: () => AmplifyContext;
 
 	/**
 	 * @param ctx - The AmplifyContext to use for auth and config.
@@ -93,9 +85,9 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 *   When omitted, the provider resolves the global context lazily per operation.
 	 */
 	constructor(ctx?: AmplifyContext) {
-		if (isAmplifyContext(ctx)) {
-			this._explicitCtx = ctx;
-		}
+		this._resolveCtx = createCtxResolver(
+			isAmplifyContext(ctx) ? ctx : undefined,
+		);
 	}
 
 	getProviderName() {
@@ -142,7 +134,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 					targetIdentityId: source.identityId,
 				};
 
-				getUrl(this._ctx, { key: source.key, options: storageConfig })
+				getUrl(this._resolveCtx(), { key: source.key, options: storageConfig })
 					.then(value => {
 						const parser =
 							/https:\/\/([a-zA-Z0-9%\-_.]+)\.s3\.[A-Za-z0-9%\-._~]+\/([a-zA-Z0-9%\-._~/]+)\?/;
@@ -198,14 +190,14 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyText(
 		input: IdentifyTextInput,
 	): Promise<IdentifyTextOutput> {
-		const { credentials } = await this._ctx.fetchAuthSession();
+		const { credentials } = await this._resolveCtx().fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyText = {} } =
-			this._ctx.resourcesConfig.Predictions?.identify ?? {};
+			this._resolveCtx().resourcesConfig.Predictions?.identify ?? {};
 		const { region = '', defaults = {} } = identifyText;
 		const { format: configFormat = 'PLAIN' } = defaults;
 
@@ -290,14 +282,14 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyLabels(
 		input: IdentifyLabelsInput,
 	): Promise<IdentifyLabelsOutput> {
-		const { credentials } = await this._ctx.fetchAuthSession();
+		const { credentials } = await this._resolveCtx().fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyLabels = {} } =
-			this._ctx.resourcesConfig.Predictions?.identify ?? {};
+			this._resolveCtx().resourcesConfig.Predictions?.identify ?? {};
 		const { region = '', defaults = {} } = identifyLabels;
 		const { type = 'LABELS' } = defaults;
 
@@ -392,14 +384,14 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyEntities(
 		input: IdentifyEntitiesInput,
 	): Promise<IdentifyEntitiesOutput> {
-		const { credentials } = await this._ctx.fetchAuthSession();
+		const { credentials } = await this._resolveCtx().fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyEntities = {} } =
-			this._ctx.resourcesConfig.Predictions?.identify ?? {};
+			this._resolveCtx().resourcesConfig.Predictions?.identify ?? {};
 		const {
 			region = '',
 			celebrityDetectionEnabled = false,

@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { enableFetchMocks } from 'jest-fetch-mock';
 import { Amplify } from '@aws-amplify/core';
 import { GraphQLAPI } from '@aws-amplify/api-graphql';
 import { generateClient } from '@aws-amplify/api';
-
-import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 // Make global `Request` available.
 enableFetchMocks();

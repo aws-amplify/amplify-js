@@ -5,7 +5,6 @@ import { Buffer } from 'buffer';
 import {
 	AmplifyContext,
 	ConsoleLogger,
-	getGlobalContext,
 	isAmplifyContext,
 } from '@aws-amplify/core';
 import {
@@ -13,6 +12,7 @@ import {
 	Category,
 	PredictionsAction,
 	Signer,
+	createCtxResolver,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
 import {
@@ -55,22 +55,14 @@ const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];
 export class AmazonAIConvertPredictionsProvider {
 	private translateClient?: TranslateClient;
 	private pollyClient?: PollyClient;
-	private _explicitCtx: AmplifyContext | undefined;
-
 	/**
-	 * Resolve the AmplifyContext for this provider.
+	 * Resolve the AmplifyContext for this provider (fresh per operation).
 	 * - If an explicit ctx was passed at construction, it is pinned (fixed context by design).
 	 * - Otherwise, the global context is resolved fresh per access so that reconfiguration
 	 *   (setGlobalContext with a new AmplifyContext) is honored across operations.
 	 * @private
 	 */
-	private get _ctx(): AmplifyContext {
-		if (this._explicitCtx) {
-			return this._explicitCtx;
-		}
-
-		return getGlobalContext();
-	}
+	private readonly _resolveCtx: () => AmplifyContext;
 
 	/**
 	 * @param ctx - The AmplifyContext to use for auth and config.
@@ -78,9 +70,9 @@ export class AmazonAIConvertPredictionsProvider {
 	 *   When omitted, the provider resolves the global context lazily per operation.
 	 */
 	constructor(ctx?: AmplifyContext) {
-		if (isAmplifyContext(ctx)) {
-			this._explicitCtx = ctx;
-		}
+		this._resolveCtx = createCtxResolver(
+			isAmplifyContext(ctx) ? ctx : undefined,
+		);
 	}
 
 	getProviderName() {
@@ -116,14 +108,14 @@ export class AmazonAIConvertPredictionsProvider {
 		logger.debug('Starting translation');
 
 		const { translateText = {} } =
-			this._ctx.resourcesConfig.Predictions?.convert ?? {};
+			this._resolveCtx().resourcesConfig.Predictions?.convert ?? {};
 		assertValidationError(
 			!!translateText.region,
 			PredictionsValidationErrorCode.NoRegion,
 		);
 		const { defaults = {}, region } = translateText;
 
-		const { credentials } = await this._ctx.fetchAuthSession();
+		const { credentials } = await this._resolveCtx().fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
@@ -167,7 +159,7 @@ export class AmazonAIConvertPredictionsProvider {
 	protected async convertTextToSpeech(
 		input: TextToSpeechInput,
 	): Promise<TextToSpeechOutput> {
-		const { credentials } = await this._ctx.fetchAuthSession();
+		const { credentials } = await this._resolveCtx().fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
@@ -178,7 +170,7 @@ export class AmazonAIConvertPredictionsProvider {
 		);
 
 		const { speechGenerator } =
-			this._ctx.resourcesConfig.Predictions?.convert ?? {};
+			this._resolveCtx().resourcesConfig.Predictions?.convert ?? {};
 		assertValidationError(
 			!!speechGenerator?.region,
 			PredictionsValidationErrorCode.NoRegion,
@@ -224,14 +216,14 @@ export class AmazonAIConvertPredictionsProvider {
 		input: SpeechToTextInput,
 	): Promise<SpeechToTextOutput> {
 		logger.debug('starting transcription..');
-		const { credentials } = await this._ctx.fetchAuthSession();
+		const { credentials } = await this._resolveCtx().fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { transcription } =
-			this._ctx.resourcesConfig.Predictions?.convert ?? {};
+			this._resolveCtx().resourcesConfig.Predictions?.convert ?? {};
 		assertValidationError(
 			!!transcription?.region,
 			PredictionsValidationErrorCode.NoRegion,

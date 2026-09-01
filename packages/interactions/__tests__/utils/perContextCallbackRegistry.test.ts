@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { createPerContextCallbackRegistry } from '../../src/utils/perContextCallbackRegistry';
-import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
 describe('createPerContextCallbackRegistry', () => {
 	it('returns a registered callback for the same context and name', () => {

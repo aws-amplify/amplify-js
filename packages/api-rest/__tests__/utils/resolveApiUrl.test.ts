@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { resolveApiUrl } from '../../src/utils';
 import {
 	RestApiError,
 	RestApiValidationErrorCode,
 	validationErrorMap,
 } from '../../src/errors';
-import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
 const mkAmplify = (endpoint = 'https://example.com/api', apiName = 'myAPI') =>
 	createMockAmplifyContext({

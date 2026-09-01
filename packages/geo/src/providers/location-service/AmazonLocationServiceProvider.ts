@@ -4,10 +4,12 @@ import camelcaseKeys from 'camelcase-keys';
 import {
 	AmplifyContext,
 	ConsoleLogger,
-	getGlobalContext,
 	isAmplifyContext,
 } from '@aws-amplify/core';
-import { GeoAction } from '@aws-amplify/core/internals/utils';
+import {
+	GeoAction,
+	createCtxResolver,
+} from '@aws-amplify/core/internals/utils';
 import {
 	BatchDeleteGeofenceCommand,
 	BatchDeleteGeofenceCommandInput,
@@ -75,22 +77,15 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	private _config;
 	private _credentials;
-	private _explicitCtx: AmplifyContext | undefined;
 
 	/**
-	 * Resolve the AmplifyContext for this provider.
+	 * Resolve the AmplifyContext for this provider (fresh per operation).
 	 * - If an explicit ctx was passed at construction, it is pinned (fixed context by design).
 	 * - Otherwise, the global context is resolved fresh per access so that reconfiguration
 	 *   (setGlobalContext with a new AmplifyContext) is honored across operations.
 	 * @private
 	 */
-	private get _ctx(): AmplifyContext {
-		if (this._explicitCtx) {
-			return this._explicitCtx;
-		}
-
-		return getGlobalContext();
-	}
+	private readonly _resolveCtx: () => AmplifyContext;
 
 	/**
 	 * Initialize Geo with AWS configurations
@@ -101,9 +96,9 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	constructor(config?: GeoConfig, ctx?: AmplifyContext) {
 		this._config = config || {};
-		if (isAmplifyContext(ctx)) {
-			this._explicitCtx = ctx;
-		}
+		this._resolveCtx = createCtxResolver(
+			isAmplifyContext(ctx) ? ctx : undefined,
+		);
 		logger.debug('Geo Options', this._config);
 	}
 
@@ -740,7 +735,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	private async _ensureCredentials(): Promise<boolean> {
 		// Resolve ctx outside try/catch so 'No AmplifyContext available' propagates
-		const ctx = this._ctx;
+		const ctx = this._resolveCtx();
 		try {
 			const { credentials } = await ctx.fetchAuthSession();
 			if (!credentials) return false;
@@ -759,7 +754,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	}
 
 	private _refreshConfig() {
-		this._config = this._ctx.resourcesConfig.Geo?.LocationService;
+		this._config = this._resolveCtx().resourcesConfig.Geo?.LocationService;
 		if (!this._config) {
 			const errorString =
 				"No Geo configuration found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";

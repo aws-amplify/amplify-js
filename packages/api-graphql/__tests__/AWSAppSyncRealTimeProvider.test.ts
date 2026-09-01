@@ -1,3 +1,4 @@
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
@@ -14,7 +15,6 @@ import { ConnectionState as CS } from '../src/types/PubSub';
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
 import { isCustomDomain } from '../src/Providers/AWSWebSocketProvider/appsyncUrl';
 import * as authHeadersModule from '../src/Providers/AWSWebSocketProvider/authHeaders';
-import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {

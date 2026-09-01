@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import {
 	DEFAULT_PERSONALIZE_CONFIG,
 	PERSONALIZE_FLUSH_SIZE_MAX,
 	resolveConfig,
 } from '../../../../src/providers/personalize/utils';
-import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 describe('Analytics Personalize Provider Util: resolveConfig', () => {
 	const providedConfig = {

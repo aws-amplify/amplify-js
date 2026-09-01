@@ -2,13 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+import {
+	createMockAmplifyContext,
+	withTokens,
+} from '@aws-amplify/core/internals/testing';
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { fetchMFAPreference } from '../../../src/providers/cognito/apis/fetchMFAPreference';
 import { GetUserException } from '../../../src/providers/cognito/types/errors';
 import { createGetUserClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 
@@ -35,15 +38,13 @@ describe('fetchMFAPreference', () => {
 	});
 
 	beforeAll(() => {
-		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(mockCtx, decodeJWT(mockAccessToken));
 		mockCreateGetUserClient.mockReturnValue(mockGetUser);
 	});
 
 	afterEach(() => {
 		mockGetUser.mockReset();
-		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
+		mockCtx.fetchAuthSession.mockClear();
 	});
 
 	it('should return correct MFA preferences when SMS is preferred', async () => {
@@ -123,9 +124,7 @@ describe('fetchMFAPreference', () => {
 				},
 			},
 		});
-		(customCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(customCtx, decodeJWT(mockAccessToken));
 
 		mockGetUser.mockResolvedValueOnce({
 			UserAttributes: [],

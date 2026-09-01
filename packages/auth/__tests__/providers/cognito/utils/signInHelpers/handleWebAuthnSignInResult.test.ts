@@ -1,3 +1,5 @@
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { signInStore } from '../../../../../src/client/utils/store';
 import { authAPITestParams } from '../../testUtils/authApiTestParams';
 import { createRespondToAuthChallengeClient } from '../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
@@ -11,7 +13,6 @@ import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorCodes } from '../../../../../src/common/AuthErrorStrings';
 import { cacheCognitoTokens } from '../../../../../src/providers/cognito/tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../../../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
-import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 import { getIsPasskeySupported } from '../../../../../src/client/utils/passkey/getIsPasskeySupported';
 import {
 	assertCredentialIsPkcWithAuthenticatorAssertionResponse,

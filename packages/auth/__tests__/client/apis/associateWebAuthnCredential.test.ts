@@ -6,6 +6,10 @@ import {
 	decodeJWT,
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
+import {
+	createMockAmplifyContext,
+	withTokens,
+} from '@aws-amplify/core/internals/testing';
 
 import {
 	createCompleteWebAuthnRegistrationClient,
@@ -24,7 +28,6 @@ import { serializePkcWithAttestationToJson } from '../../../src/client/utils/pas
 import * as utils from '../../../src/client/utils';
 import { getIsPasskeySupported } from '../../../src/client/utils/passkey/getIsPasskeySupported';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import {
 	assertCredentialIsPkcWithAuthenticatorAssertionResponse,
 	assertCredentialIsPkcWithAuthenticatorAttestationResponse,
@@ -89,13 +92,11 @@ describe('associateWebAuthnCredential', () => {
 			},
 		},
 	});
-	const mockCtxFetchAuthSession = mockCtx.fetchAuthSession as jest.Mock;
+	const mockCtxFetchAuthSession = mockCtx.fetchAuthSession;
 
 	beforeAll(() => {
 		setGlobalContext(mockCtx);
-		mockCtxFetchAuthSession.mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(mockCtx, decodeJWT(mockAccessToken));
 		mockCreateStartWebAuthnRegistrationClient.mockReturnValue(
 			mockStartWebAuthnRegistration,
 		);

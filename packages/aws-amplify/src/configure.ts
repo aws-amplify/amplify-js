@@ -3,16 +3,15 @@
 
 import {
 	AmplifyContext,
-	CookieStorage,
 	LibraryOptions,
 	ResourcesConfig,
 	createAmplifyContext as createCoreAmplifyContext,
-	defaultStorage,
 } from '@aws-amplify/core';
 import {
 	AmplifyOutputsUnknown,
 	LegacyConfig,
 	parseAmplifyConfig,
+	selectSsrKeyValueStorage,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -106,12 +105,10 @@ function resolveLocalLibraryOptions(
 		return libraryOptions;
 	}
 
-	// Resolve storage based on the SSR option:
+	// Resolve storage via core's shared helper based on the SSR option:
 	// - ssr: true  → CookieStorage (shared between client and server)
 	// - ssr: false → defaultStorage (localStorage with server-safe fallback)
-	const keyValueStorage = libraryOptions?.ssr
-		? new CookieStorage({ sameSite: 'lax' })
-		: defaultStorage;
+	const keyValueStorage = selectSsrKeyValueStorage(libraryOptions?.ssr);
 	const tokenProvider = createUserPoolsTokenProvider(
 		resourceConfig.Auth,
 		keyValueStorage,

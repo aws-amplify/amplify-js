@@ -5,13 +5,11 @@ import {
 	AmplifyContext,
 	AuthSession,
 	AuthTokens,
-	CookieStorage,
 	FetchAuthSessionOptions,
 	Hub,
 	LibraryOptions,
 	ResourcesConfig,
 	createAmplifyContext,
-	defaultStorage,
 	getGlobalContext,
 	hasGlobalContext,
 } from '@aws-amplify/core';
@@ -20,6 +18,7 @@ import {
 	AmplifyOutputsUnknown,
 	LegacyConfig,
 	parseAmplifyConfig,
+	selectSsrKeyValueStorage,
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
 
@@ -189,13 +188,16 @@ function resolveLibraryOptions(
 	// singleton token provider below so the Auth providers never go stale.
 	const baseLibraryOptions = libraryOptions ?? previousLibraryOptions ?? {};
 
-	const cookieBasedKeyValueStorage = new CookieStorage({ sameSite: 'lax' });
-	const resolvedKeyValueStorage = baseLibraryOptions.ssr
-		? cookieBasedKeyValueStorage
-		: defaultStorage;
+	// Select the storage backing the default providers via core's shared
+	// helper (ssr → fresh cookie storage, else the localStorage-backed
+	// singleton). When ssr is set, reuse the SAME cookie storage instance for
+	// the identity-id store so tokens and identity ids share one cookie jar.
+	const resolvedKeyValueStorage = selectSsrKeyValueStorage(
+		baseLibraryOptions.ssr,
+	);
 	const resolvedCredentialsProvider = baseLibraryOptions.ssr
 		? new CognitoAWSCredentialsAndIdentityIdProvider(
-				new DefaultIdentityIdStore(cookieBasedKeyValueStorage),
+				new DefaultIdentityIdStore(resolvedKeyValueStorage),
 			)
 		: cognitoCredentialsProvider;
 

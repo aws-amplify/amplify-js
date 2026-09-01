@@ -5,6 +5,7 @@ import {
 	clearGlobalContext,
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import {
 	resetActiveSignInState,
@@ -18,7 +19,6 @@ import {
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signIn } from '../../../src/providers/cognito';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 

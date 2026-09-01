@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
 import { DEFAULT_KINESIS_CONFIG } from '../../../../src/providers/kinesis/utils/constants';
-import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 	const kinesisConfig = {

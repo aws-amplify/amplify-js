@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+import {
+	createMockAmplifyContext,
+	withTokens,
+} from '@aws-amplify/core/internals/testing';
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { updateUserAttributes } from '../../../src/providers/cognito';
@@ -9,7 +13,6 @@ import { UpdateUserAttributesException } from '../../../src/providers/cognito/ty
 import { toAttributeType } from '../../../src/providers/cognito/utils/apiHelpers';
 import { createUpdateUserAttributesClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 
@@ -39,9 +42,7 @@ describe('updateUserAttributes', () => {
 	);
 
 	beforeAll(() => {
-		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(mockCtx, decodeJWT(mockAccessToken));
 	});
 
 	beforeEach(() => {
@@ -66,7 +67,7 @@ describe('updateUserAttributes', () => {
 
 	afterEach(() => {
 		mockUpdateUserAttributes.mockReset();
-		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
+		mockCtx.fetchAuthSession.mockClear();
 		mockCreateUpdateUserAttributesClient.mockClear();
 	});
 
@@ -144,9 +145,7 @@ describe('updateUserAttributes', () => {
 				},
 			},
 		});
-		(customCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(customCtx, decodeJWT(mockAccessToken));
 
 		await updateUserAttributes(customCtx, {
 			userAttributes: {},

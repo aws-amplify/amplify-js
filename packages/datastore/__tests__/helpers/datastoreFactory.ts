@@ -10,6 +10,7 @@ import {
 	DataStore as DataStoreInstance,
 } from '../../src/datastore/datastore';
 import { SyncError } from '../../src/types';
+import { createTestCtx } from './ctx';
 import { FakeGraphQLService, FakeDataStoreConnectivity } from './fakes';
 import {
 	testSchema,
@@ -210,27 +211,7 @@ export function getDataStore({
 	// module (not Amplify.configure — that dispatches Hub events which can
 	// auto-start DataStore before its storage adapter is configured).
 	const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-	const testCtx = {
-		resourcesConfig: {
-			API: {
-				GraphQL: {
-					endpoint: 'https://0.0.0.0/graphql',
-					region: 'us-west-2',
-					defaultAuthMode: 'apiKey' as const,
-					apiKey: 'da2-fakeApiId123456',
-				},
-			},
-		},
-		libraryOptions: {},
-		fetchAuthSession: () => Promise.resolve({}),
-		clearCredentials: () => Promise.resolve(),
-		getTokens: () => Promise.resolve(undefined),
-	};
-	Object.defineProperty(testCtx, Symbol.for('amplify.context'), {
-		value: true,
-		enumerable: false,
-	});
-	setGlobalContext(testCtx);
+	setGlobalContext(createTestCtx());
 
 	let errorHandlerSubscriber: Observer<SyncError<any>> | null = null;
 

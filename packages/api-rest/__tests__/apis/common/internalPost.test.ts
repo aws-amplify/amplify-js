@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
@@ -16,7 +17,6 @@ import {
 import { authenticatedHandler } from '../../../src/apis/common/baseHandlers/authenticatedHandler';
 import { unauthenticatedHandler } from '../../../src/apis/common/baseHandlers/unauthenticatedHandler';
 import { RestApiError, isCancelError } from '../../../src/errors';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 jest.mock('../../../src/apis/common/baseHandlers/authenticatedHandler');

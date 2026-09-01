@@ -8,6 +8,7 @@ import {
 	SearchPlaceIndexForTextCommand,
 } from '@aws-sdk/client-location';
 import { AmplifyContext } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import {
 	clearGlobalContext,
 	setGlobalContext,
@@ -40,7 +41,6 @@ import {
 	mockGetGeofenceCommand,
 	mockListGeofencesCommand,
 } from './testUtils';
-import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 LocationClient.prototype.send = jest.fn(async command => {
 	if (

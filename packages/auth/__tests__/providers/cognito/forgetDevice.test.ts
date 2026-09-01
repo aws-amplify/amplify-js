@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+import {
+	createMockAmplifyContext,
+	withTokens,
+} from '@aws-amplify/core/internals/testing';
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { DEVICE_METADATA_NOT_FOUND_EXCEPTION } from '../../../src/errors/constants';
@@ -10,7 +14,6 @@ import { ForgetDeviceException } from '../../../src/providers/cognito/types/erro
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
 import { createForgetDeviceClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 
@@ -48,9 +51,7 @@ describe('fetchMFAPreference', () => {
 	});
 
 	beforeAll(() => {
-		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(mockCtx, decodeJWT(mockAccessToken));
 	});
 
 	beforeEach(() => {
@@ -62,7 +63,7 @@ describe('fetchMFAPreference', () => {
 	afterEach(() => {
 		mockForgetDevice.mockReset();
 		mockGetDeviceMetadata.mockReset();
-		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
+		mockCtx.fetchAuthSession.mockClear();
 		mockClearDeviceMetadata.mockClear();
 		mockCreateForgetDeviceClient.mockClear();
 	});
@@ -93,9 +94,7 @@ describe('fetchMFAPreference', () => {
 				},
 			},
 		});
-		(customCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(customCtx, decodeJWT(mockAccessToken));
 
 		await forgetDevice(customCtx, { device: { id: 'externalDeviceKey' } });
 

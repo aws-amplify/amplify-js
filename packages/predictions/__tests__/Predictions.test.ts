@@ -13,7 +13,7 @@ import {
 	TranslateTextOutput,
 } from '../src/types';
 
-import { createMockAmplifyContext } from './testUtils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 describe('Predictions test', () => {
 	describe('getModuleName tests', () => {
@@ -102,15 +102,15 @@ describe('Predictions test', () => {
 
 			const predictions = new PredictionsClass(ctx);
 
-			// Access the private providers and verify each received the exact same ctx (identity check)
-			type ProviderWithCtx = { _explicitCtx: unknown };
+			// Access the private providers and verify each resolves the exact same ctx (identity check)
+			type ProviderWithCtx = { _resolveCtx(): unknown };
 			const convertProvider = (predictions as unknown as { convertProvider: ProviderWithCtx }).convertProvider;
 			const identifyProvider = (predictions as unknown as { identifyProvider: ProviderWithCtx }).identifyProvider;
 			const interpretProvider = (predictions as unknown as { interpretProvider: ProviderWithCtx }).interpretProvider;
 
-			expect(convertProvider._explicitCtx).toBe(ctx);
-			expect(identifyProvider._explicitCtx).toBe(ctx);
-			expect(interpretProvider._explicitCtx).toBe(ctx);
+			expect(convertProvider._resolveCtx()).toBe(ctx);
+			expect(identifyProvider._resolveCtx()).toBe(ctx);
+			expect(interpretProvider._resolveCtx()).toBe(ctx);
 		});
 
 		test('convert delegates to the convert provider', async () => {

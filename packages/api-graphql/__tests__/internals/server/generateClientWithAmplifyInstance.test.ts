@@ -1,9 +1,9 @@
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { Amplify, AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import { generateClientWithAmplifyInstance } from '../../../src/internals/server';
 import configFixture from '../../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../../fixtures/modeled/schema';
 import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../../src/types';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { mockApiResponse, normalizePostGraphqlCalls } from '../../utils';
 
 const serverManagedFields = {

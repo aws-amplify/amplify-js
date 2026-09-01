@@ -17,6 +17,8 @@ import {
 import {
 	pause,
 	expectMutation,
+	createTestCtx,
+	injectNoOpInternalAPI,
 	Model,
 	User,
 	Profile,
@@ -113,36 +115,13 @@ export function addCommonQueryTests({
 
 			// Establish a global context so that InternalAPI.graphql() →
 			// getGlobalContext() succeeds when the sync engine starts.
-			const testCtx = {
-				resourcesConfig: {
-					API: {
-						GraphQL: {
-							endpoint:
-								'https://0.0.0.0/does/not/exist/graphql',
-							region: 'us-west-2',
-							defaultAuthMode: 'apiKey' as const,
-							apiKey: 'da2-fakeApiId123456',
-						},
-					},
-				},
-				libraryOptions: {},
-				fetchAuthSession: () => Promise.resolve({}),
-				clearCredentials: () => Promise.resolve(),
-				getTokens: () => Promise.resolve(undefined),
-			};
-			Object.defineProperty(testCtx, Symbol.for('amplify.context'), {
-				value: true,
-				enumerable: false,
-			});
-			setGlobalContext(testCtx);
+			setGlobalContext(
+				createTestCtx('https://0.0.0.0/does/not/exist/graphql'),
+			);
 
 			// Prevent the subscription processor from making real network
 			// requests. Inject a no-op InternalAPI that returns empty observables.
-			const { NEVER } = require('rxjs');
-			(DataStore as any).amplifyContext.InternalAPI = {
-				graphql: () => NEVER,
-				getGraphqlOperationType: () => 'subscription',
-			};
+			injectNoOpInternalAPI(DataStore);
 
 			// start() ensures storageAdapter is set
 			await DataStore.start();
@@ -356,34 +335,11 @@ export function addCommonQueryTests({
 			});
 
 			// Establish a global context and fake InternalAPI for sync engine.
-			const testCtx = {
-				resourcesConfig: {
-					API: {
-						GraphQL: {
-							endpoint:
-								'https://0.0.0.0/does/not/exist/graphql',
-							region: 'us-west-2',
-							defaultAuthMode: 'apiKey' as const,
-							apiKey: 'da2-fakeApiId123456',
-						},
-					},
-				},
-				libraryOptions: {},
-				fetchAuthSession: () => Promise.resolve({}),
-				clearCredentials: () => Promise.resolve(),
-				getTokens: () => Promise.resolve(undefined),
-			};
-			Object.defineProperty(testCtx, Symbol.for('amplify.context'), {
-				value: true,
-				enumerable: false,
-			});
-			setGlobalContext(testCtx);
+			setGlobalContext(
+				createTestCtx('https://0.0.0.0/does/not/exist/graphql'),
+			);
 
-			const { NEVER } = require('rxjs');
-			(DataStore as any).amplifyContext.InternalAPI = {
-				graphql: () => NEVER,
-				getGraphqlOperationType: () => 'subscription',
-			};
+			injectNoOpInternalAPI(DataStore);
 
 			// start() ensures storageAdapter is set
 			await DataStore.start();

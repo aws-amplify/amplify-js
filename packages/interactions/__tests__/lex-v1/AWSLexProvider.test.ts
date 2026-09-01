@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import {
 	LexRuntimeServiceClient,
 	PostContentCommand,
@@ -8,7 +9,6 @@ import {
 } from '@aws-sdk/client-lex-runtime-service';
 import { lexProvider } from '../../src/lex-v1/AWSLexProvider';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
-import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
 (global as any).Response = class Response {
 	arrayBuffer(blob: Blob) {

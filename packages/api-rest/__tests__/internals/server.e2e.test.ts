@@ -11,12 +11,12 @@
  * and `amplify.Auth.fetchAuthSession` resolves credentials for IAM signing.
  */
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { getRetryDecider } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { authenticatedHandler } from '../../src/apis/common/baseHandlers/authenticatedHandler';
 import { unauthenticatedHandler } from '../../src/apis/common/baseHandlers/unauthenticatedHandler';
 import { post } from '../../src/internals/server';
-import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 jest.mock('../../src/apis/common/baseHandlers/authenticatedHandler');

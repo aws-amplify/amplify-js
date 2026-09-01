@@ -1,22 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AMPLIFY_CONTEXT_BRAND, AmplifyContext } from '@aws-amplify/core';
 import { InvalidAmplifyContextError } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { AWSIoT } from '../src/Providers/AWSIot';
-
-function makeBrandedContext(): AmplifyContext {
-	const ctx = {
-		resourcesConfig: {},
-		libraryOptions: {},
-		fetchAuthSession: jest.fn().mockResolvedValue({}),
-		clearCredentials: jest.fn().mockResolvedValue(undefined),
-		getTokens: jest.fn().mockResolvedValue(undefined),
-	};
-	Object.defineProperty(ctx, AMPLIFY_CONTEXT_BRAND, { value: true });
-
-	return ctx as unknown as AmplifyContext;
-}
 
 describe('AWSIoT constructor context guard (F3.1)', () => {
 	it('throws InvalidAmplifyContextError when the (ctx, options) overload is used with an unbranded first arg', () => {
@@ -35,7 +22,7 @@ describe('AWSIoT constructor context guard (F3.1)', () => {
 
 	it('accepts a branded AmplifyContext in the (ctx, options) overload', () => {
 		expect(
-			() => new AWSIoT(makeBrandedContext(), { region: 'us-east-1' }),
+			() => new AWSIoT(createMockAmplifyContext(), { region: 'us-east-1' }),
 		).not.toThrow();
 	});
 

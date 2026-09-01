@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
@@ -12,7 +13,6 @@ import { ConnectionState as CS } from '../src/types/PubSub';
 
 import { AWSAppSyncEventProvider } from '../src/Providers/AWSAppSyncEventsProvider';
 import * as authHeadersModule from '../src/Providers/AWSWebSocketProvider/authHeaders';
-import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {

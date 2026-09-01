@@ -1,3 +1,5 @@
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
@@ -5,7 +7,6 @@ import { RespondToAuthChallengeException } from '../../../src/providers/cognito/
 import { signInStore } from '../../../src/client/utils/store';
 import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
 import { createRespondToAuthChallengeClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError } from './testUtils/data';
 import { authAPITestParams } from './testUtils/authApiTestParams';

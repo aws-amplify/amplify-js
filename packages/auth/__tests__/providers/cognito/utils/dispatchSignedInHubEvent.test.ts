@@ -3,6 +3,7 @@
 
 import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import {
 	ERROR_MESSAGE,
@@ -10,7 +11,6 @@ import {
 } from '../../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
 import { getCurrentUser } from '../../../../src/providers/cognito/apis/getCurrentUser';
 import { assertAuthTokens } from '../../../../src/providers/cognito/utils/types';
-import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/providers/cognito/apis/getCurrentUser', () => ({
 	getCurrentUser: jest.fn(),
