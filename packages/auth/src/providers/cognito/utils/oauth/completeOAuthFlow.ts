@@ -236,9 +236,17 @@ const completeFlow = async ({
 	state: string;
 	username: string;
 }) => {
-	await tokenOrchestrator.setOAuthMetadata({
-		oauthSignIn: true,
-	});
+	await tokenOrchestrator.setOAuthMetadata(
+		{
+			oauthSignIn: true,
+		},
+		// Namespace the metadata under the signed-in user. dispatchSignedInHubEvent
+		// (below) is what moves the LastAuthUser pointer via addActiveSession, so at
+		// this point the pointer is still the stale/sentinel value; a no-arg call
+		// would strand the metadata under the wrong namespace and break OAuth
+		// sign-out detection on a second cookie-sharing subdomain.
+		username,
+	);
 	await oAuthStore.clearOAuthData();
 	await oAuthStore.storeOAuthSignIn(true, preferPrivateSession);
 

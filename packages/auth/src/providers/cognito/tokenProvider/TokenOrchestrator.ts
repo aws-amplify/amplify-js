@@ -212,6 +212,11 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			});
 			newTokens.signInDetails = signInDetails;
 			await this.setTokens({ tokens: newTokens });
+			// storeTokens no longer writes the active-user pointer (LastAuthUser);
+			// re-assert it for the active user so SSR cookie migration re-sets it at
+			// path '/' along with the refreshed token cookies. Pointer-only: the
+			// roster is never reordered on refresh.
+			await this.getTokenStore().reassertActiveUserPointer(username);
 			const userId = newTokens.idToken?.payload?.sub;
 			Hub.dispatch(
 				'auth',
@@ -317,8 +322,8 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		return this.getTokenStore().clearDeviceMetadata(username);
 	}
 
-	setOAuthMetadata(metadata: OAuthMetadata): Promise<void> {
-		return this.getTokenStore().setOAuthMetadata(metadata);
+	setOAuthMetadata(metadata: OAuthMetadata, username?: string): Promise<void> {
+		return this.getTokenStore().setOAuthMetadata(metadata, username);
 	}
 
 	getOAuthMetadata(): Promise<OAuthMetadata | null> {
