@@ -71,8 +71,9 @@ export async function initializePushNotifications(
 	ctx: AmplifyContext,
 ): Promise<void>;
 // The body is synchronous listener wiring; the function is `async` so the
-// return type matches the web stub overloads (`Promise<void>`, F6.2 unified
-// async-rejecting contract). This deliberately surfaces the not-configured
+// return type matches the web stub overloads (`Promise<void>`) — the unified
+// not-supported stubs reject asynchronously for a consistent cross-platform
+// contract. This deliberately surfaces the not-configured
 // `resolveCtxArgs` throw as a rejection, consistent with the web stubs which
 // reject with `PlatformNotSupportedError`.
 export async function initializePushNotifications(

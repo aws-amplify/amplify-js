@@ -158,7 +158,7 @@ export { setGlobalContext, clearGlobalContext } from './context/globalContext';
 // Context argument resolution
 export { resolveCtxArgs } from './context/resolveCtxArgs';
 
-// Explicit-ctx resolver for class-based (Pattern 7) providers
+// Explicit-ctx resolver for class-based providers
 export { createCtxResolver } from './context/createCtxResolver';
 
 // SSR-aware key-value storage selection for default auth providers

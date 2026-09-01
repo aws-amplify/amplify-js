@@ -131,10 +131,11 @@ export function graphql<
 		| CustomHeaders,
 	maybeHeaders?: CustomHeaders,
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
-	// Pattern 6 (post-Phase C3): server req/res clients pass the per-request
-	// branded `AmplifyContext` as the first argument (ctx-first form); browser
-	// and cookie-based clients pass options first. Typed-union resolution
-	// (rather than `...args`) keeps the body fully type-checked.
+	// Server req/res clients pass the per-request branded `AmplifyContext` as
+	// the first argument (ctx-first form) so the client can sign each call
+	// with request-scoped credentials; browser and cookie-based clients pass
+	// options first. Typed-union resolution (rather than `...args`) keeps the
+	// body fully type-checked.
 	const [explicitCtx, options, additionalHeaders]: [
 		AmplifyContext | undefined,
 		GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>,

@@ -155,9 +155,9 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		mockAddMessageEventListener.mockReturnValue(mockEventListenerRemover);
 	});
 
-	it('only enables once', () => {
+	it('only enables once', async () => {
 		mockIsInitialized.mockReturnValue(true);
-		initializePushNotifications();
+		await initializePushNotifications();
 		expect(mockInitialize).not.toHaveBeenCalled();
 	});
 
@@ -177,8 +177,8 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 	});
 
 	describe('background notification', () => {
-		it('registers a headless task if able', () => {
-			initializePushNotifications();
+		it('registers a headless task if able', async () => {
+			await initializePushNotifications();
 			expect(mockRegisterHeadlessTask).toHaveBeenCalledWith(
 				expect.any(Function),
 			);
@@ -187,21 +187,21 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 			).notToBeAdded();
 		});
 
-		it('calls background notification handlers when headless task is run', () => {
+		it('calls background notification handlers when headless task is run', async () => {
 			mockRegisterHeadlessTask.mockImplementation(task => {
 				task(simplePushMessage);
 			});
-			initializePushNotifications();
+			await initializePushNotifications();
 			expect(mockNotifyEventListenersAndAwaitHandlers).toHaveBeenCalledWith(
 				'backgroundMessageReceived',
 				simplePushMessage,
 			);
 		});
 
-		it('registers and calls background notification listener if unable to register headless task', () => {
+		it('registers and calls background notification listener if unable to register headless task', async () => {
 			listenForEvent(NativeEvent.BACKGROUND_MESSAGE_RECEIVED);
 			mockGetConstants.mockReturnValue({ NativeEvent });
-			initializePushNotifications();
+			await initializePushNotifications();
 			expectListenerForEvent(
 				NativeEvent.BACKGROUND_MESSAGE_RECEIVED,
 			).toBeAdded();
@@ -212,18 +212,19 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 			);
 		});
 
-		it('completes the notification if completionHandlerId is provided', done => {
+		it('completes the notification if completionHandlerId is provided', async () => {
 			mockAddMessageEventListener.mockImplementation((heardEvent, handler) => {
 				if (heardEvent === NativeEvent.BACKGROUND_MESSAGE_RECEIVED) {
 					handler(simplePushMessage, completionHandlerId);
 				}
 			});
-			mockCompleteNotification.mockImplementation(() => {
-				expect(mockCompleteNotification).toHaveBeenCalled();
-				done();
+			const notificationCompleted = new Promise<void>(resolve => {
+				mockCompleteNotification.mockImplementation(() => {
+					resolve();
+				});
 			});
 			mockGetConstants.mockReturnValue({ NativeEvent });
-			initializePushNotifications();
+			await initializePushNotifications();
 			expectListenerForEvent(
 				NativeEvent.BACKGROUND_MESSAGE_RECEIVED,
 			).toBeAdded();
@@ -232,13 +233,15 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 				'backgroundMessageReceived',
 				simplePushMessage,
 			);
+			await notificationCompleted;
+			expect(mockCompleteNotification).toHaveBeenCalled();
 		});
 	});
 
 	describe('launch notification', () => {
-		it('registers and calls launch notification listener if able', () => {
+		it('registers and calls launch notification listener if able', async () => {
 			listenForEvent(NativeEvent.LAUNCH_NOTIFICATION_OPENED);
-			initializePushNotifications();
+			await initializePushNotifications();
 
 			expectListenerForEvent(
 				NativeEvent.LAUNCH_NOTIFICATION_OPENED,
@@ -249,7 +252,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 			);
 		});
 
-		it('does not register launch notification listener if unable', () => {
+		it('does not register launch notification listener if unable', async () => {
 			listenForEvent(NativeEvent.LAUNCH_NOTIFICATION_OPENED);
 			mockGetConstants.mockReturnValue({
 				NativeEvent: {
@@ -257,7 +260,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 					LAUNCH_NOTIFICATION_OPENED: undefined,
 				},
 			});
-			initializePushNotifications();
+			await initializePushNotifications();
 
 			expectListenerForEvent(
 				NativeEvent.LAUNCH_NOTIFICATION_OPENED,
@@ -266,9 +269,9 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		});
 	});
 
-	it('registers and calls foreground message listener', () => {
+	it('registers and calls foreground message listener', async () => {
 		listenForEvent(NativeEvent.FOREGROUND_MESSAGE_RECEIVED);
-		initializePushNotifications();
+		await initializePushNotifications();
 
 		expectListenerForEvent(NativeEvent.FOREGROUND_MESSAGE_RECEIVED).toBeAdded();
 		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
@@ -277,9 +280,9 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		);
 	});
 
-	it('registers and calls notification opened listener', () => {
+	it('registers and calls notification opened listener', async () => {
 		listenForEvent(NativeEvent.NOTIFICATION_OPENED);
-		initializePushNotifications();
+		await initializePushNotifications();
 
 		expectListenerForEvent(NativeEvent.NOTIFICATION_OPENED).toBeAdded();
 		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
@@ -289,35 +292,43 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 	});
 
 	describe('token received', () => {
-		it('registers the device with Customer Profiles and resolves the inflight registration', done => {
+		it('registers the device with Customer Profiles and resolves the inflight registration', async () => {
 			expect.assertions(6);
 			mockGetToken.mockReturnValue(undefined);
-			mockAddTokenEventListener.mockImplementation(
-				async (heardEvent, handler) => {
-					if (heardEvent === NativeEvent.TOKEN_RECEIVED) {
-						await handler(pushToken);
-						expect(mockAddTokenEventListener).toHaveBeenCalledWith(
-							NativeEvent.TOKEN_RECEIVED,
-							expect.any(Function),
-						);
-						expect(mockSetToken).toHaveBeenCalledWith(pushToken);
-						expect(mockNotifyEventListeners).toHaveBeenCalledWith(
-							'tokenReceived',
-							pushToken,
-						);
-						expect(mockRegisterDevice).toHaveBeenCalledWith(expect.anything(), {
-							token: pushToken,
-						});
-						expect(mockResolveInflightDeviceRegistration).toHaveBeenCalled();
-						expect(mockRejectInflightDeviceRegistration).not.toHaveBeenCalled();
-						done();
-					}
-				},
-			);
-			initializePushNotifications();
+			const tokenHandled = new Promise<void>(resolve => {
+				mockAddTokenEventListener.mockImplementation(
+					async (heardEvent, handler) => {
+						if (heardEvent === NativeEvent.TOKEN_RECEIVED) {
+							await handler(pushToken);
+							expect(mockAddTokenEventListener).toHaveBeenCalledWith(
+								NativeEvent.TOKEN_RECEIVED,
+								expect.any(Function),
+							);
+							expect(mockSetToken).toHaveBeenCalledWith(pushToken);
+							expect(mockNotifyEventListeners).toHaveBeenCalledWith(
+								'tokenReceived',
+								pushToken,
+							);
+							expect(mockRegisterDevice).toHaveBeenCalledWith(
+								expect.anything(),
+								{
+									token: pushToken,
+								},
+							);
+							expect(mockResolveInflightDeviceRegistration).toHaveBeenCalled();
+							expect(
+								mockRejectInflightDeviceRegistration,
+							).not.toHaveBeenCalled();
+							resolve();
+						}
+					},
+				);
+			});
+			await initializePushNotifications();
+			await tokenHandled;
 		});
 
-		it('should not invoke token received listener with the same token twice', () => {
+		it('should not invoke token received listener with the same token twice', async () => {
 			mockGetToken
 				.mockReturnValueOnce(undefined)
 				.mockReturnValueOnce(pushToken);
@@ -327,12 +338,12 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 					handler(pushToken);
 				}
 			});
-			initializePushNotifications();
+			await initializePushNotifications();
 
 			expect(mockNotifyEventListeners).toHaveBeenCalledTimes(1);
 		});
 
-		it('token received should be invoked with different tokens', () => {
+		it('token received should be invoked with different tokens', async () => {
 			mockGetToken
 				.mockReturnValueOnce(undefined)
 				.mockReturnValueOnce(pushToken);
@@ -342,29 +353,32 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 					handler('bar-foo');
 				}
 			});
-			initializePushNotifications();
+			await initializePushNotifications();
 
 			expect(mockNotifyEventListeners).toHaveBeenCalledTimes(2);
 		});
 
-		it('throws if device registration fails', done => {
+		it('throws if device registration fails', async () => {
 			expect.assertions(3);
 			mockRegisterDevice.mockImplementation(() => {
 				throw new Error();
 			});
-			mockAddTokenEventListener.mockImplementation(
-				async (heardEvent, handler) => {
-					if (heardEvent === NativeEvent.TOKEN_RECEIVED) {
-						await expect(handler(pushToken)).rejects.toThrow();
-						expect(
-							mockResolveInflightDeviceRegistration,
-						).not.toHaveBeenCalled();
-						expect(mockRejectInflightDeviceRegistration).toHaveBeenCalled();
-						done();
-					}
-				},
-			);
-			initializePushNotifications();
+			const tokenHandled = new Promise<void>(resolve => {
+				mockAddTokenEventListener.mockImplementation(
+					async (heardEvent, handler) => {
+						if (heardEvent === NativeEvent.TOKEN_RECEIVED) {
+							await expect(handler(pushToken)).rejects.toThrow();
+							expect(
+								mockResolveInflightDeviceRegistration,
+							).not.toHaveBeenCalled();
+							expect(mockRejectInflightDeviceRegistration).toHaveBeenCalled();
+							resolve();
+						}
+					},
+				);
+			});
+			await initializePushNotifications();
+			await tokenHandled;
 		});
 	});
 
@@ -377,7 +391,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 
 		it('re-registers the current token when an auth signedIn event is received', async () => {
 			mockGetToken.mockReturnValue(pushToken);
-			initializePushNotifications();
+			await initializePushNotifications();
 
 			getAuthHandler()({ payload: { event: 'signedIn' } });
 			await Promise.resolve();
@@ -388,9 +402,9 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 			});
 		});
 
-		it('does NOT re-register when no token has been received yet', () => {
+		it('does NOT re-register when no token has been received yet', async () => {
 			mockGetToken.mockReturnValue(undefined);
-			initializePushNotifications();
+			await initializePushNotifications();
 
 			getAuthHandler()({ payload: { event: 'signedIn' } });
 
@@ -400,7 +414,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		it('swallows errors from the sign-in re-registration', async () => {
 			mockGetToken.mockReturnValue(pushToken);
 			mockRegisterDevice.mockRejectedValue(new Error('register failed'));
-			initializePushNotifications();
+			await initializePushNotifications();
 
 			const authHandler = getAuthHandler();
 			expect(() =>
@@ -411,9 +425,9 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 			expect(mockRegisterDevice).toHaveBeenCalledTimes(1);
 		});
 
-		it('ignores auth events other than signedIn', () => {
+		it('ignores auth events other than signedIn', async () => {
 			mockGetToken.mockReturnValue(pushToken);
-			initializePushNotifications();
+			await initializePushNotifications();
 
 			const authHandler = getAuthHandler();
 			authHandler({ payload: { event: 'tokenRefresh' } });
@@ -431,7 +445,7 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		// `signOut()` instead.
 		it('does NOT remove the device when an auth signedOut event is received', async () => {
 			mockGetToken.mockReturnValue(pushToken);
-			initializePushNotifications();
+			await initializePushNotifications();
 
 			const authHandler = mockHubListen.mock.calls.find(
 				call => call[0] === 'auth',

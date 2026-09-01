@@ -184,7 +184,8 @@ function resolveLibraryOptions(
 
 	// Auth is present and the caller did NOT supply their own Auth providers.
 	// Carry non-Auth library options forward from the previous configuration
-	// when the caller passes none (Phase C preservation), but ALWAYS re-sync the
+	// when the caller passes none (preserving prior behavior across
+	// reconfigure), but ALWAYS re-sync the
 	// singleton token provider below so the Auth providers never go stale.
 	const baseLibraryOptions = libraryOptions ?? previousLibraryOptions ?? {};
 

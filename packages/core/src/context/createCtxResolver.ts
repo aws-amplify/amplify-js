@@ -5,7 +5,7 @@ import { AmplifyContext } from './AmplifyContext';
 import { getGlobalContext } from './globalContext';
 
 /**
- * Creates a context resolver for class-based ("Pattern 7") providers that
+ * Creates a context resolver for class-based providers that
  * accept an optional explicit {@link AmplifyContext} at construction time.
  *
  * The returned function resolves the context **fresh on every call**:

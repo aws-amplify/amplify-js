@@ -86,7 +86,7 @@ describe('initializePushNotifications (native) — reconfigure support', () => {
 			tokenHandler = handler;
 		});
 
-		initializePushNotifications();
+		await initializePushNotifications();
 
 		// First token event — should use configA
 		mockResolveConfig.mockReturnValue(configA);
@@ -125,7 +125,7 @@ describe('initializePushNotifications (native) — reconfigure support', () => {
 		});
 
 		// Initialize with explicit context
-		initializePushNotifications(explicitCtx);
+		await initializePushNotifications(explicitCtx);
 
 		// Change global context
 		setGlobalContext(ctxB);

@@ -59,6 +59,12 @@ export interface CreateMockAmplifyContextOptions {
  * `createAmplifyContext()` — it is deliberately **not** frozen, because tests
  * mutate the mocks between cases.
  *
+ * Note: `resourcesConfig` is exposed through a getter only (read-only) —
+ * unlike the per-package mocks this helper replaces, it cannot be reassigned.
+ * Tests that need to change config per test should pass the
+ * {@link CreateMockAmplifyContextOptions.getConfig} option (or create a new
+ * context) instead of assigning `ctx.resourcesConfig`.
+ *
  * @param resourcesConfig - A (deep-partial) resource config, or the options
  *   object (mirrors the per-package copies this helper consolidates).
  * @param options - Optional overrides; see {@link CreateMockAmplifyContextOptions}.

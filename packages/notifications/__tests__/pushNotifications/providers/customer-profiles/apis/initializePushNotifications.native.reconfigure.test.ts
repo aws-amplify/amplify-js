@@ -105,7 +105,7 @@ describe('initializePushNotifications (customer-profiles, native) — reconfigur
 			tokenHandler = handler;
 		});
 
-		initializePushNotifications();
+		await initializePushNotifications();
 
 		// First token — ctx should be ctxA
 		await tokenHandler!('token-1');
@@ -125,7 +125,7 @@ describe('initializePushNotifications (customer-profiles, native) — reconfigur
 		setGlobalContext(ctxA);
 		mockGetToken.mockReturnValue(pushToken);
 
-		initializePushNotifications();
+		await initializePushNotifications();
 
 		const authHandler = mockHubListen.mock.calls.find(
 			call => call[0] === 'auth',
@@ -167,7 +167,7 @@ describe('initializePushNotifications (customer-profiles, native) — reconfigur
 		});
 
 		// Initialize with explicit context
-		initializePushNotifications(explicitCtx);
+		await initializePushNotifications(explicitCtx);
 
 		// Change global context
 		setGlobalContext(ctxB);

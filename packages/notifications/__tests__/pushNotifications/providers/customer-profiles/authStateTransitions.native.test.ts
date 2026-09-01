@@ -75,7 +75,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	const mockFetch = jest.fn();
 
 	interface LoadedProvider {
-		initializePushNotifications(ctx: any): void;
+		initializePushNotifications(ctx: any): Promise<void>;
 		setToken(token: string): void;
 		registerDevice(ctx: any, input: { token: string }): Promise<void>;
 		removeDevice(ctx: any): Promise<void>;
@@ -164,7 +164,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	describe('sign-in re-registration (Hub listener)', () => {
 		it('re-registers the device, signing with the now-authenticated identity', async () => {
 			const { initializePushNotifications, setToken } = loadProvider();
-			initializePushNotifications(makeTestCtx());
+			await initializePushNotifications(makeTestCtx());
 			setToken(pushToken);
 
 			// A returning user signs in: the push token is unchanged so the native
@@ -200,7 +200,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 
 		it('does NOT reach the network when no token has been received yet', async () => {
 			const { initializePushNotifications } = loadProvider();
-			initializePushNotifications(makeTestCtx());
+			await initializePushNotifications(makeTestCtx());
 
 			getAuthListener()({ payload: { event: 'signedIn' } });
 			await flushMicrotasks();
@@ -211,7 +211,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 
 		it('does NOT attempt a removal on signedOut (removal after sign-out cannot work)', async () => {
 			const { initializePushNotifications, setToken } = loadProvider();
-			initializePushNotifications(makeTestCtx());
+			await initializePushNotifications(makeTestCtx());
 			setToken(pushToken);
 
 			// After `signOut` the session is a brand-new guest identity — a removal
@@ -226,16 +226,16 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	});
 
 	describe('credential path: the identity that signs each call', () => {
-		const initializeProvider = (): LoadedProvider => {
+		const initializeProvider = async (): Promise<LoadedProvider> => {
 			const provider = loadProvider();
-			provider.initializePushNotifications(makeTestCtx());
+			await provider.initializePushNotifications(makeTestCtx());
 			provider.setToken(pushToken);
 
 			return provider;
 		};
 
 		it('signs register-device with the identity fetchAuthSession returns', async () => {
-			const { registerDevice } = initializeProvider();
+			const { registerDevice } = await initializeProvider();
 			signInAs(AUTH_IDENTITY_ID);
 
 			await registerDevice(makeTestCtx(), { token: pushToken });
@@ -257,7 +257,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 		});
 
 		it('signs remove-device with the CURRENT identity, so a guest session cannot remove the authenticated row', async () => {
-			const { registerDevice, removeDevice } = initializeProvider();
+			const { registerDevice, removeDevice } = await initializeProvider();
 
 			signInAs(AUTH_IDENTITY_ID);
 			await registerDevice(makeTestCtx(), { token: pushToken });
@@ -284,7 +284,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 		});
 
 		it('signs remove-device with the authenticated identity when called BEFORE sign-out', async () => {
-			const { registerDevice, removeDevice } = initializeProvider();
+			const { registerDevice, removeDevice } = await initializeProvider();
 			signInAs(AUTH_IDENTITY_ID);
 
 			await registerDevice(makeTestCtx(), { token: pushToken });
@@ -301,7 +301,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 		});
 
 		it('rejects when the session has no credentials to sign with', async () => {
-			const { registerDevice } = initializeProvider();
+			const { registerDevice } = await initializeProvider();
 			mockFetchAuthSession.mockResolvedValue({
 				identityId: undefined,
 				credentials: undefined,
