@@ -42,7 +42,7 @@ const mockResolveCredentials = resolveCredentials as jest.Mock;
 const mockResolveConfig = resolveConfig as jest.Mock;
 
 describe('initializePushNotifications (native) — reconfigure support', () => {
-	let initializePushNotifications: (...args: any[]) => Promise<void>;
+	let initializePushNotifications: (...args: any[]) => void;
 
 	const configA = { appId: 'app-A', region: 'us-west-2' };
 	const configB = { appId: 'app-B', region: 'us-east-1' };
@@ -86,7 +86,7 @@ describe('initializePushNotifications (native) — reconfigure support', () => {
 			tokenHandler = handler;
 		});
 
-		await initializePushNotifications();
+		initializePushNotifications();
 
 		// First token event — should use configA
 		mockResolveConfig.mockReturnValue(configA);
@@ -125,7 +125,7 @@ describe('initializePushNotifications (native) — reconfigure support', () => {
 		});
 
 		// Initialize with explicit context
-		await initializePushNotifications(explicitCtx);
+		initializePushNotifications(explicitCtx);
 
 		// Change global context
 		setGlobalContext(ctxB);

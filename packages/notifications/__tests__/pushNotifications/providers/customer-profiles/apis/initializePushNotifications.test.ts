@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { initializePushNotifications } from '../../../../../src/pushNotifications/providers/customer-profiles/apis/initializePushNotifications';
-import { expectNotSupportedAsync } from '../../../../testUtils/expectNotSupported';
+import { expectNotSupported } from '../../../../testUtils/expectNotSupported';
 
 describe('initializePushNotifications (customer-profiles, web stub)', () => {
-	it('is only supported on React Native', async () => {
-		await expectNotSupportedAsync(initializePushNotifications());
+	it('is only supported on React Native', () => {
+		expectNotSupported(initializePushNotifications);
 	});
 });

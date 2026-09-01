@@ -22,6 +22,9 @@ export function removeDevice(): Promise<void>;
  * @param ctx - The {@link AmplifyContext} to use for config and credentials.
  */
 export function removeDevice(ctx: AmplifyContext): Promise<void>;
+// Deliberately `async` (rejects) rather than throwing synchronously: the
+// declared overloads have always returned `Promise<void>`, so rejecting is
+// what a `.catch`-chaining caller can actually observe.
 export async function removeDevice(..._args: any[]): Promise<void> {
 	throw new PlatformNotSupportedError();
 }

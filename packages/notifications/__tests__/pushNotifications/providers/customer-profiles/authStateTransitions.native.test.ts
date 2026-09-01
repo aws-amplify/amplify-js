@@ -75,7 +75,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	const mockFetch = jest.fn();
 
 	interface LoadedProvider {
-		initializePushNotifications(ctx: any): Promise<void>;
+		initializePushNotifications(ctx: any): void;
 		setToken(token: string): void;
 		registerDevice(ctx: any, input: { token: string }): Promise<void>;
 		removeDevice(ctx: any): Promise<void>;
@@ -164,7 +164,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	describe('sign-in re-registration (Hub listener)', () => {
 		it('re-registers the device, signing with the now-authenticated identity', async () => {
 			const { initializePushNotifications, setToken } = loadProvider();
-			await initializePushNotifications(makeTestCtx());
+			initializePushNotifications(makeTestCtx());
 			setToken(pushToken);
 
 			// A returning user signs in: the push token is unchanged so the native
@@ -200,7 +200,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 
 		it('does NOT reach the network when no token has been received yet', async () => {
 			const { initializePushNotifications } = loadProvider();
-			await initializePushNotifications(makeTestCtx());
+			initializePushNotifications(makeTestCtx());
 
 			getAuthListener()({ payload: { event: 'signedIn' } });
 			await flushMicrotasks();
@@ -211,7 +211,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 
 		it('does NOT attempt a removal on signedOut (removal after sign-out cannot work)', async () => {
 			const { initializePushNotifications, setToken } = loadProvider();
-			await initializePushNotifications(makeTestCtx());
+			initializePushNotifications(makeTestCtx());
 			setToken(pushToken);
 
 			// After `signOut` the session is a brand-new guest identity — a removal
@@ -228,7 +228,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	describe('credential path: the identity that signs each call', () => {
 		const initializeProvider = async (): Promise<LoadedProvider> => {
 			const provider = loadProvider();
-			await provider.initializePushNotifications(makeTestCtx());
+			provider.initializePushNotifications(makeTestCtx());
 			provider.setToken(pushToken);
 
 			return provider;

@@ -24,10 +24,7 @@ describe('resolveRedirectSignInUrl', () => {
 	it('throws an error when the redirect url is not found by the specified origin', () => {
 		const origin = 'https://other-site.com';
 		expect(() => resolveRedirectSignInUrl(origin, oAuthConfig)).toThrow(
-			expect.objectContaining({
-				name: 'OAuthRedirectUrlNotFoundError',
-				message: 'No valid redirectSignIn url found in the OAuth config.',
-			}),
+			'No valid redirectSignIn url found in the OAuth config.',
 		);
 	});
 });
@@ -43,10 +40,7 @@ describe('resolveRedirectSignOutUrl', () => {
 	it('throws an error when the redirect url is not found by the specified origin', () => {
 		const origin = 'https://other-site.com';
 		expect(() => resolveRedirectSignOutUrl(origin, oAuthConfig)).toThrow(
-			expect.objectContaining({
-				name: 'OAuthRedirectUrlNotFoundError',
-				message: 'No valid redirectSignOut url found in the OAuth config.',
-			}),
+			'No valid redirectSignOut url found in the OAuth config.',
 		);
 	});
 });

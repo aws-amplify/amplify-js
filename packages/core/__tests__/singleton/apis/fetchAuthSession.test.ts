@@ -158,11 +158,43 @@ describe('fetchAuthSession / clearCredentials (context overloads)', () => {
 				(fetchAuthSession as any)(undefined, { forceRefresh: true }),
 			).toThrow(NoAmplifyContextError);
 		});
+	});
 
-		it('throws the typed error when called with no args and no global context', async () => {
+	describe('unconfigured (no global context) — pre-context back-compat', () => {
+		beforeEach(() => {
 			clearGlobalContext();
+		});
 
-			expect(() => fetchAuthSession()).toThrow(NoAmplifyContextError);
+		it('fetchAuthSession() resolves with an empty session, matching the pre-context unconfigured singleton', async () => {
+			const session = await fetchAuthSession();
+
+			// Exact base shape: all four fields present and `undefined` (the
+			// unconfigured AuthClass optional-chained its missing providers).
+			expect(session).toEqual({
+				tokens: undefined,
+				credentials: undefined,
+				identityId: undefined,
+				userSub: undefined,
+			});
+			expect(Object.keys(session).sort()).toEqual([
+				'credentials',
+				'identityId',
+				'tokens',
+				'userSub',
+			]);
+		});
+
+		it('fetchAuthSession(options) also resolves with an empty session', async () => {
+			await expect(fetchAuthSession({ forceRefresh: true })).resolves.toEqual({
+				tokens: undefined,
+				credentials: undefined,
+				identityId: undefined,
+				userSub: undefined,
+			});
+		});
+
+		it('clearCredentials() resolves harmlessly', async () => {
+			await expect(clearCredentials()).resolves.toBeUndefined();
 		});
 	});
 

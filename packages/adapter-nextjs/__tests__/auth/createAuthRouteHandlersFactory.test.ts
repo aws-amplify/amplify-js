@@ -98,11 +98,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				globalSettings,
 			});
 			expect(() => throwingFunc()).toThrow(
-				expect.objectContaining({
-					name: 'AmplifyAppOriginMissingError',
-					message:
-						'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
-				}),
+				'Could not find the AMPLIFY_APP_ORIGIN environment variable.',
 			);
 		});
 
@@ -115,11 +111,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				globalSettings,
 			});
 			expect(() => throwingFunc()).toThrow(
-				expect.objectContaining({
-					name: 'AmplifyAppOriginInvalidError',
-					message:
-						'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
-				}),
+				'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
 			);
 		});
 

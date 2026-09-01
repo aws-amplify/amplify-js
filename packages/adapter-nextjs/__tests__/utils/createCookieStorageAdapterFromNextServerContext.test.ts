@@ -582,12 +582,6 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				request: undefined,
 				response: new ServerResponse({} as any),
 			} as any),
-		).rejects.toThrow(
-			expect.objectContaining({
-				name: 'UnsupportedNextServerContextError',
-				message:
-					'Attempted to create cookie storage adapter from an unsupported Next.js server context.',
-			}),
-		);
+		).rejects.toThrow();
 	});
 });

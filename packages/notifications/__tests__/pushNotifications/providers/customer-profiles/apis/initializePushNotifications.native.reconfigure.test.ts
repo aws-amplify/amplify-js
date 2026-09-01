@@ -52,7 +52,7 @@ const mockGetToken = getToken as jest.Mock;
 const mockIsInitialized = isInitialized as jest.Mock;
 
 describe('initializePushNotifications (customer-profiles, native) — reconfigure support', () => {
-	let initializePushNotifications: (...args: any[]) => Promise<void>;
+	let initializePushNotifications: (...args: any[]) => void;
 
 	const ctxA = createMockAmplifyContext({
 		Notifications: {
@@ -105,7 +105,7 @@ describe('initializePushNotifications (customer-profiles, native) — reconfigur
 			tokenHandler = handler;
 		});
 
-		await initializePushNotifications();
+		initializePushNotifications();
 
 		// First token — ctx should be ctxA
 		await tokenHandler!('token-1');
@@ -125,7 +125,7 @@ describe('initializePushNotifications (customer-profiles, native) — reconfigur
 		setGlobalContext(ctxA);
 		mockGetToken.mockReturnValue(pushToken);
 
-		await initializePushNotifications();
+		initializePushNotifications();
 
 		const authHandler = mockHubListen.mock.calls.find(
 			call => call[0] === 'auth',
@@ -167,7 +167,7 @@ describe('initializePushNotifications (customer-profiles, native) — reconfigur
 		});
 
 		// Initialize with explicit context
-		await initializePushNotifications(explicitCtx);
+		initializePushNotifications(explicitCtx);
 
 		// Change global context
 		setGlobalContext(ctxB);
