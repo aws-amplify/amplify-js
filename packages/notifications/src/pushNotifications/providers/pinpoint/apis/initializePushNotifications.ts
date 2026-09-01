@@ -21,11 +21,15 @@ import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
  * initializePushNotifications();
  * ```
  */
-export function initializePushNotifications(): void;
+export async function initializePushNotifications(): Promise<void>;
 /**
  * @param ctx - The {@link AmplifyContext} to use for config and credentials.
  */
-export function initializePushNotifications(ctx: AmplifyContext): void;
-export function initializePushNotifications(..._args: any[]): void {
+export async function initializePushNotifications(
+	ctx: AmplifyContext,
+): Promise<void>;
+export async function initializePushNotifications(
+	..._args: any[]
+): Promise<void> {
 	throw new PlatformNotSupportedError();
 }

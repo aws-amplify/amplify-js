@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { AmplifyContext, isAmplifyContext } from '@aws-amplify/core';
+import { InvalidAmplifyContextError } from '@aws-amplify/core/internals/utils';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 import { GraphQLAPI } from '../GraphQLAPI';
@@ -104,9 +106,64 @@ export function graphql<
 	this: V6Client,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>,
 	additionalHeaders?: CustomHeaders,
+): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+export function graphql<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string,
+	Options extends CommonPublicClientOptions = object,
+>(
+	this: V6Client,
+	contextSpec: AmplifyContext,
+	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>,
+	additionalHeaders?: CustomHeaders,
+): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+export function graphql<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string,
+	Options extends CommonPublicClientOptions = object,
+>(
+	this: V6Client,
+	ctxOrOptions:
+		| AmplifyContext
+		| GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>,
+	optionsOrHeaders?:
+		| GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>
+		| CustomHeaders,
+	maybeHeaders?: CustomHeaders,
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
+	// Pattern 6 (post-Phase C3): server req/res clients pass the per-request
+	// branded `AmplifyContext` as the first argument (ctx-first form); browser
+	// and cookie-based clients pass options first. Typed-union resolution
+	// (rather than `...args`) keeps the body fully type-checked.
+	const [explicitCtx, options, additionalHeaders]: [
+		AmplifyContext | undefined,
+		GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING, Options>,
+		CustomHeaders | undefined,
+	] = isAmplifyContext(ctxOrOptions)
+		? [
+				ctxOrOptions,
+				optionsOrHeaders as GraphQLOptionsV6<
+					FALLBACK_TYPES,
+					TYPED_GQL_STRING,
+					Options
+				>,
+				maybeHeaders,
+			]
+		: [undefined, ctxOrOptions, optionsOrHeaders as CustomHeaders | undefined];
+
 	// inject client-level auth
 	const internals = getInternals(this);
+
+	// Req/res server clients carry no client-bound context (`amplify: null` —
+	// see `server/generateClient`); each call must supply the per-request
+	// context. Fail with a clear, typed error instead of letting an unbranded
+	// first argument fall through as `options`.
+	if (!explicitCtx && internals.amplify == null) {
+		throw new InvalidAmplifyContextError(
+			'This server client requires the per-request AmplifyContext to be ' +
+				'passed as the first argument to `graphql()`.',
+		);
+	}
 
 	/**
 	 * The custom `endpoint` specific to the client
@@ -153,7 +210,7 @@ export function graphql<
 	 */
 	const result = GraphQLAPI.graphql(
 		// TODO: move V6Client back into this package?
-		internals.amplify as any,
+		explicitCtx ?? (internals.amplify as any),
 		{
 			...options,
 			endpoint: clientEndpoint,

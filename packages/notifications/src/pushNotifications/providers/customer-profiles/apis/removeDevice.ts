@@ -22,6 +22,6 @@ export function removeDevice(): Promise<void>;
  * @param ctx - The {@link AmplifyContext} to use for config and credentials.
  */
 export function removeDevice(ctx: AmplifyContext): Promise<void>;
-export function removeDevice(..._args: any[]): Promise<void> {
+export async function removeDevice(..._args: any[]): Promise<void> {
 	throw new PlatformNotSupportedError();
 }

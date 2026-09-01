@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext, isAmplifyContext } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	AnalyticsValidationErrorCode,
@@ -13,6 +13,7 @@ import {
 	TrackerType,
 } from '../../../types/trackers';
 import {
+	peekCtxArgs,
 	updateProviderTrackers,
 	validateTrackerConfiguration,
 } from '../../../utils';
@@ -84,14 +85,12 @@ export function configureAutoTrack(
 	input: KinesisConfigureAutoTrackInput,
 ): void;
 export function configureAutoTrack(...args: any[]): void {
-	// Resolve the optional leading context WITHOUT falling back to the global
+	// Peek the optional leading context WITHOUT falling back to the global
 	// context. The context is only needed when events are emitted; resolving it
 	// eagerly would (a) throw when trackers are configured before
 	// `Amplify.configure()` and (b) pin auto-tracked events to the configuration
 	// snapshot captured at setup time after a later `configure()` call.
-	const [ctx, input] = isAmplifyContext(args[0])
-		? [args[0] as AmplifyContext, args[1] as KinesisConfigureAutoTrackInput]
-		: [undefined, args[0] as KinesisConfigureAutoTrackInput];
+	const { ctx, input } = peekCtxArgs<KinesisConfigureAutoTrackInput>(args);
 	validateTrackerConfiguration(input);
 
 	if (input.enable) {

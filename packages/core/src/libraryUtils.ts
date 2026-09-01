@@ -158,6 +158,12 @@ export { setGlobalContext, clearGlobalContext } from './context/globalContext';
 // Context argument resolution
 export { resolveCtxArgs } from './context/resolveCtxArgs';
 
+// Explicit-ctx resolver for class-based (Pattern 7) providers
+export { createCtxResolver } from './context/createCtxResolver';
+
+// SSR-aware key-value storage selection for default auth providers
+export { selectSsrKeyValueStorage } from './context/selectSsrKeyValueStorage';
+
 // Optional-context constructor argument guard (constructor / single-slot pattern)
 export { assertOptionalCtxArg } from './context/assertCtxArg';
 

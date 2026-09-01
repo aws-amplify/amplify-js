@@ -3,6 +3,7 @@ import { generateClientWithAmplifyInstance } from '../../../src/internals/server
 import configFixture from '../../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../../fixtures/modeled/schema';
 import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../../src/types';
+import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { mockApiResponse, normalizePostGraphqlCalls } from '../../utils';
 
 const serverManagedFields = {
@@ -223,9 +224,15 @@ describe('server generateClient', () => {
 					config: config,
 				});
 
-				const mockContextSpec = {
-					token: { value: Symbol('AmplifyServerContextToken') },
-				};
+				// Post-Phase C3 shape: the per-request context is a branded
+				// `AmplifyContext` (previously an opaque `{ token }` ContextSpec).
+				// data-schema's model-op typings still declare the legacy
+				// ContextSpec, so the mock carries a `token` too — runtime
+				// pass-through is shape-agnostic either way.
+				const mockContextSpec = Object.assign(
+					createMockAmplifyContext(config),
+					{ token: { value: Symbol('AmplifyServerContextToken') } },
+				);
 
 				const spy = jest
 					.spyOn(client, 'graphql')

@@ -5,8 +5,10 @@
 // APIs as the default Analytics surface. Removing them would be a breaking
 // change; instead each is wrapped to emit a one-time runtime deprecation
 // warning. The deprecated imports below are therefore expected. (Note: the
-// `import/no-deprecated` rule no longer detects these since the APIs became
-// overloaded function declarations, so no disable directive is needed.)
+// `import/no-deprecated` rule cannot resolve `@deprecated` through overloaded
+// function declarations today, so the per-import disables below are
+// belt-and-suspenders — they keep lint green if any of these ever becomes a
+// non-overloaded deprecated declaration the rule can detect.)
 import {
 	configureAutoTrack as configureAutoTrackPinpoint,
 	flushEvents as flushEventsPinpoint,
