@@ -48,13 +48,22 @@ const BACKGROUND_TASK_TIMEOUT = 25; // seconds
  * initializePushNotifications();
  * ```
  */
-export function initializePushNotifications(): void;
+export async function initializePushNotifications(): Promise<void>;
 /**
  * @param ctx - The {@link AmplifyContext} to use for config and credentials.
  */
-export function initializePushNotifications(ctx: AmplifyContext): void;
-export function initializePushNotifications(...args: any[]): void {
-	// Validate that config is available (throws if not configured yet)
+export async function initializePushNotifications(
+	ctx: AmplifyContext,
+): Promise<void>;
+// The body is synchronous listener wiring; the function is `async` so the
+// return type matches the web stub overloads (`Promise<void>`, F6.2 unified
+// async-rejecting contract). This deliberately surfaces the not-configured
+// `resolveCtxArgs` throw as a rejection, consistent with the web stubs which
+// reject with `PlatformNotSupportedError`.
+export async function initializePushNotifications(
+	...args: any[]
+): Promise<void> {
+	// Validate that config is available (rejects if not configured yet)
 	resolveCtxArgs<[]>(args);
 
 	// Reconfigure support: the global context is a frozen snapshot swapped on

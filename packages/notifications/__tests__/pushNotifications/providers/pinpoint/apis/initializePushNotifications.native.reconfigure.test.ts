@@ -42,7 +42,7 @@ const mockResolveCredentials = resolveCredentials as jest.Mock;
 const mockResolveConfig = resolveConfig as jest.Mock;
 
 describe('initializePushNotifications (native) — reconfigure support', () => {
-	let initializePushNotifications: (...args: any[]) => void;
+	let initializePushNotifications: (...args: any[]) => Promise<void>;
 
 	const configA = { appId: 'app-A', region: 'us-west-2' };
 	const configB = { appId: 'app-B', region: 'us-east-1' };

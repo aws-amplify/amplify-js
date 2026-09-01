@@ -52,7 +52,7 @@ const mockGetToken = getToken as jest.Mock;
 const mockIsInitialized = isInitialized as jest.Mock;
 
 describe('initializePushNotifications (customer-profiles, native) — reconfigure support', () => {
-	let initializePushNotifications: (...args: any[]) => void;
+	let initializePushNotifications: (...args: any[]) => Promise<void>;
 
 	const ctxA = createMockAmplifyContext({
 		Notifications: {

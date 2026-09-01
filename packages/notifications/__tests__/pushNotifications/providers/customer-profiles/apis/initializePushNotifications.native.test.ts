@@ -69,7 +69,7 @@ const mockGetConstants = jest.fn();
 const mockRegisterHeadlessTask = jest.fn();
 
 describe('initializePushNotifications (customer-profiles, native)', () => {
-	let initializePushNotifications: () => void;
+	let initializePushNotifications: () => Promise<void>;
 	const { NativeEvent } = pushModuleConstants;
 	// create mocks
 	const mockEventListenerRemover = { remove: jest.fn() };
@@ -159,6 +159,21 @@ describe('initializePushNotifications (customer-profiles, native)', () => {
 		mockIsInitialized.mockReturnValue(true);
 		initializePushNotifications();
 		expect(mockInitialize).not.toHaveBeenCalled();
+	});
+
+	it('returns a promise that resolves once listeners are wired', async () => {
+		// return type must match the web stub overloads (Promise<void>, F6.2)
+		await expect(initializePushNotifications()).resolves.toBeUndefined();
+		expect(mockInitialize).toHaveBeenCalled();
+	});
+
+	it('rejects (rather than throwing synchronously) when Amplify is not configured', async () => {
+		clearGlobalContext();
+		try {
+			await expect(initializePushNotifications()).rejects.toThrow();
+		} finally {
+			setGlobalContext(createMockAmplifyContext());
+		}
 	});
 
 	describe('background notification', () => {
