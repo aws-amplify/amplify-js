@@ -250,11 +250,6 @@ const completeFlow = async ({
 	await oAuthStore.clearOAuthData();
 	await oAuthStore.storeOAuthSignIn(true, preferPrivateSession);
 
-	// this should be called before any call that involves `fetchAuthSession`
-	// e.g. `getCurrentUser()` below, so it allows every inflight async calls to
-	//  `fetchAuthSession` can be resolved
-	resolveAndClearInflightPromises();
-
 	// clear history before sending out final Hub events
 	clearHistory(redirectUri);
 
@@ -270,7 +265,23 @@ const completeFlow = async ({
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	await dispatchSignedInHubEvent(tokenOrchestrator.getTokenStore(), username);
+
+	try {
+		// dispatchSignedInHubEvent moves the LastAuthUser pointer to the signed-in
+		// user (via addActiveSession). Inflight `fetchAuthSession`/`getCurrentUser`
+		// callers — e.g. an app that fired getCurrentUser while the code flow was
+		// awaiting the /oauth2/token exchange — MUST only be released AFTER the
+		// pointer is set. loadTokens namespaces by the active pointer, so releasing
+		// them earlier makes them resolve against the stale 'username' sentinel
+		// namespace and throw UserUnAuthenticatedException (the implicit flow has no
+		// token-exchange await, so no caller blocks and the bug does not surface).
+		// clearOAuthData() above already cleared the inflight flag, so the
+		// getCurrentUser inside dispatchSignedInHubEvent does not block here.
+		await dispatchSignedInHubEvent(tokenOrchestrator.getTokenStore(), username);
+	} finally {
+		// Always release blocked callers, even on failure, so the app never hangs.
+		resolveAndClearInflightPromises();
+	}
 };
 
 const isCustomState = (state: string): boolean => {

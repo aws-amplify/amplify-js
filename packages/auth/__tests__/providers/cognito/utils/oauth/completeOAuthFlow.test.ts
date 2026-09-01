@@ -237,6 +237,44 @@ describe('completeOAuthFlow', () => {
 			]);
 		});
 
+		it('releases inflight fetchAuthSession callers only AFTER the active-user pointer is set', async () => {
+			// Regression (grant-flow e2e failure, PR #14875): the app-side
+			// getCurrentUser that blocks during the code flow's /oauth2/token
+			// exchange must be released only AFTER addActiveSession moves the
+			// LastAuthUser pointer. Released earlier, loadTokens resolves against the
+			// stale 'username' sentinel namespace and throws
+			// UserUnAuthenticatedException. invocationCallOrder is a jest-global
+			// monotonic counter, so it orders calls across different mocks.
+			const addActiveSession = jest.fn().mockResolvedValue(undefined);
+			(tokenOrchestrator.getTokenStore as jest.Mock).mockReturnValueOnce({
+				getAuthUserList: jest.fn().mockResolvedValue([]),
+				getActiveUsername: jest.fn().mockResolvedValue(undefined),
+				addActiveSession,
+			});
+			mockValidateState.mockReturnValueOnce('myState-valid_state');
+			(oAuthStore.loadPKCE as jest.Mock).mockResolvedValueOnce('pkce');
+			mockDecodeJWT.mockReturnValueOnce({ payload: { username: 'testuser' } });
+			mockFetch.mockResolvedValueOnce({
+				json: jest.fn(() =>
+					Promise.resolve({
+						access_token: 'access_token',
+						id_token: 'id_token',
+						refresh_token: 'refresh_token',
+						token_type: 'token_type',
+						expires_in: 'expires_in',
+					}),
+				),
+			});
+
+			await completeOAuthFlow(testInput);
+
+			expect(addActiveSession).toHaveBeenCalledWith('testuser');
+			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
+			expect(addActiveSession.mock.invocationCallOrder[0]).toBeLessThan(
+				mockResolveAndClearInflightPromises.mock.invocationCallOrder[0],
+			);
+		});
+
 		it('throws (and does not cache tokens) when no username claim can be resolved', async () => {
 			mockCacheCognitoTokens.mockClear();
 			mockValidateState.mockReturnValueOnce('myState-valid_state');
