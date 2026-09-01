@@ -839,6 +839,17 @@ describe('TokenStore', () => {
 		});
 
 		describe('storeTokens', () => {
+			// Build a full token set for a given user. decodeJWT is mocked module-wide,
+			// so accessToken/idToken toString values are opaque here — the namespace
+			// under which they are STORED (tokens.username) is what these assert.
+			const buildTokens = (username: string) => ({
+				accessToken: mockAccessToken,
+				idToken: mockIdToken,
+				refreshToken: `refresh-${username}`,
+				clockDrift: 0,
+				username,
+			});
+
 			it('does not write the LastAuthUser or AuthUserList roster keys', async () => {
 				await tokenStore.storeTokens(mockAuthToken);
 
@@ -850,6 +861,57 @@ describe('TokenStore', () => {
 					authUserListKey,
 					expect.anything(),
 				);
+			});
+
+			it('namespaces a fresh sign-in under tokens.username with NO active pointer, and loadTokens finds it after addActiveSession', async () => {
+				// Fresh state (store empty from beforeEach): the active pointer is
+				// unset when cacheCognitoTokens runs, exactly as in the real sign-in
+				// flow. Tokens must be namespaced under tokens.username regardless.
+				await tokenStore.storeTokens(buildTokens('alice'));
+
+				// Written under alice's namespace, not the sentinel/unset pointer.
+				expect(
+					store[`${authIDP}.${userPoolClientId}.alice.accessToken`],
+				).toBeDefined();
+				expect(store[`${authIDP}.${userPoolClientId}.alice.refreshToken`]).toBe(
+					'refresh-alice',
+				);
+				// storeTokens never touches the pointer, so it is still unset.
+				expect(store[lastAuthUserKey]).toBeUndefined();
+
+				// Pointer advances to alice (dispatchSignedInHubEvent/addActiveSession).
+				await tokenStore.addActiveSession('alice');
+
+				const loaded = await tokenStore.loadTokens();
+				expect(loaded).toBeTruthy();
+				expect(loaded?.username).toBe('alice');
+				expect(loaded?.refreshToken).toBe('refresh-alice');
+			});
+
+			it('stores a second user under their own namespace without disturbing the first', async () => {
+				// alice is the active session with stored tokens.
+				await tokenStore.storeTokens(buildTokens('alice'));
+				await tokenStore.addActiveSession('alice');
+
+				// bob signs in: tokens are cached BEFORE the pointer moves to bob.
+				await tokenStore.storeTokens(buildTokens('bob'));
+
+				// bob's tokens land under bob's namespace...
+				expect(
+					store[`${authIDP}.${userPoolClientId}.bob.accessToken`],
+				).toBeDefined();
+				expect(store[`${authIDP}.${userPoolClientId}.bob.refreshToken`]).toBe(
+					'refresh-bob',
+				);
+				// ...and alice's tokens remain untouched.
+				expect(
+					store[`${authIDP}.${userPoolClientId}.alice.accessToken`],
+				).toBeDefined();
+				expect(store[`${authIDP}.${userPoolClientId}.alice.refreshToken`]).toBe(
+					'refresh-alice',
+				);
+				// pointer still names alice until addActiveSession('bob') runs.
+				expect(store[lastAuthUserKey]).toBe('alice');
 			});
 		});
 	});

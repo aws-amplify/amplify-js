@@ -102,7 +102,13 @@ export class DefaultTokenStore implements AuthTokenStore {
 		// (LastAuthUser / AuthUserList). The active pointer is owned exclusively by
 		// the roster methods (persistAuthUserList). This prevents token refresh from
 		// reordering the session roster.
-		const authKeys = await this.getAuthKeys();
+		//
+		// Keys are resolved from tokens.username (the user these tokens belong to),
+		// INDEPENDENT of the active pointer. A fresh sign-in caches tokens BEFORE
+		// addActiveSession moves the pointer, so a no-arg getAuthKeys() would namespace
+		// under the stale/sentinel pointer and the tokens would be unreachable once the
+		// pointer advances to the new user's (empty) namespace (per HLD §4.3).
+		const authKeys = await this.getAuthKeys(tokens.username);
 		await this.getKeyValueStorage().setItem(
 			authKeys.accessToken,
 			tokens.accessToken.toString(),
