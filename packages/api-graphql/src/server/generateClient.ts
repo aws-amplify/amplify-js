@@ -1,18 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext, ResourcesConfig } from '@aws-amplify/core';
-import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
+import { ResourcesConfig } from '@aws-amplify/core';
 
 import { generateClientWithAmplifyInstance } from '../internals/server';
-import {
-	GenerateServerClientParams,
-	GraphQLMethod,
-	GraphQLMethodSSR,
-	GraphQLOptionsV6,
-	V6ClientSSRRequest,
-	__amplify,
-} from '../types';
+import { GenerateServerClientParams, V6ClientSSRRequest } from '../types';
 
 /**
  * Generates an GraphQL API client that works with Amplify server context.
@@ -34,34 +26,15 @@ export function generateClient<
 	T extends Record<any, any> = never,
 	Options extends GenerateServerClientParams = { config: ResourcesConfig },
 >(options: Options): V6ClientSSRRequest<T, Options> {
-	// passing `null` instance because each (future model) method must retrieve a valid instance
-	// from server context
-	const client = generateClientWithAmplifyInstance<T, V6ClientSSRRequest<T>>({
+	// `client.graphql` natively accepts the per-request branded
+	// `AmplifyContext` as its first argument (see `internals/v6.ts`) so each
+	// call signs with request-scoped credentials; the per-client `graphql`
+	// wrapper this entry used to carry is gone — this is a bare pass-through,
+	// mirroring the other categories' server entries.
+	// Passing `null` instance because each method must receive a valid context
+	// from the per-request argument.
+	return generateClientWithAmplifyInstance<T, V6ClientSSRRequest<T>>({
 		amplify: null,
 		...options,
 	});
-
-	// TODO: improve this and the next type
-	const prevGraphql = client.graphql as unknown as GraphQLMethod<Options>;
-
-	const wrappedGraphql = (
-		contextSpec: AmplifyContext,
-		innerOptions: GraphQLOptionsV6<unknown, string, Options>,
-		additionalHeaders?: CustomHeaders,
-	) => {
-		// Phase C4: the server-context registry is gone. The caller supplies the
-		// per-request `AmplifyContext` directly (branded via `Amplify.configure`,
-		// `createAmplifyContext`, or the adapter's per-request builder). Bind it as
-		// the client instance; `InternalGraphQLAPI` bridges a bare `AmplifyClass`
-		// if one is ever passed through.
-		return prevGraphql.call(
-			{ [__amplify]: contextSpec },
-			innerOptions,
-			additionalHeaders,
-		);
-	};
-
-	client.graphql = wrappedGraphql as unknown as GraphQLMethodSSR<Options>;
-
-	return client;
 }

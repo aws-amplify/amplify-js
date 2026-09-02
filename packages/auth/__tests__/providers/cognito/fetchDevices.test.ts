@@ -2,13 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+import {
+	createMockAmplifyContext,
+	withTokens,
+} from '@aws-amplify/core/internals/testing';
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { fetchDevices } from '../../../src/providers/cognito';
 import { ListDevicesException } from '../../../src/providers/cognito/types/errors';
 import { createListDevicesClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 
@@ -59,9 +62,7 @@ describe('fetchDevices', () => {
 	});
 
 	beforeAll(() => {
-		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(mockCtx, decodeJWT(mockAccessToken));
 	});
 
 	beforeEach(() => {
@@ -74,7 +75,7 @@ describe('fetchDevices', () => {
 
 	afterEach(() => {
 		mockListDevices.mockReset();
-		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
+		mockCtx.fetchAuthSession.mockClear();
 		mockCreateListDevicesClient.mockClear();
 	});
 
@@ -118,9 +119,7 @@ describe('fetchDevices', () => {
 				},
 			},
 		});
-		(customCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(customCtx, decodeJWT(mockAccessToken));
 
 		await fetchDevices(customCtx);
 

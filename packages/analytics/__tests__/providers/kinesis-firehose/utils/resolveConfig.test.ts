@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { resolveConfig } from '../../../../src/providers/kinesis-firehose/utils';
 import { DEFAULT_KINESIS_FIREHOSE_CONFIG } from '../../../../src/providers/kinesis-firehose/utils/constants';
-import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 	const providedConfig = {

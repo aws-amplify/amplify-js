@@ -3,12 +3,9 @@
 import {
 	Signer,
 	assertOptionalCtxArg,
+	createCtxResolver,
 } from '@aws-amplify/core/internals/utils';
-import {
-	AmplifyContext,
-	getGlobalContext,
-	isAmplifyContext,
-} from '@aws-amplify/core';
+import { AmplifyContext, isAmplifyContext } from '@aws-amplify/core';
 
 import { MqttOptions, MqttOverWS } from './MqttOverWS';
 
@@ -20,7 +17,14 @@ export interface AWSIoTOptions extends MqttOptions {
 }
 
 export class AWSIoT extends MqttOverWS {
-	private readonly _explicitCtx: AmplifyContext | undefined;
+	/**
+	 * Resolve the AmplifyContext for this provider (fresh per operation).
+	 * - If an explicit ctx was passed at construction, it is pinned (fixed context by design).
+	 * - Otherwise, the global context is resolved fresh per access so that reconfiguration
+	 *   (setGlobalContext with a new AmplifyContext) is honored across operations.
+	 * @private
+	 */
+	private readonly _resolveCtx: () => AmplifyContext;
 
 	constructor(options?: AWSIoTOptions);
 	constructor(ctx: AmplifyContext | undefined, options?: AWSIoTOptions);
@@ -30,7 +34,7 @@ export class AWSIoT extends MqttOverWS {
 	) {
 		if (isAmplifyContext(ctxOrOptions)) {
 			super(maybeOptions ?? {});
-			this._explicitCtx = ctxOrOptions;
+			this._resolveCtx = createCtxResolver(ctxOrOptions);
 		} else {
 			// When a second argument is supplied the caller used the
 			// `(ctx, options)` overload, so the first argument is required to be a
@@ -45,22 +49,8 @@ export class AWSIoT extends MqttOverWS {
 			// caller omitted the context but still supplied options in the second
 			// slot, so fall back to `maybeOptions` rather than discarding it.
 			super(ctxOrOptions ?? maybeOptions ?? {});
+			this._resolveCtx = createCtxResolver();
 		}
-	}
-
-	/**
-	 * Resolve the AmplifyContext for this provider.
-	 * - If an explicit ctx was passed at construction, it is pinned (fixed context by design).
-	 * - Otherwise, the global context is resolved fresh per access so that reconfiguration
-	 *   (setGlobalContext with a new AmplifyContext) is honored across operations.
-	 * @private
-	 */
-	private get _ctx(): AmplifyContext {
-		if (this._explicitCtx) {
-			return this._explicitCtx;
-		}
-
-		return getGlobalContext();
 	}
 
 	protected get region(): string | undefined {
@@ -75,7 +65,7 @@ export class AWSIoT extends MqttOverWS {
 				service: SERVICE_NAME,
 				region: this.region,
 			};
-			const session = await this._ctx.fetchAuthSession();
+			const session = await this._resolveCtx().fetchAuthSession();
 
 			if (!session.credentials) {
 				throw new Error('No auth session credentials');

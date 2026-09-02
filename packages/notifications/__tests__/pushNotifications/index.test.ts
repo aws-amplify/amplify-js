@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { ConsoleLogger } from '@aws-amplify/core';
 import {
 	clearGlobalContext,
@@ -9,7 +10,6 @@ import {
 
 import * as defaultExports from '../../src/pushNotifications';
 import * as customerProfilesExports from '../../src/pushNotifications/providers/customer-profiles';
-import { createMockAmplifyContext } from '../testUtils/createMockAmplifyContext';
 
 const DEPRECATED_RUNTIME_APIS = [
 	'getBadgeCount',

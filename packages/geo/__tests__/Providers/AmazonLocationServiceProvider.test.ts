@@ -9,6 +9,10 @@ import {
 } from '@aws-sdk/client-location';
 import { AmplifyContext, GeoConfig } from '@aws-amplify/core';
 import {
+	MockResourcesConfig,
+	createMockAmplifyContext,
+} from '@aws-amplify/core/internals/testing';
+import {
 	clearGlobalContext,
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
@@ -33,7 +37,6 @@ import {
 	mockGetGeofenceCommand,
 	mockListGeofencesCommand,
 } from '../testUtils';
-import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 import {
 	AmazonLocationServiceGeofence,
 	Coordinates,
@@ -149,7 +152,11 @@ describe('AmazonLocationServiceProvider', () => {
 					},
 				},
 			};
-			const noDefaultCtx = createMockAmplifyContext(noDefaultMapConfig);
+			// The fixture intentionally uses an invalid `maps.items` shape to
+			// exercise the error path, so it cannot satisfy MockResourcesConfig.
+			const noDefaultCtx = createMockAmplifyContext(
+				noDefaultMapConfig as unknown as MockResourcesConfig,
+			);
 			const provider = new AmazonLocationServiceProvider(
 				noDefaultMapConfig.Geo as unknown as GeoConfig,
 				noDefaultCtx,

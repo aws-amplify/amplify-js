@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig } from 'aws-amplify';
+import { fetchAuthSession } from 'aws-amplify/auth/server';
 import { sharedInMemoryStorage } from 'aws-amplify/utils';
 
 import { createRunWithAmplifyServerContext } from '../../src/utils/createRunWithAmplifyServerContext';
@@ -188,6 +189,40 @@ describe('createRunWithAmplifyServerContext (per-request AmplifyContext)', () =>
 			mockAmplifyConfig.Auth,
 			adapterB,
 		);
+	});
+
+	it('supports the SSR calling pattern: operation calls fetchAuthSession(contextSpec) end-to-end', async () => {
+		// Mirrors the documented pre-context v6 SSR customer snippet:
+		//   runWithAmplifyServerContext({
+		//     nextServerContext: { req, res },
+		//     operation: async (contextSpec) => {
+		//       const session = await fetchAuthSession(contextSpec);
+		//     },
+		//   });
+		// `fetchAuthSession` is the overloaded top-level API reachable from
+		// `aws-amplify/auth/server`; the per-request branded context is passed
+		// as its first argument.
+		mockCreateCookieStorageAdapterFromNextServerContext.mockResolvedValueOnce(
+			makeTaggedCookieAdapter('SSR'),
+		);
+
+		const runWithAmplifyServerContext = buildRunner();
+
+		const session = await runWithAmplifyServerContext({
+			nextServerContext: {
+				req: {},
+				res: {},
+			} as unknown as NextServer.Context,
+			operation: async contextSpec => fetchAuthSession(contextSpec),
+		});
+
+		// The session was produced by the per-request context's cookie-backed
+		// providers — not any global state (no Amplify.configure ran here).
+		expect(session.tokens).toEqual({
+			accessToken: 'access-SSR',
+			idToken: 'id-SSR',
+		});
+		expect(session.identityId).toBe('identity-SSR');
 	});
 
 	it('uses sharedInMemoryStorage for the unauthenticated (nextServerContext === null) path', async () => {

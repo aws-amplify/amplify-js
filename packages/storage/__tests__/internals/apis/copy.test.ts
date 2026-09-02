@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { copy as advancedCopy } from '../../../src/internals';
 import { copy as copyInternal } from '../../../src/providers/s3/apis/internal/copy';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../src/providers/s3/apis/internal/copy');
 const mockedCopyInternal = jest.mocked(copyInternal);

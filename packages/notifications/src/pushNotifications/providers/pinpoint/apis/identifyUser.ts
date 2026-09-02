@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
-import {
-	PlatformNotSupportedError,
-	resolveCtxArgs,
-} from '@aws-amplify/core/internals/utils';
+import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
 import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/pinpoint';
 
 import { PushNotificationValidationErrorCode } from '../../../errors';
@@ -72,7 +69,6 @@ export async function identifyUser(
 	ctx: AmplifyContext,
 	input: IdentifyUserInput,
 ): Promise<void>;
-export async function identifyUser(...args: any[]): Promise<void> {
-	resolveCtxArgs<[IdentifyUserInput]>(args);
+export async function identifyUser(..._args: any[]): Promise<void> {
 	throw new PlatformNotSupportedError();
 }

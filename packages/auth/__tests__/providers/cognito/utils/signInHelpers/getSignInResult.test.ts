@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { ChallengeName } from '../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { getSignInResult } from '../../../../../src/providers/cognito/utils/signInHelpers';
 import { AuthSignInOutput } from '../../../../../src/types';
 import { createAssociateSoftwareTokenClient } from '../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
-import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock(
 	'../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',

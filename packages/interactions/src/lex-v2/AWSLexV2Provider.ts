@@ -16,7 +16,11 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
-import { convert, unGzipBase64AsJson } from '../utils';
+import {
+	convert,
+	createPerContextCallbackRegistry,
+	unGzipBase64AsJson,
+} from '../utils';
 import {
 	InteractionsMessage,
 	InteractionsOnCompleteCallback,
@@ -55,24 +59,13 @@ interface lexV2BaseReqParams {
 }
 
 class AWSLexV2Provider {
-	// Per-context onComplete callback registry. Keyed on the *resolved*
-	// `AmplifyContext` object identity so a callback registered against one
-	// context never fires for another (context isolation) — previously this was
-	// a single process-global map keyed only by bot name, which leaked callbacks
-	// across independent contexts.
-	//
-	// NOTE (re-configure semantics): `Amplify.configure()` publishes a NEW frozen
-	// global context object on every call. A callback registered against the
-	// global context before a re-configure is therefore keyed on the OLD context
-	// object and will NOT be found after re-configure (the new global context is
-	// a different object). Callers relying on the global context must re-register
-	// `onComplete` after reconfiguring; callers passing an explicit context keep
-	// their callbacks for that context's lifetime. Using a `WeakMap` lets the
-	// per-context records be garbage-collected once a context is unreferenced.
-	private readonly _botsCompleteCallbackByCtx = new WeakMap<
-		AmplifyContext,
-		Record<string, InteractionsOnCompleteCallback>
-	>();
+	// Per-context onComplete callback registry (context isolation). See
+	// `createPerContextCallbackRegistry` for the full documentation, including
+	// the re-configure semantics (`Amplify.configure()` publishes a NEW frozen
+	// global context object, so callbacks registered against a prior global
+	// context are intentionally not carried over).
+	private readonly _botsCompleteCallbackByCtx =
+		createPerContextCallbackRegistry<InteractionsOnCompleteCallback>();
 
 	private defaultSessionId: string = amplifyUuid();
 
@@ -147,12 +140,7 @@ class AWSLexV2Provider {
 		{ name }: AWSLexV2ProviderOption,
 		callback: InteractionsOnCompleteCallback,
 	) {
-		const existing = this._botsCompleteCallbackByCtx.get(ctx);
-		if (existing) {
-			existing[name] = callback;
-		} else {
-			this._botsCompleteCallbackByCtx.set(ctx, { [name]: callback });
-		}
+		this._botsCompleteCallbackByCtx.set(ctx, name, callback);
 	}
 
 	/**
@@ -168,7 +156,7 @@ class AWSLexV2Provider {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', sessionState?.intent?.state);
 		// Only fire callbacks registered against this exact context (isolation).
-		const callback = this._botsCompleteCallbackByCtx.get(ctx)?.[name];
+		const callback = this._botsCompleteCallbackByCtx.get(ctx, name);
 		if (!callback) {
 			return;
 		}

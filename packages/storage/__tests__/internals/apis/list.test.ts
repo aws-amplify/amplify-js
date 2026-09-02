@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { list as advancedList } from '../../../src/internals';
 import { list as listInternal } from '../../../src/providers/s3/apis/internal/list';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../src/providers/s3/apis/internal/list');
 const mockedListInternal = jest.mocked(listInternal);

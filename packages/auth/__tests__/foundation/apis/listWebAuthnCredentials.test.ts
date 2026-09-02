@@ -1,13 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+import {
+	createMockAmplifyContext,
+	withTokens,
+} from '@aws-amplify/core/internals/testing';
 
 import { createListWebAuthnCredentialsClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { ListWebAuthnCredentialsInput } from '../../../src';
 import { mockUserCredentials } from '../../mockData';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
 import { listWebAuthnCredentials } from '../../../src/foundation/apis';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -37,9 +40,7 @@ describe('listWebAuthnCredentials', () => {
 	});
 
 	beforeAll(() => {
-		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(mockCtx, decodeJWT(mockAccessToken));
 
 		mockCreateListWebAuthnCredentialsClient.mockReturnValue(
 			mockListWebAuthnCredentials,

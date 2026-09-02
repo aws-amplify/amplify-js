@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { resolveConfig } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/resolveConfig';
 import {
 	PushNotificationError,
 	PushNotificationValidationErrorCode,
 } from '../../../../../src/pushNotifications/errors';
 import { customerProfilesConfig } from '../../../../testUtils/data';
-import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 describe('resolveConfig (customer-profiles)', () => {
 	const makeCtx = (config: unknown) =>

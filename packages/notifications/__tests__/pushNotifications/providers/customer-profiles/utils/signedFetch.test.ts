@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	PushNotificationAction,
@@ -13,7 +14,6 @@ import { signedFetch } from '../../../../../src/pushNotifications/providers/cust
 import { resolveConfig } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/resolveConfig';
 import { resolveCredentials } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/resolveCredentials';
 import { customerProfilesConfig } from '../../../../testUtils/data';
-import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 jest.mock(

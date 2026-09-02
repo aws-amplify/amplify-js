@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import {
 	clearGlobalContext,
 	setGlobalContext,
@@ -8,7 +9,6 @@ import {
 
 import { identifyUser } from '../../../../../src/pushNotifications/providers/pinpoint/apis/identifyUser';
 import { expectNotSupportedAsync } from '../../../../testUtils/expectNotSupported';
-import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 describe('identifyUser', () => {
 	beforeAll(() => {

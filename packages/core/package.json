@@ -162,6 +162,12 @@
 			"import": "./dist/esm/libraryUtils.mjs",
 			"require": "./dist/cjs/libraryUtils.js"
 		},
+		"./internals/testing": {
+			"react-native": "./dist/cjs/testing/index.js",
+			"types": "./dist/esm/testing/index.d.ts",
+			"import": "./dist/esm/testing/index.mjs",
+			"require": "./dist/cjs/testing/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -189,6 +195,9 @@
 			],
 			"internals/utils": [
 				"./dist/esm/libraryUtils.d.ts"
+			],
+			"internals/testing": [
+				"./dist/esm/testing/index.d.ts"
 			]
 		}
 	}

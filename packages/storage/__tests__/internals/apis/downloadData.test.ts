@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { downloadData as advancedDownloadData } from '../../../src/internals';
 import { downloadData as downloadDataInternal } from '../../../src/providers/s3/apis/internal/downloadData';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../src/providers/s3/apis/internal/downloadData');
 const mockedDownloadDataInternal = jest.mocked(downloadDataInternal);

@@ -6,6 +6,7 @@ import {
 	clearGlobalContext,
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { handleFailure } from '../../../../../src/providers/cognito/utils/oauth/handleFailure';
 import { validateState } from '../../../../../src/providers/cognito/utils/oauth/validateState';
@@ -16,7 +17,6 @@ import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorTypes } from '../../../../../src/types/Auth';
 import { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
-import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/cognito/tokenProvider');
 jest.mock('@aws-amplify/core', () => ({

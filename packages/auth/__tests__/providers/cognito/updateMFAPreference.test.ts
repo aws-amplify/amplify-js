@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+import {
+	createMockAmplifyContext,
+	withTokens,
+} from '@aws-amplify/core/internals/testing';
 
 import {
 	UpdateMFAPreferenceInput,
@@ -13,7 +17,6 @@ import { getMFASettings } from '../../../src/providers/cognito/apis/updateMFAPre
 import { MFAPreference } from '../../../src/providers/cognito/types';
 import { createSetUserMFAPreferenceClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 
@@ -79,9 +82,7 @@ describe('updateMFAPreference', () => {
 	);
 
 	beforeAll(() => {
-		(mockCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(mockCtx, decodeJWT(mockAccessToken));
 	});
 
 	beforeEach(() => {
@@ -93,7 +94,7 @@ describe('updateMFAPreference', () => {
 
 	afterEach(() => {
 		mockSetUserMFAPreference.mockReset();
-		(mockCtx.fetchAuthSession as jest.Mock).mockClear();
+		mockCtx.fetchAuthSession.mockClear();
 		mockCreateSetUserMFAPreferenceClient.mockClear();
 	});
 
@@ -129,9 +130,7 @@ describe('updateMFAPreference', () => {
 				},
 			},
 		});
-		(customCtx.fetchAuthSession as jest.Mock).mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+		withTokens(customCtx, decodeJWT(mockAccessToken));
 
 		await updateMFAPreference(customCtx, mfaChoices[0]);
 

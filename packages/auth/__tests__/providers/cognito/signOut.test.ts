@@ -3,6 +3,7 @@
 
 import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
@@ -15,7 +16,6 @@ import {
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { getRegionFromUserPoolId } from '../../../src/foundation/parsers';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
@@ -56,7 +56,7 @@ describe('signOut', () => {
 	});
 
 	// assert mocks
-	const mockClearCredentials = () => mockCtx.clearCredentials as jest.Mock;
+	const mockClearCredentials = () => mockCtx.clearCredentials;
 	const mockGetRegionFromUserPoolId = jest.mocked(getRegionFromUserPoolId);
 	const mockGlobalSignOut = jest.fn();
 	const mockCreateGlobalSignOutClient = jest.mocked(createGlobalSignOutClient);

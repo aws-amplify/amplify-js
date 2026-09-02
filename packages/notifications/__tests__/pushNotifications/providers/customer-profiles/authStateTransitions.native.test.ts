@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import {
 	clearGlobalContext,
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
 import { Hub, fetchAuthSession } from '@aws-amplify/core';
 
-import { createMockAmplifyContext } from '../../../testUtils/createMockAmplifyContext';
 import { customerProfilesConfig, pushToken } from '../../../testUtils/data';
 
 jest.mock('@aws-amplify/core', () => ({
@@ -226,7 +226,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 	});
 
 	describe('credential path: the identity that signs each call', () => {
-		const initializeProvider = (): LoadedProvider => {
+		const initializeProvider = async (): Promise<LoadedProvider> => {
 			const provider = loadProvider();
 			provider.initializePushNotifications(makeTestCtx());
 			provider.setToken(pushToken);
@@ -235,7 +235,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 		};
 
 		it('signs register-device with the identity fetchAuthSession returns', async () => {
-			const { registerDevice } = initializeProvider();
+			const { registerDevice } = await initializeProvider();
 			signInAs(AUTH_IDENTITY_ID);
 
 			await registerDevice(makeTestCtx(), { token: pushToken });
@@ -257,7 +257,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 		});
 
 		it('signs remove-device with the CURRENT identity, so a guest session cannot remove the authenticated row', async () => {
-			const { registerDevice, removeDevice } = initializeProvider();
+			const { registerDevice, removeDevice } = await initializeProvider();
 
 			signInAs(AUTH_IDENTITY_ID);
 			await registerDevice(makeTestCtx(), { token: pushToken });
@@ -284,7 +284,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 		});
 
 		it('signs remove-device with the authenticated identity when called BEFORE sign-out', async () => {
-			const { registerDevice, removeDevice } = initializeProvider();
+			const { registerDevice, removeDevice } = await initializeProvider();
 			signInAs(AUTH_IDENTITY_ID);
 
 			await registerDevice(makeTestCtx(), { token: pushToken });
@@ -301,7 +301,7 @@ describe('customer-profiles push device auth-state transitions (native)', () => 
 		});
 
 		it('rejects when the session has no credentials to sign with', async () => {
-			const { registerDevice } = initializeProvider();
+			const { registerDevice } = await initializeProvider();
 			mockFetchAuthSession.mockResolvedValue({
 				identityId: undefined,
 				credentials: undefined,

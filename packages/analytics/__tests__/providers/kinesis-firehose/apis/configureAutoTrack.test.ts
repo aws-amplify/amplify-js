@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { KinesisFirehoseConfigureAutoTrackInput } from '../../../../src/providers/kinesis-firehose/types';
 import {
 	EventTracker,
@@ -8,7 +10,6 @@ import {
 	SessionTracker,
 } from '../../../../src/trackers';
 import { record } from '../../../../src/providers/kinesis-firehose/apis/record';
-import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/trackers');
 jest.mock('../../../../src/providers/kinesis-firehose/apis/record');

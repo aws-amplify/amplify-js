@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import * as core from '@aws-amplify/core';
 import { clearGlobalContext } from '@aws-amplify/core/internals/utils';
 
 import { awsRealTimeHeaderBasedAuth } from '../src/Providers/AWSWebSocketProvider/authHeaders';
-
-import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 // Signing is a crypto boundary — mock it so the IAM path is deterministic in
 // jsdom. All other internals (context resolution, handler dispatch) run for real.

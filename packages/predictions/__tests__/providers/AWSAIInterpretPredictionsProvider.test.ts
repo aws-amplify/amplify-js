@@ -17,7 +17,7 @@ import {
 	validationErrorMap,
 } from '../../src/errors/types/validation';
 import { AmazonAIInterpretPredictionsProvider } from '../../src/providers';
-import { createMockAmplifyContext } from '../testUtils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 ComprehendClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof DetectEntitiesCommand) {
@@ -491,7 +491,8 @@ describe('Predictions interpret provider test', () => {
 
 	describe('custom user agent', () => {
 		test('interpret initializes a client with the correct custom user agent', async () => {
-			jest.spyOn(ComprehendClient.prototype, 'send');
+			const comprehendSendMock = jest.spyOn(ComprehendClient.prototype, 'send');
+			comprehendSendMock.mockClear();
 			await predictionsProvider.interpret({
 				text: {
 					source: {
@@ -501,11 +502,12 @@ describe('Predictions interpret provider test', () => {
 				},
 			});
 
-			// comprehendClient is a private property
-			// Used this strategy to easily check that the customUserAgent is set correctly on the client
-			expect(
-				(predictionsProvider as any).comprehendClient.config.customUserAgent,
-			).toEqual(
+			// Assert via the client instance captured by the mocked `send`
+			// (`config` is public SDK client API) instead of peeking the
+			// provider's private client field.
+			const comprehendClient = comprehendSendMock.mock
+				.contexts[0] as ComprehendClient;
+			expect(comprehendClient.config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Interpret,

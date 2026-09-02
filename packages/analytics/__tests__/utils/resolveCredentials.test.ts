@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { resolveCredentials } from '../../src/utils';
 import { AnalyticsError } from '../../src';
-import { createMockAmplifyContext } from '../testUtils/mockAmplifyContext';
 
 describe('Analytics Kinesis Provider Util: resolveCredentials', () => {
 	const credentials = {

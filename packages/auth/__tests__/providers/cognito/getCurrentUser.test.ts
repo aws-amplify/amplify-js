@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { getCurrentUser } from '../../../src/providers/cognito';
 import { USER_UNAUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 import { mockAccessToken } from './testUtils/data';
 
@@ -25,7 +25,7 @@ describe('getCurrentUser', () => {
 	});
 
 	beforeEach(() => {
-		(mockCtx.getTokens as jest.Mock).mockResolvedValue({
+		mockCtx.getTokens.mockResolvedValue({
 			accessToken: decodeJWT(mockAccessToken),
 			idToken: {
 				payload: {
@@ -41,7 +41,7 @@ describe('getCurrentUser', () => {
 	});
 
 	afterEach(() => {
-		(mockCtx.getTokens as jest.Mock).mockReset();
+		mockCtx.getTokens.mockReset();
 	});
 
 	it('should get current user', async () => {
@@ -57,7 +57,7 @@ describe('getCurrentUser', () => {
 	});
 
 	it('should throw an error when tokens are not found', async () => {
-		(mockCtx.getTokens as jest.Mock).mockResolvedValue(undefined);
+		mockCtx.getTokens.mockResolvedValue(undefined);
 		try {
 			await getCurrentUser(mockCtx);
 		} catch (error: any) {

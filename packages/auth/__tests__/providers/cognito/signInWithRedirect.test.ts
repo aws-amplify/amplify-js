@@ -7,6 +7,7 @@ import {
 	isBrowser,
 	urlSafeEncode,
 } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { assertUserNotAuthenticated } from '../../../src/providers/cognito/utils/signInHelpers';
 import {
@@ -22,7 +23,6 @@ import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWi
 import type { OAuthStore } from '../../../src/providers/cognito/utils/types';
 import { mockAuthConfigWithOAuth } from '../../mockData';
 import { type AuthPrompt } from '../../../src/types/inputs';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),

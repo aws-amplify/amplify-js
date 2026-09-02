@@ -4,7 +4,7 @@ import { InvalidAmplifyContextError } from '@aws-amplify/core/internals/utils';
 
 import { PredictionsClass } from '../src/Predictions';
 
-import { createMockAmplifyContext } from './testUtils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 describe('PredictionsClass constructor context guard (F3.1)', () => {
 	it('throws InvalidAmplifyContextError when a defined-but-unbranded object is passed', () => {

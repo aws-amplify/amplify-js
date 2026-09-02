@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { defaultStorage } from '@aws-amplify/core';
 import {
 	clearGlobalContext,
@@ -9,7 +10,6 @@ import {
 
 import { uploadData } from '../../../../src/providers/s3/apis';
 import { uploadData as internalUploadDataImpl } from '../../../../src/providers/s3/apis/internal/uploadData';
-import { createMockAmplifyContext } from '../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../src/providers/s3/apis/internal/uploadData');
 

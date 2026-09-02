@@ -7,10 +7,10 @@ import {
 	clearGlobalContext,
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { signInWithUserAuth } from '../../../src/providers/cognito/apis/signInWithUserAuth';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { InitiateAuthCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 jest.mock('../../../src/providers/cognito/utils/signInHelpers', () => ({

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import {
 	PushNotificationAction,
 	clearGlobalContext,
@@ -21,7 +22,6 @@ import {
 } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/resolveConfig';
 import { channelType } from '../../../../testUtils/data';
 import { PushNotificationValidationErrorCode } from '../../../../../src/pushNotifications/errors';
-import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock(
 	'../../../../../src/pushNotifications/providers/customer-profiles/utils/signedFetch',

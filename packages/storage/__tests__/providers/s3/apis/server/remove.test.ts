@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { RemoveInput, RemoveWithPathInput } from '../../../../../src';
 import { remove } from '../../../../../src/providers/s3/apis/server';
 import { remove as internalRemoveImpl } from '../../../../../src/providers/s3/apis/internal/remove';
-import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/s3/apis/internal/remove');
 

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { StorageAccessLevel } from '@aws-amplify/core';
 
@@ -20,7 +21,6 @@ import {
 } from '../../../../../src/providers/s3/types';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import './testUtils';
-import { createMockAmplifyContext } from '../../../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 

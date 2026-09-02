@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import {
 	generateRandomLexV1Config,
 	generateRandomLexV2Config,
 } from '../../testUtils/randomConfigGeneration';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import { resolveBotConfig } from '../../../src/lex-v1/utils';
 
 describe('Interactions LexV1 Util: resolveBotConfig', () => {

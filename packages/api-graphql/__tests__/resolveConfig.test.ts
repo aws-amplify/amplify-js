@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { resolveConfig } from '../src/utils';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
 
 describe('GraphQL API Util: resolveConfig', () => {
 	const GraphQLConfig = {

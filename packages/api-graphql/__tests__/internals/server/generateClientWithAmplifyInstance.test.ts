@@ -1,3 +1,4 @@
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { Amplify, AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import { generateClientWithAmplifyInstance } from '../../../src/internals/server';
 import configFixture from '../../fixtures/modeled/amplifyconfiguration';
@@ -223,9 +224,15 @@ describe('server generateClient', () => {
 					config: config,
 				});
 
-				const mockContextSpec = {
-					token: { value: Symbol('AmplifyServerContextToken') },
-				};
+				// Post-Phase C3 shape: the per-request context is a branded
+				// `AmplifyContext` (previously an opaque `{ token }` ContextSpec).
+				// data-schema's model-op typings still declare the legacy
+				// ContextSpec, so the mock carries a `token` too — runtime
+				// pass-through is shape-agnostic either way.
+				const mockContextSpec = Object.assign(
+					createMockAmplifyContext(config),
+					{ token: { value: Symbol('AmplifyServerContextToken') } },
+				);
 
 				const spy = jest
 					.spyOn(client, 'graphql')

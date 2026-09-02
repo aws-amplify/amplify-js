@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext } from '@aws-amplify/core';
-import {
-	PlatformNotSupportedError,
-	resolveCtxArgs,
-} from '@aws-amplify/core/internals/utils';
+import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
 
 import { RegisterDeviceInput } from '../types';
 
@@ -24,7 +21,6 @@ export async function registerDevice(
 	ctx: AmplifyContext,
 	input: RegisterDeviceInput,
 ): Promise<void>;
-export async function registerDevice(...args: any[]): Promise<void> {
-	resolveCtxArgs<[RegisterDeviceInput]>(args);
+export async function registerDevice(..._args: any[]): Promise<void> {
 	throw new PlatformNotSupportedError();
 }

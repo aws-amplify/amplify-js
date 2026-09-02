@@ -18,15 +18,11 @@ jest.mock('@aws-amplify/core', () => ({
 			},
 		};
 	},
-	// Provides the global-ctx fallback for tests that construct providers
-	// without an explicit AmplifyContext (lazy ctx resolution path).
-	// References mockGlobalCtxFetchAuthSession lazily (at call time) so
-	// explicit-ctx tests can assert it is NOT called.
-	getGlobalContext() {
-		return {
-			fetchAuthSession: mockGlobalCtxFetchAuthSession,
-		};
-	},
+	// Note: the global-ctx fallback for tests that construct providers
+	// without an explicit AmplifyContext (lazy ctx resolution path) is
+	// provided by the real setGlobalContext(...) call below — the resolver
+	// created by core's createCtxResolver reads core's actual global
+	// context state, not this module mock's surface.
 }));
 
 const mockGlobalCtxFetchAuthSession = jest.fn(() => ({
@@ -39,15 +35,30 @@ const mockGlobalCtxFetchAuthSession = jest.fn(() => ({
 	},
 }));
 
-import { Reachability, Signer } from '@aws-amplify/core/internals/utils';
+import {
+	Reachability,
+	Signer,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 import * as Paho from '../src/vendor/paho-mqtt';
 import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
 import { PubSub as MqttPubSub } from '../src/clients/mqtt';
 import { AWSIoT } from '../src/Providers/AWSIot';
 import { HubConnectionListener } from './helpers';
-import { createMockAmplifyContext } from './testUtils/mockAmplifyContext';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { Observable, Observer } from 'rxjs';
 import * as constants from '../src/Providers/constants';
+
+// Provide the global-ctx fallback for tests that construct providers without
+// an explicit AmplifyContext (lazy ctx resolution path). Uses the REAL global
+// context state (via setGlobalContext) so core's createCtxResolver resolves it.
+// References mockGlobalCtxFetchAuthSession so explicit-ctx tests can assert
+// it is NOT called.
+setGlobalContext(
+	createMockAmplifyContext({
+		fetchAuthSession: mockGlobalCtxFetchAuthSession,
+	}),
+);
 
 const pahoClientMockCache = {};
 

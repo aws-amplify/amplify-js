@@ -39,7 +39,7 @@ import {
 } from '../../src/types';
 import { BlockList } from '../../src/types/AWSTypes';
 
-import { createMockAmplifyContext } from '../testUtils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 jest.mock('@aws-amplify/storage', () => ({
 	getUrl: jest.fn(),
@@ -729,16 +729,23 @@ describe('Predictions identify provider test', () => {
 		test('identify for label initializes a client with the correct custom user agent', async () => {
 			predictionsProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
 			jest.spyOn(TextractClient.prototype, 'send');
-			jest.spyOn(RekognitionClient.prototype, 'send');
+			const rekognitionSendMock = jest.spyOn(
+				RekognitionClient.prototype,
+				'send',
+			);
+			rekognitionSendMock.mockClear();
 			const fileInput = new File([Buffer.from('file')], 'file');
 			const detectLabelInput: IdentifyLabelsInput = {
 				labels: { source: { bytes: fileInput }, type: 'LABELS' },
 			};
 			await predictionsProvider.identify(detectLabelInput);
 
-			expect(
-				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
-			).toEqual(
+			// Assert via the client instance captured by the mocked `send`
+			// (`config` is public SDK client API) instead of peeking the
+			// provider's private client field.
+			const rekognitionClient = rekognitionSendMock.mock
+				.contexts[0] as RekognitionClient;
+			expect(rekognitionClient.config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
@@ -748,7 +755,11 @@ describe('Predictions identify provider test', () => {
 		test('identify for entities initializes a client with the correct custom user agent', async () => {
 			predictionsProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
 			jest.spyOn(TextractClient.prototype, 'send');
-			jest.spyOn(RekognitionClient.prototype, 'send');
+			const rekognitionSendMock = jest.spyOn(
+				RekognitionClient.prototype,
+				'send',
+			);
+			rekognitionSendMock.mockClear();
 			const detectFacesInput: IdentifyEntitiesInput = {
 				entities: {
 					source: {
@@ -759,9 +770,12 @@ describe('Predictions identify provider test', () => {
 			};
 			await predictionsProvider.identify(detectFacesInput);
 
-			expect(
-				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
-			).toEqual(
+			// Assert via the client instance captured by the mocked `send`
+			// (`config` is public SDK client API) instead of peeking the
+			// provider's private client field.
+			const rekognitionClient = rekognitionSendMock.mock
+				.contexts[0] as RekognitionClient;
+			expect(rekognitionClient.config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
@@ -770,25 +784,50 @@ describe('Predictions identify provider test', () => {
 		});
 		test('identify for text initializes a client with the correct custom user agent', async () => {
 			predictionsProvider = new AmazonAIIdentifyPredictionsProvider(ctx);
-			jest.spyOn(TextractClient.prototype, 'send');
-			jest.spyOn(RekognitionClient.prototype, 'send');
+			const textractSendMock = jest.spyOn(TextractClient.prototype, 'send');
+			const rekognitionSendMock = jest.spyOn(
+				RekognitionClient.prototype,
+				'send',
+			);
+			textractSendMock.mockClear();
+			rekognitionSendMock.mockClear();
+			// we only call textract if rekognition.detectText reaches word limit of 50. Mock this:
+			rekognitionSendMock.mockImplementationOnce(() => {
+				const plainBlocks: DetectTextCommandOutput = {
+					TextDetections: [{ Type: 'LINE', Id: 1, DetectedText: 'Hello world' }],
+					$metadata: {},
+				};
+				for (let i = 0; i < 50; ++i) {
+					plainBlocks.TextDetections!.push({
+						Type: 'WORD',
+						Id: i + 2,
+						ParentId: 1,
+						DetectedText: '',
+					});
+				}
+
+				return Promise.resolve(plainBlocks);
+			});
 			const detectTextInput: IdentifyTextInput = {
 				text: { source: { key: 'key' }, format: 'PLAIN' },
 			};
 			await predictionsProvider.identify(detectTextInput);
 
-			expect(
-				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
-			).toEqual(
+			// Assert via the client instances captured by the mocked `send`
+			// (`config` is public SDK client API) instead of peeking the
+			// provider's private client fields.
+			const rekognitionClient = rekognitionSendMock.mock
+				.contexts[0] as RekognitionClient;
+			expect(rekognitionClient.config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
 				}),
 			);
 
-			expect(
-				(predictionsProvider as any).textractClient.config.customUserAgent,
-			).toEqual(
+			const textractClient = textractSendMock.mock
+				.contexts[0] as TextractClient;
+			expect(textractClient.config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,

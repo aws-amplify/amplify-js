@@ -1,13 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	AmplifyContext,
-	getGlobalContext,
-	isAmplifyContext,
-} from '@aws-amplify/core';
+import { AmplifyContext, isAmplifyContext } from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
+	createCtxResolver,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
 import {
@@ -42,22 +39,14 @@ import {
 
 export class AmazonAIInterpretPredictionsProvider {
 	private comprehendClient?: ComprehendClient;
-	private _explicitCtx: AmplifyContext | undefined;
-
 	/**
-	 * Resolve the AmplifyContext for this provider.
+	 * Resolve the AmplifyContext for this provider (fresh per operation).
 	 * - If an explicit ctx was passed at construction, it is pinned (fixed context by design).
 	 * - Otherwise, the global context is resolved fresh per access so that reconfiguration
 	 *   (setGlobalContext with a new AmplifyContext) is honored across operations.
 	 * @private
 	 */
-	private get _ctx(): AmplifyContext {
-		if (this._explicitCtx) {
-			return this._explicitCtx;
-		}
-
-		return getGlobalContext();
-	}
+	private readonly _resolveCtx: () => AmplifyContext;
 
 	/**
 	 * @param ctx - The AmplifyContext to use for auth and config.
@@ -65,9 +54,9 @@ export class AmazonAIInterpretPredictionsProvider {
 	 *   When omitted, the provider resolves the global context lazily per operation.
 	 */
 	constructor(ctx?: AmplifyContext) {
-		if (isAmplifyContext(ctx)) {
-			this._explicitCtx = ctx;
-		}
+		this._resolveCtx = createCtxResolver(
+			isAmplifyContext(ctx) ? ctx : undefined,
+		);
 	}
 
 	getProviderName() {
@@ -84,14 +73,14 @@ export class AmazonAIInterpretPredictionsProvider {
 	}
 
 	async interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
-		const { credentials } = await this._ctx.fetchAuthSession();
+		const { credentials } = await this._resolveCtx().fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { interpretText = {} } =
-			this._ctx.resourcesConfig.Predictions?.interpret ?? {};
+			this._resolveCtx().resourcesConfig.Predictions?.interpret ?? {};
 		const { region = '', defaults = {} } = interpretText;
 		const { type: defaultType = '' } = defaults;
 

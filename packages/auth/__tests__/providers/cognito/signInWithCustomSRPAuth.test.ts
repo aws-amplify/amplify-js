@@ -6,11 +6,11 @@ import {
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInWithCustomSRPAuth } from '../../../src/providers/cognito/apis/signInWithCustomSRPAuth';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,

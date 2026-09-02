@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import {
 	clearGlobalContext,
 	setGlobalContext,
@@ -12,7 +13,6 @@ import {
 	getDeviceId,
 	removeDeviceInternal,
 } from '../../../../../src/pushNotifications/providers/customer-profiles/utils';
-import { createMockAmplifyContext } from '../../../../testUtils/createMockAmplifyContext';
 
 jest.mock('@aws-amplify/react-native', () => ({
 	getOperatingSystem: jest.fn(),

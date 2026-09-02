@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { getUrl as advancedGetUrl } from '../../../src/internals';
 import { getUrl as getUrlInternal } from '../../../src/providers/s3/apis/internal/getUrl';
-import { createMockAmplifyContext } from '../../testUtils/mockAmplifyContext';
 
 jest.mock('../../../src/providers/s3/apis/internal/getUrl');
 const mockedGetUrlInternal = jest.mocked(getUrlInternal);
