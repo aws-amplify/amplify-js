@@ -31,6 +31,11 @@ import { createOAuthError } from '../utils/oauth/createOAuthError';
 import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
 import { OpenAuthSession } from '../../../utils/types';
 
+export async function signInWithRedirect(
+	ctx: AmplifyContext,
+	input?: SignInWithRedirectInput,
+): Promise<void>;
+
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
  *
@@ -40,10 +45,6 @@ import { OpenAuthSession } from '../../../utils/types';
  * @throws OAuthNotConfigureException - Thrown when the oauth config is invalid.
  */
 export async function signInWithRedirect(
-	input?: SignInWithRedirectInput,
-): Promise<void>;
-export async function signInWithRedirect(
-	ctx: AmplifyContext,
 	input?: SignInWithRedirectInput,
 ): Promise<void>;
 export async function signInWithRedirect(...args: any[]): Promise<void> {

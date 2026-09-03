@@ -46,7 +46,11 @@ const {
 
 const logger = new ConsoleLogger('Notifications.PushNotification');
 
-const BACKGROUND_TASK_TIMEOUT = 25; // seconds
+const BACKGROUND_TASK_TIMEOUT = 25;
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export function initializePushNotifications(ctx: AmplifyContext): void; // seconds
 
 /**
  * Initialize and set up the push notification category. The category must be first initialized before all other
@@ -64,10 +68,6 @@ const BACKGROUND_TASK_TIMEOUT = 25; // seconds
  * ```
  */
 export function initializePushNotifications(): void;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export function initializePushNotifications(ctx: AmplifyContext): void;
 export function initializePushNotifications(...args: any[]): void {
 	// Validate that config is available (throws if not configured yet)
 	resolveCtxArgs<[]>(args);

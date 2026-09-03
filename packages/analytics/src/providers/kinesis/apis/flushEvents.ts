@@ -15,6 +15,7 @@ import {
 import { getEventBuffer } from '../utils/getEventBuffer';
 
 const logger = new ConsoleLogger('Kinesis');
+export function flushEvents(ctx: AmplifyContext): void;
 
 /**
  * Flushes all buffered Kinesis events to the service.
@@ -24,7 +25,6 @@ const logger = new ConsoleLogger('Kinesis');
  * this API may not be included in the flush.
  */
 export function flushEvents(): void;
-export function flushEvents(ctx: AmplifyContext): void;
 export function flushEvents(...args: any[]): void {
 	const [ctx] = resolveCtxArgs<[]>(args);
 	const { region, flushSize, flushInterval, bufferSize, resendLimit } =

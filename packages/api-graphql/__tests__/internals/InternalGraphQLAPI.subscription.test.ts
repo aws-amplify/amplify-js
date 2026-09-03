@@ -9,6 +9,7 @@ function makeBrandedContext(): AmplifyContext {
 	const ctx = {
 		resourcesConfig: {},
 		libraryOptions: {},
+		token: Object.freeze({ value: Symbol('testContextToken') }),
 		fetchAuthSession: jest.fn().mockResolvedValue({}),
 		clearCredentials: jest.fn().mockResolvedValue(undefined),
 		getTokens: jest.fn().mockResolvedValue(undefined),

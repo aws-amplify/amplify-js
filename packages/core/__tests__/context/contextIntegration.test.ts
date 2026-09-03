@@ -49,6 +49,20 @@ describe('Amplify.configure() context integration', () => {
 		expect(ctx1).not.toBe(ctx2);
 	});
 
+	it('each configure() publishes a global context with a fresh, frozen token', () => {
+		Amplify.configure({ Auth: { Cognito: { identityPoolId: 'pool1' } } });
+		const ctx1 = getGlobalContext();
+
+		Amplify.configure({ Auth: { Cognito: { identityPoolId: 'pool2' } } });
+		const ctx2 = getGlobalContext();
+
+		// The structural + runtime duck-check the released
+		// @aws-amplify/data-schema performs on server-op params.
+		expect(typeof ctx1.token.value).toBe('symbol');
+		expect(Object.isFrozen(ctx1.token)).toBe(true);
+		expect(ctx1.token.value).not.toBe(ctx2.token.value);
+	});
+
 	it('context.fetchAuthSession delegates to Auth', async () => {
 		const mockTokenProvider = {
 			getTokens: jest.fn().mockResolvedValue({

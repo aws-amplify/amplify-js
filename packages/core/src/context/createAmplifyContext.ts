@@ -12,6 +12,7 @@ import { parseAmplifyConfig } from '../utils/parseAmplifyConfig';
 
 import { AmplifyContext } from './AmplifyContext';
 import { AMPLIFY_CONTEXT_BRAND } from './contextBrand';
+import { createAmplifyContextToken } from './contextToken';
 
 /**
  * Creates a local, branded {@link AmplifyContext} from the given resource
@@ -89,6 +90,9 @@ export function createAmplifyContext(
 	const ctx: AmplifyContext = {
 		resourcesConfig: Object.freeze(resolvedResourceConfig),
 		libraryOptions: resolvedLibraryOptions,
+		// Unique, frozen per-context identity handle (see AmplifyContextToken).
+		// Attached before the brand/freeze below so the frozen context carries it.
+		token: createAmplifyContextToken(),
 		fetchAuthSession: fetchOptions => auth.fetchAuthSession(fetchOptions ?? {}),
 		clearCredentials: () => auth.clearCredentials(),
 		getTokens: tokenOptions => auth.getTokens(tokenOptions),

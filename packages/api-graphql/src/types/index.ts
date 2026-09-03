@@ -502,7 +502,11 @@ export type GraphQLMethodSSR<Options extends CommonPublicClientOptions> = <
 export interface ServerClientGenerationParams {
 	amplify:
 		| null // null expected when used with `generateServerClient`
-		// closure expected with `generateServerClientUsingCookies`
+		// branded per-client context expected with `generateServerClientUsingCookies`
+		// (client-bound; every operation resolves config/auth off of it)
+		| AmplifyContext
+		// legacy closure form; still honored at runtime by InternalGraphQLAPI for
+		// awaitable query/mutation operations, but no longer produced in-repo
 		| ((fn: (amplify: AmplifyClassV6) => Promise<any>) => Promise<any>);
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;

@@ -19,6 +19,7 @@ import {
 import { AnalyticsValidationErrorCode } from '../../../errors';
 
 const logger = new ConsoleLogger('Kinesis');
+export function record(ctx: AmplifyContext, input: RecordInput): void;
 
 /**
  * Record one analytic event and send it to Kinesis. Events will be buffered and periodically sent to
@@ -42,7 +43,6 @@ const logger = new ConsoleLogger('Kinesis');
  * @returns void
  */
 export function record(input: RecordInput): void;
-export function record(ctx: AmplifyContext, input: RecordInput): void;
 export function record(...args: any[]): void {
 	const [ctx, input] = resolveCtxArgs<[RecordInput]>(args);
 	const { streamName, partitionKey, data } = input;

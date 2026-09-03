@@ -29,6 +29,8 @@ import {
 	put as commonPut,
 } from './common/publicApis';
 
+export function get(ctx: AmplifyContext, input: GetInput): GetOperation;
+
 /**
  * GET HTTP request
  * @param {GetInput} input - Input for GET operation
@@ -69,12 +71,12 @@ import {
  * ```
  */
 export function get(input: GetInput): GetOperation;
-export function get(ctx: AmplifyContext, input: GetInput): GetOperation;
 export function get(...args: any[]): GetOperation {
 	const [ctx, input] = resolveCtxArgs<[GetInput]>(args);
 
 	return commonGet(ctx, input);
 }
+export function post(ctx: AmplifyContext, input: PostInput): PostOperation;
 
 /**
  * POST HTTP request
@@ -116,12 +118,12 @@ export function get(...args: any[]): GetOperation {
  * ```
  */
 export function post(input: PostInput): PostOperation;
-export function post(ctx: AmplifyContext, input: PostInput): PostOperation;
 export function post(...args: any[]): PostOperation {
 	const [ctx, input] = resolveCtxArgs<[PostInput]>(args);
 
 	return commonPost(ctx, input);
 }
+export function put(ctx: AmplifyContext, input: PutInput): PutOperation;
 
 /**
  * PUT HTTP request
@@ -162,12 +164,12 @@ export function post(...args: any[]): PostOperation {
  * ```
  */
 export function put(input: PutInput): PutOperation;
-export function put(ctx: AmplifyContext, input: PutInput): PutOperation;
 export function put(...args: any[]): PutOperation {
 	const [ctx, input] = resolveCtxArgs<[PutInput]>(args);
 
 	return commonPut(ctx, input);
 }
+export function del(ctx: AmplifyContext, input: DeleteInput): DeleteOperation;
 
 /**
  * DELETE HTTP request
@@ -190,12 +192,12 @@ export function put(...args: any[]): PutOperation {
  * ```
  */
 export function del(input: DeleteInput): DeleteOperation;
-export function del(ctx: AmplifyContext, input: DeleteInput): DeleteOperation;
 export function del(...args: any[]): DeleteOperation {
 	const [ctx, input] = resolveCtxArgs<[DeleteInput]>(args);
 
 	return commonDel(ctx, input);
 }
+export function head(ctx: AmplifyContext, input: HeadInput): HeadOperation;
 
 /**
  * HEAD HTTP request
@@ -219,12 +221,12 @@ export function del(...args: any[]): DeleteOperation {
  *
  */
 export function head(input: HeadInput): HeadOperation;
-export function head(ctx: AmplifyContext, input: HeadInput): HeadOperation;
 export function head(...args: any[]): HeadOperation {
 	const [ctx, input] = resolveCtxArgs<[HeadInput]>(args);
 
 	return commonHead(ctx, input);
 }
+export function patch(ctx: AmplifyContext, input: PatchInput): PatchOperation;
 
 /**
  * PATCH HTTP request
@@ -266,7 +268,6 @@ export function head(...args: any[]): HeadOperation {
  * ```
  */
 export function patch(input: PatchInput): PatchOperation;
-export function patch(ctx: AmplifyContext, input: PatchInput): PatchOperation;
 export function patch(...args: any[]): PatchOperation {
 	const [ctx, input] = resolveCtxArgs<[PatchInput]>(args);
 

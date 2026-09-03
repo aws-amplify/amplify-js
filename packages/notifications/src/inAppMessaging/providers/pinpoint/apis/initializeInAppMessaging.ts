@@ -21,6 +21,10 @@ import { incrementMessageCounts, sessionStateChangeHandler } from '../utils';
 import { initialize, isInitialized } from '../../../utils';
 
 import { dispatchEvent } from './dispatchEvent';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export function initializeInAppMessaging(ctx: AmplifyContext): void;
 
 /**
  * Initialize and set up in-app messaging category. This API needs to be called to enable other InAppMessaging APIs.
@@ -38,10 +42,6 @@ import { dispatchEvent } from './dispatchEvent';
  * ```
  */
 export function initializeInAppMessaging(): void;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export function initializeInAppMessaging(ctx: AmplifyContext): void;
 export function initializeInAppMessaging(...args: any[]): void {
 	// Validate that config is available (throws if not configured yet)
 	resolveCtxArgs<[]>(args);

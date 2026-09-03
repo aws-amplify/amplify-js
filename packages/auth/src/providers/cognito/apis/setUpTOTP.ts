@@ -21,6 +21,8 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createAssociateSoftwareTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function setUpTOTP(ctx: AmplifyContext): Promise<SetUpTOTPOutput>;
+
 /**
  * Sets up TOTP for the user.
  *
@@ -30,7 +32,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  **/
 export async function setUpTOTP(): Promise<SetUpTOTPOutput>;
-export async function setUpTOTP(ctx: AmplifyContext): Promise<SetUpTOTPOutput>;
 export async function setUpTOTP(...args: any[]): Promise<SetUpTOTPOutput> {
 	const [ctx] = resolveCtxArgs<[]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;

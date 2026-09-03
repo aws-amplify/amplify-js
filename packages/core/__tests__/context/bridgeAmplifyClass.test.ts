@@ -120,5 +120,15 @@ describe('bridgeAmplifyClass', () => {
 
 			expect(Object.isFrozen(ctx)).toBe(true);
 		});
+
+		it('attaches a unique, frozen per-context token (data-schema ContextSpec duck-check)', () => {
+			const { raw } = buildBareAmplifyClass();
+			const ctxA = bridgeAmplifyClass(raw as unknown as AmplifyClass);
+			const ctxB = bridgeAmplifyClass(raw as unknown as AmplifyClass);
+
+			expect(typeof ctxA.token.value).toBe('symbol');
+			expect(Object.isFrozen(ctxA.token)).toBe(true);
+			expect(ctxA.token.value).not.toBe(ctxB.token.value);
+		});
 	});
 });

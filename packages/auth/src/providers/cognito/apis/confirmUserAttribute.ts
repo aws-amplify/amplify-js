@@ -18,6 +18,11 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createVerifyUserAttributeClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function confirmUserAttribute(
+	ctx: AmplifyContext,
+	input: ConfirmUserAttributeInput,
+): Promise<void>;
+
 /**
  * Confirms a user attribute with the confirmation code.
  *
@@ -28,10 +33,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmUserAttribute(
-	input: ConfirmUserAttributeInput,
-): Promise<void>;
-export async function confirmUserAttribute(
-	ctx: AmplifyContext,
 	input: ConfirmUserAttributeInput,
 ): Promise<void>;
 export async function confirmUserAttribute(...args: any[]): Promise<void> {

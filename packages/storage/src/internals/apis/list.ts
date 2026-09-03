@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	getGlobalContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 
 import { list as listInternal } from '../../providers/s3/apis/internal/list';
 import { ListAllInput, ListInput, ListPaginateInput } from '../types/inputs';
@@ -28,10 +32,23 @@ export function list(
 /**
  * @internal
  */
+export function list(input: ListAllInput): Promise<ListAllWithPathOutput>;
+/**
+ * @internal
+ */
 export function list(
-	ctx: AmplifyContext,
-	input: ListInput,
+	input: ListPaginateInput,
+): Promise<ListPaginateWithPathOutput>;
+export function list(
+	ctxOrInput: AmplifyContext | ListInput,
+	maybeInput?: ListInput,
 ): Promise<ListOutput> {
+	// Resolve the optional leading context. The global context is resolved at
+	// CALL time (never cached) so single-arg callers follow live configuration.
+	const [ctx, input]: [AmplifyContext, ListInput] = isAmplifyContext(ctxOrInput)
+		? [ctxOrInput, maybeInput as ListInput]
+		: [getGlobalContext(), ctxOrInput];
+
 	return listInternal(ctx, {
 		path: input.path,
 		options: {

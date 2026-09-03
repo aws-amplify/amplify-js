@@ -128,6 +128,13 @@ describe('createRunWithAmplifyServerContext (per-request AmplifyContext)', () =>
 		expect(Object.isFrozen(ctx)).toBe(true);
 		expect(typeof ctx.fetchAuthSession).toBe('function');
 		expect(typeof ctx.getTokens).toBe('function');
+
+		// The per-request context comes from core's `createAmplifyContext`
+		// factory, so it carries the frozen ContextSpec token that the released
+		// `@aws-amplify/data-schema` duck-checks structurally
+		// (`typeof arg?.token?.value === 'symbol'`).
+		expect(typeof ctx.token?.value).toBe('symbol');
+		expect(Object.isFrozen(ctx.token)).toBe(true);
 	});
 
 	it('builds an isolated context per request: different cookie stores yield different tokens with no cross-talk', async () => {
@@ -174,6 +181,11 @@ describe('createRunWithAmplifyServerContext (per-request AmplifyContext)', () =>
 		expect(AMPLIFY_CONTEXT_BRAND in ctxB).toBe(true);
 		expect(Object.isFrozen(ctxA)).toBe(true);
 		expect(Object.isFrozen(ctxB)).toBe(true);
+
+		// Each per-request context carries its own unique ContextSpec token.
+		expect(typeof ctxA.token?.value).toBe('symbol');
+		expect(typeof ctxB.token?.value).toBe('symbol');
+		expect(ctxA.token.value).not.toBe(ctxB.token.value);
 
 		// Each context reads only its own cookie-backed tokens — no cross-talk.
 		expect(tokensA).toEqual({ accessToken: 'access-A', idToken: 'id-A' });
@@ -246,5 +258,35 @@ describe('createRunWithAmplifyServerContext (per-request AmplifyContext)', () =>
 
 		expect(AMPLIFY_CONTEXT_BRAND in ctx).toBe(true);
 		expect(Object.isFrozen(ctx)).toBe(true);
+	});
+});
+
+describe('data-schema ContextSpec compatibility (type-level)', () => {
+	/**
+	 * Structural replica of the `ContextSpec` type the RELEASED
+	 * `@aws-amplify/data-schema` uses for its server-operation params
+	 * (`{ token: { value: symbol } }`). Gen2 Next.js data apps pass the
+	 * `operation` callback's parameter straight into generated model/custom
+	 * ops, so the parameter type must remain assignable to this shape or
+	 * those apps stop compiling.
+	 */
+	interface DataSchemaContextSpecReplica {
+		token: {
+			value: symbol;
+		};
+	}
+
+	it('the runWithAmplifyServerContext operation parameter is assignable to data-schema ContextSpec', () => {
+		type OperationParam = Parameters<
+			NextServer.RunWithContextInput<unknown>['operation']
+		>[0];
+
+		// Type-level assertion: compilation fails here if `AmplifyContext`
+		// ever loses (or optionalizes) the `token` handle.
+		const assertAssignable = (
+			contextSpec: OperationParam,
+		): DataSchemaContextSpecReplica => contextSpec;
+
+		expect(typeof assertAssignable).toBe('function');
 	});
 });

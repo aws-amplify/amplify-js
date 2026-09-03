@@ -5,6 +5,13 @@ import { AmplifyContext } from '@aws-amplify/core';
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
 
 import { RegisterDeviceInput } from '../types';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function registerDevice(
+	ctx: AmplifyContext,
+	input: RegisterDeviceInput,
+): Promise<void>;
 
 /**
  * Registers a push device with Amazon Connect Customer Profiles.
@@ -14,13 +21,6 @@ import { RegisterDeviceInput } from '../types';
  *  API.
  */
 export async function registerDevice(input: RegisterDeviceInput): Promise<void>;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export async function registerDevice(
-	ctx: AmplifyContext,
-	input: RegisterDeviceInput,
-): Promise<void>;
 export async function registerDevice(..._args: any[]): Promise<void> {
 	throw new PlatformNotSupportedError();
 }

@@ -37,6 +37,11 @@ import {
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
+export async function confirmSignIn(
+	ctx: AmplifyContext,
+	input: ConfirmSignInInput,
+): Promise<ConfirmSignInOutput>;
+
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
  *
@@ -53,10 +58,6 @@ import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignIn(
-	input: ConfirmSignInInput,
-): Promise<ConfirmSignInOutput>;
-export async function confirmSignIn(
-	ctx: AmplifyContext,
 	input: ConfirmSignInInput,
 ): Promise<ConfirmSignInOutput>;
 export async function confirmSignIn(

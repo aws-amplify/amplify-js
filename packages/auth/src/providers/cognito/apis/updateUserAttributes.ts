@@ -26,6 +26,11 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createUpdateUserAttributesClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function updateUserAttributes(
+	ctx: AmplifyContext,
+	input: UpdateUserAttributesInput,
+): Promise<UpdateUserAttributesOutput>;
+
 /**
  * Updates user's attributes while authenticated.
  *
@@ -35,10 +40,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updateUserAttributes(
-	input: UpdateUserAttributesInput,
-): Promise<UpdateUserAttributesOutput>;
-export async function updateUserAttributes(
-	ctx: AmplifyContext,
 	input: UpdateUserAttributesInput,
 ): Promise<UpdateUserAttributesOutput>;
 export async function updateUserAttributes(

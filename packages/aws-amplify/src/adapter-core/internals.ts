@@ -9,6 +9,17 @@ export {
 	AmplifyServerContextError,
 } from '@aws-amplify/core/internals/adapter-core';
 export { OAuthConfig } from '@aws-amplify/core';
+// Context-producer primitives for adapter packages that construct their own
+// branded `AmplifyContext` (e.g. the cookies-based data client in
+// `@aws-amplify/adapter-nextjs`). Any adapter-produced context MUST be branded
+// with `AMPLIFY_CONTEXT_BRAND` and carry a `createAmplifyContextToken()` token,
+// mirroring the core producers.
+export {
+	AMPLIFY_CONTEXT_BRAND,
+	isAmplifyContext,
+	createAmplifyContextToken,
+} from '@aws-amplify/core';
+export type { AmplifyContext, AmplifyContextToken } from '@aws-amplify/core';
 export {
 	assertOAuthConfig,
 	assertTokenProviderConfig,

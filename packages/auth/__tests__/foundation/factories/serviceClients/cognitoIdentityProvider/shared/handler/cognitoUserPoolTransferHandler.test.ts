@@ -28,6 +28,7 @@ const buildCtxWithHeaders = (
 ): AmplifyContext => ({
 	resourcesConfig: {},
 	libraryOptions: headers ? { Auth: { headers } } : {},
+	token: Object.freeze({ value: Symbol('test-ctx') }),
 	fetchAuthSession: jest.fn(),
 	clearCredentials: jest.fn(),
 	getTokens: jest.fn(),

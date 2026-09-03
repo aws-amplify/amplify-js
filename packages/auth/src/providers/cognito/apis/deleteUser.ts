@@ -18,6 +18,8 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 import { signOut } from './signOut';
 
+export async function deleteUser(ctx: AmplifyContext): Promise<void>;
+
 /**
  * Deletes a user from the user pool while authenticated.
  *
@@ -25,7 +27,6 @@ import { signOut } from './signOut';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function deleteUser(): Promise<void>;
-export async function deleteUser(ctx: AmplifyContext): Promise<void>;
 export async function deleteUser(...args: any[]): Promise<void> {
 	const [ctx] = resolveCtxArgs<[]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;

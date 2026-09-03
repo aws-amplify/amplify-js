@@ -12,6 +12,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
 import { getAnalyticsUserAgentString } from '../../../utils';
 
 const logger = new ConsoleLogger('Analytics');
+export function flushEvents(ctx: AmplifyContext): void;
 
 /**
  * Flushes all buffered Pinpoint events to the service.
@@ -23,7 +24,6 @@ const logger = new ConsoleLogger('Analytics');
  * this API may not be included in the flush.
  */
 export function flushEvents(): void;
-export function flushEvents(ctx: AmplifyContext): void;
 export function flushEvents(...args: any[]): void {
 	const [ctx] = resolveCtxArgs<[]>(args);
 	const { appId, region, bufferSize, flushSize, flushInterval, resendLimit } =

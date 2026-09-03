@@ -21,6 +21,11 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createGetUserAttributeVerificationCodeClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function sendUserAttributeVerificationCode(
+	ctx: AmplifyContext,
+	input: SendUserAttributeVerificationCodeInput,
+): Promise<SendUserAttributeVerificationCodeOutput>;
+
 /**
  * Resends user's confirmation code when updating attributes while authenticated.
  *
@@ -30,10 +35,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function sendUserAttributeVerificationCode(
-	input: SendUserAttributeVerificationCodeInput,
-): Promise<SendUserAttributeVerificationCodeOutput>;
-export async function sendUserAttributeVerificationCode(
-	ctx: AmplifyContext,
 	input: SendUserAttributeVerificationCodeInput,
 ): Promise<SendUserAttributeVerificationCodeOutput>;
 export async function sendUserAttributeVerificationCode(

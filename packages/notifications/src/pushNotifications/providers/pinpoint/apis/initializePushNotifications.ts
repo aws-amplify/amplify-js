@@ -3,6 +3,10 @@
 
 import { AmplifyContext } from '@aws-amplify/core';
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export function initializePushNotifications(ctx: AmplifyContext): void;
 
 /**
  * Initialize and set up the push notification category. The category must be first initialized before all other
@@ -22,10 +26,6 @@ import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
  * ```
  */
 export function initializePushNotifications(): void;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export function initializePushNotifications(ctx: AmplifyContext): void;
 export function initializePushNotifications(..._args: any[]): void {
 	throw new PlatformNotSupportedError();
 }

@@ -21,6 +21,7 @@ import { RecordInput } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
 const logger = new ConsoleLogger('Analytics');
+export function record(ctx: AmplifyContext, input: RecordInput): void;
 
 /**
  * Records an Analytic event to Pinpoint. Events will be buffered and periodically sent to Pinpoint.
@@ -53,7 +54,6 @@ const logger = new ConsoleLogger('Analytics');
  * ```
  */
 export function record(input: RecordInput): void;
-export function record(ctx: AmplifyContext, input: RecordInput): void;
 export function record(...args: any[]): void {
 	const [ctx, input] = resolveCtxArgs<[RecordInput]>(args);
 	const { appId, region, bufferSize, flushSize, flushInterval, resendLimit } =

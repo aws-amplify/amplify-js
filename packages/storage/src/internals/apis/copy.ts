@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	getGlobalContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 
 import { copy as copyInternal } from '../../providers/s3/apis/internal/copy';
 import { CopyInput } from '../types/inputs';
@@ -10,8 +14,25 @@ import { CopyOutput } from '../types/outputs';
 /**
  * @internal
  */
-export const copy = (ctx: AmplifyContext, input: CopyInput) =>
-	copyInternal(ctx, {
+export function copy(
+	ctx: AmplifyContext,
+	input: CopyInput,
+): Promise<CopyOutput>;
+/**
+ * @internal
+ */
+export function copy(input: CopyInput): Promise<CopyOutput>;
+export function copy(
+	ctxOrInput: AmplifyContext | CopyInput,
+	maybeInput?: CopyInput,
+): Promise<CopyOutput> {
+	// Resolve the optional leading context. The global context is resolved at
+	// CALL time (never cached) so single-arg callers follow live configuration.
+	const [ctx, input]: [AmplifyContext, CopyInput] = isAmplifyContext(ctxOrInput)
+		? [ctxOrInput, maybeInput as CopyInput]
+		: [getGlobalContext(), ctxOrInput];
+
+	return copyInternal(ctx, {
 		source: {
 			path: input.source.path,
 			bucket: input.source.bucket,
@@ -32,3 +53,4 @@ export const copy = (ctx: AmplifyContext, input: CopyInput) =>
 		// Type casting is necessary because `copyInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.
 	}) as Promise<CopyOutput>;
+}

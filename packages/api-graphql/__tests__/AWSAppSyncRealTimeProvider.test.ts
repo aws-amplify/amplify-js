@@ -55,6 +55,7 @@ jest.mock('@aws-amplify/core', () => {
 		getGlobalContext: () => ({
 			resourcesConfig: {},
 			libraryOptions: {},
+			token: Object.freeze({ value: Symbol('testContextToken') }),
 			fetchAuthSession: async () => session,
 			clearCredentials: async () => undefined,
 			getTokens: async () => undefined,

@@ -2,7 +2,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Amplify, Cache, ConsoleLogger, Hub } from '@aws-amplify/core';
+import {
+	Cache,
+	ConsoleLogger,
+	Hub,
+	getGlobalContext,
+	hasGlobalContext,
+} from '@aws-amplify/core';
 import {
 	Draft,
 	Patch,
@@ -2471,11 +2477,15 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
-		// NOTE: reads the legacy core `Amplify` singleton's config. DataStore is
-		// deprecated and is NOT supported under facade-only configuration (where
-		// the singleton stays unconfigured and the global AmplifyContext is the
-		// source of truth). Intentionally left as-is; do not migrate.
-		const currentAppSyncConfig = Amplify.getConfig().API?.GraphQL;
+		// NOTE: reads the GLOBAL AmplifyContext (set by `Amplify.configure()`)
+		// by design. DataStore is deprecated and is NOT context-migrated: it is
+		// global-context-only, with no per-request/explicit-context support.
+		// `hasGlobalContext()` preserves v6 pre-configure semantics, where the
+		// singleton returned an empty config (DataStore waits for the
+		// 'configure' Hub event rather than throwing here).
+		const currentAppSyncConfig = hasGlobalContext()
+			? getGlobalContext().resourcesConfig.API?.GraphQL
+			: undefined;
 
 		const appSyncConfig = {
 			aws_appsync_graphqlEndpoint: currentAppSyncConfig?.endpoint,

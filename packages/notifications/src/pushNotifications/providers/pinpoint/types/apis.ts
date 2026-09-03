@@ -19,6 +19,6 @@ export {
 } from '../../shared/types';
 
 export interface IdentifyUser {
-	(input: IdentifyUserInput): Promise<void>;
 	(ctx: AmplifyContext, input: IdentifyUserInput): Promise<void>;
+	(input: IdentifyUserInput): Promise<void>;
 }

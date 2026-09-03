@@ -27,6 +27,10 @@ import {
 	assertServiceError,
 } from '../../../errors';
 import { assertIsInitialized } from '../../../utils';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function syncMessages(ctx: AmplifyContext): Promise<void>;
 
 /**
  * Fetch and persist messages from Pinpoint campaigns.
@@ -46,10 +50,6 @@ import { assertIsInitialized } from '../../../utils';
  * ```
  */
 export async function syncMessages(): Promise<void>;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export async function syncMessages(ctx: AmplifyContext): Promise<void>;
 export async function syncMessages(...args: any[]): Promise<void> {
 	const [ctx] = resolveCtxArgs<[]>(args);
 	assertIsInitialized();

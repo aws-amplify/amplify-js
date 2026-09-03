@@ -65,6 +65,19 @@ describe('createAmplifyContext', () => {
 			const ctx = createAmplifyContext(resourcesConfig);
 			expect(Object.isFrozen(ctx.resourcesConfig)).toBe(true);
 		});
+
+		it('attaches a unique, frozen per-context token (data-schema ContextSpec duck-check)', () => {
+			const ctxA = createAmplifyContext(resourcesConfig);
+			const ctxB = createAmplifyContext(resourcesConfig);
+
+			// The exact structural + runtime check the released
+			// @aws-amplify/data-schema performs on server-op params.
+			expect(typeof ctxA.token.value).toBe('symbol');
+			expect(Object.isFrozen(ctxA.token)).toBe(true);
+
+			// Unique Symbol() per context — never shared.
+			expect(ctxA.token.value).not.toBe(ctxB.token.value);
+		});
 	});
 
 	describe('shape', () => {

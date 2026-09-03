@@ -16,6 +16,8 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createUpdateDeviceStatusClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function rememberDevice(ctx: AmplifyContext): Promise<void>;
+
 /**
  * Marks device as remembered while authenticated.
  *
@@ -24,7 +26,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function rememberDevice(): Promise<void>;
-export async function rememberDevice(ctx: AmplifyContext): Promise<void>;
 export async function rememberDevice(...args: any[]): Promise<void> {
 	const [ctx] = resolveCtxArgs<[]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;

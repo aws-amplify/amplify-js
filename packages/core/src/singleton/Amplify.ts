@@ -5,6 +5,7 @@ import { deepFreeze } from '../utils';
 import { parseAmplifyConfig } from '../libraryUtils';
 import { AmplifyContext } from '../context/AmplifyContext';
 import { AMPLIFY_CONTEXT_BRAND } from '../context/contextBrand';
+import { createAmplifyContextToken } from '../context/contextToken';
 import { setGlobalContext } from '../context/globalContext';
 
 import { AuthClass } from './Auth';
@@ -85,6 +86,10 @@ export class AmplifyClass {
 		const ctx: AmplifyContext = {
 			resourcesConfig: this.resourcesConfig,
 			libraryOptions: this.libraryOptions,
+			// Unique, frozen per-context identity handle (see AmplifyContextToken):
+			// each configure() publishes a NEW global context with a fresh token.
+			// Attached before the brand/freeze below so the frozen context carries it.
+			token: createAmplifyContextToken(),
 			fetchAuthSession: (options?) => this.Auth.fetchAuthSession(options ?? {}),
 			clearCredentials: () => this.Auth.clearCredentials(),
 			getTokens: options => this.Auth.getTokens(options),

@@ -29,8 +29,8 @@ export type GetLaunchNotification = () => Promise<GetLaunchNotificationOutput>;
 export type GetPermissionStatus = () => Promise<GetPermissionStatusOutput>;
 
 export interface InitializePushNotifications {
-	(): void;
 	(ctx: AmplifyContext): void;
+	(): void;
 }
 
 export type RequestPermissions = (

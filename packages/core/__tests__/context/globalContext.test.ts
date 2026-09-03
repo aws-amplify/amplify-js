@@ -3,6 +3,7 @@
 
 import {
 	AMPLIFY_CONTEXT_BRAND,
+	createAmplifyContextToken,
 	getGlobalContext,
 	hasGlobalContext,
 } from '../../src';
@@ -20,6 +21,7 @@ function makeBrandedContext(
 	const ctx = {
 		resourcesConfig: {},
 		libraryOptions: {},
+		token: createAmplifyContextToken(),
 		fetchAuthSession: jest.fn(),
 		clearCredentials: jest.fn(),
 		getTokens: jest.fn(),

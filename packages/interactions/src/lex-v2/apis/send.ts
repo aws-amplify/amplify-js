@@ -12,11 +12,12 @@ import {
 	assertValidationError,
 } from '../../errors';
 
-export function send(input: SendInput): Promise<SendOutput>;
 export function send(
 	ctx: AmplifyContext,
 	input: SendInput,
 ): Promise<SendOutput>;
+
+export function send(input: SendInput): Promise<SendOutput>;
 export async function send(...args: any[]): Promise<SendOutput> {
 	const [ctx, input] = resolveCtxArgs<[SendInput]>(args);
 	const { botName, message } = input;

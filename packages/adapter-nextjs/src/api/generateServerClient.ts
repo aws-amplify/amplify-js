@@ -9,7 +9,12 @@ import {
 	generateClientWithAmplifyInstance,
 } from 'aws-amplify/api/internals';
 import { generateClient } from 'aws-amplify/api/server';
-import { AmplifyError } from 'aws-amplify/adapter-core/internals';
+import {
+	AMPLIFY_CONTEXT_BRAND,
+	AmplifyContext,
+	AmplifyError,
+	createAmplifyContextToken,
+} from 'aws-amplify/adapter-core/internals';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
 
 import { NextServer } from '../types';
@@ -53,18 +58,49 @@ export function generateServerClientUsingCookies<
 	const { runWithAmplifyServerContext, resourcesConfig } =
 		createServerRunnerForAPI({ config: options.config });
 
-	// This function reference gets passed down to InternalGraphQLAPI.ts.graphql
-	// where this._graphql is passed in as the `fn` argument
-	// causing it to always get invoked inside `runWithAmplifyServerContext`.
-	// The `contextSpec` handed to the operation is the per-request, branded
-	// `AmplifyContext`; it is passed straight through to the GraphQL internals
-	// (which recognize a branded context and bridge a bare `AmplifyClass` only if
-	// one is ever supplied).
-	const getAmplify = (fn: (amplify: any) => Promise<any>) =>
+	// Client-bound, branded `AmplifyContext` stored as the client's internal
+	// `amplify` instance (replacing main's closure form). Configuration is
+	// static per client, while every auth operation delegates per call into
+	// `runWithAmplifyServerContext` so it reads the CURRENT request's cookies —
+	// per-request isolation is preserved because the runner builds a fresh
+	// per-request context (with cookie-backed token/credentials providers) on
+	// every invocation.
+	//
+	// Carrying the brand + token also keeps this client compatible with
+	// `@aws-amplify/data-schema`, which duck-types contexts structurally via
+	// `typeof arg?.token?.value === 'symbol'`.
+	const runWithPerRequestContext = <OperationResult>(
+		operation: (contextSpec: AmplifyContext) => Promise<OperationResult>,
+	): Promise<OperationResult> =>
 		runWithAmplifyServerContext({
 			nextServerContext: { cookies: options.cookies },
-			operation: contextSpec => fn(contextSpec),
+			operation,
 		});
+
+	const cookiesContext: AmplifyContext = {
+		resourcesConfig,
+		libraryOptions: {},
+		// Unique, frozen per-context identity handle (see AmplifyContextToken).
+		// Attached before the brand/freeze below so the frozen context carries it.
+		token: createAmplifyContextToken(),
+		fetchAuthSession: fetchOptions =>
+			runWithPerRequestContext(ctx => ctx.fetchAuthSession(fetchOptions)),
+		clearCredentials: () =>
+			runWithPerRequestContext(ctx => ctx.clearCredentials()),
+		getTokens: tokenOptions =>
+			runWithPerRequestContext(ctx => ctx.getTokens(tokenOptions)),
+	};
+
+	// Brand the context for runtime identification by isAmplifyContext(),
+	// mirroring the core producers.
+	Object.defineProperty(cookiesContext, AMPLIFY_CONTEXT_BRAND, {
+		value: true,
+		enumerable: false,
+		configurable: false,
+		writable: false,
+	});
+
+	Object.freeze(cookiesContext);
 
 	const { cookies: _cookies, config: _config, ...params } = options;
 
@@ -72,7 +108,7 @@ export function generateServerClientUsingCookies<
 	// against the generation params type, so we assert the (correct) shape using
 	// the factory's own parameter type — no `any` involved.
 	return generateClientWithAmplifyInstance<T, V6ClientSSRCookies<T, Options>>({
-		amplify: getAmplify,
+		amplify: cookiesContext,
 		config: resourcesConfig,
 		...params,
 	} as Parameters<typeof generateClientWithAmplifyInstance>[0]);

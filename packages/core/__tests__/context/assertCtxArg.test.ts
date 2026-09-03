@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AMPLIFY_CONTEXT_BRAND } from '../../src';
+import { AMPLIFY_CONTEXT_BRAND, createAmplifyContextToken } from '../../src';
 import { assertOptionalCtxArg } from '../../src/context/assertCtxArg';
 import {
 	AmplifyError,
@@ -13,6 +13,7 @@ function makeBrandedContext(): AmplifyContext {
 	const ctx = {
 		resourcesConfig: {},
 		libraryOptions: {},
+		token: createAmplifyContextToken(),
 		fetchAuthSession: jest.fn(),
 		clearCredentials: jest.fn(),
 		getTokens: jest.fn(),

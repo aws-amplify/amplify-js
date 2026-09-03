@@ -23,6 +23,10 @@ import { record } from './record';
 
 // Configured Tracker instances for Kinesis
 const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
+export function configureAutoTrack(
+	ctx: AmplifyContext,
+	input: KinesisConfigureAutoTrackInput,
+): void;
 
 /**
  * Configures automatic event tracking for Kinesis. This API will automatically transmit an analytic event to the
@@ -80,10 +84,6 @@ const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
  * ```
  */
 export function configureAutoTrack(input: KinesisConfigureAutoTrackInput): void;
-export function configureAutoTrack(
-	ctx: AmplifyContext,
-	input: KinesisConfigureAutoTrackInput,
-): void;
 export function configureAutoTrack(...args: any[]): void {
 	// Peek the optional leading context WITHOUT falling back to the global
 	// context. The context is only needed when events are emitted; resolving it

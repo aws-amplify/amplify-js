@@ -46,7 +46,7 @@ export {
 } from './singleton';
 
 // AmplifyContext — the singleton-free contract for category APIs
-export { AmplifyContext } from './context/AmplifyContext';
+export { AmplifyContext, AmplifyContextToken } from './context/AmplifyContext';
 
 // Context factory — create a local, branded AmplifyContext without touching
 // the global singleton state.
@@ -57,6 +57,9 @@ export {
 	isAmplifyContext,
 	AMPLIFY_CONTEXT_BRAND,
 } from './context/contextBrand';
+
+// Per-context identity token — attached by every context producer
+export { createAmplifyContextToken } from './context/contextToken';
 
 // Global context management
 export { getGlobalContext, hasGlobalContext } from './context/globalContext';

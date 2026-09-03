@@ -3,6 +3,10 @@
 
 import { AmplifyContext } from '@aws-amplify/core';
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export function removeDevice(ctx: AmplifyContext): Promise<void>;
 
 /**
  * De-registers the current push device from Amazon Connect Customer Profiles.
@@ -18,10 +22,6 @@ import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
  *  API.
  */
 export function removeDevice(): Promise<void>;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export function removeDevice(ctx: AmplifyContext): Promise<void>;
 // Deliberately `async` (rejects) rather than throwing synchronously: the
 // declared overloads have always returned `Promise<void>`, so rejecting is
 // what a `.catch`-chaining caller can actually observe.

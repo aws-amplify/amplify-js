@@ -23,6 +23,10 @@ import { record } from './record';
 
 // Configured Tracker instances for Kinesis Data Firehose
 const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
+export function configureAutoTrack(
+	ctx: AmplifyContext,
+	input: KinesisFirehoseConfigureAutoTrackInput,
+): void;
 
 /**
  * Configures automatic event tracking for Kinesis Data Firehose. This API will automatically transmit an analytic
@@ -77,10 +81,6 @@ const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
  * ```
  */
 export function configureAutoTrack(
-	input: KinesisFirehoseConfigureAutoTrackInput,
-): void;
-export function configureAutoTrack(
-	ctx: AmplifyContext,
 	input: KinesisFirehoseConfigureAutoTrackInput,
 ): void;
 export function configureAutoTrack(...args: any[]): void {

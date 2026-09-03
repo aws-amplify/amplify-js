@@ -18,6 +18,11 @@ import { createConfirmForgotPasswordClient } from '../../../foundation/factories
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 
+export async function confirmResetPassword(
+	ctx: AmplifyContext,
+	input: ConfirmResetPasswordInput,
+): Promise<void>;
+
 /**
  * Confirms the new password and verification code to reset the password.
  *
@@ -29,10 +34,6 @@ import { getRegionFromUserPoolId } from '../../../foundation/parsers';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmResetPassword(
-	input: ConfirmResetPasswordInput,
-): Promise<void>;
-export async function confirmResetPassword(
-	ctx: AmplifyContext,
 	input: ConfirmResetPasswordInput,
 ): Promise<void>;
 export async function confirmResetPassword(...args: any[]): Promise<void> {

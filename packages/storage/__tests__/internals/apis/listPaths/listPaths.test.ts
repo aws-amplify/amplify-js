@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext, AuthTokens } from '@aws-amplify/core';
+import { AuthTokens } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { resolveLocationsForCurrentSession } from '../../../../src/internals/apis/listPaths/resolveLocationsForCurrentSession';
 import { getHighestPrecedenceUserGroup } from '../../../../src/internals/apis/listPaths/getHighestPrecedenceUserGroup';
@@ -30,15 +31,10 @@ const mockFetchAuthSession = jest.fn();
 // listPaths now receives a required AmplifyContext. Back resourcesConfig with
 // a jest.fn so tests can vary config per-case, and expose fetchAuthSession as a
 // jest.fn for session/token control.
-const mockCtx: AmplifyContext = {
-	get resourcesConfig() {
-		return mockGetConfig();
-	},
-	libraryOptions: {},
+const mockCtx = createMockAmplifyContext({
+	getConfig: mockGetConfig,
 	fetchAuthSession: mockFetchAuthSession,
-	clearCredentials: jest.fn(),
-	getTokens: jest.fn(),
-};
+});
 const mockResolveLocationsFromCurrentSession =
 	resolveLocationsForCurrentSession as jest.Mock;
 const mockGetHighestPrecedenceUserGroup = jest.mocked(

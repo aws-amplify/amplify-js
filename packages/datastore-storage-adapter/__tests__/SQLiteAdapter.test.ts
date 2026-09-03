@@ -22,6 +22,7 @@ import {
 	pause,
 	addCommonQueryTests,
 } from '../../datastore/__tests__/commonAdapterTests';
+import { createTestCtx } from '../../datastore/__tests__/helpers/ctx';
 
 let innerSQLiteDatabase;
 
@@ -102,29 +103,12 @@ describe('SQLiteAdapter', () => {
 			await DataStore.clear();
 
 			// Establish a global context so InternalAPI.graphql() → getGlobalContext()
-			// succeeds when the sync engine starts subscriptions.
-			const testCtx = {
-				resourcesConfig: {
-					API: {
-						GraphQL: {
-							endpoint:
-								'https://0.0.0.0/does/not/exist/graphql',
-							region: 'us-west-2',
-							defaultAuthMode: 'apiKey' as const,
-							apiKey: 'da2-fakeApiId123456',
-						},
-					},
-				},
-				libraryOptions: {},
-				fetchAuthSession: () => Promise.resolve({}),
-				clearCredentials: () => Promise.resolve(),
-				getTokens: () => Promise.resolve(undefined),
-			};
-			Object.defineProperty(testCtx, Symbol.for('amplify.context'), {
-				value: true,
-				enumerable: false,
-			});
-			setGlobalContext(testCtx);
+			// succeeds when the sync engine starts subscriptions. createTestCtx
+			// returns a branded context (via core's createMockAmplifyContext) with
+			// the given fake AppSync endpoint.
+			setGlobalContext(
+				createTestCtx('https://0.0.0.0/does/not/exist/graphql'),
+			);
 
 			// Prevent the subscription processor from making real network
 			// requests. Inject a no-op InternalAPI that returns empty observables.

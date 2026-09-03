@@ -30,6 +30,11 @@ import { autoSignInStore } from '../../../client/utils/store';
 
 import { setAutoSignIn } from './autoSignIn';
 
+export async function signUp(
+	ctx: AmplifyContext,
+	input: SignUpInput,
+): Promise<SignUpOutput>;
+
 /**
  * Creates a user
  *
@@ -41,10 +46,6 @@ import { setAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signUp(input: SignUpInput): Promise<SignUpOutput>;
-export async function signUp(
-	ctx: AmplifyContext,
-	input: SignUpInput,
-): Promise<SignUpOutput>;
 export async function signUp(...args: any[]): Promise<SignUpOutput> {
 	const [ctx, input] = resolveCtxArgs<[SignUpInput]>(args);
 	const { username, password, options } = input;

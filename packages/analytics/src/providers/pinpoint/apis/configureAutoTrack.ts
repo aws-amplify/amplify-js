@@ -21,6 +21,10 @@ import { record } from './record';
 
 // Configured Tracker instances for Pinpoint
 const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
+export function configureAutoTrack(
+	ctx: AmplifyContext,
+	input: ConfigureAutoTrackInput,
+): void;
 
 /**
  * Configures automatic event tracking for Pinpoint. This API will automatically transmit an analytic event when
@@ -38,10 +42,6 @@ const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
  *  configuration is incorrect.
  */
 export function configureAutoTrack(input: ConfigureAutoTrackInput): void;
-export function configureAutoTrack(
-	ctx: AmplifyContext,
-	input: ConfigureAutoTrackInput,
-): void;
 export function configureAutoTrack(...args: any[]): void {
 	// Peek the optional leading context WITHOUT falling back to the global
 	// context. The context is only needed when events are emitted; resolving it

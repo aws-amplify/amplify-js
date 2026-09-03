@@ -10,7 +10,7 @@ import {
 	DataStore as DataStoreInstance,
 } from '../../src/datastore/datastore';
 import { SyncError } from '../../src/types';
-import { createTestCtx } from './ctx';
+import { createEmptyTestCtx } from './ctx';
 import { FakeGraphQLService, FakeDataStoreConnectivity } from './fakes';
 import {
 	testSchema,
@@ -210,8 +210,11 @@ export function getDataStore({
 	// a context exists. Establish one via setGlobalContext() on the FRESH core
 	// module (not Amplify.configure — that dispatches Hub events which can
 	// auto-start DataStore before its storage adapter is configured).
+	// The ctx carries an EMPTY resourcesConfig: DataStore.configure() reads
+	// the global ctx's API.GraphQL config, and offline suites must not see an
+	// endpoint (the `if (online)` block below injects one explicitly).
 	const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
-	setGlobalContext(createTestCtx());
+	setGlobalContext(createEmptyTestCtx());
 
 	let errorHandlerSubscriber: Observer<SyncError<any>> | null = null;
 

@@ -17,6 +17,11 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createForgetDeviceClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function forgetDevice(
+	ctx: AmplifyContext,
+	input?: ForgetDeviceInput,
+): Promise<void>;
+
 /**
  * Forget a remembered device while authenticated.
  *
@@ -26,10 +31,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function forgetDevice(input?: ForgetDeviceInput): Promise<void>;
-export async function forgetDevice(
-	ctx: AmplifyContext,
-	input?: ForgetDeviceInput,
-): Promise<void>;
 export async function forgetDevice(...args: any[]): Promise<void> {
 	const [ctx, input] = resolveCtxArgs<[ForgetDeviceInput | undefined]>(args);
 	const { device: { id: externalDeviceKey } = { id: undefined } } = input ?? {};

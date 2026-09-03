@@ -17,6 +17,10 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createGetUserClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function fetchMFAPreference(
+	ctx: AmplifyContext,
+): Promise<FetchMFAPreferenceOutput>;
+
 /**
  * Fetches the preferred MFA setting and enabled MFA settings for the user.
  *
@@ -26,9 +30,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function fetchMFAPreference(): Promise<FetchMFAPreferenceOutput>;
-export async function fetchMFAPreference(
-	ctx: AmplifyContext,
-): Promise<FetchMFAPreferenceOutput>;
 export async function fetchMFAPreference(
 	...args: any[]
 ): Promise<FetchMFAPreferenceOutput> {

@@ -17,6 +17,17 @@ describe('createMockAmplifyContext', () => {
 		expect(AMPLIFY_CONTEXT_BRAND in ctx).toBe(true);
 	});
 
+	it('attaches a unique, frozen per-context token like the real producers', () => {
+		const ctxA = createMockAmplifyContext();
+		const ctxB = createMockAmplifyContext();
+
+		// Satisfies @aws-amplify/data-schema's structural ContextSpec
+		// duck-check (`typeof arg?.token?.value === 'symbol'`) in tests.
+		expect(typeof ctxA.token.value).toBe('symbol');
+		expect(Object.isFrozen(ctxA.token)).toBe(true);
+		expect(ctxA.token.value).not.toBe(ctxB.token.value);
+	});
+
 	it('keeps the brand non-enumerable', () => {
 		const ctx = createMockAmplifyContext();
 

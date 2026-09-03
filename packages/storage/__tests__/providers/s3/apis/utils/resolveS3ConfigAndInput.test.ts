@@ -36,6 +36,7 @@ const mockCtx: AmplifyContext = {
 	get libraryOptions() {
 		return mockLibraryOptions;
 	},
+	token: Object.freeze({ value: Symbol('test-ctx') }),
 	fetchAuthSession: mockFetchAuthSession,
 	clearCredentials: jest.fn(),
 	getTokens: jest.fn(),

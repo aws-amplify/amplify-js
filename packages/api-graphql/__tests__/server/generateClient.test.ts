@@ -5,6 +5,7 @@ import { ResourcesConfig } from '@aws-amplify/core';
 import { InvalidAmplifyContextError } from '@aws-amplify/core/internals/utils';
 
 import { generateClient } from '../../src/server';
+import { getInternals } from '../../src/types';
 import { mockApiResponse } from '../utils';
 
 const config: ResourcesConfig = {
@@ -61,5 +62,17 @@ describe('server generateClient (req/res entry)', () => {
 			// @ts-expect-error omitting the required contextSpec for test
 			client.graphql({ query: `query Q { someQuery { a } }` }),
 		).toThrow(InvalidAmplifyContextError);
+	});
+
+	test('constructs the client with `amplify: null` internals (req/res server contract)', () => {
+		const client = generateClient({ config });
+
+		// `@aws-amplify/data-schema` keys its op generation on this:
+		// `useContext = params.amplify === null` makes every generated op
+		// require (and duck-check) the per-request contextSpec argument.
+		expect(
+			getInternals(client as unknown as Parameters<typeof getInternals>[0])
+				.amplify,
+		).toBeNull();
 	});
 });

@@ -10,6 +10,7 @@ import {
 	AMPLIFY_CONTEXT_BRAND,
 	AmplifyContext,
 	ResourcesConfig,
+	createAmplifyContextToken,
 	getGlobalContext,
 	hasGlobalContext,
 	isAmplifyContext,
@@ -44,6 +45,11 @@ const lazyGlobalContext: AmplifyContext = {
 	get libraryOptions() {
 		return hasGlobalContext() ? getGlobalContext().libraryOptions : {};
 	},
+	// Stable identity handle for this lazy handle itself (see
+	// AmplifyContextToken). Deliberately NOT delegated to the global context:
+	// the token identifies this long-lived wrapper, and reading it must not
+	// throw pre-configure.
+	token: createAmplifyContextToken(),
 	fetchAuthSession: options => getGlobalContext().fetchAuthSession(options),
 	clearCredentials: () => getGlobalContext().clearCredentials(),
 	getTokens: options => getGlobalContext().getTokens(options),
@@ -60,17 +66,6 @@ Object.defineProperty(lazyGlobalContext, AMPLIFY_CONTEXT_BRAND, {
 });
 
 Object.freeze(lazyGlobalContext);
-
-/**
- * Generates an API client that can work with models or raw GraphQL
- *
- * @returns {@link V6Client}
- * @throws {@link Error} - Throws error when client cannot be generated due to configuration issues.
- */
-export function generateClient<
-	T extends Record<any, any> = never,
-	Options extends CommonPublicClientOptions = DefaultCommonClientOptions,
->(options?: Options): V6Client<T, Options>;
 
 /**
  * Generates an API client bound to a specific {@link AmplifyContext} instead of
@@ -97,6 +92,17 @@ export function generateClient<
 	T extends Record<any, any> = never,
 	Options extends CommonPublicClientOptions = DefaultCommonClientOptions,
 >(ctx: AmplifyContext, options?: Options): V6Client<T, Options>;
+
+/**
+ * Generates an API client that can work with models or raw GraphQL
+ *
+ * @returns {@link V6Client}
+ * @throws {@link Error} - Throws error when client cannot be generated due to configuration issues.
+ */
+export function generateClient<
+	T extends Record<any, any> = never,
+	Options extends CommonPublicClientOptions = DefaultCommonClientOptions,
+>(options?: Options): V6Client<T, Options>;
 
 export function generateClient<
 	T extends Record<any, any> = never,

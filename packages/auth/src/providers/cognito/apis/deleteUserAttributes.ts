@@ -16,6 +16,11 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createDeleteUserAttributesClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function deleteUserAttributes(
+	ctx: AmplifyContext,
+	input: DeleteUserAttributesInput,
+): Promise<void>;
+
 /**
  * Deletes user attributes.
  *
@@ -24,10 +29,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function deleteUserAttributes(
-	input: DeleteUserAttributesInput,
-): Promise<void>;
-export async function deleteUserAttributes(
-	ctx: AmplifyContext,
 	input: DeleteUserAttributesInput,
 ): Promise<void>;
 export async function deleteUserAttributes(...args: any[]): Promise<void> {

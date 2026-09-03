@@ -18,6 +18,11 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createChangePasswordClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function updatePassword(
+	ctx: AmplifyContext,
+	input: UpdatePasswordInput,
+): Promise<void>;
+
 /**
  * Updates user's password while authenticated.
  *
@@ -27,10 +32,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updatePassword(input: UpdatePasswordInput): Promise<void>;
-export async function updatePassword(
-	ctx: AmplifyContext,
-	input: UpdatePasswordInput,
-): Promise<void>;
 export async function updatePassword(...args: any[]): Promise<void> {
 	const [ctx, input] = resolveCtxArgs<[UpdatePasswordInput]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;

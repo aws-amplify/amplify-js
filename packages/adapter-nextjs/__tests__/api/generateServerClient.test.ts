@@ -1,5 +1,8 @@
 import { ResourcesConfig } from 'aws-amplify';
 import { parseAmplifyConfig } from 'aws-amplify/utils';
+import { isAmplifyContext } from 'aws-amplify/adapter-core/internals';
+import type { AmplifyContext } from 'aws-amplify/adapter-core/internals';
+import { getInternals } from '@aws-amplify/api-graphql';
 
 import {
 	generateServerClientUsingCookies,
@@ -66,6 +69,64 @@ describe('generateServerClientUsingCookies', () => {
 		generateServerClientUsingCookies({ config: mockAmplifyConfig, cookies });
 		expect(mockCreateRunWithAmplifyServerContext).toHaveBeenCalledWith({
 			config: mockAmplifyConfig,
+		});
+	});
+
+	it('stores a BRANDED AmplifyContext (not a function) as the client internals amplify instance', async () => {
+		const { cookies } = await headers;
+
+		const client = generateServerClientUsingCookies({
+			config: mockAmplifyConfig,
+			cookies,
+		});
+		const { amplify } = getInternals(
+			client as Parameters<typeof getInternals>[0],
+		);
+
+		// Main stored a closure here; the context migration stores a branded,
+		// client-bound context instead.
+		expect(typeof amplify).not.toBe('function');
+		expect(isAmplifyContext(amplify)).toBe(true);
+		expect(Object.isFrozen(amplify)).toBe(true);
+
+		// The structural duck-check the released @aws-amplify/data-schema
+		// performs (`typeof arg?.token?.value === 'symbol'`).
+		const ctx = amplify as unknown as AmplifyContext;
+		expect(typeof ctx.token.value).toBe('symbol');
+		expect(Object.isFrozen(ctx.token)).toBe(true);
+	});
+
+	it('delegates auth operations per call through runWithAmplifyServerContext with the client cookies', async () => {
+		const { cookies } = await headers;
+
+		const innerFetchAuthSession = jest.fn().mockResolvedValue({});
+		const mockRunWithAmplifyServerContext = jest.fn(
+			async ({
+				operation,
+			}: {
+				operation(contextSpec: unknown): Promise<unknown>;
+			}) => operation({ fetchAuthSession: innerFetchAuthSession }),
+		);
+		mockCreateRunWithAmplifyServerContext.mockReturnValueOnce(
+			mockRunWithAmplifyServerContext,
+		);
+
+		const client = generateServerClientUsingCookies({
+			config: mockAmplifyConfig,
+			cookies,
+		});
+		const ctx = getInternals(client as Parameters<typeof getInternals>[0])
+			.amplify as unknown as AmplifyContext;
+
+		await ctx.fetchAuthSession({ forceRefresh: true });
+
+		// Each auth operation resolves a FRESH per-request context via the
+		// runner (per-request isolation), bound to the client's cookies.
+		expect(mockRunWithAmplifyServerContext).toHaveBeenCalledWith(
+			expect.objectContaining({ nextServerContext: { cookies } }),
+		);
+		expect(innerFetchAuthSession).toHaveBeenCalledWith({
+			forceRefresh: true,
 		});
 	});
 });

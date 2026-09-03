@@ -19,6 +19,11 @@ import { signInWithUserPassword } from './signInWithUserPassword';
 import { signInWithUserAuth } from './signInWithUserAuth';
 import { resetAutoSignIn } from './autoSignIn';
 
+export async function signIn(
+	ctx: AmplifyContext,
+	input: SignInInput,
+): Promise<SignInOutput>;
+
 /**
  * Signs a user in
  *
@@ -31,10 +36,6 @@ import { resetAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signIn(input: SignInInput): Promise<SignInOutput>;
-export async function signIn(
-	ctx: AmplifyContext,
-	input: SignInInput,
-): Promise<SignInOutput>;
 export async function signIn(...args: any[]): Promise<SignInOutput> {
 	const [ctx, input] = resolveCtxArgs<[SignInInput]>(args);
 	// Here we want to reset the store but not reassign the callback.

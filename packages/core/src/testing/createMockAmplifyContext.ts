@@ -3,6 +3,7 @@
 
 import { AmplifyContext } from '../context/AmplifyContext';
 import { AMPLIFY_CONTEXT_BRAND } from '../context/contextBrand';
+import { createAmplifyContextToken } from '../context/contextToken';
 import { AuthTokens, JWT } from '../singleton/Auth/types';
 import { LibraryOptions, ResourcesConfig } from '../singleton/types';
 
@@ -91,6 +92,10 @@ export function createMockAmplifyContext(
 				: (staticConfig ?? {});
 		},
 		libraryOptions: resolvedOptions.libraryOptions ?? {},
+		// Unique, frozen per-context identity handle, matching the real
+		// producers (see AmplifyContextToken) — also satisfies
+		// @aws-amplify/data-schema's structural ContextSpec duck-check in tests.
+		token: createAmplifyContextToken(),
 		fetchAuthSession:
 			resolvedOptions.fetchAuthSession ?? jest.fn().mockResolvedValue({}),
 		clearCredentials:

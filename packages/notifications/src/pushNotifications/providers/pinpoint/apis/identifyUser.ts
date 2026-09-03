@@ -7,6 +7,13 @@ import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/p
 
 import { PushNotificationValidationErrorCode } from '../../../errors';
 import { IdentifyUserInput } from '../types';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function identifyUser(
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void>;
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
@@ -62,13 +69,6 @@ import { IdentifyUserInput } from '../types';
  * });
  */
 export async function identifyUser(input: IdentifyUserInput): Promise<void>;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export async function identifyUser(
-	ctx: AmplifyContext,
-	input: IdentifyUserInput,
-): Promise<void>;
 export async function identifyUser(..._args: any[]): Promise<void> {
 	throw new PlatformNotSupportedError();
 }

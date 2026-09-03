@@ -9,6 +9,10 @@ import { GetUserException } from '../types/errors';
 
 import { fetchUserAttributes as fetchUserAttributesInternal } from './internal/fetchUserAttributes';
 
+export async function fetchUserAttributes(
+	ctx: AmplifyContext,
+): Promise<FetchUserAttributesOutput>;
+
 /**
  * Fetches the current user attributes while authenticated.
  *
@@ -16,9 +20,6 @@ import { fetchUserAttributes as fetchUserAttributesInternal } from './internal/f
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function fetchUserAttributes(): Promise<FetchUserAttributesOutput>;
-export async function fetchUserAttributes(
-	ctx: AmplifyContext,
-): Promise<FetchUserAttributesOutput>;
 export async function fetchUserAttributes(
 	...args: any[]
 ): Promise<FetchUserAttributesOutput> {

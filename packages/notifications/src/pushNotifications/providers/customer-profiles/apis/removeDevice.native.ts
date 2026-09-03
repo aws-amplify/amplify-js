@@ -6,6 +6,10 @@ import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import { assertIsInitialized } from '../../../errors/errorHelpers';
 import { getDeviceId, removeDeviceInternal } from '../utils';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function removeDevice(ctx: AmplifyContext): Promise<void>;
 
 /**
  * De-registers the current push device from Amazon Connect Customer Profiles.
@@ -34,10 +38,6 @@ import { getDeviceId, removeDeviceInternal } from '../utils';
  * ```
  */
 export async function removeDevice(): Promise<void>;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export async function removeDevice(ctx: AmplifyContext): Promise<void>;
 export async function removeDevice(...args: any[]): Promise<void> {
 	const [ctx] = resolveCtxArgs<[]>(args);
 	assertIsInitialized();

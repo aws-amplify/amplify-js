@@ -20,6 +20,9 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 // Cognito Documentation for max device
 // https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
 const MAX_DEVICES = 60;
+export async function fetchDevices(
+	ctx: AmplifyContext,
+): Promise<FetchDevicesOutput>;
 
 /**
  * Fetches devices that have been remembered using {@link rememberDevice}
@@ -30,9 +33,6 @@ const MAX_DEVICES = 60;
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function fetchDevices(): Promise<FetchDevicesOutput>;
-export async function fetchDevices(
-	ctx: AmplifyContext,
-): Promise<FetchDevicesOutput>;
 export async function fetchDevices(
 	...args: any[]
 ): Promise<FetchDevicesOutput> {

@@ -20,6 +20,11 @@ import { ResendConfirmationException } from '../types/errors';
 import { createResendConfirmationCodeClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function resendSignUpCode(
+	ctx: AmplifyContext,
+	input: ResendSignUpCodeInput,
+): Promise<ResendSignUpCodeOutput>;
+
 /**
  * Resend the confirmation code while signing up
  *
@@ -30,10 +35,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function resendSignUpCode(
-	input: ResendSignUpCodeInput,
-): Promise<ResendSignUpCodeOutput>;
-export async function resendSignUpCode(
-	ctx: AmplifyContext,
 	input: ResendSignUpCodeInput,
 ): Promise<ResendSignUpCodeOutput>;
 export async function resendSignUpCode(

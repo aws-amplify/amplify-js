@@ -21,6 +21,7 @@ describe('hasUserSignedIn', () => {
 	const mockContextSpec: AmplifyContext = {
 		resourcesConfig: {},
 		libraryOptions: {},
+		token: Object.freeze({ value: Symbol('test-ctx') }),
 		fetchAuthSession: jest.fn(),
 		clearCredentials: jest.fn(),
 		getTokens: jest.fn(),

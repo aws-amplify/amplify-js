@@ -5,6 +5,7 @@ import { AmplifyClass } from '../singleton/Amplify';
 
 import { AmplifyContext } from './AmplifyContext';
 import { AMPLIFY_CONTEXT_BRAND } from './contextBrand';
+import { createAmplifyContextToken } from './contextToken';
 
 /**
  * Bridges an {@link AmplifyClass} (a.k.a. `AmplifyClassV6`) instance to the
@@ -33,6 +34,9 @@ export const bridgeAmplifyClass = (amplify: AmplifyClass): AmplifyContext => {
 		get libraryOptions() {
 			return amplify.libraryOptions;
 		},
+		// Unique, frozen per-context identity handle (see AmplifyContextToken).
+		// Attached before the brand/freeze below so the frozen bridge carries it.
+		token: createAmplifyContextToken(),
 		// AmplifyContext.fetchAuthSession has OPTIONAL options while
 		// AuthClass.Auth.fetchAuthSession requires it, hence the `?? {}` default.
 		fetchAuthSession: options => amplify.Auth.fetchAuthSession(options ?? {}),

@@ -25,9 +25,9 @@ export class AWSIoT extends MqttOverWS {
 	 * @private
 	 */
 	private readonly _resolveCtx: () => AmplifyContext;
+	constructor(ctx: AmplifyContext | undefined, options?: AWSIoTOptions);
 
 	constructor(options?: AWSIoTOptions);
-	constructor(ctx: AmplifyContext | undefined, options?: AWSIoTOptions);
 	constructor(
 		ctxOrOptions?: AmplifyContext | AWSIoTOptions,
 		maybeOptions?: AWSIoTOptions,

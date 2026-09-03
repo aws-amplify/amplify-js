@@ -36,6 +36,10 @@ import {
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 const logger = new ConsoleLogger('Auth');
+export async function signOut(
+	ctx: AmplifyContext,
+	input?: SignOutInput,
+): Promise<void>;
 
 /**
  * Signs a user out
@@ -44,10 +48,6 @@ const logger = new ConsoleLogger('Auth');
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signOut(input?: SignOutInput): Promise<void>;
-export async function signOut(
-	ctx: AmplifyContext,
-	input?: SignOutInput,
-): Promise<void>;
 export async function signOut(...args: any[]): Promise<void> {
 	const [ctx, input] = resolveCtxArgs<[SignOutInput | undefined]>(args);
 	const cognitoConfig = ctx.resourcesConfig.Auth?.Cognito;

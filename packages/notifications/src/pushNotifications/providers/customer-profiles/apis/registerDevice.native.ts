@@ -53,6 +53,13 @@ export const buildDeviceRegistration = async (
 		channelType: getChannelType(),
 	};
 };
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function registerDevice(
+	ctx: AmplifyContext,
+	input: RegisterDeviceInput,
+): Promise<void>;
 
 /**
  * Registers a push device with Amazon Connect Customer Profiles. The device is
@@ -67,13 +74,6 @@ export const buildDeviceRegistration = async (
  * @returns A promise that will resolve when the operation is complete.
  */
 export async function registerDevice(input: RegisterDeviceInput): Promise<void>;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export async function registerDevice(
-	ctx: AmplifyContext,
-	input: RegisterDeviceInput,
-): Promise<void>;
 export async function registerDevice(...args: any[]): Promise<void> {
 	const [ctx, input] = resolveCtxArgs<[RegisterDeviceInput]>(args);
 	assertIsInitialized();

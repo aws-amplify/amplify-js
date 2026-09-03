@@ -18,6 +18,11 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createSetUserMFAPreferenceClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function updateMFAPreference(
+	ctx: AmplifyContext,
+	input: UpdateMFAPreferenceInput,
+): Promise<void>;
+
 /**
  * Updates the MFA preference of the user.
  *
@@ -26,10 +31,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updateMFAPreference(
-	input: UpdateMFAPreferenceInput,
-): Promise<void>;
-export async function updateMFAPreference(
-	ctx: AmplifyContext,
 	input: UpdateMFAPreferenceInput,
 ): Promise<void>;
 export async function updateMFAPreference(...args: any[]): Promise<void> {

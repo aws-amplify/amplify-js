@@ -16,6 +16,11 @@ import { getAnalyticsUserAgentString } from '../../../utils';
 import { IdentifyUserInput } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
+export async function identifyUser(
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void>;
+
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
@@ -64,10 +69,6 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * });
  */
 export async function identifyUser(input: IdentifyUserInput): Promise<void>;
-export async function identifyUser(
-	ctx: AmplifyContext,
-	input: IdentifyUserInput,
-): Promise<void>;
 export async function identifyUser(...args: any[]): Promise<void> {
 	const [ctx, input] = resolveCtxArgs<[IdentifyUserInput]>(args);
 	const { userId, userProfile, options } = input;

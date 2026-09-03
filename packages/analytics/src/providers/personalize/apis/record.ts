@@ -27,6 +27,7 @@ import {
 import { AnalyticsValidationErrorCode } from '../../../errors';
 
 const logger = new ConsoleLogger('Personalize');
+export function record(ctx: AmplifyContext, input: RecordInput): void;
 
 /**
  * Record one analytic event and send it to Personalize. Events will be buffered and periodically sent to Amazon
@@ -54,7 +55,6 @@ const logger = new ConsoleLogger('Personalize');
  * @returns void
  */
 export function record(input: RecordInput): void;
-export function record(ctx: AmplifyContext, input: RecordInput): void;
 export function record(...args: any[]): void {
 	const [ctx, input] = resolveCtxArgs<[RecordInput]>(args);
 	const { userId, eventId, eventType, properties } = input;

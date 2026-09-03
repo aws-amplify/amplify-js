@@ -32,6 +32,21 @@ export function createTestCtx(
 }
 
 /**
+ * Creates a branded test `AmplifyContext` with an EMPTY `resourcesConfig`.
+ *
+ * Use this where a global context is installed only so that
+ * `getGlobalContext()` resolves (e.g. for `InternalAPI.graphql()`), without
+ * feeding DataStore an AppSync endpoint: `DataStore.configure()` reads
+ * `getGlobalContext().resourcesConfig.API?.GraphQL`, so a ctx carrying an
+ * endpoint would start the sync engine in suites that expect to run offline.
+ * An empty config mirrors the pre-context v6 "unconfigured singleton"
+ * semantics those suites were written against.
+ */
+export function createEmptyTestCtx(): MockAmplifyContext {
+	return createMockAmplifyContext();
+}
+
+/**
  * Prevents the subscription processor from making real network requests
  * (which hang in the test environment) by injecting a no-op `InternalAPI`
  * that returns empty observables for subscriptions.

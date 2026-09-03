@@ -14,6 +14,7 @@ import {
 } from '../../../utils';
 
 const logger = new ConsoleLogger('Personalize');
+export function flushEvents(ctx: AmplifyContext): void;
 
 /**
  * Flushes all buffered Personalize events to the service.
@@ -23,7 +24,6 @@ const logger = new ConsoleLogger('Personalize');
  * this API may not be included in the flush.
  */
 export function flushEvents(): void;
-export function flushEvents(ctx: AmplifyContext): void;
 export function flushEvents(...args: any[]): void {
 	const [ctx] = resolveCtxArgs<[]>(args);
 	const { region, flushSize, bufferSize, flushInterval } = resolveConfig(ctx);

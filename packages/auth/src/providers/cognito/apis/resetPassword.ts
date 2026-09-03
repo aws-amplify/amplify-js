@@ -20,6 +20,11 @@ import { getUserContextData } from '../utils/userContextData';
 import { createForgotPasswordClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function resetPassword(
+	ctx: AmplifyContext,
+	input: ResetPasswordInput,
+): Promise<ResetPasswordOutput>;
+
 /**
  * Resets a user's password.
  *
@@ -32,10 +37,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  **/
 export async function resetPassword(
-	input: ResetPasswordInput,
-): Promise<ResetPasswordOutput>;
-export async function resetPassword(
-	ctx: AmplifyContext,
 	input: ResetPasswordInput,
 ): Promise<ResetPasswordOutput>;
 export async function resetPassword(

@@ -12,6 +12,22 @@ import {
 } from '../types';
 
 import { getProperties as getPropertiesInternal } from './internal/getProperties';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetPropertiesWithPathInput` object.
+ */
+export function getProperties(
+	ctx: AmplifyContext,
+	input: GetPropertiesWithPathInput,
+): Promise<GetPropertiesWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetPropertiesInput` object.
+ */
+export function getProperties(
+	ctx: AmplifyContext,
+	input: GetPropertiesInput,
+): Promise<GetPropertiesOutput>;
 
 /**
  * Gets the properties of a file. The properties include S3 system metadata and
@@ -38,22 +54,6 @@ export function getProperties(
  * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
  */
 export function getProperties(
-	input: GetPropertiesInput,
-): Promise<GetPropertiesOutput>;
-/**
- * @param ctx - The AmplifyContext to operate on.
- * @param input - The `GetPropertiesWithPathInput` object.
- */
-export function getProperties(
-	ctx: AmplifyContext,
-	input: GetPropertiesWithPathInput,
-): Promise<GetPropertiesWithPathOutput>;
-/**
- * @param ctx - The AmplifyContext to operate on.
- * @param input - The `GetPropertiesInput` object.
- */
-export function getProperties(
-	ctx: AmplifyContext,
 	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput>;
 

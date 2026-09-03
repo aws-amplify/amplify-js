@@ -12,6 +12,22 @@ import {
 } from '../types';
 
 import { getUrl as getUrlInternal } from './internal/getUrl';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetUrlWithPathInput` object.
+ */
+export function getUrl(
+	ctx: AmplifyContext,
+	input: GetUrlWithPathInput,
+): Promise<GetUrlWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetUrlInput` object.
+ */
+export function getUrl(
+	ctx: AmplifyContext,
+	input: GetUrlInput,
+): Promise<GetUrlOutput>;
 
 /**
  * Get a temporary presigned URL to download or upload the specified S3 object.
@@ -52,22 +68,6 @@ export function getUrl(
  *
  */
 export function getUrl(input: GetUrlInput): Promise<GetUrlOutput>;
-/**
- * @param ctx - The AmplifyContext to operate on.
- * @param input - The `GetUrlWithPathInput` object.
- */
-export function getUrl(
-	ctx: AmplifyContext,
-	input: GetUrlWithPathInput,
-): Promise<GetUrlWithPathOutput>;
-/**
- * @param ctx - The AmplifyContext to operate on.
- * @param input - The `GetUrlInput` object.
- */
-export function getUrl(
-	ctx: AmplifyContext,
-	input: GetUrlInput,
-): Promise<GetUrlOutput>;
 
 // Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
 export function getUrl(...args: any[]) {

@@ -12,8 +12,9 @@ import {
 	assertValidationError,
 } from '../../errors';
 
-export function onComplete(input: OnCompleteInput): void;
 export function onComplete(ctx: AmplifyContext, input: OnCompleteInput): void;
+
+export function onComplete(input: OnCompleteInput): void;
 export function onComplete(...args: any[]): void {
 	const [ctx, input] = resolveCtxArgs<[OnCompleteInput]>(args);
 	const { botName, callback } = input;

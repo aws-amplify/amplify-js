@@ -19,16 +19,16 @@ export {
 } from '../../shared/types';
 
 export interface IdentifyUser {
-	(input: IdentifyUserInput): Promise<void>;
 	(ctx: AmplifyContext, input: IdentifyUserInput): Promise<void>;
+	(input: IdentifyUserInput): Promise<void>;
 }
 
 export interface RegisterDevice {
-	(input: RegisterDeviceInput): Promise<void>;
 	(ctx: AmplifyContext, input: RegisterDeviceInput): Promise<void>;
+	(input: RegisterDeviceInput): Promise<void>;
 }
 
 export interface RemoveDevice {
-	(): Promise<void>;
 	(ctx: AmplifyContext): Promise<void>;
+	(): Promise<void>;
 }

@@ -24,6 +24,11 @@ import type {
 
 // Keeps a list of open channels in the websocket
 const openChannels = new Set<string>();
+async function connect(
+	ctx: AmplifyContext,
+	channel: string,
+	options?: EventsOptions,
+): Promise<EventsChannel>;
 
 /**
  * @experimental API may change in future versions
@@ -49,11 +54,6 @@ const openChannels = new Set<string>();
  *
  */
 async function connect(
-	channel: string,
-	options?: EventsOptions,
-): Promise<EventsChannel>;
-async function connect(
-	ctx: AmplifyContext,
 	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel>;
@@ -140,6 +140,12 @@ async function connect(...args: any[]): Promise<EventsChannel> {
 		publish: pub,
 	};
 }
+async function post(
+	ctx: AmplifyContext,
+	channel: string,
+	event: DocumentType | DocumentType[],
+	options?: EventsOptions,
+): Promise<void | PublishedEvent[]>;
 
 /**
  * @experimental API may change in future versions
@@ -166,12 +172,6 @@ async function connect(...args: any[]): Promise<EventsChannel> {
  * @throws on error
  */
 async function post(
-	channel: string,
-	event: DocumentType | DocumentType[],
-	options?: EventsOptions,
-): Promise<void | PublishedEvent[]>;
-async function post(
-	ctx: AmplifyContext,
 	channel: string,
 	event: DocumentType | DocumentType[],
 	options?: EventsOptions,

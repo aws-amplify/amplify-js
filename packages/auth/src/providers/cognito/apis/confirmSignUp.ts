@@ -23,6 +23,11 @@ import { autoSignInStore } from '../../../client/utils/store';
 
 import { resetAutoSignIn } from './autoSignIn';
 
+export async function confirmSignUp(
+	ctx: AmplifyContext,
+	input: ConfirmSignUpInput,
+): Promise<ConfirmSignUpOutput>;
+
 /**
  * Confirms a new user account.
  *
@@ -35,10 +40,6 @@ import { resetAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignUp(
-	input: ConfirmSignUpInput,
-): Promise<ConfirmSignUpOutput>;
-export async function confirmSignUp(
-	ctx: AmplifyContext,
 	input: ConfirmSignUpInput,
 ): Promise<ConfirmSignUpOutput>;
 export async function confirmSignUp(

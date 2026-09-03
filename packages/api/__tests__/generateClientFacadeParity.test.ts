@@ -1,12 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { enableFetchMocks } from 'jest-fetch-mock';
-import { Amplify, createAmplifyContext } from '@aws-amplify/core';
+import {
+	Amplify,
+	AmplifyContext,
+	createAmplifyContext,
+} from '@aws-amplify/core';
 import {
 	clearGlobalContext,
 	setGlobalContext,
 } from '@aws-amplify/core/internals/utils';
-import { GraphQLAPI } from '@aws-amplify/api-graphql';
+import { GraphQLAPI, getInternals } from '@aws-amplify/api-graphql';
 import { generateClient } from '@aws-amplify/api';
 
 // Make global `Request` available.
@@ -117,5 +121,20 @@ describe('generateClient - facade-only configuration (global context, no core si
 		const { endpoint, apiKey } = getFirstPost();
 		expect(endpoint).toEqual(NEW_ENDPOINT);
 		expect(apiKey).toEqual(NEW_API_KEY);
+	});
+
+	test('the lazy global-context handle carries a ContextSpec token and reads it pre-configure without throwing', () => {
+		clearGlobalContext();
+
+		const client = generateClient();
+		const ctx = getInternals(client as Parameters<typeof getInternals>[0])
+			.amplify as unknown as AmplifyContext;
+
+		// The structural + runtime duck-check the released
+		// @aws-amplify/data-schema performs (`typeof arg?.token?.value ===
+		// 'symbol'`). The token identifies the long-lived lazy wrapper itself
+		// and must be readable even before any configuration.
+		expect(typeof ctx.token.value).toBe('symbol');
+		expect(Object.isFrozen(ctx.token)).toBe(true);
 	});
 });

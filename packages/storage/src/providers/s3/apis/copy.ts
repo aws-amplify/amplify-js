@@ -12,6 +12,22 @@ import {
 } from '../types';
 
 import { copy as copyInternal } from './internal/copy';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `CopyWithPathInput` object.
+ */
+export function copy(
+	ctx: AmplifyContext,
+	input: CopyWithPathInput,
+): Promise<CopyWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `CopyInput` object.
+ */
+export function copy(
+	ctx: AmplifyContext,
+	input: CopyInput,
+): Promise<CopyOutput>;
 
 /**
  * Copy an object from a source to a destination object within the same bucket.
@@ -37,22 +53,6 @@ export function copy(input: CopyWithPathInput): Promise<CopyWithPathOutput>;
  * source or destination key is not defined.
  */
 export function copy(input: CopyInput): Promise<CopyOutput>;
-/**
- * @param ctx - The AmplifyContext to operate on.
- * @param input - The `CopyWithPathInput` object.
- */
-export function copy(
-	ctx: AmplifyContext,
-	input: CopyWithPathInput,
-): Promise<CopyWithPathOutput>;
-/**
- * @param ctx - The AmplifyContext to operate on.
- * @param input - The `CopyInput` object.
- */
-export function copy(
-	ctx: AmplifyContext,
-	input: CopyInput,
-): Promise<CopyOutput>;
 
 // Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
 export function copy(...args: any[]) {

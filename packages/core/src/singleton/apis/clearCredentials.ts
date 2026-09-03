@@ -5,13 +5,6 @@ import { AmplifyContext } from '../../context/AmplifyContext';
 import { resolveCtxArgs } from '../../context/resolveCtxArgs';
 
 import { isUnconfiguredNoCtxCall } from './isUnconfiguredNoCtxCall';
-
-/**
- * Clears the cached auth credentials of the global {@link AmplifyContext}.
- * Before `Amplify.configure()` has run this resolves harmlessly, matching the
- * pre-context behavior.
- */
-export function clearCredentials(): Promise<void>;
 /**
  * Clears the cached auth credentials of the given {@link AmplifyContext}
  * instead of the global one.
@@ -19,6 +12,13 @@ export function clearCredentials(): Promise<void>;
  * @param ctx - The explicit {@link AmplifyContext} whose credentials are cleared.
  */
 export function clearCredentials(ctx: AmplifyContext): Promise<void>;
+
+/**
+ * Clears the cached auth credentials of the global {@link AmplifyContext}.
+ * Before `Amplify.configure()` has run this resolves harmlessly, matching the
+ * pre-context behavior.
+ */
+export function clearCredentials(): Promise<void>;
 export function clearCredentials(...args: any[]): Promise<void> {
 	// Back-compat: before the context migration, `clearCredentials()` on an
 	// unconfigured Amplify resolved harmlessly (the unconfigured `AuthClass`

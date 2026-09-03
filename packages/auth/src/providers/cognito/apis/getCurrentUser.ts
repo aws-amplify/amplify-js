@@ -9,6 +9,10 @@ import { InitiateAuthException } from '../types/errors';
 
 import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentUser';
 
+export async function getCurrentUser(
+	ctx: AmplifyContext,
+): Promise<GetCurrentUserOutput>;
+
 /**
  * Gets the current user from the idToken.
  *
@@ -18,9 +22,6 @@ import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentU
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function getCurrentUser(): Promise<GetCurrentUserOutput>;
-export async function getCurrentUser(
-	ctx: AmplifyContext,
-): Promise<GetCurrentUserOutput>;
 export async function getCurrentUser(
 	...args: any[]
 ): Promise<GetCurrentUserOutput> {

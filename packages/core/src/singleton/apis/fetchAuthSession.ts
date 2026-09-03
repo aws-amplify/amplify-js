@@ -6,21 +6,6 @@ import { resolveCtxArgs } from '../../context/resolveCtxArgs';
 import { AuthSession, FetchAuthSessionOptions } from '../Auth/types';
 
 import { isUnconfiguredNoCtxCall } from './isUnconfiguredNoCtxCall';
-
-/**
- * Fetch the auth session including the tokens and credentials if they are available. By default it
- * will automatically refresh expired auth tokens if a valid refresh token is present. You can force a refresh
- * of non-expired tokens with `{ forceRefresh: true }` input.
- *
- * @param options - Options configuring the fetch behavior.
- * @throws {@link AuthError} - Throws error when session information cannot be refreshed.
- * @returns Promise<AuthSession> — before `Amplify.configure()` has run this
- * resolves with an empty session (all fields `undefined`), matching the
- * pre-context behavior.
- */
-export function fetchAuthSession(
-	options?: FetchAuthSessionOptions,
-): Promise<AuthSession>;
 /**
  * Fetch the auth session of the given {@link AmplifyContext} — e.g. the
  * per-request context handed to an SSR `runWithAmplifyServerContext`
@@ -36,6 +21,21 @@ export function fetchAuthSession(
  */
 export function fetchAuthSession(
 	ctx: AmplifyContext,
+	options?: FetchAuthSessionOptions,
+): Promise<AuthSession>;
+
+/**
+ * Fetch the auth session including the tokens and credentials if they are available. By default it
+ * will automatically refresh expired auth tokens if a valid refresh token is present. You can force a refresh
+ * of non-expired tokens with `{ forceRefresh: true }` input.
+ *
+ * @param options - Options configuring the fetch behavior.
+ * @throws {@link AuthError} - Throws error when session information cannot be refreshed.
+ * @returns Promise<AuthSession> — before `Amplify.configure()` has run this
+ * resolves with an empty session (all fields `undefined`), matching the
+ * pre-context behavior.
+ */
+export function fetchAuthSession(
 	options?: FetchAuthSessionOptions,
 ): Promise<AuthSession>;
 export function fetchAuthSession(...args: any[]): Promise<AuthSession> {

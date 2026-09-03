@@ -18,6 +18,11 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createVerifySoftwareTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function verifyTOTPSetup(
+	ctx: AmplifyContext,
+	input: VerifyTOTPSetupInput,
+): Promise<void>;
+
 /**
  * Verifies an OTP code retrieved from an associated authentication app.
  *
@@ -29,10 +34,6 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function verifyTOTPSetup(
-	input: VerifyTOTPSetupInput,
-): Promise<void>;
-export async function verifyTOTPSetup(
-	ctx: AmplifyContext,
 	input: VerifyTOTPSetupInput,
 ): Promise<void>;
 export async function verifyTOTPSetup(...args: any[]): Promise<void> {

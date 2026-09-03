@@ -22,6 +22,13 @@ import {
 	resolveConfig,
 } from '../utils';
 import { IdentifyUserInput } from '../types';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function identifyUser(
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void>;
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
@@ -34,13 +41,6 @@ import { IdentifyUserInput } from '../types';
  * @returns A promise that will resolve when the operation is complete.
  */
 export async function identifyUser(input: IdentifyUserInput): Promise<void>;
-/**
- * @param ctx - The {@link AmplifyContext} to use for config and credentials.
- */
-export async function identifyUser(
-	ctx: AmplifyContext,
-	input: IdentifyUserInput,
-): Promise<void>;
 export async function identifyUser(...args: any[]): Promise<void> {
 	const [ctx, input] = resolveCtxArgs<[IdentifyUserInput]>(args);
 	const { userId, userProfile, options } = input;
