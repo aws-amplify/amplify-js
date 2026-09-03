@@ -8,6 +8,7 @@ import {
 	LibraryOptions,
 	ResourcesConfig,
 } from '../singleton/types';
+import { deepFreeze } from '../utils/deepFreeze';
 import { parseAmplifyConfig } from '../utils/parseAmplifyConfig';
 
 import { AmplifyContext } from './AmplifyContext';
@@ -75,9 +76,19 @@ export function createAmplifyContext(
 	// `parseAmplifyConfig` returns an already-parsed `ResourcesConfig` unchanged,
 	// so skipping it when the caller has pre-parsed keeps behavior identical while
 	// avoiding a redundant parse.
-	const resolvedResourceConfig = internalOptions?.skipConfigParse
-		? (resourceConfig as ResourcesConfig)
-		: parseAmplifyConfig(resourceConfig);
+	//
+	// The resolved config is DEEP-frozen (matching `Amplify.configure()` in
+	// Amplify.ts) on BOTH paths: a shallow `Object.freeze` would leave nested
+	// config (e.g. `Auth.Cognito`) mutable, and on the `skipConfigParse` path the
+	// caller's object passes through by reference — potentially SHARED between
+	// several per-request contexts (adapter-nextjs reuses one parsed config for
+	// every request), so any nested mutation would leak across contexts.
+	// `deepFreeze` is idempotent, so re-freezing that shared object is safe.
+	const resolvedResourceConfig: ResourcesConfig = deepFreeze(
+		internalOptions?.skipConfigParse
+			? (resourceConfig as ResourcesConfig)
+			: parseAmplifyConfig(resourceConfig),
+	);
 	const resolvedLibraryOptions: LibraryOptions = libraryOptions ?? {};
 
 	// Fresh, per-context Auth instance (not the global singleton) so that
@@ -88,7 +99,8 @@ export function createAmplifyContext(
 	}
 
 	const ctx: AmplifyContext = {
-		resourcesConfig: Object.freeze(resolvedResourceConfig),
+		// Already deep-frozen above (both parse paths).
+		resourcesConfig: resolvedResourceConfig,
 		libraryOptions: resolvedLibraryOptions,
 		// Unique, frozen per-context identity handle (see AmplifyContextToken).
 		// Attached before the brand/freeze below so the frozen context carries it.

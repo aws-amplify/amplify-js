@@ -183,4 +183,79 @@ describe('createAmplifyContext', () => {
 			);
 		});
 	});
+
+	describe('deep-freeze of resourcesConfig (both config paths)', () => {
+		// Fresh config per test — deepFreeze mutates (freezes) its input in
+		// place, so sharing the module-level object would couple tests.
+		const buildConfig = (): ResourcesConfig => ({
+			Auth: {
+				Cognito: {
+					userPoolId: 'us-east-1_test',
+					userPoolClientId: 'test-user-pool-client-id',
+				},
+			},
+		});
+
+		it('deep-freezes nested config on the parse path (nested mutation throws in strict mode)', () => {
+			const ctx = createAmplifyContext(buildConfig());
+
+			expect(Object.isFrozen(ctx.resourcesConfig)).toBe(true);
+			expect(Object.isFrozen(ctx.resourcesConfig.Auth)).toBe(true);
+			expect(Object.isFrozen(ctx.resourcesConfig.Auth?.Cognito)).toBe(true);
+
+			// Test modules run in strict mode, so writing to a frozen object
+			// throws (it would fail silently in sloppy mode — frozen either way).
+			expect(() => {
+				ctx.resourcesConfig.Auth!.Cognito.userPoolId = 'us-east-1_mutated';
+			}).toThrow(TypeError);
+			expect(ctx.resourcesConfig.Auth?.Cognito?.userPoolId).toBe(
+				'us-east-1_test',
+			);
+		});
+
+		it('deep-freezes nested config on the skipConfigParse path (caller object no longer passes through mutable)', () => {
+			const preParsed = buildConfig();
+			const ctx = createAmplifyContext(preParsed, undefined, {
+				skipConfigParse: true,
+			});
+
+			expect(Object.isFrozen(ctx.resourcesConfig)).toBe(true);
+			expect(Object.isFrozen(ctx.resourcesConfig.Auth)).toBe(true);
+			expect(Object.isFrozen(ctx.resourcesConfig.Auth?.Cognito)).toBe(true);
+
+			expect(() => {
+				ctx.resourcesConfig.Auth!.Cognito.userPoolId = 'us-east-1_mutated';
+			}).toThrow(TypeError);
+			expect(ctx.resourcesConfig.Auth?.Cognito?.userPoolId).toBe(
+				'us-east-1_test',
+			);
+		});
+
+		it('isolates two skipConfigParse contexts sharing the same config object (no mutation is possible)', () => {
+			// adapter-nextjs passes the SAME parsed config object for every
+			// per-request context; deep-freezing it is idempotent and prevents
+			// one context's consumer from mutating state the other observes.
+			const shared = buildConfig();
+			const ctxA = createAmplifyContext(shared, undefined, {
+				skipConfigParse: true,
+			});
+			const ctxB = createAmplifyContext(shared, undefined, {
+				skipConfigParse: true,
+			});
+
+			// Both contexts intentionally reference the shared (now frozen) object.
+			expect(ctxA.resourcesConfig).toBe(shared);
+			expect(ctxB.resourcesConfig).toBe(shared);
+
+			// A nested mutation attempted through ctxA throws...
+			expect(() => {
+				ctxA.resourcesConfig.Auth!.Cognito.userPoolId = 'us-east-1_mutated';
+			}).toThrow(TypeError);
+
+			// ...so ctxB can never observe a change (none is possible).
+			expect(ctxB.resourcesConfig.Auth?.Cognito?.userPoolId).toBe(
+				'us-east-1_test',
+			);
+		});
+	});
 });

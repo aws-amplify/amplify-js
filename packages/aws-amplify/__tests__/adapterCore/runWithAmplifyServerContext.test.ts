@@ -9,7 +9,10 @@
  * exercise that behavior against the REAL core global context.
  */
 import { getGlobalContext, isAmplifyContext } from '@aws-amplify/core';
-import { clearGlobalContext } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyError,
+	clearGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { runWithAmplifyServerContext } from '../../src/adapter-core';
 import { Amplify } from '../../src';
@@ -73,5 +76,41 @@ describe('runWithAmplifyServerContext (deprecated shim)', () => {
 		await expect(
 			runWithAmplifyServerContext({ operation: mockOperation }),
 		).rejects.toThrow(testError);
+	});
+
+	describe('legacy request-scoped `nextServerContext` shape (fail-loud)', () => {
+		// Mimics an untyped-JS caller still passing the removed
+		// `{ nextServerContext: { request, response }, operation }` shape.
+		const legacyCall = (nextServerContext: unknown) =>
+			runWithAmplifyServerContext({
+				nextServerContext,
+				operation: jest.fn(),
+			} as unknown as Parameters<typeof runWithAmplifyServerContext>[0]);
+
+		it('throws a typed InvalidServerContextError instead of leaking the global context', async () => {
+			expect.assertions(3);
+			try {
+				await legacyCall({ request: {}, response: {} });
+			} catch (error) {
+				expect(error).toBeInstanceOf(AmplifyError);
+				expect((error as AmplifyError).name).toBe('InvalidServerContextError');
+				expect((error as AmplifyError).recoverySuggestion).toContain(
+					'createRunWithAmplifyServerContext',
+				);
+			}
+		});
+
+		it('does not invoke the operation when the legacy shape is passed', async () => {
+			const mockOperation = jest.fn();
+
+			await expect(
+				runWithAmplifyServerContext({
+					nextServerContext: { request: {}, response: {} },
+					operation: mockOperation,
+				} as unknown as Parameters<typeof runWithAmplifyServerContext>[0]),
+			).rejects.toMatchObject({ name: 'InvalidServerContextError' });
+
+			expect(mockOperation).not.toHaveBeenCalled();
+		});
 	});
 });

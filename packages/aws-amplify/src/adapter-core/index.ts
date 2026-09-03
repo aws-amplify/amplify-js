@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyContext, getGlobalContext } from '@aws-amplify/core';
+import { AmplifyError } from '@aws-amplify/core/internals/utils';
 
 export { createKeyValueStorageFromCookieStorageAdapter } from './storageFactories';
 export {
@@ -44,10 +45,12 @@ export { AmplifyServerContextError } from '@aws-amplify/core/internals/adapter-c
  *   and passes it to `operation`. It no longer creates or scopes anything.
  * - **The request-scoped `{ nextServerContext: reqRes }` shape is GONE.** The
  *   authenticated form that previously drove per-request auth (cookies/headers
- *   from the incoming request/response pair) is no longer accepted. Untyped-JS
- *   callers that relied on it will silently fall through to the single global
- *   context and **share one context across every request** — a correctness and
- *   security hazard in SSR / multi-tenant deployments.
+ *   from the incoming request/response pair) is no longer accepted. Passing a
+ *   non-null `nextServerContext` now **throws an `AmplifyError` named
+ *   `InvalidServerContextError`** instead of silently falling through to the
+ *   single global context (which would share one context across every
+ *   request — a correctness and security hazard in SSR / multi-tenant
+ *   deployments).
  * - **Use the request-scoped path instead.** For true per-request isolation use
  *   `createRunWithAmplifyServerContext` from `@aws-amplify/adapter-nextjs`, or
  *   build a context explicitly with `createAmplifyContext()` and pass it to
@@ -70,9 +73,25 @@ export async function runWithAmplifyServerContext<T>(input: {
 	operation(contextSpec: AmplifyContext): T | Promise<T>;
 }): Promise<T>;
 export async function runWithAmplifyServerContext<T>(input: {
-	nextServerContext?: null;
+	nextServerContext?: unknown;
 	operation(contextSpec: AmplifyContext): T | Promise<T>;
 }): Promise<T> {
+	// Fail loud for untyped-JS callers still passing the legacy request-scoped
+	// shape: silently resolving the global context here would share one context
+	// (and its credentials) across every request.
+	if (input.nextServerContext != null) {
+		throw new AmplifyError({
+			name: 'InvalidServerContextError',
+			message:
+				'The request-scoped `nextServerContext` shape is no longer supported by ' +
+				'this deprecated `runWithAmplifyServerContext` shim; it only resolves ' +
+				'the process-wide global context, which must not be shared across requests.',
+			recoverySuggestion:
+				'Use `createRunWithAmplifyServerContext` from `@aws-amplify/adapter-nextjs` ' +
+				'for per-request isolation.',
+		});
+	}
+
 	const ctx = getGlobalContext();
 
 	return input.operation(ctx);

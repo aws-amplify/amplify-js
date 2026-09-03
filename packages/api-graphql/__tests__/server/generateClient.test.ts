@@ -75,4 +75,143 @@ describe('server generateClient (req/res entry)', () => {
 				.amplify,
 		).toBeNull();
 	});
+
+	/**
+	 * REGRESSION GUARD (PR #14931 finding 4): the pre-Phase-C server entry
+	 * wrapped `client.graphql` and invoked the shared implementation via
+	 * `prevGraphql.call({ [__amplify]: amplifyInstance }, ...)` — a rebound
+	 * `this` carrying ONLY the context. `getInternals(this)` therefore read
+	 * `authMode`/`authToken`/`headers` off an object that lacked them, and
+	 * every client-instance-level option was silently dropped: requests fell
+	 * back to the config default (`apiKey` here → `X-Api-Key`, no
+	 * `Authorization`, no custom headers, no signing for `lambda`).
+	 *
+	 * The collapsed entry passes the real client as `this` (ctx arrives as
+	 * the explicit first argument instead), so client-level options are
+	 * honored. These tests assert at the transport boundary; if anyone
+	 * reintroduces a wrapper that rebinds `this` without the client
+	 * internals, the `Authorization`/custom-header/signing assertions below
+	 * fail (the request would instead carry the config-default `X-Api-Key`).
+	 */
+	describe('client-instance-level options (authMode/authToken/headers)', () => {
+		test('applies client-level authMode, authToken, and headers to the outgoing request', async () => {
+			const spy = mockApiResponse({ data: { someQuery: { a: 1 } } });
+			const ctx = createMockAmplifyContext(config);
+
+			const client = generateClient({
+				config,
+				authMode: 'lambda',
+				authToken: 'client-lambda-token',
+				headers: { 'x-client-header': 'client-value' },
+			});
+
+			await client.graphql(ctx, {
+				query: `query Q { someQuery { a } }`,
+			});
+
+			expect(spy).toHaveBeenCalledTimes(1);
+			const [, postOptions] = spy.mock.calls[0] as [
+				unknown,
+				{
+					url: URL;
+					options: {
+						headers: Record<string, string>;
+						signingServiceInfo?: { service: string; region: string };
+					};
+				},
+			];
+
+			// Client-level `authToken` becomes the Authorization header
+			// (also satisfies the `lambda` auth mode's token requirement).
+			expect(postOptions.options.headers.Authorization).toEqual(
+				'client-lambda-token',
+			);
+			// Client-level custom headers are forwarded.
+			expect(postOptions.options.headers['x-client-header']).toEqual(
+				'client-value',
+			);
+			// Client-level `authMode: 'lambda'` won over the config default
+			// (`apiKey`): no API key header, and the request is signed.
+			expect(postOptions.options.headers['X-Api-Key']).toBeUndefined();
+			expect(postOptions.options.signingServiceInfo).toEqual({
+				service: 'appsync',
+				region: 'us-east-1',
+			});
+		});
+
+		test('call-level authMode, authToken, and headers take precedence over client-level', async () => {
+			const spy = mockApiResponse({ data: { someQuery: { a: 1 } } });
+			const ctx = createMockAmplifyContext(config);
+
+			const client = generateClient({
+				config,
+				authMode: 'lambda',
+				authToken: 'client-lambda-token',
+				headers: { 'x-client-header': 'client-value' },
+			});
+
+			await client.graphql(
+				ctx,
+				{
+					query: `query Q { someQuery { a } }`,
+					authMode: 'apiKey',
+					authToken: 'call-token',
+				},
+				{ 'x-call-header': 'call-value' },
+			);
+
+			expect(spy).toHaveBeenCalledTimes(1);
+			const [, postOptions] = spy.mock.calls[0] as [
+				unknown,
+				{
+					url: URL;
+					options: {
+						headers: Record<string, string>;
+						signingServiceInfo?: { service: string; region: string };
+					};
+				},
+			];
+
+			// Call-level `authMode: 'apiKey'` wins over client-level `lambda`:
+			// the API key header is attached and the request is unsigned.
+			expect(postOptions.options.headers['X-Api-Key']).toEqual('apikey');
+			expect(postOptions.options.signingServiceInfo).toBeUndefined();
+			// Call-level `authToken` wins over the client-level token.
+			expect(postOptions.options.headers.Authorization).toEqual('call-token');
+			// Call-level headers replace client-level headers entirely.
+			expect(postOptions.options.headers['x-call-header']).toEqual(
+				'call-value',
+			);
+			expect(postOptions.options.headers['x-client-header']).toBeUndefined();
+		});
+
+		test('config-level defaults apply when neither client- nor call-level options are set', async () => {
+			// Control case (same contract the ctx-threading test above pins):
+			// with no client- or call-level auth options, the config default
+			// `apiKey` mode applies.
+			const spy = mockApiResponse({ data: { someQuery: { a: 1 } } });
+			const ctx = createMockAmplifyContext(config);
+
+			const client = generateClient({ config });
+
+			await client.graphql(ctx, {
+				query: `query Q { someQuery { a } }`,
+			});
+
+			expect(spy).toHaveBeenCalledTimes(1);
+			const [, postOptions] = spy.mock.calls[0] as [
+				unknown,
+				{
+					url: URL;
+					options: {
+						headers: Record<string, string>;
+						signingServiceInfo?: { service: string; region: string };
+					};
+				},
+			];
+			expect(postOptions.options.headers['X-Api-Key']).toEqual('apikey');
+			expect(postOptions.options.headers.Authorization).toBeUndefined();
+			expect(postOptions.options.signingServiceInfo).toBeUndefined();
+		});
+	});
 });

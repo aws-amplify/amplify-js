@@ -14,3 +14,8 @@ export { AmplifyServerContextError } from '../errors/AmplifyServerContextError';
  * server-context `ContextSpec`. The registry semantics no longer exist.
  */
 export type { AmplifyContext as ContextSpec } from '../context/AmplifyContext';
+
+// Backwards-compat namespace for the removed server-context types
+// (`AmplifyServer.ContextSpec` / `Context` / `ContextToken` /
+// `RunOperationWithContext`), mirroring `aws-amplify/adapter-core`.
+export { AmplifyServer } from './AmplifyServer';
