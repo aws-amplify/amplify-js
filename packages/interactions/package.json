@@ -76,7 +76,7 @@
 		"@aws-sdk/client-lex-runtime-service": "^3.1012.0",
 		"@aws-sdk/client-lex-runtime-v2": "^3.1012.0",
 		"base-64": "1.0.0",
-		"fflate": "0.7.3",
+		"fflate": "0.7.5",
 		"pako": "2.0.4",
 		"tslib": "^2.5.0"
 	},
