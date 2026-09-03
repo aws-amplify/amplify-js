@@ -1,9 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext, getGlobalContext } from '@aws-amplify/core';
-import { AmplifyError } from '@aws-amplify/core/internals/utils';
-
+// Deprecated, registry-backed `runWithAmplifyServerContext` restored at its
+// original specifier and signature (`(amplifyConfig, libraryOptions,
+// operation)`) solely so OLD published `@aws-amplify/adapter-nextjs` versions
+// (≤ 1.7.3) keep working against this version of `aws-amplify`. Removed in the
+// next major version.
+export { runWithAmplifyServerContext } from './runWithAmplifyServerContext';
 export { createKeyValueStorageFromCookieStorageAdapter } from './storageFactories';
 export {
 	createAWSCredentialsAndIdentityIdProvider,
@@ -31,68 +34,3 @@ export { DEFAULT_AUTH_TOKEN_COOKIES_MAX_AGE } from './constants';
 export { type AmplifyContext as ContextSpec } from '@aws-amplify/core';
 export { AmplifyServer } from './AmplifyServer';
 export { AmplifyServerContextError } from '@aws-amplify/core/internals/adapter-core';
-
-/**
- * Runs an operation with an {@link AmplifyContext}.
- *
- * @deprecated The server-context registry has been removed in favor of the
- * branded {@link AmplifyContext} model, and this shim's semantics have changed
- * in ways untyped-JS callers will not catch at compile time. Read before using:
- *
- * - **Semantics are inverted.** The old API built an *isolated, per-call*
- *   server context for the duration of `operation`. This shim instead resolves
- *   the process-wide **global** context (the one set by `Amplify.configure()`)
- *   and passes it to `operation`. It no longer creates or scopes anything.
- * - **The request-scoped `{ nextServerContext: reqRes }` shape is GONE.** The
- *   authenticated form that previously drove per-request auth (cookies/headers
- *   from the incoming request/response pair) is no longer accepted. Passing a
- *   non-null `nextServerContext` now **throws an `AmplifyError` named
- *   `InvalidServerContextError`** instead of silently falling through to the
- *   single global context (which would share one context across every
- *   request — a correctness and security hazard in SSR / multi-tenant
- *   deployments).
- * - **Use the request-scoped path instead.** For true per-request isolation use
- *   `createRunWithAmplifyServerContext` from `@aws-amplify/adapter-nextjs`, or
- *   build a context explicitly with `createAmplifyContext()` and pass it to
- *   category APIs.
- *
- * This shim is retained only for backwards compatibility and simply resolves
- * the current global context before invoking `operation`.
- */
-export async function runWithAmplifyServerContext<T>(input: {
-	nextServerContext: null;
-	operation(contextSpec: AmplifyContext): T | Promise<T>;
-}): Promise<T>;
-/**
- * @deprecated See the overload above. Prefer
- * `@aws-amplify/adapter-nextjs`'s `createRunWithAmplifyServerContext` for
- * per-request isolation, or `createAmplifyContext()` + direct API calls. This
- * shim resolves the process-wide global context, not an isolated per-call one.
- */
-export async function runWithAmplifyServerContext<T>(input: {
-	operation(contextSpec: AmplifyContext): T | Promise<T>;
-}): Promise<T>;
-export async function runWithAmplifyServerContext<T>(input: {
-	nextServerContext?: unknown;
-	operation(contextSpec: AmplifyContext): T | Promise<T>;
-}): Promise<T> {
-	// Fail loud for untyped-JS callers still passing the legacy request-scoped
-	// shape: silently resolving the global context here would share one context
-	// (and its credentials) across every request.
-	if (input.nextServerContext != null) {
-		throw new AmplifyError({
-			name: 'InvalidServerContextError',
-			message:
-				'The request-scoped `nextServerContext` shape is no longer supported by ' +
-				'this deprecated `runWithAmplifyServerContext` shim; it only resolves ' +
-				'the process-wide global context, which must not be shared across requests.',
-			recoverySuggestion:
-				'Use `createRunWithAmplifyServerContext` from `@aws-amplify/adapter-nextjs` ' +
-				'for per-request isolation.',
-		});
-	}
-
-	const ctx = getGlobalContext();
-
-	return input.operation(ctx);
-}

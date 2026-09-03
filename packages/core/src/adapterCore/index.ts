@@ -3,6 +3,18 @@
 
 export { CookieStorage, KeyValueStorageMethodValidator } from './serverContext';
 
+// Deprecated registry-backed server-context shims, restored at their original
+// specifier solely so OLD published `@aws-amplify/adapter-nextjs` versions
+// (≤ 1.7.3) keep working against this version of the libraries. Removed in the
+// next major version. See `serverContext/legacyServerContext.ts`.
+export {
+	createAmplifyServerContext,
+	getAmplifyServerContext,
+	destroyAmplifyServerContext,
+	LegacyAmplifyServerContext,
+	LegacyBridgedAmplify,
+} from './serverContext';
+
 // Retained (deprecated) for backwards compatibility of existing error
 // re-export / catch paths. The legacy server-context machinery has been
 // removed in favor of the singleton-free AmplifyContext model.

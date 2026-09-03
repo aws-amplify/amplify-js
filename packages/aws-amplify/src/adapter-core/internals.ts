@@ -4,9 +4,13 @@
 export {
 	KeyValueStorageMethodValidator,
 	CookieStorage,
-	// Retained for backwards compatibility; `getAmplifyServerContext` and
-	// `AmplifyServer` were removed with the server-context registry.
 	AmplifyServerContextError,
+	// Deprecated registry-backed lookup, restored at its original specifier
+	// solely so OLD published `@aws-amplify/adapter-nextjs` versions (≤ 1.7.3)
+	// — whose `generateServerClient` calls
+	// `getAmplifyServerContext(contextSpec).amplify` at runtime — keep working
+	// against this version of `aws-amplify`. Removed in the next major version.
+	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 export { OAuthConfig } from '@aws-amplify/core';
 // Context-producer primitives for adapter packages that construct their own

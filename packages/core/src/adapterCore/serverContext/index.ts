@@ -2,3 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { CookieStorage, KeyValueStorageMethodValidator } from './types';
+export {
+	createAmplifyServerContext,
+	getAmplifyServerContext,
+	destroyAmplifyServerContext,
+	LegacyAmplifyServerContext,
+	LegacyBridgedAmplify,
+} from './legacyServerContext';
