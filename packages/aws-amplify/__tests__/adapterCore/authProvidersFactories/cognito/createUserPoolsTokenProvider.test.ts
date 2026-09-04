@@ -4,6 +4,7 @@
 import {
 	DefaultTokenStore,
 	TokenOrchestrator,
+	createAuthSessionSwitcher,
 	refreshAuthTokensWithoutDedupe,
 } from '@aws-amplify/auth/cognito';
 import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
@@ -28,10 +29,17 @@ const mockAuthConfig: AuthConfig = {
 const MockDefaultTokenStore = DefaultTokenStore as jest.Mock;
 const MockTokenOrchestrator = TokenOrchestrator as jest.Mock;
 const mockRefreshAuthTokens = refreshAuthTokensWithoutDedupe as jest.Mock;
+const mockCreateAuthSessionSwitcher = createAuthSessionSwitcher as jest.Mock;
+const mockSwitcher = {
+	listSessionUsernames: jest.fn(),
+	getStoredIdToken: jest.fn(),
+	setActiveSession: jest.fn(),
+};
 
 describe('createUserPoolsTokenProvider', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
+		mockCreateAuthSessionSwitcher.mockReturnValue(mockSwitcher);
 	});
 
 	it('should create a token provider with underlying dependencies', () => {
@@ -63,6 +71,30 @@ describe('createUserPoolsTokenProvider', () => {
 		).toHaveBeenCalledWith(mockRefreshAuthTokens);
 
 		expect(tokenProvider).toBeDefined();
+	});
+
+	it('surfaces a non-destructive session switcher and no destructive store methods', () => {
+		const tokenProvider = createUserPoolsTokenProvider(
+			mockAuthConfig,
+			mockKeyValueStorage,
+		);
+		const mockTokenStoreInstance = MockDefaultTokenStore.mock.instances[0];
+
+		// the switcher is built from the closure's DefaultTokenStore.
+		expect(mockCreateAuthSessionSwitcher).toHaveBeenCalledWith(
+			mockTokenStoreInstance,
+		);
+		expect(tokenProvider.getSessionSwitcher()).toBe(mockSwitcher);
+
+		// ONLY read + reorder cross the boundary: no raw store, no destructive op.
+		expect(Object.keys(tokenProvider).sort()).toEqual([
+			'getSessionSwitcher',
+			'getTokens',
+		]);
+		expect('storeTokens' in tokenProvider).toBe(false);
+		expect('clearTokens' in tokenProvider).toBe(false);
+		expect('clearTokensForUser' in tokenProvider).toBe(false);
+		expect('removeSession' in tokenProvider).toBe(false);
 	});
 
 	it('should call TokenOrchestrator.getTokens method with the default forceRefresh value', async () => {

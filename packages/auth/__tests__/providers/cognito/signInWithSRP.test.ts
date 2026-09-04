@@ -172,6 +172,33 @@ describe('signIn API happy path cases', () => {
 		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
 	});
 
+	// Multi-session: a native signIn for a second user must succeed and be added
+	// to the roster head, so the UserAlreadyAuthenticatedException gate has been
+	// removed from signIn (assertUserNotAuthenticated is now only used by
+	// signInWithRedirect). This guards against the gate being reintroduced.
+	test('two sequential signIn calls both succeed without the not-authenticated gate', async () => {
+		const assertUserNotAuthenticatedSpy = jest.spyOn(
+			initiateAuthHelpers,
+			'assertUserNotAuthenticated',
+		);
+
+		const firstResult = await signIn({
+			username: authAPITestParams.user1.username,
+			password: authAPITestParams.user1.password,
+		});
+		const secondResult = await signIn({
+			username: 'secondUser',
+			password: 'secondUserPassword',
+		});
+
+		expect(firstResult).toEqual(authAPITestParams.signInResult());
+		expect(secondResult).toEqual(authAPITestParams.signInResult());
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(2);
+		expect(assertUserNotAuthenticatedSpy).not.toHaveBeenCalled();
+
+		assertUserNotAuthenticatedSpy.mockRestore();
+	});
+
 	test('signInWithSRP API should return a SignInResult', async () => {
 		const result = await signInWithSRP({
 			username: authAPITestParams.user1.username,

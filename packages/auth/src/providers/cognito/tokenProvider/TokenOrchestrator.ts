@@ -19,6 +19,7 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { oAuthStore } from '../utils/oauth/oAuthStore';
 import { addInflightPromise } from '../utils/oauth/inflightPromise';
+import { dispatchSignOutBoundaryEvents } from '../utils/dispatchSignOutHubEvents';
 import { ClientMetadata, CognitoAuthSignInDetails } from '../types';
 
 import {
@@ -172,23 +173,56 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			});
 			newTokens.signInDetails = signInDetails;
 			await this.setTokens({ tokens: newTokens });
-			Hub.dispatch('auth', { event: 'tokenRefresh' }, 'Auth', AMPLIFY_SYMBOL);
+			// storeTokens no longer writes the active-user pointer (LastAuthUser);
+			// re-assert it for the active user so SSR cookie migration re-sets it at
+			// path '/' along with the refreshed token cookies. Pointer-only: the
+			// roster is never reordered on refresh.
+			await this.getTokenStore().reassertActiveUserPointer(username);
+			const userId = newTokens.idToken?.payload?.sub;
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'tokenRefresh',
+					data: userId ? { username, userId: userId as string } : undefined,
+				},
+				'Auth',
+				AMPLIFY_SYMBOL,
+			);
 
 			return newTokens;
 		} catch (err) {
-			return this.handleErrors(err);
+			// capture the failing user's id (from the pre-clear tokens) so the
+			// boundary events can carry it before the namespace is removed.
+			const userId = tokens.idToken?.payload?.sub as string | undefined;
+
+			return this.handleErrors(err, username, userId);
 		}
 	}
 
-	private handleErrors(err: unknown) {
+	private async handleErrors(
+		err: unknown,
+		username: string,
+		userId?: string,
+	): Promise<CognitoAuthTokens | null> {
 		assertServiceError(err);
 
 		// Only clear tokens for definitive authentication failures
 		// Do NOT clear tokens for transient errors like service issues, rate limits, etc.
 		const shouldClearTokens = this.isAuthenticationError(err);
 
+		let cleared = false;
+		let signedOutUser: { username: string; userId: string } | undefined;
 		if (shouldClearTokens) {
-			this.clearTokens();
+			// Scope the clear to ONLY the failing user's namespace, drop them from
+			// the roster (no promotion of a parked user) and clear the active
+			// pointer. A blanket clearTokens() would remove AuthUserList and orphan
+			// every other parked session (multi-session support).
+			const tokenStore = this.getTokenStore();
+			await tokenStore.clearTokensForUser(username);
+			await tokenStore.removeSession(username);
+			await tokenStore.clearActiveUser();
+			cleared = true;
+			signedOutUser = userId ? { username, userId } : undefined;
 		}
 
 		Hub.dispatch(
@@ -200,6 +234,15 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			'Auth',
 			AMPLIFY_SYMBOL,
 		);
+
+		if (cleared) {
+			// emit the sign-out boundary events for the removed session (userSignedOut
+			// when resolvable, then signedOut ALWAYS; never switchActiveUser). Resolve
+			// everything from the pre-clear tokens; do NOT call getCurrentUser()/
+			// getTokens() here as that would recurse back into token refresh. This
+			// path keeps its existing credential handling (no clearCredentials call).
+			await dispatchSignOutBoundaryEvents(signedOutUser);
+		}
 
 		if (err.name.startsWith('NotAuthorizedException')) {
 			return null;
@@ -240,8 +283,8 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		return this.getTokenStore().clearDeviceMetadata(username);
 	}
 
-	setOAuthMetadata(metadata: OAuthMetadata): Promise<void> {
-		return this.getTokenStore().setOAuthMetadata(metadata);
+	setOAuthMetadata(metadata: OAuthMetadata, username?: string): Promise<void> {
+		return this.getTokenStore().setOAuthMetadata(metadata, username);
 	}
 
 	getOAuthMetadata(): Promise<OAuthMetadata | null> {

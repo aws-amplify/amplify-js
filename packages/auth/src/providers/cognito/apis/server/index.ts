@@ -3,3 +3,5 @@
 
 export { fetchUserAttributes } from './fetchUserAttributes';
 export { getCurrentUser } from './getCurrentUser';
+export { listCurrentUsers } from './listCurrentUsers';
+export { setCurrentUser } from './setCurrentUser';

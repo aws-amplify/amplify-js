@@ -4,6 +4,7 @@
 import { AuthError } from './AuthError';
 
 export const USER_UNAUTHENTICATED_EXCEPTION = 'UserUnAuthenticatedException';
+export const USER_NOT_SIGNED_IN_EXCEPTION = 'UserNotSignedInException';
 export const USER_ALREADY_AUTHENTICATED_EXCEPTION =
 	'UserAlreadyAuthenticatedException';
 export const DEVICE_METADATA_NOT_FOUND_EXCEPTION =

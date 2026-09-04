@@ -138,8 +138,10 @@ const handleCodeFlow = async ({
 		throw createOAuthError(errorMessage ?? error);
 	}
 
-	const username =
-		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
+	const username = resolveUsername({
+		accessToken: access_token,
+		idToken: id_token,
+	});
 
 	await cacheCognitoTokens({
 		username,
@@ -153,6 +155,7 @@ const handleCodeFlow = async ({
 	return completeFlow({
 		redirectUri,
 		state: validatedState,
+		username,
 		preferPrivateSession,
 	});
 };
@@ -201,8 +204,10 @@ const handleImplicitFlow = async ({
 	}
 
 	const validatedState = await validateState(state);
-	const username =
-		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
+	const username = resolveUsername({
+		accessToken: access_token,
+		idToken: id_token,
+	});
 
 	await cacheCognitoTokens({
 		username,
@@ -215,6 +220,7 @@ const handleImplicitFlow = async ({
 	return completeFlow({
 		redirectUri,
 		state: validatedState,
+		username,
 		preferPrivateSession,
 	});
 };
@@ -222,22 +228,27 @@ const handleImplicitFlow = async ({
 const completeFlow = async ({
 	redirectUri,
 	state,
+	username,
 	preferPrivateSession,
 }: {
 	preferPrivateSession?: boolean;
 	redirectUri: string;
 	state: string;
+	username: string;
 }) => {
-	await tokenOrchestrator.setOAuthMetadata({
-		oauthSignIn: true,
-	});
+	await tokenOrchestrator.setOAuthMetadata(
+		{
+			oauthSignIn: true,
+		},
+		// Namespace the metadata under the signed-in user. dispatchSignedInHubEvent
+		// (below) is what moves the LastAuthUser pointer via addActiveSession, so at
+		// this point the pointer is still the stale/sentinel value; a no-arg call
+		// would strand the metadata under the wrong namespace and break OAuth
+		// sign-out detection on a second cookie-sharing subdomain.
+		username,
+	);
 	await oAuthStore.clearOAuthData();
 	await oAuthStore.storeOAuthSignIn(true, preferPrivateSession);
-
-	// this should be called before any call that involves `fetchAuthSession`
-	// e.g. `getCurrentUser()` below, so it allows every inflight async calls to
-	//  `fetchAuthSession` can be resolved
-	resolveAndClearInflightPromises();
 
 	// clear history before sending out final Hub events
 	clearHistory(redirectUri);
@@ -254,7 +265,23 @@ const completeFlow = async ({
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	await dispatchSignedInHubEvent();
+
+	try {
+		// dispatchSignedInHubEvent moves the LastAuthUser pointer to the signed-in
+		// user (via addActiveSession). Inflight `fetchAuthSession`/`getCurrentUser`
+		// callers — e.g. an app that fired getCurrentUser while the code flow was
+		// awaiting the /oauth2/token exchange — MUST only be released AFTER the
+		// pointer is set. loadTokens namespaces by the active pointer, so releasing
+		// them earlier makes them resolve against the stale 'username' sentinel
+		// namespace and throw UserUnAuthenticatedException (the implicit flow has no
+		// token-exchange await, so no caller blocks and the bug does not surface).
+		// clearOAuthData() above already cleared the inflight flag, so the
+		// getCurrentUser inside dispatchSignedInHubEvent does not block here.
+		await dispatchSignedInHubEvent(tokenOrchestrator.getTokenStore(), username);
+	} finally {
+		// Always release blocked callers, even on failure, so the app never hangs.
+		resolveAndClearInflightPromises();
+	}
 };
 
 const isCustomState = (state: string): boolean => {
@@ -263,6 +290,40 @@ const isCustomState = (state: string): boolean => {
 
 const getCustomState = (state: string): string => {
 	return state.split('-').splice(1).join('-');
+};
+
+/**
+ * Resolves the signed-in username from the OAuth tokens' claims (the access
+ * token's `username` claim, falling back to the id token's `cognito:username`),
+ * mirroring how other sign-in paths derive the username.
+ *
+ * Throws an OAuth error rather than silently persisting the literal 'username'
+ * sentinel as a real roster entry when no username claim can be resolved.
+ */
+const resolveUsername = ({
+	accessToken,
+	idToken,
+}: {
+	accessToken?: string;
+	idToken?: string;
+}): string => {
+	const usernameFromAccessToken =
+		accessToken &&
+		(decodeJWT(accessToken).payload.username as string | undefined);
+	if (usernameFromAccessToken) {
+		return usernameFromAccessToken;
+	}
+
+	const usernameFromIdToken =
+		idToken &&
+		(decodeJWT(idToken).payload['cognito:username'] as string | undefined);
+	if (usernameFromIdToken) {
+		return usernameFromIdToken;
+	}
+
+	throw createOAuthError(
+		'Unable to resolve the username from the OAuth tokens.',
+	);
 };
 
 const clearHistory = (redirectUri: string) => {

@@ -7,8 +7,8 @@ import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { getCurrentUser, signIn } from '../../../src/providers/cognito';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
-import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
 import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
@@ -49,18 +49,32 @@ describe('signIn API error path cases:', () => {
 		mockInitiateAuth.mockReset();
 	});
 
-	it('should throw an error when a user is already signed-in', async () => {
+	it('does not throw UserAlreadyAuthenticatedException when a user is already signed-in (multi-session)', async () => {
+		// Multi-session (HLD §6.1): a native signIn for a second user must succeed
+		// and be added to the roster head instead of throwing
+		// UserAlreadyAuthenticatedException. The gate has been removed from signIn
+		// (the OAuth prompt-gate on signInWithRedirect is unaffected). Here we let
+		// the SRP flow resolve to a challenge next step so the call resolves without
+		// exercising token caching / Hub dispatch.
 		mockedGetCurrentUser.mockResolvedValue({
 			username: 'username',
 			userId: 'userId',
 		});
+		const handleUserSRPAuthFlowSpy = jest
+			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
+			.mockResolvedValue({
+				ChallengeName: 'SMS_MFA',
+				ChallengeParameters: {},
+				AuthenticationResult: undefined,
+				Session: '1234',
+				$metadata: {},
+			});
 
-		try {
-			await signIn({ username: 'username', password: 'password' });
-		} catch (error: any) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(USER_ALREADY_AUTHENTICATED_EXCEPTION);
-		}
+		const result = await signIn({ username: 'username', password: 'password' });
+
+		expect(result.nextStep.signInStep).toBe('CONFIRM_SIGN_IN_WITH_SMS_CODE');
+
+		handleUserSRPAuthFlowSpy.mockRestore();
 		mockedGetCurrentUser.mockClear();
 	});
 

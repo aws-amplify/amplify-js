@@ -12,6 +12,8 @@ import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorTypes } from '../../../../../src/types/Auth';
 import { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
+import { tokenOrchestrator } from '../../../../../src/providers/cognito/tokenProvider';
+import { getCurrentUser } from '../../../../../src/providers/cognito/apis/getCurrentUser';
 
 jest.mock('../../../../../src/providers/cognito/tokenProvider');
 jest.mock('@aws-amplify/core', () => ({
@@ -69,6 +71,17 @@ describe('completeOAuthFlow', () => {
 					},
 				}) as any,
 		);
+		// dispatchSignedInHubEvent (invoked at the end of the OAuth flow) reads the
+		// session roster and resolves the signed-in user for its event payload.
+		(tokenOrchestrator.getTokenStore as jest.Mock).mockReturnValue({
+			getAuthUserList: jest.fn().mockResolvedValue([]),
+			getActiveUsername: jest.fn().mockResolvedValue(undefined),
+			addActiveSession: jest.fn().mockResolvedValue(undefined),
+		});
+		(getCurrentUser as jest.Mock).mockResolvedValue({
+			username: 'testuser',
+			userId: 'testsub',
+		});
 	});
 
 	afterEach(() => {
@@ -192,6 +205,15 @@ describe('completeOAuthFlow', () => {
 			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
 			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
 
+			// OAuth metadata must be namespaced under the signed-in user (resolved
+			// from the token claims), NOT the still-stale active pointer — otherwise
+			// a second cookie-sharing subdomain cannot detect the OAuth session on
+			// sign-out (regression: hosted-UI logout never called).
+			expect(tokenOrchestrator.setOAuthMetadata).toHaveBeenCalledWith(
+				{ oauthSignIn: true },
+				'testuser',
+			);
+
 			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
 
 			expect(mockReplaceState).toHaveBeenCalledWith(
@@ -200,15 +222,80 @@ describe('completeOAuthFlow', () => {
 				testInput.redirectUri,
 			);
 
-			expect(mockHubDispatch).toHaveBeenCalledTimes(3);
+			expect(mockHubDispatch).toHaveBeenCalledTimes(4);
 
-			// Verify we replace browser tab location before dispatching hub events
+			// Verify we replace browser tab location before dispatching hub events.
+			// dispatchSignedInHubEvent now emits both userSignedIn (roster membership)
+			// and signedIn (empty->non-empty boundary), so there are 3 auth Hub events
+			// plus signInWithRedirect.
 			expect(executionOrder).toEqual([
 				'replaceState',
 				'hubDispatch',
 				'hubDispatch',
 				'hubDispatch',
+				'hubDispatch',
 			]);
+		});
+
+		it('releases inflight fetchAuthSession callers only AFTER the active-user pointer is set', async () => {
+			// Regression (grant-flow e2e failure, PR #14875): the app-side
+			// getCurrentUser that blocks during the code flow's /oauth2/token
+			// exchange must be released only AFTER addActiveSession moves the
+			// LastAuthUser pointer. Released earlier, loadTokens resolves against the
+			// stale 'username' sentinel namespace and throws
+			// UserUnAuthenticatedException. invocationCallOrder is a jest-global
+			// monotonic counter, so it orders calls across different mocks.
+			const addActiveSession = jest.fn().mockResolvedValue(undefined);
+			(tokenOrchestrator.getTokenStore as jest.Mock).mockReturnValueOnce({
+				getAuthUserList: jest.fn().mockResolvedValue([]),
+				getActiveUsername: jest.fn().mockResolvedValue(undefined),
+				addActiveSession,
+			});
+			mockValidateState.mockReturnValueOnce('myState-valid_state');
+			(oAuthStore.loadPKCE as jest.Mock).mockResolvedValueOnce('pkce');
+			mockDecodeJWT.mockReturnValueOnce({ payload: { username: 'testuser' } });
+			mockFetch.mockResolvedValueOnce({
+				json: jest.fn(() =>
+					Promise.resolve({
+						access_token: 'access_token',
+						id_token: 'id_token',
+						refresh_token: 'refresh_token',
+						token_type: 'token_type',
+						expires_in: 'expires_in',
+					}),
+				),
+			});
+
+			await completeOAuthFlow(testInput);
+
+			expect(addActiveSession).toHaveBeenCalledWith('testuser');
+			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
+			expect(addActiveSession.mock.invocationCallOrder[0]).toBeLessThan(
+				mockResolveAndClearInflightPromises.mock.invocationCallOrder[0],
+			);
+		});
+
+		it('throws (and does not cache tokens) when no username claim can be resolved', async () => {
+			mockCacheCognitoTokens.mockClear();
+			mockValidateState.mockReturnValueOnce('myState-valid_state');
+			(oAuthStore.loadPKCE as jest.Mock).mockResolvedValueOnce('pkce23234a');
+			mockFetch.mockResolvedValueOnce({
+				json: jest.fn(() =>
+					Promise.resolve({
+						access_token: 'access_token',
+						id_token: 'id_token',
+						refresh_token: 'refresh_token',
+						token_type: 'token_type',
+						expires_in: 'expires_in',
+					}),
+				),
+			});
+			// neither the access token nor the id token carries a username claim, so
+			// the sentinel 'username' must NOT be persisted as a real roster entry.
+			mockDecodeJWT.mockReturnValue({ payload: {} });
+
+			await expect(completeOAuthFlow(testInput)).rejects.toThrow();
+			expect(mockCacheCognitoTokens).not.toHaveBeenCalled();
 		});
 
 		it('throws when `fetch` call resolves error', async () => {
@@ -299,7 +386,8 @@ describe('completeOAuthFlow', () => {
 			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
 			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
 
-			expect(mockHubDispatch).toHaveBeenCalledTimes(2);
+			// signInWithRedirect + userSignedIn + signedIn (empty->non-empty boundary).
+			expect(mockHubDispatch).toHaveBeenCalledTimes(3);
 			expect(mockReplaceState).toHaveBeenCalledWith(
 				'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 				'',

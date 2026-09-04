@@ -2,13 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	AMPLIFY_SYMBOL,
 	AmplifyError,
 	AmplifyErrorCode,
 } from '@aws-amplify/core/internals/utils';
+import { Hub } from '@aws-amplify/core';
 
 import { tokenOrchestrator } from '../../../../src/providers/cognito/tokenProvider';
 import { CognitoAuthTokens } from '../../../../src/providers/cognito/tokenProvider/types';
 import { oAuthStore } from '../../../../src/providers/cognito/utils/oauth/oAuthStore';
+import { dispatchSignOutBoundaryEvents } from '../../../../src/providers/cognito/utils/dispatchSignOutHubEvents';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
@@ -17,12 +20,17 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 jest.mock('../../../../src/providers/cognito/utils/oauth/oAuthStore');
+jest.mock('../../../../src/providers/cognito/utils/dispatchSignOutHubEvents');
+
+const mockDispatchSignOutBoundaryEvents =
+	dispatchSignOutBoundaryEvents as jest.Mock;
 
 describe('tokenOrchestrator', () => {
 	const mockTokenRefresher = jest.fn();
 	const mockTokenStore = {
 		storeTokens: jest.fn(),
 		getLastAuthUser: jest.fn(),
+		getActiveUsername: jest.fn(),
 		loadTokens: jest.fn(),
 		clearTokens: jest.fn(),
 		setKeyValueStorage: jest.fn(),
@@ -30,6 +38,13 @@ describe('tokenOrchestrator', () => {
 		clearDeviceMetadata: jest.fn(),
 		getOAuthMetadata: jest.fn(),
 		setOAuthMetadata: jest.fn(),
+		getAuthUserList: jest.fn(),
+		addActiveSession: jest.fn(),
+		removeSession: jest.fn(),
+		clearActiveUser: jest.fn(),
+		clearTokensForUser: jest.fn(),
+		getStoredIdToken: jest.fn(),
+		reassertActiveUserPointer: jest.fn(),
 	};
 
 	beforeAll(() => {
@@ -89,140 +104,217 @@ describe('tokenOrchestrator', () => {
 			// async #2
 			expect(mockTokenStore.storeTokens).toHaveBeenCalledWith(mockTokens);
 
+			// storeTokens no longer writes the LastAuthUser pointer, so the refresh
+			// path must re-assert it for the active user; this drives SSR cookie
+			// migration to re-set the pointer cookie at path '/' (regression:
+			// stale path-scoped LastAuthUser cookie survived a server-side refresh).
+			expect(mockTokenStore.reassertActiveUserPointer).toHaveBeenCalledWith(
+				testUsername,
+			);
+
 			// ensure the result is correct
 			expect(newTokens).toEqual(mockTokens);
 			expect(newTokens?.signInDetails).toEqual(testSignInDetails);
 		});
+
+		it('dispatches the `tokenRefresh` Hub event carrying { username, userId }', async () => {
+			const testUsername = 'username';
+			const userSub = 'user-sub-123';
+			// refreshed tokens whose idToken payload provides the userId (sub).
+			const mockTokens: CognitoAuthTokens = {
+				accessToken: {
+					payload: {},
+				},
+				idToken: {
+					payload: { sub: userSub },
+				},
+				clockDrift: 300,
+				username: testUsername,
+			};
+			mockTokenRefresher.mockResolvedValueOnce(mockTokens);
+			mockTokenStore.storeTokens.mockResolvedValue(undefined);
+			(Hub.dispatch as jest.Mock).mockClear();
+
+			// invoke the private refreshTokens without resorting to `as any`.
+			const invokeRefreshTokens = (
+				tokenOrchestrator as unknown as {
+					refreshTokens(input: {
+						tokens: CognitoAuthTokens;
+						username: string;
+					}): Promise<CognitoAuthTokens | null>;
+				}
+			).refreshTokens.bind(tokenOrchestrator);
+
+			await invokeRefreshTokens({
+				tokens: {
+					accessToken: { payload: {} },
+					clockDrift: 400000,
+					username: testUsername,
+				},
+				username: testUsername,
+			});
+
+			expect(Hub.dispatch).toHaveBeenCalledWith(
+				'auth',
+				{
+					event: 'tokenRefresh',
+					data: { username: testUsername, userId: userSub },
+				},
+				'Auth',
+				AMPLIFY_SYMBOL,
+			);
+		});
 	});
 
 	describe('handleErrors method', () => {
+		const testUsername = 'user1';
+		const testUserId = 'user1-sub';
+		// typed invoker so we can exercise the private handleErrors without `as any`.
+		const invokeHandleErrors = (
+			err: unknown,
+			username = testUsername,
+			userId?: string,
+		) =>
+			(
+				tokenOrchestrator as unknown as {
+					handleErrors(
+						err: unknown,
+						username: string,
+						userId?: string,
+					): Promise<CognitoAuthTokens | null>;
+				}
+			).handleErrors(err, username, userId);
+
 		beforeEach(() => {
 			jest.clearAllMocks();
+			// terminal auth errors now scope the clear to a single user + roster.
+			mockTokenStore.clearTokensForUser.mockResolvedValue(undefined);
+			mockTokenStore.removeSession.mockResolvedValue({ isEmpty: true });
+			mockTokenStore.clearActiveUser.mockResolvedValue(undefined);
 		});
 
-		it('does not call clearTokens() if the error is a network error thrown from fetch handler', () => {
-			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+		it('does not clear a user or emit boundary events for a network error', async () => {
 			const error = new AmplifyError({
 				name: AmplifyErrorCode.NetworkError,
 				message: 'Network Error',
 			});
 
-			expect(() => {
-				(tokenOrchestrator as any).handleErrors(error);
-			}).toThrow(error);
+			await expect(invokeHandleErrors(error)).rejects.toThrow(error);
 
-			expect(clearTokensSpy).not.toHaveBeenCalled();
+			expect(mockTokenStore.clearTokensForUser).not.toHaveBeenCalled();
+			expect(mockTokenStore.removeSession).not.toHaveBeenCalled();
+			expect(mockDispatchSignOutBoundaryEvents).not.toHaveBeenCalled();
 		});
 
-		it('calls clearTokens() for NotAuthorizedException', () => {
-			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+		it('scopes the clear to the failing user and emits boundary events for NotAuthorizedException', async () => {
 			const error = new AmplifyError({
 				name: 'NotAuthorizedException',
 				message: 'Not authorized',
 			});
 
-			const result = (tokenOrchestrator as any).handleErrors(error);
+			const result = await invokeHandleErrors(error, testUsername, testUserId);
 
-			expect(clearTokensSpy).toHaveBeenCalled();
+			// only the failing user's namespace + roster entry are removed; the
+			// roster (AuthUserList) is NOT wiped.
+			expect(mockTokenStore.clearTokensForUser).toHaveBeenCalledWith(
+				testUsername,
+			);
+			expect(mockTokenStore.removeSession).toHaveBeenCalledWith(testUsername);
+			expect(mockTokenStore.clearActiveUser).toHaveBeenCalledTimes(1);
+			expect(mockTokenStore.clearTokens).not.toHaveBeenCalled();
+			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith({
+				username: testUsername,
+				userId: testUserId,
+			});
 			expect(result).toBeNull();
 		});
 
-		it('calls clearTokens() for TokenRevokedException', () => {
-			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+		it('preserves the tokenRefresh_failure dispatch on terminal errors', async () => {
+			const error = new AmplifyError({
+				name: 'NotAuthorizedException',
+				message: 'Not authorized',
+			});
+
+			await invokeHandleErrors(error);
+
+			expect(Hub.dispatch).toHaveBeenCalledWith(
+				'auth',
+				{ event: 'tokenRefresh_failure', data: { error } },
+				'Auth',
+				AMPLIFY_SYMBOL,
+			);
+		});
+
+		it('scopes the clear for TokenRevokedException', async () => {
 			const error = new AmplifyError({
 				name: 'TokenRevokedException',
 				message: 'Token revoked',
 			});
 
-			expect(() => {
-				(tokenOrchestrator as any).handleErrors(error);
-			}).toThrow(error);
+			await expect(invokeHandleErrors(error)).rejects.toThrow(error);
 
-			expect(clearTokensSpy).toHaveBeenCalled();
+			expect(mockTokenStore.clearTokensForUser).toHaveBeenCalledWith(
+				testUsername,
+			);
+			expect(mockTokenStore.removeSession).toHaveBeenCalledWith(testUsername);
+			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalled();
 		});
 
-		it('calls clearTokens() for RefreshTokenReuseException', () => {
-			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+		it('scopes the clear for RefreshTokenReuseException', async () => {
 			const error = new AmplifyError({
 				name: 'RefreshTokenReuseException',
 				message: 'Refresh token has been invalidated by rotation',
 			});
 
-			expect(() => {
-				(tokenOrchestrator as any).handleErrors(error);
-			}).toThrow(error);
+			await expect(invokeHandleErrors(error)).rejects.toThrow(error);
 
-			expect(clearTokensSpy).toHaveBeenCalled();
+			expect(mockTokenStore.clearTokensForUser).toHaveBeenCalledWith(
+				testUsername,
+			);
+			expect(mockTokenStore.removeSession).toHaveBeenCalledWith(testUsername);
 		});
 
-		it('calls clearTokens() for UserNotFoundException', () => {
-			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+		it('scopes the clear for UserNotFoundException', async () => {
 			const error = new AmplifyError({
 				name: 'UserNotFoundException',
 				message: 'User not found',
 			});
 
-			expect(() => {
-				(tokenOrchestrator as any).handleErrors(error);
-			}).toThrow(error);
+			await expect(invokeHandleErrors(error)).rejects.toThrow(error);
 
-			expect(clearTokensSpy).toHaveBeenCalled();
+			expect(mockTokenStore.clearTokensForUser).toHaveBeenCalledWith(
+				testUsername,
+			);
+			expect(mockTokenStore.removeSession).toHaveBeenCalledWith(testUsername);
 		});
 
-		it('does not call clearTokens() for service errors (500)', () => {
-			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+		it('emits boundary events with an undefined signedOutUser when userId is unavailable', async () => {
 			const error = new AmplifyError({
-				name: 'InternalServerError',
-				message: 'Internal server error',
+				name: 'NotAuthorizedException',
+				message: 'Not authorized',
 			});
 
-			expect(() => {
-				(tokenOrchestrator as any).handleErrors(error);
-			}).toThrow(error);
+			await invokeHandleErrors(error, testUsername, undefined);
 
-			expect(clearTokensSpy).not.toHaveBeenCalled();
+			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(undefined);
 		});
 
-		it('does not call clearTokens() for rate limit errors', () => {
-			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
-			const error = new AmplifyError({
-				name: 'TooManyRequestsException',
-				message: 'Too many requests',
-			});
+		it.each([
+			['InternalServerError', 'Internal server error'],
+			['TooManyRequestsException', 'Too many requests'],
+			['ThrottlingException', 'Request throttled'],
+			['ServiceUnavailable', 'Service temporarily unavailable'],
+		])(
+			'does not clear a user or emit boundary events for %s',
+			async (name, message) => {
+				const error = new AmplifyError({ name, message });
 
-			expect(() => {
-				(tokenOrchestrator as any).handleErrors(error);
-			}).toThrow(error);
+				await expect(invokeHandleErrors(error)).rejects.toThrow(error);
 
-			expect(clearTokensSpy).not.toHaveBeenCalled();
-		});
-
-		it('does not call clearTokens() for throttling errors', () => {
-			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
-			const error = new AmplifyError({
-				name: 'ThrottlingException',
-				message: 'Request throttled',
-			});
-
-			expect(() => {
-				(tokenOrchestrator as any).handleErrors(error);
-			}).toThrow(error);
-
-			expect(clearTokensSpy).not.toHaveBeenCalled();
-		});
-
-		it('does not call clearTokens() for temporary service issues', () => {
-			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
-			const error = new AmplifyError({
-				name: 'ServiceUnavailable',
-				message: 'Service temporarily unavailable',
-			});
-
-			expect(() => {
-				(tokenOrchestrator as any).handleErrors(error);
-			}).toThrow(error);
-
-			expect(clearTokensSpy).not.toHaveBeenCalled();
-		});
+				expect(mockTokenStore.clearTokensForUser).not.toHaveBeenCalled();
+				expect(mockTokenStore.removeSession).not.toHaveBeenCalled();
+				expect(mockDispatchSignOutBoundaryEvents).not.toHaveBeenCalled();
+			},
+		);
 	});
 });
