@@ -112,6 +112,8 @@ class MutationEventOutbox {
 
 		if (record) {
 			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp!);
+		} else if (head?.operation === TransformerMutationType.CREATE) {
+			await this.promoteNextUpdateToCreate(storage, head);
 		}
 
 		if (head) {
@@ -249,6 +251,42 @@ class MutationEventOutbox {
 			reconciledMutations.map(async m =>
 				storage.save(m, undefined, this.ownSymbol),
 			),
+		);
+	}
+
+	private async promoteNextUpdateToCreate(
+		storage: StorageClass,
+		discardedCreate: MutationEvent,
+	): Promise<void> {
+		const mutationEventModelDefinition =
+			this.schema.namespaces[SYNC].models.MutationEvent;
+
+		const predicate = ModelPredicateCreator.createFromAST<MutationEvent>(
+			mutationEventModelDefinition,
+			{
+				and: [
+					{ modelId: { eq: discardedCreate.modelId } },
+					{ id: { ne: discardedCreate.id } },
+				],
+			},
+		);
+
+		const [next] = await storage.query(this._MutationEvent, predicate);
+
+		if (next?.operation !== TransformerMutationType.UPDATE) {
+			return;
+		}
+
+		const merged = this.mergeUserFields(discardedCreate, next);
+
+		await storage.save(
+			this._MutationEvent.copyOf(next, draft => {
+				draft.data = merged.data;
+				draft.operation = TransformerMutationType.CREATE;
+				draft.condition = JSON.stringify({});
+			}),
+			undefined,
+			this.ownSymbol,
 		);
 	}
 
