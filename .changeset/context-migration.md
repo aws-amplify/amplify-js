@@ -14,6 +14,7 @@
 '@aws-amplify/adapter-nextjs': minor
 'aws-amplify': minor
 '@aws-amplify/datastore': patch
+'@aws-amplify/datastore-storage-adapter': patch
 ---
 
 feat: explicit AmplifyContext support across all categories.
@@ -29,3 +30,20 @@ Backward compatible: existing application code — including pre-context SSR
 unchanged via deprecated type aliases. Includes two api-graphql bug fixes: SSR request
 clients now honor client-level options (previously silently dropped), and events error
 messages accurately describe failures.
+
+Compatibility surface and version guidance:
+
+- Deprecated `AmplifyServer` type aliases (`Context`, `ContextSpec`, `ContextToken`,
+  `RunOperationWithContext`) and functional `createAmplifyServerContext` /
+  `getAmplifyServerContext` / `destroyAmplifyServerContext` shims are restored on the
+  internals/adapter-core entries so previously published `@aws-amplify/adapter-nextjs`
+  versions keep working. They will be removed in the next major.
+- Peer minimums are raised (`@aws-amplify/core` to `^6.19.0` across category packages;
+  `aws-amplify` to `^6.21.0` for `@aws-amplify/adapter-nextjs`) to guard against
+  version-skewed installs going forward. Note this guard only applies when the
+  dependency tree is re-resolved: existing lockfiles, `npm ci`, and installs with
+  `--legacy-peer-deps` (or yarn classic's warn-only peers) are not re-checked, and
+  already-published category versions still declare the older range. Mixing an older
+  scoped category package (e.g. `@aws-amplify/auth` ≤ 6.x pinned to `core ^6.16.2`)
+  with a newer core is unsupported — keep directly installed `@aws-amplify/*` category
+  packages on the same release line as `aws-amplify`.
