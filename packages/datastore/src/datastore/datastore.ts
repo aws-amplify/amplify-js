@@ -50,6 +50,7 @@ import {
 	NonModelTypeConstructor,
 	ObserveQueryOptions,
 	PaginationInput,
+	PerModelSyncConfig,
 	PersistentModel,
 	PersistentModelConstructor,
 	PersistentModelMetaData,
@@ -1551,7 +1552,10 @@ class DataStore {
 						aws_appsync_graphqlEndpoint,
 					);
 
-					this.syncPredicates = await this.processSyncExpressions();
+					const { syncPredicates, perModelSyncConfig } =
+						await this.processSyncExpressions();
+					this.syncPredicates = syncPredicates;
+					this.amplifyConfig.perModelSyncConfig = perModelSyncConfig;
 					this.sync = new SyncEngine(
 						schema,
 						namespaceResolver,
@@ -2675,22 +2679,40 @@ class DataStore {
 
 	/**
 	 * Examines the configured `syncExpressions` and produces a WeakMap of
-	 * SchemaModel -> predicate to use during sync.
+	 * SchemaModel -> predicate to use during sync, and a WeakMap of
+	 * SchemaModel -> per-model sync config.
 	 */
-	private async processSyncExpressions(): Promise<
-		WeakMap<SchemaModel, ModelPredicate<any> | null>
-	> {
+	private async processSyncExpressions(): Promise<{
+		syncPredicates: WeakMap<SchemaModel, ModelPredicate<any> | null>;
+		perModelSyncConfig: WeakMap<SchemaModel, PerModelSyncConfig>;
+	}> {
 		if (!this.syncExpressions || !this.syncExpressions.length) {
-			return new WeakMap<SchemaModel, ModelPredicate<any>>();
+			return {
+				syncPredicates: new WeakMap<SchemaModel, ModelPredicate<any>>(),
+				perModelSyncConfig: new WeakMap<SchemaModel, PerModelSyncConfig>(),
+			};
 		}
+
+		const perModelSyncConfig = new WeakMap<SchemaModel, PerModelSyncConfig>();
 
 		const syncPredicates = await Promise.all(
 			this.syncExpressions.map(
 				async (
 					syncExpression: SyncExpression,
 				): Promise<[SchemaModel, ModelPredicate<any> | null]> => {
-					const { modelConstructor, conditionProducer } = await syncExpression;
-					const modelDefinition = getModelDefinition(modelConstructor)!;
+					const { modelConstructor, conditionProducer, syncConfig } =
+						await syncExpression;
+					const modelDefinition = getModelDefinition(modelConstructor);
+
+					if (!modelDefinition) {
+						throw new Error(
+							`Invalid model provided to syncExpression: ${modelConstructor?.name}; unable to find model definition.`,
+						);
+					}
+
+					if (syncConfig) {
+						perModelSyncConfig.set(modelDefinition, syncConfig);
+					}
 
 					// conditionProducer is either a predicate, e.g. (c) => c.field.eq(1)
 					// OR a function/promise that returns a predicate
@@ -2714,7 +2736,10 @@ class DataStore {
 			),
 		);
 
-		return this.weakMapFromEntries(syncPredicates);
+		return {
+			syncPredicates: this.weakMapFromEntries(syncPredicates),
+			perModelSyncConfig,
+		};
 	}
 
 	private async unwrapPromise<T extends PersistentModel>(
