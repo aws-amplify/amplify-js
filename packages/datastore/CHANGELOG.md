@@ -1,5 +1,11 @@
 # Change Log
 
+## 5.1.11
+
+### Patch Changes
+
+- [#14926](https://github.com/aws-amplify/amplify-js/pull/14926) [`b44e018`](https://github.com/aws-amplify/amplify-js/commit/b44e01830793e8a1b3a4a0d27a9eb155ac72c9b3) Thanks [@warren830](https://github.com/warren830)! - fix(datastore): apply pagination when only one record matches a query
+
 ## 5.1.10
 
 ### Patch Changes

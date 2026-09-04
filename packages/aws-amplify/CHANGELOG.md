@@ -1,5 +1,13 @@
 # Change Log
 
+## 6.20.1
+
+### Patch Changes
+
+- Updated dependencies [[`b44e018`](https://github.com/aws-amplify/amplify-js/commit/b44e01830793e8a1b3a4a0d27a9eb155ac72c9b3), [`4661401`](https://github.com/aws-amplify/amplify-js/commit/46614015534d5d2080b2da4887ec020cb15bcea8)]:
+  - @aws-amplify/datastore@5.1.11
+  - @aws-amplify/auth@6.20.1
+
 ## 6.20.0
 
 ### Minor Changes

@@ -37,7 +37,7 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.18.0",
-		"@aws-amplify/datastore": "5.1.10",
+		"@aws-amplify/datastore": "5.1.11",
 		"@types/better-sqlite3": "^7.6.13",
 		"@types/react-native-sqlite-storage": "5.0.1",
 		"better-sqlite3": "^12.6.2",
