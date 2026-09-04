@@ -777,4 +777,88 @@ describe('generateClient', () => {
 			});
 		});
 	});
+
+	describe('custom operations with selectionSet', () => {
+		beforeEach(() => {
+			Amplify.configure(configFixture as any);
+		});
+
+		test('custom query without selectionSet generates default selection set', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echoTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'test todo',
+						description: 'test description',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await client.queries.echoTodo({ id: 'todo-123' });
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('custom query with selectionSet generates custom selection set', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echoTodo: {
+						id: 'todo-123',
+						name: 'test todo',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await client.queries.echoTodo(
+				{ id: 'todo-123' },
+				{ selectionSet: ['id', 'name'] as const },
+			);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('custom query with undefined selectionSet falls back to default selection set', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echoTodo: {
+						id: 'todo-123',
+						name: 'test todo',
+						description: 'desc',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await client.queries.echoTodo(
+				{ id: 'todo-123' },
+				{ selectionSet: undefined },
+			);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('custom query with empty selectionSet generates empty braces {} and fails GraphQL parsing', async () => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await expect(
+				client.queries.echoTodo(
+					{ id: 'todo-123' },
+					{ selectionSet: [] as const },
+				),
+			).rejects.toThrow('Syntax Error: Expected Name, found "}"');
+		});
+
+		test('model operation with empty selectionSet generates empty braces {} and fails GraphQL parsing', async () => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await expect(
+				client.models.Todo.get(
+					{ id: 'todo-123' },
+					{ selectionSet: [] as const },
+				),
+			).rejects.toThrow('Syntax Error: Expected Name, found "}"');
+		});
+	});
 });
+
