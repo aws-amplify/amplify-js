@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Hub } from '@aws-amplify/core';
+import { AmplifyContext, Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { getCurrentUser } from '../apis/getCurrentUser';
@@ -14,13 +14,13 @@ import { AuthError } from '../../../errors/AuthError';
 export const ERROR_MESSAGE =
 	'Unable to get user session following successful sign-in.';
 
-export const dispatchSignedInHubEvent = async () => {
+export const dispatchSignedInHubEvent = async (ctx: AmplifyContext) => {
 	try {
 		Hub.dispatch(
 			'auth',
 			{
 				event: 'signedIn',
-				data: await getCurrentUser(),
+				data: await getCurrentUser(ctx),
 			},
 			'Auth',
 			AMPLIFY_SYMBOL,

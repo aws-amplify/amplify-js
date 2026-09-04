@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
@@ -20,6 +21,8 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createAssociateSoftwareTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function setUpTOTP(ctx: AmplifyContext): Promise<SetUpTOTPOutput>;
+
 /**
  * Sets up TOTP for the user.
  *
@@ -28,11 +31,13 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * Thrown if a service occurs while setting up TOTP.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  **/
-export async function setUpTOTP(): Promise<SetUpTOTPOutput> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+export async function setUpTOTP(): Promise<SetUpTOTPOutput>;
+export async function setUpTOTP(...args: any[]): Promise<SetUpTOTPOutput> {
+	const [ctx] = resolveCtxArgs<[]>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await ctx.fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const username = tokens.idToken?.payload['cognito:username'] ?? '';
 	const associateSoftwareToken = createAssociateSoftwareTokenClient({

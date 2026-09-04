@@ -33,7 +33,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.16.2"
+		"@aws-amplify/core": "^6.19.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.18.0",

@@ -2,8 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Subscription } from 'rxjs';
-import { Amplify } from '@aws-amplify/core';
-import { DocumentType, amplifyUuid } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
+import {
+	DocumentType,
+	amplifyUuid,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 
 import { AppSyncEventProvider as eventProvider } from '../../Providers/AWSAppSyncEventsProvider';
 
@@ -20,6 +24,11 @@ import type {
 
 // Keeps a list of open channels in the websocket
 const openChannels = new Set<string>();
+async function connect(
+	ctx: AmplifyContext,
+	channel: string,
+	options?: EventsOptions,
+): Promise<EventsChannel>;
 
 /**
  * @experimental API may change in future versions
@@ -37,6 +46,9 @@ const openChannels = new Set<string>();
  * @example // authMode override
  * const channel = await events.connect("default/channel", { authMode: "userPool" })
  *
+ * @example // with explicit context
+ * const channel = await events.connect(ctx, "default/channel")
+ *
  * @param channel - channel path; `<namespace>/<channel>`
  * @param options - request overrides: `authMode`, `authToken`
  *
@@ -44,8 +56,12 @@ const openChannels = new Set<string>();
 async function connect(
 	channel: string,
 	options?: EventsOptions,
-): Promise<EventsChannel> {
-	const providerOptions: ProviderOptions = configure();
+): Promise<EventsChannel>;
+async function connect(...args: any[]): Promise<EventsChannel> {
+	const [ctx, channel, options] =
+		resolveCtxArgs<[string, EventsOptions?]>(args);
+
+	const providerOptions: ProviderOptions = configure(ctx);
 
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
@@ -54,7 +70,8 @@ async function connect(
 	providerOptions.apiKey = options?.apiKey || providerOptions.apiKey;
 	providerOptions.authToken = options?.authToken || providerOptions.authToken;
 
-	await eventProvider.connect(providerOptions);
+	// Pass ctx to the provider so WebSocket auth uses the correct credentials
+	await eventProvider.connect({ ...providerOptions, ctx });
 
 	const channelId = amplifyUuid();
 	openChannels.add(channelId);
@@ -78,7 +95,7 @@ async function connect(
 			subOptions?.authToken || subscribeOptions.authToken;
 
 		_subscription = eventProvider
-			.subscribe(subscribeOptions)
+			.subscribe({ ...subscribeOptions, ctx })
 			.subscribe(observer);
 
 		return _subscription;
@@ -104,7 +121,7 @@ async function connect(
 		publishOptions.authToken =
 			pubOptions?.authToken || publishOptions.authToken;
 
-		return eventProvider.publish(publishOptions);
+		return eventProvider.publish({ ...publishOptions, ctx });
 	};
 
 	const close = async () => {
@@ -123,6 +140,12 @@ async function connect(
 		publish: pub,
 	};
 }
+async function post(
+	ctx: AmplifyContext,
+	channel: string,
+	event: DocumentType | DocumentType[],
+	options?: EventsOptions,
+): Promise<void | PublishedEvent[]>;
 
 /**
  * @experimental API may change in future versions
@@ -138,6 +161,9 @@ async function connect(
  * @example // authMode override
  * await events.post("default/channel", { some: "event" }, { authMode: "userPool" })
  *
+ * @example // with explicit context
+ * await events.post(ctx, "default/channel", { some: "event" })
+ *
  * @param channel - channel path; `<namespace>/<channel>`
  * @param event - JSON-serializable value or an array of values
  * @param options - request overrides: `authMode`, `authToken`
@@ -149,8 +175,14 @@ async function post(
 	channel: string,
 	event: DocumentType | DocumentType[],
 	options?: EventsOptions,
-): Promise<void | PublishedEvent[]> {
-	const providerOptions: ProviderOptions = configure();
+): Promise<void | PublishedEvent[]>;
+async function post(...args: any[]): Promise<void | PublishedEvent[]> {
+	const [ctx, channel, event, options] =
+		resolveCtxArgs<[string, DocumentType | DocumentType[], EventsOptions?]>(
+			args,
+		);
+
+	const providerOptions: ProviderOptions = configure(ctx);
 	providerOptions.authenticationType = normalizeAuth(
 		options?.authMode,
 		providerOptions.authenticationType,
@@ -170,7 +202,7 @@ async function post(
 	const abortController = new AbortController();
 
 	const res = await appsyncRequest<PublishResponse>(
-		Amplify,
+		ctx,
 		publishOptions,
 		{},
 		abortController,

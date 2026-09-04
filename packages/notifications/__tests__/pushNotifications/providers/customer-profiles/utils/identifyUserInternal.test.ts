@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+import {
+	PushNotificationAction,
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	DeviceRegistration,
@@ -24,6 +29,15 @@ jest.mock(
 
 describe('customer-profiles transport callers', () => {
 	const mockSignedFetch = signedFetch as jest.Mock;
+	const mockCtx = createMockAmplifyContext();
+
+	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	beforeEach(() => {
 		mockSignedFetch.mockResolvedValue(undefined);
@@ -36,21 +50,23 @@ describe('customer-profiles transport callers', () => {
 	describe('identifyUserInternal', () => {
 		it('POSTs the userProfile to the identify-user route (no userId)', async () => {
 			const userProfile = { email: 'user@example.com', name: 'Jane' };
-			await identifyUserInternal({ userProfile });
+			await identifyUserInternal(mockCtx, { userProfile });
 
 			expect(mockSignedFetch).toHaveBeenCalledTimes(1);
 			expect(mockSignedFetch).toHaveBeenCalledWith(
+				mockCtx,
 				IDENTIFY_USER_PATH,
 				{ userProfile },
 				PushNotificationAction.IdentifyUser,
 			);
-			const [, body] = mockSignedFetch.mock.calls[0];
+			const [, , body] = mockSignedFetch.mock.calls[0];
 			expect(body).not.toHaveProperty('userId');
 		});
 
 		it('defaults userProfile to an empty object when omitted', async () => {
-			await identifyUserInternal({});
+			await identifyUserInternal(mockCtx, {});
 			expect(mockSignedFetch).toHaveBeenCalledWith(
+				mockCtx,
 				IDENTIFY_USER_PATH,
 				{ userProfile: {} },
 				PushNotificationAction.IdentifyUser,
@@ -59,7 +75,7 @@ describe('customer-profiles transport callers', () => {
 
 		it('validates the userProfile before calling signedFetch (invalid profile short-circuits the request)', async () => {
 			await expect(
-				identifyUserInternal({
+				identifyUserInternal(mockCtx, {
 					userProfile: { customAttributes: { principalId: 'x' } },
 				}),
 			).rejects.toMatchObject({
@@ -78,10 +94,11 @@ describe('customer-profiles transport callers', () => {
 				appVersion: '',
 				channelType,
 			};
-			await registerDeviceInternal(device);
+			await registerDeviceInternal(mockCtx, device);
 
 			expect(mockSignedFetch).toHaveBeenCalledTimes(1);
 			expect(mockSignedFetch).toHaveBeenCalledWith(
+				mockCtx,
 				REGISTER_DEVICE_PATH,
 				{ device },
 				PushNotificationAction.RegisterDevice,
@@ -91,10 +108,11 @@ describe('customer-profiles transport callers', () => {
 
 	describe('removeDeviceInternal', () => {
 		it('POSTs the deviceId to the remove-device route', async () => {
-			await removeDeviceInternal('device-id');
+			await removeDeviceInternal(mockCtx, 'device-id');
 
 			expect(mockSignedFetch).toHaveBeenCalledTimes(1);
 			expect(mockSignedFetch).toHaveBeenCalledWith(
+				mockCtx,
 				REMOVE_DEVICE_PATH,
 				{ deviceId: 'device-id' },
 				PushNotificationAction.RemoveDevice,

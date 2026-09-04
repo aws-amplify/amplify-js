@@ -18,6 +18,8 @@ import {
 	Metadata,
 	Model,
 	BasicModelRequiredTS,
+	createTestCtx,
+	injectNoOpInternalAPI,
 	getDataStore,
 	configureSync,
 	unconfigureSync,
@@ -118,6 +120,17 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			Profile: PersistentModelConstructor<Profile>;
 		});
 
+		// After resetModules the fresh core module has no global context.
+		// Establish one so that InternalAPI.graphql() → getGlobalContext() succeeds
+		// when the sync engine starts subscriptions.
+		const { setGlobalContext } = require('@aws-amplify/core/internals/utils');
+		setGlobalContext(createTestCtx());
+
+		// Prevent the subscription processor from making real network requests
+		// (which hang in the test environment). Inject a fake InternalAPI that
+		// returns empty observables for subscriptions.
+		injectNoOpInternalAPI(DataStore);
+
 		jest.useFakeTimers();
 		await configureSync(DataStore);
 	});
@@ -126,6 +139,11 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		await DataStore.clear();
 		await unconfigureSync(DataStore);
 		jest.useRealTimers();
+		// symmetric cleanup: the fresh module graph set a global ctx in beforeEach
+		const {
+			clearGlobalContext,
+		} = require('@aws-amplify/core/internals/utils');
+		clearGlobalContext();
 	});
 
 	test('publishes preexisting local data immediately', async () => {

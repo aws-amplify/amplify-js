@@ -1,9 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-
-import { RemoveDevice } from '../types';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export function removeDevice(ctx: AmplifyContext): Promise<void>;
 
 /**
  * De-registers the current push device from Amazon Connect Customer Profiles.
@@ -18,6 +21,10 @@ import { RemoveDevice } from '../types';
  *  an unsupported platform. Currently, only React Native is supported by this
  *  API.
  */
-export const removeDevice: RemoveDevice = () => {
+export function removeDevice(): Promise<void>;
+// Deliberately `async` (rejects) rather than throwing synchronously: the
+// declared overloads have always returned `Promise<void>`, so rejecting is
+// what a `.catch`-chaining caller can actually observe.
+export async function removeDevice(..._args: any[]): Promise<void> {
 	throw new PlatformNotSupportedError();
-};
+}

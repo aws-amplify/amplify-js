@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { ConsoleLogger } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import * as defaultExports from '../../src/pushNotifications';
 import * as customerProfilesExports from '../../src/pushNotifications/providers/customer-profiles';
@@ -22,6 +27,14 @@ const DEPRECATED_RUNTIME_APIS = [
 
 describe('push-notifications default (Pinpoint) entry point', () => {
 	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
+
+	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	beforeEach(() => {
 		loggerWarnSpy.mockClear();

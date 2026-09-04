@@ -7,6 +7,8 @@ import {
 	PersistentModelConstructor,
 	initSchema as initSchemaType,
 } from '@aws-amplify/datastore';
+import { Amplify } from '@aws-amplify/core';
+import { clearGlobalContext, setGlobalContext } from '@aws-amplify/core/internals/utils';
 import {
 	Model,
 	Post,
@@ -20,6 +22,7 @@ import {
 	pause,
 	addCommonQueryTests,
 } from '../../datastore/__tests__/commonAdapterTests';
+import { createTestCtx } from '../../datastore/__tests__/helpers/ctx';
 
 let innerSQLiteDatabase;
 
@@ -99,6 +102,22 @@ describe('SQLiteAdapter', () => {
 			});
 			await DataStore.clear();
 
+			// Establish a global context so InternalAPI.graphql() → getGlobalContext()
+			// succeeds when the sync engine starts subscriptions. createTestCtx
+			// returns a branded context (via core's createMockAmplifyContext) with
+			// the given fake AppSync endpoint.
+			setGlobalContext(
+				createTestCtx('https://0.0.0.0/does/not/exist/graphql'),
+			);
+
+			// Prevent the subscription processor from making real network
+			// requests. Inject a no-op InternalAPI that returns empty observables.
+			const { NEVER } = require('rxjs');
+			(DataStore as any).amplifyContext.InternalAPI = {
+				graphql: () => NEVER,
+				getGraphqlOperationType: () => 'subscription',
+			};
+
 			// start() ensures storageAdapter is set
 			await DataStore.start();
 
@@ -110,6 +129,11 @@ describe('SQLiteAdapter', () => {
 			// prevents the mutation process from clearing the mutation queue, which
 			// allows us to observe the state of mutations.
 			(syncEngine as any).mutationsProcessor.isReady = () => false;
+		});
+
+		afterEach(async () => {
+			await DataStore.clear();
+			clearGlobalContext();
 		});
 
 		describe('sanity checks', () => {

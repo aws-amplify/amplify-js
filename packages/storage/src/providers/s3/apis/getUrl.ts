@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import {
 	GetUrlInput,
@@ -11,6 +12,22 @@ import {
 } from '../types';
 
 import { getUrl as getUrlInternal } from './internal/getUrl';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetUrlWithPathInput` object.
+ */
+export function getUrl(
+	ctx: AmplifyContext,
+	input: GetUrlWithPathInput,
+): Promise<GetUrlWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetUrlInput` object.
+ */
+export function getUrl(
+	ctx: AmplifyContext,
+	input: GetUrlInput,
+): Promise<GetUrlOutput>;
 
 /**
  * Get a temporary presigned URL to download or upload the specified S3 object.
@@ -52,6 +69,10 @@ export function getUrl(
  */
 export function getUrl(input: GetUrlInput): Promise<GetUrlOutput>;
 
-export function getUrl(input: GetUrlInput | GetUrlWithPathInput) {
-	return getUrlInternal(Amplify, input);
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
+export function getUrl(...args: any[]) {
+	const [ctx, input] =
+		resolveCtxArgs<[GetUrlInput | GetUrlWithPathInput]>(args);
+
+	return getUrlInternal(ctx, input);
 }

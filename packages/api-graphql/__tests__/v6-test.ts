@@ -1,6 +1,6 @@
 import * as raw from '../src';
 import { graphql } from '../src/internals/v6';
-import { Amplify } from 'aws-amplify';
+import { Amplify } from '@aws-amplify/core';
 import * as typedQueries from './fixtures/with-types/queries';
 import * as typedMutations from './fixtures/with-types/mutations';
 import * as typedSubscriptions from './fixtures/with-types/subscriptions';

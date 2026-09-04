@@ -1,6 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
+
 import { inAppMessages } from '../../../../testUtils/data';
 import {
 	addEventListener,
@@ -23,7 +29,12 @@ const mockAddEventListener = addEventListener as jest.Mock;
 describe('Interaction events', () => {
 	const handler = jest.fn();
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		initializeInAppMessaging();
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 	it('can be listened to by onMessageReceived', () => {
 		onMessageReceived(handler);

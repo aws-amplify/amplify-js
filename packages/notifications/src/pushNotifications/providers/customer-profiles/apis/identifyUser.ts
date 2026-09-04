@@ -1,8 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
+
 import { identifyUserInternal } from '../utils/identifyUserInternal';
-import { IdentifyUser } from '../types';
+import { IdentifyUserInput } from '../types';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function identifyUser(
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void>;
 
 /**
  * Sends profile information about a user to Amazon Connect Customer Profiles.
@@ -32,6 +42,8 @@ import { IdentifyUser } from '../types';
  * });
  * ```
  */
-export const identifyUser: IdentifyUser = async ({ userProfile }) => {
-	await identifyUserInternal({ userProfile });
-};
+export async function identifyUser(input: IdentifyUserInput): Promise<void>;
+export async function identifyUser(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[IdentifyUserInput]>(args);
+	await identifyUserInternal(ctx, { userProfile: input.userProfile });
+}

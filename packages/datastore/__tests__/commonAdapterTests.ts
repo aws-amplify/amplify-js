@@ -7,6 +7,7 @@ import {
 	initSchema as initSchemaType,
 } from '../src';
 
+import { setGlobalContext, clearGlobalContext } from '@aws-amplify/core/internals/utils';
 import { ModelRelationship } from '../src/storage/relationship';
 import {
 	extractPrimaryKeyFieldNames,
@@ -16,6 +17,8 @@ import {
 import {
 	pause,
 	expectMutation,
+	createTestCtx,
+	injectNoOpInternalAPI,
 	Model,
 	User,
 	Profile,
@@ -110,6 +113,16 @@ export function addCommonQueryTests({
 				ModelWithIndexes: PersistentModelConstructor<ModelWithIndexes>;
 			});
 
+			// Establish a global context so that InternalAPI.graphql() →
+			// getGlobalContext() succeeds when the sync engine starts.
+			setGlobalContext(
+				createTestCtx('https://0.0.0.0/does/not/exist/graphql'),
+			);
+
+			// Prevent the subscription processor from making real network
+			// requests. Inject a no-op InternalAPI that returns empty observables.
+			injectNoOpInternalAPI(DataStore);
+
 			// start() ensures storageAdapter is set
 			await DataStore.start();
 
@@ -131,6 +144,7 @@ export function addCommonQueryTests({
 			// prevent cross-contamination with other test suites which are using
 			// the same instance.
 			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = '';
+			clearGlobalContext();
 		});
 
 		it('should match fields of any non-empty value for `("ne", undefined)`', async () => {
@@ -320,6 +334,13 @@ export function addCommonQueryTests({
 				User: PersistentModelConstructor<User>;
 			});
 
+			// Establish a global context and fake InternalAPI for sync engine.
+			setGlobalContext(
+				createTestCtx('https://0.0.0.0/does/not/exist/graphql'),
+			);
+
+			injectNoOpInternalAPI(DataStore);
+
 			// start() ensures storageAdapter is set
 			await DataStore.start();
 
@@ -336,6 +357,7 @@ export function addCommonQueryTests({
 		afterEach(async () => {
 			await DataStore.clear();
 			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = '';
+			clearGlobalContext();
 		});
 
 		it('should allow linking model via model field', async () => {

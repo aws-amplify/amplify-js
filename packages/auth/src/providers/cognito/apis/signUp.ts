@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthDeliveryMedium } from '../../../types';
@@ -29,6 +30,11 @@ import { autoSignInStore } from '../../../client/utils/store';
 
 import { setAutoSignIn } from './autoSignIn';
 
+export async function signUp(
+	ctx: AmplifyContext,
+	input: SignUpInput,
+): Promise<SignUpOutput>;
+
 /**
  * Creates a user
  *
@@ -39,9 +45,11 @@ import { setAutoSignIn } from './autoSignIn';
  *  are not defined.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
+export async function signUp(input: SignUpInput): Promise<SignUpOutput>;
+export async function signUp(...args: any[]): Promise<SignUpOutput> {
+	const [ctx, input] = resolveCtxArgs<[SignUpInput]>(args);
 	const { username, password, options } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
 	const { clientMetadata, validationData, autoSignIn } = input.options ?? {};

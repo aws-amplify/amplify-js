@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -40,6 +40,7 @@ import { resetAutoSignIn } from './autoSignIn';
 /**
  * Signs a user in
  *
+ * @param ctx - The AmplifyContext
  * @param input - The SignInWithSRPInput object
  * @returns SignInWithSRPOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito service errors
@@ -49,10 +50,11 @@ import { resetAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithSRP(
+	ctx: AmplifyContext,
 	input: SignInWithSRPInput,
 ): Promise<SignInWithSRPOutput> {
 	const { username, password } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
 		authFlowType: 'USER_SRP_AUTH',
@@ -104,7 +106,7 @@ export async function signInWithSRP(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(ctx);
 
 			resetAutoSignIn();
 
@@ -114,7 +116,7 @@ export async function signInWithSRP(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: handledChallengeName as ChallengeName,
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});

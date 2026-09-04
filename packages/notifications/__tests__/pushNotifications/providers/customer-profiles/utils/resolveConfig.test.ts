@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { resolveConfig } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/resolveConfig';
 import {
@@ -11,20 +11,20 @@ import {
 import { customerProfilesConfig } from '../../../../testUtils/data';
 
 describe('resolveConfig (customer-profiles)', () => {
-	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
-
-	const mockCustomerProfilesConfig = (config: unknown) => {
-		getConfigSpy.mockReturnValue({
+	const makeCtx = (config: unknown) =>
+		createMockAmplifyContext({
 			Notifications: {
 				PushNotification: { CustomerProfiles: config as any },
 			},
 		});
-	};
 
-	const expectToThrowWithCode = (code: PushNotificationValidationErrorCode) => {
+	const expectToThrowWithCode = (
+		config: unknown,
+		code: PushNotificationValidationErrorCode,
+	) => {
 		let error: unknown;
 		try {
-			resolveConfig();
+			resolveConfig(makeCtx(config));
 		} catch (caught) {
 			error = caught;
 		}
@@ -32,75 +32,78 @@ describe('resolveConfig (customer-profiles)', () => {
 		expect((error as PushNotificationError).name).toBe(code);
 	};
 
-	afterEach(() => {
-		getConfigSpy.mockReset();
-	});
-
 	it('returns the Customer Profiles endpoint and region for an https endpoint', () => {
-		mockCustomerProfilesConfig(customerProfilesConfig);
-		expect(resolveConfig()).toStrictEqual(customerProfilesConfig);
-	});
-
-	it('throws NoEndpoint if endpoint is missing', () => {
-		mockCustomerProfilesConfig({
-			...customerProfilesConfig,
-			endpoint: undefined,
-		});
-		expectToThrowWithCode(PushNotificationValidationErrorCode.NoEndpoint);
-	});
-
-	it('throws NoRegion if region is missing', () => {
-		mockCustomerProfilesConfig({
-			...customerProfilesConfig,
-			region: undefined,
-		});
-		expectToThrowWithCode(PushNotificationValidationErrorCode.NoRegion);
-	});
-
-	it('throws NoEndpoint if the Customer Profiles config is absent', () => {
-		getConfigSpy.mockReturnValue({
-			Notifications: { PushNotification: {} as any },
-		});
-		expectToThrowWithCode(PushNotificationValidationErrorCode.NoEndpoint);
-	});
-
-	it('throws InvalidEndpoint for an http:// (non-https) endpoint', () => {
-		mockCustomerProfilesConfig({
-			...customerProfilesConfig,
-			endpoint: 'http://abcd1234.execute-api.us-east-1.amazonaws.com/prod',
-		});
-		expectToThrowWithCode(PushNotificationValidationErrorCode.InvalidEndpoint);
-	});
-
-	it('throws InvalidEndpoint for a non-https scheme (ftp://)', () => {
-		mockCustomerProfilesConfig({
-			...customerProfilesConfig,
-			endpoint: 'ftp://x',
-		});
-		expectToThrowWithCode(PushNotificationValidationErrorCode.InvalidEndpoint);
-	});
-
-	it('throws InvalidEndpoint for a malformed (non-URL) endpoint', () => {
-		mockCustomerProfilesConfig({
-			...customerProfilesConfig,
-			endpoint: 'not a url',
-		});
-		expectToThrowWithCode(PushNotificationValidationErrorCode.InvalidEndpoint);
-	});
-
-	it('accepts an execute-api host without a stage path', () => {
-		mockCustomerProfilesConfig({
-			...customerProfilesConfig,
-			endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com',
-		});
-		expect(resolveConfig().endpoint).toBe(
-			'https://abcd1234.execute-api.us-east-1.amazonaws.com',
+		expect(resolveConfig(makeCtx(customerProfilesConfig))).toStrictEqual(
+			customerProfilesConfig,
 		);
 	});
 
+	it('throws NoEndpoint if endpoint is missing', () => {
+		expectToThrowWithCode(
+			{ ...customerProfilesConfig, endpoint: undefined },
+			PushNotificationValidationErrorCode.NoEndpoint,
+		);
+	});
+
+	it('throws NoRegion if region is missing', () => {
+		expectToThrowWithCode(
+			{ ...customerProfilesConfig, region: undefined },
+			PushNotificationValidationErrorCode.NoRegion,
+		);
+	});
+
+	it('throws NoEndpoint if the Customer Profiles config is absent', () => {
+		const ctx = createMockAmplifyContext({
+			Notifications: { PushNotification: {} as any },
+		});
+		let error: unknown;
+		try {
+			resolveConfig(ctx);
+		} catch (caught) {
+			error = caught;
+		}
+		expect(error).toBeInstanceOf(PushNotificationError);
+		expect((error as PushNotificationError).name).toBe(
+			PushNotificationValidationErrorCode.NoEndpoint,
+		);
+	});
+
+	it('throws InvalidEndpoint for an http:// (non-https) endpoint', () => {
+		expectToThrowWithCode(
+			{
+				...customerProfilesConfig,
+				endpoint: 'http://abcd1234.execute-api.us-east-1.amazonaws.com/prod',
+			},
+			PushNotificationValidationErrorCode.InvalidEndpoint,
+		);
+	});
+
+	it('throws InvalidEndpoint for a non-https scheme (ftp://)', () => {
+		expectToThrowWithCode(
+			{ ...customerProfilesConfig, endpoint: 'ftp://x' },
+			PushNotificationValidationErrorCode.InvalidEndpoint,
+		);
+	});
+
+	it('throws InvalidEndpoint for a malformed (non-URL) endpoint', () => {
+		expectToThrowWithCode(
+			{ ...customerProfilesConfig, endpoint: 'not a url' },
+			PushNotificationValidationErrorCode.InvalidEndpoint,
+		);
+	});
+
+	it('accepts an execute-api host without a stage path', () => {
+		expect(
+			resolveConfig(
+				makeCtx({
+					...customerProfilesConfig,
+					endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com',
+				}),
+			).endpoint,
+		).toBe('https://abcd1234.execute-api.us-east-1.amazonaws.com');
+	});
+
 	describe('endpoint host allowlist', () => {
-		// SigV4 execute-api credentials travel with every request to this
-		// endpoint, so a non-API-Gateway host MUST be rejected outright.
 		it.each([
 			['an unrelated host', 'https://evil.com'],
 			['an unrelated host with a plausible path', 'https://evil.com/prod'],
@@ -125,18 +128,18 @@ describe('resolveConfig (customer-profiles)', () => {
 				'https://abcd1234.execute-api.us-east-1.amazonaws.com@evil.com',
 			],
 		])('throws InvalidEndpoint for %s', (_, endpoint) => {
-			mockCustomerProfilesConfig({ ...customerProfilesConfig, endpoint });
 			expectToThrowWithCode(
+				{ ...customerProfilesConfig, endpoint },
 				PushNotificationValidationErrorCode.InvalidEndpoint,
 			);
 		});
 
 		it('accepts the execute-api host of the configured region', () => {
-			mockCustomerProfilesConfig({
+			const ctx = makeCtx({
 				endpoint: 'https://xyz789.execute-api.eu-west-2.amazonaws.com/prod',
 				region: 'eu-west-2',
 			});
-			expect(resolveConfig()).toStrictEqual({
+			expect(resolveConfig(ctx)).toStrictEqual({
 				endpoint: 'https://xyz789.execute-api.eu-west-2.amazonaws.com/prod',
 				region: 'eu-west-2',
 			});
@@ -145,42 +148,47 @@ describe('resolveConfig (customer-profiles)', () => {
 
 	describe('trailing slash normalization', () => {
 		it('strips a trailing slash from a host-only endpoint', () => {
-			mockCustomerProfilesConfig({
-				...customerProfilesConfig,
-				endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com/',
-			});
-			expect(resolveConfig().endpoint).toBe(
-				'https://abcd1234.execute-api.us-east-1.amazonaws.com',
-			);
+			expect(
+				resolveConfig(
+					makeCtx({
+						...customerProfilesConfig,
+						endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com/',
+					}),
+				).endpoint,
+			).toBe('https://abcd1234.execute-api.us-east-1.amazonaws.com');
 		});
 
 		it('strips trailing slashes while PRESERVING a stage path', () => {
-			mockCustomerProfilesConfig({
-				...customerProfilesConfig,
-				endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod/',
-			});
-			expect(resolveConfig().endpoint).toBe(
-				'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod',
-			);
+			expect(
+				resolveConfig(
+					makeCtx({
+						...customerProfilesConfig,
+						endpoint:
+							'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod/',
+					}),
+				).endpoint,
+			).toBe('https://abcd1234.execute-api.us-east-1.amazonaws.com/prod');
 		});
 
 		it('strips repeated trailing slashes', () => {
-			mockCustomerProfilesConfig({
-				...customerProfilesConfig,
-				endpoint:
-					'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod///',
-			});
-			expect(resolveConfig().endpoint).toBe(
-				'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod',
-			);
+			expect(
+				resolveConfig(
+					makeCtx({
+						...customerProfilesConfig,
+						endpoint:
+							'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod///',
+					}),
+				).endpoint,
+			).toBe('https://abcd1234.execute-api.us-east-1.amazonaws.com/prod');
 		});
 
 		it('produces an endpoint that composes with a route path without a double slash', () => {
-			mockCustomerProfilesConfig({
-				...customerProfilesConfig,
-				endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com/',
-			});
-			const { endpoint } = resolveConfig();
+			const { endpoint } = resolveConfig(
+				makeCtx({
+					...customerProfilesConfig,
+					endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com/',
+				}),
+			);
 			expect(new URL(`${endpoint}/identify-user`).toString()).toBe(
 				'https://abcd1234.execute-api.us-east-1.amazonaws.com/identify-user',
 			);

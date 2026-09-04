@@ -1,23 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AuthTokens, fetchAuthSession } from '@aws-amplify/core';
+import { AuthTokens } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { resolveLocationsForCurrentSession } from '../../../../src/internals/apis/listPaths/resolveLocationsForCurrentSession';
 import { getHighestPrecedenceUserGroup } from '../../../../src/internals/apis/listPaths/getHighestPrecedenceUserGroup';
 import { listPaths } from '../../../../src/internals';
+import {
+	StorageValidationErrorCode,
+	validationErrorMap,
+} from '../../../../src/errors/types/validation';
 
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn(),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			getConfig: jest.fn(),
-			fetchAuthSession: jest.fn(),
-		},
-	},
-	fetchAuthSession: jest.fn(),
-}));
 jest.mock(
 	'../../../../src/internals/apis/listPaths/resolveLocationsForCurrentSession',
 );
@@ -32,8 +26,15 @@ const credentials = {
 };
 const identityId = 'identityId';
 
-const mockGetConfig = jest.mocked(Amplify.getConfig);
-const mockFetchAuthSession = jest.mocked(fetchAuthSession);
+const mockGetConfig = jest.fn();
+const mockFetchAuthSession = jest.fn();
+// listPaths now receives a required AmplifyContext. Back resourcesConfig with
+// a jest.fn so tests can vary config per-case, and expose fetchAuthSession as a
+// jest.fn for session/token control.
+const mockCtx = createMockAmplifyContext({
+	getConfig: mockGetConfig,
+	fetchAuthSession: mockFetchAuthSession,
+});
 const mockResolveLocationsFromCurrentSession =
 	resolveLocationsForCurrentSession as jest.Mock;
 const mockGetHighestPrecedenceUserGroup = jest.mocked(
@@ -99,7 +100,7 @@ describe('listPaths', () => {
 			Storage: { S3: { buckets: undefined } },
 		});
 
-		const result = await listPaths();
+		const result = await listPaths(mockCtx);
 
 		expect(result).toEqual({ locations: [] });
 	});
@@ -118,7 +119,7 @@ describe('listPaths', () => {
 			},
 		]);
 
-		const result = await listPaths();
+		const result = await listPaths(mockCtx);
 
 		expect(result).toEqual({
 			locations: [
@@ -157,7 +158,7 @@ describe('listPaths', () => {
 				prefix: '/path1',
 			},
 		});
-		await listPaths();
+		await listPaths(mockCtx);
 
 		expect(mockResolveLocationsFromCurrentSession).toHaveBeenCalled();
 		expect(mockResolveLocationsFromCurrentSession).toHaveBeenCalledWith({
@@ -189,7 +190,7 @@ describe('listPaths', () => {
 		});
 		mockGetHighestPrecedenceUserGroup.mockReturnValue('admin');
 
-		await listPaths();
+		await listPaths(mockCtx);
 
 		expect(mockResolveLocationsFromCurrentSession).toHaveBeenCalled();
 		expect(mockResolveLocationsFromCurrentSession).toHaveBeenCalledWith({
@@ -197,6 +198,38 @@ describe('listPaths', () => {
 			isAuthenticated: true,
 			identityId: 'identityId',
 			userGroup: 'admin',
+		});
+	});
+
+	it('should throw StorageValidationError with NoS3Config when Storage.S3 is missing', async () => {
+		mockGetConfig.mockReturnValue({
+			...mockAuthConfig,
+			Storage: undefined,
+		});
+
+		await expect(listPaths(mockCtx)).rejects.toMatchObject({
+			name: StorageValidationErrorCode.NoS3Config,
+			message:
+				validationErrorMap[StorageValidationErrorCode.NoS3Config].message,
+		});
+	});
+
+	it('should throw StorageValidationError with NoAuthConfig when Auth.Cognito is missing', async () => {
+		mockGetConfig.mockReturnValue({
+			Auth: undefined,
+			Storage: {
+				S3: {
+					bucket: 'bucket1',
+					region: 'region1',
+					buckets: mockBuckets,
+				},
+			},
+		});
+
+		await expect(listPaths(mockCtx)).rejects.toMatchObject({
+			name: StorageValidationErrorCode.NoAuthConfig,
+			message:
+				validationErrorMap[StorageValidationErrorCode.NoAuthConfig].message,
 		});
 	});
 });

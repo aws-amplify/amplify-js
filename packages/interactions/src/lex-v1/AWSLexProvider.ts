@@ -11,14 +11,14 @@ import {
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import {
 	InteractionsMessage,
 	InteractionsOnCompleteCallback,
 	InteractionsResponse,
 } from '../types/Interactions';
-import { convert } from '../utils';
+import { convert, createPerContextCallbackRegistry } from '../utils';
 
 import { AWSLexProviderOption } from './types';
 
@@ -34,10 +34,13 @@ type AWSLexProviderSendResponse =
 	| PostContentCommandOutputFormatted;
 
 class AWSLexProvider {
-	private readonly _botsCompleteCallback: Record<
-		string,
-		InteractionsOnCompleteCallback
-	> = {};
+	// Per-context onComplete callback registry (context isolation). See
+	// `createPerContextCallbackRegistry` for the full documentation, including
+	// the re-configure semantics (`Amplify.configure()` publishes a NEW frozen
+	// global context object, so callbacks registered against a prior global
+	// context are intentionally not carried over).
+	private readonly _botsCompleteCallbackByCtx =
+		createPerContextCallbackRegistry<InteractionsOnCompleteCallback>();
 
 	/**
 	 * @deprecated
@@ -45,10 +48,12 @@ class AWSLexProvider {
 	 * for a bot if configured
 	 */
 	reportBotStatus(
+		ctx: AmplifyContext,
 		data: AWSLexProviderSendResponse,
 		{ name }: AWSLexProviderOption,
 	) {
-		const callback = this._botsCompleteCallback[name];
+		// Only fire callbacks registered against this exact context (isolation).
+		const callback = this._botsCompleteCallbackByCtx.get(ctx, name);
 		if (!callback) {
 			return;
 		}
@@ -69,13 +74,14 @@ class AWSLexProvider {
 	}
 
 	async sendMessage(
+		ctx: AmplifyContext,
 		botConfig: AWSLexProviderOption,
 		message: string | InteractionsMessage,
 	): Promise<InteractionsResponse> {
 		// check if credentials are present
 		let session;
 		try {
-			session = await fetchAuthSession();
+			session = await ctx.fetchAuthSession();
 		} catch (error) {
 			return Promise.reject(new Error('No credentials'));
 		}
@@ -101,7 +107,7 @@ class AWSLexProvider {
 				const postTextCommand = new PostTextCommand(params);
 				const data = await client.send(postTextCommand);
 
-				this.reportBotStatus(data, botConfig);
+				this.reportBotStatus(ctx, data, botConfig);
 
 				return data;
 			} catch (err) {
@@ -151,7 +157,7 @@ class AWSLexProvider {
 
 				const response = { ...data, ...{ audioStream: audioArray } };
 
-				this.reportBotStatus(response, botConfig);
+				this.reportBotStatus(ctx, response, botConfig);
 
 				return response;
 			} catch (err) {
@@ -161,10 +167,11 @@ class AWSLexProvider {
 	}
 
 	onComplete(
+		ctx: AmplifyContext,
 		{ name }: AWSLexProviderOption,
 		callback: InteractionsOnCompleteCallback,
 	) {
-		this._botsCompleteCallback[name] = callback;
+		this._botsCompleteCallbackByCtx.set(ctx, name, callback);
 	}
 }
 

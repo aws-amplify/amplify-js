@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	DocumentType,
 	GraphQLAuthMode,
@@ -23,14 +23,14 @@ export const normalizeAuth = (
 	return explicitAuthMode;
 };
 
-export const configure = () => {
-	const config = Amplify.getConfig();
+export const configure = (ctx: AmplifyContext) => {
+	const config = ctx.resourcesConfig;
 
 	const eventsConfig = config.API?.Events;
 
 	if (!eventsConfig) {
 		throw new Error(
-			'Amplify configuration is missing. Have you called Amplify.configure()?',
+			'Events API configuration is missing. Have you called Amplify.configure() with an `API.Events` configuration?',
 		);
 	}
 
@@ -60,7 +60,7 @@ export const serializeEvents = (
 			const eventJson = JSON.stringify(ev);
 			if (eventJson === undefined) {
 				throw new Error(
-					`Event must be a valid JSON value. Received ${ev} at index ${idx}`,
+					`Event must be a JSON-serializable value. Received ${String(ev)} at index ${idx}`,
 				);
 			}
 
@@ -70,7 +70,9 @@ export const serializeEvents = (
 
 	const eventJson = JSON.stringify(events);
 	if (eventJson === undefined) {
-		throw new Error(`Event must be a valid JSON value. Received ${events}`);
+		throw new Error(
+			`Event must be a JSON-serializable value. Received ${String(events)}`,
+		);
 	}
 
 	return [eventJson];

@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	HubInternal,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
@@ -22,6 +23,11 @@ import { autoSignInStore } from '../../../client/utils/store';
 
 import { resetAutoSignIn } from './autoSignIn';
 
+export async function confirmSignUp(
+	ctx: AmplifyContext,
+	input: ConfirmSignUpInput,
+): Promise<ConfirmSignUpOutput>;
+
 /**
  * Confirms a new user account.
  *
@@ -35,10 +41,14 @@ import { resetAutoSignIn } from './autoSignIn';
  */
 export async function confirmSignUp(
 	input: ConfirmSignUpInput,
+): Promise<ConfirmSignUpOutput>;
+export async function confirmSignUp(
+	...args: any[]
 ): Promise<ConfirmSignUpOutput> {
+	const [ctx, input] = resolveCtxArgs<[ConfirmSignUpInput]>(args);
 	const { username, confirmationCode, options } = input;
 
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig;
 	const clientMetadata = options?.clientMetadata;

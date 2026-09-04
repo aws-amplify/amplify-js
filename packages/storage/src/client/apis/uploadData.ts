@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, defaultStorage } from '@aws-amplify/core';
+import { AmplifyContext, defaultStorage } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import { readFile } from '../utils/readFile';
 import { toBase64 } from '../utils/toBase64';
@@ -12,6 +13,22 @@ import {
 	UploadDataWithPathOutput,
 } from '../../providers/s3/types';
 import { uploadData as uploadDataInternal } from '../../providers/s3/apis/internal/uploadData';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `UploadDataWithPathInput` object.
+ */
+export function uploadData(
+	ctx: AmplifyContext,
+	input: UploadDataWithPathInput,
+): UploadDataWithPathOutput;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `UploadDataInput` object.
+ */
+export function uploadData(
+	ctx: AmplifyContext,
+	input: UploadDataInput,
+): UploadDataOutput;
 
 /**
  * Upload data to the specified S3 object path. By default uses single PUT operation to upload if the payload is less than 5MB.
@@ -123,9 +140,13 @@ export function uploadData(
  */
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
-export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
+export function uploadData(...args: any[]) {
+	const [ctx, input] =
+		resolveCtxArgs<[UploadDataInput | UploadDataWithPathInput]>(args);
+
 	return uploadDataInternal(
-		{ amplify: Amplify, readFile, toBase64 },
+		{ amplify: ctx, readFile, toBase64 },
 		{
 			...input,
 			options: {

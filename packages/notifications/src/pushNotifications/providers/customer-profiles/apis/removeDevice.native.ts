@@ -1,9 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
+
 import { assertIsInitialized } from '../../../errors/errorHelpers';
 import { getDeviceId, removeDeviceInternal } from '../utils';
-import { RemoveDevice } from '../types';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function removeDevice(ctx: AmplifyContext): Promise<void>;
 
 /**
  * De-registers the current push device from Amazon Connect Customer Profiles.
@@ -31,7 +37,9 @@ import { RemoveDevice } from '../types';
  * await signOut();
  * ```
  */
-export const removeDevice: RemoveDevice = async () => {
+export async function removeDevice(): Promise<void>;
+export async function removeDevice(...args: any[]): Promise<void> {
+	const [ctx] = resolveCtxArgs<[]>(args);
 	assertIsInitialized();
-	await removeDeviceInternal(await getDeviceId());
-};
+	await removeDeviceInternal(ctx, await getDeviceId());
+}
