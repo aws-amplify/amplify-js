@@ -11,12 +11,11 @@
  * * {@link PutObjectRequest.Body}: Remove Node.js specific `Readable` type and add `ArrayBuffer` and `ArrayBufferView`
  * * {@link UploadPartRequest.Body}: Remove Node.js specific `Readable` type and add `ArrayBuffer` and `ArrayBufferView`
  */
-import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
 import {
 	HttpResponse,
+	MetadataBearer as __MetadataBearer,
 	ResponseBodyMixin,
 } from '@aws-amplify/core/internals/aws-client-utils';
-
 /**
  * Compatible type for S3 streaming body exposed via Amplify public interfaces, like {@link GetObjectCommandOutput}
  * exposed via download API. It's also compatible with the custom transfer handler interface {@link HttpResponse.body}.

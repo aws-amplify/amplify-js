@@ -4,10 +4,10 @@ import booleanClockwise from '@turf/boolean-clockwise';
 import {
 	Category,
 	GeoAction,
+	UserAgent,
 	getAmplifyUserAgent,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
-import { UserAgent } from '@aws-sdk/types';
 
 import {
 	GeofenceId,
