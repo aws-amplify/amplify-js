@@ -33,6 +33,11 @@ messages accurately describe failures.
 
 Compatibility surface and version guidance:
 
+- Resources config is now deep-frozen after `Amplify.configure()` and
+  `createAmplifyContext()` (previously frozen only at the top level). Code that mutated
+  a nested config field post-configure — always unsupported — now throws in strict mode
+  instead of silently succeeding.
+
 - Deprecated `AmplifyServer` type aliases (`Context`, `ContextSpec`, `ContextToken`,
   `RunOperationWithContext`) and functional `createAmplifyServerContext` /
   `getAmplifyServerContext` / `destroyAmplifyServerContext` shims are restored on the
