@@ -498,7 +498,7 @@ export type GraphQLMethodSSR<Options extends CommonPublicClientOptions> = <
  */
 export interface ServerClientGenerationParams {
 	amplify:
-		| null // null expected when used with `generateServerClient`
+		| null // null expected when used with `generateClient`
 		// closure expected with `generateServerClientUsingCookies`
 		| ((fn: (amplify: AmplifyClassV6) => Promise<any>) => Promise<any>);
 	// global env-sourced config use for retrieving modelIntro
