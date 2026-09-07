@@ -7,6 +7,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import { attemptCompleteOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/attemptCompleteOAuthFlow';
+import { setOAuthInProgress } from '../../../../../src/providers/cognito/utils/oauth/inflightPromise';
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
 import { getRedirectUrl } from '../../../../../src/providers/cognito/utils/oauth/getRedirectUrl';
 import { oAuthStore } from '../../../../../src/providers/cognito/utils/oauth/oAuthStore';
@@ -39,6 +40,8 @@ jest.mock(
 	'../../../../../src/providers/cognito/utils/oauth/inflightPromise',
 	() => ({
 		addInflightPromise: jest.fn(),
+		setOAuthInProgress: jest.fn(),
+		isOAuthInProgress: jest.fn(() => false),
 	}),
 );
 
@@ -107,6 +110,9 @@ describe('attemptCompleteOAuthFlow', () => {
 				redirectUri: 'http://localhost:3000/',
 			}),
 		);
+		// marks this tab as owning the inflight OAuth completion, then clears it
+		expect(setOAuthInProgress).toHaveBeenCalledWith(true);
+		expect(setOAuthInProgress).toHaveBeenLastCalledWith(false);
 	});
 
 	test.each([

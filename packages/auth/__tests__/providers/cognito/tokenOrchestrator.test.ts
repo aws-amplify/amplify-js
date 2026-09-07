@@ -5,7 +5,10 @@ import { Hub, ResourcesConfig } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { TokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
-import { addInflightPromise } from '../../../src/providers/cognito/utils/oauth/inflightPromise';
+import {
+	addInflightPromise,
+	isOAuthInProgress,
+} from '../../../src/providers/cognito/utils/oauth/inflightPromise';
 import { oAuthStore } from '../../../src/providers/cognito/utils/oauth';
 
 jest.mock('../../../src/providers/cognito/utils/oauth/oAuthStore');
@@ -41,7 +44,9 @@ const validAuthConfig: ResourcesConfig = {
 };
 
 jest.mock('../../../src/providers/cognito/utils/oauth/inflightPromise', () => ({
-	addInflightPromise: jest.fn(),
+	// `addInflightPromise` returns an unregister handle in the real module.
+	addInflightPromise: jest.fn(() => jest.fn()),
+	isOAuthInProgress: jest.fn(() => false),
 }));
 
 const currentDate = new Date();
@@ -101,6 +106,15 @@ const validAuthTokens = {
 };
 
 const mockAddInflightPromise = addInflightPromise as jest.Mock;
+const mockIsOAuthInProgress = isOAuthInProgress as jest.Mock;
+
+const INFLIGHT_OAUTH_KEY =
+	'CognitoIdentityServiceProvider.test-id.inflightOAuth';
+// Flush pending microtasks and the current (real-timer) macrotask queue.
+const flushAsyncWork = () =>
+	new Promise<void>(resolve => {
+		setTimeout(resolve, 0);
+	});
 
 describe('TokenOrchestrator', () => {
 	const tokenOrchestrator = new TokenOrchestrator();
@@ -108,6 +122,8 @@ describe('TokenOrchestrator', () => {
 		beforeAll(() => {
 			mockAddInflightPromise.mockImplementation(resolver => {
 				resolver();
+
+				return jest.fn();
 			});
 			tokenOrchestrator.setAuthConfig(validAuthConfig.Auth!);
 			tokenOrchestrator.setAuthTokenStore(mockAuthTokenStore);
@@ -149,6 +165,266 @@ describe('TokenOrchestrator', () => {
 
 			expect(addInflightPromise).toHaveBeenCalledWith(expect.any(Function));
 			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
+		});
+
+		it('Should not block indefinitely when the inflight OAuth flow is never resolved by this tab (e.g. started or abandoned in another tab), resolving after a bounded timeout', async () => {
+			jest.useFakeTimers();
+			try {
+				mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
+				mockIsOAuthInProgress.mockReturnValue(false);
+				// Simulate a tab that never processes the OAuth redirect response, so
+				// the registered resolver is never invoked in-process. The listener and
+				// timeout are wired before addInflightPromise is called, so resolving
+				// here signals setup is complete without releasing the wait.
+				const readyToAdvance = new Promise<void>(resolve => {
+					mockAddInflightPromise.mockImplementationOnce(() => {
+						resolve();
+
+						return jest.fn();
+					});
+				});
+
+				const tokensPromise = tokenOrchestrator.getTokens();
+				await readyToAdvance;
+				await jest.advanceTimersByTimeAsync(5_000);
+
+				const tokens = await tokensPromise;
+				expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
+			} finally {
+				jest.useRealTimers();
+			}
+		});
+
+		it('Should keep waiting past the timeout while this tab is completing its own OAuth redirect, then resolve once completion finishes', async () => {
+			jest.useFakeTimers();
+			try {
+				mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
+				// This tab owns the flow (running completeOAuthFlow), so it must not
+				// give up on the safety timeout.
+				mockIsOAuthInProgress.mockReturnValue(true);
+				const ready = new Promise<void>(resolve => {
+					mockAddInflightPromise.mockImplementationOnce(() => {
+						resolve();
+
+						return jest.fn();
+					});
+				});
+
+				let resolved = false;
+				const tokensPromise = tokenOrchestrator.getTokens().then(tokens => {
+					resolved = true;
+
+					return tokens;
+				});
+				await ready;
+
+				// First timeout fires but re-arms because completion is in progress.
+				await jest.advanceTimersByTimeAsync(5_000);
+				expect(resolved).toBe(false);
+
+				// Completion finishes; the next timeout releases the wait.
+				mockIsOAuthInProgress.mockReturnValue(false);
+				await jest.advanceTimersByTimeAsync(5_000);
+
+				const tokens = await tokensPromise;
+				expect(resolved).toBe(true);
+				expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
+			} finally {
+				mockIsOAuthInProgress.mockReturnValue(false);
+				jest.useRealTimers();
+			}
+		});
+
+		it('Should stop blocking as soon as another tab clears the shared inflight OAuth flag', async () => {
+			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
+			mockIsOAuthInProgress.mockReturnValue(false);
+			// Do not resolve the wait in-process; rely on the cross-tab storage event.
+			const listenerReady = new Promise<void>(resolve => {
+				mockAddInflightPromise.mockImplementationOnce(() => {
+					resolve();
+
+					return jest.fn();
+				});
+			});
+
+			const tokensPromise = tokenOrchestrator.getTokens();
+			await listenerReady;
+
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: INFLIGHT_OAUTH_KEY,
+					oldValue: 'true',
+					newValue: null,
+				}),
+			);
+
+			const tokens = await tokensPromise;
+			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
+		});
+
+		it('Should ignore a storage event that sets the flag to "true" and only release when it is cleared', async () => {
+			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
+			mockIsOAuthInProgress.mockReturnValue(false);
+			const ready = new Promise<void>(resolve => {
+				mockAddInflightPromise.mockImplementationOnce(() => {
+					resolve();
+
+					return jest.fn();
+				});
+			});
+
+			let resolved = false;
+			const tokensPromise = tokenOrchestrator.getTokens().then(tokens => {
+				resolved = true;
+
+				return tokens;
+			});
+			await ready;
+
+			// Another tab STARTING a flow (newValue 'true') must not release the wait.
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: INFLIGHT_OAUTH_KEY,
+					oldValue: null,
+					newValue: 'true',
+				}),
+			);
+			await flushAsyncWork();
+			expect(resolved).toBe(false);
+
+			// Clearing it does release the wait.
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: INFLIGHT_OAUTH_KEY,
+					oldValue: 'true',
+					newValue: null,
+				}),
+			);
+			await tokensPromise;
+			expect(resolved).toBe(true);
+		});
+
+		it('Should ignore inflightOAuth changes for a different user pool client', async () => {
+			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
+			mockIsOAuthInProgress.mockReturnValue(false);
+			const ready = new Promise<void>(resolve => {
+				mockAddInflightPromise.mockImplementationOnce(() => {
+					resolve();
+
+					return jest.fn();
+				});
+			});
+
+			let resolved = false;
+			const tokensPromise = tokenOrchestrator.getTokens().then(tokens => {
+				resolved = true;
+
+				return tokens;
+			});
+			await ready;
+
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: 'CognitoIdentityServiceProvider.another-client-id.inflightOAuth',
+					oldValue: 'true',
+					newValue: null,
+				}),
+			);
+			await flushAsyncWork();
+			expect(resolved).toBe(false);
+
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: INFLIGHT_OAUTH_KEY,
+					oldValue: 'true',
+					newValue: null,
+				}),
+			);
+			await tokensPromise;
+			expect(resolved).toBe(true);
+		});
+
+		it('Should ignore storage events with a null key (e.g. localStorage.clear())', async () => {
+			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
+			mockIsOAuthInProgress.mockReturnValue(false);
+			const ready = new Promise<void>(resolve => {
+				mockAddInflightPromise.mockImplementationOnce(() => {
+					resolve();
+
+					return jest.fn();
+				});
+			});
+
+			let resolved = false;
+			const tokensPromise = tokenOrchestrator.getTokens().then(tokens => {
+				resolved = true;
+
+				return tokens;
+			});
+			await ready;
+
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: null,
+					oldValue: null,
+					newValue: null,
+				}),
+			);
+			await flushAsyncWork();
+			expect(resolved).toBe(false);
+
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: INFLIGHT_OAUTH_KEY,
+					oldValue: 'true',
+					newValue: null,
+				}),
+			);
+			await tokensPromise;
+			expect(resolved).toBe(true);
+		});
+
+		it('Should remove the storage listener and clear the timeout when the wait is resolved in-process', async () => {
+			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
+			mockIsOAuthInProgress.mockReturnValue(false);
+			const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+			const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
+
+			let capturedResolver: (() => void) | undefined;
+			const ready = new Promise<void>(resolve => {
+				mockAddInflightPromise.mockImplementationOnce(
+					(resolver: () => void) => {
+						capturedResolver = resolver;
+						resolve();
+
+						return jest.fn();
+					},
+				);
+			});
+
+			const tokensPromise = tokenOrchestrator.getTokens();
+			await ready;
+
+			// Simulate resolveAndClearInflightPromises invoking the registered resolver.
+			capturedResolver?.();
+
+			const tokens = await tokensPromise;
+			expect(removeEventListenerSpy).toHaveBeenCalledWith(
+				'storage',
+				expect.any(Function),
+			);
+			expect(clearTimeoutSpy).toHaveBeenCalled();
+			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
+
+			removeEventListenerSpy.mockRestore();
+			clearTimeoutSpy.mockRestore();
 		});
 	});
 

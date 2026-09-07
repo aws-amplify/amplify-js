@@ -18,7 +18,11 @@ import {
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { oAuthStore } from '../utils/oauth/oAuthStore';
-import { addInflightPromise } from '../utils/oauth/inflightPromise';
+import {
+	addInflightPromise,
+	isOAuthInProgress,
+} from '../utils/oauth/inflightPromise';
+import { OAuthStorageKeys } from '../utils/types';
 import { ClientMetadata, CognitoAuthSignInDetails } from '../types';
 
 import {
@@ -29,6 +33,20 @@ import {
 	OAuthMetadata,
 	TokenRefresher,
 } from './types';
+
+// Upper bound for how long a tab that does NOT own the inflight OAuth flow will
+// block token-fetching calls (fetchAuthSession, getCurrentUser, ...) before it
+// gives up waiting. The `inflightOAuth` flag lives in cross-tab shared storage,
+// but the resolver that clears the wait is only invoked in the tab that
+// actually processes the OAuth redirect response. This bound guarantees a tab
+// that did not initiate the flow (or where the flow was abandoned) can never
+// block indefinitely, while a tab that IS completing its own redirect keeps
+// waiting (see the `isOAuthInProgress` re-check in `waitForInflightOAuth`).
+const INFLIGHT_OAUTH_WAIT_TIMEOUT_MS = 5_000;
+
+// Storage-key prefix used by `DefaultOAuthStore` (see `signInWithRedirectStore`).
+// Must stay in sync with that store's provider name.
+const OAUTH_STORAGE_KEY_PREFIX = 'CognitoIdentityServiceProvider';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
@@ -50,8 +68,76 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				// to block async calls that require fetching tokens before the oauth flow completes
 				// e.g. getCurrentUser, fetchAuthSession etc.
 
-				this.inflightPromise = new Promise<void>((resolve, _reject) => {
-					addInflightPromise(resolve);
+				const inflightOAuthKey = `${OAUTH_STORAGE_KEY_PREFIX}.${this.authConfig?.Cognito?.userPoolClientId}.${OAuthStorageKeys.inflightOAuth}`;
+
+				this.inflightPromise = new Promise<void>(resolve => {
+					let settled = false;
+					const cleanups: (() => void)[] = [];
+
+					// Releases only this tab's local waiter. It intentionally does NOT
+					// clear the shared `inflightOAuth`/PKCE/state, so an OAuth flow that
+					// is genuinely inflight in another tab is left untouched.
+					const settle = () => {
+						if (settled) {
+							return;
+						}
+						settled = true;
+						cleanups.forEach(cleanup => {
+							cleanup();
+						});
+						resolve();
+					};
+
+					// The `inflightOAuth` flag is persisted in shared (cross-tab)
+					// storage, but the resolver registered below is only invoked (via
+					// `resolveAndClearInflightPromises`) in the tab that processes the
+					// OAuth redirect response. Without an escape hatch, a tab that did
+					// not initiate the flow — the flow was started in another tab, or
+					// abandoned before completion — would block forever. Resolve the
+					// local waiter as soon as another tab clears this pool's shared flag
+					// (e.g. sign-out, completion, or failure). An exact-key match avoids
+					// reacting to other user-pool clients / tenants in the same origin.
+					if (
+						typeof window !== 'undefined' &&
+						typeof window.addEventListener === 'function'
+					) {
+						const onStorage = (event: StorageEvent) => {
+							if (event.key === inflightOAuthKey && event.newValue !== 'true') {
+								settle();
+							}
+						};
+						window.addEventListener('storage', onStorage);
+						cleanups.push(() => {
+							window.removeEventListener('storage', onStorage);
+						});
+					}
+
+					// ...and, as a safety net for an abandoned flow that is never
+					// cleared, after a bounded timeout. A tab that is actively
+					// completing its OWN redirect (`isOAuthInProgress()`) must not give
+					// up here — its `completeOAuthFlow` may legitimately take longer than
+					// the bound (slow network, cold Cognito) and will settle the wait via
+					// `resolveAndClearInflightPromises`. Only bystander/abandoned tabs
+					// release on timeout; owning tabs re-arm and keep waiting.
+					const scheduleTimeout = () => {
+						const timeoutId = setTimeout(() => {
+							if (isOAuthInProgress()) {
+								scheduleTimeout();
+							} else {
+								settle();
+							}
+						}, INFLIGHT_OAUTH_WAIT_TIMEOUT_MS);
+						cleanups.push(() => {
+							clearTimeout(timeoutId);
+						});
+					};
+					scheduleTimeout();
+
+					// Registered last so a resolver that fires synchronously can still
+					// tear down the listener and timeout created above. The returned
+					// handle removes `settle` from the shared list when we resolve via
+					// the timeout / storage paths, so no dead resolver is left behind.
+					cleanups.push(addInflightPromise(settle));
 				});
 
 				return this.inflightPromise;

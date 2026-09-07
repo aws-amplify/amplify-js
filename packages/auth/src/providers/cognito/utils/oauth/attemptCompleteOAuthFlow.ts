@@ -14,6 +14,7 @@ import { oAuthStore } from './oAuthStore';
 import { completeOAuthFlow } from './completeOAuthFlow';
 import { getRedirectUrl } from './getRedirectUrl';
 import { handleFailure } from './handleFailure';
+import { setOAuthInProgress } from './inflightPromise';
 
 export const attemptCompleteOAuthFlow = async (
 	authConfig: AuthConfig['Cognito'],
@@ -34,6 +35,11 @@ export const attemptCompleteOAuthFlow = async (
 		return;
 	}
 
+	// Mark that this tab owns the inflight OAuth flow so that concurrent
+	// token-fetching calls in this tab wait for completion instead of releasing
+	// early on the bystander/abandoned-flow safety timeout in
+	// `TokenOrchestrator.waitForInflightOAuth`.
+	setOAuthInProgress(true);
 	try {
 		const currentUrl = window.location.href;
 		const { loginWith, userPoolClientId } = authConfig;
@@ -50,5 +56,7 @@ export const attemptCompleteOAuthFlow = async (
 		});
 	} catch (err) {
 		await handleFailure(err);
+	} finally {
+		setOAuthInProgress(false);
 	}
 };
