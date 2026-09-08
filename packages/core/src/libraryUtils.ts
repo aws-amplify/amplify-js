@@ -28,7 +28,7 @@ export {
 	AmplifyOutputs,
 	AmplifyOutputsUnknown,
 } from './singleton/AmplifyOutputs/types';
-export { ADD_OAUTH_LISTENER } from './singleton/constants';
+export { AuthClass } from './singleton/Auth';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
 export { parseAmplifyConfig } from './utils/parseAmplifyConfig';
@@ -115,6 +115,10 @@ export {
 	ApiError,
 	ApiErrorParams,
 	ApiErrorResponse,
+	NoAmplifyContextError,
+	NO_AMPLIFY_CONTEXT_ERROR_NAME,
+	InvalidAmplifyContextError,
+	INVALID_AMPLIFY_CONTEXT_ERROR_NAME,
 } from './errors';
 export {
 	AmplifyErrorCode,
@@ -147,3 +151,21 @@ export {
 	SESSION_START_EVENT,
 	SESSION_STOP_EVENT,
 } from './utils/sessionListener';
+
+// Global context internals
+export { setGlobalContext, clearGlobalContext } from './context/globalContext';
+
+// Context argument resolution
+export { resolveCtxArgs } from './context/resolveCtxArgs';
+
+// Explicit-ctx resolver for class-based providers
+export { createCtxResolver } from './context/createCtxResolver';
+
+// SSR-aware key-value storage selection for default auth providers
+export { selectSsrKeyValueStorage } from './context/selectSsrKeyValueStorage';
+
+// Optional-context constructor argument guard (constructor / single-slot pattern)
+export { assertOptionalCtxArg } from './context/assertCtxArg';
+
+// AmplifyClass -> AmplifyContext bridge (single shared implementation)
+export { bridgeAmplifyClass } from './context/bridgeAmplifyClass';

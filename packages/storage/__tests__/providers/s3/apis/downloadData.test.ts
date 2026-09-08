@@ -1,14 +1,31 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
+
 import { downloadData } from '../../../../src/providers/s3/apis';
 import { downloadData as internalDownloadDataImpl } from '../../../../src/providers/s3/apis/internal/downloadData';
 
 jest.mock('../../../../src/providers/s3/apis/internal/downloadData');
 
 const mockInternalDownloadDataImpl = jest.mocked(internalDownloadDataImpl);
+const mockCtx = createMockAmplifyContext();
 
 describe('client-side downloadData', () => {
+	beforeAll(() => {
+		// The public API falls back to the global AmplifyContext when no ctx is
+		// passed explicitly; establish it so resolveCtxArgs can resolve it.
+		setGlobalContext(mockCtx);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -24,7 +41,7 @@ describe('client-side downloadData', () => {
 			},
 		};
 		expect(downloadData(input)).toEqual(mockInternalResult);
-		expect(mockInternalDownloadDataImpl).toBeCalledWith(input);
+		expect(mockInternalDownloadDataImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through input with path and output to internal implementation', async () => {
@@ -35,6 +52,18 @@ describe('client-side downloadData', () => {
 			data: 'data',
 		};
 		expect(downloadData(input)).toEqual(mockInternalResult);
-		expect(mockInternalDownloadDataImpl).toBeCalledWith(input);
+		expect(mockInternalDownloadDataImpl).toBeCalledWith(mockCtx, input);
+	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalDownloadDataImpl.mockReturnValue(mockInternalResult);
+		const input = {
+			path: 'path',
+			data: 'data',
+		};
+		expect(downloadData(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalDownloadDataImpl).toBeCalledWith(explicitCtx, input);
 	});
 });

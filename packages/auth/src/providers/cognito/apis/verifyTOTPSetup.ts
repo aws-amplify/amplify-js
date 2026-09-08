@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -16,6 +17,11 @@ import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createVerifySoftwareTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
+
+export async function verifyTOTPSetup(
+	ctx: AmplifyContext,
+	input: VerifyTOTPSetupInput,
+): Promise<void>;
 
 /**
  * Verifies an OTP code retrieved from an associated authentication app.
@@ -29,8 +35,10 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  */
 export async function verifyTOTPSetup(
 	input: VerifyTOTPSetupInput,
-): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+): Promise<void>;
+export async function verifyTOTPSetup(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[VerifyTOTPSetupInput]>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { code, options } = input;
@@ -38,7 +46,7 @@ export async function verifyTOTPSetup(
 		!!code,
 		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode,
 	);
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await ctx.fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const verifySoftwareToken = createVerifySoftwareTokenClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({

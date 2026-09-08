@@ -1,14 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
 import {
-	ADD_OAUTH_LISTENER,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	isBrowser,
 	urlSafeEncode,
 } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { assertUserNotAuthenticated } from '../../../src/providers/cognito/utils/signInHelpers';
 import {
@@ -19,7 +18,6 @@ import {
 	oAuthStore,
 } from '../../../src/providers/cognito/utils/oauth';
 import { getAuthUserAgentValue, openAuthSession } from '../../../src/utils';
-import { attemptCompleteOAuthFlow } from '../../../src/providers/cognito/utils/oauth/attemptCompleteOAuthFlow';
 import { createOAuthError } from '../../../src/providers/cognito/utils/oauth/createOAuthError';
 import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWithRedirect';
 import type { OAuthStore } from '../../../src/providers/cognito/utils/types';
@@ -33,32 +31,13 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	urlSafeEncode: jest.fn(),
 	isBrowser: jest.fn(() => true),
 }));
-jest.mock('@aws-amplify/core', () => {
-	const { ADD_OAUTH_LISTENER: ACTUAL_ADD_OAUTH_LISTENER } = jest.requireActual(
-		'@aws-amplify/core/internals/utils',
-	);
-
-	return {
-		Amplify: {
-			getConfig: jest.fn(() => mockAuthConfigWithOAuth),
-			[ACTUAL_ADD_OAUTH_LISTENER]: jest.fn(),
-		},
-		ConsoleLogger: jest.fn().mockImplementation(() => {
-			return { warn: jest.fn() };
-		}),
-		syncSessionStorage: {
-			setItem: jest.fn((key, value) => {
-				window.sessionStorage.setItem(key, value);
-			}),
-			getItem: jest.fn((key: string) => {
-				return window.sessionStorage.getItem(key);
-			}),
-			removeItem: jest.fn((key: string) => {
-				window.sessionStorage.removeItem(key);
-			}),
-		},
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
+	Amplify: {
+		...jest.requireActual('@aws-amplify/core').Amplify,
+		getConfig: jest.fn(),
+	},
+}));
 
 jest.mock('../../../src/providers/cognito/utils/signInHelpers');
 
@@ -108,6 +87,8 @@ describe('signInWithRedirect', () => {
 	const mockCodeChallenge = 'code_challenge';
 	const mockToCodeChallenge = jest.fn(() => mockCodeChallenge);
 
+	const mockCtx = createMockAmplifyContext(mockAuthConfigWithOAuth);
+
 	const promptTypes = [
 		'NONE',
 		'LOGIN',
@@ -146,7 +127,7 @@ describe('signInWithRedirect', () => {
 	});
 
 	it('invokes dependent functions with expected parameters', async () => {
-		await signInWithRedirect({ provider: 'Google' });
+		await signInWithRedirect(mockCtx, { provider: 'Google' });
 
 		expect(mockAssertTokenProviderConfig).toHaveBeenCalledTimes(1);
 		expect(mockAssertOAuthConfig).toHaveBeenCalledTimes(1);
@@ -176,7 +157,7 @@ describe('signInWithRedirect', () => {
 
 	it('uses "Cognito" as the default provider if not specified', async () => {
 		const expectedDefaultProvider = 'COGNITO';
-		await signInWithRedirect();
+		await signInWithRedirect(mockCtx);
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
 			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedDefaultProvider}&scope=phone+email+openid+profile+aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
@@ -185,7 +166,9 @@ describe('signInWithRedirect', () => {
 
 	it('uses custom provider when specified', async () => {
 		const expectedCustomProvider = 'PieAuth';
-		await signInWithRedirect({ provider: { custom: expectedCustomProvider } });
+		await signInWithRedirect(mockCtx, {
+			provider: { custom: expectedCustomProvider },
+		});
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
 			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone+email+openid+profile+aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
@@ -194,7 +177,7 @@ describe('signInWithRedirect', () => {
 
 	it('uses idpIdentifier when specified', async () => {
 		const expectedIdpIdentifier = 'example.com';
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: { idpIdentifier: expectedIdpIdentifier },
 		});
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
@@ -204,7 +187,7 @@ describe('signInWithRedirect', () => {
 	});
 
 	it('omits identity_provider when prompt is NONE and no provider is specified', async () => {
-		await signInWithRedirect({ options: { prompt: 'NONE' } });
+		await signInWithRedirect(mockCtx, { options: { prompt: 'NONE' } });
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).not.toContain('identity_provider');
 		expect(oauthUrl).toStrictEqual(
@@ -213,7 +196,7 @@ describe('signInWithRedirect', () => {
 	});
 
 	it('keeps identity_provider when prompt is NONE and a provider is specified', async () => {
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: 'Google',
 			options: { prompt: 'NONE' },
 		});
@@ -222,7 +205,7 @@ describe('signInWithRedirect', () => {
 	});
 
 	it('keeps idp_identifier only when prompt is NONE and an idpIdentifier is specified', async () => {
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: { idpIdentifier: 'example.com' },
 			options: { prompt: 'NONE' },
 		});
@@ -233,7 +216,7 @@ describe('signInWithRedirect', () => {
 
 	it('keeps the default identity_provider for prompt values other than NONE', async () => {
 		for (const prompt of promptTypes.filter(value => value !== 'NONE')) {
-			await signInWithRedirect({ options: { prompt } });
+			await signInWithRedirect(mockCtx, { options: { prompt } });
 			const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 			expect(oauthUrl).toContain('identity_provider=COGNITO');
 			mockOpenAuthSession.mockClear();
@@ -242,14 +225,14 @@ describe('signInWithRedirect', () => {
 
 	it('uses custom state if specified', async () => {
 		const expectedCustomState = 'verify_me';
-		await signInWithRedirect({ customState: expectedCustomState });
+		await signInWithRedirect(mockCtx, { customState: expectedCustomState });
 		expect(mockUrlSafeEncode).toHaveBeenCalledWith(expectedCustomState);
 	});
 
 	it('includes prompt parameter in authorization URL', async () => {
 		for (const prompt of promptTypes) {
 			const expectedCustomProvider = 'PieAuth';
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: { custom: expectedCustomProvider },
 				options: { prompt },
 			});
@@ -265,7 +248,7 @@ describe('signInWithRedirect', () => {
 	it('calls assertUserNotAuthenticated based on prompt value', async () => {
 		for (const prompt of promptTypes) {
 			const expectedCustomProvider = 'PieAuth';
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: { custom: expectedCustomProvider },
 				options: { prompt },
 			});
@@ -277,14 +260,14 @@ describe('signInWithRedirect', () => {
 		}
 
 		// Test no options at all
-		await signInWithRedirect();
+		await signInWithRedirect(mockCtx);
 		expect(mockAssertUserNotAuthenticated).toHaveBeenCalled();
 		mockAssertUserNotAuthenticated.mockClear();
 	});
 
 	it('calls default openAuthSession if no override specified', async () => {
 		const mockAuthSessionOpener = jest.fn();
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: 'Google',
 		});
 
@@ -294,7 +277,7 @@ describe('signInWithRedirect', () => {
 
 	it('allows to override openAuthSession if specified', async () => {
 		const mockAuthSessionOpener = jest.fn();
-		await signInWithRedirect({
+		await signInWithRedirect(mockCtx, {
 			provider: 'Google',
 			options: {
 				authSessionOpener: mockAuthSessionOpener,
@@ -306,17 +289,10 @@ describe('signInWithRedirect', () => {
 	});
 
 	describe('specifications on Web', () => {
-		describe('side effect', () => {
-			it('attaches oauth listener to the Amplify singleton', async () => {
-				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(
-					false,
-				);
-
-				expect(Amplify[ADD_OAUTH_LISTENER]).toHaveBeenCalledWith(
-					attemptCompleteOAuthFlow,
-				);
-			});
-		});
+		// NOTE (Phase C4): the OAuth listener is no longer attached to the
+		// singleton via `ADD_OAUTH_LISTENER`. It is registered as a `configure`
+		// Hub side effect at module load of `enableOAuthListener` — covered by
+		// `utils/oauth/enableOAuthListener.test.ts`.
 
 		it('invokes handleFailure when user cancels the oauth flow', async () => {
 			const error = new Error('OAuth flow was cancelled.');
@@ -331,7 +307,7 @@ describe('signInWithRedirect', () => {
 				cb({ persisted: true });
 			});
 
-			await signInWithRedirect({ provider: 'Google' });
+			await signInWithRedirect(mockCtx, { provider: 'Google' });
 			expect(mockCreateOAuthError).toHaveBeenCalledTimes(1);
 			expect(mockHandleFailure).toHaveBeenCalledWith(error);
 
@@ -350,7 +326,7 @@ describe('signInWithRedirect', () => {
 			};
 			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
 
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: 'Google',
 				options: { preferPrivateSession: true },
 			});
@@ -374,7 +350,7 @@ describe('signInWithRedirect', () => {
 			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
 
 			await expect(
-				signInWithRedirect({
+				signInWithRedirect(mockCtx, {
 					provider: 'Google',
 					options: { preferPrivateSession: true },
 				}),
@@ -398,7 +374,7 @@ describe('signInWithRedirect', () => {
 			mockCompleteOAuthFlow.mockRejectedValueOnce(expectedError);
 
 			await expect(
-				signInWithRedirect({
+				signInWithRedirect(mockCtx, {
 					provider: 'Google',
 					options: { preferPrivateSession: true },
 				}),
@@ -422,7 +398,7 @@ describe('signInWithRedirect', () => {
 			mockCreateOAuthError.mockReturnValueOnce(expectedError);
 
 			await expect(
-				signInWithRedirect({
+				signInWithRedirect(mockCtx, {
 					provider: 'Google',
 					options: { preferPrivateSession: true },
 				}),
@@ -441,7 +417,7 @@ describe('signInWithRedirect', () => {
 			};
 			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
 
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: 'Google',
 			});
 
@@ -449,7 +425,7 @@ describe('signInWithRedirect', () => {
 		});
 
 		it('should send the login_hint, lang and nonce in the query string if provided', async () => {
-			await signInWithRedirect({
+			await signInWithRedirect(mockCtx, {
 				provider: 'Google',
 				options: {
 					loginHint: 'someone@gmail.com',
@@ -478,7 +454,7 @@ describe('signInWithRedirect', () => {
 				throw mockError;
 			});
 
-			await expect(signInWithRedirect()).rejects.toThrow(mockError);
+			await expect(signInWithRedirect(mockCtx)).rejects.toThrow(mockError);
 		});
 
 		it('rethrows error thrown from `assertOAuthConfig`', async () => {
@@ -487,7 +463,7 @@ describe('signInWithRedirect', () => {
 				throw mockError;
 			});
 
-			await expect(signInWithRedirect()).rejects.toThrow(mockError);
+			await expect(signInWithRedirect(mockCtx)).rejects.toThrow(mockError);
 		});
 
 		it('rethrow error thrown from `assertUserNotAuthenticated`', async () => {
@@ -496,7 +472,7 @@ describe('signInWithRedirect', () => {
 				throw mockError;
 			});
 
-			await expect(signInWithRedirect()).rejects.toThrow(mockError);
+			await expect(signInWithRedirect(mockCtx)).rejects.toThrow(mockError);
 		});
 	});
 });

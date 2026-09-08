@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import {
+	AmplifyClassV6,
+	AmplifyContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
+import { bridgeAmplifyClass } from '@aws-amplify/core/internals/utils';
 
 import { InternalPostInput, RestApiResponse } from '../../types';
 import { createCancellableOperation } from '../../utils';
@@ -39,8 +44,10 @@ const cancelTokenMap = new WeakMap<Promise<any>, AbortController>();
  * To make the internal post cancellable, you must also call `updateRequestToBeCancellable()` with the promise from
  * internal post call and the abort controller supplied to the internal post call.
  *
- * @param amplify the AmplifyClassV6 instance - it may be the singleton used on Web, or an instance created within
- * a context created by `runWithAmplifyServerContext`
+ * @param amplify the AmplifyContext instance (new), or an AmplifyClassV6 instance (legacy dependents
+ * such as api-graphql, until they migrate to AmplifyContext — interim accommodation removed in the
+ * api-graphql split). When an AmplifyClassV6 is passed, it is bridged to AmplifyContext so that
+ * fetchAuthSession/clearCredentials/getTokens are correctly resolved from `.Auth`.
  * @param postInput an object of {@link InternalPostInput}
  * @param postInput.url The URL that the POST request sends to
  * @param postInput.options Options of the POST request
@@ -54,14 +61,15 @@ const cancelTokenMap = new WeakMap<Promise<any>, AbortController>();
  * @throws a {@link CanceledError} when the ongoing POST request get cancelled
  */
 export const post = (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext | AmplifyClassV6,
 	{ url, options, abortController }: InternalPostInput,
 ): Promise<RestApiResponse> => {
+	const ctx = isAmplifyContext(amplify) ? amplify : bridgeAmplifyClass(amplify);
 	const controller = abortController ?? new AbortController();
 	const responsePromise = createCancellableOperation(
 		async () => {
 			const response = transferHandler(
-				amplify,
+				ctx,
 				{
 					url,
 					method: 'POST',

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { resolveConfig } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 
@@ -14,8 +14,8 @@ describe('resolveConfig', () => {
 		},
 	};
 	it('should return the configured appId and region', () => {
-		Amplify.configure(validConfig);
-		expect(resolveConfig()).toStrictEqual(
+		const ctx = createMockAmplifyContext(validConfig);
+		expect(resolveConfig(ctx)).toStrictEqual(
 			validConfig.Notifications!.InAppMessaging!.Pinpoint,
 		);
 	});

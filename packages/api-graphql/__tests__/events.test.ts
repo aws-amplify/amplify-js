@@ -48,7 +48,7 @@ describe('Events client', () => {
 	describe('config', () => {
 		test('no configure()', async () => {
 			await expect(events.connect('/')).rejects.toThrow(
-				'Amplify configuration is missing. Have you called Amplify.configure()?',
+				'No AmplifyContext available. Call Amplify.configure() to set a global context, or pass a context as the first argument.',
 			);
 		});
 
@@ -235,7 +235,10 @@ describe('Events client', () => {
 				await events.post('/', { test: 'data' });
 
 				expect(mockReq).toHaveBeenCalledWith(
-					Amplify,
+					expect.objectContaining({
+						resourcesConfig: expect.any(Object),
+						fetchAuthSession: expect.any(Function),
+					}),
 					expect.objectContaining({
 						query: '/',
 						variables: ['{"test":"data"}'],
@@ -252,7 +255,10 @@ describe('Events client', () => {
 					await events.post('/', { test: 'data' }, authConfig);
 
 					expect(mockReq).toHaveBeenCalledWith(
-						Amplify,
+						expect.objectContaining({
+							resourcesConfig: expect.any(Object),
+							fetchAuthSession: expect.any(Function),
+						}),
 						expect.objectContaining({
 							query: '/',
 							variables: ['{"test":"data"}'],

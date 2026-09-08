@@ -40,10 +40,36 @@ export {
 } from './singleton/types';
 export {
 	Amplify,
-	fetchAuthSession,
 	AmplifyClass as AmplifyClassV6,
+	fetchAuthSession,
 	clearCredentials,
 } from './singleton';
+
+// AmplifyContext — the singleton-free contract for category APIs
+export { AmplifyContext, AmplifyContextToken } from './context/AmplifyContext';
+
+// Context factory — create a local, branded AmplifyContext without touching
+// the global singleton state.
+export { createAmplifyContext } from './context/createAmplifyContext';
+
+// Context branding — runtime identification of AmplifyContext objects
+export {
+	isAmplifyContext,
+	AMPLIFY_CONTEXT_BRAND,
+} from './context/contextBrand';
+
+// Per-context identity token — attached by every context producer
+export { createAmplifyContextToken } from './context/contextToken';
+
+// Global context management
+export { getGlobalContext, hasGlobalContext } from './context/globalContext';
+
+// Configuration Builder
+export { createConfigurationBuilder } from './configurationBuilder';
+export type {
+	ConfigurationBuilder,
+	CreateConfigurationBuilderOptions,
+} from './configurationBuilder';
 
 // Cognito Identity service client factories
 export {

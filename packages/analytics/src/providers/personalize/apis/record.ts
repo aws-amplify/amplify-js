@@ -1,8 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+import {
+	AnalyticsAction,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import { RecordInput } from '../types';
 import {
@@ -24,6 +27,7 @@ import {
 import { AnalyticsValidationErrorCode } from '../../../errors';
 
 const logger = new ConsoleLogger('Personalize');
+export function record(ctx: AmplifyContext, input: RecordInput): void;
 
 /**
  * Record one analytic event and send it to Personalize. Events will be buffered and periodically sent to Amazon
@@ -50,12 +54,11 @@ const logger = new ConsoleLogger('Personalize');
  *
  * @returns void
  */
-export const record = ({
-	userId,
-	eventId,
-	eventType,
-	properties,
-}: RecordInput): void => {
+export function record(input: RecordInput): void;
+export function record(...args: any[]): void {
+	const [ctx, input] = resolveCtxArgs<[RecordInput]>(args);
+	const { userId, eventId, eventType, properties } = input;
+
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
 
@@ -63,8 +66,8 @@ export const record = ({
 	}
 
 	const { region, trackingId, bufferSize, flushSize, flushInterval } =
-		resolveConfig();
-	resolveCredentials()
+		resolveConfig(ctx);
+	resolveCredentials(ctx)
 		.then(async ({ credentials, identityId }) => {
 			const timestamp = Date.now();
 			const { sessionId: cachedSessionId, userId: cachedUserId } =
@@ -127,4 +130,4 @@ export const record = ({
 		.catch(e => {
 			logger.warn('Failed to record event.', e);
 		});
-};
+}

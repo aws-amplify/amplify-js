@@ -1,16 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { getGlobalContext } from '@aws-amplify/core';
 import { HubInternal } from '@aws-amplify/core/internals/utils';
 
 import { signIn } from '../apis/signIn';
+import { signInWithUserAuth } from '../apis/signInWithUserAuth';
 import { SignInInput, SignInOutput } from '../types';
 import { AutoSignInEventData } from '../types/models';
 import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
-import { signInWithUserAuth } from '../apis/signInWithUserAuth';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
@@ -121,8 +122,8 @@ async function handleAutoSignInWithCodeOrUserConfirmed(
 	try {
 		const output =
 			signInInput?.options?.authFlowType === 'USER_AUTH'
-				? await signInWithUserAuth(signInInput)
-				: await signIn(signInInput);
+				? await signInWithUserAuth(getGlobalContext(), signInInput)
+				: await signIn(getGlobalContext(), signInInput);
 
 		resolve(output);
 		resetAutoSignIn();

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { resolveS3ConfigAndInput } from '../../utils/resolveS3ConfigAndInput';
@@ -24,11 +24,12 @@ import {
 import { DownloadDataInput as DownloadDataWithPathInputWithAdvancedOptions } from '../../../../internals/types/inputs';
 
 export const downloadData = (
+	ctx: AmplifyContext,
 	input: DownloadDataInput | DownloadDataWithPathInputWithAdvancedOptions,
 ) => {
 	const abortController = new AbortController();
 	const downloadTask = createDownloadTask({
-		job: downloadDataJob(input, abortController.signal),
+		job: downloadDataJob(ctx, input, abortController.signal),
 		onCancel: (message?: string) => {
 			abortController.abort(message);
 		},
@@ -39,6 +40,7 @@ export const downloadData = (
 
 const downloadDataJob =
 	(
+		ctx: AmplifyContext,
 		downloadDataInput: DownloadDataInput | DownloadDataWithPathInput,
 		abortSignal: AbortSignal,
 	) =>
@@ -47,7 +49,7 @@ const downloadDataJob =
 	> => {
 		const { options: downloadDataOptions } = downloadDataInput;
 		const { bucket, keyPrefix, s3Config, identityId } =
-			await resolveS3ConfigAndInput(Amplify, downloadDataInput);
+			await resolveS3ConfigAndInput(ctx, downloadDataInput);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			downloadDataInput,
 			identityId,

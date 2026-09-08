@@ -24,7 +24,13 @@ import * as storageS3Exports from '../src/storage/s3';
 describe('aws-amplify Exports', () => {
 	describe('Top-level exports', () => {
 		it('should only export expected symbols', () => {
-			expect(Object.keys(topLevelExports).sort()).toEqual(['Amplify'].sort());
+			expect(Object.keys(topLevelExports).sort()).toEqual(
+				[
+					'Amplify',
+					'createAmplifyContext',
+					'createConfigurationBuilder',
+				].sort(),
+			);
 		});
 	});
 

@@ -37,6 +37,11 @@ describe('InMemoryStorage', () => {
 		expect(inMemoryStorage.key(1)).toEqual('2');
 	});
 
+	it('should return null for out of bounds index', () => {
+		inMemoryStorage.setItem('1', value);
+		expect(inMemoryStorage.key(10)).toBeNull();
+	});
+
 	it('should not throw if trying to delete a non existing key', () => {
 		const badKey = 'nonExistingKey';
 		expect(() => {

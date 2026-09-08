@@ -20,3 +20,4 @@ export {
 export { updateProviderTrackers } from './trackerHelpers';
 export { validateTrackerConfiguration } from './trackerConfigHelpers';
 export { deprecatePinpoint } from './deprecatePinpoint';
+export { PeekedCtxArgs, peekCtxArgs } from './peekCtxArgs';

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import {
 	getRetryDecider,
 	parseJsonError,
@@ -48,12 +48,8 @@ const mockConfig = {
 };
 const mockParseJsonError = parseJsonError as jest.Mock;
 const mockRestHeaders = jest.fn();
-const mockGetConfig = jest.fn();
-const mockAmplifyInstance = {
-	Auth: {
-		fetchAuthSession: mockFetchAuthSession,
-	},
-	getConfig: mockGetConfig,
+const mockAmplifyInstance = createMockAmplifyContext(mockConfig, {
+	fetchAuthSession: mockFetchAuthSession,
 	libraryOptions: {
 		API: {
 			REST: {
@@ -61,7 +57,8 @@ const mockAmplifyInstance = {
 			},
 		},
 	},
-} as any as AmplifyClassV6;
+});
+
 const credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -90,7 +87,6 @@ describe('public APIs', () => {
 		mockSuccessResponse.body.json.mockResolvedValue({ foo: 'bar' });
 		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 		mockUnauthenticatedHandler.mockResolvedValue(mockSuccessResponse);
-		mockGetConfig.mockReturnValue(mockConfig);
 		mockGetRetryDecider.mockReturnValue(mockRetryDeciderResponse);
 	});
 
@@ -482,16 +478,19 @@ describe('public APIs', () => {
 			expect.assertions(3);
 			const timeoutSpy = jest.spyOn(global, 'setTimeout');
 			const mockTimeoutFunction = jest.fn().mockReturnValue(100);
-			const mockAmplifyInstanceWithTimeout = {
-				...mockAmplifyInstance,
-				libraryOptions: {
-					API: {
-						REST: {
-							timeout: mockTimeoutFunction,
+			const mockAmplifyInstanceWithTimeout = createMockAmplifyContext(
+				mockConfig,
+				{
+					fetchAuthSession: mockFetchAuthSession,
+					libraryOptions: {
+						API: {
+							REST: {
+								timeout: mockTimeoutFunction,
+							},
 						},
 					},
 				},
-			} as any as AmplifyClassV6;
+			);
 			mockAuthenticatedHandler.mockImplementation(() => {
 				return new Promise((_resolve, reject) => {
 					setTimeout(() => {
@@ -583,18 +582,21 @@ describe('public APIs', () => {
 
 			it('should retry and prefer the individual retry strategy over the library options', async () => {
 				expect.assertions(3);
-				const mockAmplifyInstanceWithNoRetry = {
-					...mockAmplifyInstance,
-					libraryOptions: {
-						API: {
-							REST: {
-								retryStrategy: {
-									strategy: 'no-retry',
+				const mockAmplifyInstanceWithNoRetry = createMockAmplifyContext(
+					mockConfig,
+					{
+						fetchAuthSession: mockFetchAuthSession,
+						libraryOptions: {
+							API: {
+								REST: {
+									retryStrategy: {
+										strategy: 'no-retry',
+									},
 								},
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				);
 				await fn(mockAmplifyInstanceWithNoRetry, {
 					apiName: 'restApi1',
 					path: 'items',
@@ -618,18 +620,21 @@ describe('public APIs', () => {
 
 			it('should not retry and prefer the individual retry strategy over the library options', async () => {
 				expect.assertions(3);
-				const mockAmplifyInstanceWithRetry = {
-					...mockAmplifyInstance,
-					libraryOptions: {
-						API: {
-							REST: {
-								retryStrategy: {
-									strategy: 'jittered-exponential-backoff',
+				const mockAmplifyInstanceWithRetry = createMockAmplifyContext(
+					mockConfig,
+					{
+						fetchAuthSession: mockFetchAuthSession,
+						libraryOptions: {
+							API: {
+								REST: {
+									retryStrategy: {
+										strategy: 'jittered-exponential-backoff',
+									},
 								},
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				);
 				await fn(mockAmplifyInstanceWithRetry, {
 					apiName: 'restApi1',
 					path: 'items',
@@ -653,18 +658,21 @@ describe('public APIs', () => {
 
 			it('should not retry when configured through library options', async () => {
 				expect.assertions(3);
-				const mockAmplifyInstanceWithRetry = {
-					...mockAmplifyInstance,
-					libraryOptions: {
-						API: {
-							REST: {
-								retryStrategy: {
-									strategy: 'no-retry',
+				const mockAmplifyInstanceWithRetry = createMockAmplifyContext(
+					mockConfig,
+					{
+						fetchAuthSession: mockFetchAuthSession,
+						libraryOptions: {
+							API: {
+								REST: {
+									retryStrategy: {
+										strategy: 'no-retry',
+									},
 								},
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				);
 				await fn(mockAmplifyInstanceWithRetry, {
 					apiName: 'restApi1',
 					path: 'items',
@@ -734,18 +742,21 @@ describe('public APIs', () => {
 			});
 
 			it('should use global defaultAuthMode configuration when no local defaultAuthMode is specified', async () => {
-				const mockAmplifyWithGlobalConfig = {
-					...mockAmplifyInstance,
-					libraryOptions: {
-						...mockAmplifyInstance.libraryOptions,
-						API: {
-							...mockAmplifyInstance.libraryOptions?.API,
-							REST: {
-								defaultAuthMode: 'none' as const,
+				const mockAmplifyWithGlobalConfig = createMockAmplifyContext(
+					mockConfig,
+					{
+						fetchAuthSession: mockFetchAuthSession,
+						libraryOptions: {
+							...mockAmplifyInstance.libraryOptions,
+							API: {
+								...mockAmplifyInstance.libraryOptions?.API,
+								REST: {
+									defaultAuthMode: 'none' as const,
+								},
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				);
 
 				mockFetchAuthSession.mockClear();
 
@@ -760,18 +771,21 @@ describe('public APIs', () => {
 			});
 
 			it('should override global defaultAuthMode with local defaultAuthMode configuration', async () => {
-				const mockAmplifyWithGlobalConfig = {
-					...mockAmplifyInstance,
-					libraryOptions: {
-						...mockAmplifyInstance.libraryOptions,
-						API: {
-							...mockAmplifyInstance.libraryOptions?.API,
-							REST: {
-								defaultAuthMode: 'none' as const,
+				const mockAmplifyWithGlobalConfig = createMockAmplifyContext(
+					mockConfig,
+					{
+						fetchAuthSession: mockFetchAuthSession,
+						libraryOptions: {
+							...mockAmplifyInstance.libraryOptions,
+							API: {
+								...mockAmplifyInstance.libraryOptions?.API,
+								REST: {
+									defaultAuthMode: 'none' as const,
+								},
 							},
 						},
 					},
-				} as any as AmplifyClassV6;
+				);
 
 				mockFetchAuthSession.mockClear();
 				mockFetchAuthSession.mockResolvedValue({ credentials });

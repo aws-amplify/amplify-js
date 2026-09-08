@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import {
 	GetPropertiesInput,
@@ -11,6 +12,22 @@ import {
 } from '../types';
 
 import { getProperties as getPropertiesInternal } from './internal/getProperties';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetPropertiesWithPathInput` object.
+ */
+export function getProperties(
+	ctx: AmplifyContext,
+	input: GetPropertiesWithPathInput,
+): Promise<GetPropertiesWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `GetPropertiesInput` object.
+ */
+export function getProperties(
+	ctx: AmplifyContext,
+	input: GetPropertiesInput,
+): Promise<GetPropertiesOutput>;
 
 /**
  * Gets the properties of a file. The properties include S3 system metadata and
@@ -40,8 +57,10 @@ export function getProperties(
 	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput>;
 
-export function getProperties(
-	input: GetPropertiesInput | GetPropertiesWithPathInput,
-) {
-	return getPropertiesInternal(Amplify, input);
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
+export function getProperties(...args: any[]) {
+	const [ctx, input] =
+		resolveCtxArgs<[GetPropertiesInput | GetPropertiesWithPathInput]>(args);
+
+	return getPropertiesInternal(ctx, input);
 }

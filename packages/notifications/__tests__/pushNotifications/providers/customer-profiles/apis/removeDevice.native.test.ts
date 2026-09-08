@@ -1,6 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
+
 import { assertIsInitialized } from '../../../../../src/pushNotifications/errors/errorHelpers';
 import { removeDevice } from '../../../../../src/pushNotifications/providers/customer-profiles/apis/removeDevice.native';
 import {
@@ -23,6 +29,14 @@ describe('removeDevice (customer-profiles, native)', () => {
 	const mockAssertIsInitialized = assertIsInitialized as jest.Mock;
 	const mockGetDeviceId = getDeviceId as jest.Mock;
 	const mockRemoveDeviceInternal = removeDeviceInternal as jest.Mock;
+
+	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	beforeEach(() => {
 		mockGetDeviceId.mockResolvedValue(DEVICE_ID);
@@ -48,7 +62,10 @@ describe('removeDevice (customer-profiles, native)', () => {
 
 		expect(mockGetDeviceId).toHaveBeenCalledTimes(1);
 		expect(mockRemoveDeviceInternal).toHaveBeenCalledTimes(1);
-		expect(mockRemoveDeviceInternal).toHaveBeenCalledWith(DEVICE_ID);
+		expect(mockRemoveDeviceInternal).toHaveBeenCalledWith(
+			expect.anything(),
+			DEVICE_ID,
+		);
 	});
 
 	it('rejects if the remove-device request rejects', async () => {

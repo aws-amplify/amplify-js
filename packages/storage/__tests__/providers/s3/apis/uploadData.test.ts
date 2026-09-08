@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, defaultStorage } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+import { defaultStorage } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { uploadData } from '../../../../src/providers/s3/apis';
 import { uploadData as internalUploadDataImpl } from '../../../../src/providers/s3/apis/internal/uploadData';
@@ -9,14 +14,25 @@ import { uploadData as internalUploadDataImpl } from '../../../../src/providers/
 jest.mock('../../../../src/providers/s3/apis/internal/uploadData');
 
 const mockInternalUploadDataImpl = jest.mocked(internalUploadDataImpl);
+const mockCtx = createMockAmplifyContext();
 
 const expectedCtx = {
-	amplify: Amplify,
+	amplify: mockCtx,
 	readFile: expect.any(Function),
 	toBase64: expect.any(Function),
 };
 
 describe('client-side uploadData', () => {
+	beforeAll(() => {
+		// The public API falls back to the global AmplifyContext when no ctx is
+		// passed explicitly; establish it so resolveCtxArgs can resolve it.
+		setGlobalContext(mockCtx);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -59,5 +75,29 @@ describe('client-side uploadData', () => {
 				resumableUploadsCache: defaultStorage,
 			},
 		});
+	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalUploadDataImpl.mockReturnValue(mockInternalResult);
+		const input = {
+			path: 'path',
+			data: 'data',
+		};
+		expect(uploadData(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalUploadDataImpl).toBeCalledWith(
+			{
+				amplify: explicitCtx,
+				readFile: expect.any(Function),
+				toBase64: expect.any(Function),
+			},
+			{
+				...input,
+				options: {
+					resumableUploadsCache: defaultStorage,
+				},
+			},
+		);
 	});
 });

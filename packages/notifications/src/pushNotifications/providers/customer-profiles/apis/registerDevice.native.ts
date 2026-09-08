@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getClientInfo } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
+import {
+	getClientInfo,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 
 import { PushNotificationError } from '../../../errors';
 import {
@@ -15,7 +19,7 @@ import {
 	getDeviceId,
 	registerDeviceInternal,
 } from '../utils';
-import { RegisterDevice } from '../types';
+import { RegisterDeviceInput } from '../types';
 
 /**
  * Builds the device-registration wire object. The stable per-install `deviceId`
@@ -49,6 +53,13 @@ export const buildDeviceRegistration = async (
 		channelType: getChannelType(),
 	};
 };
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function registerDevice(
+	ctx: AmplifyContext,
+	input: RegisterDeviceInput,
+): Promise<void>;
 
 /**
  * Registers a push device with Amazon Connect Customer Profiles. The device is
@@ -62,7 +73,9 @@ export const buildDeviceRegistration = async (
  * @throws validation - Thrown when the library configuration is incorrect.
  * @returns A promise that will resolve when the operation is complete.
  */
-export const registerDevice: RegisterDevice = async ({ token }) => {
+export async function registerDevice(input: RegisterDeviceInput): Promise<void>;
+export async function registerDevice(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[RegisterDeviceInput]>(args);
 	assertIsInitialized();
-	await registerDeviceInternal(await buildDeviceRegistration(token));
-};
+	await registerDeviceInternal(ctx, await buildDeviceRegistration(input.token));
+}

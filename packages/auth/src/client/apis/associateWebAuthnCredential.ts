@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { getGlobalContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
@@ -38,13 +38,17 @@ import { assertValidCredentialCreationOptions } from '../utils/passkey/types';
  * - Thrown due to a service error when verifying WebAuthn registration result
  */
 export async function associateWebAuthnCredential(): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	// Resolve the global AmplifyContext fresh per operation so facade-only
+	// configuration (which never configures the core `Amplify` singleton) is
+	// honored. Both config and auth session are read off the same context.
+	const ctx = getGlobalContext();
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 
 	assertTokenProviderConfig(authConfig);
 
 	const { userPoolEndpoint, userPoolId } = authConfig;
 
-	const { tokens } = await fetchAuthSession();
+	const { tokens } = await ctx.fetchAuthSession();
 
 	assertAuthTokens(tokens);
 

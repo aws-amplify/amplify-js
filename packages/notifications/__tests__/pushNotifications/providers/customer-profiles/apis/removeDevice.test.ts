@@ -6,7 +6,9 @@ import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
 import { removeDevice } from '../../../../../src/pushNotifications/providers/customer-profiles/apis/removeDevice';
 
 describe('removeDevice (customer-profiles, web stub)', () => {
-	it('throws PlatformNotSupportedError', () => {
-		expect(() => removeDevice()).toThrow(new PlatformNotSupportedError());
+	it('throws PlatformNotSupportedError', async () => {
+		await expect(removeDevice()).rejects.toThrow(
+			new PlatformNotSupportedError(),
+		);
 	});
 });

@@ -220,7 +220,7 @@ export abstract class AWSWebSocketProvider {
 	}
 
 	private async _connectWebSocket(options: AWSAppSyncRealTimeProviderOptions) {
-		const { apiKey, appSyncGraphqlEndpoint, authenticationType, region } =
+		const { apiKey, appSyncGraphqlEndpoint, authenticationType, region, ctx } =
 			options;
 
 		const { additionalCustomHeaders } =
@@ -233,6 +233,7 @@ export abstract class AWSWebSocketProvider {
 			authenticationType,
 			region,
 			additionalCustomHeaders,
+			ctx,
 		});
 	}
 
@@ -812,6 +813,7 @@ export abstract class AWSWebSocketProvider {
 		apiKey,
 		region,
 		additionalCustomHeaders,
+		ctx,
 	}: AWSAppSyncRealTimeProviderOptions) {
 		if (this.socketStatus === SOCKET_STATUS.READY) {
 			return;
@@ -829,15 +831,18 @@ export abstract class AWSWebSocketProvider {
 					// Empty payload on connect
 					const payloadString = '{}';
 
-					const authHeader = await awsRealTimeHeaderBasedAuth({
-						authenticationType,
-						payload: payloadString,
-						canonicalUri: this.wsConnectUri,
-						apiKey,
-						appSyncGraphqlEndpoint,
-						region,
-						additionalCustomHeaders,
-					});
+					const authHeader = await awsRealTimeHeaderBasedAuth(
+						{
+							authenticationType,
+							payload: payloadString,
+							canonicalUri: this.wsConnectUri,
+							apiKey,
+							appSyncGraphqlEndpoint,
+							region,
+							additionalCustomHeaders,
+						},
+						ctx,
+					);
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
 					// base64url-encoded string

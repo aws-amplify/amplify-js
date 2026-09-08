@@ -5,7 +5,6 @@
 // APIs as the default Push Notifications surface. Removing them would be a
 // breaking change; instead each is wrapped to emit a one-time runtime
 // deprecation warning. The deprecated imports below are therefore expected.
-/* eslint-disable import/no-deprecated */
 import {
 	getBadgeCount as getBadgeCountPinpoint,
 	getLaunchNotification as getLaunchNotificationPinpoint,

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -46,7 +46,7 @@ interface ListInputArgs {
 }
 
 export const list = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: ListAllInput | ListPaginateInput | ListWithPathInputAndAdvancedOptions,
 ): Promise<
 	| ListAllOutput

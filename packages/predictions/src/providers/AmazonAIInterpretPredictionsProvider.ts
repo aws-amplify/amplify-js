@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext, isAmplifyContext } from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
+	createCtxResolver,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
 import {
@@ -38,6 +39,25 @@ import {
 
 export class AmazonAIInterpretPredictionsProvider {
 	private comprehendClient?: ComprehendClient;
+	/**
+	 * Resolve the AmplifyContext for this provider (fresh per operation).
+	 * - If an explicit ctx was passed at construction, it is pinned (fixed context by design).
+	 * - Otherwise, the global context is resolved fresh per access so that reconfiguration
+	 *   (setGlobalContext with a new AmplifyContext) is honored across operations.
+	 * @private
+	 */
+	private readonly _resolveCtx: () => AmplifyContext;
+
+	/**
+	 * @param ctx - The AmplifyContext to use for auth and config.
+	 *   When provided, the provider is pinned to this context.
+	 *   When omitted, the provider resolves the global context lazily per operation.
+	 */
+	constructor(ctx?: AmplifyContext) {
+		this._resolveCtx = createCtxResolver(
+			isAmplifyContext(ctx) ? ctx : undefined,
+		);
+	}
 
 	getProviderName() {
 		return 'AmazonAIInterpretPredictionsProvider';
@@ -53,14 +73,14 @@ export class AmazonAIInterpretPredictionsProvider {
 	}
 
 	async interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
-		const { credentials } = await fetchAuthSession();
+		const { credentials } = await this._resolveCtx().fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { interpretText = {} } =
-			Amplify.getConfig().Predictions?.interpret ?? {};
+			this._resolveCtx().resourcesConfig.Predictions?.interpret ?? {};
 		const { region = '', defaults = {} } = interpretText;
 		const { type: defaultType = '' } = defaults;
 

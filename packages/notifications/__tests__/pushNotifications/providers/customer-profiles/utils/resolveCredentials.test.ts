@@ -1,12 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { PushNotificationError } from '../../../../../src/pushNotifications/errors';
 import { resolveCredentials } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/resolveCredentials';
-
-jest.mock('@aws-amplify/core');
 
 describe('Push Notifications Customer Profiles Provider Util: resolveCredentials', () => {
 	const credentials = {
@@ -14,36 +12,34 @@ describe('Push Notifications Customer Profiles Provider Util: resolveCredentials
 		secretAccessKey: 'secret-access-key',
 		sessionToken: 'session-token',
 	};
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-
-	beforeEach(() => {
-		mockFetchAuthSession.mockReset();
-	});
 
 	it('resolves Identity Pool credentials for an authenticated session', async () => {
-		mockFetchAuthSession.mockResolvedValue({
+		const ctx = createMockAmplifyContext();
+		(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 			tokens: { accessToken: { toString: () => 'ignored' } },
 			credentials,
 			identityId: 'us-east-1:auth-identity-id',
 		});
-		expect(await resolveCredentials()).toStrictEqual({ credentials });
+		expect(await resolveCredentials(ctx)).toStrictEqual({ credentials });
 	});
 
 	it('resolves Identity Pool credentials for a guest session', async () => {
-		mockFetchAuthSession.mockResolvedValue({
+		const ctx = createMockAmplifyContext();
+		(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 			tokens: undefined,
 			credentials,
 			identityId: 'us-east-1:guest-identity-id',
 		});
-		expect(await resolveCredentials()).toStrictEqual({ credentials });
+		expect(await resolveCredentials(ctx)).toStrictEqual({ credentials });
 	});
 
 	it('throws if no credentials can be resolved', async () => {
-		mockFetchAuthSession.mockResolvedValue({
+		const ctx = createMockAmplifyContext();
+		(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
 			tokens: undefined,
 			credentials: undefined,
 		});
-		await expect(resolveCredentials()).rejects.toBeInstanceOf(
+		await expect(resolveCredentials(ctx)).rejects.toBeInstanceOf(
 			PushNotificationError,
 		);
 	});

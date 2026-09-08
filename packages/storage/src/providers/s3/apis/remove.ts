@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import {
 	RemoveInput,
@@ -12,6 +13,22 @@ import {
 } from '../types';
 
 import { remove as removeInternal } from './internal/remove';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `RemoveWithPathInput` object.
+ */
+export function remove(
+	ctx: AmplifyContext,
+	input: RemoveWithPathInput,
+): RemoveOperation<RemoveWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `RemoveInput` object.
+ */
+export function remove(
+	ctx: AmplifyContext,
+	input: RemoveInput,
+): RemoveOperation<RemoveOutput>;
 
 /**
  * Remove a file or folder from your S3 bucket.
@@ -37,10 +54,14 @@ export function remove(
  */
 export function remove(input: RemoveInput): RemoveOperation<RemoveOutput>;
 
-export function remove(input: RemoveInput | RemoveWithPathInput) {
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
+export function remove(...args: any[]) {
+	const [ctx, input] =
+		resolveCtxArgs<[RemoveInput | RemoveWithPathInput]>(args);
+	// Narrowing is required: removeInternal is overloaded and TypeScript cannot resolve the union argument without discriminating.
 	if ('key' in input) {
-		return removeInternal(Amplify, input);
+		return removeInternal(ctx, input);
 	} else {
-		return removeInternal(Amplify, input);
+		return removeInternal(ctx, input);
 	}
 }

@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
 import { KinesisConfigureAutoTrackInput } from '../../../../src/providers/kinesis/types';
 import {
 	EventTracker,
@@ -11,6 +13,8 @@ import { record } from '../../../../src/providers/kinesis/apis/record';
 
 jest.mock('../../../../src/trackers');
 jest.mock('../../../../src/providers/kinesis/apis/record');
+
+const mockCtx = createMockAmplifyContext();
 
 const MOCK_STREAM_NAME = 'stream0';
 const MOCK_PARTITION_KEY = 'partition0';
@@ -193,7 +197,9 @@ describe('Kinesis API: configureAutoTrack', () => {
 			configureAutoTrack(MOCK_INPUT);
 		});
 
-		// The recorder callback passed to the tracker should emit to the configured stream
+		// The recorder callback passed to the tracker should emit to the configured stream.
+		// No context was supplied, so record must be called WITHOUT a captured context —
+		// it resolves the global context lazily at emit time (live config).
 		const emitTrackingEvent = MockEventTracker.mock.calls[0][0];
 		emitTrackingEvent('my-event', { foo: 'bar' });
 
@@ -204,6 +210,42 @@ describe('Kinesis API: configureAutoTrack', () => {
 				name: 'my-event',
 				attributes: { foo: 'bar' },
 			},
+		});
+	});
+
+	it('passes an explicitly provided context through to record', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/kinesis/apis');
+
+			configureAutoTrack(mockCtx, MOCK_INPUT);
+		});
+
+		const emitTrackingEvent = MockEventTracker.mock.calls[0][0];
+		emitTrackingEvent('my-event', { foo: 'bar' });
+
+		expect(mockRecord).toHaveBeenCalledWith(mockCtx, {
+			streamName: MOCK_STREAM_NAME,
+			partitionKey: MOCK_PARTITION_KEY,
+			data: {
+				name: 'my-event',
+				attributes: { foo: 'bar' },
+			},
+		});
+	});
+
+	it('can be configured before Amplify.configure (no global context)', () => {
+		jest.isolateModules(() => {
+			const {
+				configureAutoTrack,
+			} = require('../../../../src/providers/kinesis/apis');
+
+			// The isolated registry has NO global context set — tracker setup must
+			// not resolve the context eagerly, so this must not throw.
+			expect(() => {
+				configureAutoTrack(MOCK_INPUT);
+			}).not.toThrow();
 		});
 	});
 

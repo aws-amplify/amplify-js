@@ -1,6 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
+
 import { identifyUser } from '../../../../../src/pushNotifications/providers/customer-profiles/apis/identifyUser';
 import { identifyUserInternal } from '../../../../../src/pushNotifications/providers/customer-profiles/utils/identifyUserInternal';
 import { IdentifyUserInput } from '../../../../../src/pushNotifications/providers/customer-profiles/types';
@@ -11,6 +17,14 @@ jest.mock(
 
 describe('identifyUser (customer-profiles, web)', () => {
 	const mockIdentifyUserInternal = identifyUserInternal as jest.Mock;
+
+	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
 
 	beforeEach(() => {
 		mockIdentifyUserInternal.mockResolvedValue(undefined);
@@ -32,10 +46,10 @@ describe('identifyUser (customer-profiles, web)', () => {
 		await identifyUser(input);
 
 		expect(mockIdentifyUserInternal).toHaveBeenCalledTimes(1);
-		expect(mockIdentifyUserInternal).toHaveBeenCalledWith({
+		expect(mockIdentifyUserInternal).toHaveBeenCalledWith(expect.anything(), {
 			userProfile: input.userProfile,
 		});
-		const call = mockIdentifyUserInternal.mock.calls[0][0];
+		const call = mockIdentifyUserInternal.mock.calls[0][1];
 		expect(call).not.toHaveProperty('userId');
 		expect(call).not.toHaveProperty('deviceToken');
 		expect(call).not.toHaveProperty('channelType');
@@ -45,7 +59,9 @@ describe('identifyUser (customer-profiles, web)', () => {
 	it('forwards a minimal input (empty userProfile)', async () => {
 		await identifyUser({ userProfile: {} });
 
-		expect(mockIdentifyUserInternal).toHaveBeenCalledWith({ userProfile: {} });
+		expect(mockIdentifyUserInternal).toHaveBeenCalledWith(expect.anything(), {
+			userProfile: {},
+		});
 	});
 
 	it('rejects when the underlying identify request rejects', async () => {
