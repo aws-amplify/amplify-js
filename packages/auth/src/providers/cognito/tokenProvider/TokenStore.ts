@@ -66,10 +66,27 @@ export class DefaultTokenStore implements AuthTokenStore {
 		}
 		this.stopNotify = this.keyValueStorage?.addListener?.(
 			async (e: KeyValueStorageEvent) => {
-				const [key, , , id] = (e.key || '').split('.');
-				if (key === AUTH_KEY_PREFIX && id === 'refreshToken') {
-					const { newValue, oldValue } = e;
-					if (newValue && oldValue === null) {
+				const key = e.key || '';
+				// Only react to this provider's auth token keys. Match by
+				// prefix/suffix instead of a positional `split('.')` so usernames
+				// that contain dots (e.g. email addresses) are handled correctly —
+				// keys look like `${AUTH_KEY_PREFIX}.<clientId>.<username>.<type>`.
+				if (!key.startsWith(`${AUTH_KEY_PREFIX}.`)) {
+					return;
+				}
+
+				const { newValue, oldValue } = e;
+
+				if (key.endsWith('.refreshToken')) {
+					// The refreshToken key drives sign-in / sign-out only. Its
+					// presence transition (falsy <-> truthy) is the reliable
+					// cross-tab signal. `oldValue`/`newValue` are compared with
+					// truthy/falsy checks rather than `=== null` so adapter storages
+					// that surface an absent value as `undefined` or `''` still work.
+					// Note: non-rotating pools rewrite an identical refreshToken,
+					// which fires no storage event, so value→value changes here are
+					// not observable and must not be relied on for tokenRefresh.
+					if (newValue && !oldValue) {
 						Hub.dispatch(
 							'auth',
 							{
@@ -80,7 +97,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 							AMPLIFY_SYMBOL,
 							true,
 						);
-					} else if (newValue === null && oldValue) {
+					} else if (!newValue && oldValue) {
 						Hub.dispatch(
 							'auth',
 							{
@@ -90,7 +107,15 @@ export class DefaultTokenStore implements AuthTokenStore {
 							AMPLIFY_SYMBOL,
 							true,
 						);
-					} else if (newValue && oldValue) {
+					}
+				} else if (key.endsWith('.accessToken')) {
+					// tokenRefresh is detected on the accessToken key: it always
+					// changes value on a refresh for both rotating and non-rotating
+					// pools. Guard on both values present and actually differing so
+					// that sign-in's null→value transition does not masquerade as a
+					// refresh. On rotation pools both keys change, but only this
+					// branch dispatches tokenRefresh, so there is no double dispatch.
+					if (oldValue && newValue && oldValue !== newValue) {
 						Hub.dispatch(
 							'auth',
 							{

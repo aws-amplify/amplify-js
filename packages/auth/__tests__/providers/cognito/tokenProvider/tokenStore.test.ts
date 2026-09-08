@@ -448,81 +448,181 @@ describe('TokenStore', () => {
 	});
 
 	describe('setupNotify', () => {
-		it('should setup a KeyValueStorageEvent listener', async () => {
-			tokenStore.setupNotify();
+		describe('storage event handling', () => {
+			let listener: (ev: KeyValueStorageEvent) => Promise<void>;
+			let hubSpy: jest.SpyInstance;
 
-			const spy = jest.spyOn(keyValStorage, 'addListener');
-			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			beforeEach(() => {
+				const addListenerSpy = jest.spyOn(keyValStorage, 'addListener');
+				hubSpy = jest.spyOn(Hub, 'dispatch');
 
-			expect(spy).toHaveBeenCalledWith(expect.any(Function));
+				tokenStore.setupNotify();
 
-			const listener = spy.mock.calls[0][0];
-
-			// does nothing if key does not match
-			await listener({
-				key: 'foo.bar',
-				oldValue: null,
-				newValue: null,
+				expect(addListenerSpy).toHaveBeenCalledWith(expect.any(Function));
+				// The listener registered with the underlying storage.
+				[[listener]] = addListenerSpy.mock.calls;
 			});
 
-			expect(hubSpy).not.toHaveBeenCalled();
+			it('does nothing when the key does not match the auth prefix', async () => {
+				await listener({ key: 'foo.bar', oldValue: null, newValue: null });
 
-			// does nothing if both values are null
-			await listener({
-				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
-				oldValue: null,
-				newValue: null,
+				expect(hubSpy).not.toHaveBeenCalled();
 			});
 
-			expect(hubSpy).not.toHaveBeenCalled();
+			it('does nothing when both refreshToken values are null', async () => {
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.refreshToken`,
+					oldValue: null,
+					newValue: null,
+				});
 
-			// dispatches signedIn on new value
-			await listener({
-				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
-				newValue: '123',
-				oldValue: null,
+				expect(hubSpy).not.toHaveBeenCalled();
 			});
 
-			expect(hubSpy).toHaveBeenCalledWith(
-				'auth',
-				{ event: 'signedIn', data: {} },
-				'Auth',
-				AMPLIFY_SYMBOL,
-				true,
-			);
-			hubSpy.mockClear();
+			it('dispatches signedIn when the refreshToken first appears', async () => {
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.refreshToken`,
+					newValue: '123',
+					oldValue: null,
+				});
 
-			// dispatches signedOut on null newValue
-			await listener({
-				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
-				newValue: null,
-				oldValue: '123',
+				expect(hubSpy).toHaveBeenCalledWith(
+					'auth',
+					{ event: 'signedIn', data: {} },
+					'Auth',
+					AMPLIFY_SYMBOL,
+					true,
+				);
 			});
 
-			expect(hubSpy).toHaveBeenCalledWith(
-				'auth',
-				{ event: 'signedOut' },
-				'Auth',
-				AMPLIFY_SYMBOL,
-				true,
-			);
-			hubSpy.mockClear();
+			it('dispatches signedOut when the refreshToken is removed', async () => {
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.refreshToken`,
+					newValue: null,
+					oldValue: '123',
+				});
 
-			// dispatches tokenRefresh for changed value
-			await listener({
-				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
-				newValue: '456',
-				oldValue: '123',
+				expect(hubSpy).toHaveBeenCalledWith(
+					'auth',
+					{ event: 'signedOut' },
+					'Auth',
+					AMPLIFY_SYMBOL,
+					true,
+				);
 			});
 
-			expect(hubSpy).toHaveBeenCalledWith(
-				'auth',
-				{ event: 'tokenRefresh' },
-				'Auth',
-				AMPLIFY_SYMBOL,
-				true,
-			);
-			hubSpy.mockClear();
+			it('does not dispatch tokenRefresh on a refreshToken value→value change', async () => {
+				// Non-rotating pools rewrite an identical refreshToken (which fires
+				// no storage event), and rotation is detected via the accessToken
+				// key — so a refreshToken value change must not dispatch anything.
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.refreshToken`,
+					newValue: '456',
+					oldValue: '123',
+				});
+
+				expect(hubSpy).not.toHaveBeenCalled();
+			});
+
+			it('dispatches tokenRefresh when the accessToken value changes', async () => {
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.accessToken`,
+					newValue: 'newAccess',
+					oldValue: 'oldAccess',
+				});
+
+				expect(hubSpy).toHaveBeenCalledWith(
+					'auth',
+					{ event: 'tokenRefresh' },
+					'Auth',
+					AMPLIFY_SYMBOL,
+					true,
+				);
+			});
+
+			it('does not dispatch tokenRefresh when the accessToken first appears (sign-in)', async () => {
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.accessToken`,
+					newValue: 'newAccess',
+					oldValue: null,
+				});
+
+				expect(hubSpy).not.toHaveBeenCalled();
+			});
+
+			it('fires events for usernames that contain dots (email addresses)', async () => {
+				// The username segment `user.name@example.com` contains dots; a
+				// positional split would misidentify the token type. Prefix/suffix
+				// matching keeps the event firing correctly.
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.myClientId.user.name@example.com.refreshToken`,
+					newValue: '123',
+					oldValue: null,
+				});
+
+				expect(hubSpy).toHaveBeenCalledWith(
+					'auth',
+					{ event: 'signedIn', data: {} },
+					'Auth',
+					AMPLIFY_SYMBOL,
+					true,
+				);
+			});
+
+			it('treats an empty-string oldValue on the refreshToken key as a first sign-in', async () => {
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.refreshToken`,
+					newValue: '123',
+					oldValue: '',
+				});
+
+				expect(hubSpy).toHaveBeenCalledWith(
+					'auth',
+					{ event: 'signedIn', data: {} },
+					'Auth',
+					AMPLIFY_SYMBOL,
+					true,
+				);
+			});
+
+			it('treats an undefined oldValue on the refreshToken key as a first sign-in', async () => {
+				// Some adapter storages surface an absent value as `undefined`
+				// rather than `null`; the truthy/falsy guard must still sign in.
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.refreshToken`,
+					newValue: '123',
+					oldValue: undefined,
+				} as unknown as KeyValueStorageEvent);
+
+				expect(hubSpy).toHaveBeenCalledWith(
+					'auth',
+					{ event: 'signedIn', data: {} },
+					'Auth',
+					AMPLIFY_SYMBOL,
+					true,
+				);
+			});
+
+			it('dispatches exactly one tokenRefresh under rotation when both keys change', async () => {
+				// Rotation pools change BOTH refreshToken and accessToken. Only the
+				// accessToken branch dispatches tokenRefresh, so there is no double
+				// dispatch even when both storage events are observed.
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.refreshToken`,
+					newValue: 'rNew',
+					oldValue: 'rOld',
+				});
+				await listener({
+					key: `${AUTH_KEY_PREFIX}.someid.someuser.accessToken`,
+					newValue: 'aNew',
+					oldValue: 'aOld',
+				});
+
+				const tokenRefreshCalls = hubSpy.mock.calls.filter(
+					call => (call[1] as { event?: string })?.event === 'tokenRefresh',
+				);
+				expect(tokenRefreshCalls).toHaveLength(1);
+			});
 		});
 
 		it('should be idempotent — a second setupNotify does not register a second listener', () => {
