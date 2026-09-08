@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Hub, KeyValueStorageInterface } from '@aws-amplify/core';
+import {
+	Hub,
+	KeyValueStorageEvent,
+	KeyValueStorageInterface,
+} from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL, decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -78,7 +82,39 @@ const mockKeyValueStorage: jest.Mocked<KeyValueStorageInterface> = {
 	getItem: jest.fn(),
 	removeItem: jest.fn(),
 	clear: jest.fn(),
-	addListener: jest.fn(),
+	// addListener now returns an unsubscribe function.
+	addListener: jest.fn(() => jest.fn()),
+};
+
+/**
+ * Faithful KeyValueStorage double: `addListener` really tracks listeners and
+ * returns a working unsubscribe, and `emit` fans an event out to them. Lets us
+ * exercise the real TokenStore notify lifecycle without mocking its internals.
+ */
+const createFakeStorage = () => {
+	const listeners = new Set<(ev: KeyValueStorageEvent) => Promise<void>>();
+
+	return {
+		setItem: jest.fn(),
+		getItem: jest.fn(),
+		removeItem: jest.fn(),
+		clear: jest.fn(),
+		addListener: jest.fn(
+			(listener: (ev: KeyValueStorageEvent) => Promise<void>) => {
+				listeners.add(listener);
+
+				return () => {
+					listeners.delete(listener);
+				};
+			},
+		),
+		emit: async (ev: KeyValueStorageEvent) => {
+			for (const listener of listeners) {
+				await listener(ev);
+			}
+		},
+		listenerCount: () => listeners.size,
+	};
 };
 
 describe('TokenStore', () => {
@@ -487,6 +523,95 @@ describe('TokenStore', () => {
 				true,
 			);
 			hubSpy.mockClear();
+		});
+
+		it('should be idempotent — a second setupNotify does not register a second listener', () => {
+			const fakeStorage = createFakeStorage();
+			tokenStore.setKeyValueStorage(fakeStorage);
+
+			tokenStore.setupNotify();
+			tokenStore.setupNotify();
+
+			expect(fakeStorage.addListener).toHaveBeenCalledTimes(1);
+			expect(fakeStorage.listenerCount()).toBe(1);
+		});
+
+		it('teardownNotify should unsubscribe and stop dispatching Hub events', async () => {
+			const fakeStorage = createFakeStorage();
+			tokenStore.setKeyValueStorage(fakeStorage);
+			tokenStore.setupNotify();
+
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			const signInEvent = {
+				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
+				newValue: '123',
+				oldValue: null,
+			};
+
+			await fakeStorage.emit(signInEvent);
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ event: 'signedIn', data: {} },
+				'Auth',
+				AMPLIFY_SYMBOL,
+				true,
+			);
+
+			hubSpy.mockClear();
+			tokenStore.teardownNotify();
+			expect(fakeStorage.listenerCount()).toBe(0);
+
+			// No further Hub dispatches after teardown.
+			await fakeStorage.emit(signInEvent);
+			expect(hubSpy).not.toHaveBeenCalled();
+		});
+
+		it('teardownNotify should be a safe no-op when notify was never set up', () => {
+			expect(() => {
+				tokenStore.teardownNotify();
+			}).not.toThrow();
+		});
+
+		it('setKeyValueStorage should re-register the listener on the new storage when notify is active', async () => {
+			const oldStorage = createFakeStorage();
+			const newStorage = createFakeStorage();
+
+			tokenStore.setKeyValueStorage(oldStorage);
+			tokenStore.setupNotify();
+			expect(oldStorage.listenerCount()).toBe(1);
+
+			// Swap storages while notify is active.
+			tokenStore.setKeyValueStorage(newStorage);
+
+			// Listener detached from the old storage, attached to the new one.
+			expect(oldStorage.listenerCount()).toBe(0);
+			expect(newStorage.listenerCount()).toBe(1);
+
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			const refreshEvent = {
+				key: `${AUTH_KEY_PREFIX}.someid.someotherId.refreshToken`,
+				newValue: '123',
+				oldValue: null,
+			};
+
+			// New storage drives Hub dispatches.
+			await newStorage.emit(refreshEvent);
+			expect(hubSpy).toHaveBeenCalledTimes(1);
+
+			// Old storage no longer does.
+			hubSpy.mockClear();
+			await oldStorage.emit(refreshEvent);
+			expect(hubSpy).not.toHaveBeenCalled();
+		});
+
+		it('setKeyValueStorage should not activate notify when it was inactive', () => {
+			const newStorage = createFakeStorage();
+
+			// notify never set up → swapping storage must not subscribe.
+			tokenStore.setKeyValueStorage(newStorage);
+
+			expect(newStorage.addListener).not.toHaveBeenCalled();
+			expect(newStorage.listenerCount()).toBe(0);
 		});
 	});
 });

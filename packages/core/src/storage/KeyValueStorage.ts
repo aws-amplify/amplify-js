@@ -3,6 +3,7 @@
 
 import { PlatformNotSupportedError } from '../errors';
 import { KeyValueStorageEvent, KeyValueStorageInterface } from '../types';
+import { isBrowser } from '../utils';
 
 /**
  * @internal
@@ -60,18 +61,40 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	/**
 	 * This is used to allow listening for changes
 	 * @param {function} listener - the function called on storage change
+	 * @returns {function} an unsubscribe function that removes the listener. The
+	 * underlying `window` 'storage' event listener is attached lazily on the
+	 * first subscription and detached once the last listener unsubscribes. In
+	 * non-browser (SSR/native) environments nothing is attached and the returned
+	 * unsubscribe function is a safe no-op.
 	 */
-	addListener(listener: (ev: KeyValueStorageEvent) => Promise<void>) {
-		if (!this.listeners) {
-			return;
+	addListener(
+		listener: (ev: KeyValueStorageEvent) => Promise<void>,
+	): () => void {
+		const listeners = (this.listeners ??= new Set());
+		listeners.add(listener);
+
+		// Lazily attach the cross-tab 'storage' listener on the first subscription.
+		if (isBrowser() && listeners.size === 1) {
+			window.addEventListener('storage', this.storageListener, false);
 		}
-		this.listeners.add(listener);
+
+		return () => {
+			listeners.delete(listener);
+			// Detach once the last subscriber unsubscribes — real teardown, not
+			// just pruning the set.
+			if (isBrowser() && listeners.size === 0) {
+				window.removeEventListener('storage', this.storageListener, false);
+			}
+		};
 	}
 
-	rmListener(listener: (ev: KeyValueStorageEvent) => Promise<void>) {
-		if (!this.listeners) {
-			return;
-		}
-		this.listeners.delete(listener);
-	}
+	private storageListener = (e: StorageEvent) => {
+		this.listeners?.forEach(listener => {
+			listener({
+				key: e.key,
+				oldValue: e.oldValue,
+				newValue: e.newValue,
+			});
+		});
+	};
 }

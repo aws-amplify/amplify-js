@@ -38,6 +38,15 @@ export class CognitoUserPoolsTokenProvider
 		this.authTokenStore.setKeyValueStorage(keyValueStorage);
 	}
 
+	/**
+	 * Tears down the cross-tab storage listener held by the underlying token
+	 * store. Intended for tests, HMR, and micro-frontend teardown; safe no-op
+	 * when notify was never set up.
+	 */
+	teardownNotify(): void {
+		this.authTokenStore.teardownNotify();
+	}
+
 	setClientMetadataProvider(
 		clientMetadataProvider: ClientMetadataProvider,
 	): void {

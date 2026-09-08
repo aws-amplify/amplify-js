@@ -12,6 +12,12 @@ describe('DefaultStorage', () => {
 		defaultStorage = new DefaultStorage();
 	});
 
+	afterEach(() => {
+		// Restore window/isBrowser spies so listener attach/detach assertions
+		// are not polluted by calls from earlier tests in this file.
+		jest.restoreAllMocks();
+	});
+
 	it('should set a value and retrieve it with the same key', async () => {
 		await defaultStorage.setItem(key, value);
 		expect(await defaultStorage.getItem(key)).toEqual(value);
@@ -59,15 +65,116 @@ describe('DefaultStorage', () => {
 		});
 	});
 
-	it('should setup listeners, when in browser', () => {
+	it('should not attach a window listener in the constructor', () => {
 		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
 		const windowSpy = jest.spyOn(window, 'addEventListener');
 
 		defaultStorage = new DefaultStorage();
-		expect(windowSpy).toHaveBeenCalledWith(
+		expect(windowSpy).not.toHaveBeenCalledWith(
 			'storage',
 			expect.any(Function),
 			false,
 		);
+	});
+
+	it('should lazily attach the window listener on first addListener, when in browser', () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
+		const addSpy = jest.spyOn(window, 'addEventListener');
+
+		defaultStorage = new DefaultStorage();
+		const listener = jest.fn();
+		defaultStorage.addListener(listener);
+
+		expect(addSpy).toHaveBeenCalledWith('storage', expect.any(Function), false);
+	});
+
+	it('should attach the window listener only once across multiple listeners', () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
+		const addSpy = jest.spyOn(window, 'addEventListener');
+
+		defaultStorage = new DefaultStorage();
+		defaultStorage.addListener(jest.fn());
+		defaultStorage.addListener(jest.fn());
+
+		const storageAttachCalls = addSpy.mock.calls.filter(
+			([eventName]) => eventName === 'storage',
+		);
+		expect(storageAttachCalls).toHaveLength(1);
+	});
+
+	it('should detach the window listener when the last listener unsubscribes', () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
+		const removeSpy = jest.spyOn(window, 'removeEventListener');
+
+		defaultStorage = new DefaultStorage();
+		const unsubscribeA = defaultStorage.addListener(jest.fn());
+		const unsubscribeB = defaultStorage.addListener(jest.fn());
+
+		unsubscribeA();
+		expect(removeSpy).not.toHaveBeenCalledWith(
+			'storage',
+			expect.any(Function),
+			false,
+		);
+
+		unsubscribeB();
+		expect(removeSpy).toHaveBeenCalledWith(
+			'storage',
+			expect.any(Function),
+			false,
+		);
+	});
+
+	it('should invoke registered listeners on window storage events and stop after unsubscribe', () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
+
+		defaultStorage = new DefaultStorage();
+		const listener = jest.fn();
+		const unsubscribe = defaultStorage.addListener(listener);
+
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'someKey',
+				oldValue: 'old',
+				newValue: 'new',
+			}),
+		);
+
+		expect(listener).toHaveBeenCalledWith({
+			key: 'someKey',
+			oldValue: 'old',
+			newValue: 'new',
+		});
+
+		listener.mockClear();
+		unsubscribe();
+
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'someKey',
+				oldValue: 'old',
+				newValue: 'new',
+			}),
+		);
+
+		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it('should not attach a window listener when not in browser', () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => false);
+		const addSpy = jest.spyOn(window, 'addEventListener');
+
+		defaultStorage = new DefaultStorage();
+		const unsubscribe = defaultStorage.addListener(jest.fn());
+
+		expect(addSpy).not.toHaveBeenCalledWith(
+			'storage',
+			expect.any(Function),
+			false,
+		);
+		// unsubscribe stays a safe no-op off-browser
+		expect(() => {
+			unsubscribe();
+		}).not.toThrow();
 	});
 });

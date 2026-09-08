@@ -6,8 +6,15 @@ export interface KeyValueStorageInterface {
 	getItem(key: string): Promise<string | null>;
 	removeItem(key: string): Promise<void>;
 	clear(): Promise<void>;
-	addListener?(listener: (ev: KeyValueStorageEvent) => Promise<void>): void;
-	rmListener?(listener: (ev: KeyValueStorageEvent) => Promise<void>): void;
+	/**
+	 * Subscribe to cross-tab storage changes.
+	 * @param listener - invoked when the underlying storage changes in another tab.
+	 * @returns an unsubscribe function that removes the listener. Optional: storages
+	 * that do not support cross-tab notifications (e.g. cookie storage) may omit it.
+	 */
+	addListener?(
+		listener: (ev: KeyValueStorageEvent) => Promise<void>,
+	): () => void;
 }
 
 export type SameSite = 'strict' | 'lax' | 'none';

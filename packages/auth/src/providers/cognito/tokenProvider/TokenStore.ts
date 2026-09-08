@@ -29,6 +29,7 @@ import { AUTH_KEY_PREFIX } from './constants';
 export class DefaultTokenStore implements AuthTokenStore {
 	private authConfig?: AuthConfig;
 	keyValueStorage?: KeyValueStorageInterface;
+	private stopNotify?: () => void;
 
 	getKeyValueStorage(): KeyValueStorageInterface {
 		if (!this.keyValueStorage) {
@@ -42,7 +43,15 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
+		// If notify is active, detach from the old storage and re-attach to the
+		// new one so a storage swap (e.g. SSR/adapter cookie storage) does not
+		// orphan the listener on the previous store.
+		const wasActive = !!this.stopNotify;
+		this.teardownNotify();
 		this.keyValueStorage = keyValueStorage;
+		if (wasActive) {
+			this.setupNotify();
+		}
 	}
 
 	setAuthConfig(authConfig: AuthConfig) {
@@ -50,44 +59,62 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	setupNotify() {
-		this.keyValueStorage?.addListener?.(async (e: KeyValueStorageEvent) => {
-			const [key, , , id] = (e.key || '').split('.');
-			if (key === AUTH_KEY_PREFIX && id === 'refreshToken') {
-				const { newValue, oldValue } = e;
-				if (newValue && oldValue === null) {
-					Hub.dispatch(
-						'auth',
-						{
-							event: 'signedIn',
-							data: await getCurrentUser(),
-						},
-						'Auth',
-						AMPLIFY_SYMBOL,
-						true,
-					);
-				} else if (newValue === null && oldValue) {
-					Hub.dispatch(
-						'auth',
-						{
-							event: 'signedOut',
-						},
-						'Auth',
-						AMPLIFY_SYMBOL,
-						true,
-					);
-				} else if (newValue && oldValue) {
-					Hub.dispatch(
-						'auth',
-						{
-							event: 'tokenRefresh',
-						},
-						'Auth',
-						AMPLIFY_SYMBOL,
-						true,
-					);
+		// Idempotent: a second call while already subscribed is a no-op rather
+		// than a second (leaked) listener.
+		if (this.stopNotify) {
+			return;
+		}
+		this.stopNotify = this.keyValueStorage?.addListener?.(
+			async (e: KeyValueStorageEvent) => {
+				const [key, , , id] = (e.key || '').split('.');
+				if (key === AUTH_KEY_PREFIX && id === 'refreshToken') {
+					const { newValue, oldValue } = e;
+					if (newValue && oldValue === null) {
+						Hub.dispatch(
+							'auth',
+							{
+								event: 'signedIn',
+								data: await getCurrentUser(),
+							},
+							'Auth',
+							AMPLIFY_SYMBOL,
+							true,
+						);
+					} else if (newValue === null && oldValue) {
+						Hub.dispatch(
+							'auth',
+							{
+								event: 'signedOut',
+							},
+							'Auth',
+							AMPLIFY_SYMBOL,
+							true,
+						);
+					} else if (newValue && oldValue) {
+						Hub.dispatch(
+							'auth',
+							{
+								event: 'tokenRefresh',
+							},
+							'Auth',
+							AMPLIFY_SYMBOL,
+							true,
+						);
+					}
 				}
-			}
-		});
+			},
+		);
+	}
+
+	/**
+	 * Detaches the cross-tab storage listener registered by {@link setupNotify}
+	 * and clears the retained unsubscribe handle, allowing a subsequent
+	 * `setupNotify()` to re-register (e.g. after a storage swap, in tests, or
+	 * during HMR). No-op when notify was never set up.
+	 */
+	teardownNotify() {
+		this.stopNotify?.();
+		this.stopNotify = undefined;
 	}
 
 	async loadTokens(): Promise<CognitoAuthTokens | null> {
