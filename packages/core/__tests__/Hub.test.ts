@@ -160,7 +160,7 @@ describe('Hub', () => {
 			sameTabListener.mockClear();
 		});
 
-		it('should not call crossTab listeners on sameTab events', () => {
+		it('should also call crossTab listeners on sameTab events', () => {
 			Hub.dispatch(
 				'auth',
 				{
@@ -171,7 +171,9 @@ describe('Hub', () => {
 				Symbol.for('amplify_default'),
 			);
 
-			expect(crossTabListener).not.toHaveBeenCalled();
+			// Cross-tab listeners form a superset: they receive same-tab events
+			// in addition to cross-tab events. Plain listeners are also called.
+			expect(crossTabListener).toHaveBeenCalled();
 			expect(sameTabListener).toHaveBeenCalled();
 		});
 

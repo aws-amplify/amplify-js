@@ -8,7 +8,7 @@ export type IListener<
 	EventData extends EventDataMap = EventDataMap,
 > = {
 	name: string;
-	crossTab: boolean;
+	crossTab?: boolean;
 	callback: HubCallback<Channel, EventData>;
 }[];
 

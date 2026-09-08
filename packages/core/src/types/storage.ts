@@ -40,6 +40,6 @@ export interface SyncStorage {
 
 export interface KeyValueStorageEvent {
 	readonly key: string | null;
-	readonly oldValue: any;
-	readonly newValue: any;
+	readonly oldValue: string | null;
+	readonly newValue: string | null;
 }

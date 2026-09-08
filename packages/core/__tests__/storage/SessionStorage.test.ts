@@ -126,6 +126,39 @@ describe('SessionStorage', () => {
 		);
 	});
 
+	it('should ignore window storage events from a different storage area', () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
+
+		sessionStorage = new SessionStorage();
+		const listener = jest.fn();
+		sessionStorage.addListener(listener);
+
+		// Event originates from localStorage (a different area) — the
+		// sessionStorage-backed instance must not react to it.
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'someKey',
+				oldValue: 'old',
+				newValue: 'new',
+				storageArea: window.localStorage,
+			}),
+		);
+
+		expect(listener).not.toHaveBeenCalled();
+
+		// A matching-area event is still delivered.
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'someKey',
+				oldValue: 'old',
+				newValue: 'new',
+				storageArea: sessionStorage.storage,
+			}),
+		);
+
+		expect(listener).toHaveBeenCalledTimes(1);
+	});
+
 	it('should not attach a window listener when not in browser', () => {
 		jest.spyOn(utils, 'isBrowser').mockImplementation(() => false);
 		const addSpy = jest.spyOn(window, 'addEventListener');

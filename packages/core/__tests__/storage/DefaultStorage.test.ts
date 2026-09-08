@@ -137,6 +137,7 @@ describe('DefaultStorage', () => {
 				key: 'someKey',
 				oldValue: 'old',
 				newValue: 'new',
+				storageArea: defaultStorage.storage,
 			}),
 		);
 
@@ -154,10 +155,77 @@ describe('DefaultStorage', () => {
 				key: 'someKey',
 				oldValue: 'old',
 				newValue: 'new',
+				storageArea: defaultStorage.storage,
 			}),
 		);
 
 		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it('should ignore window storage events from a different storage area', () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
+
+		defaultStorage = new DefaultStorage();
+		const listener = jest.fn();
+		defaultStorage.addListener(listener);
+
+		// Event originates from sessionStorage (a different area) — the
+		// localStorage-backed instance must not react to it.
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'someKey',
+				oldValue: 'old',
+				newValue: 'new',
+				storageArea: window.sessionStorage,
+			}),
+		);
+
+		expect(listener).not.toHaveBeenCalled();
+
+		// A matching-area event is still delivered.
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'someKey',
+				oldValue: 'old',
+				newValue: 'new',
+				storageArea: defaultStorage.storage,
+			}),
+		);
+
+		expect(listener).toHaveBeenCalledTimes(1);
+	});
+
+	it('should isolate a rejecting listener and still invoke the others', async () => {
+		jest.spyOn(utils, 'isBrowser').mockImplementation(() => true);
+		const unhandledRejection = jest.fn();
+		process.on('unhandledRejection', unhandledRejection);
+
+		defaultStorage = new DefaultStorage();
+		const rejectingListener = jest
+			.fn()
+			.mockRejectedValue(new Error('listener boom'));
+		const okListener = jest.fn().mockResolvedValue(undefined);
+		defaultStorage.addListener(rejectingListener);
+		defaultStorage.addListener(okListener);
+
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'someKey',
+				oldValue: 'old',
+				newValue: 'new',
+				storageArea: defaultStorage.storage,
+			}),
+		);
+
+		// Both listeners were invoked despite the first rejecting.
+		expect(rejectingListener).toHaveBeenCalledTimes(1);
+		expect(okListener).toHaveBeenCalledTimes(1);
+
+		// Allow the rejection to settle and assert it was swallowed.
+		await new Promise(resolve => setTimeout(resolve, 0));
+		expect(unhandledRejection).not.toHaveBeenCalled();
+
+		process.removeListener('unhandledRejection', unhandledRejection);
 	});
 
 	it('should not attach a window listener when not in browser', () => {

@@ -156,6 +156,11 @@ export class HubClass {
 		callback: HubCallback<Channel, AmplifyEventData[Channel]>,
 		options?: {
 			listenerName?: string;
+			/**
+			 * `auth` channel only; the listener receives BOTH same-tab and
+			 * cross-tab events. A listener without this flag receives only
+			 * same-tab events.
+			 */
 			enableCrossTabEvents?: boolean;
 		},
 	): StopListenerCallback;
@@ -179,12 +184,10 @@ export class HubClass {
 		},
 	): StopListenerCallback {
 		let cb: HubCallback;
-		let o;
-		if (typeof options === 'string') {
-			o = { listenerName: options, enableCrossTabEvents: false };
-		} else {
-			o = { listenerName: 'noname', enableCrossTabEvents: false, ...options };
-		}
+		const o: { listenerName: string; enableCrossTabEvents: boolean } =
+			typeof options === 'string'
+				? { listenerName: options, enableCrossTabEvents: false }
+				: { listenerName: 'noname', enableCrossTabEvents: false, ...options };
 		if (typeof callback !== 'function') {
 			throw new AmplifyError({
 				name: NO_HUBCALLBACK_PROVIDED_EXCEPTION,
@@ -202,10 +205,8 @@ export class HubClass {
 		}
 
 		holder.push({
-			name: (o as { listenerName: string; enableCrossTabEvents: boolean })
-				.listenerName,
-			crossTab: (o as { listenerName: string; enableCrossTabEvents: boolean })
-				.enableCrossTabEvents,
+			name: o.listenerName,
+			crossTab: o.enableCrossTabEvents,
 			callback: cb,
 		});
 
@@ -220,13 +221,19 @@ export class HubClass {
 		const { channel, payload, crossTab } = capsule;
 		const holder = this.listeners.get(channel);
 		if (holder) {
-			const crossTabHolders = holder.filter(listener => {
-				const sameCrossTabSpec = !!crossTab === !!listener.crossTab;
-				const rightChannel = crossTab ? channel === 'auth' : true;
+			const eligibleListeners = holder.filter(listener => {
+				// Cross-tab dispatch: only cross-tab listeners on the 'auth'
+				// channel are eligible (cross-tab events are auth-only).
+				if (crossTab) {
+					return !!listener.crossTab && channel === 'auth';
+				}
 
-				return sameCrossTabSpec && rightChannel;
+				// Same-tab dispatch: every listener is eligible — cross-tab
+				// listeners form a superset and therefore ALSO receive same-tab
+				// events, while plain listeners receive same-tab events only.
+				return true;
 			});
-			crossTabHolders.forEach(listener => {
+			eligibleListeners.forEach(listener => {
 				logger.debug(`Dispatching to ${channel} with `, payload);
 				try {
 					listener.callback(capsule);

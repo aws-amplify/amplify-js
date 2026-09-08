@@ -1,16 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ConsoleLogger } from '../Logger';
 import { PlatformNotSupportedError } from '../errors';
 import { KeyValueStorageEvent, KeyValueStorageInterface } from '../types';
 import { isBrowser } from '../utils';
+
+const logger = new ConsoleLogger('KeyValueStorage');
 
 /**
  * @internal
  */
 export class KeyValueStorage implements KeyValueStorageInterface {
 	storage?: Storage;
-	listeners?: Set<(e: KeyValueStorageEvent) => void>;
+	listeners?: Set<(e: KeyValueStorageEvent) => Promise<void>>;
 
 	/**
 	 * The bound `window` 'storage' event handler. It is created lazily on the
@@ -89,11 +92,25 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 			// never subscribe keep no function-valued own property. The same
 			// reference is reused for detach on last-unsubscribe.
 			const storageListener = (e: StorageEvent) => {
+				// Only react to events for this instance's backing store. Without
+				// this guard a localStorage-backed instance and a
+				// sessionStorage-backed instance would react to each other's
+				// 'storage' events, since both share the single window listener.
+				if (e.storageArea !== this.storage) {
+					return;
+				}
 				this.listeners?.forEach(l => {
-					l({
-						key: e.key,
-						oldValue: e.oldValue,
-						newValue: e.newValue,
+					// A listener may be async and reject; isolate each call so one
+					// rejecting listener neither aborts the others nor surfaces as an
+					// unhandled promise rejection.
+					Promise.resolve(
+						l({
+							key: e.key,
+							oldValue: e.oldValue,
+							newValue: e.newValue,
+						}),
+					).catch(error => {
+						logger.error('Error in storage event listener', error);
 					});
 				});
 			};
