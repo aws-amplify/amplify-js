@@ -18,7 +18,10 @@ import {
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { oAuthStore } from '../utils/oauth/oAuthStore';
-import { addInflightPromise } from '../utils/oauth/inflightPromise';
+import {
+	addInflightPromise,
+	armInflightDeadline,
+} from '../utils/oauth/inflightPromise';
 import { ClientMetadata, CognitoAuthSignInDetails } from '../types';
 
 import {
@@ -38,11 +41,26 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	inflightPromise: Promise<void> | undefined;
 	waitForInflightOAuth: () => Promise<void> = isBrowser()
 		? async () => {
-				if (!(await oAuthStore.loadOAuthInFlight())) {
+				// Read-time evaluation of the blocking deadline: absent flag, an
+				// expired deadline, or a flag value other than 'true' all mean
+				// "do not block". An abandoned flow in another tab can therefore
+				// never park token consumers indefinitely.
+				// (`loadOAuthInFlightDeadline` is optional on the OAuthStore
+				// interface for custom-implementation compatibility, but this
+				// singleton is always the concrete DefaultOAuthStore, which
+				// implements it.)
+				const deadline = await oAuthStore.loadOAuthInFlightDeadline();
+				if (deadline === undefined) {
 					return;
 				}
 
 				if (this.inflightPromise) {
+					// Keep the backstop aligned with the current deadline for waiters
+					// piggybacking on the existing park.
+					armInflightDeadline(deadline, () =>
+						oAuthStore.loadOAuthInFlightDeadline(),
+					);
+
 					return this.inflightPromise;
 				}
 
@@ -50,8 +68,17 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				// to block async calls that require fetching tokens before the oauth flow completes
 				// e.g. getCurrentUser, fetchAuthSession etc.
 
-				this.inflightPromise = new Promise<void>((resolve, _reject) => {
+				this.inflightPromise = new Promise<void>(resolve => {
 					addInflightPromise(resolve);
+					// Arm the deadline backstop in the same synchronous step as the
+					// park: it releases this waiter even when the cross-tab release
+					// fired between the deadline read above and this park (that storage
+					// event never re-fires), when storage events are unavailable
+					// (Safari private mode), or when the flow is simply never
+					// completed anywhere.
+					armInflightDeadline(deadline, () =>
+						oAuthStore.loadOAuthInFlightDeadline(),
+					);
 				});
 
 				return this.inflightPromise;
