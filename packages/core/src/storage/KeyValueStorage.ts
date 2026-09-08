@@ -12,6 +12,16 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	storage?: Storage;
 	listeners?: Set<(e: KeyValueStorageEvent) => void>;
 
+	/**
+	 * The bound `window` 'storage' event handler. It is created lazily on the
+	 * first successful browser subscription and cleared once the last listener
+	 * unsubscribes. Instances that never subscribe therefore carry no
+	 * function-valued own property, which keeps two structurally-identical
+	 * storage instances deep-equal for consumers that compare by value (e.g.
+	 * Jest's `toHaveBeenCalledWith`).
+	 */
+	private storageListener?: (event: StorageEvent) => void;
+
 	constructor(storage?: Storage) {
 		this.storage = storage;
 	}
@@ -75,26 +85,32 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 
 		// Lazily attach the cross-tab 'storage' listener on the first subscription.
 		if (isBrowser() && listeners.size === 1) {
-			window.addEventListener('storage', this.storageListener, false);
+			// Create the handler lazily (and only in a browser) so instances that
+			// never subscribe keep no function-valued own property. The same
+			// reference is reused for detach on last-unsubscribe.
+			const storageListener = (e: StorageEvent) => {
+				this.listeners?.forEach(l => {
+					l({
+						key: e.key,
+						oldValue: e.oldValue,
+						newValue: e.newValue,
+					});
+				});
+			};
+			this.storageListener = storageListener;
+			window.addEventListener('storage', storageListener, false);
 		}
 
 		return () => {
 			listeners.delete(listener);
+			const { storageListener } = this;
 			// Detach once the last subscriber unsubscribes — real teardown, not
-			// just pruning the set.
-			if (isBrowser() && listeners.size === 0) {
-				window.removeEventListener('storage', this.storageListener, false);
+			// just pruning the set. Guarding on the stored handler keeps repeated
+			// unsubscribe calls idempotent.
+			if (isBrowser() && listeners.size === 0 && storageListener) {
+				window.removeEventListener('storage', storageListener, false);
+				this.storageListener = undefined;
 			}
 		};
 	}
-
-	private storageListener = (e: StorageEvent) => {
-		this.listeners?.forEach(listener => {
-			listener({
-				key: e.key,
-				oldValue: e.oldValue,
-				newValue: e.newValue,
-			});
-		});
-	};
 }
