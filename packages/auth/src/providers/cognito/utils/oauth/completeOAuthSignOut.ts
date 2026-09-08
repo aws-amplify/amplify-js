@@ -11,11 +11,18 @@ export const completeOAuthSignOut = async (store: DefaultOAuthStore) => {
 	await store.clearOAuthData();
 
 	const tokenStore = tokenOrchestrator.getTokenStore();
+	// Parked-only guard: when there is NO active user (empty/sentinel pointer),
+	// there is nobody to sign out. OAuth data has already been cleared above; skip
+	// the per-user token/roster mutation and emit NO signedOut event for nobody.
+	const activeUsername = await tokenStore.getActiveUsername();
+	if (!activeUsername) {
+		return;
+	}
+
 	// Resolve the active user from STORED tokens (no refresh), then remove ONLY
 	// that user's namespace + roster entry and clear the active pointer. A
 	// blanket clearTokens() would remove AuthUserList and orphan every other
 	// parked session (multi-session support).
-	const activeUsername = await tokenStore.getLastAuthUser();
 	const storedIdToken = await tokenStore.getStoredIdToken(activeUsername);
 	const activeUserId = storedIdToken?.payload?.sub as string | undefined;
 	const signedOutUser = activeUserId

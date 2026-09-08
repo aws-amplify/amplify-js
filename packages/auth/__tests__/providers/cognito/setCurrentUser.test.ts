@@ -135,16 +135,20 @@ describe('setCurrentUser', () => {
 		);
 	});
 
-	it('skips dispatch when the stored id token has no sub claim', async () => {
+	it('throws UserNotSignedInException BEFORE mutating when the stored id token is unresolvable', async () => {
 		mockGetAuthUserList.mockResolvedValue(['alice', 'bob']);
 		mockGetActiveUsername.mockResolvedValue('alice');
+		// target session cannot be resolved from its stored id token.
 		mockGetStoredIdToken.mockResolvedValue(undefined);
 
-		await setCurrentUser(mockCtx, 'bob');
+		await expect(setCurrentUser(mockCtx, 'bob')).rejects.toMatchObject({
+			name: USER_NOT_SIGNED_IN_EXCEPTION,
+		});
 
-		expect(mockAddActiveSession).toHaveBeenCalledWith('bob');
-		expect(mockCtx.clearCredentials).toHaveBeenCalledTimes(1);
-		// No dispatch when userId can't be resolved.
+		// identity is resolved up front, so NO mutation/side effect occurs.
+		expect(mockGetStoredIdToken).toHaveBeenCalledWith('bob');
+		expect(mockAddActiveSession).not.toHaveBeenCalled();
+		expect(mockCtx.clearCredentials).not.toHaveBeenCalled();
 		expect(mockDispatch).not.toHaveBeenCalled();
 	});
 });

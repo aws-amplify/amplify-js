@@ -24,9 +24,12 @@ export type AuthHubEventData =
 	| { event: 'tokenRefresh_failure'; data: { error?: AuthError } }
 	/** Dispatched when there is a customState passed in the options of the `signInWithRedirect` API. */
 	| { event: 'customOAuthState'; data: string }
-	/** Dispatched when the roster transitions from empty to non-empty. */
+	/** Dispatched when the active user pointer transitions from none to some —
+	 * the first sign-in, or reactivating a parked session after a sign-out. */
 	| { event: 'signedIn'; data: AuthUser }
-	/** Dispatched when the roster transitions from non-empty to empty. */
+	/** Dispatched on every active-user sign-out. This fires EVEN when parked
+	 * sessions remain in the roster; it signals that no user is active, NOT that
+	 * the roster is empty. */
 	| { event: 'signedOut'; data?: AuthUser }
 	/** Dispatched when a user is added to the roster on sign-in. */
 	| { event: 'userSignedIn'; data: AuthUser }

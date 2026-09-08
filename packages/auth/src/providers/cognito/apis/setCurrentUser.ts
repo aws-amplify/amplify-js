@@ -58,6 +58,24 @@ export async function setCurrentUser(...args: any[]): Promise<void> {
 		return;
 	}
 
+	// Resolve the target's identity from their stored id token (no refresh)
+	// BEFORE any mutation. An unresolvable/undecodable session is effectively not
+	// switchable — treat it as a roster-membership failure and throw up front so
+	// we never move the pointer or clear credentials for a switch that could not
+	// produce a valid active user (emitting an event with userId:'' would also
+	// violate the AuthUser contract).
+	const idToken = await tokenStore.getStoredIdToken(username);
+	const userId = (idToken?.payload?.sub as string) ?? '';
+
+	if (!userId) {
+		throw new AuthError({
+			name: USER_NOT_SIGNED_IN_EXCEPTION,
+			message: `Cannot switch to user "${username}": no resolvable signed-in session found.`,
+			recoverySuggestion:
+				'Please make sure the user has signed in before switching to it.',
+		});
+	}
+
 	// Promote the target user to the front of the roster and set it active.
 	await tokenStore.addActiveSession(username);
 
@@ -65,16 +83,6 @@ export async function setCurrentUser(...args: any[]): Promise<void> {
 	// credential requests resolve against the newly active user. Uses the
 	// context-scoped clearCredentials, NOT the global import.
 	await ctx.clearCredentials();
-
-	// Resolve the now-active user's identity from their stored id token (no
-	// refresh). Skip the dispatch if the id token is undecodable — emitting an
-	// event with userId:'' would violate the AuthUser contract.
-	const idToken = await tokenStore.getStoredIdToken(username);
-	const userId = (idToken?.payload?.sub as string) ?? '';
-
-	if (!userId) {
-		return;
-	}
 
 	const data = { username, userId };
 

@@ -44,6 +44,9 @@ export interface AuthTokenStore {
 	getActiveUsername(): Promise<string | undefined>;
 	getAuthUserList(): Promise<string[]>;
 	getStoredIdToken(username: string): Promise<JWT | undefined>;
+	getStoredSignInDetails(
+		username: string,
+	): Promise<CognitoAuthSignInDetails | undefined>;
 	addActiveSession(username: string): Promise<void>;
 	removeSession(username: string): Promise<{ isEmpty: boolean }>;
 	clearActiveUser(): Promise<void>;

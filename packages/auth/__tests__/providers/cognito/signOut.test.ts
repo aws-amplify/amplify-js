@@ -78,6 +78,7 @@ describe('signOut', () => {
 	const mockRemoveSession = jest.fn();
 	const mockClearActiveUser = jest.fn();
 	const mockGetLastAuthUser = jest.fn();
+	const mockGetActiveUsername = jest.fn();
 	const mockGetStoredIdToken = jest.fn();
 	const mockDispatchSignOutBoundaryEvents =
 		dispatchSignOutBoundaryEvents as jest.Mock;
@@ -87,6 +88,7 @@ describe('signOut', () => {
 		removeSession: mockRemoveSession,
 		clearActiveUser: mockClearActiveUser,
 		getLastAuthUser: mockGetLastAuthUser,
+		getActiveUsername: mockGetActiveUsername,
 		getStoredIdToken: mockGetStoredIdToken,
 	} as unknown as AuthTokenStore;
 	const mockDefaultOAuthStoreInstance = {
@@ -135,6 +137,7 @@ describe('signOut', () => {
 		mockLoadTokens.mockResolvedValue(cognitoAuthTokens);
 		// active user resolves from the stored id token (no refresh).
 		mockGetLastAuthUser.mockResolvedValue(activeUser.username);
+		mockGetActiveUsername.mockResolvedValue(activeUser.username);
 		mockGetStoredIdToken.mockResolvedValue({
 			payload: { sub: activeUser.userId },
 		});
@@ -154,6 +157,7 @@ describe('signOut', () => {
 		mockRemoveSession.mockReset();
 		mockClearActiveUser.mockReset();
 		mockGetLastAuthUser.mockReset();
+		mockGetActiveUsername.mockReset();
 		mockGetStoredIdToken.mockReset();
 		loggerDebugSpy.mockClear();
 		mockCreateCognitoUserPoolEndpointResolver.mockClear();
@@ -316,6 +320,34 @@ describe('signOut', () => {
 			expect(mockClearTokensForUser).toHaveBeenCalledWith(activeUser.username);
 			expect(mockClearActiveUser).toHaveBeenCalledTimes(1);
 			expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(undefined);
+		});
+
+		it('is a no-op with NO signedOut event when there is no active user (parked-only roster)', async () => {
+			// empty active pointer: parked sessions may remain but nobody is active,
+			// so sign-out must not mutate anything and must not fire signedOut.
+			mockGetActiveUsername.mockResolvedValue(undefined);
+
+			await signOut(mockCtx);
+
+			expect(mockClearTokensForUser).not.toHaveBeenCalled();
+			expect(mockRemoveSession).not.toHaveBeenCalled();
+			expect(mockClearActiveUser).not.toHaveBeenCalled();
+			expect(mockClearCredentials).not.toHaveBeenCalled();
+			expect(mockDispatchSignOutBoundaryEvents).not.toHaveBeenCalled();
+		});
+
+		it('invokes clearTokensForUser -> removeSession -> clearActiveUser -> dispatch in order', async () => {
+			await signOut(mockCtx);
+
+			// assert the precise sequencing via invocationCallOrder (mirrors the
+			// sign-in ordering test).
+			const order = [
+				mockClearTokensForUser.mock.invocationCallOrder[0],
+				mockRemoveSession.mock.invocationCallOrder[0],
+				mockClearActiveUser.mock.invocationCallOrder[0],
+				mockDispatchSignOutBoundaryEvents.mock.invocationCallOrder[0],
+			];
+			expect(order).toEqual([...order].sort((a, b) => a - b));
 		});
 	});
 

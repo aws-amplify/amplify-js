@@ -12,6 +12,7 @@ import {
 	AUTH_KEY_PREFIX,
 	DefaultTokenStore,
 } from '../../../../src/providers/cognito/tokenProvider';
+import { AuthError } from '../../../../src/errors/AuthError';
 
 const userPoolId = 'us-west-1:0000523';
 const userPoolClientId = 'mockCognitoUserPoolsId';
@@ -215,6 +216,41 @@ describe('TokenStore', () => {
 			const result = await tokenStore.getStoredIdToken(userSub);
 
 			expect(result).toBeUndefined();
+		});
+	});
+
+	describe('getStoredSignInDetails', () => {
+		const signInDetailsKey = `${authIDP}.${userPoolClientId}.${userSub}.signInDetails`;
+
+		it('parses stored signInDetails for a user (keyed via getAuthKeys)', async () => {
+			const details = {
+				loginId: 'alice@example.com',
+				authFlowType: 'USER_SRP_AUTH',
+			};
+			mockKeyValueStorage.getItem.mockImplementation(key =>
+				Promise.resolve(
+					key === signInDetailsKey ? JSON.stringify(details) : null,
+				),
+			);
+
+			const result = await tokenStore.getStoredSignInDetails(userSub);
+
+			expect(mockKeyValueStorage.getItem).toHaveBeenCalledWith(
+				signInDetailsKey,
+			);
+			expect(result).toEqual(details);
+		});
+
+		it('returns undefined when no signInDetails are stored', async () => {
+			mockKeyValueStorage.getItem.mockResolvedValue(null);
+
+			expect(await tokenStore.getStoredSignInDetails(userSub)).toBeUndefined();
+		});
+
+		it('returns undefined (no throw) when the stored value is invalid JSON', async () => {
+			mockKeyValueStorage.getItem.mockResolvedValue('not-json');
+
+			expect(await tokenStore.getStoredSignInDetails(userSub)).toBeUndefined();
 		});
 	});
 
@@ -1111,6 +1147,55 @@ describe('TokenStore', () => {
 
 				expect(store[authUserListKey]).toBe('dave,bob,carol');
 				expect(store[lastAuthUserKey]).toBe('dave');
+			});
+
+			it('serializes concurrent calls so no session is dropped (F3)', async () => {
+				// Start from an empty roster. Apply writes to the in-memory store
+				// immediately but resolve setItem asynchronously: unserialized RMW
+				// would let both reads observe the empty roster and the later write
+				// would clobber the earlier, dropping a user. The mutex must make the
+				// second call read the first call's committed write.
+				mockKeyValueStorage.setItem.mockImplementation(
+					(key: string, value: string) => {
+						store[key] = value;
+
+						return new Promise<void>(resolve => {
+							setTimeout(resolve, 10);
+						});
+					},
+				);
+
+				await Promise.all([
+					tokenStore.addActiveSession('alice'),
+					tokenStore.addActiveSession('bob'),
+				]);
+
+				// both users survive regardless of scheduling order.
+				const finalRoster = (store[authUserListKey] ?? '')
+					.split(',')
+					.filter(Boolean)
+					.sort();
+				expect(finalRoster).toEqual(['alice', 'bob']);
+			});
+
+			it('rethrows a storage write failure as a wrapped AuthError, not the raw error (F4)', async () => {
+				store[authUserListKey] = 'bob';
+				// read-only SSR cookie storage: the persisting write rejects with a
+				// plain Error.
+				mockKeyValueStorage.setItem.mockRejectedValue(
+					new Error('Storage is read-only'),
+				);
+
+				// The rejection must be the descriptive SessionPersistenceException
+				// (an AuthError), NOT the raw storage Error. (This suite auto-mocks
+				// core internals utils, so AmplifyError does not populate `.name`;
+				// the AuthError prototype identity is the reliable signal here.)
+				const rejection = await tokenStore.addActiveSession('alice').then(
+					() => undefined,
+					err => err,
+				);
+				expect(rejection).toBeInstanceOf(AuthError);
+				expect(rejection.message).not.toBe('Storage is read-only');
 			});
 		});
 

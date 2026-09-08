@@ -35,12 +35,14 @@ describe('completeOAuthSignOut', () => {
 	// create mocks
 	const activeUser = { username: 'user1', userId: 'user1-sub' };
 	const mockGetLastAuthUser = jest.fn();
+	const mockGetActiveUsername = jest.fn();
 	const mockGetStoredIdToken = jest.fn();
 	const mockClearTokensForUser = jest.fn();
 	const mockRemoveSession = jest.fn();
 	const mockClearActiveUser = jest.fn();
 	const mockTokenStore = {
 		getLastAuthUser: mockGetLastAuthUser,
+		getActiveUsername: mockGetActiveUsername,
 		getStoredIdToken: mockGetStoredIdToken,
 		clearTokensForUser: mockClearTokensForUser,
 		removeSession: mockRemoveSession,
@@ -55,6 +57,7 @@ describe('completeOAuthSignOut', () => {
 			mockTokenStore as unknown as AuthTokenStore,
 		);
 		mockGetLastAuthUser.mockResolvedValue(activeUser.username);
+		mockGetActiveUsername.mockResolvedValue(activeUser.username);
 		mockGetStoredIdToken.mockResolvedValue({
 			payload: { sub: activeUser.userId },
 		});
@@ -67,6 +70,7 @@ describe('completeOAuthSignOut', () => {
 		mockStore.clearOAuthData.mockClear();
 		mockClearCredentials.mockClear();
 		mockGetLastAuthUser.mockReset();
+		mockGetActiveUsername.mockReset();
 		mockGetStoredIdToken.mockReset();
 		mockClearTokensForUser.mockReset();
 		mockRemoveSession.mockReset();
@@ -95,10 +99,25 @@ describe('completeOAuthSignOut', () => {
 
 		await completeOAuthSignOut(mockStore);
 
-		expect(mockGetLastAuthUser).toHaveBeenCalledTimes(1);
+		expect(mockGetActiveUsername).toHaveBeenCalledTimes(1);
 		expect(mockClearTokensForUser).toHaveBeenCalledWith(activeUser.username);
 		expect(mockClearActiveUser).toHaveBeenCalledTimes(1);
 		// no resolvable userId -> signedOutUser is undefined.
 		expect(mockDispatchSignOutBoundaryEvents).toHaveBeenCalledWith(undefined);
+	});
+
+	it('clears OAuth data but is otherwise a no-op with NO signedOut event when there is no active user', async () => {
+		// parked-only/empty roster: nobody active. OAuth data is still cleared, but
+		// no token/roster mutation happens and signedOut fires for nobody.
+		mockGetActiveUsername.mockResolvedValue(undefined);
+
+		await completeOAuthSignOut(mockStore);
+
+		expect(mockStore.clearOAuthData).toHaveBeenCalledTimes(1);
+		expect(mockClearTokensForUser).not.toHaveBeenCalled();
+		expect(mockRemoveSession).not.toHaveBeenCalled();
+		expect(mockClearActiveUser).not.toHaveBeenCalled();
+		expect(mockClearCredentials).not.toHaveBeenCalled();
+		expect(mockDispatchSignOutBoundaryEvents).not.toHaveBeenCalled();
 	});
 });

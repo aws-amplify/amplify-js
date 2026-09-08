@@ -20,11 +20,21 @@ import { resolveSessionSwitcher } from './resolveSessionSwitcher';
  *
  * Unlike the client API, this does NOT emit a `switchActiveUser` Hub event.
  *
+ * Requires a WRITABLE server context — a Route Handler, Server Action, or
+ * Middleware — because the switch must persist the active-session pointer to
+ * cookie storage. A read-only Server Component context cannot persist the
+ * switch (its response cookies are already committed/immutable); attempting it
+ * there rejects with an `AuthError` named `SessionPersistenceException` rather
+ * than silently appearing to succeed.
+ *
  * @param contextSpec - The context spec used to get the Amplify server context.
  * @param username - The username of the signed-in user to switch to.
  * @returns void
  * @throws {@link AuthError} - Thrown with name `UserNotSignedInException` when
  * the given username has no signed-in session in the roster.
+ * @throws {@link AuthError} - Thrown with name `SessionPersistenceException`
+ * when the switch cannot be persisted (read-only storage / already-committed
+ * response).
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  * @throws {@link AuthError} - Thrown with name `TokenProviderNotFoundException`
  * when no token provider is configured on the resolved context.

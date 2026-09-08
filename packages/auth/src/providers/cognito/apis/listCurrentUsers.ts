@@ -31,10 +31,8 @@ export async function listCurrentUsers(...args: any[]): Promise<AuthUser[]> {
 	const [ctx] = resolveCtxArgs<[]>(args);
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { userPoolClientId } = authConfig;
 
 	const { authTokenStore } = cognitoUserPoolsTokenProvider;
-	const keyValueStorage = authTokenStore.getKeyValueStorage();
 
 	// Roster is ordered with the active user first; preserve that order.
 	const roster = await authTokenStore.getAuthUserList();
@@ -64,11 +62,12 @@ export async function listCurrentUsers(...args: any[]): Promise<AuthUser[]> {
 				userId: sub as string,
 			};
 
-			const signInDetailsKey = `CognitoIdentityServiceProvider.${userPoolClientId}.${rosterUsername}.signInDetails`;
-			const signInDetailsString =
-				await keyValueStorage.getItem(signInDetailsKey);
-			if (signInDetailsString) {
-				authUser.signInDetails = JSON.parse(signInDetailsString);
+			// Keyed via the shared store helper (getAuthKeys) rather than a
+			// hand-built key template, avoiding drift with the token namespace.
+			const signInDetails =
+				await authTokenStore.getStoredSignInDetails(rosterUsername);
+			if (signInDetails) {
+				authUser.signInDetails = signInDetails;
 			}
 
 			return authUser;

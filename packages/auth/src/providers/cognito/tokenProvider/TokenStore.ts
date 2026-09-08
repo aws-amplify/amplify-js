@@ -15,6 +15,8 @@ import {
 
 import { AuthError } from '../../../errors/AuthError';
 import { getCurrentUser } from '../apis/getCurrentUser';
+import { SESSION_PERSISTENCE_EXCEPTION } from '../../../errors/constants';
+import { CognitoAuthSignInDetails } from '../types';
 
 import {
 	AuthKeys,
@@ -31,6 +33,29 @@ export class DefaultTokenStore implements AuthTokenStore {
 	private authConfig?: AuthConfig;
 	keyValueStorage?: KeyValueStorageInterface;
 	private stopNotify?: () => void;
+
+	/**
+	 * In-memory serialization point for roster read-modify-write mutations.
+	 *
+	 * addActiveSession/removeSession (and getAuthUserList's reconciliation write)
+	 * each read the roster, transform it, then persist it. Two such operations
+	 * racing on the same instance would both read the same starting roster and
+	 * the later write would clobber the earlier — silently dropping a session.
+	 * serializeRoster chains every mutation onto a single promise so they run one
+	 * at a time; the `.catch` on the stored tail keeps a rejected mutation from
+	 * wedging the chain while still surfacing the rejection to its own caller.
+	 *
+	 * This guards concurrency WITHIN a single process/instance only; it does not
+	 * coordinate across tabs or the shared cookie storage two subdomains see.
+	 */
+	private rosterMutation: Promise<unknown> = Promise.resolve();
+
+	private serializeRoster<T>(fn: () => Promise<T>): Promise<T> {
+		const run = this.rosterMutation.then(fn, fn);
+		this.rosterMutation = run.catch(() => undefined);
+
+		return run;
+	}
 
 	getKeyValueStorage(): KeyValueStorageInterface {
 		if (!this.keyValueStorage) {
@@ -328,6 +353,29 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	/**
+	 * Loads and parses the stored signInDetails for a specific user, keyed via
+	 * the shared {@link getAuthKeys} helper (avoids key drift with the rest of
+	 * the token namespace). Returns undefined when the key is absent or its value
+	 * cannot be parsed.
+	 *
+	 * @param username - The username whose stored signInDetails should be read.
+	 */
+	async getStoredSignInDetails(
+		username: string,
+	): Promise<CognitoAuthSignInDetails | undefined> {
+		try {
+			const authKeys = await this.getAuthKeys(username);
+			const signInDetailsString = await this.getKeyValueStorage().getItem(
+				authKeys.signInDetails,
+			);
+
+			return signInDetailsString ? JSON.parse(signInDetailsString) : undefined;
+		} catch (err) {
+			return undefined;
+		}
+	}
+
+	/**
 	 * Returns true when a live session exists for the username, detected by the
 	 * presence of the ACCESS TOKEN key. This is the correct liveness signal for
 	 * pruning: loadTokens only requires an accessToken, and the idToken is
@@ -434,6 +482,47 @@ export class DefaultTokenStore implements AuthTokenStore {
 	 * hot path (pointer already in sync, or empty) does no per-entry reads.
 	 */
 	async getAuthUserList(): Promise<string[]> {
+		// Compute the reconciled roster with reads only (no writes), then persist
+		// under the roster mutex if reconciliation changed anything. Splitting the
+		// read from the write lets addActiveSession/removeSession reuse the pure
+		// reader INSIDE their own serialized slot without re-entering the mutex
+		// (which would deadlock, since serializeRoster runs one fn at a time).
+		const { list, needsPersist, clearStalePointer } =
+			await this.readReconciledRoster();
+
+		if (needsPersist) {
+			// Best-effort AND serialized: read-only/ephemeral SSR storage may reject
+			// the write (the reconciled list is still returned regardless), and the
+			// mutex prevents a concurrent addActiveSession/removeSession from
+			// clobbering — or being clobbered by — this repair.
+			await this.serializeRoster(async () => {
+				try {
+					await this.persistAuthUserList(list);
+					if (clearStalePointer && list.length > 0) {
+						// Non-empty roster keeps the pointer key (persist didn't touch
+						// it), so clear the stale pointer explicitly.
+						await this.clearActiveUser();
+					}
+				} catch {
+					// Storage is read-only (e.g. SSR); degrade gracefully.
+				}
+			});
+		}
+
+		return list;
+	}
+
+	/**
+	 * Pure (read-only) computation of the reconciled roster. Performs NO writes;
+	 * the caller decides whether/how to persist. Returns the reconciled list plus
+	 * whether a persist is warranted and whether a stale non-empty pointer must be
+	 * cleared. See {@link getAuthUserList} for the reconciliation semantics.
+	 */
+	private async readReconciledRoster(): Promise<{
+		list: string[];
+		needsPersist: boolean;
+		clearStalePointer: boolean;
+	}> {
 		const authUserListString = await this.getKeyValueStorage().getItem(
 			this.getAuthUserListKey(),
 		);
@@ -486,43 +575,24 @@ export class DefaultTokenStore implements AuthTokenStore {
 			// roster (the pointer is single-writer — owned by addActiveSession), so
 			// a surviving promoted pointer is left as the external writer set it.
 			// When reconciledList is empty, persistAuthUserList([]) clears both keys.
-			if (
-				reconciledList.join(',') !== parsedList.join(',') ||
-				clearStalePointer
-			) {
-				// Best-effort: read-only/ephemeral SSR storage may reject the write;
-				// the reconciled list is still returned to the caller.
-				try {
-					await this.persistAuthUserList(reconciledList);
-					if (clearStalePointer && reconciledList.length > 0) {
-						// Non-empty roster keeps the pointer key (persist didn't touch
-						// it), so clear the stale pointer explicitly.
-						await this.clearActiveUser();
-					}
-				} catch {
-					// Storage is read-only (e.g. SSR); degrade gracefully.
-				}
-			}
+			const needsPersist =
+				reconciledList.join(',') !== parsedList.join(',') || clearStalePointer;
 
-			return reconciledList;
+			return { list: reconciledList, needsPersist, clearStalePointer };
 		}
 
 		// Migration: fall back to a legacy single LastAuthUser value if present.
+		// The derived roster is returned to the caller; getAuthUserList persists it
+		// best-effort (the next mutable-storage call will retry on SSR).
 		if (lastAuthUser && lastAuthUser !== 'username') {
-			const migratedList = [lastAuthUser];
-			// Best-effort persist: on read-only/ephemeral SSR storage the write
-			// may fail — that's acceptable because the migrated list is still
-			// returned to the caller; the next mutable-storage call will retry.
-			try {
-				await this.persistAuthUserList(migratedList);
-			} catch {
-				// Storage is read-only (e.g. SSR); degrade gracefully.
-			}
-
-			return migratedList;
+			return {
+				list: [lastAuthUser],
+				needsPersist: true,
+				clearStalePointer: false,
+			};
 		}
 
-		return [];
+		return { list: [], needsPersist: false, clearStalePointer: false };
 	}
 
 	/**
@@ -582,11 +652,32 @@ export class DefaultTokenStore implements AuthTokenStore {
 	 * @param username - The username to mark as the active session.
 	 */
 	async addActiveSession(username: string): Promise<void> {
-		const list = await this.getAuthUserList();
-		await this.persistAuthUserList(
-			[username, ...list.filter(user => user !== username)],
-			{ setPointerTo: username },
-		);
+		return this.serializeRoster(async () => {
+			// Read INSIDE the mutex via the pure reader (not getAuthUserList, which
+			// would re-enter serializeRoster and deadlock) so the read-modify-write
+			// is atomic with respect to other roster mutations.
+			const { list } = await this.readReconciledRoster();
+			try {
+				await this.persistAuthUserList(
+					[username, ...list.filter(user => user !== username)],
+					{ setPointerTo: username },
+				);
+			} catch (err) {
+				// Unlike getAuthUserList's best-effort reconciliation, an active-session
+				// switch MUST persist: a switch that silently failed to write would
+				// look successful while the pointer never moved. Rethrow the raw
+				// storage error as a descriptive AuthError so a read-only SSR context
+				// (Server Component / already-committed response) surfaces clearly.
+				throw new AuthError({
+					name: SESSION_PERSISTENCE_EXCEPTION,
+					message:
+						'The active-session switch could not be persisted: storage is read-only or the response has already been committed.',
+					recoverySuggestion:
+						'Perform the session switch from a writable server context (Route Handler, Server Action, or Middleware); a read-only Server Component cannot persist a switch.',
+					underlyingError: err,
+				});
+			}
+		});
 	}
 
 	/**
@@ -599,11 +690,15 @@ export class DefaultTokenStore implements AuthTokenStore {
 	 * @returns Whether the roster is now empty.
 	 */
 	async removeSession(username: string): Promise<{ isEmpty: boolean }> {
-		const list = await this.getAuthUserList();
-		const newList = list.filter(user => user !== username);
-		await this.persistAuthUserList(newList);
+		return this.serializeRoster(async () => {
+			// Pure reader inside the mutex (see addActiveSession) so a concurrent
+			// mutation cannot clobber this filter-and-persist.
+			const { list } = await this.readReconciledRoster();
+			const newList = list.filter(user => user !== username);
+			await this.persistAuthUserList(newList);
 
-		return { isEmpty: newList.length === 0 };
+			return { isEmpty: newList.length === 0 };
+		});
 	}
 
 	/**

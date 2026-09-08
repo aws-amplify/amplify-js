@@ -84,10 +84,19 @@ export async function signOut(...args: any[]): Promise<void> {
 		}
 	} else {
 		// complete sign out
+		const tokenStore = tokenOrchestrator.getTokenStore();
+
+		// Parked-only guard: when there is NO active user (empty/sentinel pointer)
+		// there is nobody to sign out — a parked roster with no active pointer is a
+		// legitimate post-sign-out state. Skip all local mutation and emit NO
+		// signedOut event for nobody.
+		const activeUsername = await tokenStore.getActiveUsername();
+		if (!activeUsername) {
+			return;
+		}
+
 		// Resolve the signed-out user identity from STORED tokens (no refresh)
 		// before any local mutation, so the boundary events can carry it.
-		const tokenStore = tokenOrchestrator.getTokenStore();
-		const activeUsername = await tokenStore.getLastAuthUser();
 		const storedIdToken = await tokenStore.getStoredIdToken(activeUsername);
 		const userId = storedIdToken?.payload?.sub as string | undefined;
 		const signedOutUser = userId

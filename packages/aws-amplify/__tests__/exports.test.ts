@@ -6,6 +6,7 @@ import * as utilsExports from '../src/utils';
 import * as apiTopLevelExports from '../src/api';
 import * as authTopLevelExports from '../src/auth';
 import * as authCognitoExports from '../src/auth/cognito';
+import * as authServerExports from '../src/auth/server';
 import * as analyticsTopLevelExports from '../src/analytics';
 import * as analyticsPinpointExports from '../src/analytics/pinpoint';
 import * as inAppMessagingTopLevelExports from '../src/in-app-messaging';
@@ -242,6 +243,22 @@ describe('aws-amplify Exports', () => {
 					'listCurrentUsers',
 					'setCurrentUser',
 				].sort(),
+			);
+		});
+	});
+
+	describe('Auth server exports', () => {
+		it('should export the multi-session server APIs', () => {
+			// The server entry re-exports @aws-amplify/core/server symbols too, so
+			// assert the auth server surface CONTAINS the multi-session APIs rather
+			// than pinning the full (core-dependent) set.
+			expect(Object.keys(authServerExports)).toEqual(
+				expect.arrayContaining([
+					'getCurrentUser',
+					'fetchUserAttributes',
+					'listCurrentUsers',
+					'setCurrentUser',
+				]),
 			);
 		});
 	});
