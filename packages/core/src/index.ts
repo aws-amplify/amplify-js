@@ -91,7 +91,7 @@ export {
 	syncSessionStorage,
 	sharedInMemoryStorage,
 } from './storage';
-export { KeyValueStorageInterface } from './types';
+export { KeyValueStorageInterface, KeyValueStorageEvent } from './types';
 
 // Cache exports
 export { Cache } from './Cache';

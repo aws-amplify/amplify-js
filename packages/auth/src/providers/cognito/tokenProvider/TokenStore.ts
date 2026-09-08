@@ -1,12 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
 import {
+	AuthConfig,
+	Hub,
+	KeyValueStorageEvent,
+	KeyValueStorageInterface,
+} from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
 	assertTokenProviderConfig,
 	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
+import { getCurrentUser } from '../apis/getCurrentUser';
 
 import {
 	AuthKeys,
@@ -22,6 +29,7 @@ import { AUTH_KEY_PREFIX } from './constants';
 export class DefaultTokenStore implements AuthTokenStore {
 	private authConfig?: AuthConfig;
 	keyValueStorage?: KeyValueStorageInterface;
+	private stopNotify?: () => void;
 
 	getKeyValueStorage(): KeyValueStorageInterface {
 		if (!this.keyValueStorage) {
@@ -35,11 +43,103 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
+		// If notify is active, detach from the old storage and re-attach to the
+		// new one so a storage swap (e.g. SSR/adapter cookie storage) does not
+		// orphan the listener on the previous store.
+		const wasActive = !!this.stopNotify;
+		this.teardownNotify();
 		this.keyValueStorage = keyValueStorage;
+		if (wasActive) {
+			this.setupNotify();
+		}
 	}
 
 	setAuthConfig(authConfig: AuthConfig) {
 		this.authConfig = authConfig;
+	}
+
+	setupNotify() {
+		// Idempotent: a second call while already subscribed is a no-op rather
+		// than a second (leaked) listener.
+		if (this.stopNotify) {
+			return;
+		}
+		this.stopNotify = this.keyValueStorage?.addListener?.(
+			async (e: KeyValueStorageEvent) => {
+				const key = e.key || '';
+				// Only react to this provider's auth token keys. Match by
+				// prefix/suffix instead of a positional `split('.')` so usernames
+				// that contain dots (e.g. email addresses) are handled correctly —
+				// keys look like `${AUTH_KEY_PREFIX}.<clientId>.<username>.<type>`.
+				if (!key.startsWith(`${AUTH_KEY_PREFIX}.`)) {
+					return;
+				}
+
+				const { newValue, oldValue } = e;
+
+				if (key.endsWith('.refreshToken')) {
+					// The refreshToken key drives sign-in / sign-out only. Its
+					// presence transition (falsy <-> truthy) is the reliable
+					// cross-tab signal. `oldValue`/`newValue` are compared with
+					// truthy/falsy checks rather than `=== null` so adapter storages
+					// that surface an absent value as `undefined` or `''` still work.
+					// Note: non-rotating pools rewrite an identical refreshToken,
+					// which fires no storage event, so value→value changes here are
+					// not observable and must not be relied on for tokenRefresh.
+					if (newValue && !oldValue) {
+						Hub.dispatch(
+							'auth',
+							{
+								event: 'signedIn',
+								data: await getCurrentUser(),
+							},
+							'Auth',
+							AMPLIFY_SYMBOL,
+							true,
+						);
+					} else if (!newValue && oldValue) {
+						Hub.dispatch(
+							'auth',
+							{
+								event: 'signedOut',
+							},
+							'Auth',
+							AMPLIFY_SYMBOL,
+							true,
+						);
+					}
+				} else if (key.endsWith('.accessToken')) {
+					// tokenRefresh is detected on the accessToken key: it always
+					// changes value on a refresh for both rotating and non-rotating
+					// pools. Guard on both values present and actually differing so
+					// that sign-in's null→value transition does not masquerade as a
+					// refresh. On rotation pools both keys change, but only this
+					// branch dispatches tokenRefresh, so there is no double dispatch.
+					if (oldValue && newValue && oldValue !== newValue) {
+						Hub.dispatch(
+							'auth',
+							{
+								event: 'tokenRefresh',
+							},
+							'Auth',
+							AMPLIFY_SYMBOL,
+							true,
+						);
+					}
+				}
+			},
+		);
+	}
+
+	/**
+	 * Detaches the cross-tab storage listener registered by {@link setupNotify}
+	 * and clears the retained unsubscribe handle, allowing a subsequent
+	 * `setupNotify()` to re-register (e.g. after a storage swap, in tests, or
+	 * during HMR). No-op when notify was never set up.
+	 */
+	teardownNotify() {
+		this.stopNotify?.();
+		this.stopNotify = undefined;
 	}
 
 	async loadTokens(): Promise<CognitoAuthTokens | null> {
