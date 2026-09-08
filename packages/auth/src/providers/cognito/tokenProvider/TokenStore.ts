@@ -1,12 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AuthConfig, Hub, KeyValueStorageInterface } from '@aws-amplify/core';
+import {
+	AuthConfig,
+	Hub,
+	KeyValueStorageEvent,
+	KeyValueStorageInterface,
+} from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
 	assertTokenProviderConfig,
 	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
-import { KeyValueStorageEvent } from '@aws-amplify/core/src/types';
 
 import { AuthError } from '../../../errors/AuthError';
 import { getCurrentUser } from '../apis/getCurrentUser';
