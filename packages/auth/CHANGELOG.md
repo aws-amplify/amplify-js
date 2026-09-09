@@ -1,5 +1,71 @@
 # Change Log
 
+## 6.21.0
+
+### Minor Changes
+
+- [#14931](https://github.com/aws-amplify/amplify-js/pull/14931) [`736d81d`](https://github.com/aws-amplify/amplify-js/commit/736d81d694b1df633e519881f73d1a942d6ccbe6) Thanks [@bobbor](https://github.com/bobbor)! - feat: explicit AmplifyContext support across all categories.
+
+  Adds context-first overloads (`fn(ctx, input)`) to category APIs alongside the existing
+  singleton-based forms, a public `createAmplifyContext(resourcesConfig, libraryOptions?)`
+  factory for isolated per-request/per-tenant contexts, per-request context isolation in
+  `@aws-amplify/adapter-nextjs` SSR, typed misuse errors (`InvalidAmplifyContextError`,
+  `NoAmplifyContextError`), and a shared testing entry (`@aws-amplify/core/internals/testing`).
+
+  Backward compatible: existing application code — including pre-context SSR
+  `operation: (contextSpec) => fetchAuthSession(contextSpec)` — compiles and behaves
+  unchanged via deprecated type aliases. Includes two api-graphql bug fixes: SSR request
+  clients now honor client-level options (previously silently dropped), and events error
+  messages accurately describe failures.
+
+  Compatibility surface and version guidance:
+  - Resources config is now deep-frozen after `Amplify.configure()` and
+    `createAmplifyContext()` (previously frozen only at the top level). Code that mutated
+    a nested config field post-configure — always unsupported — now throws in strict mode
+    instead of silently succeeding.
+  - Deprecated `AmplifyServer` type aliases (`Context`, `ContextSpec`, `ContextToken`,
+    `RunOperationWithContext`) and functional `createAmplifyServerContext` /
+    `getAmplifyServerContext` / `destroyAmplifyServerContext` shims are restored on the
+    internals/adapter-core entries so previously published `@aws-amplify/adapter-nextjs`
+    versions keep working. They will be removed in the next major.
+  - Peer minimums are raised (`@aws-amplify/core` to `^6.19.0` across category packages;
+    `aws-amplify` to `^6.21.0` for `@aws-amplify/adapter-nextjs`) to guard against
+    version-skewed installs going forward. Note this guard only applies when the
+    dependency tree is re-resolved: existing lockfiles, `npm ci`, and installs with
+    `--legacy-peer-deps` (or yarn classic's warn-only peers) are not re-checked, and
+    already-published category versions still declare the older range. Mixing an older
+    scoped category package (e.g. `@aws-amplify/auth` ≤ 6.x pinned to `core ^6.16.2`)
+    with a newer core is unsupported — keep directly installed `@aws-amplify/*` category
+    packages on the same release line as `aws-amplify`.
+
+- [#14465](https://github.com/aws-amplify/amplify-js/pull/14465) [`eda0afa`](https://github.com/aws-amplify/amplify-js/commit/eda0afae7006b437902ad332803831da970abd38) Thanks [@bobbor](https://github.com/bobbor)! - feat(auth): dispatch auth Hub events across browser tabs (signedIn / signedOut / tokenRefresh)
+
+### Patch Changes
+
+- [#14902](https://github.com/aws-amplify/amplify-js/pull/14902) [`4661401`](https://github.com/aws-amplify/amplify-js/commit/46614015534d5d2080b2da4887ec020cb15bcea8) Thanks [@soberm](https://github.com/soberm)! - fix(auth): allow prompt=none silent SSO to resume federated sessions
+
+  `signInWithRedirect` always appended `identity_provider=COGNITO` to the `/oauth2/authorize` request when no `provider` or `idpIdentifier` was supplied. Cognito treats `identity_provider` as a provider selector, so pinning it to `COGNITO` while requesting a silent sign in with `options.prompt: 'NONE'` restricted the attempt to native Cognito sessions. Users whose live hosted UI session originated from a federated IdP (for example Google or a SAML provider) were rejected with `error=login_required` instead of having their session resumed.
+
+  `identity_provider` is now omitted only when `prompt` is `'NONE'` and neither `provider` nor `idpIdentifier` is specified, which lets Cognito resume whichever session is already active. All other behavior is unchanged: an explicit `provider` still sends `identity_provider`, an `idpIdentifier` still sends `idp_identifier`, and the interactive no-argument call still defaults to `identity_provider=COGNITO`.
+
+  Fixes https://github.com/aws-amplify/amplify-js/issues/14897
+
+- [#14942](https://github.com/aws-amplify/amplify-js/pull/14942) [`556185e`](https://github.com/aws-amplify/amplify-js/commit/556185e769418f450cd11d2d8b31daf4c7961b0c) Thanks [@bobbor](https://github.com/bobbor)! - fix(auth): bound waiting on an inflight OAuth flow with a read-time deadline
+
+  `fetchAuthSession` / `getCurrentUser` could previously hang forever when another
+  tab started `signInWithRedirect` and abandoned the Hosted UI page: the shared
+  `inflightOAuth` flag has no expiry and the parked promise was only released by
+  the tab completing the flow.
+
+  The flow now records a blocking deadline next to the flag (`inflightOAuthDeadline`,
+  5 minutes). Token consumers evaluate it at read time and park with a backstop
+  timer, and a cross-tab storage listener releases waiters as soon as the owning
+  tab settles the flow. The deadline bounds only how long other work may block —
+  the completion path deliberately ignores it, and no tab ever mutates another
+  tab's flow state, so a slow-but-successful login still completes. Flags written
+  by older library versions are handled by persisting a default deadline on first
+  observation.
+
 ## 6.20.0
 
 ### Minor Changes
