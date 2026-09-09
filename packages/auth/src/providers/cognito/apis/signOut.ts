@@ -5,11 +5,9 @@ import {
 	AmplifyContext,
 	CognitoUserPoolConfig,
 	ConsoleLogger,
-	Hub,
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
-	AMPLIFY_SYMBOL,
 	AuthAction,
 	JWT,
 	assertOAuthConfig,
@@ -27,6 +25,7 @@ import {
 } from '../utils/types';
 import { handleOAuthSignOut } from '../utils/oauth';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
+import { dispatchSignOutBoundaryEvents } from '../utils/dispatchSignOutHubEvents';
 import { AuthError } from '../../../errors/AuthError';
 import { OAUTH_SIGNOUT_EXCEPTION } from '../../../errors/constants';
 import {
@@ -85,9 +84,37 @@ export async function signOut(...args: any[]): Promise<void> {
 		}
 	} else {
 		// complete sign out
-		tokenOrchestrator.clearTokens();
+		const tokenStore = tokenOrchestrator.getTokenStore();
+
+		// Parked-only guard: when there is NO active user (empty/sentinel pointer)
+		// there is nobody to sign out — a parked roster with no active pointer is a
+		// legitimate post-sign-out state. Skip all local mutation and emit NO
+		// signedOut event for nobody.
+		const activeUsername = await tokenStore.getActiveUsername();
+		if (!activeUsername) {
+			return;
+		}
+
+		// Resolve the signed-out user identity from STORED tokens (no refresh)
+		// before any local mutation, so the boundary events can carry it.
+		const storedIdToken = await tokenStore.getStoredIdToken(activeUsername);
+		const userId = storedIdToken?.payload?.sub as string | undefined;
+		const signedOutUser = userId
+			? { username: activeUsername, userId }
+			: undefined;
+
+		// No-promotion sign-out: clear the active user's namespaced tokens, drop
+		// them from the roster (never promoting a parked user), then clear the
+		// active pointer so getCurrentUser/fetchAuthSession read as signed-out.
+		await tokenStore.clearTokensForUser(activeUsername);
+		await tokenStore.removeSession(activeUsername);
+		await tokenStore.clearActiveUser();
+		// Bust identity-pool credentials via the context-scoped clearCredentials.
 		await ctx.clearCredentials();
-		Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
+
+		// emit the shared sign-out boundary events (userSignedOut when resolvable,
+		// then signedOut ALWAYS). No switchActiveUser is ever emitted.
+		await dispatchSignOutBoundaryEvents(signedOutUser);
 	}
 }
 

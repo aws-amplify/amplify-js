@@ -1,0 +1,154 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { Hub } from '@aws-amplify/core';
+import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+
+import { setCurrentUser } from '../../../src/providers/cognito/apis/setCurrentUser';
+import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
+import { AuthTokenStore } from '../../../src/providers/cognito/tokenProvider/types';
+import { USER_NOT_SIGNED_IN_EXCEPTION } from '../../../src/errors/constants';
+
+jest.mock('@aws-amplify/core', () => ({
+	Hub: {
+		dispatch: jest.fn(),
+	},
+}));
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	AMPLIFY_SYMBOL: Symbol('AMPLIFY_SYMBOL'),
+}));
+jest.mock('../../../src/providers/cognito/tokenProvider');
+
+const mockTokenOrchestrator = tokenOrchestrator as jest.Mocked<
+	typeof tokenOrchestrator
+>;
+const mockDispatch = Hub.dispatch as jest.Mock;
+const mockGetAuthUserList = jest.fn();
+const mockGetActiveUsername = jest.fn();
+const mockAddActiveSession = jest.fn();
+const mockGetStoredIdToken = jest.fn();
+const mockTokenStore = {
+	getAuthUserList: mockGetAuthUserList,
+	getActiveUsername: mockGetActiveUsername,
+	addActiveSession: mockAddActiveSession,
+	getStoredIdToken: mockGetStoredIdToken,
+};
+
+let mockCtx: ReturnType<typeof createMockAmplifyContext>;
+
+describe('setCurrentUser', () => {
+	beforeEach(() => {
+		mockCtx = createMockAmplifyContext();
+		mockTokenOrchestrator.getTokenStore.mockReturnValue(
+			mockTokenStore as unknown as AuthTokenStore,
+		);
+		mockAddActiveSession.mockResolvedValue(undefined);
+	});
+
+	afterEach(() => {
+		mockGetAuthUserList.mockReset();
+		mockGetActiveUsername.mockReset();
+		mockAddActiveSession.mockReset();
+		mockGetStoredIdToken.mockReset();
+		mockDispatch.mockClear();
+		mockTokenOrchestrator.getTokenStore.mockReset();
+	});
+
+	it('throws when the target username has no session in the roster', async () => {
+		mockGetAuthUserList.mockResolvedValue(['alice']);
+
+		await expect(setCurrentUser(mockCtx, 'bob')).rejects.toMatchObject({
+			name: USER_NOT_SIGNED_IN_EXCEPTION,
+		});
+
+		expect(mockAddActiveSession).not.toHaveBeenCalled();
+		expect(mockCtx.clearCredentials).not.toHaveBeenCalled();
+		expect(mockDispatch).not.toHaveBeenCalled();
+	});
+
+	it('is a no-op when the target user is already the active pointer', async () => {
+		mockGetAuthUserList.mockResolvedValue(['bob', 'alice']);
+		mockGetActiveUsername.mockResolvedValue('bob');
+
+		await setCurrentUser(mockCtx, 'bob');
+
+		expect(mockAddActiveSession).not.toHaveBeenCalled();
+		expect(mockCtx.clearCredentials).not.toHaveBeenCalled();
+		expect(mockDispatch).not.toHaveBeenCalled();
+	});
+
+	it('reorders the roster, clears credentials, and dispatches switchActiveUser when another user was active', async () => {
+		mockGetAuthUserList.mockResolvedValue(['alice', 'bob']);
+		mockGetActiveUsername.mockResolvedValue('alice');
+		mockGetStoredIdToken.mockResolvedValue({
+			payload: { sub: 'bob-id' },
+		});
+
+		await setCurrentUser(mockCtx, 'bob');
+
+		// promotes the target to the front of the roster.
+		expect(mockAddActiveSession).toHaveBeenCalledWith('bob');
+		// busts the previous active user's identity-pool credentials.
+		expect(mockCtx.clearCredentials).toHaveBeenCalledTimes(1);
+		// resolves from stored id token, not getCurrentUser.
+		expect(mockGetStoredIdToken).toHaveBeenCalledWith('bob');
+		// switchActiveUser fires when the active pointer moves between users.
+		expect(mockDispatch).toHaveBeenCalledWith(
+			'auth',
+			{
+				event: 'switchActiveUser',
+				data: { username: 'bob', userId: 'bob-id' },
+			},
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	});
+
+	it('dispatches signedIn (not switchActiveUser) when activating a parked session with no active pointer', async () => {
+		// parked roster after a sign-out: nobody active (empty pointer).
+		mockGetAuthUserList.mockResolvedValue(['bob']);
+		mockGetActiveUsername.mockResolvedValue(undefined);
+		mockGetStoredIdToken.mockResolvedValue({
+			payload: { sub: 'bob-id' },
+		});
+
+		await setCurrentUser(mockCtx, 'bob');
+
+		expect(mockAddActiveSession).toHaveBeenCalledWith('bob');
+		expect(mockCtx.clearCredentials).toHaveBeenCalledTimes(1);
+		expect(mockDispatch).toHaveBeenCalledWith(
+			'auth',
+			{
+				event: 'signedIn',
+				data: { username: 'bob', userId: 'bob-id' },
+			},
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).not.toHaveBeenCalledWith(
+			'auth',
+			expect.objectContaining({ event: 'switchActiveUser' }),
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	});
+
+	it('throws UserNotSignedInException BEFORE mutating when the stored id token is unresolvable', async () => {
+		mockGetAuthUserList.mockResolvedValue(['alice', 'bob']);
+		mockGetActiveUsername.mockResolvedValue('alice');
+		// target session cannot be resolved from its stored id token.
+		mockGetStoredIdToken.mockResolvedValue(undefined);
+
+		await expect(setCurrentUser(mockCtx, 'bob')).rejects.toMatchObject({
+			name: USER_NOT_SIGNED_IN_EXCEPTION,
+		});
+
+		// identity is resolved up front, so NO mutation/side effect occurs.
+		expect(mockGetStoredIdToken).toHaveBeenCalledWith('bob');
+		expect(mockAddActiveSession).not.toHaveBeenCalled();
+		expect(mockCtx.clearCredentials).not.toHaveBeenCalled();
+		expect(mockDispatch).not.toHaveBeenCalled();
+	});
+});

@@ -7,6 +7,8 @@ export {
 } from '../utils/refreshAuthTokens';
 export { DefaultTokenStore, createKeysForAuthStorage } from './TokenStore';
 export { TokenOrchestrator } from './TokenOrchestrator';
+export { createAuthSessionSwitcher } from './createAuthSessionSwitcher';
+export { AuthSessionSwitcher } from './types';
 export { CognitoUserPoolTokenProviderType } from './types';
 export {
 	cognitoUserPoolsTokenProvider,
