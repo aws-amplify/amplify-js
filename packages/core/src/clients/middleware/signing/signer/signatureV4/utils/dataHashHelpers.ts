@@ -3,8 +3,9 @@
 
 // TODO: V6 update to different crypto dependency?
 import { Sha256 } from '@aws-crypto/sha256-js';
-import { SourceData } from '@aws-sdk/types';
 import { toHex } from '@smithy/util-hex-encoding';
+
+import { SourceData } from '../../../../../types';
 
 /**
  * Returns the hashed data a `Uint8Array`.

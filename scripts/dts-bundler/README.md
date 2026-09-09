@@ -27,6 +27,11 @@ re-format the generated code.
 	  * The bundled TypeScript definition file may import more types transitive dependencies of AWS SDK package. In this
 		case you may need to tweak the `libraries.inlinedLibraries` config until all the necessary dependency types are 
 		bundled.
-		    * You need to make sure the imported packages of the bundle file(e.g. `@aws-sdk/types`) are also added to the 
+		    * You need to make sure the imported packages of the bundle file are also added to the
 			  Amplify library's **runtime dependency**.
+		    * The generated bundle imports `MetadataBearer` from `@aws-sdk/types`. That import **must** be replaced with
+			  the equivalent `MetadataBearer` exported by `@aws-amplify/core/internals/aws-client-utils` (or the relative
+			  `src/clients` path within the `core` package). Amplify does not depend on `@aws-sdk/types`, because its
+			  transitive `@smithy/types` declarations require Node.js type declarations, which breaks browser-only
+			  TypeScript projects.
 	  * You **must** make sure the documented manual changes are re-applied to the newly generated bundle file.

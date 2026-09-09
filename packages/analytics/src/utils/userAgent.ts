@@ -3,10 +3,10 @@
 import {
 	AnalyticsAction,
 	Category,
+	UserAgent,
 	getAmplifyUserAgent,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
-import { UserAgent } from '@aws-sdk/types';
 
 export function getAnalyticsUserAgent(action: AnalyticsAction): UserAgent {
 	return getAmplifyUserAgentObject({

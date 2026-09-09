@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ResponseMetadata as SdkResponseMetadata } from '@aws-sdk/types';
 
-export type ResponseMetadata = Pick<
-	SdkResponseMetadata,
-	'extendedRequestId' | 'httpStatusCode' | 'requestId'
->;
+export interface ResponseMetadata {
+	extendedRequestId?: string;
+	httpStatusCode?: number;
+	requestId?: string;
+}
 
 export enum AmplifyErrorCode {
 	NoEndpointId = 'NoEndpointId',

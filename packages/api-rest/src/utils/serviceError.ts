@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { MetadataBearer } from '@aws-sdk/types';
 import {
 	HttpResponse,
+	MetadataBearer,
 	parseJsonError as parseAwsJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ApiErrorResponse } from '@aws-amplify/core/internals/utils';

@@ -22,5 +22,8 @@ export {
 	Credentials,
 	EndpointResolverOptions,
 	ErrorParser,
+	MetadataBearer,
+	ResponseMetadata,
 	ServiceClientOptions,
+	SourceData,
 } from './aws';
