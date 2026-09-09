@@ -1044,6 +1044,11 @@ export interface DataStoreConfig {
 		syncExpressions?: SyncExpression[];
 		authProviders?: AuthProviders;
 		storageAdapter?: Adapter;
+		subscriptionVariables?: Record<
+			string,
+			| Record<string, any>
+			| ((operation: 'CREATE' | 'UPDATE' | 'DELETE') => Record<string, any>)
+		>;
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
