@@ -3,13 +3,19 @@
 
 import {
 	Hub,
+	KeyValueStorageEvent,
 	ResourcesConfig,
+	defaultStorage,
 	getGlobalContext,
 	hasGlobalContext,
 } from '@aws-amplify/core';
 import { isBrowser } from '@aws-amplify/core/internals/utils';
 
+import { AUTH_KEY_PREFIX } from '../../tokenProvider/constants';
+import { OAuthStorageKeys } from '../types';
+
 import { attemptCompleteOAuthFlow } from './attemptCompleteOAuthFlow';
+import { resolveAndClearInflightPromises } from './inflightPromise';
 
 // Synchronous re-entry guard for the OAuth completion side effect (PR #14925).
 //
@@ -68,6 +74,30 @@ if (isBrowser()) {
 			if (cognitoConfig?.loginWith?.oauth) {
 				attemptCompleteOAuthFlowOnce(cognitoConfig);
 			}
+		}
+	});
+
+	// Cross-tab release of parked token consumers: when the tab owning an
+	// inflight OAuth flow settles it (success, failure, or cancellation), it
+	// removes the `inflightOAuth` flag from shared storage — `completeOAuthFlow`
+	// on success, `handleFailure` otherwise. Observing that transition here
+	// releases this tab's waiters (`fetchAuthSession`, `getCurrentUser`, ...)
+	// immediately instead of leaving them parked until the blocking-deadline
+	// backstop fires. The release is purely local; no shared state is mutated.
+	// Registered for the module (page) lifetime, mirroring the Hub subscription
+	// above — deliberately never unsubscribed.
+	defaultStorage.addListener?.(async (event: KeyValueStorageEvent) => {
+		const { key, newValue } = event;
+		// Match by prefix/suffix rather than positional `split('.')`, consistent
+		// with the cross-tab token listener (key shape:
+		// `${AUTH_KEY_PREFIX}.<clientId>.inflightOAuth`).
+		if (
+			!!key &&
+			key.startsWith(`${AUTH_KEY_PREFIX}.`) &&
+			key.endsWith(`.${OAuthStorageKeys.inflightOAuth}`) &&
+			newValue !== 'true'
+		) {
+			resolveAndClearInflightPromises();
 		}
 	});
 
