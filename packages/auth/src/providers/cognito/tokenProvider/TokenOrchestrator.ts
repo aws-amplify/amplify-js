@@ -69,7 +69,16 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				// e.g. getCurrentUser, fetchAuthSession etc.
 
 				this.inflightPromise = new Promise<void>(resolve => {
-					addInflightPromise(resolve);
+					// Invariant: `this.inflightPromise` is owned by the park lifecycle —
+					// created here and reset by the very resolver that releases it
+					// (drained by the backstop timer, the cross-tab listener, or
+					// in-process completion). Resetting BEFORE resolving closes the
+					// post-release hole where a caller for a NEW flow could observe a
+					// stale, already-resolved promise and skip blocking on it.
+					addInflightPromise(() => {
+						this.inflightPromise = undefined;
+						resolve();
+					});
 					// Arm the deadline backstop in the same synchronous step as the
 					// park: it releases this waiter even when the cross-tab release
 					// fired between the deadline read above and this park (that storage
@@ -142,7 +151,10 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			return null;
 		}
 		await this.waitForInflightOAuth();
-		this.inflightPromise = undefined;
+		// NOTE: `this.inflightPromise` is reset by the resolver registered in
+		// `waitForInflightOAuth` (co-located with the release), NOT here — a reset
+		// here could clobber a newer flow's park created between the release and
+		// this line resuming.
 		tokens = await this.getTokenStore().loadTokens();
 		const username = await this.getTokenStore().getLastAuthUser();
 

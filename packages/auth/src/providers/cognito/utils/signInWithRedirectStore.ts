@@ -142,9 +142,10 @@ export class DefaultOAuthStore implements OAuthStore {
 			// so it stays stable across tabs and page reloads instead of resetting
 			// on every load. This write is purely additive — the legacy flow's own
 			// state (inflight flag, PKCE, state) is never touched, and legacy
-			// readers ignore the extra key. Concurrent first-observers may race
-			// this write (last writer wins); the resulting drift is a few
-			// milliseconds and harmless.
+			// readers ignore the extra key. Independent first-observers race this
+			// write (last writer wins), so the persisted deadline can shift by the
+			// observation-time gap between tabs — harmless, as it stays bounded by
+			// observation time + OAUTH_INFLIGHT_TTL_MS.
 			deadline = Date.now() + OAUTH_INFLIGHT_TTL_MS;
 			await this.keyValueStorage.setItem(
 				authKeys.inflightOAuthDeadline,

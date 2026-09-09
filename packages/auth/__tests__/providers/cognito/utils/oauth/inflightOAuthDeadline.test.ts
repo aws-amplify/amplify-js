@@ -39,10 +39,16 @@ const deadlineKey = `${AUTH_KEY_PREFIX}.${userPoolClientId}.inflightOAuthDeadlin
 const pkceKey = `${AUTH_KEY_PREFIX}.${userPoolClientId}.oauthPKCE`;
 const stateKey = `${AUTH_KEY_PREFIX}.${userPoolClientId}.oauthState`;
 
-const flushMicrotasks = async () => {
-	// Enough passes to drain the deepest async chain under test
-	// (waitForInflightOAuth → store reads → waiter continuations).
-	for (let i = 0; i < 10; i++) {
+// Bounded microtask drain, used ONLY ahead of NEGATIVE (`isSettled() === false`)
+// assertions, where it is safe by construction: draining too little can only
+// make the assertion weaker, never flaky-pass a regression, and extra passes
+// only strengthen it. POSITIVE assertions never rely on this — they `await`
+// the parked promise itself, which is deterministic at any async-chain depth
+// and turns a regression into a hard jest timeout instead of a silent
+// under-drain (jest's jsdom provides neither setImmediate nor MessageChannel
+// for a true macrotask boundary).
+const drainMicrotasks = async () => {
+	for (let i = 0; i < 25; i++) {
 		await Promise.resolve();
 	}
 };
@@ -73,7 +79,7 @@ describe('inflight OAuth blocking deadline', () => {
 		// Drain any parked waiters and clear the singleton backstop timer so
 		// module-level state never leaks between tests.
 		resolveAndClearInflightPromises();
-		await flushMicrotasks();
+		await drainMicrotasks();
 		jest.clearAllTimers();
 		jest.useRealTimers();
 	});
@@ -81,10 +87,9 @@ describe('inflight OAuth blocking deadline', () => {
 	it('does not block when no OAuth flow is in flight', async () => {
 		const orchestrator = createOrchestrator();
 
-		const waiter = park(orchestrator);
-		await flushMicrotasks();
-
-		expect(waiter.isSettled()).toBe(true);
+		// Deterministic positive assertion: resolves without any timer advance,
+		// or times out the test on regression.
+		await park(orchestrator).promise;
 	});
 
 	it('parks while a flow is in flight and releases once the deadline passes, without mutating shared state', async () => {
@@ -94,17 +99,17 @@ describe('inflight OAuth blocking deadline', () => {
 
 		const orchestrator = createOrchestrator();
 		const waiter = park(orchestrator);
-		await flushMicrotasks();
+		await drainMicrotasks();
 		expect(waiter.isSettled()).toBe(false);
 
 		// One millisecond before the deadline: still parked.
 		await jest.advanceTimersByTimeAsync(OAUTH_INFLIGHT_TTL_MS - 1);
+		await drainMicrotasks();
 		expect(waiter.isSettled()).toBe(false);
 
 		// Deadline passes: the backstop timer releases the waiter locally...
 		await jest.advanceTimersByTimeAsync(2);
-		await flushMicrotasks();
-		expect(waiter.isSettled()).toBe(true);
+		await waiter.promise;
 
 		// ...while the (possibly still running) flow's shared state is intact:
 		// only the flow-owner tab may mutate it.
@@ -119,7 +124,7 @@ describe('inflight OAuth blocking deadline', () => {
 
 		const orchestrator = createOrchestrator();
 		const waiter = park(orchestrator);
-		await flushMicrotasks();
+		await drainMicrotasks();
 		expect(waiter.isSettled()).toBe(false);
 
 		// Simulate the owner tab settling the flow (success/failure both remove
@@ -133,9 +138,8 @@ describe('inflight OAuth blocking deadline', () => {
 				storageArea: window.localStorage,
 			}),
 		);
-		await flushMicrotasks();
 
-		expect(waiter.isSettled()).toBe(true);
+		await waiter.promise;
 	});
 
 	it('ignores unrelated cross-tab storage events', async () => {
@@ -143,7 +147,7 @@ describe('inflight OAuth blocking deadline', () => {
 
 		const orchestrator = createOrchestrator();
 		const waiter = park(orchestrator);
-		await flushMicrotasks();
+		await drainMicrotasks();
 
 		window.dispatchEvent(
 			new StorageEvent('storage', {
@@ -162,7 +166,7 @@ describe('inflight OAuth blocking deadline', () => {
 				storageArea: window.localStorage,
 			}),
 		);
-		await flushMicrotasks();
+		await drainMicrotasks();
 
 		expect(waiter.isSettled()).toBe(false);
 	});
@@ -172,7 +176,7 @@ describe('inflight OAuth blocking deadline', () => {
 
 		const orchestrator = createOrchestrator();
 		const waiter = park(orchestrator);
-		await flushMicrotasks();
+		await drainMicrotasks();
 
 		// One minute in, a fresh signInWithRedirect renews the deadline.
 		await jest.advanceTimersByTimeAsync(60_000);
@@ -181,12 +185,12 @@ describe('inflight OAuth blocking deadline', () => {
 		// Original deadline passes: the backstop re-checks, finds the renewed
 		// deadline, and re-arms instead of releasing.
 		await jest.advanceTimersByTimeAsync(OAUTH_INFLIGHT_TTL_MS - 60_000 + 1);
+		await drainMicrotasks();
 		expect(waiter.isSettled()).toBe(false);
 
 		// Renewed deadline passes: released.
 		await jest.advanceTimersByTimeAsync(60_000 + 1);
-		await flushMicrotasks();
-		expect(waiter.isSettled()).toBe(true);
+		await waiter.promise;
 	});
 
 	it('does not block on an expired flow, while the completion gate still sees it', async () => {
@@ -195,11 +199,9 @@ describe('inflight OAuth blocking deadline', () => {
 		resolveAndClearInflightPromises();
 
 		const orchestrator = createOrchestrator();
-		const waiter = park(orchestrator);
-		await flushMicrotasks();
 
 		// Read-time evaluation: nothing to block on.
-		expect(waiter.isSettled()).toBe(true);
+		await park(orchestrator).promise;
 		// The completion path deliberately ignores the deadline so a
 		// slow-but-successful login still completes.
 		await expect(oAuthStore.loadOAuthInFlight()).resolves.toBe(true);
@@ -230,22 +232,45 @@ describe('inflight OAuth blocking deadline', () => {
 		await oAuthStore.storeOAuthInFlight(true);
 
 		const first = park(createOrchestrator());
-		await flushMicrotasks();
+		await drainMicrotasks();
 
 		// An earlier release (e.g. a cross-tab event) drains waiters and clears
 		// the backstop timer ...
 		resolveAndClearInflightPromises();
-		await flushMicrotasks();
-		expect(first.isSettled()).toBe(true);
+		await first.promise;
 
 		// ... yet a subsequent park while the flag is still active must arm its
 		// own backstop rather than rely on a timer that no longer exists.
 		const second = park(createOrchestrator());
-		await flushMicrotasks();
+		await drainMicrotasks();
 		expect(second.isSettled()).toBe(false);
 
 		await jest.advanceTimersByTimeAsync(OAUTH_INFLIGHT_TTL_MS + 1);
-		await flushMicrotasks();
-		expect(second.isSettled()).toBe(true);
+		await second.promise;
+	});
+
+	it('blocks on a new flow parked on the SAME orchestrator right after a release', async () => {
+		// Pins the fix for the post-release hole: `this.inflightPromise` is reset
+		// by the resolver itself, so a caller arriving for a NEW flow immediately
+		// after a release must get a fresh park — not a stale, already-resolved
+		// promise that would let it skip blocking.
+		await oAuthStore.storeOAuthInFlight(true);
+		const orchestrator = createOrchestrator();
+
+		const first = park(orchestrator);
+		await drainMicrotasks();
+
+		// Flow 1 settles in another tab; waiters drain.
+		resolveAndClearInflightPromises();
+		await first.promise;
+
+		// Flow 2 starts; the SAME orchestrator is asked to wait again.
+		await oAuthStore.storeOAuthInFlight(true);
+		const second = park(orchestrator);
+		await drainMicrotasks();
+		expect(second.isSettled()).toBe(false);
+
+		await jest.advanceTimersByTimeAsync(OAUTH_INFLIGHT_TTL_MS + 1);
+		await second.promise;
 	});
 });
