@@ -23,7 +23,28 @@ buildscript {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+// Android Gradle Plugin 9 ships built-in Kotlin support and applies the Kotlin
+// plugin itself. Applying it a second time fails the configuration phase with
+// "Cannot add extension with name 'kotlin'". Apply it only when AGP is not
+// providing Kotlin: AGP 8 and older, or AGP 9 with android.builtInKotlin=false.
+def shouldApplyKotlinPlugin() {
+    def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+    if (agpMajor <= 8) {
+        return true
+    }
+    // AGP 10 removes the opt-out: built-in Kotlin is always active there.
+    if (agpMajor >= 10) {
+        return false
+    }
+    def propertyVal = providers.gradleProperty("android.builtInKotlin").orNull
+    def builtInKotlinEnabled = propertyVal != null ? propertyVal.toBoolean() : true
+    return !builtInKotlinEnabled
+}
+
+if (shouldApplyKotlinPlugin()) {
+    apply plugin: 'kotlin-android'
+}
+
 apply plugin: 'kotlinx-serialization'
 
 def getExtOrDefault(prop) {
