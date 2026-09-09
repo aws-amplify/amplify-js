@@ -91,6 +91,7 @@ export async function signInWithRedirect(...args: any[]): Promise<void> {
 			prompt: input?.options?.prompt,
 		},
 		authSessionOpener: input?.options?.authSessionOpener,
+		preferredRedirectUrl: input?.options?.preferredRedirectUrl,
 	});
 }
 
@@ -103,6 +104,7 @@ const oauthSignIn = async ({
 	preferPrivateSession,
 	options,
 	authSessionOpener,
+	preferredRedirectUrl,
 }: {
 	oauthConfig: OAuthConfig;
 	provider?: string;
@@ -112,6 +114,7 @@ const oauthSignIn = async ({
 	preferPrivateSession?: boolean;
 	options?: SignInWithRedirectInput['options'];
 	authSessionOpener?: OpenAuthSession;
+	preferredRedirectUrl?: string;
 }) => {
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const { loginHint, lang, nonce, prompt } = options ?? {};
@@ -129,7 +132,10 @@ const oauthSignIn = async ({
 		: randomState;
 
 	const { value, method, toCodeChallenge } = generateCodeVerifier(128);
-	const redirectUri = getRedirectUrl(oauthConfig.redirectSignIn);
+	const redirectUri = getRedirectUrl(
+		oauthConfig.redirectSignIn,
+		preferredRedirectUrl,
+	);
 
 	if (isBrowser()) oAuthStore.storeOAuthInFlight(true);
 	oAuthStore.storeOAuthState(state);
