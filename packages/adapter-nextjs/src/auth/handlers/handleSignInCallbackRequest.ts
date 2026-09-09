@@ -57,7 +57,6 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 	const { [PKCE_COOKIE_NAME]: clientPkce, [STATE_COOKIE_NAME]: clientState } =
 		getCookieValuesFromRequest(request, [PKCE_COOKIE_NAME, STATE_COOKIE_NAME]);
 
-	// The state and pkce cookies are removed from cookie store after 5 minutes
 	if (!clientState || !clientPkce) {
 		const searchParamsString = createErrorSearchParamsString({
 			error: SIGN_IN_TIMEOUT_ERROR_CODE,
@@ -72,7 +71,6 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 		});
 	}
 
-	// Most likely the cookie has been tampered
 	if (clientState !== state) {
 		return new Response(null, { status: 400 });
 	}
@@ -104,18 +102,21 @@ export const handleSignInCallbackRequest: HandleSignInCallbackRequest = async ({
 		createAuthFlowProofCookiesRemoveOptions(setCookieOptions),
 	);
 
-	// When Cognito redirects back to `/sign-in-callback`, the referer is Cognito
-	// endpoint. If redirect end user to `redirectOnSignInComplete` from this point,
-	// the referer remains the same.
-	// When authN token cookies set as `sameSite: 'strict'`, this may cause the
-	// authN tokens cookies set with the redirect response not to be sent to the
-	// server. Hence, sending a html page with status 200 to the client, and perform
-	// the redirection on the client side.
+	const url = new URL(request.url);
+	const redirectToParam = url.searchParams.get('redirectTo');
+
+	const safeRedirectTo =
+		redirectToParam && redirectToParam.startsWith('/') ? redirectToParam : null;
+
+	const finalRedirect =
+		safeRedirectTo ??
+		getRedirectOrDefault(handlerInput.redirectOnSignInComplete);
+
 	headers.set('Content-Type', 'text/html');
 
 	return new Response(
 		createRedirectionIntermediary({
-			redirectTo: getRedirectOrDefault(handlerInput.redirectOnSignInComplete),
+			redirectTo: finalRedirect,
 		}),
 		{
 			status: 200,
