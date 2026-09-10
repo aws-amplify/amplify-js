@@ -6,6 +6,11 @@ import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
 import { CustomUserAgentDetails } from '@aws-amplify/core';
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: object;
@@ -17,6 +22,11 @@ export interface GraphQLOptions {
 	userAgentSuffix?: string; // TODO: remove in v6
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface GraphQLResult<T = object> {
 	data?: T;
 	errors?: GraphQLError[];
@@ -25,6 +35,11 @@ export interface GraphQLResult<T = object> {
 	};
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum GraphQLAuthError {
 	NO_API_KEY = 'No api-key configured',
 	NO_CURRENT_USER = 'No current user',
@@ -36,5 +51,8 @@ export enum GraphQLAuthError {
 /**
  * GraphQLSource or string, the type of the parameter for calling graphql.parse
  * @see: https://graphql.org/graphql-js/language/#parse
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export type GraphQLOperation = Source | string;

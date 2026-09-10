@@ -26,6 +26,9 @@ import { Amplify } from '../Amplify';
  * At the minmum this class will register the service worker and listen
  * and attempt to dispatch messages on state change and record analytics
  * events based on the service worker lifecycle.
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export class ServiceWorkerClass {
 	// The active service worker will be set once it is registered

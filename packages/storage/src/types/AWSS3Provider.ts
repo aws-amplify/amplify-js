@@ -19,6 +19,11 @@ import { UploadTask } from './Provider';
 
 type ListObjectsCommandOutputContent = _Object;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface FileMetadata {
 	bucket: string;
 	fileName: string;
@@ -28,6 +33,11 @@ export interface FileMetadata {
 	uploadId: string;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type CommonStorageOptions = Omit<
 	StorageOptions,
 	| 'credentials'
@@ -36,6 +46,11 @@ export type CommonStorageOptions = Omit<
 	| 'dangerouslyConnectToHttpEndpointForTesting'
 >;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderGetConfig = CommonStorageOptions & {
 	download?: boolean;
 	track?: boolean;
@@ -55,6 +70,11 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	validateObjectExistence?: boolean;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderGetPropertiesConfig = CommonStorageOptions & {
 	SSECustomerAlgorithm?: HeadObjectInput['SSECustomerAlgorithm'];
 	SSECustomerKey?: HeadObjectInput['SSECustomerKey'];
@@ -62,6 +82,11 @@ export type S3ProviderGetPropertiesConfig = CommonStorageOptions & {
 	SSECustomerKeyMD5?: HeadObjectInput['SSECustomerKeyMD5'];
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderGetOuput<T> = T extends { download: true }
 	? GetObjectOutput
 	: string;
@@ -89,6 +114,11 @@ type _S3ProviderPutConfig = {
 	resumable?: boolean;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type ResumableUploadConfig = {
 	resumable: true;
 	progressCallback?: (progress: UploadTaskProgressEvent) => any;
@@ -104,6 +134,9 @@ export type ResumableUploadConfig = {
  * Usage of this parameter is not considered a recommended practice:
  *  {@link https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html}
  *
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export type S3ProviderPutConfig = CommonStorageOptions &
 	(
@@ -112,19 +145,39 @@ export type S3ProviderPutConfig = CommonStorageOptions &
 		| (_S3ProviderPutConfig & ResumableUploadConfig)
 	);
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderRemoveConfig = CommonStorageOptions & {
 	bucket?: string;
 	provider?: 'AWSS3';
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderListOutput = {
 	results: S3ProviderListOutputItem[];
 	nextToken?: string;
 	hasNextToken: boolean;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderRemoveOutput = DeleteObjectOutput;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
 	pageSize?: number | 'ALL';
@@ -133,10 +186,20 @@ export type S3ProviderListConfig = CommonStorageOptions & {
 	nextToken?: string;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ClientOptions = StorageOptions & {
 	credentials: ICredentials;
 } & S3ProviderListConfig;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface S3ProviderListOutputItem {
 	key: ListObjectsCommandOutputContent['Key'];
 	eTag: ListObjectsCommandOutputContent['ETag'];
@@ -144,14 +207,29 @@ export interface S3ProviderListOutputItem {
 	size: ListObjectsCommandOutputContent['Size'];
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface S3CopyTarget {
 	key: string;
 	level?: StorageAccessLevel;
 	identityId?: string;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3CopySource = S3CopyTarget;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
 /**
@@ -162,6 +240,9 @@ export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
  * Usage of this parameter is not considered a recommended practice:
  *  {@link https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html}
  *
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export type S3ProviderCopyConfig = Omit<CommonStorageOptions, 'level'> & {
 	provider?: 'AWSS3';
@@ -182,10 +263,20 @@ export type S3ProviderCopyConfig = Omit<CommonStorageOptions, 'level'> & {
 	SSEKMSKeyId?: CopyObjectInput['SSEKMSKeyId'];
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderCopyOutput = {
 	key: string;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderGetPropertiesOutput = {
 	contentType: string;
 	contentLength: number;
@@ -194,10 +285,20 @@ export type S3ProviderGetPropertiesOutput = {
 	metadata: Record<string, string>;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type PutResult = {
 	key: string;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type S3ProviderPutOutput<T> = T extends { resumable: true }
 	? UploadTask
 	: Promise<PutResult>;

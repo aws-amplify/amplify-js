@@ -57,17 +57,32 @@ export interface InAppMessagingProvider extends NotificationsProvider {
 	): Promise<InAppMessage[]>;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface InAppMessagingConfig {
 	listenForAnalyticsEvents?: boolean;
 	AWSPinpoint?: AWSPinpointProviderConfig;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type InAppMessagingEvent = {
 	name: string;
 	attributes?: Record<string, string>;
 	metrics?: Record<string, number>;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type InAppMessageLayout =
 	| 'BOTTOM_BANNER'
 	| 'CAROUSEL'
@@ -76,8 +91,18 @@ export type InAppMessageLayout =
 	| 'MODAL'
 	| 'TOP_BANNER';
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type InAppMessageAction = 'CLOSE' | 'DEEP_LINK' | 'LINK';
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type InAppMessageTextAlign = 'center' | 'left' | 'right';
 
 interface InAppMessageContainer {
@@ -94,10 +119,20 @@ interface InAppMessageBody {
 	style?: InAppMessageStyle;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface InAppMessageImage {
 	src: string;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface InAppMessageButton {
 	title: string;
 	action: InAppMessageAction;
@@ -105,6 +140,11 @@ export interface InAppMessageButton {
 	style?: InAppMessageStyle;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface InAppMessageStyle {
 	backgroundColor?: string;
 	borderRadius?: number;
@@ -112,6 +152,11 @@ export interface InAppMessageStyle {
 	textAlign?: InAppMessageTextAlign;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface InAppMessageContent {
 	container?: InAppMessageContainer;
 	header?: InAppMessageHeader;
@@ -121,6 +166,11 @@ export interface InAppMessageContent {
 	secondaryButton?: InAppMessageButton;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface InAppMessage {
 	id: string;
 	layout: InAppMessageLayout;
@@ -130,6 +180,11 @@ export interface InAppMessage {
 
 export type OnMessageInteractionEventHandler = (message: InAppMessage) => any;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum InAppMessageInteractionEvent {
 	MESSAGE_RECEIVED = 'MESSAGE_RECEIVED_EVENT',
 	MESSAGE_DISPLAYED = 'MESSAGE_DISPLAYED_EVENT',

@@ -20,6 +20,11 @@ interface IListener {
 	callback: HubCallback;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type HubCapsule = {
 	channel: string;
 	payload: HubPayload;
@@ -27,12 +32,22 @@ export type HubCapsule = {
 	patternInfo?: string[];
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type HubPayload = {
 	event: string;
 	data?: any;
 	message?: string;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export type HubCallback = (capsule: HubCapsule) => void;
 
 export type LegacyCallback = { onHubCapsule: HubCallback };
@@ -232,4 +247,9 @@ export class HubClass {
 /*We export a __default__ instance of HubClass to use it as a 
 pseudo Singleton for the main messaging bus, however you can still create
 your own instance of HubClass() for a separate "private bus" of events.*/
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const Hub = new HubClass('__default__');

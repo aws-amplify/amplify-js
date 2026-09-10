@@ -310,6 +310,11 @@ export const getAttachment = (instance: PersistentModel) => {
 		: ModelAttachment.Detached;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {
 		console.warn('The schema has already been initialized');
@@ -548,6 +553,9 @@ const createTypeClasses: (
  * @param modelConstructor The model constructor.
  * @param init Init data that would normally be passed to the constructor.
  * @returns The initialized model.
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export declare type ModelInstanceCreator = typeof modelInstanceCreator;
 
@@ -1112,6 +1120,9 @@ const createModelClass = <T extends PersistentModel>(
 
 /**
  * An eventually loaded related model instance.
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export class AsyncItem<T> extends Promise<T> {}
 
@@ -1119,6 +1130,9 @@ export class AsyncItem<T> extends Promise<T> {}
  * A collection of related model instances.
  *
  * This collection can be async-iterated or turned directly into an array using `toArray()`.
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export class AsyncCollection<T> implements AsyncIterable<T> {
 	private values: Array<any> | Promise<Array<any>>;
@@ -1387,6 +1401,11 @@ enum DataStoreState {
 
 // TODO: How can we get rid of the non-null assertions?
 // https://github.com/aws-amplify/amplify-js/pull/10477/files#r1007363485
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
 	private Auth = Auth;
@@ -2757,6 +2776,11 @@ class DataStore {
 	}
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 const instance = new DataStore();
 Amplify.register(instance);
 

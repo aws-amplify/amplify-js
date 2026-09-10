@@ -56,6 +56,11 @@ interface IWithAuthenticatorState {
 	authState: string;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export function withAuthenticator<Props extends object>(
 	Comp: React.ComponentType<Props>,
 	includeGreetings: boolean | { [index: string]: any } = false,

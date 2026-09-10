@@ -45,8 +45,18 @@ const MIME_MAP = [
 	{ type: 'message/rfc822', ext: 'eml' },
 ];
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const isEmpty = (obj = {}) => Object.keys(obj).length === 0;
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const sortByField = (list, field, dir) => {
 	if (!list || !list.sort) {
 		return false;
@@ -78,6 +88,11 @@ export const sortByField = (list, field, dir) => {
 	return true;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const objectLessAttributes = (obj, less) => {
 	const ret = Object.assign({}, obj);
 	if (less) {
@@ -93,6 +108,11 @@ export const objectLessAttributes = (obj, less) => {
 	return ret;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const filenameToContentType = (
 	filename,
 	defVal = 'application/octet-stream'
@@ -103,6 +123,11 @@ export const filenameToContentType = (
 	return filtered.length > 0 ? filtered[0].type : defVal;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const isTextFile = contentType => {
 	const type = contentType.toLowerCase();
 	if (type.startsWith('text/')) {
@@ -115,6 +140,11 @@ export const isTextFile = contentType => {
 	);
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const generateRandomString = () => {
 	let result = '';
 	const chars =
@@ -125,6 +155,11 @@ export const generateRandomString = () => {
 	return result;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const makeQuerablePromise = promise => {
 	if (promise.isResolved) return promise;
 
@@ -152,6 +187,11 @@ export const makeQuerablePromise = promise => {
 	return result;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const isWebWorker = () => {
 	if (typeof self === 'undefined') {
 		return false;
@@ -163,6 +203,11 @@ export const isWebWorker = () => {
 	);
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const browserOrNode = () => {
 	const isBrowser =
 		typeof window !== 'undefined' && typeof window.document !== 'undefined';
@@ -182,6 +227,9 @@ export const browserOrNode = () => {
  * @param {Object} obj - the object need to be transferred
  * @param {Array} whiteListForItself - whitelist itself from being transferred
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export const transferKeyToLowerCase = (
 	obj,
@@ -215,6 +263,9 @@ export const transferKeyToLowerCase = (
  * @param {Object} obj - the object need to be transferred
  * @param {Array} whiteListForItself - whitelist itself from being transferred
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export const transferKeyToUpperCase = (
 	obj,
@@ -246,6 +297,9 @@ export const transferKeyToUpperCase = (
  * Return true if the object is a strict object
  * which means it's not Array, Function, Number, String, Boolean or Null
  * @param obj the Object
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export const isStrictObject = obj => {
 	return (

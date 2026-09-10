@@ -9,6 +9,11 @@ export interface SubscriptionObserver<T> {
 	complete(): void;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum CONTROL_MSG {
 	CONNECTION_CLOSED = 'Connection closed',
 	CONNECTION_FAILED = 'Connection failed',
@@ -17,7 +22,12 @@ export enum CONTROL_MSG {
 	TIMEOUT_DISCONNECT = 'Timeout disconnect',
 }
 
-/** @enum {string} */
+/**
+ * @enum {string}
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export enum ConnectionState {
 	/*
 	 * The connection is alive and healthy

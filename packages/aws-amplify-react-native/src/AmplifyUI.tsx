@@ -38,6 +38,11 @@ interface IContainerProps {
 	theme?: AmplifyThemeType;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const Container: FC<IContainerProps> = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	return <SafeAreaView style={theme.container}>{props.children}</SafeAreaView>;
@@ -49,6 +54,11 @@ interface IFormFieldProps extends TextInputProperties {
 	theme?: AmplifyThemeType;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const FormField: FC<IFormFieldProps> = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	return (
@@ -83,6 +93,11 @@ interface IPhoneState {
 
 const minWidth = { minWidth: Platform.OS === 'android' ? 16 : 0 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export class PhoneField extends Component<IPhoneProps, IPhoneState> {
 	constructor(props: IPhoneProps) {
 		super(props);
@@ -153,6 +168,11 @@ interface ILinkCellProps {
 	theme?: AmplifyThemeType;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const LinkCell: FC<ILinkCellProps> = (props) => {
 	const { disabled } = props;
 	const theme = props.theme || AmplifyTheme;
@@ -175,6 +195,11 @@ interface IHeaderProps {
 	theme?: AmplifyThemeType;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const Header: FC<IHeaderProps> = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	return (
@@ -190,6 +215,11 @@ interface IErrorRowProps {
 	theme?: AmplifyThemeType;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const ErrorRow: FC<IErrorRowProps> = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	if (!props.children) return null;
@@ -210,6 +240,11 @@ interface IAmplifyButtonProps extends TouchableOpacityProps {
 	theme?: AmplifyThemeType;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const AmplifyButton: FC<IAmplifyButtonProps> = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	let style = theme.button;
@@ -234,6 +269,11 @@ interface IWrapperProps {
 	onPress?: Function;
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const Wrapper: FC<IWrapperProps> = (props) => {
 	const isWeb = Platform.OS === 'web';
 	const WrapperComponent: React.ElementType = isWeb ? View : TouchableWithoutFeedback;
@@ -250,6 +290,11 @@ export const Wrapper: FC<IWrapperProps> = (props) => {
 	return <WrapperComponent {...wrapperProps}>{props.children}</WrapperComponent>;
 };
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const SignedOutMessage = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const message = props.signedOutMessage || I18n.get('Please Sign In / Sign Up');

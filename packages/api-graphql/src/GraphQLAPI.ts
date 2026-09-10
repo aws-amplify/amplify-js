@@ -5,6 +5,11 @@ import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals';
 import Observable from 'zen-observable-ts';
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const graphqlOperation = (
 	query,
 	variables = {},
@@ -17,6 +22,9 @@ export const graphqlOperation = (
 
 /**
  * Export Cloud Logic APIs
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
  */
 export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	public getModuleName() {
@@ -38,5 +46,10 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	}
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export const GraphQLAPI = new GraphQLAPIClass(null);
 Amplify.register(GraphQLAPI);

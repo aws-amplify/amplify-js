@@ -3,6 +3,11 @@
 import { InteractionsOptions } from './Interactions';
 import { InteractionsResponse } from './Response';
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface InteractionsProvider {
 	// configure your provider
 	configure(config: InteractionsOptions): InteractionsOptions;
@@ -21,6 +26,11 @@ export interface InteractionsProvider {
 	);
 }
 
+/**
+ * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
+ * See the migration guide:
+ * https://docs.amplify.aws/gen1/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/
+ */
 export interface InteractionsProviders {
 	[key: string]: InteractionsProvider;
 }
