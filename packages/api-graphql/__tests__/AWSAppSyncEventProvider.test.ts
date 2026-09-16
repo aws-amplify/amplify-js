@@ -613,6 +613,168 @@ describe('AppSyncEventProvider', () => {
 		});
 	});
 
+	describe('publish error-frame correlation (issue #14946)', () => {
+		let provider: AWSAppSyncEventProvider;
+		let reachabilityObserver: Observer<{ online: boolean }>;
+		let messageListeners: EventListener[];
+		let capturedPublishId: string | undefined;
+
+		beforeEach(() => {
+			// Set the network to "online" for these tests
+			jest
+				.spyOn(Reachability.prototype, 'networkMonitor')
+				.mockImplementationOnce(
+					() =>
+						new Observable(observer => {
+							reachabilityObserver = observer;
+						}),
+				)
+				// Twice because we subscribe to get the initial state then again to monitor reachability
+				.mockImplementationOnce(
+					() =>
+						new Observable(observer => {
+							reachabilityObserver = observer;
+						}),
+				);
+
+			provider = new AWSAppSyncEventProvider();
+
+			messageListeners = [];
+			capturedPublishId = undefined;
+
+			// Minimal controllable socket: it records the 'message' listener the
+			// provider registers for the publish and captures the id of the frame
+			// it sends, so the test can replay arbitrary server frames and assert
+			// how the publish promise correlates them. (The shared
+			// FakeWebSocketInterface no-ops addEventListener, so it cannot exercise
+			// the publish listener path.)
+			const controllableSocket = {
+				onclose: (_event: CloseEvent) => {},
+				onerror: (_event: Event) => {},
+				addEventListener: (type: string, listener: EventListener) => {
+					if (type === 'message') {
+						messageListeners.push(listener);
+					}
+				},
+				removeEventListener: (type: string, listener: EventListener) => {
+					if (type === 'message') {
+						messageListeners = messageListeners.filter(l => l !== listener);
+					}
+				},
+				send: (data: string) => {
+					capturedPublishId = JSON.parse(String(data)).id;
+				},
+				close: () => {
+					controllableSocket.onclose(new CloseEvent('close'));
+				},
+			};
+
+			Object.defineProperty(provider, 'socketStatus', {
+				value: constants.SOCKET_STATUS.READY,
+			});
+			Object.defineProperty(provider, 'awsRealTimeSocket', {
+				value: controllableSocket,
+				writable: true,
+				configurable: true,
+			});
+		});
+
+		afterEach(async () => {
+			provider?.close();
+		});
+
+		const deliverFrame = (frame: Record<string, unknown>) => {
+			const event = new MessageEvent('message', {
+				data: JSON.stringify(frame),
+			});
+			messageListeners.forEach(listener => listener(event));
+		};
+
+		const waitForPublishSent = async () => {
+			for (let i = 0; i < 200 && capturedPublishId === undefined; i++) {
+				await delay(5);
+			}
+			if (capturedPublishId === undefined) {
+				throw new Error('publish frame was never sent');
+			}
+		};
+
+		test('a pending publish is not rejected by an unrelated subscription error frame', async () => {
+			expect.assertions(1);
+
+			const pub = provider.publish({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				query: 'events/allowed-channel',
+				variables: { some: 'data' },
+				authenticationType: 'iam',
+				region: 'us-east-1',
+			});
+
+			// Wait until the publish frame has been sent and its id captured.
+			await waitForPublishSent();
+
+			// An error frame for a DIFFERENT operation id (e.g. a subscribe_error
+			// on an unrelated channel) arrives while this publish is in flight.
+			// It must not settle this publish's promise.
+			deliverFrame({
+				id: 'unrelated-subscription-id',
+				type: MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR,
+				errors: [
+					{
+						errorType: 'AuthorizationError',
+						message: 'Not authorized to access channel',
+					},
+				],
+			});
+
+			// The correlated publish_success then arrives for this publish.
+			deliverFrame({
+				id: capturedPublishId,
+				type: MESSAGE_TYPES.EVENT_PUBLISH_ACK,
+			});
+
+			// The publish was accepted, so the promise must resolve — the
+			// unrelated error frame must not have rejected it.
+			await expect(pub).resolves.toBeUndefined();
+		});
+
+		test('a pending publish is still rejected by an error frame correlated to its own operation id', async () => {
+			expect.assertions(1);
+
+			const pub = provider.publish({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				query: 'events/denied-channel',
+				variables: { some: 'data' },
+				authenticationType: 'iam',
+				region: 'us-east-1',
+			});
+
+			// Wait until the publish frame has been sent and its id captured.
+			await waitForPublishSent();
+
+			// A genuine publish_error frame correlated to THIS publish's operation
+			// id arrives. (AppSync Events emits publish_error for a failed publish;
+			// a subscribe_error would never legitimately carry a publish's id.)
+			// The id-correlation guard must not suppress it: a matching-id error
+			// must retain the original rejection behavior so genuine publish
+			// failures still surface to the caller.
+			deliverFrame({
+				id: capturedPublishId,
+				type: 'publish_error',
+				errors: [
+					{
+						errorType: 'AuthorizationError',
+						message: 'Not authorized to access channel',
+					},
+				],
+			});
+
+			// The correlated error frame must reject the publish promise with the
+			// aggregated error types.
+			await expect(pub).rejects.toThrow('Publish errors: AuthorizationError');
+		});
+	});
+
 	describe('ctx propagation', () => {
 		let fakeWebSocketInterface: FakeWebSocketInterface;
 		let provider: AWSAppSyncEventProvider;

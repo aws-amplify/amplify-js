@@ -271,6 +271,14 @@ export abstract class AWSWebSocketProvider {
 					}
 
 					if (data.errors && data.errors.length > 0) {
+						// Only reject on error frames correlated to THIS publish's
+						// operation id. The socket is multiplexed, so an error frame
+						// (e.g. a subscribe_error) can belong to an unrelated operation
+						// on another channel and must not settle this publish's promise.
+						if (data.id !== subscriptionId) {
+							return;
+						}
+
 						const errorTypes = data.errors.map((error: any) => error.errorType);
 						cleanup();
 						reject(new Error(`Publish errors: ${errorTypes.join(', ')}`));
