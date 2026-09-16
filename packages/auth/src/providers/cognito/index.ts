@@ -83,6 +83,8 @@ export {
 	refreshAuthTokensWithoutDedupe,
 	createKeysForAuthStorage,
 	AUTH_KEY_PREFIX,
+	registerContextTokenOrchestrator,
+	getContextTokenOrchestrator,
 } from './tokenProvider';
 export {
 	generateState,

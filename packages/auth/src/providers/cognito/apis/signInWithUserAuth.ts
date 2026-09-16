@@ -103,17 +103,20 @@ export async function signInWithUserAuth(
 		});
 
 		if (response.AuthenticationResult) {
-			await cacheCognitoTokens({
-				username: activeUsername,
-				...response.AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetadata({
-					userPoolId: authConfig.userPoolId,
-					userPoolEndpoint: authConfig.userPoolEndpoint,
-					newDeviceMetadata: response.AuthenticationResult.NewDeviceMetadata,
-					accessToken: response.AuthenticationResult.AccessToken,
-				}),
-				signInDetails,
-			});
+			await cacheCognitoTokens(
+				{
+					username: activeUsername,
+					...response.AuthenticationResult,
+					NewDeviceMetadata: await getNewDeviceMetadata({
+						userPoolId: authConfig.userPoolId,
+						userPoolEndpoint: authConfig.userPoolEndpoint,
+						newDeviceMetadata: response.AuthenticationResult.NewDeviceMetadata,
+						accessToken: response.AuthenticationResult.AccessToken,
+					}),
+					signInDetails,
+				},
+				ctx,
+			);
 			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent(ctx);

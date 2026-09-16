@@ -90,17 +90,20 @@ export async function handleWebAuthnSignInResult(
 	});
 
 	if (authenticationResult) {
-		await cacheCognitoTokens({
-			...authenticationResult,
-			username,
-			NewDeviceMetadata: await getNewDeviceMetadata({
-				userPoolId: authConfig.userPoolId,
-				userPoolEndpoint: authConfig.userPoolEndpoint,
-				newDeviceMetadata: authenticationResult.NewDeviceMetadata,
-				accessToken: authenticationResult.AccessToken,
-			}),
-			signInDetails,
-		});
+		await cacheCognitoTokens(
+			{
+				...authenticationResult,
+				username,
+				NewDeviceMetadata: await getNewDeviceMetadata({
+					userPoolId: authConfig.userPoolId,
+					userPoolEndpoint: authConfig.userPoolEndpoint,
+					newDeviceMetadata: authenticationResult.NewDeviceMetadata,
+					accessToken: authenticationResult.AccessToken,
+				}),
+				signInDetails,
+			},
+			ctx,
+		);
 		signInStore.dispatch({ type: 'RESET_STATE' });
 		await dispatchSignedInHubEvent(ctx);
 

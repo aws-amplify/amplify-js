@@ -13,3 +13,7 @@ export {
 	tokenOrchestrator,
 } from './tokenProvider';
 export { AUTH_KEY_PREFIX } from './constants';
+export {
+	registerContextTokenOrchestrator,
+	getContextTokenOrchestrator,
+} from './contextTokenOrchestrators';

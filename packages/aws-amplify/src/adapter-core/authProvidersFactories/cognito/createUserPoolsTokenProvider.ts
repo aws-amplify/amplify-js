@@ -5,6 +5,7 @@ import {
 	DefaultTokenStore,
 	TokenOrchestrator,
 	refreshAuthTokensWithoutDedupe,
+	registerContextTokenOrchestrator,
 } from '@aws-amplify/auth/cognito';
 import {
 	AuthConfig,
@@ -30,8 +31,15 @@ export const createUserPoolsTokenProvider = (
 	tokenOrchestrator.setAuthTokenStore(authTokenStore);
 	tokenOrchestrator.setTokenRefresher(refreshAuthTokensWithoutDedupe);
 
-	return {
+	const provider: TokenProvider = {
 		getTokens: ({ forceRefresh } = { forceRefresh: false }) =>
 			tokenOrchestrator.getTokens({ forceRefresh }),
 	};
+
+	// Register the per-context orchestrator so token writes performed through a
+	// local context (e.g. `createAmplifyContext`) can be routed to this
+	// write-capable orchestrator instead of the global singleton.
+	registerContextTokenOrchestrator(provider, tokenOrchestrator);
+
+	return provider;
 };
