@@ -12,7 +12,9 @@ var mockSubscribeObservable: any;
 
 jest.mock('../src/Providers/AWSAppSyncEventsProvider', () => {
 	mockSubscribeObservable = jest.fn(() => ({
-		subscribe: jest.fn(),
+		subscribe: jest.fn(() => ({
+			unsubscribe: jest.fn(),
+		})),
 	}));
 
 	return {
@@ -147,6 +149,67 @@ describe('Events client', () => {
 				channel.subscribe({
 					next: data => void data,
 					error: error => void error,
+				});
+			});
+
+			describe('ready promise', () => {
+				test('subscribe returns a subscription exposing a ready promise', async () => {
+					const channel = await events.connect('/');
+					const subscription = channel.subscribe({
+						next: data => void data,
+						error: error => void error,
+					});
+
+					expect(subscription.ready).toBeInstanceOf(Promise);
+				});
+
+				test('ready resolves with { subscriptionId } when the provider signals readiness', async () => {
+					const channel = await events.connect('/');
+					const subscription = channel.subscribe({
+						next: data => void data,
+						error: error => void error,
+					});
+
+					const subscribeMock = AppSyncEventProvider.subscribe as jest.Mock;
+					const subscribeOptions =
+						subscribeMock.mock.calls[subscribeMock.mock.calls.length - 1][0];
+					subscribeOptions.onSubscriptionReady('sub-id-123');
+
+					await expect(subscription.ready).resolves.toEqual({
+						subscriptionId: 'sub-id-123',
+					});
+				});
+
+				test('ready rejects when the provider signals a subscription error', async () => {
+					const channel = await events.connect('/');
+					const subscription = channel.subscribe({
+						next: data => void data,
+						error: error => void error,
+					});
+
+					const subscribeMock = AppSyncEventProvider.subscribe as jest.Mock;
+					const subscribeOptions =
+						subscribeMock.mock.calls[subscribeMock.mock.calls.length - 1][0];
+					subscribeOptions.onSubscriptionError(
+						'sub-id-123',
+						new Error('subscribe failed'),
+					);
+
+					await expect(subscription.ready).rejects.toThrow('subscribe failed');
+				});
+
+				test('ready rejects when unsubscribed before ready', async () => {
+					const channel = await events.connect('/');
+					const subscription = channel.subscribe({
+						next: data => void data,
+						error: error => void error,
+					});
+
+					subscription.unsubscribe();
+
+					await expect(subscription.ready).rejects.toThrow(
+						'Subscription unsubscribed before ready',
+					);
 				});
 			});
 

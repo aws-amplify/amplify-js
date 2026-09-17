@@ -4,12 +4,12 @@
 import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { MESSAGE_TYPES } from '../src/Providers/constants';
 import * as constants from '../src/Providers/constants';
 
 import { delay, FakeWebSocketInterface } from './helpers';
-import { ConnectionState as CS } from '../src/types/PubSub';
+import { ConnectionState as CS, CONTROL_MSG } from '../src/types/PubSub';
 
 import { AWSAppSyncEventProvider } from '../src/Providers/AWSAppSyncEventsProvider';
 import * as authHeadersModule from '../src/Providers/AWSWebSocketProvider/authHeaders';
@@ -473,6 +473,99 @@ describe('AppSyncEventProvider', () => {
 						type: MESSAGE_TYPES.DATA,
 						event: JSON.parse(event),
 					});
+				});
+
+				test('onSubscriptionReady is invoked with the subscription id on subscription ack', async () => {
+					expect.assertions(1);
+					const onSubscriptionReady = jest.fn();
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						onSubscriptionReady,
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+
+					expect(onSubscriptionReady).toHaveBeenCalledWith(
+						fakeWebSocketInterface.webSocket.subscriptionId,
+					);
+				});
+
+				test('onSubscriptionError is invoked with the subscription id and error on EVENT_SUBSCRIBE_ERROR', async () => {
+					expect.assertions(2);
+					const onSubscriptionError = jest.fn();
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						onSubscriptionError,
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+
+					// A subscribe failure (no start ack precedes it)
+					await fakeWebSocketInterface?.sendDataMessage({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR,
+						errors: [
+							{
+								errorType: 'AuthorizationError',
+								message: 'Not authorized to access channel',
+							},
+						],
+					});
+
+					expect(onSubscriptionError).toHaveBeenCalledTimes(1);
+					expect(onSubscriptionError).toHaveBeenCalledWith(
+						fakeWebSocketInterface.webSocket.subscriptionId,
+						expect.objectContaining({
+							message: expect.stringContaining('Connection failed:'),
+						}),
+					);
+				});
+
+				test('SUBSCRIPTION_ACK Hub event payload includes the subscription id', async () => {
+					expect.assertions(1);
+					const ackPayloads: any[] = [];
+					const unsubscribeHub = Hub.listen('api', ({ payload }: any) => {
+						if (payload.event === CONTROL_MSG.SUBSCRIPTION_ACK) {
+							ackPayloads.push(payload.data);
+						}
+					});
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+
+					unsubscribeHub();
+
+					expect(ackPayloads[0]).toEqual(
+						expect.objectContaining({
+							id: fakeWebSocketInterface.webSocket.subscriptionId,
+						}),
+					);
 				});
 
 				test('socket is disconnected after .close() is called', async () => {

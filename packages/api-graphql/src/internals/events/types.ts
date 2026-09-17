@@ -12,6 +12,27 @@ export interface SubscriptionObserver<T> {
 	error(errorValue: any): void;
 }
 
+/**
+ * @experimental API may change in future versions
+ *
+ * An rxjs `Subscription` augmented with a one-shot `ready` promise that
+ * resolves once the AppSync server ACKs the subscription.
+ */
+export interface EventsSubscription extends Subscription {
+	/**
+	 * @experimental API may change in future versions
+	 *
+	 * Resolves with the AppSync subscription id once the server ACKs the
+	 * subscription. Rejects on subscribe error, start-ack timeout, or
+	 * unsubscribe-before-ack. One-shot: reconnects do not re-settle it.
+	 * If a network disruption with a pending reconnect occurs during the
+	 * initial connect, `ready` follows the reconnect lifecycle and settles
+	 * once the retried subscription ACKs or errors (it is not force-rejected
+	 * mid-reconnect).
+	 */
+	readonly ready: Promise<{ subscriptionId: string }>;
+}
+
 export interface EventsChannel {
 	/**
 	 * @experimental API may change in future versions
@@ -41,7 +62,7 @@ export interface EventsChannel {
 	subscribe(
 		observer: SubscriptionObserver<any>,
 		subOptions?: EventsOptions,
-	): Subscription;
+	): EventsSubscription;
 	/**
 	 * @experimental API may change in future versions
 	 *

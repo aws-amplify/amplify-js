@@ -16,6 +16,7 @@ import { configure, normalizeAuth, serializeEvents } from './utils';
 import type {
 	EventsChannel,
 	EventsOptions,
+	EventsSubscription,
 	ProviderOptions,
 	PublishResponse,
 	PublishedEvent,
@@ -81,7 +82,7 @@ async function connect(...args: any[]): Promise<EventsChannel> {
 	const sub = (
 		observer: SubscriptionObserver<any>,
 		subOptions?: EventsOptions,
-	): Subscription => {
+	): EventsSubscription => {
 		if (!openChannels.has(channelId)) {
 			throw new Error('Channel is closed');
 		}
@@ -94,11 +95,58 @@ async function connect(...args: any[]): Promise<EventsChannel> {
 		subscribeOptions.authToken =
 			subOptions?.authToken || subscribeOptions.authToken;
 
+		// One-shot readiness signal for THIS subscribe call. Locals (not the
+		// closure-scoped `_subscription`) so concurrent subscribes don't collide.
+		let settled = false;
+		let resolveReady!: (value: { subscriptionId: string }) => void;
+		let rejectReady!: (reason?: unknown) => void;
+		const ready = new Promise<{ subscriptionId: string }>((resolve, reject) => {
+			resolveReady = resolve;
+			rejectReady = reject;
+		});
+		// Avoid unhandled-rejection noise before the caller reads `.ready`.
+		ready.catch(() => undefined);
+
 		_subscription = eventProvider
-			.subscribe({ ...subscribeOptions, ctx })
+			.subscribe({
+				...subscribeOptions,
+				ctx,
+				onSubscriptionReady: (subscriptionId: string) => {
+					if (!settled) {
+						settled = true;
+						resolveReady({ subscriptionId });
+					}
+				},
+				onSubscriptionError: (_subscriptionId: string, error?: unknown) => {
+					if (!settled) {
+						settled = true;
+						rejectReady(error);
+					}
+				},
+			})
 			.subscribe(observer);
 
-		return _subscription;
+		// Reject `ready` if the caller unsubscribes (or the channel closes, which
+		// calls unsubscribe) before the server ACKs the subscription.
+		const originalUnsubscribe = _subscription.unsubscribe.bind(_subscription);
+		_subscription.unsubscribe = () => {
+			if (!settled) {
+				settled = true;
+				rejectReady(new Error('Subscription unsubscribed before ready'));
+			}
+			originalUnsubscribe();
+		};
+
+		// Augment the returned rxjs Subscription with the readiness promise
+		// (backward compatible: existing callers keep the Subscription contract).
+		const eventsSubscription: EventsSubscription = Object.assign(
+			_subscription,
+			{
+				ready,
+			},
+		);
+
+		return eventsSubscription;
 	};
 
 	const pub = async (

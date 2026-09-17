@@ -60,6 +60,18 @@ export interface ObserverQuery {
 	subscriptionState: SUBSCRIPTION_STATUS;
 	subscriptionReadyCallback?(): void;
 	subscriptionFailedCallback?(reason?: any): void;
+	/**
+	 * Optional one-shot callback surfacing subscription readiness to the caller,
+	 * carrying the subscription id. Separate from the internal
+	 * `subscriptionReadyCallback` (which coordinates the unsubscribe race).
+	 */
+	onSubscriptionReady?(subscriptionId: string): void;
+	/**
+	 * Optional one-shot callback surfacing subscription failure to the caller,
+	 * carrying the subscription id and error. Separate from the internal
+	 * `subscriptionFailedCallback`.
+	 */
+	onSubscriptionError?(subscriptionId: string, error?: unknown): void;
 	startAckTimeoutId?: ReturnType<typeof setTimeout>;
 }
 
@@ -418,6 +430,8 @@ export abstract class AWSWebSocketProvider {
 			query: query ?? '',
 			variables: variables ?? {},
 			subscriptionState: SUBSCRIPTION_STATUS.PENDING,
+			onSubscriptionReady: options.onSubscriptionReady,
+			onSubscriptionError: options.onSubscriptionError,
 			startAckTimeoutId: undefined,
 		});
 
@@ -455,6 +469,8 @@ export abstract class AWSWebSocketProvider {
 			variables: variables ?? {},
 			subscriptionReadyCallback,
 			subscriptionFailedCallback,
+			onSubscriptionReady: options.onSubscriptionReady,
+			onSubscriptionError: options.onSubscriptionError,
 			startAckTimeoutId: setTimeout(() => {
 				this._timeoutStartSubscriptionAck(subscriptionId);
 			}, START_ACK_TIMEOUT),
@@ -495,13 +511,17 @@ export abstract class AWSWebSocketProvider {
 				this.logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`);
 			}
 
-			const { subscriptionFailedCallback } =
+			const { subscriptionFailedCallback, onSubscriptionError } =
 				this.subscriptionObserverMap.get(subscriptionId) || {};
 
 			// Notify concurrent unsubscription
 			if (typeof subscriptionFailedCallback === 'function') {
 				subscriptionFailedCallback();
 			}
+			onSubscriptionError?.(
+				subscriptionId,
+				new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
+			);
 		}
 	}
 
@@ -657,6 +677,8 @@ export abstract class AWSWebSocketProvider {
 			startAckTimeoutId,
 			subscriptionReadyCallback,
 			subscriptionFailedCallback,
+			onSubscriptionReady,
+			onSubscriptionError,
 		} = this.subscriptionObserverMap.get(id) || {};
 
 		if (
@@ -669,10 +691,11 @@ export abstract class AWSWebSocketProvider {
 			if (typeof subscriptionReadyCallback === 'function') {
 				subscriptionReadyCallback();
 			}
+			onSubscriptionReady?.(id);
 			if (startAckTimeoutId) clearTimeout(startAckTimeoutId);
 			dispatchApiEvent({
 				event: CONTROL_MSG.SUBSCRIPTION_ACK,
-				data: { query, variables },
+				data: { id, query, variables },
 				message: 'Connection established for subscription',
 			});
 			const subscriptionState = SUBSCRIPTION_STATUS.CONNECTED;
@@ -783,6 +806,10 @@ export abstract class AWSWebSocketProvider {
 				if (typeof subscriptionFailedCallback === 'function') {
 					subscriptionFailedCallback();
 				}
+				onSubscriptionError?.(
+					id,
+					new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${errorMessage}`),
+				);
 			}
 		}
 	}
@@ -810,7 +837,8 @@ export abstract class AWSWebSocketProvider {
 		const subscriptionObserver =
 			this.subscriptionObserverMap.get(subscriptionId);
 		if (subscriptionObserver) {
-			const { observer, query, variables } = subscriptionObserver;
+			const { observer, query, variables, onSubscriptionError } =
+				subscriptionObserver;
 			if (!observer) {
 				return;
 			}
@@ -820,6 +848,11 @@ export abstract class AWSWebSocketProvider {
 				variables,
 				subscriptionState: SUBSCRIPTION_STATUS.FAILED,
 			});
+
+			onSubscriptionError?.(
+				subscriptionId,
+				new Error('Subscription start ack timeout'),
+			);
 
 			this._closeSocket();
 			this.logger.debug(
