@@ -715,9 +715,16 @@ export abstract class AWSWebSocketProvider {
 					if (Array.isArray(errors) && errors.length > 0) {
 						const error = errors[0];
 						errorMessage = `${error.errorType}: ${error.message}`;
-						isAuthError =
-							AUTH_ERROR_TYPES.includes(error.errorType) ||
-							error.message?.includes('Token expired');
+						// An Events subscribe_error (e.g. a per-subscription
+						// util.unauthorized() deny, which surfaces as errorType
+						// 'Unauthorized', or an error whose message incidentally
+						// contains 'Token expired') is terminal to only this
+						// subscription. It must NOT close the shared socket: doing so
+						// tears down sibling subscriptions and, for a permanently
+						// denied channel, produces an unbounded deny/reconnect loop.
+						// So isAuthError stays false here — only connection-level
+						// GQL_ERROR auth failures below trigger a socket-closing
+						// reconnect.
 					}
 				} else if (
 					type === MESSAGE_TYPES.GQL_ERROR &&

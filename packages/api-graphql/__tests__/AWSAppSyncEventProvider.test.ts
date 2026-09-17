@@ -280,6 +280,114 @@ describe('AppSyncEventProvider', () => {
 					);
 				});
 
+				test('a subscribe_error with errorType "Unauthorized" (util.unauthorized) fails only that subscription and does NOT close the shared socket', async () => {
+					expect.assertions(2);
+
+					// Do not call through: we only want to observe whether the provider
+					// initiates a socket close, not drive the reconnect machinery.
+					const socketCloseSpy = jest
+						.spyOn(fakeWebSocketInterface.webSocket, 'close')
+						.mockImplementation(() => {});
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const errorSpy = jest.fn();
+					observer.subscribe({
+						error: errorSpy,
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+
+					// A per-subscription authorization denial: AppSync's util.unauthorized()
+					// surfaces as an errorType "Unauthorized" subscribe_error frame.
+					await fakeWebSocketInterface?.sendDataMessage({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR,
+						errors: [
+							{
+								errorType: 'Unauthorized',
+								message: 'You are not authorized to make this call.',
+							},
+						],
+					});
+
+					// The denied subscription's observable errors out (terminal to just it)
+					expect(errorSpy).toHaveBeenCalledWith(
+						expect.objectContaining({
+							errors: [
+								expect.objectContaining({
+									message:
+										'Connection failed: Unauthorized: You are not authorized to make this call.',
+								}),
+							],
+						}),
+					);
+
+					// The shared socket must stay open so sibling subscriptions survive
+					expect(socketCloseSpy).not.toHaveBeenCalledWith(
+						1000,
+						'Auth error - reconnecting',
+					);
+				});
+
+				test('a subscribe_error whose message contains "Token expired" does NOT close the shared socket', async () => {
+					expect.assertions(2);
+
+					const socketCloseSpy = jest
+						.spyOn(fakeWebSocketInterface.webSocket, 'close')
+						.mockImplementation(() => {});
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const errorSpy = jest.fn();
+					observer.subscribe({
+						error: errorSpy,
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+
+					// Incidental "Token expired" text on a per-subscription error frame
+					// must not be classified as a connection-level credentials failure.
+					await fakeWebSocketInterface?.sendDataMessage({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR,
+						errors: [
+							{
+								errorType: 'AuthorizationError',
+								message: 'Token expired for this channel',
+							},
+						],
+					});
+
+					// The denied subscription's observable errors out (terminal to just it)
+					expect(errorSpy).toHaveBeenCalledWith(
+						expect.objectContaining({
+							errors: [
+								expect.objectContaining({
+									message:
+										'Connection failed: AuthorizationError: Token expired for this channel',
+								}),
+							],
+						}),
+					);
+
+					// The shared socket must stay open so sibling subscriptions survive
+					expect(socketCloseSpy).not.toHaveBeenCalledWith(
+						1000,
+						'Auth error - reconnecting',
+					);
+				});
+
 				test('subscription observer error is not triggered when a connection is formed and a retriable connection_error data message is received', async () => {
 					expect.assertions(2);
 
