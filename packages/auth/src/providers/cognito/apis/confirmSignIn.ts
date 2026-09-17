@@ -71,16 +71,16 @@ export async function confirmSignIn(
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
-	// Resolve the per-context orchestrator ONCE at the entry point so every step
-	// of the challenge flow uses the context's configured orchestrator.
-	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
-
 	const clientMetaData = options?.clientMetadata;
 
 	assertValidationError(
 		!!challengeResponse,
 		AuthValidationErrorCode.EmptyChallengeResponse,
 	);
+
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the challenge flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	if (!username || !challengeName || !signInSession)
 		// TODO: remove this error message for production apps

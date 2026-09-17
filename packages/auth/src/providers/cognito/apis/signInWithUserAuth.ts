@@ -64,9 +64,6 @@ export async function signInWithUserAuth(
 		authFlowType: 'USER_AUTH',
 	};
 	assertTokenProviderConfig(authConfig);
-	// Resolve the per-context orchestrator ONCE at the entry point so every step
-	// of the flow uses the context's configured orchestrator.
-	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 	const clientMetaData = options?.clientMetadata;
 	const preferredChallenge =
 		options?.preferredChallenge ?? authConfig?.passwordless?.preferredChallenge;
@@ -75,6 +72,9 @@ export async function signInWithUserAuth(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername,
 	);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	try {
 		const handleUserAuthFlowInput: HandleUserAuthFlowInput = {

@@ -60,10 +60,6 @@ export async function signInWithSRP(
 		authFlowType: 'USER_SRP_AUTH',
 	};
 	assertTokenProviderConfig(authConfig);
-	// Resolve the per-context orchestrator ONCE at the entry point so every step
-	// of the flow (including the device-metadata read during the SRP
-	// PASSWORD_VERIFIER challenge) uses the context's configured orchestrator.
-	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 	const clientMetaData = input.options?.clientMetadata;
 	assertValidationError(
 		!!username,
@@ -73,6 +69,10 @@ export async function signInWithSRP(
 		!!password,
 		AuthValidationErrorCode.EmptySignInPassword,
 	);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow (including the device-metadata read during the SRP
+	// PASSWORD_VERIFIER challenge) uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	try {
 		const {
