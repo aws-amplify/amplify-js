@@ -9,6 +9,10 @@ import { tokenOrchestrator } from '../../tokenProvider';
 
 export const completeOAuthSignOut = async (store: DefaultOAuthStore) => {
 	await store.clearOAuthData();
+	// The OAuth sign-out completes after a full-page redirect, so no
+	// AmplifyContext survives to resolve a per-context orchestrator from; this
+	// path is global-only by construction (see `enableOAuthListener`, which uses
+	// `getGlobalContext()`).
 	tokenOrchestrator.clearTokens();
 	await clearCredentials();
 	Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);

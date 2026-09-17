@@ -29,7 +29,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import {
 	ChallengeName,
@@ -70,6 +70,10 @@ export async function confirmSignIn(
 
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
+
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the challenge flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	const clientMetaData = options?.clientMetadata;
 
@@ -133,7 +137,7 @@ export async function confirmSignIn(
 					}),
 					signInDetails,
 				},
-				ctx,
+				tokenOrchestrator,
 			);
 			resetActiveSignInState();
 

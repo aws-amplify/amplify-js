@@ -5,8 +5,8 @@ import {
 	DefaultTokenStore,
 	TokenOrchestrator,
 	refreshAuthTokensWithoutDedupe,
-	registerContextTokenOrchestrator,
 } from '@aws-amplify/auth/cognito';
+import { registerContextTokenOrchestrator } from '@aws-amplify/core/internals/utils';
 import {
 	AuthConfig,
 	KeyValueStorageInterface,

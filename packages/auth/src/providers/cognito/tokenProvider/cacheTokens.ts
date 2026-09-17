@@ -1,14 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyError, decodeJWT } from '@aws-amplify/core/internals/utils';
-import type { AmplifyContext } from '@aws-amplify/core';
 
 import { CognitoAuthSignInDetails } from '../types';
 import { AuthenticationResultType } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 import { tokenOrchestrator as globalTokenOrchestrator } from './tokenProvider';
-import { getContextTokenOrchestrator } from './contextTokenOrchestrators';
-import { CognitoAuthTokens, DeviceMetadata } from './types';
+import {
+	AuthTokenOrchestrator,
+	CognitoAuthTokens,
+	DeviceMetadata,
+} from './types';
 
 export async function cacheCognitoTokens(
 	AuthenticationResult: AuthenticationResultType & {
@@ -16,7 +18,7 @@ export async function cacheCognitoTokens(
 		username: string;
 		signInDetails?: CognitoAuthSignInDetails;
 	},
-	ctx?: AmplifyContext,
+	orchestrator?: AuthTokenOrchestrator,
 ): Promise<void> {
 	if (AuthenticationResult.AccessToken) {
 		const accessToken = decodeJWT(AuthenticationResult.AccessToken);
@@ -55,14 +57,10 @@ export async function cacheCognitoTokens(
 			tokens.signInDetails = AuthenticationResult.signInDetails;
 		}
 
-		// Resolve the per-context orchestrator from the provided context (via its
-		// token provider object); fall back to the module-level singleton for the
-		// global `Amplify.configure()` path when there is no context orchestrator.
-		const orchestrator =
-			getContextTokenOrchestrator(ctx?.libraryOptions?.Auth?.tokenProvider) ??
-			globalTokenOrchestrator;
-
-		await orchestrator.setTokens({
+		// The caller resolves the per-context orchestrator at its flow entry point;
+		// fall back to the module-level singleton for the global
+		// `Amplify.configure()` path when none was passed.
+		await (orchestrator ?? globalTokenOrchestrator).setTokens({
 			tokens,
 		});
 	} else {

@@ -31,7 +31,7 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
@@ -58,6 +58,9 @@ export async function signInWithCustomSRPAuth(
 	};
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
@@ -103,7 +106,7 @@ export async function signInWithCustomSRPAuth(
 					}),
 					signInDetails,
 				},
-				ctx,
+				tokenOrchestrator,
 			);
 			resetActiveSignInState();
 

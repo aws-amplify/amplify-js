@@ -28,7 +28,7 @@ import {
 	setActiveSignInState,
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { retryOnResourceNotFoundException } from '../utils/retryOnResourceNotFoundException';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
@@ -57,6 +57,9 @@ export async function signInWithUserPassword(
 		authFlowType: 'USER_PASSWORD_AUTH',
 	};
 	assertTokenProviderConfig(authConfig);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
@@ -100,7 +103,7 @@ export async function signInWithUserPassword(
 					}),
 					signInDetails,
 				},
-				ctx,
+				tokenOrchestrator,
 			);
 			resetActiveSignInState();
 

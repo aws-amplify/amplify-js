@@ -1,16 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyContext } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { cacheCognitoTokens } from '../../../../src/providers/cognito/tokenProvider/cacheTokens';
 import { tokenOrchestrator as globalTokenOrchestrator } from '../../../../src/providers/cognito/tokenProvider/tokenProvider';
-import { registerContextTokenOrchestrator } from '../../../../src/providers/cognito/tokenProvider/contextTokenOrchestrators';
-import { AuthTokenOrchestrator } from '../../../../src/providers/cognito/tokenProvider/types';
+import { TokenOrchestrator } from '../../../../src/providers/cognito/tokenProvider/TokenOrchestrator';
 
-// Mock the global singleton module so we can spy on the fallback orchestrator
-// without touching the per-context registry (which we exercise for real).
+// Mock the global singleton module so we can spy on the fallback orchestrator.
 jest.mock(
 	'../../../../src/providers/cognito/tokenProvider/tokenProvider',
 	() => ({
@@ -43,36 +40,31 @@ describe('cacheCognitoTokens', () => {
 		} as ReturnType<typeof decodeJWT>);
 	});
 
-	it('writes to the ctx orchestrator when the ctx token provider is registered', async () => {
-		const contextOrchestrator = {
+	it('writes to the orchestrator passed by the caller', async () => {
+		const orchestrator = {
 			setTokens: jest.fn(),
-		} as unknown as AuthTokenOrchestrator;
-		const tokenProvider = { getTokens: jest.fn() };
-		registerContextTokenOrchestrator(tokenProvider, contextOrchestrator);
+		} as unknown as TokenOrchestrator;
 
-		const ctx = {
-			libraryOptions: { Auth: { tokenProvider } },
-		} as unknown as AmplifyContext;
+		await cacheCognitoTokens(AuthenticationResult, orchestrator);
 
-		await cacheCognitoTokens(AuthenticationResult, ctx);
-
-		expect(contextOrchestrator.setTokens).toHaveBeenCalledTimes(1);
+		expect(orchestrator.setTokens).toHaveBeenCalledTimes(1);
 		expect(mockGlobalSetTokens).not.toHaveBeenCalled();
 	});
 
-	it('falls back to the global singleton orchestrator when no ctx is provided', async () => {
+	it('falls back to the global singleton orchestrator when none is passed', async () => {
 		await cacheCognitoTokens(AuthenticationResult);
 
 		expect(mockGlobalSetTokens).toHaveBeenCalledTimes(1);
 	});
 
-	it('falls back to the global singleton when the ctx provider is not registered', async () => {
-		const ctx = {
-			libraryOptions: { Auth: { tokenProvider: { getTokens: jest.fn() } } },
-		} as unknown as AmplifyContext;
+	it('throws InvalidTokens when there is no access token', async () => {
+		const orchestrator = {
+			setTokens: jest.fn(),
+		} as unknown as TokenOrchestrator;
 
-		await cacheCognitoTokens(AuthenticationResult, ctx);
-
-		expect(mockGlobalSetTokens).toHaveBeenCalledTimes(1);
+		await expect(
+			cacheCognitoTokens({ username: 'username' }, orchestrator),
+		).rejects.toThrow('Invalid tokens');
+		expect(orchestrator.setTokens).not.toHaveBeenCalled();
 	});
 });

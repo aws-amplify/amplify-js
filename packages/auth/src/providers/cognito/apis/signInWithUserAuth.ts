@@ -32,7 +32,7 @@ import {
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import {
 	HandleUserAuthFlowInput,
 	handleUserAuthFlow,
@@ -64,6 +64,9 @@ export async function signInWithUserAuth(
 		authFlowType: 'USER_AUTH',
 	};
 	assertTokenProviderConfig(authConfig);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 	const clientMetaData = options?.clientMetadata;
 	const preferredChallenge =
 		options?.preferredChallenge ?? authConfig?.passwordless?.preferredChallenge;
@@ -115,7 +118,7 @@ export async function signInWithUserAuth(
 					}),
 					signInDetails,
 				},
-				ctx,
+				tokenOrchestrator,
 			);
 			resetActiveSignInState();
 

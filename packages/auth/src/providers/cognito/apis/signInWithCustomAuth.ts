@@ -28,7 +28,7 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { retryOnResourceNotFoundException } from '../utils/retryOnResourceNotFoundException';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
@@ -50,6 +50,9 @@ export async function signInWithCustomAuth(
 ): Promise<SignInWithCustomAuthOutput> {
 	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 	const { username, password, options } = input;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
@@ -98,7 +101,7 @@ export async function signInWithCustomAuth(
 					}),
 					signInDetails,
 				},
-				ctx,
+				tokenOrchestrator,
 			);
 			resetActiveSignInState();
 

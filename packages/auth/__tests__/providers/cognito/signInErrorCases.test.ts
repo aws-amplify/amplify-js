@@ -11,6 +11,10 @@ import { InitiateAuthException } from '../../../src/providers/cognito/types/erro
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
 import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
+import {
+	resolveTokenOrchestrator,
+	tokenOrchestrator,
+} from '../../../src/providers/cognito/tokenProvider';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
@@ -24,6 +28,11 @@ jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
 jest.mock('../../../src/providers/cognito/tokenProvider');
+
+// The barrel is auto-mocked, so `resolveTokenOrchestrator` returns undefined by
+// default. Point it at the auto-mocked singleton so the sign-in flows keep
+// receiving a usable orchestrator.
+jest.mocked(resolveTokenOrchestrator).mockReturnValue(tokenOrchestrator);
 
 describe('signIn API error path cases:', () => {
 	// assert mocks

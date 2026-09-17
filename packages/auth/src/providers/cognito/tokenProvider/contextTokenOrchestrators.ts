@@ -1,21 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AuthTokenOrchestrator } from './types';
+import { getContextTokenOrchestrator } from '@aws-amplify/core/internals/utils';
+import type { AmplifyContext } from '@aws-amplify/core';
+
+import { tokenOrchestrator as globalTokenOrchestrator } from './tokenProvider';
+import type { TokenOrchestrator } from './TokenOrchestrator';
 
 /**
- * Maps a per-context token provider object to its write-capable orchestrator.
- * Weak keys so entries are GC'd with the context/provider. Internal only.
+ * Resolves the write-capable token orchestrator for the given context.
+ *
+ * Returns the per-context orchestrator registered for the context's token
+ * provider when one exists (the `createAmplifyContext()` path), and falls back
+ * to the module-level singleton for the global `Amplify.configure()` path.
+ *
+ * This MUST be called at the entry point of a flow (e.g. `signInWithSRP`) so
+ * every step downstream — including early device-metadata reads — uses the same
+ * correctly configured orchestrator. Internal only.
  */
-const contextTokenOrchestrators = new WeakMap<object, AuthTokenOrchestrator>();
-
-export const registerContextTokenOrchestrator = (
-	provider: object,
-	orchestrator: AuthTokenOrchestrator,
-): void => {
-	contextTokenOrchestrators.set(provider, orchestrator);
-};
-
-export const getContextTokenOrchestrator = (
-	provider?: object,
-): AuthTokenOrchestrator | undefined =>
-	provider ? contextTokenOrchestrators.get(provider) : undefined;
+export const resolveTokenOrchestrator = (
+	ctx?: AmplifyContext,
+): TokenOrchestrator =>
+	getContextTokenOrchestrator<TokenOrchestrator>(
+		ctx?.libraryOptions?.Auth?.tokenProvider,
+	) ?? globalTokenOrchestrator;

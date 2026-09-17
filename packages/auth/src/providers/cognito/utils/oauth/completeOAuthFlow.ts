@@ -141,6 +141,9 @@ const handleCodeFlow = async ({
 	const username =
 		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
 
+	// No AmplifyContext survives the OAuth redirect (this runs from the
+	// module-level listener via `getGlobalContext()`), so tokens are persisted
+	// through the global singleton orchestrator.
 	await cacheCognitoTokens({
 		username,
 		AccessToken: access_token,
