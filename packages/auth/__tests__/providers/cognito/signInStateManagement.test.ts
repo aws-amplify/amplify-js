@@ -12,6 +12,7 @@ import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/fac
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
+jest.mock('../../../src/providers/cognito/utils/dispatchSignedInHubEvent');
 
 //  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
 // before returning an `AuthSignInResult`
@@ -86,12 +87,6 @@ describe('local sign-in state management tests', () => {
 		await signIn({
 			username,
 			password,
-		});
-		mockedGetCurrentUser.mockImplementationOnce(async () => {
-			return {
-				username: 'username',
-				userId: 'userId',
-			};
 		});
 
 		const localSignInState = signInStore.getState();

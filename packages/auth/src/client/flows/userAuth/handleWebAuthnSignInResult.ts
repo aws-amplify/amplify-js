@@ -102,7 +102,7 @@ export async function handleWebAuthnSignInResult(
 			signInDetails,
 		});
 		signInStore.dispatch({ type: 'RESET_STATE' });
-		await dispatchSignedInHubEvent(ctx);
+		await dispatchSignedInHubEvent(ctx, username);
 
 		return {
 			isSignedIn: true,

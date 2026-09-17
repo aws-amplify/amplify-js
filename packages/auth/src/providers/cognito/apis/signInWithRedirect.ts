@@ -55,6 +55,13 @@ export async function signInWithRedirect(...args: any[]): Promise<void> {
 	assertOAuthConfig(authConfig);
 	oAuthStore.setAuthConfig(authConfig);
 
+	// OAuth add-a-user asymmetry (deliberate): password flows add another user
+	// UNCONDITIONALLY, but the OAuth redirect requires an explicit
+	// `options.prompt` to add a second user. Without a prompt the Hosted UI
+	// session cookie would silently SSO the browser straight back as the
+	// EXISTING user, so we assert nobody is authenticated instead of starting a
+	// redirect that cannot actually switch/add a user. A caller that genuinely
+	// wants to add another user must pass a prompt (e.g. 'login'/'select_account').
 	if (!input?.options?.prompt) {
 		await assertUserNotAuthenticated(ctx);
 	}

@@ -99,7 +99,7 @@ export async function signInWithCustomAuth(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent(ctx);
+			await dispatchSignedInHubEvent(ctx, activeUsername);
 
 			return {
 				isSignedIn: true,

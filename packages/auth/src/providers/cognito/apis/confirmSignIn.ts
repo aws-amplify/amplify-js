@@ -134,7 +134,7 @@ export async function confirmSignIn(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent(ctx);
+			await dispatchSignedInHubEvent(ctx, username);
 
 			return {
 				isSignedIn: true,

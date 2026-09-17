@@ -116,7 +116,7 @@ export async function signInWithUserAuth(
 			});
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent(ctx);
+			await dispatchSignedInHubEvent(ctx, activeUsername);
 
 			resetAutoSignIn();
 

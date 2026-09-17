@@ -11,6 +11,13 @@ import {
 } from '../../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
 import { getCurrentUser } from '../../../../src/providers/cognito/apis/getCurrentUser';
 import { assertAuthTokens } from '../../../../src/providers/cognito/utils/types';
+import { tokenOrchestrator } from '../../../../src/providers/cognito/tokenProvider';
+import type { AuthTokenStore } from '../../../../src/providers/cognito/tokenProvider/types';
+
+// mock names are prefixed with `mock` so jest allows referencing them inside
+// the hoisted factory below.
+const mockGetActiveUsername = jest.fn();
+const mockAddActiveSession = jest.fn();
 
 jest.mock('../../../../src/providers/cognito/apis/getCurrentUser', () => ({
 	getCurrentUser: jest.fn(),
@@ -24,27 +31,174 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	AMPLIFY_SYMBOL: Symbol('AMPLIFY_SYMBOL'),
 }));
+// The helper resolves the roster/pointer through the module-level token store
+// (the client path), mirroring how main's ctx-native sign-in reaches
+// `tokenOrchestrator` directly. It takes the ctx for the getCurrentUser payload.
+jest.mock('../../../../src/providers/cognito/tokenProvider', () => ({
+	tokenOrchestrator: {
+		getTokenStore: jest.fn(),
+	},
+}));
+
+// The helper resolves the roster/pointer through the module-level token store
+// (mocked below) and reads the RAW active pointer (getActiveUsername).
+const mockTokenStore = {
+	getActiveUsername: mockGetActiveUsername,
+	addActiveSession: mockAddActiveSession,
+} as unknown as AuthTokenStore;
 
 const mockGetCurrentUser = getCurrentUser as jest.Mock;
 const mockDispatch = Hub.dispatch as jest.Mock;
+const mockGetTokenStore = tokenOrchestrator.getTokenStore as jest.Mock;
 const mockCtx = createMockAmplifyContext();
 
-describe('dispatchSignedInHubEvent(mockCtx)', () => {
-	it('dispatches Hub event `signedIn` with `getCurrentUser()` returned data', async () => {
-		const mockGetCurrentUserPayload = {
-			username: 'hello',
-			userId: 'userId',
-		};
-		mockGetCurrentUser.mockResolvedValueOnce(mockGetCurrentUserPayload);
+const mockGetCurrentUserPayload = {
+	username: 'hello',
+	userId: 'userId',
+};
 
-		await dispatchSignedInHubEvent(mockCtx);
+describe('dispatchSignedInHubEvent()', () => {
+	beforeEach(() => {
+		// default: no active pointer before, and addActiveSession succeeds.
+		mockGetTokenStore.mockReturnValue(mockTokenStore);
+		mockGetActiveUsername.mockResolvedValue(undefined);
+		mockAddActiveSession.mockResolvedValue(undefined);
+		mockGetCurrentUser.mockResolvedValue(mockGetCurrentUserPayload);
+	});
+
+	afterEach(() => {
+		mockGetActiveUsername.mockReset();
+		mockAddActiveSession.mockReset();
+		mockGetCurrentUser.mockReset();
+		mockGetTokenStore.mockReset();
+		mockDispatch.mockClear();
+	});
+
+	it('adds the signed-in user to the roster as the active session', async () => {
+		await dispatchSignedInHubEvent(mockCtx, 'hello');
+
+		expect(mockAddActiveSession).toHaveBeenCalledWith('hello');
+	});
+
+	it('dispatches `userSignedIn` with `getCurrentUser()` returned data', async () => {
+		await dispatchSignedInHubEvent(mockCtx, 'hello');
 
 		expect(mockDispatch).toHaveBeenCalledWith(
 			'auth',
 			{
-				event: 'signedIn',
+				event: 'userSignedIn',
 				data: mockGetCurrentUserPayload,
 			},
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	});
+
+	it('dispatches `signedIn` on first sign-in when no user is active', async () => {
+		// no active pointer before the new session is added.
+		mockGetActiveUsername.mockResolvedValueOnce(undefined);
+
+		await dispatchSignedInHubEvent(mockCtx, 'hello');
+
+		// userSignedIn tracks the user; signedIn marks the no-active->active boundary.
+		expect(mockDispatch).toHaveBeenNthCalledWith(
+			1,
+			'auth',
+			{ event: 'userSignedIn', data: mockGetCurrentUserPayload },
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).toHaveBeenNthCalledWith(
+			2,
+			'auth',
+			{ event: 'signedIn', data: mockGetCurrentUserPayload },
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).not.toHaveBeenCalledWith(
+			'auth',
+			expect.objectContaining({ event: 'switchActiveUser' }),
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	});
+
+	it('dispatches `signedIn` when activating from a parked-only roster (empty pointer)', async () => {
+		// Roster holds parked sessions but nobody is active (pointer empty) after a
+		// prior sign-out: signing in reads as a signedIn boundary, not a switch.
+		mockGetActiveUsername.mockResolvedValueOnce(undefined);
+
+		await dispatchSignedInHubEvent(mockCtx, 'hello');
+
+		expect(mockDispatch).toHaveBeenNthCalledWith(
+			2,
+			'auth',
+			{ event: 'signedIn', data: mockGetCurrentUserPayload },
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).not.toHaveBeenCalledWith(
+			'auth',
+			expect.objectContaining({ event: 'switchActiveUser' }),
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	});
+
+	it('dispatches `switchActiveUser` (not `signedIn`) when a different user is already active', async () => {
+		// a different user is the active pointer before the new session is added.
+		mockGetActiveUsername.mockResolvedValueOnce('existing');
+
+		await dispatchSignedInHubEvent(mockCtx, 'hello');
+
+		expect(mockDispatch).toHaveBeenNthCalledWith(
+			1,
+			'auth',
+			{ event: 'userSignedIn', data: mockGetCurrentUserPayload },
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).toHaveBeenNthCalledWith(
+			2,
+			'auth',
+			{ event: 'switchActiveUser', data: mockGetCurrentUserPayload },
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).not.toHaveBeenCalledWith(
+			'auth',
+			expect.objectContaining({ event: 'signedIn' }),
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+	});
+
+	it('dispatches `userSignedIn` only (no `signedIn`/`switchActiveUser`) when the active user re-authenticates', async () => {
+		// the signing-in user is already the active pointer.
+		mockGetActiveUsername.mockResolvedValueOnce('hello');
+		mockGetCurrentUser.mockResolvedValue({
+			username: 'hello',
+			userId: 'userId',
+		});
+
+		await dispatchSignedInHubEvent(mockCtx, 'hello');
+
+		expect(mockDispatch).toHaveBeenCalledTimes(1);
+		expect(mockDispatch).toHaveBeenCalledWith(
+			'auth',
+			{ event: 'userSignedIn', data: { username: 'hello', userId: 'userId' } },
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).not.toHaveBeenCalledWith(
+			'auth',
+			expect.objectContaining({ event: 'signedIn' }),
+			'Auth',
+			AMPLIFY_SYMBOL,
+		);
+		expect(mockDispatch).not.toHaveBeenCalledWith(
+			'auth',
+			expect.objectContaining({ event: 'switchActiveUser' }),
 			'Auth',
 			AMPLIFY_SYMBOL,
 		);
@@ -55,7 +209,7 @@ describe('dispatchSignedInHubEvent(mockCtx)', () => {
 			assertAuthTokens(null);
 		});
 
-		expect(() => dispatchSignedInHubEvent(mockCtx)).rejects.toThrow(
+		expect(() => dispatchSignedInHubEvent(mockCtx, 'hello')).rejects.toThrow(
 			ERROR_MESSAGE,
 		);
 	});
@@ -67,6 +221,8 @@ describe('dispatchSignedInHubEvent(mockCtx)', () => {
 			throw mockError;
 		});
 
-		expect(() => dispatchSignedInHubEvent(mockCtx)).rejects.toThrow(mockError);
+		expect(() => dispatchSignedInHubEvent(mockCtx, 'hello')).rejects.toThrow(
+			mockError,
+		);
 	});
 });

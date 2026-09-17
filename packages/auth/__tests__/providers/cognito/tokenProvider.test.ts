@@ -98,6 +98,10 @@ describe('saving tokens', () => {
 			},
 		});
 		const lastAuthUser = 'amplify@user';
+		// Real sign-in flow order: cacheCognitoTokens (storeTokens) runs BEFORE the
+		// active pointer is moved by addActiveSession. storeTokens must namespace
+		// under tokens.username (NOT the stale/unset pointer), so the tokens remain
+		// reachable once the pointer advances to this user.
 		await tokenStore.storeTokens({
 			accessToken: decodeJWT(
 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA',
@@ -114,6 +118,7 @@ describe('saving tokens', () => {
 			},
 			username: lastAuthUser,
 		});
+		await tokenStore.addActiveSession(lastAuthUser);
 
 		expect(
 			await memoryStorage.getItem(
@@ -165,6 +170,15 @@ describe('saving tokens', () => {
 				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.randomPasswordKey`,
 			),
 		).toBe('random-password2');
+
+		// Regression: tokens stored BEFORE the pointer moved must be reachable via
+		// loadTokens (which resolves keys from the now-active pointer). This is the
+		// exact fresh sign-in path that was broken by no-arg getAuthKeys().
+		const loaded = await tokenStore.loadTokens();
+		expect(loaded?.accessToken.toString()).toBe(
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA',
+		);
+		expect(loaded?.refreshToken).toBe('refresh-token');
 	});
 	it('should save tokens from store clear old tokens', async () => {
 		const tokenStore = new DefaultTokenStore();
