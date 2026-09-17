@@ -773,6 +773,45 @@ describe('AppSyncEventProvider', () => {
 			// aggregated error types.
 			await expect(pub).rejects.toThrow('Publish errors: AuthorizationError');
 		});
+
+		test('a pending publish is not settled by an id-less error frame, and a subsequent correlated publish_success still resolves it', async () => {
+			expect.assertions(1);
+
+			const pub = provider.publish({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				query: 'events/allowed-channel',
+				variables: { some: 'data' },
+				authenticationType: 'iam',
+				region: 'us-east-1',
+			});
+
+			// Wait until the publish frame has been sent and its id captured.
+			await waitForPublishSent();
+
+			// An error frame with NO operation `id` (e.g. a connection-level error)
+			// arrives while this publish is in flight. AppSync Events guarantees a
+			// publish_error carries the operation `id`, so an id-less error frame is
+			// not this publish's terminal response and must not settle its promise.
+			deliverFrame({
+				type: 'publish_error',
+				errors: [
+					{
+						errorType: 'InternalServerError',
+						message: 'Something went wrong',
+					},
+				],
+			});
+
+			// The correlated publish_success then arrives for this publish.
+			deliverFrame({
+				id: capturedPublishId,
+				type: MESSAGE_TYPES.EVENT_PUBLISH_ACK,
+			});
+
+			// The id-less error frame must not have settled the promise, so the
+			// correlated success resolves it.
+			await expect(pub).resolves.toBeUndefined();
+		});
 	});
 
 	describe('ctx propagation', () => {
