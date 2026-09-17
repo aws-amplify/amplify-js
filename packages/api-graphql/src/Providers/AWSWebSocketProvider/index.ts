@@ -271,6 +271,21 @@ export abstract class AWSWebSocketProvider {
 					}
 
 					if (data.errors && data.errors.length > 0) {
+						// Only reject on the terminal `publish_error` frame correlated to
+						// THIS publish's operation id. AppSync Events guarantees that every
+						// publish response frame (`publish_success`/`publish_error`) carries
+						// the operation `id`, so error frames are correlated by `id` exactly
+						// like the `publish_success` branch above, and the `data.type` gate
+						// mirrors that branch's specificity. The socket is multiplexed, so an
+						// error frame (e.g. a `subscribe_error`) can belong to an unrelated
+						// operation on another channel; likewise an uncorrelated or id-less
+						// error frame is not this publish's response. Such frames are
+						// intentionally ignored for this publish and must not settle its
+						// promise.
+						if (data.id !== subscriptionId || data.type !== 'publish_error') {
+							return;
+						}
+
 						const errorTypes = data.errors.map((error: any) => error.errorType);
 						cleanup();
 						reject(new Error(`Publish errors: ${errorTypes.join(', ')}`));
