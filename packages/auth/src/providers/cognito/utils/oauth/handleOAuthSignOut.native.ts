@@ -13,9 +13,9 @@ import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
-	// No-op here as it's only used in the non-native implementation
 	tokenOrchestrator: TokenOrchestrator,
 	redirectUrl: string | undefined,
+	clearCredentials: () => Promise<void>,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn, preferPrivateSession } = await store.loadOAuthSignIn();
 	if (isOAuthSignIn) {
@@ -29,11 +29,11 @@ export const handleOAuthSignOut = async (
 		const shouldCompleteSignOut =
 			preferPrivateSession || result?.type === 'success';
 		if (shouldCompleteSignOut) {
-			await completeOAuthSignOut(store);
+			await completeOAuthSignOut(store, tokenOrchestrator, clearCredentials);
 		}
 
 		return result;
 	}
 
-	return completeOAuthSignOut(store);
+	return completeOAuthSignOut(store, tokenOrchestrator, clearCredentials);
 };

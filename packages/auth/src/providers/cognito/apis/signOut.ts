@@ -81,6 +81,7 @@ export async function signOut(...args: any[]): Promise<void> {
 				oAuthStore,
 				tokenOrchestrator,
 				input?.oauth?.redirectUrl,
+				() => ctx.clearCredentials(),
 			)) ?? {};
 		if (type === 'error') {
 			throw new AuthError({
