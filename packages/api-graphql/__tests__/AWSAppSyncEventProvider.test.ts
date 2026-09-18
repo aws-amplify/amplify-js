@@ -635,6 +635,85 @@ describe('AppSyncEventProvider', () => {
 					expect(observerMap.size).toBe(0);
 				});
 
+				test('an INVALID/unreachable endpoint rejects the subscription readiness signal via _connectWebSocket -> _logStartSubscriptionError (no hang)', async () => {
+					expect.assertions(1);
+
+					// Reproduce the events layer's `ready` wiring (see
+					// internals/events/index.ts): a one-shot readiness promise resolved
+					// by onSubscriptionReady and rejected by onSubscriptionError. This is
+					// exactly what backs `channel.subscribe(...).ready`. We assert it here
+					// at the provider level because the events public API connects EAGERLY
+					// in events.connect() (awaited before any subscribe), so an invalid
+					// endpoint rejects events.connect() and `ready` is never created on
+					// that path. The subscribe-driven _connectWebSocket failure that
+					// _logStartSubscriptionError handles — the path this comment/test
+					// guards — is reached when subscribe() itself drives the connect, as
+					// below.
+					let settled = false;
+					let resolveReady!: (value: { subscriptionId: string }) => void;
+					let rejectReady!: (reason?: unknown) => void;
+					const ready = new Promise<{ subscriptionId: string }>(
+						(resolve, reject) => {
+							resolveReady = resolve;
+							rejectReady = reject;
+						},
+					);
+					// Avoid unhandled-rejection noise before the assertion reads it.
+					ready.catch(() => undefined);
+
+					fakeWebSocketInterface.webSocket.readyState = WebSocket.OPEN;
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						onSubscriptionReady: (subscriptionId: string) => {
+							if (!settled) {
+								settled = true;
+								resolveReady({ subscriptionId });
+							}
+						},
+						onSubscriptionError: (_subscriptionId: string, error?: unknown) => {
+							if (!settled) {
+								settled = true;
+								rejectReady(
+									error ?? new Error('Subscription failed before ready'),
+								);
+							}
+						},
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.readyForUse;
+					await fakeWebSocketInterface?.triggerOpen();
+
+					// A non-retriable connection_error during the connect handshake makes
+					// _initiateHandshake reject -> NonRetryableError aborts the retry ->
+					// _connectWebSocket rejects -> _startSubscription's catch calls
+					// _logStartSubscriptionError, which surfaces onSubscriptionError. This
+					// is how an INVALID/unreachable/unauthorized endpoint manifests.
+					await Promise.resolve(
+						fakeWebSocketInterface?.sendDataMessage({
+							type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
+							errors: [
+								{
+									errorType: 'UnauthorizedException', // - non-retriable
+									errorCode: 401,
+								},
+							],
+						}),
+					);
+
+					// `ready` MUST reject with the REAL connect error (not hang, not a
+					// generic reason). If this path ever regressed to a hang, this
+					// assertion would time out at the default jest timeout and fail.
+					await expect(ready).rejects.toThrow(
+						'Connection failed: UnauthorizedException',
+					);
+				});
+
 				test('SUBSCRIPTION_ACK Hub event payload includes the subscription id', async () => {
 					expect.assertions(1);
 					const ackPayloads: any[] = [];

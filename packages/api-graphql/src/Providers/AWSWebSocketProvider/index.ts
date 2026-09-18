@@ -154,13 +154,14 @@ export abstract class AWSWebSocketProvider {
 	): Observable<Record<string, unknown>> {
 		return new Observable(observer => {
 			if (!options?.appSyncGraphqlEndpoint) {
-				// No `onSubscriptionError` is surfaced here (and no subscription id
-				// exists yet): for the Events layer this branch is effectively
-				// unreachable. `events.connect()` resolves the endpoint from
-				// `Amplify.configure()` via `configure()`, which throws when the
-				// endpoint is missing before any subscribe can happen. Fabricating an
-				// empty-id error callback would be misleading, so we leave the
-				// observable to error out as before.
+				// This guard fires ONLY for a MISSING/empty endpoint. For the Events
+				// layer it is effectively unreachable: events.connect() resolves the
+				// endpoint via configure(), which rejects a missing endpoint before any
+				// subscribe happens. We don't surface onSubscriptionError here (no
+				// subscriptionId exists yet), and an empty-id callback would be
+				// misleading. An INVALID (present) endpoint is a DIFFERENT path: it
+				// passes this guard, fails later in _connectWebSocket, and DOES reject
+				// `ready` via _logStartSubscriptionError.
 				observer.error({
 					errors: [
 						{
