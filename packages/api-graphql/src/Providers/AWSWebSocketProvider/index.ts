@@ -154,6 +154,13 @@ export abstract class AWSWebSocketProvider {
 	): Observable<Record<string, unknown>> {
 		return new Observable(observer => {
 			if (!options?.appSyncGraphqlEndpoint) {
+				// No `onSubscriptionError` is surfaced here (and no subscription id
+				// exists yet): for the Events layer this branch is effectively
+				// unreachable. `events.connect()` resolves the endpoint from
+				// `Amplify.configure()` via `configure()`, which throws when the
+				// endpoint is missing before any subscribe can happen. Fabricating an
+				// empty-id error callback would be misleading, so we leave the
+				// observable to error out as before.
 				observer.error({
 					errors: [
 						{
@@ -496,6 +503,28 @@ export abstract class AWSWebSocketProvider {
 		if (
 			this.connectionState !== ConnectionState.ConnectionDisruptedPendingNetwork
 		) {
+			const { onSubscriptionError } =
+				this.subscriptionObserverMap.get(subscriptionId) || {};
+
+			// Surface the connect failure to the caller's `ready` promise BEFORE
+			// observer.error(...) so the real error wins the settle race: rxjs's
+			// Subscriber.error() synchronously unsubscribes, which the events layer
+			// would otherwise turn into a generic `ready` rejection (see
+			// internals/events/index.ts). Only onSubscriptionError is hoisted here;
+			// subscriptionFailedCallback is read and invoked AFTER observer.error
+			// (below), because on this connect-init failure path the subscription is
+			// still PENDING and subscriptionFailedCallback is not yet set. rxjs's
+			// synchronous teardown inside observer.error() runs
+			// _waitForSubscriptionToBeConnected, which re-points
+			// subscriptionFailedCallback to its own promise's reject; invoking it
+			// afterward drives that internal unsubscribe-during-connect self-heal so
+			// _removeSubscriptionObserver runs and the subscriptionObserverMap entry
+			// does not leak.
+			onSubscriptionError?.(
+				subscriptionId,
+				new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
+			);
+
 			// When the error is non-retriable, error out the observable
 			if (isNonRetryableError(err)) {
 				observer.error({
@@ -511,17 +540,16 @@ export abstract class AWSWebSocketProvider {
 				this.logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`);
 			}
 
-			const { subscriptionFailedCallback, onSubscriptionError } =
+			// Notify concurrent unsubscription. Re-read the map here (not above)
+			// because observer.error()'s synchronous teardown may have re-pointed
+			// subscriptionFailedCallback to _waitForSubscriptionToBeConnected's
+			// reject; picking it up now self-heals the unsubscribe-during-connect
+			// race and lets _removeSubscriptionObserver clean up.
+			const { subscriptionFailedCallback } =
 				this.subscriptionObserverMap.get(subscriptionId) || {};
-
-			// Notify concurrent unsubscription
 			if (typeof subscriptionFailedCallback === 'function') {
 				subscriptionFailedCallback();
 			}
-			onSubscriptionError?.(
-				subscriptionId,
-				new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
-			);
 		}
 	}
 
@@ -700,14 +728,16 @@ export abstract class AWSWebSocketProvider {
 			});
 			const subscriptionState = SUBSCRIPTION_STATUS.CONNECTED;
 			if (observer) {
+				const existing = this.subscriptionObserverMap.get(id);
 				this.subscriptionObserverMap.set(id, {
+					...existing,
 					observer,
 					query,
 					variables,
-					startAckTimeoutId: undefined,
 					subscriptionState,
 					subscriptionReadyCallback,
 					subscriptionFailedCallback,
+					startAckTimeoutId: undefined,
 				});
 			}
 			this.connectionStateMonitor.record(
@@ -729,7 +759,9 @@ export abstract class AWSWebSocketProvider {
 		) {
 			const subscriptionState = SUBSCRIPTION_STATUS.FAILED;
 			if (observer) {
+				const existing = this.subscriptionObserverMap.get(id);
 				this.subscriptionObserverMap.set(id, {
+					...existing,
 					observer,
 					query,
 					variables,
@@ -791,6 +823,17 @@ export abstract class AWSWebSocketProvider {
 					this.awsRealTimeSocket.close(1000, 'Auth error - reconnecting');
 				}
 
+				// Surface the real subscription error to the caller's `ready`
+				// promise BEFORE observer.error(...). rxjs's Subscriber.error()
+				// synchronously calls this.unsubscribe(); if onSubscriptionError ran
+				// after observer.error, the events layer's caller-unsubscribe
+				// fallback could settle `ready` first with a generic reason and mask
+				// this real error. onSubscriptionError must win that race.
+				onSubscriptionError?.(
+					id,
+					new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${errorMessage}`),
+				);
+
 				observer.error({
 					errors: [
 						{
@@ -806,10 +849,6 @@ export abstract class AWSWebSocketProvider {
 				if (typeof subscriptionFailedCallback === 'function') {
 					subscriptionFailedCallback();
 				}
-				onSubscriptionError?.(
-					id,
-					new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${errorMessage}`),
-				);
 			}
 		}
 	}
@@ -843,10 +882,12 @@ export abstract class AWSWebSocketProvider {
 				return;
 			}
 			this.subscriptionObserverMap.set(subscriptionId, {
+				...subscriptionObserver,
 				observer,
 				query,
 				variables,
 				subscriptionState: SUBSCRIPTION_STATUS.FAILED,
+				startAckTimeoutId: undefined,
 			});
 
 			onSubscriptionError?.(

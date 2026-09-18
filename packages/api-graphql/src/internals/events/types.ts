@@ -24,11 +24,11 @@ export interface EventsSubscription extends Subscription {
 	 *
 	 * Resolves with the AppSync subscription id once the server ACKs the
 	 * subscription. Rejects on subscribe error, start-ack timeout, or
-	 * unsubscribe-before-ack. One-shot: reconnects do not re-settle it.
-	 * If a network disruption with a pending reconnect occurs during the
-	 * initial connect, `ready` follows the reconnect lifecycle and settles
-	 * once the retried subscription ACKs or errors (it is not force-rejected
-	 * mid-reconnect).
+	 * unsubscribe/close-before-ack. One-shot: reconnects do not re-settle it.
+	 *
+	 * Note: `ready` has NO built-in timeout — it stays pending until the server
+	 * ACKs or the subscription errors/closes. Callers that need a bound should
+	 * race their own timeout, e.g. `Promise.race([sub.ready, timeout])`.
 	 */
 	readonly ready: Promise<{ subscriptionId: string }>;
 }

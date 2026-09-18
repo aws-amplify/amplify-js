@@ -208,7 +208,7 @@ describe('Events client', () => {
 					subscription.unsubscribe();
 
 					await expect(subscription.ready).rejects.toThrow(
-						'Subscription unsubscribed before ready',
+						'Subscription closed before ready',
 					);
 				});
 			});

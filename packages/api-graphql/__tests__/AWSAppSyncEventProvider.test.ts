@@ -8,7 +8,7 @@ import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { MESSAGE_TYPES } from '../src/Providers/constants';
 import * as constants from '../src/Providers/constants';
 
-import { delay, FakeWebSocketInterface } from './helpers';
+import { delay, FakeWebSocketInterface, replaceConstant } from './helpers';
 import { ConnectionState as CS, CONTROL_MSG } from '../src/types/PubSub';
 
 import { AWSAppSyncEventProvider } from '../src/Providers/AWSAppSyncEventsProvider';
@@ -536,6 +536,105 @@ describe('AppSyncEventProvider', () => {
 					);
 				});
 
+				test('onSubscriptionError is invoked with the start-ack timeout error when the server never ACKs', async () => {
+					expect.assertions(1);
+					const onSubscriptionError = jest.fn();
+
+					// Shorten START_ACK_TIMEOUT so the timeout fires quickly without
+					// fake timers. The provider reads the constant live off the module.
+					await replaceConstant('START_ACK_TIMEOUT', 20, async () => {
+						const observer = provider.subscribe({
+							appSyncGraphqlEndpoint: 'ws://localhost:8080',
+							onSubscriptionError,
+						});
+
+						observer.subscribe({
+							next: () => {},
+							error: () => {},
+						});
+
+						// Connect but never send the start ack, so the start-ack timeout
+						// fires and _timeoutStartSubscriptionAck surfaces the error.
+						await fakeWebSocketInterface?.standardConnectionHandshake();
+
+						// Wait past the shortened START_ACK_TIMEOUT.
+						await delay(80);
+
+						expect(onSubscriptionError).toHaveBeenCalledWith(
+							fakeWebSocketInterface.webSocket.subscriptionId,
+							expect.objectContaining({
+								message: expect.stringContaining('start ack timeout'),
+							}),
+						);
+					});
+				});
+
+				test('onSubscriptionError is invoked when the initial connection fails with a non-retryable error, and the subscription is cleaned up (no leaked observer-map entry)', async () => {
+					expect.assertions(3);
+					const onSubscriptionError = jest.fn();
+
+					fakeWebSocketInterface.webSocket.readyState = WebSocket.OPEN;
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						onSubscriptionError,
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.readyForUse;
+					await fakeWebSocketInterface?.triggerOpen();
+
+					// A non-retriable connection_error drives _startSubscription's catch
+					// -> _logStartSubscriptionError, which surfaces onSubscriptionError.
+					await Promise.resolve(
+						fakeWebSocketInterface?.sendDataMessage({
+							type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
+							errors: [
+								{
+									errorType: 'UnauthorizedException', // - non-retriable
+									errorCode: 401,
+								},
+							],
+						}),
+					);
+
+					await delay(1);
+
+					expect(onSubscriptionError).toHaveBeenCalledWith(
+						expect.any(String),
+						expect.objectContaining({
+							message: expect.stringContaining('Connection failed'),
+						}),
+					);
+
+					// Regression guard for the _logStartSubscriptionError ordering fix.
+					// On this connect-init failure path the subscription is still
+					// PENDING and subscriptionFailedCallback is not yet set. Hoisting
+					// the subscriptionFailedCallback read/invocation above
+					// observer.error (as a prior edit did) read `undefined`, so nothing
+					// ever rejected the promise that _cleanupSubscription awaits via
+					// _waitForSubscriptionToBeConnected — the wait hung,
+					// _removeSubscriptionObserver never ran, and the
+					// subscriptionObserverMap entry leaked. With the correct ordering,
+					// observer.error()'s synchronous teardown re-points
+					// subscriptionFailedCallback to that promise's reject and the
+					// AFTER-observer.error invocation drives cleanup to completion.
+					// The subscription id passed to onSubscriptionError is the map key.
+					const subscriptionId = onSubscriptionError.mock.calls[0][0];
+					const observerMap = (provider as any).subscriptionObserverMap as Map<
+						string,
+						unknown
+					>;
+					expect(observerMap.has(subscriptionId)).toBe(false);
+					// Only one subscription was created in this test, so a clean map
+					// proves nothing leaked.
+					expect(observerMap.size).toBe(0);
+				});
+
 				test('SUBSCRIPTION_ACK Hub event payload includes the subscription id', async () => {
 					expect.assertions(1);
 					const ackPayloads: any[] = [];
@@ -554,18 +653,20 @@ describe('AppSyncEventProvider', () => {
 						error: () => {},
 					});
 
-					await fakeWebSocketInterface?.standardConnectionHandshake();
-					await fakeWebSocketInterface?.startAckMessage({
-						connectionTimeoutMs: 100,
-					});
+					try {
+						await fakeWebSocketInterface?.standardConnectionHandshake();
+						await fakeWebSocketInterface?.startAckMessage({
+							connectionTimeoutMs: 100,
+						});
 
-					unsubscribeHub();
-
-					expect(ackPayloads[0]).toEqual(
-						expect.objectContaining({
-							id: fakeWebSocketInterface.webSocket.subscriptionId,
-						}),
-					);
+						expect(ackPayloads[0]).toEqual(
+							expect.objectContaining({
+								id: fakeWebSocketInterface.webSocket.subscriptionId,
+							}),
+						);
+					} finally {
+						unsubscribeHub();
+					}
 				});
 
 				test('socket is disconnected after .close() is called', async () => {
