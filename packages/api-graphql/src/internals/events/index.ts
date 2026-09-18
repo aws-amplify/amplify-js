@@ -16,6 +16,7 @@ import { configure, normalizeAuth, serializeEvents } from './utils';
 import type {
 	EventsChannel,
 	EventsOptions,
+	EventsSubscription,
 	ProviderOptions,
 	PublishResponse,
 	PublishedEvent,
@@ -81,7 +82,7 @@ async function connect(...args: any[]): Promise<EventsChannel> {
 	const sub = (
 		observer: SubscriptionObserver<any>,
 		subOptions?: EventsOptions,
-	): Subscription => {
+	): EventsSubscription => {
 		if (!openChannels.has(channelId)) {
 			throw new Error('Channel is closed');
 		}
@@ -94,11 +95,83 @@ async function connect(...args: any[]): Promise<EventsChannel> {
 		subscribeOptions.authToken =
 			subOptions?.authToken || subscribeOptions.authToken;
 
-		_subscription = eventProvider
-			.subscribe({ ...subscribeOptions, ctx })
+		// One-shot readiness signal for THIS subscribe call. The promise state
+		// (`settled`/`resolveReady`/`rejectReady`) is kept in locals so the
+		// resolve/reject callbacks below close over this specific subscribe call.
+		// NOTE: the channel-level `_subscription` closure var is overwritten on
+		// each subscribe, so `close()` only rejects the MOST RECENT subscription's
+		// `ready`; rejecting `ready` for earlier concurrent subscriptions on the
+		// same channel is a pre-existing limitation (not addressed here).
+		let settled = false;
+		let resolveReady!: (value: { subscriptionId: string }) => void;
+		let rejectReady!: (reason?: unknown) => void;
+		const ready = new Promise<{ subscriptionId: string }>((resolve, reject) => {
+			resolveReady = resolve;
+			rejectReady = reject;
+		});
+		// Avoid unhandled-rejection noise before the caller reads `.ready`.
+		ready.catch(() => undefined);
+
+		const providerSubscription = eventProvider
+			.subscribe({
+				...subscribeOptions,
+				ctx,
+				onSubscriptionReady: (subscriptionId: string) => {
+					if (!settled) {
+						settled = true;
+						resolveReady({ subscriptionId });
+					}
+				},
+				onSubscriptionError: (_subscriptionId: string, error?: unknown) => {
+					if (!settled) {
+						settled = true;
+						// `error` is optional on the provider callback; default it so
+						// `ready` never rejects with `undefined`.
+						rejectReady(error ?? new Error('Subscription failed before ready'));
+					}
+				},
+			})
 			.subscribe(observer);
 
-		return _subscription;
+		// Expose the readiness promise on a DELEGATING wrapper instead of mutating
+		// the rxjs Subscriber returned above. rxjs calls `this.unsubscribe()`
+		// internally from Subscriber.error()/complete(); if we patched the
+		// subscriber's own `unsubscribe`, a provider-driven error would fire it and
+		// reject `ready` with a generic reason, masking the real error. Delegating
+		// through a prototype wrapper keeps rxjs's internal `this.unsubscribe()`
+		// hitting the ORIGINAL subscriber, so only a CALLER-initiated unsubscribe
+		// (via this returned object) or a channel close rejects `ready`. The
+		// provider-side onSubscriptionError is the PRIMARY reject signal; this is
+		// the fallback for a genuine caller unsubscribe / close-before-ack. rxjs
+		// Subscription methods/props (`closed`, `add`, etc.) resolve through the
+		// prototype, so the returned object still satisfies the Subscription
+		// contract (backward compatible for existing callers).
+		const eventsSubscription: EventsSubscription =
+			Object.create(providerSubscription);
+		Object.defineProperty(eventsSubscription, 'unsubscribe', {
+			value: () => {
+				if (!settled) {
+					settled = true;
+					rejectReady(new Error('Subscription closed before ready'));
+				}
+				providerSubscription.unsubscribe();
+			},
+			writable: true,
+			enumerable: false,
+			configurable: true,
+		});
+		Object.defineProperty(eventsSubscription, 'ready', {
+			value: ready,
+			writable: false,
+			enumerable: true,
+			configurable: true,
+		});
+
+		// `close()` unsubscribes the most recent subscription through this closure
+		// var (the delegate above), which rejects its `ready` if still pending.
+		_subscription = eventsSubscription;
+
+		return eventsSubscription;
 	};
 
 	const pub = async (

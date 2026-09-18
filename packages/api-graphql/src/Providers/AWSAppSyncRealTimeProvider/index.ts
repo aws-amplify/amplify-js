@@ -36,6 +36,20 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	 * lifecycle, NOT stored on the provider instance (providers are singletons).
 	 */
 	ctx?: AmplifyContext;
+	/**
+	 * Optional one-shot callback invoked when the server ACKs this subscription.
+	 * Invoked alongside (never replacing) the internal `subscriptionReadyCallback`.
+	 * @param subscriptionId - the AppSync subscription id assigned to this subscribe call
+	 */
+	onSubscriptionReady?(subscriptionId: string): void;
+	/**
+	 * Optional one-shot callback invoked when this subscription fails (subscribe
+	 * error, start-ack timeout, or connection init failure). Invoked alongside
+	 * (never replacing) the internal `subscriptionFailedCallback`.
+	 * @param subscriptionId - the AppSync subscription id assigned to this subscribe call
+	 * @param error - the error that caused the failure, when available
+	 */
+	onSubscriptionError?(subscriptionId: string, error?: unknown): void;
 }
 
 interface DataObject extends Record<string, unknown> {
