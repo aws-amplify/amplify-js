@@ -302,6 +302,9 @@
 		"push-notifications",
 		"utils"
 	],
+	"engines": {
+		"node": ">=18"
+	},
 	"dependencies": {
 		"@aws-amplify/analytics": "7.2.0",
 		"@aws-amplify/api": "6.4.0",

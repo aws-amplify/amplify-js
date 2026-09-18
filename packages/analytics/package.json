@@ -93,6 +93,9 @@
 		"kinesis-firehose",
 		"personalize"
 	],
+	"engines": {
+		"node": ">=18"
+	},
 	"dependencies": {
 		"@aws-sdk/client-firehose": "^3.1012.0",
 		"@aws-sdk/client-kinesis": "^3.1012.0",
