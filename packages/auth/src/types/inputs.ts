@@ -124,6 +124,12 @@ export interface AuthSignInWithRedirectInput {
 		 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
 		 */
 		prompt?: AuthPrompt;
+		/**
+		 * The preferred redirect URL to use for the OAuth flow. Must match one of the
+		 * configured `redirectSignIn` URLs. On native platforms, this allows selecting
+		 * an HTTPS App Link/Universal Link over the default custom scheme.
+		 */
+		preferredRedirectUrl?: string;
 	};
 }
 
