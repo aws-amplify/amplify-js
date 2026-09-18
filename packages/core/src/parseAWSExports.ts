@@ -55,6 +55,7 @@ export const parseAWSExports = (
 		aws_appsync_region,
 		aws_bots_config,
 		aws_cognito_identity_pool_id,
+		aws_cognito_auth_session_validity,
 		aws_cognito_sign_up_verification_method,
 		aws_cognito_mfa_configuration,
 		aws_cognito_mfa_types,
@@ -178,6 +179,7 @@ export const parseAWSExports = (
 					) ?? false,
 			}
 		: undefined;
+	const authSessionValidityConfig = aws_cognito_auth_session_validity;
 	const mergedUserAttributes: LegacyUserAttributeKey[] = Array.from(
 		new Set([
 			...(aws_cognito_verification_mechanisms ?? []),
@@ -216,6 +218,11 @@ export const parseAWSExports = (
 				},
 			},
 		};
+
+		if (authSessionValidityConfig !== undefined) {
+			amplifyConfig.Auth.Cognito.authSessionValidity =
+				authSessionValidityConfig;
+		}
 	}
 
 	const hasOAuthConfig = oauth ? Object.keys(oauth).length > 0 : false;
