@@ -16,6 +16,7 @@ import {
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { createCognitoUserPoolEndpointResolver } from '../../../providers/cognito/factories';
 import { cacheCognitoTokens } from '../../../providers/cognito/tokenProvider/cacheTokens';
+import { resolveTokenOrchestrator } from '../../../providers/cognito/tokenProvider';
 import { dispatchSignedInHubEvent } from '../../../providers/cognito/utils/dispatchSignedInHubEvent';
 import { setActiveSignInState, signInStore } from '../../../client/utils/store';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -90,17 +91,20 @@ export async function handleWebAuthnSignInResult(
 	});
 
 	if (authenticationResult) {
-		await cacheCognitoTokens({
-			...authenticationResult,
-			username,
-			NewDeviceMetadata: await getNewDeviceMetadata({
-				userPoolId: authConfig.userPoolId,
-				userPoolEndpoint: authConfig.userPoolEndpoint,
-				newDeviceMetadata: authenticationResult.NewDeviceMetadata,
-				accessToken: authenticationResult.AccessToken,
-			}),
-			signInDetails,
-		});
+		await cacheCognitoTokens(
+			{
+				...authenticationResult,
+				username,
+				NewDeviceMetadata: await getNewDeviceMetadata({
+					userPoolId: authConfig.userPoolId,
+					userPoolEndpoint: authConfig.userPoolEndpoint,
+					newDeviceMetadata: authenticationResult.NewDeviceMetadata,
+					accessToken: authenticationResult.AccessToken,
+				}),
+				signInDetails,
+			},
+			resolveTokenOrchestrator(ctx),
+		);
 		signInStore.dispatch({ type: 'RESET_STATE' });
 		await dispatchSignedInHubEvent(ctx);
 

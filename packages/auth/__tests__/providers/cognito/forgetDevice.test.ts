@@ -11,7 +11,10 @@ import { AuthError } from '../../../src/errors/AuthError';
 import { DEVICE_METADATA_NOT_FOUND_EXCEPTION } from '../../../src/errors/constants';
 import { forgetDevice } from '../../../src/providers/cognito';
 import { ForgetDeviceException } from '../../../src/providers/cognito/types/errors';
-import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
+import {
+	resolveTokenOrchestrator,
+	tokenOrchestrator,
+} from '../../../src/providers/cognito/tokenProvider';
 import { createForgetDeviceClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
@@ -22,6 +25,12 @@ jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
 jest.mock('../../../src/providers/cognito/factories');
+
+// The barrel is auto-mocked, so `resolveTokenOrchestrator` returns undefined by
+// default. Point it at the auto-mocked singleton so these suites keep
+// asserting against `tokenOrchestrator` as they did before the entry-point
+// orchestrator threading.
+jest.mocked(resolveTokenOrchestrator).mockReturnValue(tokenOrchestrator);
 
 describe('fetchMFAPreference', () => {
 	const mockDeviceMetadata = {

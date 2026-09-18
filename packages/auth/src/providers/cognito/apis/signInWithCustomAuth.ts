@@ -28,7 +28,7 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { retryOnResourceNotFoundException } from '../utils/retryOnResourceNotFoundException';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
@@ -64,6 +64,9 @@ export async function signInWithCustomAuth(
 		!password,
 		AuthValidationErrorCode.CustomAuthSignInPassword,
 	);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	try {
 		const {
@@ -86,17 +89,20 @@ export async function signInWithCustomAuth(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens({
-				username: activeUsername,
-				...AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetadata({
-					userPoolId: authConfig.userPoolId,
-					userPoolEndpoint: authConfig.userPoolEndpoint,
-					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
-					accessToken: AuthenticationResult.AccessToken,
-				}),
-				signInDetails,
-			});
+			await cacheCognitoTokens(
+				{
+					username: activeUsername,
+					...AuthenticationResult,
+					NewDeviceMetadata: await getNewDeviceMetadata({
+						userPoolId: authConfig.userPoolId,
+						userPoolEndpoint: authConfig.userPoolEndpoint,
+						newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+						accessToken: AuthenticationResult.AccessToken,
+					}),
+					signInDetails,
+				},
+				tokenOrchestrator,
+			);
 			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent(ctx);

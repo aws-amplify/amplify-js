@@ -19,7 +19,8 @@ import {
 
 import { getAuthUserAgentValue } from '../../../utils';
 import { SignOutInput } from '../types';
-import { tokenOrchestrator } from '../tokenProvider';
+import { TokenOrchestrator } from '../tokenProvider/TokenOrchestrator';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import {
 	assertAuthTokens,
@@ -53,10 +54,14 @@ export async function signOut(...args: any[]): Promise<void> {
 	const cognitoConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 
+	// Resolve the per-context orchestrator ONCE at the entry point so the token
+	// reads below and the final clear all target the context's own token store.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
+
 	if (input?.global) {
-		await globalSignOut(cognitoConfig);
+		await globalSignOut(cognitoConfig, tokenOrchestrator);
 	} else {
-		await clientSignOut(cognitoConfig);
+		await clientSignOut(cognitoConfig, tokenOrchestrator);
 	}
 
 	let hasOAuthConfig;
@@ -76,6 +81,7 @@ export async function signOut(...args: any[]): Promise<void> {
 				oAuthStore,
 				tokenOrchestrator,
 				input?.oauth?.redirectUrl,
+				() => ctx.clearCredentials(),
 			)) ?? {};
 		if (type === 'error') {
 			throw new AuthError({
@@ -91,7 +97,10 @@ export async function signOut(...args: any[]): Promise<void> {
 	}
 }
 
-async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
+async function clientSignOut(
+	cognitoConfig: CognitoUserPoolConfig,
+	tokenOrchestrator: TokenOrchestrator,
+) {
 	try {
 		const { userPoolEndpoint, userPoolId, userPoolClientId } = cognitoConfig;
 		const authTokens = await tokenOrchestrator.getTokenStore().loadTokens();
@@ -122,7 +131,10 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	}
 }
 
-async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
+async function globalSignOut(
+	cognitoConfig: CognitoUserPoolConfig,
+	tokenOrchestrator: TokenOrchestrator,
+) {
 	try {
 		const { userPoolEndpoint, userPoolId } = cognitoConfig;
 		const authTokens = await tokenOrchestrator.getTokenStore().loadTokens();

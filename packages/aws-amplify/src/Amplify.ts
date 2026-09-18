@@ -109,10 +109,25 @@ export const Amplify = {
 	 * Returns the {@link ResourcesConfig} object passed in as the `resourceConfig` parameter when
 	 * calling `Amplify.configure`.
 	 *
+	 * If `configure()` has not been called yet, this warns and returns an empty
+	 * config object (`{}`) rather than throwing, preserving the historical
+	 * pre-context singleton behavior that callers (and release-gating e2e tests)
+	 * depend on.
+	 *
 	 * @returns An {@link ResourcesConfig} object.
-	 * @throws If `configure()` has not been called yet.
 	 */
 	getConfig(): ResourcesConfig {
+		if (!hasGlobalContext()) {
+			// Preserve the historical unconfigured UX from the core singleton:
+			// warn and return an empty config instead of throwing.
+			// eslint-disable-next-line no-console
+			console.warn(
+				`Amplify has not been configured. Please call Amplify.configure() before using this service.`,
+			);
+
+			return {};
+		}
+
 		return getGlobalContext().resourcesConfig;
 	},
 

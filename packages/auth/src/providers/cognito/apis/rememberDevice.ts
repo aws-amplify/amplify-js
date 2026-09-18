@@ -10,7 +10,7 @@ import {
 
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { UpdateDeviceStatusException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createUpdateDeviceStatusClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
@@ -34,7 +34,8 @@ export async function rememberDevice(...args: any[]): Promise<void> {
 	const { tokens } = await ctx.fetchAuthSession();
 	assertAuthTokens(tokens);
 
-	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
+	const deviceMetadata =
+		await resolveTokenOrchestrator(ctx).getDeviceMetadata();
 	assertDeviceMetadata(deviceMetadata);
 	const updateDeviceStatus = createUpdateDeviceStatusClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({

@@ -28,7 +28,7 @@ import {
 	setActiveSignInState,
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { retryOnResourceNotFoundException } from '../utils/retryOnResourceNotFoundException';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
@@ -66,6 +66,9 @@ export async function signInWithUserPassword(
 		!!password,
 		AuthValidationErrorCode.EmptySignInPassword,
 	);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	try {
 		const {
@@ -88,17 +91,20 @@ export async function signInWithUserPassword(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens({
-				...AuthenticationResult,
-				username: activeUsername,
-				NewDeviceMetadata: await getNewDeviceMetadata({
-					userPoolId: authConfig.userPoolId,
-					userPoolEndpoint: authConfig.userPoolEndpoint,
-					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
-					accessToken: AuthenticationResult.AccessToken,
-				}),
-				signInDetails,
-			});
+			await cacheCognitoTokens(
+				{
+					...AuthenticationResult,
+					username: activeUsername,
+					NewDeviceMetadata: await getNewDeviceMetadata({
+						userPoolId: authConfig.userPoolId,
+						userPoolEndpoint: authConfig.userPoolEndpoint,
+						newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+						accessToken: AuthenticationResult.AccessToken,
+					}),
+					signInDetails,
+				},
+				tokenOrchestrator,
+			);
 			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent(ctx);

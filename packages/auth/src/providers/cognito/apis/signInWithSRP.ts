@@ -31,7 +31,7 @@ import {
 	setActiveSignInState,
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
@@ -69,6 +69,10 @@ export async function signInWithSRP(
 		!!password,
 		AuthValidationErrorCode.EmptySignInPassword,
 	);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow (including the device-metadata read during the SRP
+	// PASSWORD_VERIFIER challenge) uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	try {
 		const {
@@ -93,17 +97,20 @@ export async function signInWithSRP(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens({
-				username: activeUsername,
-				...AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetadata({
-					userPoolId: authConfig.userPoolId,
-					userPoolEndpoint: authConfig.userPoolEndpoint,
-					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
-					accessToken: AuthenticationResult.AccessToken,
-				}),
-				signInDetails,
-			});
+			await cacheCognitoTokens(
+				{
+					username: activeUsername,
+					...AuthenticationResult,
+					NewDeviceMetadata: await getNewDeviceMetadata({
+						userPoolId: authConfig.userPoolId,
+						userPoolEndpoint: authConfig.userPoolEndpoint,
+						newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+						accessToken: AuthenticationResult.AccessToken,
+					}),
+					signInDetails,
+				},
+				tokenOrchestrator,
+			);
 			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent(ctx);

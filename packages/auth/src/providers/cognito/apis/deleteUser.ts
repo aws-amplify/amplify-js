@@ -11,7 +11,7 @@ import {
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
 import { DeleteUserException } from '../types/errors';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createDeleteUserClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
@@ -48,6 +48,6 @@ export async function deleteUser(...args: any[]): Promise<void> {
 			AccessToken: tokens.accessToken.toString(),
 		},
 	);
-	await tokenOrchestrator.clearDeviceMetadata();
-	await signOut();
+	await resolveTokenOrchestrator(ctx).clearDeviceMetadata();
+	await signOut(ctx);
 }

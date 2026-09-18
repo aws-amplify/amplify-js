@@ -295,8 +295,22 @@ describe('Amplify facade (formerly DefaultAmplify)', () => {
 			);
 		});
 
-		it('throws if configure has not been called', () => {
-			expect(() => Amplify.getConfig()).toThrow();
+		it('warns and returns an empty config ({}) if configure has not been called', () => {
+			const warnSpy = jest
+				.spyOn(console, 'warn')
+				.mockImplementation(() => undefined);
+
+			// Regression guard for #14931: prior to the AmplifyContext migration
+			// the umbrella facade delegated to the core singleton, which warned
+			// and returned `{}` (never threw) before configure(). The
+			// release-gating e2e `integ_react_storage_local_context` depends on
+			// this lenient pre-configure behavior.
+			const config = Amplify.getConfig();
+
+			expect(config).toEqual({});
+			expect(warnSpy).toHaveBeenCalledWith(
+				expect.stringContaining('Amplify has not been configured'),
+			);
 		});
 	});
 

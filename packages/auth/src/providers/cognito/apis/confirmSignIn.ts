@@ -29,7 +29,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import {
 	ChallengeName,
@@ -78,6 +78,10 @@ export async function confirmSignIn(
 		AuthValidationErrorCode.EmptyChallengeResponse,
 	);
 
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the challenge flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
+
 	if (!username || !challengeName || !signInSession)
 		// TODO: remove this error message for production apps
 		throw new AuthError({
@@ -121,17 +125,20 @@ export async function confirmSignIn(
 		});
 
 		if (AuthenticationResult) {
-			await cacheCognitoTokens({
-				username,
-				...AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetadata({
-					userPoolId: authConfig.userPoolId,
-					userPoolEndpoint: authConfig.userPoolEndpoint,
-					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
-					accessToken: AuthenticationResult.AccessToken,
-				}),
-				signInDetails,
-			});
+			await cacheCognitoTokens(
+				{
+					username,
+					...AuthenticationResult,
+					NewDeviceMetadata: await getNewDeviceMetadata({
+						userPoolId: authConfig.userPoolId,
+						userPoolEndpoint: authConfig.userPoolEndpoint,
+						newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+						accessToken: AuthenticationResult.AccessToken,
+					}),
+					signInDetails,
+				},
+				tokenOrchestrator,
+			);
 			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent(ctx);

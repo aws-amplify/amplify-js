@@ -10,7 +10,7 @@ import {
 
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { ForgetDeviceInput } from '../types';
 import { ForgetDeviceException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -40,6 +40,7 @@ export async function forgetDevice(...args: any[]): Promise<void> {
 	const { tokens } = await ctx.fetchAuthSession();
 	assertAuthTokens(tokens);
 
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
 	const currentDeviceKey = deviceMetadata?.deviceKey;
 	if (!externalDeviceKey) assertDeviceMetadata(deviceMetadata);

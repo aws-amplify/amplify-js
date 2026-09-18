@@ -32,7 +32,7 @@ import {
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import {
 	HandleUserAuthFlowInput,
 	handleUserAuthFlow,
@@ -72,6 +72,9 @@ export async function signInWithUserAuth(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername,
 	);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	try {
 		const handleUserAuthFlowInput: HandleUserAuthFlowInput = {
@@ -103,17 +106,20 @@ export async function signInWithUserAuth(
 		});
 
 		if (response.AuthenticationResult) {
-			await cacheCognitoTokens({
-				username: activeUsername,
-				...response.AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetadata({
-					userPoolId: authConfig.userPoolId,
-					userPoolEndpoint: authConfig.userPoolEndpoint,
-					newDeviceMetadata: response.AuthenticationResult.NewDeviceMetadata,
-					accessToken: response.AuthenticationResult.AccessToken,
-				}),
-				signInDetails,
-			});
+			await cacheCognitoTokens(
+				{
+					username: activeUsername,
+					...response.AuthenticationResult,
+					NewDeviceMetadata: await getNewDeviceMetadata({
+						userPoolId: authConfig.userPoolId,
+						userPoolEndpoint: authConfig.userPoolEndpoint,
+						newDeviceMetadata: response.AuthenticationResult.NewDeviceMetadata,
+						accessToken: response.AuthenticationResult.AccessToken,
+					}),
+					signInDetails,
+				},
+				tokenOrchestrator,
+			);
 			resetActiveSignInState();
 
 			await dispatchSignedInHubEvent(ctx);

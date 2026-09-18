@@ -169,3 +169,9 @@ export { assertOptionalCtxArg } from './context/assertCtxArg';
 
 // AmplifyClass -> AmplifyContext bridge (single shared implementation)
 export { bridgeAmplifyClass } from './context/bridgeAmplifyClass';
+
+// Per-context token orchestrator registry (write side of a context's token provider)
+export {
+	registerContextTokenOrchestrator,
+	getContextTokenOrchestrator,
+} from './context/contextTokenOrchestrators';

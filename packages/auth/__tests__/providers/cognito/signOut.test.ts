@@ -6,10 +6,14 @@ import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
-import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
+import {
+	tokenOrchestrator as globalTokenOrchestrator,
+	resolveTokenOrchestrator,
+} from '../../../src/providers/cognito/tokenProvider';
 import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWithRedirectStore';
 import { handleOAuthSignOut } from '../../../src/providers/cognito/utils/oauth';
 import { AuthTokenStore } from '../../../src/providers/cognito/tokenProvider/types';
+import type { TokenOrchestrator } from '../../../src/providers/cognito/tokenProvider/TokenOrchestrator';
 import {
 	createGlobalSignOutClient,
 	createRevokeTokenClient,
@@ -30,6 +34,19 @@ jest.mock(
 );
 jest.mock('../../../src/foundation/parsers');
 jest.mock('../../../src/providers/cognito/factories');
+
+// The barrel is auto-mocked, so `resolveTokenOrchestrator` returns undefined by
+// default. Point it at a DISTINCT per-context orchestrator mock (not the global
+// singleton) so these suites prove `signOut` clears the context's own token
+// store and never reaches for the module-level singleton.
+const mockContextTokenOrchestrator = {
+	clearTokens: jest.fn(),
+	getTokenStore: jest.fn(),
+	getOAuthMetadata: jest.fn(),
+} as unknown as jest.Mocked<TokenOrchestrator>;
+jest
+	.mocked(resolveTokenOrchestrator)
+	.mockReturnValue(mockContextTokenOrchestrator);
 
 describe('signOut', () => {
 	// eslint-disable-next-line camelcase
@@ -64,8 +81,8 @@ describe('signOut', () => {
 	const mockHub = Hub as jest.Mocked<typeof Hub>;
 	const mockRevokeToken = jest.fn();
 	const mockedRevokeTokenClient = jest.mocked(createRevokeTokenClient);
-	const mockTokenOrchestrator = tokenOrchestrator as jest.Mocked<
-		typeof tokenOrchestrator
+	const mockGlobalTokenOrchestrator = globalTokenOrchestrator as jest.Mocked<
+		typeof globalTokenOrchestrator
 	>;
 	const MockDefaultOAuthStore = DefaultOAuthStore as jest.Mock;
 	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
@@ -84,7 +101,10 @@ describe('signOut', () => {
 	// create test helpers
 	const expectSignOut = () => ({
 		toComplete: () => {
-			expect(mockTokenOrchestrator.clearTokens).toHaveBeenCalledTimes(1);
+			expect(mockContextTokenOrchestrator.clearTokens).toHaveBeenCalledTimes(1);
+			// The clear must go through the context's orchestrator, never the
+			// module-level singleton.
+			expect(mockGlobalTokenOrchestrator.clearTokens).not.toHaveBeenCalled();
 			expect(mockClearCredentials()).toHaveBeenCalledTimes(1);
 			expect(mockHub.dispatch).toHaveBeenCalledWith(
 				'auth',
@@ -95,7 +115,8 @@ describe('signOut', () => {
 		},
 		not: {
 			toComplete: () => {
-				expect(mockTokenOrchestrator.clearTokens).not.toHaveBeenCalled();
+				expect(mockContextTokenOrchestrator.clearTokens).not.toHaveBeenCalled();
+				expect(mockGlobalTokenOrchestrator.clearTokens).not.toHaveBeenCalled();
 				expect(mockClearCredentials()).not.toHaveBeenCalled();
 				expect(mockHub.dispatch).not.toHaveBeenCalled();
 			},
@@ -114,7 +135,9 @@ describe('signOut', () => {
 		mockCreateGlobalSignOutClient.mockReturnValueOnce(mockGlobalSignOut);
 		mockRevokeToken.mockResolvedValue({});
 		mockedRevokeTokenClient.mockReturnValueOnce(mockRevokeToken);
-		mockTokenOrchestrator.getTokenStore.mockReturnValue(mockAuthTokenStore);
+		mockContextTokenOrchestrator.getTokenStore.mockReturnValue(
+			mockAuthTokenStore,
+		);
 		mockLoadTokens.mockResolvedValue(cognitoAuthTokens);
 	});
 
@@ -124,7 +147,8 @@ describe('signOut', () => {
 		mockClearCredentials().mockClear();
 		mockGetRegionFromUserPoolId.mockClear();
 		mockHub.dispatch.mockClear();
-		mockTokenOrchestrator.clearTokens.mockClear();
+		mockContextTokenOrchestrator.clearTokens.mockClear();
+		mockGlobalTokenOrchestrator.clearTokens.mockClear();
 		loggerDebugSpy.mockClear();
 		mockCreateCognitoUserPoolEndpointResolver.mockClear();
 	});
@@ -262,6 +286,7 @@ describe('signOut', () => {
 		});
 
 		beforeEach(() => {
+			mockCtxWithOAuth.clearCredentials.mockClear();
 			mockHandleOAuthSignOut.mockResolvedValue({ type: 'success' });
 		});
 
@@ -279,8 +304,9 @@ describe('signOut', () => {
 			expect(mockHandleOAuthSignOut).toHaveBeenCalledWith(
 				cognitoConfigWithOauth,
 				mockDefaultOAuthStoreInstance,
-				mockTokenOrchestrator,
+				mockContextTokenOrchestrator,
 				undefined,
+				expect.any(Function),
 			);
 			// In cases of OAuth, token removal and Hub dispatch should be performed by the OAuth handling since
 			// these actions can be deferred or canceled out of altogether.
@@ -291,6 +317,18 @@ describe('signOut', () => {
 			mockHandleOAuthSignOut.mockResolvedValue({ type: 'error' });
 
 			await expect(signOut(mockCtxWithOAuth)).rejects.toThrow();
+		});
+
+		it('passes a clearCredentials callback bound to the context', async () => {
+			await signOut(mockCtxWithOAuth);
+
+			const passedClearCredentials = mockHandleOAuthSignOut.mock
+				.calls[0][4] as () => Promise<void>;
+			expect(mockCtxWithOAuth.clearCredentials).not.toHaveBeenCalled();
+
+			await passedClearCredentials();
+
+			expect(mockCtxWithOAuth.clearCredentials).toHaveBeenCalledTimes(1);
 		});
 	});
 });
