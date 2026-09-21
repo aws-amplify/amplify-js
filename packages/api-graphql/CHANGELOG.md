@@ -1,5 +1,35 @@
 # Change Log
 
+## 4.10.0
+
+### Minor Changes
+
+- [#14954](https://github.com/aws-amplify/amplify-js/pull/14954) [`a5e8df2`](https://github.com/aws-amplify/amplify-js/commit/a5e8df2cac13ab5ceb6c54260cef23b116b8dae4) Thanks [@soberm](https://github.com/soberm)! - feat(events): resolve subscription readiness via `channel.subscribe().ready` and add subscription id to the SUBSCRIPTION_ACK Hub event
+
+### Patch Changes
+
+- [#14950](https://github.com/aws-amplify/amplify-js/pull/14950) [`fb070dd`](https://github.com/aws-amplify/amplify-js/commit/fb070dd368d3b585275862125c10f2dafeda1539) Thanks [@soberm](https://github.com/soberm)! - fix(api-graphql): correlate Events publish errors by operation id
+
+  The AppSync Events WebSocket is multiplexed across operations, so a single
+  socket carries error frames for many channels at once. A publish promise
+  previously rejected on any incoming error frame that carried `data.errors` —
+  including `subscribe_error` frames belonging to unrelated operations on other
+  channels — causing publishes to fail spuriously.
+
+  Rejection is now gated on `data.id === subscriptionId`, so a publish only
+  settles on error frames correlated to its own operation id. Error frames for
+  unrelated operations are ignored, while matching `publish_error` frames still
+  reject the publish as before.
+
+- [#14951](https://github.com/aws-amplify/amplify-js/pull/14951) [`f87199a`](https://github.com/aws-amplify/amplify-js/commit/f87199a07691cea891499ef8f3d5ada699464a90) Thanks [@soberm](https://github.com/soberm)! - fix(api-graphql): keep Events subscribe authorization errors scoped to a single subscription
+
+  An authorization error on an Events subscribe (for example a per-subscription `util.unauthorized()` deny, surfaced as errorType `Unauthorized`) is no longer treated as a connection-level auth failure. Previously it closed the shared WebSocket, which tore down sibling subscriptions and, for a permanently denied channel, produced an unbounded deny/reconnect loop. The error is now delivered only to the affected subscription; other active subscriptions and the shared socket stay connected. Connection-level `GQL_ERROR` auth failures still trigger a reconnect as before.
+
+  Fixes https://github.com/aws-amplify/amplify-js/issues/14947
+
+- Updated dependencies [[`d8f5356`](https://github.com/aws-amplify/amplify-js/commit/d8f5356d31464c8f1f5e8b0a6a7b0ec800b8d110)]:
+  - @aws-amplify/core@6.19.1
+
 ## 4.9.0
 
 ### Minor Changes
