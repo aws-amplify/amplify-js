@@ -10,6 +10,28 @@ import { Amplify, fetchAuthSession } from '../singleton';
 import { ServiceWorkerErrorCode, assert } from './errorHelpers';
 
 /**
+ * Handler invoked on every service worker `statechange` event, receiving the
+ * worker's current lifecycle state.
+ */
+export type ServiceWorkerStateChangeHandler = (
+	state: ServiceWorkerState,
+) => void;
+
+/**
+ * Options for {@link ServiceWorker.register}.
+ */
+export interface ServiceWorkerOptions {
+	/**
+	 * Optional handler invoked on every service worker `statechange` event.
+	 *
+	 * When provided, this handler replaces the built-in Pinpoint auto-recording:
+	 * the built-in analytics event is only recorded when no handler is supplied,
+	 * which prevents duplicate telemetry for the same state change.
+	 */
+	onStateChange?: ServiceWorkerStateChangeHandler;
+}
+
+/**
  * Provides a means to registering a service worker in the browser
  * and communicating with it via postMessage events.
  * https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/
@@ -35,6 +57,9 @@ export class ServiceWorkerClass {
 	// push subscription
 	private _subscription?: PushSubscription;
 
+	// Optional handler invoked on every service worker state change
+	private _onStateChange?: ServiceWorkerStateChangeHandler;
+
 	// The AWS Amplify logger
 	private _logger: ConsoleLogger = new ConsoleLogger('ServiceWorker');
 
@@ -55,14 +80,33 @@ export class ServiceWorkerClass {
 	 * Make sure the service-worker.js is part of the build
 	 * for example with Angular, modify the angular-cli.json file
 	 * and add to "assets" array "service-worker.js"
+	 *
+	 * Note: when `options.onStateChange` is omitted, this method implicitly
+	 * records service worker lifecycle (`statechange`) events to Amazon
+	 * Pinpoint. That built-in auto-recording is deprecated and will be removed
+	 * in a future major version — only the implicit Pinpoint recording is
+	 * deprecated, not `register()` itself. Provide `options.onStateChange` to
+	 * observe lifecycle state changes and emit vendor-neutral telemetry instead.
 	 * @param {string} filePath Service worker file. Defaults to "/service-worker.js"
 	 * @param {string} scope The service worker scope. Defaults to "/"
 	 *  - API Doc: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
+	 * @param {ServiceWorkerOptions} [options] Optional registration options. When
+	 * `onStateChange` is provided it is invoked on every service worker state
+	 * change and replaces the built-in Pinpoint auto-recording. It is also
+	 * invoked once with the worker's current state at registration time, so an
+	 * already-active worker (which dispatches no `statechange` event) is still
+	 * observed. This initial emit applies only to `onStateChange`; the built-in
+	 * Pinpoint path is unaffected.
 	 * @returns {Promise}
 	 *	- resolve(ServiceWorkerRegistration)
 	 *	- reject(Error)
 	 **/
-	register(filePath = '/service-worker.js', scope = '/') {
+	register(
+		filePath = '/service-worker.js',
+		scope = '/',
+		options?: ServiceWorkerOptions,
+	) {
+		this._onStateChange = options?.onStateChange;
 		this._logger.debug(`registering ${filePath}`);
 		this._logger.debug(`registering service worker with scope ${scope}`);
 
@@ -210,44 +254,96 @@ export class ServiceWorkerClass {
 	/**
 	 * Listen for service worker state change and message events
 	 * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state
+	 *
+	 * Each call to `register()` attaches its own `statechange` listener. The
+	 * `onStateChange` handler is captured in a local at listener-creation time,
+	 * so re-registering with a different handler only affects its own listener
+	 * and never re-targets a previously attached one.
 	 **/
 	_setupListeners() {
+		const onStateChange = this._onStateChange;
+
 		this.serviceWorker.addEventListener('statechange', async () => {
 			const currentState = this.serviceWorker.state;
 			this._logger.debug(`ServiceWorker statechange: ${currentState}`);
 
-			const {
-				appId,
-				region,
-				bufferSize,
-				flushInterval,
-				flushSize,
-				resendLimit,
-			} = Amplify.getConfig().Analytics?.Pinpoint ?? {};
-			const { credentials } = await fetchAuthSession();
+			// Notify a consumer-provided handler, isolating any error it throws so
+			// it cannot surface as an unhandled rejection from the listener.
+			await this._notifyStateChange(onStateChange, currentState);
 
-			if (appId && region && credentials) {
-				// Pinpoint is configured, record an event
-				record({
+			// When no handler is provided, fall back to the built-in (deprecated)
+			// Pinpoint auto-recording. A supplied handler overrides it, preventing
+			// double-recording of the same state change.
+			if (!onStateChange) {
+				const {
 					appId,
 					region,
-					category: 'Core',
-					credentials,
 					bufferSize,
 					flushInterval,
 					flushSize,
 					resendLimit,
-					event: {
-						name: 'ServiceWorker',
-						attributes: {
-							state: currentState,
+				} = Amplify.getConfig().Analytics?.Pinpoint ?? {};
+				const { credentials } = await fetchAuthSession();
+
+				if (appId && region && credentials) {
+					// Pinpoint is configured, record an event
+					record({
+						appId,
+						region,
+						category: 'Core',
+						credentials,
+						bufferSize,
+						flushInterval,
+						flushSize,
+						resendLimit,
+						event: {
+							name: 'ServiceWorker',
+							attributes: {
+								state: currentState,
+							},
 						},
-					},
-				});
+					});
+				}
 			}
 		});
+
+		// A worker that is already in a state when this listener is attached
+		// (e.g. `activated` on a repeat visit, where `register()` resolves via
+		// the `registration.active` branch) emits no `statechange` event, so the
+		// consumer hook would otherwise never observe the current state. Notify
+		// the hook once with the current state to close that gap. The built-in
+		// Pinpoint path is intentionally NOT invoked here: doing so would change
+		// existing (no-hook) behavior, which must remain identical to today.
+		const initialState = this.serviceWorker.state;
+		if (onStateChange && initialState) {
+			this._logger.debug(`ServiceWorker initial state: ${initialState}`);
+			this._notifyStateChange(onStateChange, initialState).catch(() => {
+				// _notifyStateChange already logs handler errors; this catch only
+				// satisfies the no-floating-promises contract for the fire-and-forget
+				// initial emit.
+			});
+		}
+
 		this.serviceWorker.addEventListener('message', event => {
 			this._logger.debug(`ServiceWorker message event: ${event}`);
 		});
+	}
+
+	/**
+	 * Invoke the consumer `onStateChange` handler with the given state, isolating
+	 * any error it throws (or rejects with, for an async handler) so it cannot
+	 * surface as an unhandled rejection. Awaiting the handler means a rejected
+	 * promise from an async handler is caught here too; `await undefined`
+	 * resolves immediately for sync or absent handlers.
+	 */
+	private async _notifyStateChange(
+		onStateChange: ServiceWorkerStateChangeHandler | undefined,
+		state: ServiceWorkerState,
+	) {
+		try {
+			await onStateChange?.(state);
+		} catch (e) {
+			this._logger.error('onStateChange handler threw', e);
+		}
 	}
 }

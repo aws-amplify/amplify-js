@@ -19,4 +19,5 @@ export enum AuthValidationErrorCode {
 	EmptyConfirmUserAttributeCode = 'EmptyConfirmUserAttributeCode',
 	IncorrectMFAMethod = 'IncorrectMFAMethod',
 	EmptyUpdatePassword = 'EmptyUpdatePassword',
+	InvalidPreferredChallenge = 'InvalidPreferredChallenge',
 }

@@ -9,6 +9,8 @@ import { NotifyMessageInteractionInput } from '../types/inputs';
 /**
  * Notifies the respective listener of the specified type with the message given.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @param {NotifyMessageInteractionInput} input - The input object that holds the type and message.
  * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
  * configuration is incorrect, or if In App messaging hasn't been initialized.

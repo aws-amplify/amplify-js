@@ -1,7 +1,69 @@
 # Change Log
 
+## 1.8.0
+
+### Minor Changes
+
+- [#14931](https://github.com/aws-amplify/amplify-js/pull/14931) [`736d81d`](https://github.com/aws-amplify/amplify-js/commit/736d81d694b1df633e519881f73d1a942d6ccbe6) Thanks [@bobbor](https://github.com/bobbor)! - feat: explicit AmplifyContext support across all categories.
+
+  Adds context-first overloads (`fn(ctx, input)`) to category APIs alongside the existing
+  singleton-based forms, a public `createAmplifyContext(resourcesConfig, libraryOptions?)`
+  factory for isolated per-request/per-tenant contexts, per-request context isolation in
+  `@aws-amplify/adapter-nextjs` SSR, typed misuse errors (`InvalidAmplifyContextError`,
+  `NoAmplifyContextError`), and a shared testing entry (`@aws-amplify/core/internals/testing`).
+
+  Backward compatible: existing application code — including pre-context SSR
+  `operation: (contextSpec) => fetchAuthSession(contextSpec)` — compiles and behaves
+  unchanged via deprecated type aliases. Includes two api-graphql bug fixes: SSR request
+  clients now honor client-level options (previously silently dropped), and events error
+  messages accurately describe failures.
+
+  Compatibility surface and version guidance:
+  - Resources config is now deep-frozen after `Amplify.configure()` and
+    `createAmplifyContext()` (previously frozen only at the top level). Code that mutated
+    a nested config field post-configure — always unsupported — now throws in strict mode
+    instead of silently succeeding.
+  - Deprecated `AmplifyServer` type aliases (`Context`, `ContextSpec`, `ContextToken`,
+    `RunOperationWithContext`) and functional `createAmplifyServerContext` /
+    `getAmplifyServerContext` / `destroyAmplifyServerContext` shims are restored on the
+    internals/adapter-core entries so previously published `@aws-amplify/adapter-nextjs`
+    versions keep working. They will be removed in the next major.
+  - Peer minimums are raised (`@aws-amplify/core` to `^6.19.0` across category packages;
+    `aws-amplify` to `^6.21.0` for `@aws-amplify/adapter-nextjs`) to guard against
+    version-skewed installs going forward. Note this guard only applies when the
+    dependency tree is re-resolved: existing lockfiles, `npm ci`, and installs with
+    `--legacy-peer-deps` (or yarn classic's warn-only peers) are not re-checked, and
+    already-published category versions still declare the older range. Mixing an older
+    scoped category package (e.g. `@aws-amplify/auth` ≤ 6.x pinned to `core ^6.16.2`)
+    with a newer core is unsupported — keep directly installed `@aws-amplify/*` category
+    packages on the same release line as `aws-amplify`.
+
+## 1.7.3
+
+### Patch Changes
+
+- [#14791](https://github.com/aws-amplify/amplify-js/pull/14791) [`cbd2307`](https://github.com/aws-amplify/amplify-js/commit/cbd2307a14ea21c7c3c1bfdc7b0fcee5cf981888) Thanks [@osama-rizk](https://github.com/osama-rizk)! - fix(adapter-nextjs): match percent-encoded cookie names on read so sign-out clears Cognito session cookies for usernames containing URL-unsafe characters (e.g. `@`)
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [1.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.7.1...@aws-amplify/adapter-nextjs@1.7.2) (2026-02-05)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.7.0...@aws-amplify/adapter-nextjs@1.7.1) (2026-01-22)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+# [1.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.6.12...@aws-amplify/adapter-nextjs@1.7.0) (2026-01-15)
+
+### Bug Fixes
+
+- **adapter-nextjs:** encode the cookie names when writing to cookie store ([#14668](https://github.com/aws-amplify/amplify-js/issues/14668)) ([fb2c88e](https://github.com/aws-amplify/amplify-js/commit/fb2c88e3f4644cd7552fef0f188663dc6a96404a))
+
+### Features
+
+- add next16 support ([b0738e6](https://github.com/aws-amplify/amplify-js/commit/b0738e68b5d787b18f2309ad310e0254b5d2b2a6))
 
 ## [1.6.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.6.11...@aws-amplify/adapter-nextjs@1.6.12) (2025-12-10)
 

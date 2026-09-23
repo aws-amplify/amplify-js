@@ -1,7 +1,137 @@
 # Change Log
 
+## 4.10.0
+
+### Minor Changes
+
+- [#14954](https://github.com/aws-amplify/amplify-js/pull/14954) [`a5e8df2`](https://github.com/aws-amplify/amplify-js/commit/a5e8df2cac13ab5ceb6c54260cef23b116b8dae4) Thanks [@soberm](https://github.com/soberm)! - feat(events): resolve subscription readiness via `channel.subscribe().ready` and add subscription id to the SUBSCRIPTION_ACK Hub event
+
+### Patch Changes
+
+- [#14950](https://github.com/aws-amplify/amplify-js/pull/14950) [`fb070dd`](https://github.com/aws-amplify/amplify-js/commit/fb070dd368d3b585275862125c10f2dafeda1539) Thanks [@soberm](https://github.com/soberm)! - fix(api-graphql): correlate Events publish errors by operation id
+
+  The AppSync Events WebSocket is multiplexed across operations, so a single
+  socket carries error frames for many channels at once. A publish promise
+  previously rejected on any incoming error frame that carried `data.errors` —
+  including `subscribe_error` frames belonging to unrelated operations on other
+  channels — causing publishes to fail spuriously.
+
+  Rejection is now gated on `data.id === subscriptionId`, so a publish only
+  settles on error frames correlated to its own operation id. Error frames for
+  unrelated operations are ignored, while matching `publish_error` frames still
+  reject the publish as before.
+
+- [#14951](https://github.com/aws-amplify/amplify-js/pull/14951) [`f87199a`](https://github.com/aws-amplify/amplify-js/commit/f87199a07691cea891499ef8f3d5ada699464a90) Thanks [@soberm](https://github.com/soberm)! - fix(api-graphql): keep Events subscribe authorization errors scoped to a single subscription
+
+  An authorization error on an Events subscribe (for example a per-subscription `util.unauthorized()` deny, surfaced as errorType `Unauthorized`) is no longer treated as a connection-level auth failure. Previously it closed the shared WebSocket, which tore down sibling subscriptions and, for a permanently denied channel, produced an unbounded deny/reconnect loop. The error is now delivered only to the affected subscription; other active subscriptions and the shared socket stay connected. Connection-level `GQL_ERROR` auth failures still trigger a reconnect as before.
+
+  Fixes https://github.com/aws-amplify/amplify-js/issues/14947
+
+- Updated dependencies [[`d8f5356`](https://github.com/aws-amplify/amplify-js/commit/d8f5356d31464c8f1f5e8b0a6a7b0ec800b8d110)]:
+  - @aws-amplify/core@6.19.1
+
+## 4.9.0
+
+### Minor Changes
+
+- [#14931](https://github.com/aws-amplify/amplify-js/pull/14931) [`736d81d`](https://github.com/aws-amplify/amplify-js/commit/736d81d694b1df633e519881f73d1a942d6ccbe6) Thanks [@bobbor](https://github.com/bobbor)! - feat: explicit AmplifyContext support across all categories.
+
+  Adds context-first overloads (`fn(ctx, input)`) to category APIs alongside the existing
+  singleton-based forms, a public `createAmplifyContext(resourcesConfig, libraryOptions?)`
+  factory for isolated per-request/per-tenant contexts, per-request context isolation in
+  `@aws-amplify/adapter-nextjs` SSR, typed misuse errors (`InvalidAmplifyContextError`,
+  `NoAmplifyContextError`), and a shared testing entry (`@aws-amplify/core/internals/testing`).
+
+  Backward compatible: existing application code — including pre-context SSR
+  `operation: (contextSpec) => fetchAuthSession(contextSpec)` — compiles and behaves
+  unchanged via deprecated type aliases. Includes two api-graphql bug fixes: SSR request
+  clients now honor client-level options (previously silently dropped), and events error
+  messages accurately describe failures.
+
+  Compatibility surface and version guidance:
+  - Resources config is now deep-frozen after `Amplify.configure()` and
+    `createAmplifyContext()` (previously frozen only at the top level). Code that mutated
+    a nested config field post-configure — always unsupported — now throws in strict mode
+    instead of silently succeeding.
+  - Deprecated `AmplifyServer` type aliases (`Context`, `ContextSpec`, `ContextToken`,
+    `RunOperationWithContext`) and functional `createAmplifyServerContext` /
+    `getAmplifyServerContext` / `destroyAmplifyServerContext` shims are restored on the
+    internals/adapter-core entries so previously published `@aws-amplify/adapter-nextjs`
+    versions keep working. They will be removed in the next major.
+  - Peer minimums are raised (`@aws-amplify/core` to `^6.19.0` across category packages;
+    `aws-amplify` to `^6.21.0` for `@aws-amplify/adapter-nextjs`) to guard against
+    version-skewed installs going forward. Note this guard only applies when the
+    dependency tree is re-resolved: existing lockfiles, `npm ci`, and installs with
+    `--legacy-peer-deps` (or yarn classic's warn-only peers) are not re-checked, and
+    already-published category versions still declare the older range. Mixing an older
+    scoped category package (e.g. `@aws-amplify/auth` ≤ 6.x pinned to `core ^6.16.2`)
+    with a newer core is unsupported — keep directly installed `@aws-amplify/*` category
+    packages on the same release line as `aws-amplify`.
+
+### Patch Changes
+
+- Updated dependencies [[`736d81d`](https://github.com/aws-amplify/amplify-js/commit/736d81d694b1df633e519881f73d1a942d6ccbe6), [`eda0afa`](https://github.com/aws-amplify/amplify-js/commit/eda0afae7006b437902ad332803831da970abd38)]:
+  - @aws-amplify/core@6.19.0
+  - @aws-amplify/api-rest@4.7.0
+
+## 4.8.10
+
+### Patch Changes
+
+- Updated dependencies [[`bcdc02b`](https://github.com/aws-amplify/amplify-js/commit/bcdc02ba2a1b9b8e6ab8b384a4586cf9605b41c1)]:
+  - @aws-amplify/core@6.18.0
+
+## 4.8.9
+
+### Patch Changes
+
+- Updated dependencies [[`aaeb630`](https://github.com/aws-amplify/amplify-js/commit/aaeb630870119a9b55d24e3e55c17287eb911e93)]:
+  - @aws-amplify/core@6.17.0
+
+## 4.8.8
+
+### Patch Changes
+
+- Updated dependencies [[`51a50b1`](https://github.com/aws-amplify/amplify-js/commit/51a50b11e2cc436cb06d59df7ba87119f34bf425)]:
+  - @aws-amplify/core@6.16.4
+
+## 4.8.7
+
+### Patch Changes
+
+- [#14788](https://github.com/aws-amplify/amplify-js/pull/14788) [`9fbd3ba`](https://github.com/aws-amplify/amplify-js/commit/9fbd3bae72bbbb00854affc8fdc9b18b13869afd) Thanks [@AdrianoNicolucci](https://github.com/AdrianoNicolucci)! - Remove unused uuid dependency from @aws-amplify/api-graphql, @aws-amplify/interactions, and @aws-amplify/predictions packages. All UUID generation is now consolidated through @aws-amplify/core's amplifyUuid wrapper, addressing security advisory GHSA-w5hq-g745-h8pq.
+
+- Updated dependencies [[`93487ff`](https://github.com/aws-amplify/amplify-js/commit/93487ff0967b8b4f752aca4aacd341052b343177)]:
+  - @aws-amplify/core@6.16.3
+
+## 4.8.6
+
+### Patch Changes
+
+- [#14569](https://github.com/aws-amplify/amplify-js/pull/14569) [`03301e8`](https://github.com/aws-amplify/amplify-js/commit/03301e80a0ba5f1728db6ccd404d1e33ebe44485) Thanks [@anivar](https://github.com/anivar)! - fix(api-graphql): trigger WebSocket reconnection on auth errors to restore subscriptions after token expiration
+
+- [#14757](https://github.com/aws-amplify/amplify-js/pull/14757) [`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77) Thanks [@bobbor](https://github.com/bobbor)! - chore: bump aws-sdk's to v3.1012.0
+
+- Updated dependencies [[`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77)]:
+  - @aws-amplify/core@6.16.2
+  - @aws-amplify/api-rest@4.6.4
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [4.8.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.8.4...@aws-amplify/api-graphql@4.8.5) (2026-02-05)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.8.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.8.3...@aws-amplify/api-graphql@4.8.4) (2026-01-22)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## [4.8.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.8.2...@aws-amplify/api-graphql@4.8.3) (2026-01-15)
+
+### Bug Fixes
+
+- update AWS SDK packages to resolve @smithy/config-resolver ([#14667](https://github.com/aws-amplify/amplify-js/issues/14667)) ([fb5e0bc](https://github.com/aws-amplify/amplify-js/commit/fb5e0bc706bb05ac374f456a27a650af49f87c40))
 
 ## [4.8.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.8.1...@aws-amplify/api-graphql@4.8.2) (2025-12-10)
 

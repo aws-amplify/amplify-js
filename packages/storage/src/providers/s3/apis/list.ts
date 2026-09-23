@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import {
 	ListAllInput,
@@ -14,6 +15,38 @@ import {
 } from '../types';
 
 import { list as listInternal } from './internal/list';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `ListPaginateWithPathInput` object.
+ */
+export function list(
+	ctx: AmplifyContext,
+	input: ListPaginateWithPathInput,
+): Promise<ListPaginateWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `ListAllWithPathInput` object.
+ */
+export function list(
+	ctx: AmplifyContext,
+	input: ListAllWithPathInput,
+): Promise<ListAllWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `ListPaginateInput` object.
+ */
+export function list(
+	ctx: AmplifyContext,
+	input?: ListPaginateInput,
+): Promise<ListPaginateOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `ListAllInput` object.
+ */
+export function list(
+	ctx: AmplifyContext,
+	input?: ListAllInput,
+): Promise<ListAllOutput>;
 
 /**
  * List files in pages with the given `path`.
@@ -58,12 +91,19 @@ export function list(input?: ListPaginateInput): Promise<ListPaginateOutput>;
  */
 export function list(input?: ListAllInput): Promise<ListAllOutput>;
 
-export function list(
-	input?:
-		| ListAllInput
-		| ListPaginateInput
-		| ListAllWithPathInput
-		| ListPaginateWithPathInput,
-) {
-	return listInternal(Amplify, input ?? {});
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
+export function list(...args: any[]) {
+	const [ctx, input] =
+		resolveCtxArgs<
+			[
+				(
+					| ListAllInput
+					| ListPaginateInput
+					| ListAllWithPathInput
+					| ListPaginateWithPathInput
+				)?,
+			]
+		>(args);
+
+	return listInternal(ctx, input ?? {});
 }

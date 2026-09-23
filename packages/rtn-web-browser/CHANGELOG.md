@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.3.0...@aws-amplify/rtn-web-browser@1.4.0) (2026-02-05)
+
+### Features
+
+- **rtn-web-browser:** add unit tests ([#14541](https://github.com/aws-amplify/amplify-js/issues/14541)) ([db2825b](https://github.com/aws-amplify/amplify-js/commit/db2825b921d61101a0dfed9a9db7279ec1f04cff))
+
 # [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.2.0...@aws-amplify/rtn-web-browser@1.3.0) (2025-12-10)
 
 ### Bug Fixes

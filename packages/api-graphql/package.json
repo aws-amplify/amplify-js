@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api-graphql",
-	"version": "4.8.2",
+	"version": "4.10.0",
 	"description": "Api-graphql category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -63,14 +63,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/api-graphql"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
-	"homepage": "https://aws-amplify.github.io/",
+	"homepage": "https://docs.amplify.aws/",
 	"files": [
 		"dist/cjs",
 		"dist/esm",
@@ -79,14 +80,13 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-amplify/api-rest": "4.6.0",
-		"@aws-amplify/core": "6.15.0",
+		"@aws-amplify/api-rest": "4.7.0",
+		"@aws-amplify/core": "6.19.1",
 		"@aws-amplify/data-schema": "^1.7.0",
-		"@aws-sdk/types": "3.387.0",
+		"@aws-sdk/types": "^3.973.6",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
-		"tslib": "^2.5.0",
-		"uuid": "^11.0.0"
+		"tslib": "^2.5.0"
 	},
 	"size-limit": [
 		{

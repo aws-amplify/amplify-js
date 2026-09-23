@@ -11,6 +11,8 @@ export {
 	Cache,
 	ConsoleLogger,
 	ServiceWorker,
+	ServiceWorkerOptions,
+	ServiceWorkerStateChangeHandler,
 	CookieStorage,
 	defaultStorage,
 	sessionStorage,

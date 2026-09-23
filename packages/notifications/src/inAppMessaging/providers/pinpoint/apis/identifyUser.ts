@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
+import {
+	InAppMessagingAction,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 import {
 	UpdateEndpointException,
 	updateEndpoint,
@@ -17,11 +21,20 @@ import {
 } from '../utils';
 import { IdentifyUserInput } from '../types';
 import { assertIsInitialized } from '../../../utils';
+/**
+ * @param ctx - The {@link AmplifyContext} to use for config and credentials.
+ */
+export async function identifyUser(
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void>;
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
  * the same `userId`.
+ *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
  *
  * @param input The input object that conforms to {@link IdentifyUserInput} used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
@@ -67,11 +80,13 @@ import { assertIsInitialized } from '../../../utils';
  *     },
  * });
  */
-export const identifyUser = async (input: IdentifyUserInput): Promise<void> => {
+export async function identifyUser(input: IdentifyUserInput): Promise<void>;
+export async function identifyUser(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[IdentifyUserInput]>(args);
 	const { userId, userProfile, options } = input;
 	assertIsInitialized();
-	const { credentials, identityId } = await resolveCredentials();
-	const { appId, region } = resolveConfig();
+	const { credentials, identityId } = await resolveCredentials(ctx);
+	const { appId, region } = resolveConfig(ctx);
 	const { address, optOut, userAttributes } = options ?? {};
 	await updateEndpoint({
 		address,
@@ -89,4 +104,4 @@ export const identifyUser = async (input: IdentifyUserInput): Promise<void> => {
 			InAppMessagingAction.IdentifyUser,
 		),
 	});
-};
+}

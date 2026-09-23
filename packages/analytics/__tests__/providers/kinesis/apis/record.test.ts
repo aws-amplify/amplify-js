@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { ConsoleLogger } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
@@ -16,6 +21,12 @@ import { RecordInput as KinesisRecordInput } from '../../../../src/providers/kin
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
 jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
+
+setGlobalContext(createMockAmplifyContext());
+
+afterAll(() => {
+	clearGlobalContext();
+});
 
 describe('Analytics Kinesis API: record', () => {
 	const mockRecordInput: KinesisRecordInput = {

@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { defaultStorage } from '@aws-amplify/core';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	clearMessages,
@@ -13,15 +18,26 @@ import {
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
 
-jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	sessionListener: { addStateChangeListener: jest.fn() },
+}));
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
 
 const mockDefaultStorage = defaultStorage as jest.Mocked<typeof defaultStorage>;
 
 describe('clearMessages', () => {
+	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	afterEach(() => {
 		mockDefaultStorage.removeItem.mockClear();
 	});

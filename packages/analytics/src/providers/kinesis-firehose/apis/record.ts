@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fromUtf8 } from '@smithy/util-utf8';
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+import {
+	AnalyticsAction,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 
 import { RecordInput } from '../types';
 import { getEventBuffer, resolveConfig } from '../utils';
@@ -15,6 +18,7 @@ import {
 import { AnalyticsValidationErrorCode } from '../../../errors';
 
 const logger = new ConsoleLogger('KinesisFirehose');
+export function record(ctx: AmplifyContext, input: RecordInput): void;
 
 /**
  * Record one analytic event and send it to Kinesis Data Firehose. Events will be buffered and periodically sent to
@@ -33,7 +37,11 @@ const logger = new ConsoleLogger('KinesisFirehose');
  * });
  * ```
  */
-export const record = ({ streamName, data }: RecordInput): void => {
+export function record(input: RecordInput): void;
+export function record(...args: any[]): void {
+	const [ctx, input] = resolveCtxArgs<[RecordInput]>(args);
+	const { streamName, data } = input;
+
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
 
@@ -42,9 +50,9 @@ export const record = ({ streamName, data }: RecordInput): void => {
 
 	const timestamp = Date.now();
 	const { region, bufferSize, flushSize, flushInterval, resendLimit } =
-		resolveConfig();
+		resolveConfig(ctx);
 
-	resolveCredentials()
+	resolveCredentials(ctx)
 		.then(({ credentials, identityId }) => {
 			const buffer = getEventBuffer({
 				region,
@@ -68,4 +76,4 @@ export const record = ({ streamName, data }: RecordInput): void => {
 		.catch(e => {
 			logger.warn('Failed to record event.', e);
 		});
-};
+}

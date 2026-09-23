@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/pubsub",
-	"version": "6.1.65",
+	"version": "6.2.1",
 	"description": "Pubsub category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -57,14 +57,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/pubsub"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
-	"homepage": "https://aws-amplify.github.io/",
+	"homepage": "https://docs.amplify.aws/",
 	"files": [
 		"dist/cjs",
 		"dist/esm",
@@ -73,7 +74,7 @@
 		"mqtt"
 	],
 	"dependencies": {
-		"@aws-amplify/auth": "6.17.1",
+		"@aws-amplify/auth": "6.21.1",
 		"buffer": "4.9.2",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
@@ -81,10 +82,10 @@
 		"url": "0.11.0"
 	},
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.1.0"
+		"@aws-amplify/core": "^6.19.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.15.0"
+		"@aws-amplify/core": "6.19.1"
 	},
 	"size-limit": [
 		{

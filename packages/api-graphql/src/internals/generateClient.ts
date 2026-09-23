@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Hub } from '@aws-amplify/core';
+import { Hub, isAmplifyContext } from '@aws-amplify/core';
+import { bridgeAmplifyClass } from '@aws-amplify/core/internals/utils';
 import {
 	CustomMutations,
 	CustomQueries,
@@ -39,8 +40,13 @@ export function generateClient<
 	T extends Record<any, any> = never,
 	Options extends ClientGenerationParams = ClientGenerationParams,
 >(params: Options): V6Client<T, Options> {
+	// Bridge AmplifyClassV6 to AmplifyContext if needed
+	const amplifyCtx = isAmplifyContext(params.amplify)
+		? params.amplify
+		: bridgeAmplifyClass(params.amplify);
+
 	const client = {
-		[__amplify]: params.amplify,
+		[__amplify]: amplifyCtx,
 		[__authMode]: params.authMode,
 		[__authToken]: params.authToken,
 		[__apiKey]: 'apiKey' in params ? params.apiKey : undefined,
@@ -56,7 +62,7 @@ export function generateClient<
 		subscriptions: emptyProperty as CustomSubscriptions<never>,
 	} as any;
 
-	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
+	const apiGraphqlConfig = amplifyCtx.resourcesConfig.API?.GraphQL;
 
 	if (client[__endpoint]) {
 		if (!client[__authMode]) {

@@ -182,6 +182,65 @@ describe('parseAmplifyOutputs tests', () => {
 		});
 	});
 
+	it('should parse passwordless configuration', () => {
+		const amplifyOutputs = {
+			version: '1',
+			auth: {
+				user_pool_id: 'us-east-1:test',
+				user_pool_client_id: 'xxxx',
+				aws_region: 'us-east-1',
+				passwordless: {
+					email_otp_enabled: true,
+					sms_otp_enabled: true,
+					web_authn: {
+						relying_party_id: 'example.com',
+						user_verification: 'preferred',
+					},
+					preferred_challenge: 'EMAIL_OTP',
+				},
+			},
+		};
+
+		const result = parseAmplifyOutputs(amplifyOutputs);
+
+		expect(result.Auth?.Cognito).toHaveProperty('passwordless');
+		expect(result.Auth?.Cognito?.passwordless)?.toEqual({
+			emailOtpEnabled: true,
+			smsOtpEnabled: true,
+			webAuthn: {
+				relyingPartyId: 'example.com',
+				userVerification: 'preferred',
+			},
+			preferredChallenge: 'EMAIL_OTP',
+		});
+	});
+
+	it('should parse passwordless configuration without webAuthn', () => {
+		const amplifyOutputs = {
+			version: '1',
+			auth: {
+				user_pool_id: 'us-east-1:test',
+				user_pool_client_id: 'xxxx',
+				aws_region: 'us-east-1',
+				passwordless: {
+					email_otp_enabled: true,
+					sms_otp_enabled: false,
+					preferred_challenge: 'EMAIL_OTP',
+				},
+			},
+		};
+
+		const result = parseAmplifyOutputs(amplifyOutputs);
+
+		expect(result.Auth?.Cognito).toHaveProperty('passwordless');
+		expect(result.Auth?.Cognito?.passwordless)?.toEqual({
+			emailOtpEnabled: true,
+			smsOtpEnabled: false,
+			webAuthn: undefined,
+			preferredChallenge: 'EMAIL_OTP',
+		});
+	});
+
 	it('should correctly set loginWith options', () => {
 		const testAmplifyOutputs = JSON.parse(JSON.stringify(mockAmplifyOutputs));
 
@@ -496,6 +555,61 @@ describe('parseAmplifyOutputs tests', () => {
 							Pinpoint: {
 								appId: 'appid123',
 								region: 'us-west-2',
+							},
+						},
+					},
+				});
+			});
+
+			it('should configure Pinpoint and Customer Profiles push notifications together', () => {
+				const amplifyOutputs: AmplifyOutputs = {
+					version: '1',
+					notifications: {
+						aws_region: 'us-west-2',
+						amazon_pinpoint_app_id: 'appid123',
+						channels: ['APNS', 'FCM'],
+						amazon_connect: {
+							endpoint: 'https://example.com/prod',
+							aws_region: 'us-east-1',
+						},
+					},
+				};
+
+				const result = parseAmplifyOutputs(amplifyOutputs);
+				expect(result).toEqual({
+					Notifications: {
+						PushNotification: {
+							Pinpoint: {
+								appId: 'appid123',
+								region: 'us-west-2',
+							},
+							CustomerProfiles: {
+								endpoint: 'https://example.com/prod',
+								region: 'us-east-1',
+							},
+						},
+					},
+				});
+			});
+
+			it('should configure Customer Profiles push notifications without Pinpoint channels', () => {
+				const amplifyOutputs: AmplifyOutputs = {
+					version: '1',
+					notifications: {
+						amazon_connect: {
+							endpoint: 'https://example.com/prod',
+							aws_region: 'us-east-1',
+						},
+					},
+				};
+
+				const result = parseAmplifyOutputs(amplifyOutputs);
+				expect(result).toEqual({
+					Notifications: {
+						PushNotification: {
+							CustomerProfiles: {
+								endpoint: 'https://example.com/prod',
+								region: 'us-east-1',
 							},
 						},
 					},

@@ -1,4 +1,7 @@
-import type { AmplifyClassV6 } from '@aws-amplify/core';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { resolveApiUrl } from '../../src/utils';
 import {
@@ -8,17 +11,15 @@ import {
 } from '../../src/errors';
 
 const mkAmplify = (endpoint = 'https://example.com/api', apiName = 'myAPI') =>
-	({
-		getConfig: () => ({
-			API: {
-				REST: {
-					[apiName]: {
-						endpoint,
-					},
+	createMockAmplifyContext({
+		API: {
+			REST: {
+				[apiName]: {
+					endpoint,
 				},
 			},
-		}),
-	}) as unknown as AmplifyClassV6;
+		},
+	});
 
 describe('resolveApiUrl', () => {
 	beforeEach(() => {

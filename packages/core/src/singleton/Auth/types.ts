@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Headers } from '../../clients';
 import { StrictUnion } from '../../types';
 import { AtLeastOne } from '../types';
 
@@ -56,6 +57,7 @@ export interface AuthSession {
 export interface LibraryAuthOptions {
 	tokenProvider?: TokenProvider;
 	credentialsProvider?: CredentialsAndIdentityIdProvider;
+	headers?(): Promise<Headers>;
 }
 
 export interface Identity {
@@ -141,6 +143,7 @@ export interface AuthIdentityPoolConfig {
 		mfa?: never;
 		passwordFormat?: never;
 		groups?: never;
+		passwordless?: never;
 	};
 }
 
@@ -162,6 +165,12 @@ export interface AuthUserPoolConfig {
 }
 
 export type CognitoUserPoolConfigMfaStatus = 'on' | 'off' | 'optional';
+
+export type PreferredChallenge =
+	| 'EMAIL_OTP'
+	| 'SMS_OTP'
+	| 'WEB_AUTHN'
+	| undefined;
 
 export interface CognitoUserPoolConfig {
 	userPoolClientId: string;
@@ -191,6 +200,15 @@ export interface CognitoUserPoolConfig {
 		requireSpecialCharacters?: boolean;
 	};
 	groups?: Record<UserGroupName, UserGroupPrecedence>[];
+	passwordless?: {
+		emailOtpEnabled?: boolean;
+		smsOtpEnabled?: boolean;
+		webAuthn?: {
+			relyingPartyId?: string;
+			userVerification?: string;
+		};
+		preferredChallenge?: PreferredChallenge;
+	};
 }
 
 export interface OAuthConfig {

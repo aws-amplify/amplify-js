@@ -1,0 +1,41 @@
+name: Release Unstable
+
+# Concurrency control to prevent multiple unstable releases running simultaneously
+# Cancels in-progress releases when new commits are pushed
+concurrency:
+  group: push-release-${{ github.ref }}
+  cancel-in-progress: true
+
+# Permissions required for publishing packages
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Job 1: Publish unstable packages
+  unstable-release:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'aws-amplify'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: amplify-js
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Configure npm authentication
+        run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to @unstable
+        working-directory: ./amplify-js
+        run: yarn publish:unstable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

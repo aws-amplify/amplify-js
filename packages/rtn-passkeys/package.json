@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/rtn-passkeys",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"description": "React Native module for aws-amplify webauthn support",
 	"source": "./src/index.ts",
 	"main": "./dist/cjs/index.js",
@@ -34,7 +34,7 @@
 		"prepare:ios": "cd ./example && npx pod-install",
 		"prepare:android": "cd ./example && echo \"{}\" > amplify_outputs.json",
 		"test": "echo 'no-op'",
-		"test:ios": "xcodebuild test -quiet -workspace example/ios/AmplifyRtnPasskeysExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16' -scheme AmplifyRtnPasskeys-Unit-tests",
+		"test:ios": "xcodebuild test -quiet -workspace example/ios/AmplifyRtnPasskeysExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 17' -scheme AmplifyRtnPasskeys-Unit-tests",
 		"test:android": "cd ./example/android && ./gradlew test -i",
 		"typecheck": "tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
@@ -47,14 +47,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/rtn-passkeys"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
-	"homepage": "https://docs.amplify.aws",
+	"homepage": "https://docs.amplify.aws/",
 	"devDependencies": {
 		"react-native": "0.79.2",
 		"typescript": "^5.2.2"

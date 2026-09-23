@@ -7,7 +7,7 @@ import {
 	USER_AGENT_HEADER,
 	urlSafeDecode,
 } from '@aws-amplify/core/internals/utils';
-import { Hub, decodeJWT } from '@aws-amplify/core';
+import { Hub, decodeJWT, getGlobalContext } from '@aws-amplify/core';
 
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../dispatchSignedInHubEvent';
@@ -141,6 +141,9 @@ const handleCodeFlow = async ({
 	const username =
 		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
 
+	// No AmplifyContext survives the OAuth redirect (this runs from the
+	// module-level listener via `getGlobalContext()`), so tokens are persisted
+	// through the global singleton orchestrator.
 	await cacheCognitoTokens({
 		username,
 		AccessToken: access_token,
@@ -254,7 +257,7 @@ const completeFlow = async ({
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	await dispatchSignedInHubEvent();
+	await dispatchSignedInHubEvent(getGlobalContext());
 };
 
 const isCustomState = (state: string): boolean => {

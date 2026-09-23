@@ -3,6 +3,12 @@
 # Pre-push hook to scan for secrets using git-secrets
 # This prevents accidentally pushing AWS credentials or other secrets
 
+# Skip in CI environment
+if [ -n "$CI" ]; then
+  echo "Skipping git-secrets check in CI environment"
+  exit 0
+fi
+
 # Check if git-secrets is installed
 if ! command -v git-secrets >/dev/null 2>&1; then
   echo ""

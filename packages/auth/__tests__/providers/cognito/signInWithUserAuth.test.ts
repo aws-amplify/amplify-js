@@ -1,7 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
 import { Amplify } from '@aws-amplify/core';
-import { AmplifyErrorCode } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyErrorCode,
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { signInWithUserAuth } from '../../../src/providers/cognito/apis/signInWithUserAuth';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
@@ -45,8 +51,12 @@ const authConfig = {
 };
 
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-Amplify.configure({
-	Auth: authConfig,
+Amplify.configure({ Auth: authConfig });
+const mockCtx = createMockAmplifyContext({ Auth: authConfig });
+setGlobalContext(mockCtx);
+
+afterAll(() => {
+	clearGlobalContext();
 });
 
 describe('signInWithUserAuth API tests', () => {
@@ -69,7 +79,7 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		const result = await signInWithUserAuth({
+		const result = await signInWithUserAuth(mockCtx, {
 			username: 'testuser',
 		});
 
@@ -102,7 +112,7 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		const result = await signInWithUserAuth({
+		const result = await signInWithUserAuth(mockCtx, {
 			username: 'testuser',
 			options: { preferredChallenge: 'EMAIL_OTP' },
 		});
@@ -129,7 +139,7 @@ describe('signInWithUserAuth API tests', () => {
 
 	test('should throw validation error for empty username', async () => {
 		await expect(
-			signInWithUserAuth({
+			signInWithUserAuth(mockCtx, {
 				username: '', // empty username
 			}),
 		).rejects.toThrow('username is required to signIn');
@@ -150,7 +160,7 @@ describe('signInWithUserAuth API tests', () => {
 		};
 		handleUserAuthFlow.mockResolvedValue(mockResponse);
 
-		const result = await signInWithUserAuth({
+		const result = await signInWithUserAuth(mockCtx, {
 			username: 'testuser',
 		});
 
@@ -165,7 +175,7 @@ describe('signInWithUserAuth API tests', () => {
 		error.name = 'PasswordResetRequiredException';
 		handleUserAuthFlow.mockRejectedValue(error);
 
-		const result = await signInWithUserAuth({
+		const result = await signInWithUserAuth(mockCtx, {
 			username: 'testuser',
 		});
 
@@ -175,13 +185,89 @@ describe('signInWithUserAuth API tests', () => {
 		});
 	});
 
+	test('should use config preferredChallenge when not provided by user', async () => {
+		const authConfigWithPasswordless = {
+			Cognito: {
+				...authConfig.Cognito,
+				passwordless: {
+					emailOtpEnabled: true,
+					preferredChallenge: 'EMAIL_OTP' as const,
+				},
+			},
+		};
+
+		const customCtx = createMockAmplifyContext({
+			Auth: authConfigWithPasswordless,
+		});
+
+		const mockResponse: InitiateAuthCommandOutput = {
+			ChallengeName: 'EMAIL_OTP',
+			Session: 'mockSession',
+			ChallengeParameters: {},
+			$metadata: {},
+		};
+		handleUserAuthFlow.mockResolvedValue(mockResponse);
+
+		await signInWithUserAuth(customCtx, {
+			username: 'testuser',
+		});
+
+		expect(handleUserAuthFlow).toHaveBeenCalledWith({
+			username: 'testuser',
+			clientMetadata: undefined,
+			config: authConfigWithPasswordless.Cognito,
+			tokenOrchestrator: expect.anything(),
+			preferredChallenge: 'EMAIL_OTP',
+			password: undefined,
+		});
+	});
+
+	test('should prioritize user-provided preferredChallenge over config', async () => {
+		const authConfigWithPasswordless = {
+			Cognito: {
+				...authConfig.Cognito,
+				passwordless: {
+					emailOtpEnabled: true,
+					smsOtpEnabled: true,
+					preferredChallenge: 'EMAIL_OTP' as const,
+				},
+			},
+		};
+
+		const customCtx = createMockAmplifyContext({
+			Auth: authConfigWithPasswordless,
+		});
+
+		const mockResponse: InitiateAuthCommandOutput = {
+			ChallengeName: 'SMS_OTP',
+			Session: 'mockSession',
+			ChallengeParameters: {},
+			$metadata: {},
+		};
+		handleUserAuthFlow.mockResolvedValue(mockResponse);
+
+		await signInWithUserAuth(customCtx, {
+			username: 'testuser',
+			options: { preferredChallenge: 'SMS_OTP' },
+		});
+
+		expect(handleUserAuthFlow).toHaveBeenCalledWith({
+			username: 'testuser',
+			clientMetadata: undefined,
+			config: authConfigWithPasswordless.Cognito,
+			tokenOrchestrator: expect.anything(),
+			preferredChallenge: 'SMS_OTP',
+			password: undefined,
+		});
+	});
+
 	test('should throw error when service error has no sign in result', async () => {
 		const error = new Error('Unknown error');
 		error.name = 'UnknownError';
 		handleUserAuthFlow.mockRejectedValue(error);
 
 		await expect(
-			signInWithUserAuth({
+			signInWithUserAuth(mockCtx, {
 				username: 'testuser',
 			}),
 		).rejects.toThrow(AmplifyErrorCode.Unknown);

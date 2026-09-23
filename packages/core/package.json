@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "6.15.0",
+	"version": "6.19.1",
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -34,14 +34,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/core"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
-	"homepage": "https://aws-amplify.github.io/",
+	"homepage": "https://docs.amplify.aws/",
 	"files": [
 		"dist/cjs",
 		"dist/esm",
@@ -51,16 +52,16 @@
 	],
 	"dependencies": {
 		"@aws-crypto/sha256-js": "5.2.0",
-		"@aws-sdk/types": "3.398.0",
+		"@aws-sdk/types": "^3.973.6",
 		"@smithy/util-hex-encoding": "2.0.0",
 		"@types/uuid": "^9.0.0",
-		"js-cookie": "^3.0.5",
+		"js-cookie": "^3.0.7",
 		"rxjs": "^7.8.1",
 		"tslib": "^2.5.0",
-		"uuid": "^11.0.0"
+		"uuid": "^11.1.1"
 	},
 	"devDependencies": {
-		"@aws-amplify/react-native": "1.3.1",
+		"@aws-amplify/react-native": "1.3.3",
 		"@types/js-cookie": "3.0.2",
 		"genversion": "^2.2.0"
 	},
@@ -69,7 +70,7 @@
 			"name": "Core (Hub)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Hub }",
-			"limit": "1.46 kB"
+			"limit": "1.52 kB"
 		},
 		{
 			"name": "Core (I18n)",
@@ -81,7 +82,7 @@
 			"name": "Custom clients (fetch handler)",
 			"path": "./dist/esm/clients/handlers/fetch.mjs",
 			"import": "{ fetchTransferHandler }",
-			"limit": "900 B"
+			"limit": "700 B"
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
@@ -105,7 +106,7 @@
 			"name": "Cache (default browser storage)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Cache }",
-			"limit": "3.4 kB"
+			"limit": "3.41 kB"
 		}
 	],
 	"exports": {
@@ -161,6 +162,12 @@
 			"import": "./dist/esm/libraryUtils.mjs",
 			"require": "./dist/cjs/libraryUtils.js"
 		},
+		"./internals/testing": {
+			"react-native": "./dist/cjs/testing/index.js",
+			"types": "./dist/esm/testing/index.d.ts",
+			"import": "./dist/esm/testing/index.mjs",
+			"require": "./dist/cjs/testing/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -188,6 +195,9 @@
 			],
 			"internals/utils": [
 				"./dist/esm/libraryUtils.d.ts"
+			],
+			"internals/testing": [
+				"./dist/esm/testing/index.d.ts"
 			]
 		}
 	}

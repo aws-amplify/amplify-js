@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	AnalyticsValidationErrorCode,
@@ -10,8 +10,8 @@ import {
 
 import { DEFAULT_KINESIS_CONFIG } from './constants';
 
-export const resolveConfig = () => {
-	const config = Amplify.getConfig().Analytics?.Kinesis;
+export const resolveConfig = (ctx: AmplifyContext) => {
+	const config = ctx.resourcesConfig.Analytics?.Kinesis;
 	const {
 		region,
 		bufferSize = DEFAULT_KINESIS_CONFIG.bufferSize,

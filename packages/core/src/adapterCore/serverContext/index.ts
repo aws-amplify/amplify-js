@@ -1,14 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+export { CookieStorage, KeyValueStorageMethodValidator } from './types';
 export {
 	createAmplifyServerContext,
-	destroyAmplifyServerContext,
 	getAmplifyServerContext,
-} from './serverContext';
-
-export {
-	AmplifyServer,
-	CookieStorage,
-	KeyValueStorageMethodValidator,
-} from './types';
+	destroyAmplifyServerContext,
+	LegacyAmplifyServerContext,
+	LegacyBridgedAmplify,
+} from './legacyServerContext';

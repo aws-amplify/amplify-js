@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	Amplify,
+	AmplifyContext,
 	KeyValueStorageInterface,
 	StorageAccessLevel,
 } from '@aws-amplify/core';
@@ -35,7 +35,8 @@ import {
 } from '../../../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../../../utils/userAgent';
 import { logger } from '../../../../../../utils';
-import { calculateContentCRC32 } from '../../../../utils/crc32';
+import { calculateContentCRC32 } from '../../../../../../foundation/utils';
+import { FoundationContext } from '../../../../../../foundation/types';
 import { StorageOperationOptionsInput } from '../../../../../../types/inputs';
 import { IntegrityError } from '../../../../../../errors/IntegrityError';
 import { getContentType } from '../../../../../../utils/contentType';
@@ -86,6 +87,7 @@ export type MultipartUploadDataInput = WithResumableCacheConfig<
  * @internal
  */
 export const getMultipartUploadHandlers = (
+	ctx: FoundationContext,
 	uploadDataInput: MultipartUploadDataInput,
 	size: number,
 ) => {
@@ -119,7 +121,7 @@ export const getMultipartUploadHandlers = (
 	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const resolvedS3Options = await resolveS3ConfigAndInput(
-			Amplify,
+			ctx.amplify,
 			uploadDataInput,
 		);
 
@@ -155,16 +157,18 @@ export const getMultipartUploadHandlers = (
 
 			resolvedKeyPrefix = resolvedS3Options.keyPrefix;
 			finalKey = resolvedKeyPrefix + objectKey;
-			resolvedAccessLevel = resolveAccessLevel(accessLevel);
+			resolvedAccessLevel = resolveAccessLevel(ctx.amplify, accessLevel);
 		}
 
 		const optionsHash = await calculateContentCRC32(
+			ctx,
 			serializeUploadOptions(uploadDataOptions),
 		);
 
 		if (!inProgressUpload) {
 			const { uploadId, cachedParts, finalCrc32 } =
 				await loadOrCreateMultipartUpload({
+					ctx,
 					s3Config: resolvedS3Config,
 					accessLevel: resolvedAccessLevel,
 					bucket: resolvedBucket,
@@ -227,6 +231,7 @@ export const getMultipartUploadHandlers = (
 		for (let index = 0; index < DEFAULT_QUEUE_SIZE; index++) {
 			concurrentUploadPartExecutors.push(
 				uploadPartExecutor({
+					ctx,
 					dataChunkerGenerator: dataChunker,
 					completedPartNumberSet,
 					s3Config: resolvedS3Config,
@@ -364,9 +369,12 @@ export const getMultipartUploadHandlers = (
 	};
 };
 
-const resolveAccessLevel = (accessLevel?: StorageAccessLevel) =>
+const resolveAccessLevel = (
+	amplify: AmplifyContext,
+	accessLevel?: StorageAccessLevel,
+) =>
 	accessLevel ??
-	Amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
+	amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;
 
 const validateCompletedParts = (completedParts: Part[], size: number) => {

@@ -6,6 +6,8 @@ import {
 	StorageAccessLevel,
 } from '@aws-amplify/core';
 
+import { calculateContentCRC32 } from '../../../../../../foundation/utils';
+import { FoundationContext } from '../../../../../../foundation/types';
 import {
 	ContentDisposition,
 	ResolvedS3Config,
@@ -16,7 +18,6 @@ import { Part, createMultipartUpload } from '../../../../utils/client/s3data';
 import { logger } from '../../../../../../utils';
 import { constructContentDisposition } from '../../../../utils/constructContentDisposition';
 import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../utils/constants';
-import { calculateContentCRC32 } from '../../../../utils/crc32';
 
 import {
 	cacheMultipartUpload,
@@ -25,6 +26,7 @@ import {
 } from './uploadCache';
 
 interface LoadOrCreateMultipartUploadOptions {
+	ctx: FoundationContext;
 	s3Config: ResolvedS3Config;
 	data: StorageUploadDataPayload;
 	bucket: string;
@@ -56,6 +58,7 @@ interface LoadOrCreateMultipartUploadResult {
  * @internal
  */
 export const loadOrCreateMultipartUpload = async ({
+	ctx,
 	s3Config,
 	data,
 	size,
@@ -130,7 +133,7 @@ export const loadOrCreateMultipartUpload = async ({
 		 */
 		const finalCrc32 =
 			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
-				? await calculateContentCRC32(data)
+				? await calculateContentCRC32(ctx, data)
 				: undefined;
 
 		const { UploadId } = await createMultipartUpload(

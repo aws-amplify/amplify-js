@@ -60,6 +60,18 @@ export interface ObserverQuery {
 	subscriptionState: SUBSCRIPTION_STATUS;
 	subscriptionReadyCallback?(): void;
 	subscriptionFailedCallback?(reason?: any): void;
+	/**
+	 * Optional one-shot callback surfacing subscription readiness to the caller,
+	 * carrying the subscription id. Separate from the internal
+	 * `subscriptionReadyCallback` (which coordinates the unsubscribe race).
+	 */
+	onSubscriptionReady?(subscriptionId: string): void;
+	/**
+	 * Optional one-shot callback surfacing subscription failure to the caller,
+	 * carrying the subscription id and error. Separate from the internal
+	 * `subscriptionFailedCallback`.
+	 */
+	onSubscriptionError?(subscriptionId: string, error?: unknown): void;
 	startAckTimeoutId?: ReturnType<typeof setTimeout>;
 }
 
@@ -142,6 +154,19 @@ export abstract class AWSWebSocketProvider {
 	): Observable<Record<string, unknown>> {
 		return new Observable(observer => {
 			if (!options?.appSyncGraphqlEndpoint) {
+				// This guard fires ONLY for a MISSING/empty endpoint. For the Events
+				// layer it is effectively unreachable: events.connect() connects
+				// EAGERLY (awaited before any subscribe), and a missing endpoint fails
+				// there in getRealtimeEndpointUrl -> new AmplifyUrl(''), so connect()
+				// rejects and no channel is ever returned to subscribe on. Note
+				// configure() does NOT reject a missing endpoint: it only throws when
+				// the whole API.Events block is absent. We don't surface
+				// onSubscriptionError here (no subscriptionId exists yet), and an
+				// empty-id callback would be misleading; if this branch ever became
+				// reachable it would leave `ready` pending (there is no built-in
+				// timeout). An INVALID (present) endpoint is a DIFFERENT path: it passes
+				// this guard, fails later in _connectWebSocket, and DOES reject `ready`
+				// via _logStartSubscriptionError.
 				observer.error({
 					errors: [
 						{
@@ -220,7 +245,7 @@ export abstract class AWSWebSocketProvider {
 	}
 
 	private async _connectWebSocket(options: AWSAppSyncRealTimeProviderOptions) {
-		const { apiKey, appSyncGraphqlEndpoint, authenticationType, region } =
+		const { apiKey, appSyncGraphqlEndpoint, authenticationType, region, ctx } =
 			options;
 
 		const { additionalCustomHeaders } =
@@ -233,6 +258,7 @@ export abstract class AWSWebSocketProvider {
 			authenticationType,
 			region,
 			additionalCustomHeaders,
+			ctx,
 		});
 	}
 
@@ -270,6 +296,21 @@ export abstract class AWSWebSocketProvider {
 					}
 
 					if (data.errors && data.errors.length > 0) {
+						// Only reject on the terminal `publish_error` frame correlated to
+						// THIS publish's operation id. AppSync Events guarantees that every
+						// publish response frame (`publish_success`/`publish_error`) carries
+						// the operation `id`, so error frames are correlated by `id` exactly
+						// like the `publish_success` branch above, and the `data.type` gate
+						// mirrors that branch's specificity. The socket is multiplexed, so an
+						// error frame (e.g. a `subscribe_error`) can belong to an unrelated
+						// operation on another channel; likewise an uncorrelated or id-less
+						// error frame is not this publish's response. Such frames are
+						// intentionally ignored for this publish and must not settle its
+						// promise.
+						if (data.id !== subscriptionId || data.type !== 'publish_error') {
+							return;
+						}
+
 						const errorTypes = data.errors.map((error: any) => error.errorType);
 						cleanup();
 						reject(new Error(`Publish errors: ${errorTypes.join(', ')}`));
@@ -402,6 +443,8 @@ export abstract class AWSWebSocketProvider {
 			query: query ?? '',
 			variables: variables ?? {},
 			subscriptionState: SUBSCRIPTION_STATUS.PENDING,
+			onSubscriptionReady: options.onSubscriptionReady,
+			onSubscriptionError: options.onSubscriptionError,
 			startAckTimeoutId: undefined,
 		});
 
@@ -439,6 +482,8 @@ export abstract class AWSWebSocketProvider {
 			variables: variables ?? {},
 			subscriptionReadyCallback,
 			subscriptionFailedCallback,
+			onSubscriptionReady: options.onSubscriptionReady,
+			onSubscriptionError: options.onSubscriptionError,
 			startAckTimeoutId: setTimeout(() => {
 				this._timeoutStartSubscriptionAck(subscriptionId);
 			}, START_ACK_TIMEOUT),
@@ -464,6 +509,28 @@ export abstract class AWSWebSocketProvider {
 		if (
 			this.connectionState !== ConnectionState.ConnectionDisruptedPendingNetwork
 		) {
+			const { onSubscriptionError } =
+				this.subscriptionObserverMap.get(subscriptionId) || {};
+
+			// Surface the connect failure to the caller's `ready` promise BEFORE
+			// observer.error(...) so the real error wins the settle race: rxjs's
+			// Subscriber.error() synchronously unsubscribes, which the events layer
+			// would otherwise turn into a generic `ready` rejection (see
+			// internals/events/index.ts). Only onSubscriptionError is hoisted here;
+			// subscriptionFailedCallback is read and invoked AFTER observer.error
+			// (below), because on this connect-init failure path the subscription is
+			// still PENDING and subscriptionFailedCallback is not yet set. rxjs's
+			// synchronous teardown inside observer.error() runs
+			// _waitForSubscriptionToBeConnected, which re-points
+			// subscriptionFailedCallback to its own promise's reject; invoking it
+			// afterward drives that internal unsubscribe-during-connect self-heal so
+			// _removeSubscriptionObserver runs and the subscriptionObserverMap entry
+			// does not leak.
+			onSubscriptionError?.(
+				subscriptionId,
+				new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
+			);
+
 			// When the error is non-retriable, error out the observable
 			if (isNonRetryableError(err)) {
 				observer.error({
@@ -479,10 +546,13 @@ export abstract class AWSWebSocketProvider {
 				this.logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`);
 			}
 
+			// Notify concurrent unsubscription. Re-read the map here (not above)
+			// because observer.error()'s synchronous teardown may have re-pointed
+			// subscriptionFailedCallback to _waitForSubscriptionToBeConnected's
+			// reject; picking it up now self-heals the unsubscribe-during-connect
+			// race and lets _removeSubscriptionObserver clean up.
 			const { subscriptionFailedCallback } =
 				this.subscriptionObserverMap.get(subscriptionId) || {};
-
-			// Notify concurrent unsubscription
 			if (typeof subscriptionFailedCallback === 'function') {
 				subscriptionFailedCallback();
 			}
@@ -641,6 +711,8 @@ export abstract class AWSWebSocketProvider {
 			startAckTimeoutId,
 			subscriptionReadyCallback,
 			subscriptionFailedCallback,
+			onSubscriptionReady,
+			onSubscriptionError,
 		} = this.subscriptionObserverMap.get(id) || {};
 
 		if (
@@ -653,22 +725,25 @@ export abstract class AWSWebSocketProvider {
 			if (typeof subscriptionReadyCallback === 'function') {
 				subscriptionReadyCallback();
 			}
+			onSubscriptionReady?.(id);
 			if (startAckTimeoutId) clearTimeout(startAckTimeoutId);
 			dispatchApiEvent({
 				event: CONTROL_MSG.SUBSCRIPTION_ACK,
-				data: { query, variables },
+				data: { id, query, variables },
 				message: 'Connection established for subscription',
 			});
 			const subscriptionState = SUBSCRIPTION_STATUS.CONNECTED;
 			if (observer) {
+				const existing = this.subscriptionObserverMap.get(id);
 				this.subscriptionObserverMap.set(id, {
+					...existing,
 					observer,
 					query,
 					variables,
-					startAckTimeoutId: undefined,
 					subscriptionState,
 					subscriptionReadyCallback,
 					subscriptionFailedCallback,
+					startAckTimeoutId: undefined,
 				});
 			}
 			this.connectionStateMonitor.record(
@@ -690,7 +765,9 @@ export abstract class AWSWebSocketProvider {
 		) {
 			const subscriptionState = SUBSCRIPTION_STATUS.FAILED;
 			if (observer) {
+				const existing = this.subscriptionObserverMap.get(id);
 				this.subscriptionObserverMap.set(id, {
+					...existing,
 					observer,
 					query,
 					variables,
@@ -701,16 +778,67 @@ export abstract class AWSWebSocketProvider {
 				});
 
 				let errorMessage = JSON.stringify(payload ?? data);
+				let isAuthError = false;
+
+				const AUTH_ERROR_TYPES = [
+					'UnauthorizedException',
+					'Unauthorized',
+					'NotAuthorizedException',
+				];
 
 				if (type === MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR) {
 					const { errors } = JSON.parse(String(message.data));
 					if (Array.isArray(errors) && errors.length > 0) {
 						const error = errors[0];
 						errorMessage = `${error.errorType}: ${error.message}`;
+						// An Events subscribe_error (e.g. a per-subscription
+						// util.unauthorized() deny, which surfaces as errorType
+						// 'Unauthorized', or an error whose message incidentally
+						// contains 'Token expired') is terminal to only this
+						// subscription. It must NOT close the shared socket: doing so
+						// tears down sibling subscriptions and, for a permanently
+						// denied channel, produces an unbounded deny/reconnect loop.
+						// So isAuthError stays false here — only connection-level
+						// GQL_ERROR auth failures below trigger a socket-closing
+						// reconnect.
+					}
+				} else if (
+					type === MESSAGE_TYPES.GQL_ERROR &&
+					payload &&
+					typeof payload === 'object'
+				) {
+					const { errors } = payload as Record<string, unknown>;
+					if (Array.isArray(errors) && errors.length > 0) {
+						const error = errors[0] as Record<string, string>;
+						isAuthError =
+							AUTH_ERROR_TYPES.includes(error.errorType) ||
+							error.message?.includes('Token expired');
 					}
 				}
 
 				this.logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${errorMessage}`);
+
+				// On auth errors, close the socket to trigger reconnection with fresh tokens.
+				// The onclose handler fires _errorDisconnect → CONNECTION_CLOSED, which the
+				// ConnectionStateMonitor picks up as ConnectionDisrupted and the
+				// ReconnectionMonitor reconnects with refreshed credentials.
+				if (isAuthError && this.awsRealTimeSocket) {
+					this.logger.warn(
+						'Subscription failed due to auth error, closing WebSocket to trigger reconnection with fresh tokens',
+					);
+					this.awsRealTimeSocket.close(1000, 'Auth error - reconnecting');
+				}
+
+				// Surface the real subscription error to the caller's `ready`
+				// promise BEFORE observer.error(...). rxjs's Subscriber.error()
+				// synchronously calls this.unsubscribe(); if onSubscriptionError ran
+				// after observer.error, the events layer's caller-unsubscribe
+				// fallback could settle `ready` first with a generic reason and mask
+				// this real error. onSubscriptionError must win that race.
+				onSubscriptionError?.(
+					id,
+					new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${errorMessage}`),
+				);
 
 				observer.error({
 					errors: [
@@ -754,16 +882,24 @@ export abstract class AWSWebSocketProvider {
 		const subscriptionObserver =
 			this.subscriptionObserverMap.get(subscriptionId);
 		if (subscriptionObserver) {
-			const { observer, query, variables } = subscriptionObserver;
+			const { observer, query, variables, onSubscriptionError } =
+				subscriptionObserver;
 			if (!observer) {
 				return;
 			}
 			this.subscriptionObserverMap.set(subscriptionId, {
+				...subscriptionObserver,
 				observer,
 				query,
 				variables,
 				subscriptionState: SUBSCRIPTION_STATUS.FAILED,
+				startAckTimeoutId: undefined,
 			});
+
+			onSubscriptionError?.(
+				subscriptionId,
+				new Error('Subscription start ack timeout'),
+			);
 
 			this._closeSocket();
 			this.logger.debug(
@@ -779,6 +915,7 @@ export abstract class AWSWebSocketProvider {
 		apiKey,
 		region,
 		additionalCustomHeaders,
+		ctx,
 	}: AWSAppSyncRealTimeProviderOptions) {
 		if (this.socketStatus === SOCKET_STATUS.READY) {
 			return;
@@ -796,15 +933,18 @@ export abstract class AWSWebSocketProvider {
 					// Empty payload on connect
 					const payloadString = '{}';
 
-					const authHeader = await awsRealTimeHeaderBasedAuth({
-						authenticationType,
-						payload: payloadString,
-						canonicalUri: this.wsConnectUri,
-						apiKey,
-						appSyncGraphqlEndpoint,
-						region,
-						additionalCustomHeaders,
-					});
+					const authHeader = await awsRealTimeHeaderBasedAuth(
+						{
+							authenticationType,
+							payload: payloadString,
+							canonicalUri: this.wsConnectUri,
+							apiKey,
+							appSyncGraphqlEndpoint,
+							region,
+							additionalCustomHeaders,
+						},
+						ctx,
+					);
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
 					// base64url-encoded string

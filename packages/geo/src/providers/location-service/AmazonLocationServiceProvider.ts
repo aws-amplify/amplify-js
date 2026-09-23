@@ -1,8 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
-import { Amplify, ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
-import { GeoAction } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyContext,
+	ConsoleLogger,
+	isAmplifyContext,
+} from '@aws-amplify/core';
+import {
+	GeoAction,
+	createCtxResolver,
+} from '@aws-amplify/core/internals/utils';
 import {
 	BatchDeleteGeofenceCommand,
 	BatchDeleteGeofenceCommandInput,
@@ -72,11 +79,26 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	private _credentials;
 
 	/**
+	 * Resolve the AmplifyContext for this provider (fresh per operation).
+	 * - If an explicit ctx was passed at construction, it is pinned (fixed context by design).
+	 * - Otherwise, the global context is resolved fresh per access so that reconfiguration
+	 *   (setGlobalContext with a new AmplifyContext) is honored across operations.
+	 * @private
+	 */
+	private readonly _resolveCtx: () => AmplifyContext;
+
+	/**
 	 * Initialize Geo with AWS configurations
 	 * @param {Object} config - Configuration object for Geo
+	 * @param {AmplifyContext} ctx - The AmplifyContext to use for auth and config.
+	 *   When provided, the provider is pinned to this context.
+	 *   When omitted, the provider resolves the global context lazily per operation.
 	 */
-	constructor(config?: GeoConfig) {
+	constructor(config?: GeoConfig, ctx?: AmplifyContext) {
 		this._config = config || {};
+		this._resolveCtx = createCtxResolver(
+			isAmplifyContext(ctx) ? ctx : undefined,
+		);
 		logger.debug('Geo Options', this._config);
 	}
 
@@ -712,8 +734,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * @private
 	 */
 	private async _ensureCredentials(): Promise<boolean> {
+		// Resolve ctx outside try/catch so 'No AmplifyContext available' propagates
+		const ctx = this._resolveCtx();
 		try {
-			const { credentials } = await fetchAuthSession();
+			const { credentials } = await ctx.fetchAuthSession();
 			if (!credentials) return false;
 			logger.debug(
 				'Set credentials for storage. Credentials are:',
@@ -730,7 +754,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	}
 
 	private _refreshConfig() {
-		this._config = Amplify.getConfig().Geo?.LocationService;
+		this._config = this._resolveCtx().resourcesConfig.Geo?.LocationService;
 		if (!this._config) {
 			const errorString =
 				"No Geo configuration found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";

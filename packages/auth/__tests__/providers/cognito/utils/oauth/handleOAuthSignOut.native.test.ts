@@ -23,6 +23,7 @@ describe('handleOAuthSignOut (native)', () => {
 	};
 	// assert mocks
 	const mockCompleteOAuthSignOut = completeOAuthSignOut as jest.Mock;
+	const mockClearCredentials = jest.fn();
 	const mockOAuthSignOutRedirect = oAuthSignOutRedirect as jest.Mock;
 	const mockTokenOrchestrator = tokenOrchestrator as jest.Mocked<
 		typeof tokenOrchestrator
@@ -35,6 +36,7 @@ describe('handleOAuthSignOut (native)', () => {
 	afterEach(() => {
 		mockStore.loadOAuthSignIn.mockReset();
 		mockCompleteOAuthSignOut.mockClear();
+		mockClearCredentials.mockClear();
 		mockOAuthSignOutRedirect.mockClear();
 	});
 
@@ -52,6 +54,7 @@ describe('handleOAuthSignOut (native)', () => {
 				mockStore,
 				mockTokenOrchestrator,
 				undefined,
+				mockClearCredentials,
 			);
 
 			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
@@ -59,7 +62,11 @@ describe('handleOAuthSignOut (native)', () => {
 				false,
 				undefined,
 			);
-			expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+			expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(
+				mockStore,
+				mockTokenOrchestrator,
+				mockClearCredentials,
+			);
 		});
 
 		it('should not complete OAuth sign out if redirect is canceled', async () => {
@@ -69,6 +76,7 @@ describe('handleOAuthSignOut (native)', () => {
 				mockStore,
 				mockTokenOrchestrator,
 				undefined,
+				mockClearCredentials,
 			);
 
 			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
@@ -86,6 +94,7 @@ describe('handleOAuthSignOut (native)', () => {
 				mockStore,
 				mockTokenOrchestrator,
 				undefined,
+				mockClearCredentials,
 			);
 
 			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
@@ -108,6 +117,7 @@ describe('handleOAuthSignOut (native)', () => {
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
+			mockClearCredentials,
 		);
 
 		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
@@ -115,7 +125,11 @@ describe('handleOAuthSignOut (native)', () => {
 			true,
 			undefined,
 		);
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(
+			mockStore,
+			mockTokenOrchestrator,
+			mockClearCredentials,
+		);
 	});
 
 	it('should complete OAuth sign out but not redirect', async () => {
@@ -128,9 +142,14 @@ describe('handleOAuthSignOut (native)', () => {
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
+			mockClearCredentials,
 		);
 
 		expect(mockOAuthSignOutRedirect).not.toHaveBeenCalled();
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(
+			mockStore,
+			mockTokenOrchestrator,
+			mockClearCredentials,
+		);
 	});
 });

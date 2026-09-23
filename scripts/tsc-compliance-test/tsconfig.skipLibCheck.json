@@ -1,5 +1,5 @@
 {
-	"extends": "./tsconfig.ts4_2.json",
+	"extends": "./tsconfig.ts4_5.json",
 	"compilerOptions": {
 		"skipLibCheck": true
 	},

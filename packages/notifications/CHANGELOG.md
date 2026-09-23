@@ -1,7 +1,80 @@
 # Change Log
 
+## 2.2.0
+
+### Minor Changes
+
+- [#14931](https://github.com/aws-amplify/amplify-js/pull/14931) [`736d81d`](https://github.com/aws-amplify/amplify-js/commit/736d81d694b1df633e519881f73d1a942d6ccbe6) Thanks [@bobbor](https://github.com/bobbor)! - feat: explicit AmplifyContext support across all categories.
+
+  Adds context-first overloads (`fn(ctx, input)`) to category APIs alongside the existing
+  singleton-based forms, a public `createAmplifyContext(resourcesConfig, libraryOptions?)`
+  factory for isolated per-request/per-tenant contexts, per-request context isolation in
+  `@aws-amplify/adapter-nextjs` SSR, typed misuse errors (`InvalidAmplifyContextError`,
+  `NoAmplifyContextError`), and a shared testing entry (`@aws-amplify/core/internals/testing`).
+
+  Backward compatible: existing application code — including pre-context SSR
+  `operation: (contextSpec) => fetchAuthSession(contextSpec)` — compiles and behaves
+  unchanged via deprecated type aliases. Includes two api-graphql bug fixes: SSR request
+  clients now honor client-level options (previously silently dropped), and events error
+  messages accurately describe failures.
+
+  Compatibility surface and version guidance:
+  - Resources config is now deep-frozen after `Amplify.configure()` and
+    `createAmplifyContext()` (previously frozen only at the top level). Code that mutated
+    a nested config field post-configure — always unsupported — now throws in strict mode
+    instead of silently succeeding.
+  - Deprecated `AmplifyServer` type aliases (`Context`, `ContextSpec`, `ContextToken`,
+    `RunOperationWithContext`) and functional `createAmplifyServerContext` /
+    `getAmplifyServerContext` / `destroyAmplifyServerContext` shims are restored on the
+    internals/adapter-core entries so previously published `@aws-amplify/adapter-nextjs`
+    versions keep working. They will be removed in the next major.
+  - Peer minimums are raised (`@aws-amplify/core` to `^6.19.0` across category packages;
+    `aws-amplify` to `^6.21.0` for `@aws-amplify/adapter-nextjs`) to guard against
+    version-skewed installs going forward. Note this guard only applies when the
+    dependency tree is re-resolved: existing lockfiles, `npm ci`, and installs with
+    `--legacy-peer-deps` (or yarn classic's warn-only peers) are not re-checked, and
+    already-published category versions still declare the older range. Mixing an older
+    scoped category package (e.g. `@aws-amplify/auth` ≤ 6.x pinned to `core ^6.16.2`)
+    with a newer core is unsupported — keep directly installed `@aws-amplify/*` category
+    packages on the same release line as `aws-amplify`.
+
+## 2.1.0
+
+### Minor Changes
+
+- [#14866](https://github.com/aws-amplify/amplify-js/pull/14866) [`bcdc02b`](https://github.com/aws-amplify/amplify-js/commit/bcdc02ba2a1b9b8e6ab8b384a4586cf9605b41c1) Thanks [@soberm](https://github.com/soberm)! - feat(notifications): add Amazon Connect Customer Profiles push notifications provider
+
+  Push Notifications can now be delivered through Amazon Connect Customer Profiles via the new `aws-amplify/push-notifications/customer-profiles` sub-path export. The provider ships `identifyUser`, `initializePushNotifications`, `registerDevice`, and `removeDevice` alongside the transport-agnostic badge, permission, launch-notification, and notification/token listener APIs, with SigV4-signed device registration and client-side user-profile validation. `Amplify.configure` accepts the corresponding `amazon_connect` notifications configuration from `amplify_outputs.json`.
+
+  Device registration follows the signed-in principal: `initializePushNotifications` registers the device when a push token is received and re-registers it on sign-in so an existing registration is re-homed to the authenticated principal. Because de-registration is authorized against the calling principal, applications should await `removeDevice()` before `signOut()` to stop delivery to a device.
+
+  The default `aws-amplify/push-notifications` entry point emits a one-time `ConsoleLogger` notice at runtime directing customers to the Customer Profiles sub-path, since that entry point is backed by Amazon Pinpoint and AWS ends support for Amazon Pinpoint on October 30, 2026. Both changes are backwards compatible: existing exports keep their names, types, and signatures.
+
+## 2.0.94
+
+### Patch Changes
+
+- [#14757](https://github.com/aws-amplify/amplify-js/pull/14757) [`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77) Thanks [@bobbor](https://github.com/bobbor)! - chore: bump aws-sdk's to v3.1012.0
+
+- Updated dependencies [[`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77)]:
+  - @aws-amplify/core@6.16.2
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [2.0.93](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.92...@aws-amplify/notifications@2.0.93) (2026-02-05)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.92](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.91...@aws-amplify/notifications@2.0.92) (2026-01-22)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.91](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.90...@aws-amplify/notifications@2.0.91) (2026-01-15)
+
+### Bug Fixes
+
+- update AWS SDK packages to resolve @smithy/config-resolver ([#14667](https://github.com/aws-amplify/amplify-js/issues/14667)) ([fb5e0bc](https://github.com/aws-amplify/amplify-js/commit/fb5e0bc706bb05ac374f456a27a650af49f87c40))
 
 ## [2.0.90](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.89...@aws-amplify/notifications@2.0.90) (2025-12-10)
 

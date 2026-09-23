@@ -21,6 +21,8 @@ export {
 export {
 	UploadDataOutput,
 	UploadDataWithPathOutput,
+	UploadDataServerOutput,
+	UploadDataServerWithPathOutput,
 	DownloadDataOutput,
 	DownloadDataWithPathOutput,
 	RemoveOutput,
@@ -47,6 +49,8 @@ export {
 	GetUrlWithPathInput,
 	RemoveWithPathInput,
 	RemoveInput,
+	RemoveOperation,
+	ProgressInfo,
 	DownloadDataInput,
 	DownloadDataWithPathInput,
 	UploadDataInput,

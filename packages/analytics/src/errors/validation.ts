@@ -12,6 +12,8 @@ export enum AnalyticsValidationErrorCode {
 	UnsupportedPlatform = 'UnsupportedPlatform',
 	NoTrackingId = 'NoTrackingId',
 	InvalidFlushSize = 'InvalidFlushSize',
+	NoStreamName = 'NoStreamName',
+	NoPartitionKey = 'NoPartitionKey',
 }
 
 export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
@@ -39,5 +41,11 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 		},
 		[AnalyticsValidationErrorCode.NoTrackingId]: {
 			message: 'A trackingId is required to use Amazon Personalize',
+		},
+		[AnalyticsValidationErrorCode.NoStreamName]: {
+			message: 'A streamName is required to enable auto-tracking.',
+		},
+		[AnalyticsValidationErrorCode.NoPartitionKey]: {
+			message: 'A partitionKey is required to enable Kinesis auto-tracking.',
 		},
 	};

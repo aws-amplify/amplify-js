@@ -3,6 +3,7 @@
 
 export {
 	DownloadTask,
+	NonPausableTransferTask,
 	TransferProgressEvent,
 	TransferTaskState,
 	UploadTask,

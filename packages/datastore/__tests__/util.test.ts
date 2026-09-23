@@ -20,6 +20,7 @@ import {
 	isIdOptionallyManaged,
 	indexNameFromKeys,
 	keysEqual,
+	inMemoryPagination,
 } from '../src/util';
 
 import { testSchema } from './helpers';
@@ -839,6 +840,61 @@ describe('datastore util', () => {
 				const result = keysEqual(keys1, keys2);
 				expect(result).toBeFalsy();
 			});
+		});
+	});
+
+	// See https://github.com/aws-amplify/amplify-js/issues/12049
+	describe('inMemoryPagination', () => {
+		const buildRecords = (count: number) =>
+			Array.from({ length: count }, (_, index) => ({ id: `id-${index}` }));
+
+		test('should return an empty page when there are no records', () => {
+			expect(
+				inMemoryPagination(buildRecords(0), { page: 1, limit: 20 }),
+			).toEqual([]);
+		});
+
+		test('should return the only record on the first page', () => {
+			expect(
+				inMemoryPagination(buildRecords(1), { page: 0, limit: 20 }),
+			).toEqual([{ id: 'id-0' }]);
+		});
+
+		test('should return an empty page for the page after a single record', () => {
+			expect(
+				inMemoryPagination(buildRecords(1), { page: 1, limit: 20 }),
+			).toEqual([]);
+		});
+
+		test('should return an empty page for any page past a single record', () => {
+			expect(
+				inMemoryPagination(buildRecords(1), { page: 2, limit: 1 }),
+			).toEqual([]);
+		});
+
+		test('should page through multiple records', () => {
+			expect(
+				inMemoryPagination(buildRecords(3), { page: 0, limit: 2 }),
+			).toEqual([{ id: 'id-0' }, { id: 'id-1' }]);
+			expect(
+				inMemoryPagination(buildRecords(3), { page: 1, limit: 2 }),
+			).toEqual([{ id: 'id-2' }]);
+		});
+
+		test('should return an empty page past the end of multiple records', () => {
+			expect(
+				inMemoryPagination(buildRecords(3), { page: 2, limit: 2 }),
+			).toEqual([]);
+		});
+
+		test('should not require a sort predicate', () => {
+			expect(
+				inMemoryPagination(buildRecords(3), {
+					page: 1,
+					limit: 2,
+					sort: undefined,
+				}),
+			).toEqual([{ id: 'id-2' }]);
 		});
 	});
 });

@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { CopyInput, CopyWithPathInput } from '../../../../src';
 import { copy } from '../../../../src/providers/s3/apis';
@@ -10,8 +14,19 @@ import { copy as internalCopyImpl } from '../../../../src/providers/s3/apis/inte
 jest.mock('../../../../src/providers/s3/apis/internal/copy');
 
 const mockInternalCopyImpl = jest.mocked(internalCopyImpl);
+const mockCtx = createMockAmplifyContext();
 
 describe('client-side copy', () => {
+	beforeAll(() => {
+		// The public API falls back to the global AmplifyContext when no ctx is
+		// passed explicitly; establish it so resolveCtxArgs can resolve it.
+		setGlobalContext(mockCtx);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -28,7 +43,7 @@ describe('client-side copy', () => {
 			},
 		};
 		expect(copy(input)).toEqual(mockInternalResult);
-		expect(mockInternalCopyImpl).toBeCalledWith(Amplify, input);
+		expect(mockInternalCopyImpl).toBeCalledWith(mockCtx, input);
 	});
 
 	it('should pass through input with path and output to internal implementation', async () => {
@@ -39,6 +54,18 @@ describe('client-side copy', () => {
 			destination: { path: 'abc' },
 		};
 		expect(copy(input)).toEqual(mockInternalResult);
-		expect(mockInternalCopyImpl).toBeCalledWith(Amplify, input);
+		expect(mockInternalCopyImpl).toBeCalledWith(mockCtx, input);
+	});
+
+	it('should pass explicit AmplifyContext to internal implementation when called with two args', () => {
+		const explicitCtx = createMockAmplifyContext();
+		const mockInternalResult = 'RESULT' as any;
+		mockInternalCopyImpl.mockReturnValue(mockInternalResult);
+		const input: CopyWithPathInput = {
+			source: { path: 'source-path' },
+			destination: { path: 'dest-path' },
+		};
+		expect(copy(explicitCtx, input)).toEqual(mockInternalResult);
+		expect(mockInternalCopyImpl).toBeCalledWith(explicitCtx, input);
 	});
 });

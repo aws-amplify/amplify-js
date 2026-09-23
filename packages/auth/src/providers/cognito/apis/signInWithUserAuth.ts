@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -32,7 +32,7 @@ import {
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import {
 	HandleUserAuthFlowInput,
 	handleUserAuthFlow,
@@ -44,6 +44,7 @@ import { resetAutoSignIn } from './autoSignIn';
 /**
  * Signs a user in through a registered email or phone number without a password by by receiving and entering an OTP.
  *
+ * @param ctx - The AmplifyContext
  * @param input - The SignInWithUserAuthInput object
  * @returns SignInWithUserAuthOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito service errors
@@ -53,22 +54,27 @@ import { resetAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithUserAuth(
+	ctx: AmplifyContext,
 	input: SignInWithUserAuthInput,
 ): Promise<SignInWithUserAuthOutput> {
 	const { username, password, options } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
 		authFlowType: 'USER_AUTH',
 	};
 	assertTokenProviderConfig(authConfig);
 	const clientMetaData = options?.clientMetadata;
-	const preferredChallenge = options?.preferredChallenge;
+	const preferredChallenge =
+		options?.preferredChallenge ?? authConfig?.passwordless?.preferredChallenge;
 
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername,
 	);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	try {
 		const handleUserAuthFlowInput: HandleUserAuthFlowInput = {
@@ -100,20 +106,23 @@ export async function signInWithUserAuth(
 		});
 
 		if (response.AuthenticationResult) {
-			await cacheCognitoTokens({
-				username: activeUsername,
-				...response.AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetadata({
-					userPoolId: authConfig.userPoolId,
-					userPoolEndpoint: authConfig.userPoolEndpoint,
-					newDeviceMetadata: response.AuthenticationResult.NewDeviceMetadata,
-					accessToken: response.AuthenticationResult.AccessToken,
-				}),
-				signInDetails,
-			});
+			await cacheCognitoTokens(
+				{
+					username: activeUsername,
+					...response.AuthenticationResult,
+					NewDeviceMetadata: await getNewDeviceMetadata({
+						userPoolId: authConfig.userPoolId,
+						userPoolEndpoint: authConfig.userPoolEndpoint,
+						newDeviceMetadata: response.AuthenticationResult.NewDeviceMetadata,
+						accessToken: response.AuthenticationResult.AccessToken,
+					}),
+					signInDetails,
+				},
+				tokenOrchestrator,
+			);
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(ctx);
 
 			resetAutoSignIn();
 
@@ -123,7 +132,7 @@ export async function signInWithUserAuth(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: response.ChallengeName as ChallengeName,
 			challengeParameters: response.ChallengeParameters as ChallengeParameters,
 			availableChallenges:

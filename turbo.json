@@ -1,0 +1,55 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "tsconfig.json",
+    "jest.config.js",
+    "jest.setup.js",
+    "eslint.config.mjs",
+    "prettier.config.js"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "lib/**", "lib-esm/**"],
+      "inputs": ["src/**", "tsconfig.json", "tsconfig.build.json", "rollup.config.mjs", "webpack.config.js"]
+    },
+    "build:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "inputs": ["src/**", "__tests__/**", "jest.config.js"]
+    },
+    "test:size": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "lint": {
+      "outputs": [],
+      "inputs": ["src/**", "**/*.{ts,tsx}", "eslint.config.mjs"]
+    },
+    "lint:fix": {
+      "cache": false,
+      "outputs": []
+    },
+    "format": {
+      "cache": false,
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    },
+    "clean:size": {
+      "cache": false
+    },
+    "ts-coverage": {
+      "outputs": [],
+      "inputs": ["src/**", "tsconfig.build.json"]
+    },
+    "generate-version": {
+      "cache": false
+    }
+  }
+}

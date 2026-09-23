@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { identifyUser } from '../../../../src/providers/pinpoint/apis';
 import { IdentifyUserInput } from '../../../../src/providers/pinpoint/types';
@@ -14,6 +19,12 @@ import { getAnalyticsUserAgentString } from '../../../../src/utils/userAgent';
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('../../../../src/utils/userAgent');
+
+setGlobalContext(createMockAmplifyContext());
+
+afterAll(() => {
+	clearGlobalContext();
+});
 
 describe('Analytics Pinpoint Provider API: identifyUser', () => {
 	const credentials = {

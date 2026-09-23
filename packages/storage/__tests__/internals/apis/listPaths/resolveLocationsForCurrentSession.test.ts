@@ -66,6 +66,12 @@ describe('resolveLocationsForCurrentSession', () => {
 		expect(result).toEqual([
 			{
 				type: 'PREFIX',
+				permission: ['get', 'list', 'write'],
+				bucket: 'bucket1',
+				prefix: 'path1/*',
+			},
+			{
+				type: 'PREFIX',
 				permission: ['get', 'list', 'write', 'delete'],
 				bucket: 'bucket1',
 				prefix: 'path2/*',
@@ -81,7 +87,43 @@ describe('resolveLocationsForCurrentSession', () => {
 			userGroup: 'editor',
 		});
 
-		expect(result).toEqual([]);
+		expect(result).toEqual([
+			{
+				type: 'PREFIX',
+				permission: ['get', 'list', 'write'],
+				bucket: 'bucket1',
+				prefix: 'path1/*',
+			},
+		]);
+	});
+
+	it('should merge authenticated and group permissions (union, deduped) for paths with both rules', () => {
+		const result = resolveLocationsForCurrentSession({
+			buckets: {
+				bucket1: {
+					bucketName: 'bucket1',
+					region: 'region1',
+					paths: {
+						'foo/*': {
+							authenticated: ['list'],
+							groupsAdmins: ['get', 'list', 'write', 'delete'],
+						},
+					},
+				},
+			},
+			isAuthenticated: true,
+			identityId: '12345',
+			userGroup: 'Admins',
+		});
+
+		expect(result).toEqual([
+			{
+				type: 'PREFIX',
+				permission: ['list', 'get', 'write', 'delete'],
+				bucket: 'bucket1',
+				prefix: 'foo/*',
+			},
+		]);
 	});
 
 	it('should continue to next bucket when paths are not defined', () => {

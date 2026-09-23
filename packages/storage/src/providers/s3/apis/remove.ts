@@ -1,41 +1,67 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
 
 import {
 	RemoveInput,
+	RemoveOperation,
 	RemoveOutput,
 	RemoveWithPathInput,
 	RemoveWithPathOutput,
 } from '../types';
 
 import { remove as removeInternal } from './internal/remove';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `RemoveWithPathInput` object.
+ */
+export function remove(
+	ctx: AmplifyContext,
+	input: RemoveWithPathInput,
+): RemoveOperation<RemoveWithPathOutput>;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `RemoveInput` object.
+ */
+export function remove(
+	ctx: AmplifyContext,
+	input: RemoveInput,
+): RemoveOperation<RemoveOutput>;
 
 /**
- * Remove a file from your S3 bucket.
+ * Remove a file or folder from your S3 bucket.
  * @param input - The `RemoveWithPathInput` object.
- * @return Output containing the removed object path.
+ * @return Operation handle with result promise and cancellation capability.
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object.
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
  * when there is no path or path is empty or path has a leading slash.
  */
 export function remove(
 	input: RemoveWithPathInput,
-): Promise<RemoveWithPathOutput>;
+): RemoveOperation<RemoveWithPathOutput>;
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/remove | path} instead.
  *
  * Remove a file from your S3 bucket.
  * @param input - The `RemoveInput` object.
- * @return Output containing the removed object key
+ * @return Operation handle with result promise and cancellation capability.
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
  * when there is no key or its empty.
  */
-export function remove(input: RemoveInput): Promise<RemoveOutput>;
+export function remove(input: RemoveInput): RemoveOperation<RemoveOutput>;
 
-export function remove(input: RemoveInput | RemoveWithPathInput) {
-	return removeInternal(Amplify, input);
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
+export function remove(...args: any[]) {
+	const [ctx, input] =
+		resolveCtxArgs<[RemoveInput | RemoveWithPathInput]>(args);
+	// Narrowing is required: removeInternal is overloaded and TypeScript cannot resolve the union argument without discriminating.
+	if ('key' in input) {
+		return removeInternal(ctx, input);
+	} else {
+		return removeInternal(ctx, input);
+	}
 }

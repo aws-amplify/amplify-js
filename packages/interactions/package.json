@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "6.1.31",
+	"version": "6.2.0",
 	"description": "Interactions category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -56,14 +56,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/interactions"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
-	"homepage": "https://aws-amplify.github.io/",
+	"homepage": "https://docs.amplify.aws/",
 	"files": [
 		"dist/cjs",
 		"dist/esm",
@@ -72,35 +73,34 @@
 		"lex-v2"
 	],
 	"dependencies": {
-		"@aws-sdk/client-lex-runtime-service": "3.621.0",
-		"@aws-sdk/client-lex-runtime-v2": "3.621.0",
+		"@aws-sdk/client-lex-runtime-service": "^3.1012.0",
+		"@aws-sdk/client-lex-runtime-v2": "^3.1012.0",
 		"base-64": "1.0.0",
-		"fflate": "0.7.3",
+		"fflate": "0.7.5",
 		"pako": "2.0.4",
-		"tslib": "^2.5.0",
-		"uuid": "^11.0.0"
+		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.15.0"
+		"@aws-amplify/core": "6.19.1"
 	},
 	"size-limit": [
 		{
 			"name": "Interactions (default to Lex v2)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Interactions }",
-			"limit": "54.05 kB"
+			"limit": "57 kB"
 		},
 		{
 			"name": "Interactions (Lex v2)",
 			"path": "./dist/esm/lex-v2/index.mjs",
 			"import": "{ Interactions }",
-			"limit": "54.05 kB"
+			"limit": "57 kB"
 		},
 		{
 			"name": "Interactions (Lex v1)",
 			"path": "./dist/esm/lex-v1/index.mjs",
 			"import": "{ Interactions }",
-			"limit": "47.46 kB"
+			"limit": "49 kB"
 		}
 	]
 }

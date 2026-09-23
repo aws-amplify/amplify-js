@@ -1,6 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify, ConsoleLogger } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	ConsoleLogger,
+	isAmplifyContext,
+} from '@aws-amplify/core';
+import { assertOptionalCtxArg } from '@aws-amplify/core/internals/utils';
 
 import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
 import { validateCoordinates } from './util';
@@ -33,19 +38,66 @@ export class GeoClass {
 	 * @private
 	 */
 	private _config?: GeoConfig;
-	private _pluggables: GeoProvider[];
+	private _pluggables: GeoProvider[] | undefined;
+	private _ctx: AmplifyContext | undefined;
 
-	constructor() {
+	constructor(ctx?: AmplifyContext) {
 		this._config = undefined;
+		this._pluggables = undefined;
+
+		// Reject a defined-but-unbranded value passed in the context position
+		// (e.g. a plain options object) with a typed error, before the
+		// isAmplifyContext branch below decides eager vs. deferred init.
+		assertOptionalCtxArg(ctx);
+
+		if (isAmplifyContext(ctx)) {
+			this._ctx = ctx;
+			this._initialize();
+		}
+		// When no ctx is passed, initialization is deferred until first use
+		// so the module-level singleton can be created without a global context.
+	}
+
+	/**
+	 * Ensure the class is initialized (pluggables created, config read).
+	 * Called eagerly when ctx is provided, lazily otherwise.
+	 * @private
+	 */
+	private _ensureInitialized(): void {
+		if (this._pluggables) {
+			return;
+		}
+		this._initialize();
+	}
+
+	/**
+	 * Perform initialization: read config and create default provider.
+	 *
+	 * When GeoClass was constructed with an explicit ctx, the provider is pinned
+	 * to that context (fixed context by design). When using the global fallback,
+	 * no ctx is passed to the provider so it resolves the global context lazily
+	 * per operation — reconfiguration via setGlobalContext is honored.
+	 * @private
+	 */
+	private _initialize(): void {
 		this._pluggables = [];
 
-		const amplifyConfig = Amplify.getConfig() ?? {};
-		this._config = Object.assign({}, this._config, amplifyConfig.Geo);
+		if (this._ctx) {
+			// Explicit ctx path: read config eagerly and pin provider to this ctx
+			const amplifyConfig = this._ctx.resourcesConfig ?? {};
+			this._config = Object.assign({}, this._config, amplifyConfig.Geo);
 
-		const locationProvider = new AmazonLocationServiceProvider(
-			amplifyConfig.Geo,
-		);
-		this._pluggables.push(locationProvider);
+			const locationProvider = new AmazonLocationServiceProvider(
+				amplifyConfig.Geo,
+				this._ctx,
+			);
+			this._pluggables.push(locationProvider);
+		} else {
+			// Global fallback path: provider resolves ctx lazily per operation.
+			// Config is read lazily via _refreshConfig() inside the provider.
+			const locationProvider = new AmazonLocationServiceProvider();
+			this._pluggables.push(locationProvider);
+		}
 
 		logger.debug('Geo Options', this._config);
 	}
@@ -63,8 +115,9 @@ export class GeoClass {
 	 * @param {Object} pluggable an instance of the plugin
 	 */
 	public addPluggable(pluggable: GeoProvider) {
+		this._ensureInitialized();
 		if (pluggable && pluggable.getCategory() === 'Geo') {
-			this._pluggables.push(pluggable);
+			this._pluggables!.push(pluggable);
 		}
 	}
 
@@ -73,7 +126,8 @@ export class GeoClass {
 	 * @param providerName the name of the plugin
 	 */
 	public getPluggable(providerName: string) {
-		const targetPluggable = this._pluggables.find(
+		this._ensureInitialized();
+		const targetPluggable = this._pluggables!.find(
 			pluggable => pluggable.getProviderName() === providerName,
 		);
 		if (targetPluggable === undefined) {
@@ -87,7 +141,8 @@ export class GeoClass {
 	 * @param providerName the name of the plugin
 	 */
 	public removePluggable(providerName: string) {
-		this._pluggables = this._pluggables.filter(
+		this._ensureInitialized();
+		this._pluggables = this._pluggables!.filter(
 			pluggable => pluggable.getProviderName() !== providerName,
 		);
 	}

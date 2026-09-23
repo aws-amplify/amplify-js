@@ -41,4 +41,26 @@ describe('getCookieValuesFromRequest', () => {
 		expect(result).toEqual({});
 		expect(mockHeadersGet).toHaveBeenCalledWith('Cookie');
 	});
+
+	it('matches cookies whose names are percent-encoded on the wire (e.g. usernames containing `@`)', () => {
+		// Cookie name on the wire is percent-encoded by the write path, so a
+		// lookup key using the raw (unencoded) name must still resolve.
+		const mockHeadersGet = jest
+			.fn()
+			.mockReturnValue(
+				'CognitoIdentityServiceProvider.clientId.test%40example.com.refreshToken=token-value',
+			);
+		const mockRequest = {
+			headers: { get: mockHeadersGet },
+		} as unknown as Request;
+
+		const result = getCookieValuesFromRequest(mockRequest, [
+			'CognitoIdentityServiceProvider.clientId.test@example.com.refreshToken',
+		]);
+
+		expect(result).toEqual({
+			'CognitoIdentityServiceProvider.clientId.test@example.com.refreshToken':
+				'token-value',
+		});
+	});
 });

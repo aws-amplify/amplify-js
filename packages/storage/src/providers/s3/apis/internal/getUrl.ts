@@ -1,12 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { GetUrlInput, GetUrlOutput, GetUrlWithPathOutput } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
-import { getPresignedGetObjectUrl } from '../../utils/client/s3data';
+import {
+	getPresignedGetObjectUrl,
+	getPresignedPutObjectUrl,
+} from '../../utils/client/s3data';
 import {
 	resolveS3ConfigAndInput,
 	validateBucketOwnerID,
@@ -25,7 +28,7 @@ import { GetUrlInput as GetUrlWithPathInputWithAdvancedOptions } from '../../../
 import { getProperties } from './getProperties';
 
 export const getUrl = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: GetUrlInput | GetUrlWithPathInputWithAdvancedOptions,
 ): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
 	const { options: getUrlOptions } = input;
@@ -39,8 +42,12 @@ export const getUrl = async (
 
 	const finalKey =
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
+	const operation = getUrlOptions?.method ?? 'GET';
 
-	if (getUrlOptions?.validateObjectExistence) {
+	if (
+		getUrlOptions?.validateObjectExistence &&
+		getUrlOptions?.method !== 'PUT'
+	) {
 		await getProperties(amplify, input, StorageAction.GetUrl);
 	}
 
@@ -63,7 +70,34 @@ export const getUrl = async (
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed,
 	);
 
-	// expiresAt is the minimum of credential expiration and url expiration
+	if (operation === 'PUT') {
+		return {
+			url: await getPresignedPutObjectUrl(
+				{
+					...s3Config,
+					credentials: resolvedCredential,
+					expiration: urlExpirationInSec,
+				},
+				{
+					Bucket: bucket,
+					Key: finalKey,
+					...(getUrlOptions?.contentType && {
+						ContentType: getUrlOptions.contentType,
+					}),
+					...(getUrlOptions?.contentDisposition && {
+						ContentDisposition:
+							typeof getUrlOptions.contentDisposition === 'string'
+								? getUrlOptions.contentDisposition
+								: constructContentDisposition(getUrlOptions.contentDisposition),
+					}),
+					CacheControl: getUrlOptions?.cacheControl,
+					ExpectedBucketOwner: getUrlOptions?.expectedBucketOwner,
+				},
+			),
+			expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),
+		};
+	}
+
 	return {
 		url: await getPresignedGetObjectUrl(
 			{

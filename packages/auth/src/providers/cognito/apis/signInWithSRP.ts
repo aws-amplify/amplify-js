@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -31,7 +31,7 @@ import {
 	setActiveSignInState,
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
 
@@ -40,6 +40,7 @@ import { resetAutoSignIn } from './autoSignIn';
 /**
  * Signs a user in
  *
+ * @param ctx - The AmplifyContext
  * @param input - The SignInWithSRPInput object
  * @returns SignInWithSRPOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito service errors
@@ -49,10 +50,11 @@ import { resetAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithSRP(
+	ctx: AmplifyContext,
 	input: SignInWithSRPInput,
 ): Promise<SignInWithSRPOutput> {
 	const { username, password } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
 		authFlowType: 'USER_SRP_AUTH',
@@ -67,6 +69,10 @@ export async function signInWithSRP(
 		!!password,
 		AuthValidationErrorCode.EmptySignInPassword,
 	);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow (including the device-metadata read during the SRP
+	// PASSWORD_VERIFIER challenge) uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	try {
 		const {
@@ -91,20 +97,23 @@ export async function signInWithSRP(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens({
-				username: activeUsername,
-				...AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetadata({
-					userPoolId: authConfig.userPoolId,
-					userPoolEndpoint: authConfig.userPoolEndpoint,
-					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
-					accessToken: AuthenticationResult.AccessToken,
-				}),
-				signInDetails,
-			});
+			await cacheCognitoTokens(
+				{
+					username: activeUsername,
+					...AuthenticationResult,
+					NewDeviceMetadata: await getNewDeviceMetadata({
+						userPoolId: authConfig.userPoolId,
+						userPoolEndpoint: authConfig.userPoolEndpoint,
+						newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+						accessToken: AuthenticationResult.AccessToken,
+					}),
+					signInDetails,
+				},
+				tokenOrchestrator,
+			);
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(ctx);
 
 			resetAutoSignIn();
 
@@ -114,7 +123,7 @@ export async function signInWithSRP(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: handledChallengeName as ChallengeName,
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});

@@ -159,6 +159,13 @@ export type ListPaginateWithPathOptions = Omit<
  */
 export type GetUrlOptions = CommonOptions & {
 	/**
+	 * The HTTP method for the presigned URL.
+	 * - `'GET'` generates a URL for downloading an existing object from S3.
+	 * - `'PUT'` generates a URL for uploading an object to S3.
+	 * @default 'GET'
+	 */
+	method?: 'GET' | 'PUT';
+	/**
 	 * Whether to head object to make sure the object existence before downloading.
 	 * @default false
 	 */

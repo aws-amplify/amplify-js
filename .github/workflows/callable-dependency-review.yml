@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@e2a5a1afd5d7305b13671410c52a31819ab9fad9 # v4.0.0 https://github.com/actions/checkout/commit/e2a5a1afd5d7305b13671410c52a31819ab9fad9
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@da24556b548a50705dd671f47852072ea4c105d9 # v4.7.1 https://github.com/actions/dependency-review-action/commit/[hash]
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         with:
           config-file: '.github/dependency-review/dependency-review-config.yml'

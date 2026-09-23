@@ -1,7 +1,96 @@
 # Change Log
 
+## 6.17.0
+
+### Minor Changes
+
+- [#14931](https://github.com/aws-amplify/amplify-js/pull/14931) [`736d81d`](https://github.com/aws-amplify/amplify-js/commit/736d81d694b1df633e519881f73d1a942d6ccbe6) Thanks [@bobbor](https://github.com/bobbor)! - feat: explicit AmplifyContext support across all categories.
+
+  Adds context-first overloads (`fn(ctx, input)`) to category APIs alongside the existing
+  singleton-based forms, a public `createAmplifyContext(resourcesConfig, libraryOptions?)`
+  factory for isolated per-request/per-tenant contexts, per-request context isolation in
+  `@aws-amplify/adapter-nextjs` SSR, typed misuse errors (`InvalidAmplifyContextError`,
+  `NoAmplifyContextError`), and a shared testing entry (`@aws-amplify/core/internals/testing`).
+
+  Backward compatible: existing application code — including pre-context SSR
+  `operation: (contextSpec) => fetchAuthSession(contextSpec)` — compiles and behaves
+  unchanged via deprecated type aliases. Includes two api-graphql bug fixes: SSR request
+  clients now honor client-level options (previously silently dropped), and events error
+  messages accurately describe failures.
+
+  Compatibility surface and version guidance:
+  - Resources config is now deep-frozen after `Amplify.configure()` and
+    `createAmplifyContext()` (previously frozen only at the top level). Code that mutated
+    a nested config field post-configure — always unsupported — now throws in strict mode
+    instead of silently succeeding.
+  - Deprecated `AmplifyServer` type aliases (`Context`, `ContextSpec`, `ContextToken`,
+    `RunOperationWithContext`) and functional `createAmplifyServerContext` /
+    `getAmplifyServerContext` / `destroyAmplifyServerContext` shims are restored on the
+    internals/adapter-core entries so previously published `@aws-amplify/adapter-nextjs`
+    versions keep working. They will be removed in the next major.
+  - Peer minimums are raised (`@aws-amplify/core` to `^6.19.0` across category packages;
+    `aws-amplify` to `^6.21.0` for `@aws-amplify/adapter-nextjs`) to guard against
+    version-skewed installs going forward. Note this guard only applies when the
+    dependency tree is re-resolved: existing lockfiles, `npm ci`, and installs with
+    `--legacy-peer-deps` (or yarn classic's warn-only peers) are not re-checked, and
+    already-published category versions still declare the older range. Mixing an older
+    scoped category package (e.g. `@aws-amplify/auth` ≤ 6.x pinned to `core ^6.16.2`)
+    with a newer core is unsupported — keep directly installed `@aws-amplify/*` category
+    packages on the same release line as `aws-amplify`.
+
+## 6.16.0
+
+### Minor Changes
+
+- [#14798](https://github.com/aws-amplify/amplify-js/pull/14798) [`5297398`](https://github.com/aws-amplify/amplify-js/commit/52973988551378d24adb585a1c3aace4632a38d6) Thanks [@osama-rizk](https://github.com/osama-rizk)! - refactor(storage): internal `uploadData` API refactoring for architectural consistency.
+
+## 6.15.0
+
+### Minor Changes
+
+- [#14796](https://github.com/aws-amplify/amplify-js/pull/14796) [`d01b650`](https://github.com/aws-amplify/amplify-js/commit/d01b650a36bfb6d04cd6f946078b0988effa47d2) Thanks [@osama-rizk](https://github.com/osama-rizk)! - feat(storage): add server-side `uploadData` storage API.
+
+### Patch Changes
+
+- [#14793](https://github.com/aws-amplify/amplify-js/pull/14793) [`aa831db`](https://github.com/aws-amplify/amplify-js/commit/aa831db73e0bc5985c41907e159cc7fa4c81341d) Thanks [@osama-rizk](https://github.com/osama-rizk)! - fix(storage): merge authenticated and group permissions in `resolveLocationsForCurrentSession` so `allow.authenticated` and `allow.groups(...)` access rules are additive for users in a Cognito group, matching IAM. Fixes StorageBrowser hiding folders and under-reporting permissions when both rule types apply (aws-amplify/amplify-ui#6930).
+
+## 6.14.0
+
+### Minor Changes
+
+- [#14740](https://github.com/aws-amplify/amplify-js/pull/14740) [`8641160`](https://github.com/aws-amplify/amplify-js/commit/8641160ab7c8f3342ec349c533070ddb8665f82c) Thanks [@osama-rizk](https://github.com/osama-rizk)! - feat(storage): add PUT method support for getUrl presigned upload URLs
+
+### Patch Changes
+
+- [#14757](https://github.com/aws-amplify/amplify-js/pull/14757) [`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77) Thanks [@bobbor](https://github.com/bobbor)! - chore: bump aws-sdk's to v3.1012.0
+
+- Updated dependencies [[`e3b6b96`](https://github.com/aws-amplify/amplify-js/commit/e3b6b96f47d62c3e69013b08629b389cfa5d6d77)]:
+  - @aws-amplify/core@6.16.2
+
+## 6.13.2
+
+### Patch Changes
+
+- [#14747](https://github.com/aws-amplify/amplify-js/pull/14747) [`e2b77fa`](https://github.com/aws-amplify/amplify-js/commit/e2b77fa89b17251da6df8c51959e5253c7614f09) Thanks [@osama-rizk](https://github.com/osama-rizk)! - chore(deps): bump fast-xml-parser from 5.3.4 to 5.3.6
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [6.13.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.12.0...@aws-amplify/storage@6.13.1) (2026-02-05)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [6.12.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.11.1...@aws-amplify/storage@6.12.0) (2026-01-22)
+
+### Features
+
+- **storage:** add folder deletion support to remove API ([63d77aa](https://github.com/aws-amplify/amplify-js/commit/63d77aae5a3f70e98d92e01743aa4b46c22c9ec6))
+
+## [6.11.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.11.0...@aws-amplify/storage@6.11.1) (2026-01-15)
+
+### Bug Fixes
+
+- update AWS SDK packages to resolve @smithy/config-resolver ([#14667](https://github.com/aws-amplify/amplify-js/issues/14667)) ([fb5e0bc](https://github.com/aws-amplify/amplify-js/commit/fb5e0bc706bb05ac374f456a27a650af49f87c40))
 
 # [6.11.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.10.1...@aws-amplify/storage@6.11.0) (2025-12-10)
 

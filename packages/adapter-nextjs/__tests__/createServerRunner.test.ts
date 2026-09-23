@@ -66,7 +66,7 @@ describe('createServerRunner', () => {
 	const mockCreateAWSCredentialsAndIdentityIdProvider = jest.fn();
 	const mockCreateKeyValueStorageFromCookieStorageAdapter = jest.fn();
 	const mockCreateUserPoolsTokenProvider = jest.fn();
-	const mockRunWithAmplifyServerContextCore = jest.fn();
+	const mockCreateAmplifyContext = jest.fn(() => ({}));
 	const mockCreateAuthRouteHandlersFactory = jest.fn(() => jest.fn());
 	const mockIsSSLOriginUtil = jest.fn(() => true);
 	const mockIsValidOrigin = jest.fn(origin => !!origin);
@@ -87,7 +87,11 @@ describe('createServerRunner', () => {
 			createKeyValueStorageFromCookieStorageAdapter:
 				mockCreateKeyValueStorageFromCookieStorageAdapter,
 			createUserPoolsTokenProvider: mockCreateUserPoolsTokenProvider,
-			runWithAmplifyServerContext: mockRunWithAmplifyServerContextCore,
+		}));
+
+		jest.doMock('aws-amplify', () => ({
+			...jest.requireActual('aws-amplify'),
+			createAmplifyContext: mockCreateAmplifyContext,
 		}));
 
 		jest.doMock('aws-amplify/utils', () => ({
@@ -165,7 +169,7 @@ describe('createServerRunner', () => {
 
 	describe('runWithAmplifyServerContext', () => {
 		describe('when amplifyConfig.Auth is not defined', () => {
-			it('should call runWithAmplifyServerContextCore without Auth library options', () => {
+			it('should call createAmplifyContext without Auth library options', () => {
 				const mockAmplifyConfigWithoutAuth: ResourcesConfig = {
 					Analytics: {
 						Pinpoint: {
@@ -182,10 +186,9 @@ describe('createServerRunner', () => {
 				});
 				const operation = jest.fn();
 				runWithAmplifyServerContext({ operation, nextServerContext: null });
-				expect(mockRunWithAmplifyServerContextCore).toHaveBeenCalledWith(
+				expect(mockCreateAmplifyContext).toHaveBeenCalledWith(
 					mockAmplifyConfigWithoutAuth,
 					{},
-					operation,
 				);
 				expect(createRunWithAmplifyServerContextSpy).toHaveBeenCalledWith({
 					config: mockAmplifyConfigWithoutAuth,

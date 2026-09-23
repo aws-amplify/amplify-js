@@ -621,7 +621,9 @@ export function inMemoryPagination<T extends PersistentModel>(
 	records: T[],
 	pagination?: PaginationInput<T>,
 ): T[] {
-	if (pagination && records.length > 1) {
+	// Only an empty set is unaffected by pagination: with one record a page
+	// beyond the first must still resolve to no records.
+	if (pagination && records.length > 0) {
 		if (pagination.sort) {
 			const sortPredicates = ModelSortPredicateCreator.getPredicates(
 				pagination.sort,

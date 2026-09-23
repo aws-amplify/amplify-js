@@ -29,7 +29,7 @@ describe('registerHeadlessTask', () => {
 		AppRegistry.registerHeadlessTask as jest.Mock;
 	const mockNormalizeNativeMessage = normalizeNativeMessage as jest.Mock;
 
-	beforeAll(() => {
+	beforeEach(() => {
 		mockGetConstants.mockReturnValue({
 			NativeHeadlessTaskKey: nativeHeadlessTaskKey,
 		});

@@ -61,6 +61,12 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	[AuthValidationErrorCode.EmptyConfirmUserAttributeCode]: {
 		message: 'confirmation code is required to confirmUserAttribute',
 	},
+	[AuthValidationErrorCode.InvalidPreferredChallenge]: {
+		message:
+			'The preferred challenge is not enabled in your backend configuration',
+		recoverySuggestion:
+			'Ensure the authentication method is enabled in your Amplify backend configuration',
+	},
 };
 
 // TODO: delete this code when the Auth class is removed.

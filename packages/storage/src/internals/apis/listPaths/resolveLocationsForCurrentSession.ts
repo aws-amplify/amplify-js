@@ -15,18 +15,30 @@ const resolvePermissions = (
 			permission: accessRule.guest,
 		};
 	}
+	const authenticatedPermission = accessRule.authenticated;
+
 	if (groups) {
 		const selectedKey = Object.keys(accessRule).find(access =>
 			access.includes(groups),
 		);
+		const groupPermission = selectedKey ? accessRule[selectedKey] : undefined;
+
+		if (!authenticatedPermission && !groupPermission) {
+			return { permission: undefined };
+		}
 
 		return {
-			permission: selectedKey ? accessRule[selectedKey] : undefined,
+			permission: [
+				...new Set([
+					...(authenticatedPermission ?? []),
+					...(groupPermission ?? []),
+				]),
+			],
 		};
 	}
 
 	return {
-		permission: accessRule.authenticated,
+		permission: authenticatedPermission,
 	};
 };
 

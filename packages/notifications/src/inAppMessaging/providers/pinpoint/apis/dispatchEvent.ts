@@ -27,6 +27,8 @@ import { setConflictHandler } from './setConflictHandler';
  * {@link syncMessages}. Based on the messages synced and the event passed to this API, it triggers the display
  * of the In-App message that meets the criteria.
  *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
+ *
  * @remark
  * If an event would trigger multiple messages, the message closest to expiry will be chosen by default.
  * To change this behavior, you can use the {@link setConflictHandler} API to provide

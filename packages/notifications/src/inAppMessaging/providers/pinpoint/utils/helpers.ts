@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyContext, ConsoleLogger } from '@aws-amplify/core';
 import {
 	InAppMessagingAction,
 	getClientInfo,
@@ -38,13 +38,14 @@ let eventMetricsMemo: Record<string, boolean> = {};
 export const logger = new ConsoleLogger('InAppMessaging.Pinpoint.Utils');
 
 export const recordAnalyticsEvent = (
+	ctx: AmplifyContext,
 	event: PinpointMessageEvent,
 	message: InAppMessage,
 ) => {
-	const { appId, region } = resolveConfig();
+	const { appId, region } = resolveConfig(ctx);
 
 	const { id, metadata } = message;
-	resolveCredentials()
+	resolveCredentials(ctx)
 		.then(({ credentials, identityId }) => {
 			recordCore({
 				appId,
@@ -67,7 +68,7 @@ export const recordAnalyticsEvent = (
 			});
 		})
 		.catch(e => {
-			// An error occured while fetching credentials or persisting the event to the buffer
+			// An error occurred while fetching credentials or persisting the event to the buffer
 			logger.warn('Failed to record event.', e);
 		});
 };

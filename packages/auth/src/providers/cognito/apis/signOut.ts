@@ -2,11 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	Amplify,
+	AmplifyContext,
 	CognitoUserPoolConfig,
 	ConsoleLogger,
 	Hub,
-	clearCredentials,
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
@@ -15,11 +14,13 @@ import {
 	JWT,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { getAuthUserAgentValue } from '../../../utils';
 import { SignOutInput } from '../types';
-import { tokenOrchestrator } from '../tokenProvider';
+import { TokenOrchestrator } from '../tokenProvider/TokenOrchestrator';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import {
 	assertAuthTokens,
@@ -36,6 +37,10 @@ import {
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 const logger = new ConsoleLogger('Auth');
+export async function signOut(
+	ctx: AmplifyContext,
+	input?: SignOutInput,
+): Promise<void>;
 
 /**
  * Signs a user out
@@ -43,14 +48,20 @@ const logger = new ConsoleLogger('Auth');
  * @param input - The SignOutInput object
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signOut(input?: SignOutInput): Promise<void> {
-	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
+export async function signOut(input?: SignOutInput): Promise<void>;
+export async function signOut(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[SignOutInput | undefined]>(args);
+	const cognitoConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 
+	// Resolve the per-context orchestrator ONCE at the entry point so the token
+	// reads below and the final clear all target the context's own token store.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
+
 	if (input?.global) {
-		await globalSignOut(cognitoConfig);
+		await globalSignOut(cognitoConfig, tokenOrchestrator);
 	} else {
-		await clientSignOut(cognitoConfig);
+		await clientSignOut(cognitoConfig, tokenOrchestrator);
 	}
 
 	let hasOAuthConfig;
@@ -70,6 +81,7 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 				oAuthStore,
 				tokenOrchestrator,
 				input?.oauth?.redirectUrl,
+				() => ctx.clearCredentials(),
 			)) ?? {};
 		if (type === 'error') {
 			throw new AuthError({
@@ -80,12 +92,15 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 	} else {
 		// complete sign out
 		tokenOrchestrator.clearTokens();
-		await clearCredentials();
+		await ctx.clearCredentials();
 		Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
 	}
 }
 
-async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
+async function clientSignOut(
+	cognitoConfig: CognitoUserPoolConfig,
+	tokenOrchestrator: TokenOrchestrator,
+) {
 	try {
 		const { userPoolEndpoint, userPoolId, userPoolClientId } = cognitoConfig;
 		const authTokens = await tokenOrchestrator.getTokenStore().loadTokens();
@@ -116,7 +131,10 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	}
 }
 
-async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
+async function globalSignOut(
+	cognitoConfig: CognitoUserPoolConfig,
+	tokenOrchestrator: TokenOrchestrator,
+) {
 	try {
 		const { userPoolEndpoint, userPoolId } = cognitoConfig;
 		const authTokens = await tokenOrchestrator.getTokenStore().loadTokens();

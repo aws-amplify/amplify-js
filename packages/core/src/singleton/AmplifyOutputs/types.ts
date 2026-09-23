@@ -43,6 +43,15 @@ export interface AmplifyOutputsAuthProperties {
 	mfa_configuration?: string;
 	mfa_methods?: string[];
 	groups?: Partial<Record<UserGroupName, UserGroupPrecedence>>[];
+	passwordless?: {
+		email_otp_enabled?: boolean;
+		sms_otp_enabled?: boolean;
+		web_authn?: {
+			relying_party_id?: string;
+			user_verification?: string;
+		};
+		preferred_challenge?: string;
+	};
 }
 
 export interface AmplifyOutputsStorageBucketProperties {
@@ -110,9 +119,13 @@ export interface AmplifyOutputsCustomProperties {
 }
 
 export interface AmplifyOutputsNotificationsProperties {
-	aws_region: string;
-	amazon_pinpoint_app_id: string;
-	channels: string[];
+	aws_region?: string;
+	amazon_pinpoint_app_id?: string;
+	channels?: string[];
+	amazon_connect?: {
+		aws_region: string;
+		endpoint: string;
+	};
 }
 
 /** @deprecated This type is deprecated and will be removed in future versions. */

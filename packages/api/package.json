@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "6.3.21",
+	"version": "6.4.1",
 	"description": "Api category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -59,16 +59,17 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
+		"url": "https://github.com/aws-amplify/amplify-js.git",
+		"directory": "packages/api"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
-	"homepage": "https://aws-amplify.github.io/",
+	"homepage": "https://docs.amplify.aws/",
 	"devDependencies": {
-		"@aws-amplify/core": "6.15.0",
+		"@aws-amplify/core": "6.19.1",
 		"jest-fetch-mock": "3.0.3"
 	},
 	"files": [
@@ -80,13 +81,13 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-amplify/api-graphql": "4.8.2",
-		"@aws-amplify/api-rest": "4.6.0",
+		"@aws-amplify/api-graphql": "4.10.0",
+		"@aws-amplify/api-rest": "4.7.0",
 		"@aws-amplify/data-schema": "^1.7.0",
 		"rxjs": "^7.8.1",
 		"tslib": "^2.5.0"
 	},
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.1.0"
+		"@aws-amplify/core": "^6.19.0"
 	}
 }

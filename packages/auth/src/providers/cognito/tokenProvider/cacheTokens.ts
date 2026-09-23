@@ -5,8 +5,12 @@ import { AmplifyError, decodeJWT } from '@aws-amplify/core/internals/utils';
 import { CognitoAuthSignInDetails } from '../types';
 import { AuthenticationResultType } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
-import { tokenOrchestrator } from './tokenProvider';
-import { CognitoAuthTokens, DeviceMetadata } from './types';
+import { tokenOrchestrator as globalTokenOrchestrator } from './tokenProvider';
+import {
+	AuthTokenOrchestrator,
+	CognitoAuthTokens,
+	DeviceMetadata,
+} from './types';
 
 export async function cacheCognitoTokens(
 	AuthenticationResult: AuthenticationResultType & {
@@ -14,6 +18,7 @@ export async function cacheCognitoTokens(
 		username: string;
 		signInDetails?: CognitoAuthSignInDetails;
 	},
+	orchestrator?: AuthTokenOrchestrator,
 ): Promise<void> {
 	if (AuthenticationResult.AccessToken) {
 		const accessToken = decodeJWT(AuthenticationResult.AccessToken);
@@ -52,7 +57,10 @@ export async function cacheCognitoTokens(
 			tokens.signInDetails = AuthenticationResult.signInDetails;
 		}
 
-		await tokenOrchestrator.setTokens({
+		// The caller resolves the per-context orchestrator at its flow entry point;
+		// fall back to the module-level singleton for the global
+		// `Amplify.configure()` path when none was passed.
+		await (orchestrator ?? globalTokenOrchestrator).setTokens({
 			tokens,
 		});
 	} else {

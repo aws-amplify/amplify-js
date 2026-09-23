@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
+import {
+	AnalyticsAction,
+	resolveCtxArgs,
+} from '@aws-amplify/core/internals/utils';
 import {
 	UpdateEndpointException,
 	updateEndpoint,
@@ -12,10 +16,17 @@ import { getAnalyticsUserAgentString } from '../../../utils';
 import { IdentifyUserInput } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
+export async function identifyUser(
+	ctx: AmplifyContext,
+	input: IdentifyUserInput,
+): Promise<void>;
+
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
  * the same `userId`.
+ *
+ * @deprecated AWS will end support for Amazon Pinpoint on October 30, 2026.
  *
  * @param {IdentifyUserInput} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
@@ -57,13 +68,12 @@ import { resolveConfig, resolveCredentials } from '../utils';
  *     }
  * });
  */
-export const identifyUser = async ({
-	userId,
-	userProfile,
-	options,
-}: IdentifyUserInput): Promise<void> => {
-	const { credentials, identityId } = await resolveCredentials();
-	const { appId, region } = resolveConfig();
+export async function identifyUser(input: IdentifyUserInput): Promise<void>;
+export async function identifyUser(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[IdentifyUserInput]>(args);
+	const { userId, userProfile, options } = input;
+	const { credentials, identityId } = await resolveCredentials(ctx);
+	const { appId, region } = resolveConfig(ctx);
 	const { userAttributes } = options ?? {};
 	await updateEndpoint({
 		appId,
@@ -76,4 +86,4 @@ export const identifyUser = async ({
 		userProfile,
 		userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.IdentifyUser),
 	});
-};
+}
