@@ -50,6 +50,9 @@
 		"internals",
 		"server"
 	],
+	"engines": {
+		"node": ">=18"
+	},
 	"dependencies": {
 		"@aws-crypto/sha256-js": "5.2.0",
 		"@aws-sdk/types": "^3.973.6",
