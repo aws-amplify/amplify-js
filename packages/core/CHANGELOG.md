@@ -1,5 +1,13 @@
 # Change Log
 
+## 6.19.2
+
+### Patch Changes
+
+- [#14962](https://github.com/aws-amplify/amplify-js/pull/14962) [`58609d9`](https://github.com/aws-amplify/amplify-js/commit/58609d9e0f6be2600551e8b128bb112c9cf5d333) Thanks [@bobbor](https://github.com/bobbor)! - fix(core): honor custom `libraryOptions.Auth` providers when the resource config carries no `Auth` block
+
+- [#14956](https://github.com/aws-amplify/amplify-js/pull/14956) [`dd20d26`](https://github.com/aws-amplify/amplify-js/commit/dd20d261b135229ad242bb5c1da96f9c01def7d9) Thanks [@soberm](https://github.com/soberm)! - fix(core): mark tslib as external in the rollup build so ESM/CJS output imports the bare `tslib` specifier instead of a vendored nested copy, fixing SSR module resolution (ERR_MODULE_NOT_FOUND) under bundlers like Nitro/Nuxt
+
 ## 6.19.1
 
 ### Patch Changes
