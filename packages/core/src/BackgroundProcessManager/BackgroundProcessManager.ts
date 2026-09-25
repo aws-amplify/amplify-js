@@ -389,7 +389,35 @@ export class BackgroundProcessManager {
 				Array.from(this.jobs).map(j => j.promise),
 			);
 
+			const CLOSE_TIMEOUT_MS = 10_000;
+			let timer: ReturnType<typeof setTimeout>;
+			let didTimeout = false;
+			const timeoutPromise = new Promise<PromiseSettledResult<any>[]>(
+				resolve => {
+					timer = setTimeout(() => {
+						didTimeout = true;
+						resolve([]);
+					}, CLOSE_TIMEOUT_MS);
+				},
+			);
+			this._closingPromise = Promise.race([
+				this._closingPromise,
+				timeoutPromise,
+			]);
 			await this._closingPromise;
+			clearTimeout(timer!);
+
+			if (didTimeout) {
+				const pendingDescriptions = this.pending.filter(Boolean);
+
+				// eslint-disable-next-line no-console
+				console.warn(
+					`BackgroundProcessManager.close() timed out after ${CLOSE_TIMEOUT_MS}ms with ${this.jobs.size} pending job(s):`,
+					pendingDescriptions,
+				);
+				this.jobs.clear();
+			}
+
 			this._state = BackgroundProcessManagerState.Closed;
 		}
 
