@@ -285,6 +285,7 @@ export class SyncEngine {
 									// #region Base & Sync queries
 									try {
 										await new Promise<void>((_resolve, _reject) => {
+											onTerminate.then(_reject);
 											const syncQuerySubscription =
 												this.syncQueriesObservable().subscribe({
 													next: message => {
@@ -558,162 +559,167 @@ export class SyncEngine {
 							syncQueriesSubscription = this.syncQueriesProcessor
 								.start(modelLastSync)
 								.subscribe({
-									next: async ({
+									// registered with runningProcesses so that stop() waits for an
+									// in-flight page to finish merging before storage can be cleared.
+									next: ({
 										namespace,
 										modelDefinition,
 										items,
 										done,
 										startedAt,
 										isFullSync,
-									}) => {
-										const modelConstructor = this.userModelClasses[
-											modelDefinition.name
-										] as PersistentModelConstructor<any>;
+									}) =>
+										this.runningProcesses.isOpen &&
+										this.runningProcesses.add(async () => {
+											const modelConstructor = this.userModelClasses[
+												modelDefinition.name
+											] as PersistentModelConstructor<any>;
 
-										if (!count.has(modelConstructor)) {
-											count.set(modelConstructor, {
-												new: 0,
-												updated: 0,
-												deleted: 0,
-											});
-
-											start = getNow();
-											lastStartedAt =
-												lastStartedAt === undefined
-													? startedAt
-													: Math.max(lastStartedAt, startedAt);
-										}
-
-										/**
-										 * If there are mutations in the outbox for a given id, those need to be
-										 * merged individually. Otherwise, we can merge them in batches.
-										 */
-										await this.storage.runExclusive(async storage => {
-											const idsInOutbox =
-												await this.outbox.getModelIds(storage);
-
-											const oneByOne: ModelInstanceMetadata[] = [];
-											const page = items.filter(item => {
-												const itemId = getIdentifierValue(
-													modelDefinition,
-													item,
-												);
-
-												if (!idsInOutbox.has(itemId)) {
-													return true;
-												}
-
-												oneByOne.push(item);
-
-												return false;
-											});
-
-											const opTypeCount: [any, OpType][] = [];
-
-											for (const item of oneByOne) {
-												const opType = await this.modelMerger.merge(
-													storage,
-													item,
-													modelDefinition,
-												);
-
-												if (opType !== undefined) {
-													opTypeCount.push([item, opType]);
-												}
-											}
-
-											opTypeCount.push(
-												...(await this.modelMerger.mergePage(
-													storage,
-													modelConstructor,
-													page,
-													modelDefinition,
-												)),
-											);
-
-											const counts = count.get(modelConstructor)!;
-
-											opTypeCount.forEach(([, opType]) => {
-												switch (opType) {
-													case OpType.INSERT:
-														counts.new++;
-														break;
-													case OpType.UPDATE:
-														counts.updated++;
-														break;
-													case OpType.DELETE:
-														counts.deleted++;
-														break;
-													default:
-														throw new Error(`Invalid opType ${opType}`);
-												}
-											});
-										});
-
-										if (done) {
-											const { name: modelName } = modelDefinition;
-
-											// #region update last sync for type
-											let modelMetadata = await this.getModelMetadata(
-												namespace,
-												modelName,
-											);
-
-											const { lastFullSync, fullSyncInterval } = modelMetadata;
-
-											syncInterval = fullSyncInterval;
-
-											lastFullSyncStartedAt =
-												lastFullSyncStartedAt === undefined
-													? lastFullSync!
-													: Math.max(
-															lastFullSyncStartedAt,
-															isFullSync ? startedAt : lastFullSync!,
-														);
-
-											modelMetadata = (
-												this.modelClasses
-													.ModelMetadata as PersistentModelConstructor<ModelMetadata>
-											).copyOf(modelMetadata, draft => {
-												draft.lastSync = startedAt;
-												draft.lastFullSync = isFullSync
-													? startedAt
-													: modelMetadata.lastFullSync;
-											});
-
-											await this.storage.save(
-												modelMetadata,
-												undefined,
-												ownSymbol,
-											);
-											// #endregion
-
-											const counts = count.get(modelConstructor);
-
-											this.modelSyncedStatus.set(modelConstructor, true);
-
-											observer.next({
-												type: ControlMessage.SYNC_ENGINE_MODEL_SYNCED,
-												data: {
-													model: modelConstructor,
-													isFullSync,
-													isDeltaSync: !isFullSync,
-													counts,
-												},
-											});
-
-											paginatingModels.delete(modelDefinition);
-
-											if (paginatingModels.size === 0) {
-												syncDuration = getNow() - start;
-												resolve();
-												observer.next({
-													type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
+											if (!count.has(modelConstructor)) {
+												count.set(modelConstructor, {
+													new: 0,
+													updated: 0,
+													deleted: 0,
 												});
-												syncQueriesSubscription.unsubscribe();
+
+												start = getNow();
+												lastStartedAt =
+													lastStartedAt === undefined
+														? startedAt
+														: Math.max(lastStartedAt, startedAt);
 											}
-										}
-									},
+
+											/**
+											 * If there are mutations in the outbox for a given id, those need to be
+											 * merged individually. Otherwise, we can merge them in batches.
+											 */
+											await this.storage.runExclusive(async storage => {
+												const idsInOutbox =
+													await this.outbox.getModelIds(storage);
+
+												const oneByOne: ModelInstanceMetadata[] = [];
+												const page = items.filter(item => {
+													const itemId = getIdentifierValue(
+														modelDefinition,
+														item,
+													);
+
+													if (!idsInOutbox.has(itemId)) {
+														return true;
+													}
+
+													oneByOne.push(item);
+
+													return false;
+												});
+
+												const opTypeCount: [any, OpType][] = [];
+
+												for (const item of oneByOne) {
+													const opType = await this.modelMerger.merge(
+														storage,
+														item,
+														modelDefinition,
+													);
+
+													if (opType !== undefined) {
+														opTypeCount.push([item, opType]);
+													}
+												}
+
+												opTypeCount.push(
+													...(await this.modelMerger.mergePage(
+														storage,
+														modelConstructor,
+														page,
+														modelDefinition,
+													)),
+												);
+
+												const counts = count.get(modelConstructor)!;
+
+												opTypeCount.forEach(([, opType]) => {
+													switch (opType) {
+														case OpType.INSERT:
+															counts.new++;
+															break;
+														case OpType.UPDATE:
+															counts.updated++;
+															break;
+														case OpType.DELETE:
+															counts.deleted++;
+															break;
+														default:
+															throw new Error(`Invalid opType ${opType}`);
+													}
+												});
+											});
+
+											if (done) {
+												const { name: modelName } = modelDefinition;
+
+												// #region update last sync for type
+												let modelMetadata = await this.getModelMetadata(
+													namespace,
+													modelName,
+												);
+
+												const { lastFullSync, fullSyncInterval } =
+													modelMetadata;
+
+												syncInterval = fullSyncInterval;
+
+												lastFullSyncStartedAt =
+													lastFullSyncStartedAt === undefined
+														? lastFullSync!
+														: Math.max(
+																lastFullSyncStartedAt,
+																isFullSync ? startedAt : lastFullSync!,
+															);
+
+												modelMetadata = (
+													this.modelClasses
+														.ModelMetadata as PersistentModelConstructor<ModelMetadata>
+												).copyOf(modelMetadata, draft => {
+													draft.lastSync = startedAt;
+													draft.lastFullSync = isFullSync
+														? startedAt
+														: modelMetadata.lastFullSync;
+												});
+
+												await this.storage.save(
+													modelMetadata,
+													undefined,
+													ownSymbol,
+												);
+												// #endregion
+
+												const counts = count.get(modelConstructor);
+
+												this.modelSyncedStatus.set(modelConstructor, true);
+
+												observer.next({
+													type: ControlMessage.SYNC_ENGINE_MODEL_SYNCED,
+													data: {
+														model: modelConstructor,
+														isFullSync,
+														isDeltaSync: !isFullSync,
+														counts,
+													},
+												});
+
+												paginatingModels.delete(modelDefinition);
+
+												if (paginatingModels.size === 0) {
+													syncDuration = getNow() - start;
+													resolve();
+													observer.next({
+														type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
+													});
+													syncQueriesSubscription.unsubscribe();
+												}
+											}
+										}, 'syncQueriesObservable page'),
 									error: error => {
 										observer.error(error);
 									},
