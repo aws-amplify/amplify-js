@@ -155,6 +155,109 @@ describe('createAmplifyContext', () => {
 			const ctx2 = createAmplifyContext(resourcesConfig);
 			expect(ctx1).not.toBe(ctx2);
 		});
+
+		it('still hands the real Auth config to a custom provider when the resource config HAS an Auth block', async () => {
+			// Guards the path that already worked before the guard was removed:
+			// with `Auth` present, the provider must receive that config rather
+			// than `undefined`.
+			const { tokenProvider, credentialsProvider } = buildProviders();
+			const ctx = createAmplifyContext(resourcesConfig, {
+				Auth: { tokenProvider, credentialsProvider },
+			});
+
+			await ctx.fetchAuthSession();
+
+			expect(
+				credentialsProvider.getCredentialsAndIdentityId,
+			).toHaveBeenCalledWith(
+				expect.objectContaining({
+					authConfig: resourcesConfig.Auth,
+					authenticated: true,
+				}),
+			);
+			expect(
+				credentialsProvider.getCredentialsAndIdentityId.mock.calls[0][0]
+					.authConfig?.Cognito?.userPoolId,
+			).toBe('us-east-1_test');
+		});
+	});
+
+	describe('custom Auth providers with no Auth resource config', () => {
+		// Regression: the Lambda IAM shape produced by
+		// `getAmplifyDataClientConfig()` — an `API.GraphQL`-only resource config
+		// plus a custom `credentialsProvider` that returns the function's own
+		// execution-role credentials. Wiring the per-context AuthClass only when
+		// `resourcesConfig.Auth` was present left `libraryOptions.Auth`
+		// unregistered, so `fetchAuthSession()` resolved without credentials and
+		// the `iam` GraphQL auth mode threw "No credentials".
+		const iamResourcesConfig: ResourcesConfig = {
+			API: {
+				GraphQL: {
+					endpoint: 'https://test.appsync-api.us-east-1.amazonaws.com/graphql',
+					region: 'us-east-1',
+					defaultAuthMode: 'iam',
+				},
+			},
+		};
+
+		it('invokes a custom credentialsProvider from fetchAuthSession', async () => {
+			const { credentialsProvider } = buildProviders();
+			const ctx = createAmplifyContext(iamResourcesConfig, {
+				Auth: { credentialsProvider },
+			});
+
+			const session = await ctx.fetchAuthSession();
+
+			// `authConfig: undefined` is the point, not an oversight: with no
+			// `Auth` block there is no auth resource config to hand the provider,
+			// and a custom provider that sources its own credentials does not
+			// need one. Pinning it here keeps the contract explicit.
+			expect(
+				credentialsProvider.getCredentialsAndIdentityId,
+			).toHaveBeenCalledWith({
+				authConfig: undefined,
+				authenticated: false,
+				forceRefresh: undefined,
+			});
+			expect(session.credentials).toEqual({ accessKeyId: 'AKIA' });
+		});
+
+		it('invokes a custom tokenProvider from getTokens', async () => {
+			const { tokenProvider } = buildProviders();
+			const ctx = createAmplifyContext(iamResourcesConfig, {
+				Auth: { tokenProvider },
+			});
+
+			await ctx.getTokens({ forceRefresh: false });
+
+			expect(tokenProvider.getTokens).toHaveBeenCalledWith({
+				forceRefresh: false,
+			});
+		});
+
+		it('invokes a custom credentialsProvider from clearCredentials', async () => {
+			const { credentialsProvider } = buildProviders();
+			const ctx = createAmplifyContext(iamResourcesConfig, {
+				Auth: { credentialsProvider },
+			});
+
+			await ctx.clearCredentials();
+
+			expect(
+				credentialsProvider.clearCredentialsAndIdentityId,
+			).toHaveBeenCalledTimes(1);
+		});
+
+		it('resolves an empty session when no Auth providers are supplied', async () => {
+			const ctx = createAmplifyContext(iamResourcesConfig);
+
+			await expect(ctx.fetchAuthSession()).resolves.toEqual({
+				tokens: undefined,
+				credentials: undefined,
+				identityId: undefined,
+				userSub: undefined,
+			});
+		});
 	});
 
 	describe('skipConfigParse (internal single-parse option)', () => {

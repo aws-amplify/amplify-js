@@ -93,10 +93,22 @@ export function createAmplifyContext(
 
 	// Fresh, per-context Auth instance (not the global singleton) so that
 	// multiple contexts remain isolated from one another.
+	//
+	// `configure()` is called UNCONDITIONALLY, exactly as the pre-context
+	// `AmplifyClass.configure()` does (see singleton/Amplify.ts). It is the only
+	// place `AuthClass` stores `libraryOptions.Auth`, so gating it on the
+	// presence of `resourcesConfig.Auth` would silently drop caller-supplied
+	// token/credentials providers whenever the resource config carries no `Auth`
+	// block — the shape `getAmplifyDataClientConfig()` produces for IAM-authed
+	// Data access from a Lambda (`API.GraphQL` only, plus a custom
+	// `credentialsProvider`). `AuthClass.configure()` tolerates an undefined
+	// auth resource config.
+	//
+	// The `Auth!` assertion is deliberately false: in the very case this fixes,
+	// `Auth` IS undefined at runtime. It mirrors the identical assertion in the
+	// singleton rather than widening `AuthClass.configure()`'s parameter type.
 	const auth = new AuthClass();
-	if (resolvedResourceConfig.Auth) {
-		auth.configure(resolvedResourceConfig.Auth, resolvedLibraryOptions.Auth);
-	}
+	auth.configure(resolvedResourceConfig.Auth!, resolvedLibraryOptions.Auth);
 
 	const ctx: AmplifyContext = {
 		// Already deep-frozen above (both parse paths).
