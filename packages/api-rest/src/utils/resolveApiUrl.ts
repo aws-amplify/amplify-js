@@ -34,9 +34,10 @@ export const resolveApiUrl = (
 	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
 	try {
 		let url: URL;
-		if (AmplifyUrl.canParse(urlStr + path)) {
+		// Avoid URL.canParse here: older browsers such as Safari < 17 lack it
+		try {
 			url = new AmplifyUrl(urlStr + path);
-		} else {
+		} catch {
 			url = new AmplifyUrl(urlStr + path, location?.origin);
 		}
 

@@ -95,4 +95,33 @@ describe('resolveApiUrl', () => {
 			'https://example.com/api/rest?baz=2&foo=bar',
 		);
 	});
+
+	it('resolves the URL when URL.canParse is not available', () => {
+		expect.assertions(2);
+
+		jest.isolateModules(() => {
+			// e.g. Safari before 17 does not implement URL.canParse
+			jest.doMock('@aws-amplify/core/internals/utils', () => {
+				const actual = jest.requireActual('@aws-amplify/core/internals/utils');
+				class AmplifyUrl extends actual.AmplifyUrl {}
+				Object.defineProperty(AmplifyUrl, 'canParse', { value: undefined });
+
+				return { ...actual, AmplifyUrl };
+			});
+			const {
+				resolveApiUrl: resolveApiUrlWithoutCanParse,
+			} = require('../../src/utils/resolveApiUrl');
+
+			expect(
+				resolveApiUrlWithoutCanParse(mkAmplify(), 'myAPI', '/rest').toString(),
+			).toEqual('https://example.com/api/rest');
+			expect(
+				resolveApiUrlWithoutCanParse(
+					mkAmplify('/api'),
+					'myAPI',
+					'/rest',
+				).toString(),
+			).toEqual('http://localhost/api/rest');
+		});
+	});
 });
