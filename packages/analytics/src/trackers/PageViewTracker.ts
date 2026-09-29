@@ -14,7 +14,7 @@ const logger = new ConsoleLogger('PageViewTracker');
 
 const DEFAULT_EVENT_NAME = 'pageView';
 const DEFAULT_APP_TYPE = 'singlePage';
-const DEFAULT_URL_PROVIDER = () => {
+const DEFAULT_URL_PROVIDER = (): string => {
 	return window.location.origin + window.location.pathname;
 };
 const PREV_URL_STORAGE_KEY = 'aws-amplify-analytics-prevUrl';
@@ -138,7 +138,7 @@ export class PageViewTracker implements TrackerInterface {
 	public configure(
 		eventRecorder: TrackerEventRecorder,
 		options?: PageViewTrackingOptions,
-	) {
+	): void {
 		this.eventRecorder = eventRecorder;
 
 		// Clean up any existing listeners
@@ -164,7 +164,7 @@ export class PageViewTracker implements TrackerInterface {
 		}
 	}
 
-	public cleanup() {
+	public cleanup(): void {
 		// No-op if document listener is not active
 		if (!this.trackerActive) {
 			return;
@@ -183,7 +183,7 @@ export class PageViewTracker implements TrackerInterface {
 		}
 	}
 
-	private setupSPATracking() {
+	private setupSPATracking(): void {
 		if (!this.spaTrackingActive) {
 			// Subscribe to the shared history patch (installed once, ref-counted)
 			// plus native `popstate`. Both funnel through `handleLocationChange`.
@@ -196,11 +196,11 @@ export class PageViewTracker implements TrackerInterface {
 		}
 	}
 
-	private setupMPATracking() {
+	private setupMPATracking(): void {
 		this.handleLocationChange();
 	}
 
-	private handleLocationChange() {
+	private handleLocationChange(): void {
 		const currentUrl = this.options.urlProvider!();
 		const eventName = this.options.eventName || DEFAULT_EVENT_NAME;
 
@@ -224,7 +224,7 @@ export class PageViewTracker implements TrackerInterface {
 		}
 	}
 
-	private urlHasChanged() {
+	private urlHasChanged(): boolean {
 		const prevUrl = sessionStorage.getItem(this.storageKey);
 		const currUrl = this.options.urlProvider!();
 
