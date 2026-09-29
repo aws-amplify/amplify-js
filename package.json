@@ -128,7 +128,7 @@
 	},
 	"resolutions": {
 		"@babel/core": "^7.29.6",
-		"@react-native-community/cli": "^18.0.1",
+		"@react-native-community/cli": "^20.2.0",
 		"fast-xml-parser": "^5.7.2",
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",

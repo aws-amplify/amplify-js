@@ -24,8 +24,6 @@ import androidx.credentials.exceptions.domerrors.NotAllowedError
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.credentials.exceptions.publickeycredential.GetPublicKeyCredentialDomException
 
-import com.facebook.fbreact.specs.NativeAmplifyRtnPasskeysSpec
-import com.facebook.react.bridge.JSONArguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
@@ -71,7 +69,7 @@ class AmplifyRtnPasskeysModule(
 
 		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
 
-		val requestJson = JSONObject(input.toHashMap()).toString()
+		val requestJson = JSONObject(HashMap<Any?, Any?>(input.toHashMap())).toString()
 		val request =
 			CreatePublicKeyCredentialRequest(requestJson = requestJson)
 
@@ -79,7 +77,7 @@ class AmplifyRtnPasskeysModule(
 			try {
 				val result: CreateCredentialResponse =
 					credentialManager.createCredential(
-						context = currentActivity ?: reactApplicationContext,
+						context = reactApplicationContext.currentActivity ?: reactApplicationContext,
 						request = request
 					)
 
@@ -89,7 +87,7 @@ class AmplifyRtnPasskeysModule(
 
 				val jsonObject = JSONObject(publicKeyResult.registrationResponseJson)
 
-				promise.resolve(JSONArguments.fromJSONObject(jsonObject))
+				promise.resolve(JsonConversion.fromJSONObject(jsonObject))
 			} catch (e: Exception) {
 				val errorCode = handlePasskeyFailure(e)
 				promise.reject(errorCode, e)
@@ -107,7 +105,7 @@ class AmplifyRtnPasskeysModule(
 
 		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
 
-		val requestJson = JSONObject(input.toHashMap()).toString()
+		val requestJson = JSONObject(HashMap<Any?, Any?>(input.toHashMap())).toString()
 		val options =
 			GetPublicKeyCredentialOption(requestJson = requestJson)
 		val request = GetCredentialRequest(credentialOptions = listOf(options))
@@ -116,7 +114,7 @@ class AmplifyRtnPasskeysModule(
 			try {
 				val result: GetCredentialResponse =
 					credentialManager.getCredential(
-						context = currentActivity ?: reactApplicationContext,
+						context = reactApplicationContext.currentActivity ?: reactApplicationContext,
 						request = request
 					)
 
@@ -125,7 +123,7 @@ class AmplifyRtnPasskeysModule(
 
 				val jsonObject = JSONObject(publicKeyResult.authenticationResponseJson)
 
-				promise.resolve(JSONArguments.fromJSONObject(jsonObject))
+				promise.resolve(JsonConversion.fromJSONObject(jsonObject))
 			} catch (e: Exception) {
 				val errorCode = handlePasskeyFailure(e)
 				promise.reject(errorCode, e)

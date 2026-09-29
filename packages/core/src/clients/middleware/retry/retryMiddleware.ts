@@ -126,14 +126,17 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 	if (abortSignal?.aborted) {
 		return Promise.resolve();
 	}
-	let timeoutId: ReturnType<typeof setTimeout>;
+	let clearSleepTimeout: () => void;
 	let sleepPromiseResolveFn: () => void;
 	const sleepPromise = new Promise<void>(resolve => {
 		sleepPromiseResolveFn = resolve;
-		timeoutId = setTimeout(resolve, timeoutMs);
+		const timeoutId = setTimeout(resolve, timeoutMs);
+		clearSleepTimeout = () => {
+			clearTimeout(timeoutId);
+		};
 	});
 	abortSignal?.addEventListener('abort', function cancelSleep(_) {
-		clearTimeout(timeoutId);
+		clearSleepTimeout();
 		abortSignal?.removeEventListener('abort', cancelSleep);
 		sleepPromiseResolveFn();
 	});
