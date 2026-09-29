@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #ifdef RCT_NEW_ARCH_ENABLED
-#import "AmplifyRtnPasskeysSpec.h"
+#import <AmplifyRtnPasskeysSpec/AmplifyRtnPasskeysSpec.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
