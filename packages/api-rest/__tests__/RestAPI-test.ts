@@ -1102,6 +1102,11 @@ describe('Rest API test', () => {
 			['https://abc.execute-api.us-east-1.amazonaws.com', '\n.other.example/x'],
 			['/', '//other.example/x'],
 			['capacitor://localhost', '@other.example/x'],
+			['https://example.com', ':pass@example.com/x'],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'\u3002other.example/x',
+			],
 		])(
 			'rejects endpoint %j with path %j resolving to a different origin',
 			async (endpoint, path) => {
@@ -1120,6 +1125,9 @@ describe('Rest API test', () => {
 			['https://abc.execute-api.us-east-1.amazonaws.com', '/items'],
 			['https://abc.execute-api.us-east-1.amazonaws.com', '?q=1'],
 			['https://abc.execute-api.us-east-1.amazonaws.com', '#x'],
+			// For special schemes `\` is a path separator, so the host is unchanged.
+			['https://abc.execute-api.us-east-1.amazonaws.com', '\\other.example/x'],
+			['https://abc.execute-api.us-east-1.amazonaws.com', '?@other.example'],
 			['HTTPS://abc.execute-api.us-east-1.amazonaws.com', '/items'],
 			['capacitor://localhost', '/items'],
 			[
@@ -1143,6 +1151,35 @@ describe('Rest API test', () => {
 			expect(spyon).toBeCalledWith(
 				expect.objectContaining({ endpoint: endpoint + path }),
 				expect.anything()
+			);
+		});
+
+		test.each(['get', 'post', 'put', 'patch', 'del', 'head'])(
+			'%s rejects a path resolving to a different origin',
+			async method => {
+				const api = new API({});
+				api.configure(
+					configWithEndpoint('https://abc.execute-api.us-east-1.amazonaws.com')
+				);
+				const spyon = jest.spyOn(RestClient.prototype, method as any);
+
+				await expect(
+					api[method]('apiName', '.other.example/items', {})
+				).rejects.toBe(
+					'Path for API apiName must resolve under the configured endpoint'
+				);
+				expect(spyon).not.toHaveBeenCalled();
+			}
+		);
+
+		test('rejects when the configured endpoint is missing', async () => {
+			const api = new API({});
+			api.configure({ API: { endpoints: [{ name: 'apiName' }] } });
+
+			await expect(
+				api.get('apiName', 'https://other.example/items', {})
+			).rejects.toBe(
+				'Path for API apiName must resolve under the configured endpoint'
 			);
 		});
 	});

@@ -20,9 +20,11 @@ const SPECIAL_SCHEMES = ['ftp:', 'file:', 'http:', 'https:', 'ws:', 'wss:'];
  * any number of `/` or `\` may precede the authority.
  */
 const getOrigin = (url: string): string => {
-	const normalized = url
-		.replace(/^[\u0000- ]+|[\u0000- ]+$/g, '')
-		.replace(/[\t\n\r]/g, '');
+	let start = 0;
+	let end = url.length;
+	while (start < end && url.charCodeAt(start) <= 0x20) start++;
+	while (end > start && url.charCodeAt(end - 1) <= 0x20) end--;
+	const normalized = url.slice(start, end).replace(/[\t\n\r]/g, '');
 	const [, scheme = '', rest] = /^([a-z][a-z0-9+.-]*:)?([\s\S]*)$/i.exec(
 		normalized
 	);
@@ -337,8 +339,9 @@ export class RestAPIClass {
 			throw new Error(`API ${apiName} does not exist`);
 		}
 
-		const endpoint = apiConfig.endpoint + path;
-		if (getOrigin(endpoint) !== getOrigin(apiConfig.endpoint)) {
+		const configuredEndpoint = String(apiConfig.endpoint ?? '');
+		const endpoint = configuredEndpoint + path;
+		if (getOrigin(endpoint) !== getOrigin(configuredEndpoint)) {
 			throw new Error(
 				`Path for API ${apiName} must resolve under the configured endpoint`
 			);
