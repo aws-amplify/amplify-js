@@ -11,6 +11,17 @@ import { ApiInfo } from './types';
 const logger = new Logger('RestAPI');
 
 /**
+ * Returns the scheme and authority of a URL string, or an empty string for a
+ * relative URL. `/` and `\` are both treated as separators to match how URLs
+ * are resolved for http(s).
+ */
+const getOrigin = (url: string): string => {
+	const [, scheme = '', authority] =
+		/^([a-z][a-z0-9+.-]*:)?(?:[\/\\]{2}([^\/\\?#]*))?/i.exec(url);
+	return authority === undefined ? scheme : `${scheme}//${authority}`;
+};
+
+/**
  * Export Cloud Logic APIs
  * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
  * See the migration guide:
@@ -311,8 +322,15 @@ export class RestAPIClass {
 			throw new Error(`API ${apiName} does not exist`);
 		}
 
+		const endpoint = apiConfig.endpoint + path;
+		if (getOrigin(endpoint) !== getOrigin(apiConfig.endpoint)) {
+			throw new Error(
+				`Path for API ${apiName} must resolve under the configured endpoint`
+			);
+		}
+
 		const response: ApiInfo = {
-			endpoint: apiConfig.endpoint + path,
+			endpoint,
 		};
 
 		if (typeof apiConfig.region === 'string') {
