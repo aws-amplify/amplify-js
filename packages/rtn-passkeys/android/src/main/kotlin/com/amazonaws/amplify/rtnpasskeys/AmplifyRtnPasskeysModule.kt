@@ -69,7 +69,7 @@ class AmplifyRtnPasskeysModule(
 
 		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
 
-		val requestJson = JSONObject(HashMap<Any?, Any?>(input.toHashMap())).toString()
+		val requestJson = JSONObject(input.toHashMap()).toString()
 		val request =
 			CreatePublicKeyCredentialRequest(requestJson = requestJson)
 
@@ -105,7 +105,7 @@ class AmplifyRtnPasskeysModule(
 
 		val credentialManager = CredentialManager.create(reactApplicationContext.applicationContext)
 
-		val requestJson = JSONObject(HashMap<Any?, Any?>(input.toHashMap())).toString()
+		val requestJson = JSONObject(input.toHashMap()).toString()
 		val options =
 			GetPublicKeyCredentialOption(requestJson = requestJson)
 		val request = GetCredentialRequest(credentialOptions = listOf(options))

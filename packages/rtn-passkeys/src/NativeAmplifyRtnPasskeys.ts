@@ -19,18 +19,11 @@ export default TurboModuleRegistry.getEnforcing<Spec>('AmplifyRtnPasskeys');
  */
 
 // Passkey Types
-// Note: these are typed as plain strings rather than string-literal unions because
-// older React Native codegen (e.g. 0.76) rejects unions inside structs on iOS. The native
-// interfaces receive strings either way.
-
-/** One of 'ble' | 'hybrid' | 'internal' | 'nfc' | 'usb' */
-type PasskeyTransport = string;
-/** One of 'discouraged' | 'preferred' | 'required' */
-type UserVerificationRequirement = string;
+type PasskeyTransport = 'ble' | 'hybrid' | 'internal' | 'nfc' | 'usb';
+type UserVerificationRequirement = 'discouraged' | 'preferred' | 'required';
 
 interface PkcDescriptor {
-	/** Always 'public-key' */
-	type: string;
+	type: 'public-key';
 	id: string;
 	transports?: PasskeyTransport[];
 }
