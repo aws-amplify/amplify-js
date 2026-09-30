@@ -95,4 +95,63 @@ describe('resolveApiUrl', () => {
 			'https://example.com/api/rest?baz=2&foo=bar',
 		);
 	});
+
+	describe('origin validation', () => {
+		it.each([
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'.other.example/items',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'@other.example/items',
+			],
+			['https://abc.execute-api.us-east-1.amazonaws.com', ':8443/items'],
+			['https://example.com', '.other.example'],
+			['/', '/other.example/items'],
+		])(
+			'rejects endpoint %s with path %s resolving to a different origin',
+			(endpoint, path) => {
+				expect.assertions(2);
+				try {
+					resolveApiUrl(mkAmplify(endpoint), 'myAPI', path);
+				} catch (error) {
+					expect(error).toBeInstanceOf(RestApiError);
+					expect(error).toMatchObject({
+						name: RestApiValidationErrorCode.InvalidPath,
+						...validationErrorMap[RestApiValidationErrorCode.InvalidPath],
+					});
+				}
+			},
+		);
+
+		it.each([
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'/items',
+				'https://abc.execute-api.us-east-1.amazonaws.com/items',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com/prod',
+				'.other.example',
+				'https://abc.execute-api.us-east-1.amazonaws.com/prod.other.example',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com/',
+				'items',
+				'https://abc.execute-api.us-east-1.amazonaws.com/items',
+			],
+			[
+				'https://example.com',
+				'//other.example/x',
+				'https://example.com//other.example/x',
+			],
+			['https://example.com', '?q=1', 'https://example.com/?q=1'],
+			['/api', '/items', 'http://localhost/api/items'],
+		])('allows endpoint %s with path %s', (endpoint, path, expected) => {
+			expect(
+				resolveApiUrl(mkAmplify(endpoint), 'myAPI', path).toString(),
+			).toEqual(expected);
+		});
+	});
 });

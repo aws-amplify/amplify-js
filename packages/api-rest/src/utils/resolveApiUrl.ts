@@ -21,6 +21,7 @@ import {
  * 3. Merge the query parameters from path and the queryParameter argument which is taken from the public REST API
  *   options.
  * 4. Validating the resulting URL string.
+ * 5. Validating the resulting URL has the same origin as the configured endpoint.
  *
  * @internal
  */
@@ -32,23 +33,11 @@ export const resolveApiUrl = (
 ): URL => {
 	const urlStr = amplify.resourcesConfig?.API?.REST?.[apiName]?.endpoint;
 	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
+	let endpointUrl: URL;
+	let url: URL;
 	try {
-		let url: URL;
-		if (AmplifyUrl.canParse(urlStr + path)) {
-			url = new AmplifyUrl(urlStr + path);
-		} else {
-			url = new AmplifyUrl(urlStr + path, location?.origin);
-		}
-
-		if (queryParams) {
-			const mergedQueryParams = new AmplifyUrlSearchParams(url.searchParams);
-			Object.entries(queryParams).forEach(([key, value]) => {
-				mergedQueryParams.set(key, value);
-			});
-			url.search = new AmplifyUrlSearchParams(mergedQueryParams).toString();
-		}
-
-		return url;
+		endpointUrl = parseUrl(urlStr);
+		url = parseUrl(urlStr + path);
 	} catch (error) {
 		throw new RestApiError({
 			name: RestApiValidationErrorCode.InvalidApiName,
@@ -56,4 +45,23 @@ export const resolveApiUrl = (
 			recoverySuggestion: `Please make sure the REST endpoint URL is a valid URL string. Got ${urlStr}`,
 		});
 	}
+	assertValidationError(
+		url.origin === endpointUrl.origin,
+		RestApiValidationErrorCode.InvalidPath,
+	);
+
+	if (queryParams) {
+		const mergedQueryParams = new AmplifyUrlSearchParams(url.searchParams);
+		Object.entries(queryParams).forEach(([key, value]) => {
+			mergedQueryParams.set(key, value);
+		});
+		url.search = new AmplifyUrlSearchParams(mergedQueryParams).toString();
+	}
+
+	return url;
 };
+
+const parseUrl = (urlStr: string): URL =>
+	AmplifyUrl.canParse(urlStr)
+		? new AmplifyUrl(urlStr)
+		: new AmplifyUrl(urlStr, location?.origin);
