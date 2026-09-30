@@ -76,6 +76,18 @@ describe('resolveApiUrl', () => {
 		}
 	});
 
+	it('resolves a valid URL when URL.canParse is unavailable (e.g. iOS < 17)', () => {
+		const originalCanParse = (URL as any).canParse;
+		// Simulate an engine that predates URL.canParse.
+		delete (URL as any).canParse;
+		try {
+			const url = resolveApiUrl(mkAmplify(), 'myAPI', '/rest');
+			expect(url.toString()).toEqual('https://example.com/api/rest');
+		} finally {
+			(URL as any).canParse = originalCanParse;
+		}
+	});
+
 	it('appends query parameters', () => {
 		const url = resolveApiUrl(mkAmplify(), 'myAPI', '/rest', {
 			foo: 'bar',

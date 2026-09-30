@@ -34,7 +34,14 @@ export const resolveApiUrl = (
 	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
 	try {
 		let url: URL;
-		if (AmplifyUrl.canParse(urlStr + path)) {
+		// `URL.canParse` is not available on older engines (notably iOS/iPadOS < 17,
+		// where every browser is locked to WebKit). Feature-detect it so a missing
+		// method falls through to the origin-based constructor instead of throwing a
+		// `TypeError` that the catch below would mislabel as `InvalidApiName`.
+		if (
+			typeof AmplifyUrl.canParse === 'function' &&
+			AmplifyUrl.canParse(urlStr + path)
+		) {
 			url = new AmplifyUrl(urlStr + path);
 		} else {
 			url = new AmplifyUrl(urlStr + path, location?.origin);
