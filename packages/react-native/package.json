@@ -33,7 +33,7 @@
 	},
 	"peerDependencies": {
 		"@aws-amplify/rtn-passkeys": "^1.0.0",
-		"react-native": ">=0.70",
+		"react-native": ">=0.81",
 		"react-native-get-random-values": ">=1.8.0"
 	},
 	"peerDependenciesMeta": {
