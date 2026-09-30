@@ -109,19 +109,18 @@ describe('resolveApiUrl', () => {
 			['https://abc.execute-api.us-east-1.amazonaws.com', ':8443/items'],
 			['https://example.com', '.other.example'],
 			['/', '/other.example/items'],
+			['capacitor://localhost', '@other.example/items'],
+			['capacitor://localhost', '.other.example/items'],
+			['http://localhost:3000', ':8443/items'],
 		])(
 			'rejects endpoint %s with path %s resolving to a different origin',
 			(endpoint, path) => {
-				expect.assertions(2);
-				try {
-					resolveApiUrl(mkAmplify(endpoint), 'myAPI', path);
-				} catch (error) {
-					expect(error).toBeInstanceOf(RestApiError);
-					expect(error).toMatchObject({
+				expect(() => resolveApiUrl(mkAmplify(endpoint), 'myAPI', path)).toThrow(
+					expect.objectContaining({
 						name: RestApiValidationErrorCode.InvalidPath,
 						...validationErrorMap[RestApiValidationErrorCode.InvalidPath],
-					});
-				}
+					}),
+				);
 			},
 		);
 
@@ -147,6 +146,7 @@ describe('resolveApiUrl', () => {
 				'https://example.com//other.example/x',
 			],
 			['https://example.com', '?q=1', 'https://example.com/?q=1'],
+			['capacitor://localhost', '/items', 'capacitor://localhost/items'],
 			['/api', '/items', 'http://localhost/api/items'],
 		])('allows endpoint %s with path %s', (endpoint, path, expected) => {
 			expect(

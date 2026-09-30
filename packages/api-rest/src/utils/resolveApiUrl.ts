@@ -21,7 +21,7 @@ import {
  * 3. Merge the query parameters from path and the queryParameter argument which is taken from the public REST API
  *   options.
  * 4. Validating the resulting URL string.
- * 5. Validating the resulting URL has the same origin as the configured endpoint.
+ * 5. Validating the resulting URL has the same protocol and host as the configured endpoint.
  *
  * @internal
  */
@@ -34,10 +34,8 @@ export const resolveApiUrl = (
 	const urlStr = amplify.resourcesConfig?.API?.REST?.[apiName]?.endpoint;
 	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
 	let endpointUrl: URL;
-	let url: URL;
 	try {
 		endpointUrl = parseUrl(urlStr);
-		url = parseUrl(urlStr + path);
 	} catch (error) {
 		throw new RestApiError({
 			name: RestApiValidationErrorCode.InvalidApiName,
@@ -45,8 +43,18 @@ export const resolveApiUrl = (
 			recoverySuggestion: `Please make sure the REST endpoint URL is a valid URL string. Got ${urlStr}`,
 		});
 	}
+	let url: URL;
+	try {
+		url = parseUrl(urlStr + path);
+	} catch (error) {
+		throw new RestApiError({
+			name: RestApiValidationErrorCode.InvalidPath,
+			...validationErrorMap[RestApiValidationErrorCode.InvalidPath],
+		});
+	}
+	// Compare protocol and host rather than `origin`, which is the opaque "null" for non-special schemes.
 	assertValidationError(
-		url.origin === endpointUrl.origin,
+		url.protocol === endpointUrl.protocol && url.host === endpointUrl.host,
 		RestApiValidationErrorCode.InvalidPath,
 	);
 

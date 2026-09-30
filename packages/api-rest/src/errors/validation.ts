@@ -16,8 +16,8 @@ export const validationErrorMap: AmplifyErrorMap<RestApiValidationErrorCode> = {
 	},
 	[RestApiValidationErrorCode.InvalidPath]: {
 		message:
-			'API path resolves to a different origin than the configured endpoint.',
+			'API path does not resolve to the same protocol and host as the configured endpoint.',
 		recoverySuggestion:
-			'Make sure the path starts with "/" so it resolves under the configured endpoint.',
+			'Make sure the path is relative to the configured endpoint (for example `/items`) and does not change its host, port, or protocol.',
 	},
 };
