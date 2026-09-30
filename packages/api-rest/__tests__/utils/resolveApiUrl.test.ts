@@ -112,6 +112,7 @@ describe('resolveApiUrl', () => {
 			['capacitor://localhost', '@other.example/items'],
 			['capacitor://localhost', '.other.example/items'],
 			['http://localhost:3000', ':8443/items'],
+			['https://example.com', ':pass@example.com/x'],
 		])(
 			'rejects endpoint %s with path %s resolving to a different origin',
 			(endpoint, path) => {
@@ -123,6 +124,17 @@ describe('resolveApiUrl', () => {
 				);
 			},
 		);
+
+		it('reports an endpoint that fails to parse as InvalidApiName', () => {
+			expect(() =>
+				resolveApiUrl(mkAmplify('https://'), 'myAPI', '/items'),
+			).toThrow(
+				expect.objectContaining({
+					name: RestApiValidationErrorCode.InvalidApiName,
+					recoverySuggestion: expect.stringContaining('Got https://'),
+				}),
+			);
+		});
 
 		it.each([
 			[

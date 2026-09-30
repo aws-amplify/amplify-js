@@ -21,7 +21,7 @@ import {
  * 3. Merge the query parameters from path and the queryParameter argument which is taken from the public REST API
  *   options.
  * 4. Validating the resulting URL string.
- * 5. Validating the resulting URL has the same protocol and host as the configured endpoint.
+ * 5. Validating the resulting URL has the same protocol, host and userinfo as the configured endpoint.
  *
  * @internal
  */
@@ -52,9 +52,12 @@ export const resolveApiUrl = (
 			...validationErrorMap[RestApiValidationErrorCode.InvalidPath],
 		});
 	}
-	// Compare protocol and host rather than `origin`, which is the opaque "null" for non-special schemes.
+	// Compare protocol, host and userinfo rather than `origin`, which is the opaque "null" for non-special schemes.
 	assertValidationError(
-		url.protocol === endpointUrl.protocol && url.host === endpointUrl.host,
+		url.protocol === endpointUrl.protocol &&
+			url.host === endpointUrl.host &&
+			url.username === endpointUrl.username &&
+			url.password === endpointUrl.password,
 		RestApiValidationErrorCode.InvalidPath,
 	);
 
