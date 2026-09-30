@@ -1095,6 +1095,13 @@ describe('Rest API test', () => {
 			['/', '\\other.example/items'],
 			['http', 's:/other.example/items'],
 			['', 'https://other.example/items'],
+			[' https://abc.execute-api.us-east-1.amazonaws.com', '.other.example/x'],
+			['https:/abc.execute-api.us-east-1.amazonaws.com', '.other.example/x'],
+			['https:abc.execute-api.us-east-1.amazonaws.com', '.other.example/x'],
+			['https:///abc.execute-api.us-east-1.amazonaws.com', '.other.example/x'],
+			['https://abc.execute-api.us-east-1.amazonaws.com', '\n.other.example/x'],
+			['/', '//other.example/x'],
+			['capacitor://localhost', '@other.example/x'],
 		])(
 			'rejects endpoint %j with path %j resolving to a different origin',
 			async (endpoint, path) => {
@@ -1112,6 +1119,9 @@ describe('Rest API test', () => {
 		test.each([
 			['https://abc.execute-api.us-east-1.amazonaws.com', '/items'],
 			['https://abc.execute-api.us-east-1.amazonaws.com', '?q=1'],
+			['https://abc.execute-api.us-east-1.amazonaws.com', '#x'],
+			['HTTPS://abc.execute-api.us-east-1.amazonaws.com', '/items'],
+			['capacitor://localhost', '/items'],
 			[
 				'https://abc.execute-api.us-east-1.amazonaws.com/prod',
 				'.other.example',

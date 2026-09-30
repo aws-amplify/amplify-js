@@ -10,15 +10,30 @@ import { ApiInfo } from './types';
 
 const logger = new Logger('RestAPI');
 
+const SPECIAL_SCHEMES = ['ftp:', 'file:', 'http:', 'https:', 'ws:', 'wss:'];
+
 /**
  * Returns the scheme and authority of a URL string, or an empty string for a
- * relative URL. `/` and `\` are both treated as separators to match how URLs
- * are resolved for http(s).
+ * relative URL without an authority. Follows WHATWG URL parsing: leading and
+ * trailing C0 control or space characters and embedded tab or newline
+ * characters are ignored, and for special schemes (and scheme-relative URLs)
+ * any number of `/` or `\` may precede the authority.
  */
 const getOrigin = (url: string): string => {
-	const [, scheme = '', authority] =
-		/^([a-z][a-z0-9+.-]*:)?(?:[\/\\]{2}([^\/\\?#]*))?/i.exec(url);
-	return authority === undefined ? scheme : `${scheme}//${authority}`;
+	const normalized = url
+		.replace(/^[\u0000- ]+|[\u0000- ]+$/g, '')
+		.replace(/[\t\n\r]/g, '');
+	const [, scheme = '', rest] = /^([a-z][a-z0-9+.-]*:)?([\s\S]*)$/i.exec(
+		normalized
+	);
+	const lowerScheme = scheme.toLowerCase();
+	const authorityMatch =
+		lowerScheme === '' || SPECIAL_SCHEMES.indexOf(lowerScheme) !== -1
+			? /^(?:[\/\\]*)([^\/\\?#]*)/.exec(rest)
+			: /^\/\/([^\/?#]*)/.exec(rest);
+	const hasAuthority =
+		lowerScheme !== '' ? authorityMatch !== null : /^[\/\\]{2}/.test(rest);
+	return hasAuthority ? `${lowerScheme}//${authorityMatch[1]}` : lowerScheme;
 };
 
 /**
