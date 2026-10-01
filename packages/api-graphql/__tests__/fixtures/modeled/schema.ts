@@ -24,6 +24,13 @@ const schema = a.schema({
 			data: a.json(),
 		})
 		.authorization(allow => [allow.publicApiKey(), allow.owner()]),
+	echoTodo: a
+		.query()
+		.arguments({
+			id: a.string().required(),
+		})
+		.returns(a.ref('Todo'))
+		.authorization(allow => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
