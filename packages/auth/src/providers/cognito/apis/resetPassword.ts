@@ -53,7 +53,7 @@ export async function resetPassword(
 	const { userPoolClientId, userPoolId, userPoolEndpoint } = authConfig;
 	const clientMetadata = input.options?.clientMetadata;
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
