@@ -12,4 +12,4 @@ export const DEFAULT_IAM_SIGNING_REGION = 'us-east-1';
  * @see {@link https://docs.aws.amazon.com/general/latest/gr/apigateway.html#apigateway_region_data_plane}
  */
 export const APIG_HOSTNAME_PATTERN =
-	/^.+\.([a-z0-9-]+)\.([a-z0-9-]+)\.amazonaws\.com/;
+	/^.+\.([a-z0-9-]+)\.([a-z0-9-]+)\.amazonaws\.com(?:\.cn)?\.?$/;
