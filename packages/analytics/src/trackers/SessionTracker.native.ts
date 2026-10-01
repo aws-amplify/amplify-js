@@ -39,7 +39,7 @@ export class SessionTracker implements TrackerInterface {
 	public configure(
 		eventRecorder: TrackerEventRecorder,
 		options?: SessionTrackingOptions,
-	) {
+	): void {
 		this.eventRecorder = eventRecorder;
 
 		// Clean up any existing listeners
@@ -61,7 +61,7 @@ export class SessionTracker implements TrackerInterface {
 		}
 	}
 
-	public cleanup() {
+	public cleanup(): void {
 		if (this.sessionTrackingActive) {
 			sessionListener.removeStateChangeListener(this.handleStateChange);
 		}
@@ -69,7 +69,7 @@ export class SessionTracker implements TrackerInterface {
 		this.sessionTrackingActive = false;
 	}
 
-	private handleStateChange(state: SessionState) {
+	private handleStateChange(state: SessionState): void {
 		if (state === 'started') {
 			this.sessionStarted();
 		} else {
@@ -77,7 +77,7 @@ export class SessionTracker implements TrackerInterface {
 		}
 	}
 
-	private sessionStarted() {
+	private sessionStarted(): void {
 		const attributes = this.options.attributes ?? {};
 
 		logger.debug('Recording automatically tracked page view event', {
@@ -93,7 +93,7 @@ export class SessionTracker implements TrackerInterface {
 		}
 	}
 
-	private sessionStopped() {
+	private sessionStopped(): void {
 		const attributes = this.options.attributes ?? {};
 
 		logger.debug('Recording automatically tracked page view event', {
