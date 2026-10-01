@@ -13,7 +13,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
 
-const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
+import { getAuthSessionValidity } from './getAuthSessionValidity';
 
 export function handleCodeAutoSignIn(signInInput: SignInInput) {
 	const stopHubListener = HubInternal.listen<AutoSignInEventData>(
@@ -39,7 +39,7 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 		stopHubListener();
 		clearTimeout(timeOutId);
 		resetAutoSignIn();
-	}, MAX_AUTOSIGNIN_POLLING_MS);
+	}, getAuthSessionValidity());
 }
 
 // Debounces the auto sign-in flow with link
@@ -71,7 +71,7 @@ function handleAutoSignInWithLink(
 	const start = Date.now();
 	const autoSignInPollingIntervalId = setInterval(async () => {
 		const elapsedTime = Date.now() - start;
-		const maxTime = MAX_AUTOSIGNIN_POLLING_MS;
+		const maxTime = getAuthSessionValidity();
 		if (elapsedTime > maxTime) {
 			clearInterval(autoSignInPollingIntervalId);
 			reject(
