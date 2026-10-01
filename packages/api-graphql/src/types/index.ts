@@ -501,7 +501,7 @@ export type GraphQLMethodSSR<Options extends CommonPublicClientOptions> = <
  */
 export interface ServerClientGenerationParams {
 	amplify:
-		| null // null expected when used with `generateServerClient`
+		| null // null expected when used with `generateClient`
 		// branded per-client context expected with `generateServerClientUsingCookies`
 		// (client-bound; every operation resolves config/auth off of it)
 		| AmplifyContext
