@@ -30,7 +30,7 @@
 		"lodash": "^4.18.1"
 	},
 	"devDependencies": {
-		"react-native": "0.72.17"
+		"react-native": "0.81.6"
 	},
 	"peerDependencies": {
 		"react-native": ">=0.81"
