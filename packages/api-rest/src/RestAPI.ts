@@ -10,6 +10,34 @@ import { ApiInfo } from './types';
 
 const logger = new Logger('RestAPI');
 
+const SPECIAL_SCHEMES = ['ftp:', 'file:', 'http:', 'https:', 'ws:', 'wss:'];
+
+/**
+ * Returns the scheme and authority of a URL string, or an empty string for a
+ * relative URL without an authority. Follows WHATWG URL parsing: leading and
+ * trailing C0 control or space characters and embedded tab or newline
+ * characters are ignored, and for special schemes (and scheme-relative URLs)
+ * any number of `/` or `\` may precede the authority.
+ */
+const getOrigin = (url: string): string => {
+	let start = 0;
+	let end = url.length;
+	while (start < end && url.charCodeAt(start) <= 0x20) start++;
+	while (end > start && url.charCodeAt(end - 1) <= 0x20) end--;
+	const normalized = url.slice(start, end).replace(/[\t\n\r]/g, '');
+	const [, scheme = '', rest] = /^([a-z][a-z0-9+.-]*:)?([\s\S]*)$/i.exec(
+		normalized
+	);
+	const lowerScheme = scheme.toLowerCase();
+	const authorityMatch =
+		lowerScheme === '' || SPECIAL_SCHEMES.indexOf(lowerScheme) !== -1
+			? /^(?:[\/\\]*)([^\/\\?#]*)/.exec(rest)
+			: /^\/\/([^\/?#]*)/.exec(rest);
+	const hasAuthority =
+		lowerScheme !== '' ? authorityMatch !== null : /^[\/\\]{2}/.test(rest);
+	return hasAuthority ? `${lowerScheme}//${authorityMatch[1]}` : lowerScheme;
+};
+
 /**
  * Export Cloud Logic APIs
  * @deprecated Amplify JavaScript v5 is in maintenance mode. Upgrade to v6.
@@ -311,8 +339,16 @@ export class RestAPIClass {
 			throw new Error(`API ${apiName} does not exist`);
 		}
 
+		const configuredEndpoint = String(apiConfig.endpoint ?? '');
+		const endpoint = configuredEndpoint + path;
+		if (getOrigin(endpoint) !== getOrigin(configuredEndpoint)) {
+			throw new Error(
+				`Path for API ${apiName} must resolve under the configured endpoint`
+			);
+		}
+
 		const response: ApiInfo = {
-			endpoint: apiConfig.endpoint + path,
+			endpoint,
 		};
 
 		if (typeof apiConfig.region === 'string') {
