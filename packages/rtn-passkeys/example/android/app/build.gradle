@@ -117,16 +117,3 @@ dependencies {
         implementation jscFlavor
     }
 }
-
-def isNewArchitectureEnabled() {
-  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
-}
-
-if (isNewArchitectureEnabled()) {
-    // Since our library doesn't invoke codegen automatically we need to do it here.
-    tasks.register('invokeLibraryCodegen', Exec) {
-      workingDir "$rootDir/../../"
-	  commandLine 'sh', '-c', 'yarn codegen:android'
-    }
-    preBuild.dependsOn invokeLibraryCodegen
-}
