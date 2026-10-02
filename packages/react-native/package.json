@@ -33,7 +33,7 @@
 	},
 	"peerDependencies": {
 		"@aws-amplify/rtn-passkeys": "^1.0.0",
-		"react-native": ">=0.70",
+		"react-native": ">=0.81",
 		"react-native-get-random-values": ">=1.8.0"
 	},
 	"peerDependenciesMeta": {
@@ -48,7 +48,7 @@
 		"@react-native-async-storage/async-storage": "^1.17.12",
 		"@react-native-community/netinfo": "4.7.0",
 		"@types/base-64": "1.0.0",
-		"react-native": "0.72.17",
+		"react-native": "0.81.6",
 		"react-native-get-random-values": "1.9.0"
 	},
 	"repository": {

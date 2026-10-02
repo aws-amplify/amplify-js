@@ -18,9 +18,10 @@
 		"android",
 		"ios",
 		"*.podspec",
-		"react-native.config.js",
 		"!ios/build",
 		"!android/build",
+		"!android/generated",
+		"!ios/generated",
 		"!android/gradle",
 		"!android/gradlew",
 		"!android/gradlew.bat",
@@ -38,11 +39,8 @@
 		"test:android": "cd ./example/android && ./gradlew test -i",
 		"typecheck": "tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
-		"build": "yarn clean && yarn build:esm-cjs && yarn codegen",
+		"build": "yarn clean && yarn build:esm-cjs",
 		"lint": "eslint \"**/*.{js,ts,tsx}\"",
-		"codegen:ios": "react-native codegen --platform ios --outputPath ios/generated --source library",
-		"codegen:android": "react-native codegen --platform android --outputPath android/generated --source library",
-		"codegen": "yarn codegen:ios && yarn codegen:android",
 		"clean": "rimraf android/build example/android/build example/android/app/.cxx example/android/app/debug example/android/app/build example/ios/build example/ios/Pods example/ios/Podfile.lock dist"
 	},
 	"repository": {
@@ -57,23 +55,18 @@
 	},
 	"homepage": "https://docs.amplify.aws/",
 	"devDependencies": {
-		"react-native": "0.79.2",
+		"react-native": "0.81.6",
 		"typescript": "^5.2.2"
 	},
 	"peerDependencies": {
-		"react-native": ">=0.76"
+		"react-native": ">=0.81"
 	},
 	"codegenConfig": {
 		"name": "AmplifyRtnPasskeysSpec",
 		"type": "modules",
 		"jsSrcsDir": "src",
-		"outputDir": {
-			"ios": "ios/generated",
-			"android": "android/generated"
-		},
 		"android": {
 			"javaPackageName": "com.amazonaws.amplify.rtnpasskeys"
-		},
-		"includesGeneratedCode": true
+		}
 	}
 }
