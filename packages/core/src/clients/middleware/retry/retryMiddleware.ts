@@ -126,6 +126,9 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 	if (abortSignal?.aborted) {
 		return Promise.resolve();
 	}
+	// Keep the timeout handle inside the closure so its type is never named.
+	// `ReturnType<typeof setTimeout>` is ambiguous here because core's type
+	// environment has both the DOM and `@types/node` declarations of setTimeout.
 	let clearSleepTimeout: () => void;
 	let sleepPromiseResolveFn: () => void;
 	const sleepPromise = new Promise<void>(resolve => {
