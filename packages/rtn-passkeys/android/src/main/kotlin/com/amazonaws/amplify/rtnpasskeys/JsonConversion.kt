@@ -31,7 +31,7 @@ internal object JsonConversion {
 				is Boolean -> result.putBoolean(key, value)
 				is Int -> result.putInt(key, value)
 				is Double -> result.putDouble(key, value)
-				is Long -> result.putInt(key, value.toInt())
+				is Long -> result.putDouble(key, value.toDouble())
 				else ->
 					if (obj.isNull(key)) {
 						result.putNull(key)
@@ -54,7 +54,7 @@ internal object JsonConversion {
 				is Boolean -> result.pushBoolean(value)
 				is Int -> result.pushInt(value)
 				is Double -> result.pushDouble(value)
-				is Long -> result.pushInt(value.toInt())
+				is Long -> result.pushDouble(value.toDouble())
 				else ->
 					if (arr.isNull(i)) {
 						result.pushNull()

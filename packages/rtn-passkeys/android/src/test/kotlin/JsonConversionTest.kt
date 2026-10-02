@@ -53,7 +53,7 @@ class JsonConversionTest {
 				"long": 3000000000,
 				"nullValue": null,
 				"nested": { "id": "abc" },
-				"list": ["a", 1, false, null, { "k": "v" }, [2]]
+				"list": ["a", 1, false, null, { "k": "v" }, [2], 3000000000]
 			}
 			""".trimIndent()
 		)
@@ -64,18 +64,19 @@ class JsonConversionTest {
 		assert(map.getBoolean("bool"))
 		assert(map.getInt("int") == 42)
 		assert(map.getDouble("double") == 1.5)
-		assert(map.getInt("long") == 3000000000L.toInt())
+		assert(map.getDouble("long") == 3.0E9)
 		assert(map.getType("nullValue") == ReadableType.Null)
 		assert(map.getMap("nested")?.getString("id") == "abc")
 
 		val list = map.getArray("list")!!
-		assert(list.size() == 6)
+		assert(list.size() == 7)
 		assert(list.getString(0) == "a")
 		assert(list.getInt(1) == 1)
 		assert(!list.getBoolean(2))
 		assert(list.getType(3) == ReadableType.Null)
 		assert(list.getMap(4)?.getString("k") == "v")
 		assert(list.getArray(5)?.getInt(0) == 2)
+		assert(list.getDouble(6) == 3.0E9)
 	}
 
 	@Test
