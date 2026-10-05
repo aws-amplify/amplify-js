@@ -34,7 +34,16 @@ export async function cognitoIdentityIdProvider({
 	identityIdStore.setAuthConfig({ Cognito: authConfig });
 
 	// will return null only if there is no identityId cached or if there is an error retrieving it
-	const identityId: Identity | null = await identityIdStore.loadIdentityId();
+	let identityId: Identity | null = await identityIdStore.loadIdentityId();
+
+	// A primary identityId belongs to a signed-in user and cannot be used for
+	// guest access. It can be left in memory when the tokens are cleared without
+	// signing out, e.g. after a token refresh fails, so a new guest identityId is
+	// needed instead.
+	if (identityId?.type === 'primary' && !tokens) {
+		await identityIdStore.clearIdentityId();
+		identityId = null;
+	}
 
 	if (identityId) {
 		return identityId.id;
