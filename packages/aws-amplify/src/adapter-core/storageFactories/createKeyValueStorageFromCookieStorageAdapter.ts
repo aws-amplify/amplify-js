@@ -60,7 +60,15 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 			return value;
 		},
 		removeItem(key) {
-			cookieStorageAdapter.delete(key);
+			const { path, domain } = {
+				...defaultSetCookieOptions,
+				...setCookieOptions,
+			};
+
+			// Delete the cookie with the same Path and Domain used by `setItem`.
+			// Without them, the browser uses the current request path as the cookie
+			// path, and the cookie set with `Path=/` is not removed.
+			cookieStorageAdapter.delete(key, { path, domain });
 
 			return Promise.resolve();
 		},
