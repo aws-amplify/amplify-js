@@ -348,7 +348,64 @@ describe('Outbox tests', () => {
 			expect(headData.optionalField1).toEqual(optionalField1);
 		});
 	});
+
+	it('Should promote the next enqueued update to a create when an in progress create is discarded', async () => {
+		await drainOutbox();
+
+		const field1 = 'Some value';
+		const currentTimestamp = new Date().toISOString();
+		const optionalField1 = 'Optional value';
+
+		const newModel = new Model({
+			field1,
+			dateCreated: currentTimestamp,
+		});
+
+		await outbox.enqueue(Storage, await createMutationEvent(newModel));
+
+		await Storage.runExclusive(async s => {
+			const inProgressCreate = await outbox.peek(s);
+
+			expect(inProgressCreate.operation).toEqual(
+				TransformerMutationType.CREATE,
+			);
+		});
+
+		const updatedModel = Model.copyOf(newModel, updated => {
+			updated.optionalField1 = optionalField1;
+		});
+
+		await outbox.enqueue(Storage, await createMutationEvent(updatedModel));
+
+		await Storage.runExclusive(async s => {
+			const [_inProgress, nextMutation] = await outbox.getForModel(
+				s,
+				newModel as any,
+				getModelDefinition(Model),
+			);
+
+			expect(nextMutation.operation).toEqual(TransformerMutationType.UPDATE);
+
+			await outbox.dequeue(s);
+
+			const head = await outbox.peek(s);
+			const headData = JSON.parse(head.data);
+
+			expect(head.operation).toEqual(TransformerMutationType.CREATE);
+			expect(headData.field1).toEqual(field1);
+			expect(headData.dateCreated).toEqual(currentTimestamp);
+			expect(headData.optionalField1).toEqual(optionalField1);
+		});
+	});
 });
+
+async function drainOutbox(): Promise<void> {
+	await Storage.runExclusive(async s => {
+		while (await outbox.peek(s)) {
+			await outbox.dequeue(s);
+		}
+	});
+}
 
 // performs all the required dependency injection
 // in order to have a functional Outbox without the Sync Engine
