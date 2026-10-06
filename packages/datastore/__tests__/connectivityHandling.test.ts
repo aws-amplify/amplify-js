@@ -1106,6 +1106,112 @@ describe('DataStore sync engine', () => {
 			}
 		`);
 		});
+
+		describe('per-model sync configuration', () => {
+			/**
+			 * These tests verify that per-model syncPageSize and maxRecordsToSync
+			 * overrides (passed as the 3rd argument to syncExpression) are correctly
+			 * applied to sync queries, while models without overrides fall back to
+			 * the global defaults.
+			 *
+			 * graphqlService.requests accumulates across the entire test lifecycle
+			 * (initial sync from beforeEach, data generation, resync). We snapshot
+			 * the request count before resyncWith() and only inspect requests made
+			 * after that point.
+			 */
+
+			const getSyncRequestsAfter = (
+				tableName: string,
+				afterIndex: number,
+			) =>
+				graphqlService.requests.slice(afterIndex).filter(
+					r =>
+						r.operation === 'query' &&
+						r.type === 'sync' &&
+						r.tableName === tableName,
+				);
+
+			test('per-model syncPageSize overrides global default', async () => {
+				(DataStore as any).amplifyConfig.syncPageSize = 1000;
+				(DataStore as any).amplifyConfig.maxRecordsToSync = 10000;
+
+				const requestsBefore = graphqlService.requests.length;
+				await resyncWith([
+					syncExpression(Post, () => Predicates.ALL, {
+						syncPageSize: 50,
+					}),
+				]);
+
+				const postSyncRequests = getSyncRequestsAfter('Post', requestsBefore);
+				expect(postSyncRequests.length).toBeGreaterThan(0);
+				expect(postSyncRequests[0].variables.limit).toBe(50);
+			});
+
+			test('model without per-model config uses global syncPageSize', async () => {
+				(DataStore as any).amplifyConfig.syncPageSize = 500;
+				(DataStore as any).amplifyConfig.maxRecordsToSync = 10000;
+
+				const requestsBefore = graphqlService.requests.length;
+				await resyncWith([
+					syncExpression(Post, () => Predicates.ALL, {
+						syncPageSize: 50,
+					}),
+				]);
+
+				// Comment has no per-model config, should use global
+				const commentSyncRequests = getSyncRequestsAfter(
+					'Comment',
+					requestsBefore,
+				);
+				expect(commentSyncRequests.length).toBeGreaterThan(0);
+				expect(commentSyncRequests[0].variables.limit).toBe(500);
+			});
+
+			test('multiple models with different per-model syncPageSize', async () => {
+				(DataStore as any).amplifyConfig.syncPageSize = 1000;
+				(DataStore as any).amplifyConfig.maxRecordsToSync = 10000;
+
+				const requestsBefore = graphqlService.requests.length;
+				await resyncWith([
+					syncExpression(Post, () => Predicates.ALL, {
+						syncPageSize: 75,
+					}),
+					syncExpression(Model, () => Predicates.ALL, {
+						syncPageSize: 200,
+					}),
+				]);
+
+				const postSyncRequests = getSyncRequestsAfter('Post', requestsBefore);
+				expect(postSyncRequests.length).toBeGreaterThan(0);
+				expect(postSyncRequests[0].variables.limit).toBe(75);
+
+				const modelSyncRequests = getSyncRequestsAfter(
+					'Model',
+					requestsBefore,
+				);
+				expect(modelSyncRequests.length).toBeGreaterThan(0);
+				expect(modelSyncRequests[0].variables.limit).toBe(200);
+			});
+
+			test('per-model maxRecordsToSync caps limit below syncPageSize', async () => {
+				(DataStore as any).amplifyConfig.syncPageSize = 1000;
+				(DataStore as any).amplifyConfig.maxRecordsToSync = 10000;
+
+				const requestsBefore = graphqlService.requests.length;
+				await resyncWith([
+					syncExpression(Post, () => Predicates.ALL, {
+						syncPageSize: 1000,
+						maxRecordsToSync: 25,
+					}),
+				]);
+
+				const postSyncRequests = getSyncRequestsAfter('Post', requestsBefore);
+				expect(postSyncRequests.length).toBeGreaterThan(0);
+				// limit = Math.min(maxRecordsToSync - 0, syncPageSize) = Math.min(25, 1000) = 25
+				expect(postSyncRequests[0].variables.limit).toBe(25);
+			});
+
+		});
 	});
 
 	describe('error handling', () => {
