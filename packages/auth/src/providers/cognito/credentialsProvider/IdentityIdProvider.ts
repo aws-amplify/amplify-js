@@ -39,9 +39,8 @@ export async function cognitoIdentityIdProvider({
 	// A primary identityId belongs to a signed-in user and cannot be used for
 	// guest access. It can be left in memory when the tokens are cleared without
 	// signing out, e.g. after a token refresh fails, so a new guest identityId is
-	// needed instead.
+	// needed instead. Storing the new guest identityId below replaces it.
 	if (identityId?.type === 'primary' && !tokens) {
-		await identityIdStore.clearIdentityId();
 		identityId = null;
 	}
 

@@ -125,6 +125,39 @@ describe('Cognito IdentityId Provider', () => {
 			).toBe(authAPITestParams.PrimaryIdentityId.id);
 			expect(mockGetId).toHaveBeenCalledTimes(0);
 		});
+		test('Should ignore a stored primary identityId and generate a guest identityId when there are no tokens', async () => {
+			mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
+				async () => {
+					return authAPITestParams.PrimaryIdentityId as Identity;
+				},
+			);
+			mockDefaultIdentityIdStoreInstance.storeIdentityId.mockClear();
+			mockDefaultIdentityIdStoreInstance.clearIdentityId.mockClear();
+
+			expect(
+				await cognitoIdentityIdProvider({
+					authConfig: {
+						identityPoolId: 'us-east-1:test-id',
+					},
+					identityIdStore: mockDefaultIdentityIdStoreInstance,
+				}),
+			).toBe(authAPITestParams.GuestIdentityId.id);
+			expect(mockGetId).toHaveBeenCalledTimes(1);
+			expect(mockGetId).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({ Logins: {} }),
+			);
+			expect(
+				mockDefaultIdentityIdStoreInstance.storeIdentityId,
+			).toHaveBeenCalledWith({
+				id: authAPITestParams.GuestIdentityId.id,
+				type: 'guest',
+			});
+			// The stored guest identityId must not be removed
+			expect(
+				mockDefaultIdentityIdStoreInstance.clearIdentityId,
+			).not.toHaveBeenCalled();
+		});
 		test('Should generate a primary identityId and return it', async () => {
 			mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
 				async () => {
@@ -148,42 +181,6 @@ describe('Cognito IdentityId Provider', () => {
 			).toBe(authAPITestParams.PrimaryIdentityId.id);
 			expect(mockGetId).toHaveBeenCalledTimes(1);
 		});
-	});
-
-	test('Should clear a stored primary identityId and generate a guest identityId when there are no tokens', async () => {
-		mockCreateGetIdClient.mockReturnValue(mockGetId);
-		mockGetId.mockClear();
-		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
-			async () => {
-				return authAPITestParams.PrimaryIdentityId as Identity;
-			},
-		);
-		mockDefaultIdentityIdStoreInstance.storeIdentityId.mockClear();
-		mockDefaultIdentityIdStoreInstance.clearIdentityId.mockClear();
-
-		expect(
-			await cognitoIdentityIdProvider({
-				authConfig: {
-					identityPoolId: 'us-east-1:test-id',
-				},
-				identityIdStore: mockDefaultIdentityIdStoreInstance,
-			}),
-		).toBe(authAPITestParams.GuestIdentityId.id);
-		expect(
-			mockDefaultIdentityIdStoreInstance.clearIdentityId,
-		).toHaveBeenCalledTimes(1);
-		expect(mockGetId).toHaveBeenCalledTimes(1);
-		expect(mockGetId).toHaveBeenCalledWith(
-			expect.anything(),
-			expect.objectContaining({ Logins: {} }),
-		);
-		expect(
-			mockDefaultIdentityIdStoreInstance.storeIdentityId,
-		).toHaveBeenCalledWith({
-			id: authAPITestParams.GuestIdentityId.id,
-			type: 'guest',
-		});
-		mockGetId.mockClear();
 	});
 
 	test('Should return the identityId irresspective of the type if present', async () => {
