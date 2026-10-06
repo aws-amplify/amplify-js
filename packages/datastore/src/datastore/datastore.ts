@@ -1412,6 +1412,7 @@ class DataStore {
 	// sync engine processors, storage engine, adapters, etc..
 
 	private amplifyConfig: Record<string, any> = {};
+	private datastoreConfig: DataStoreConfig = {};
 	private authModeStrategy!: AuthModeStrategy;
 	private conflictHandler!: ConflictHandler;
 	private errorHandler!: (error: SyncError<PersistentModel>) => void;
@@ -1572,6 +1573,7 @@ class DataStore {
 						this.authModeStrategy,
 						this.amplifyContext,
 						this.connectivityMonitor,
+						this.datastoreConfig,
 					);
 
 					const fullSyncIntervalInMilliseconds =
@@ -2464,6 +2466,7 @@ class DataStore {
 
 	configure = (config: DataStoreConfig = {}) => {
 		this.amplifyContext.InternalAPI = this.InternalAPI;
+		this.datastoreConfig = config;
 
 		const {
 			DataStore: configDataStore,
