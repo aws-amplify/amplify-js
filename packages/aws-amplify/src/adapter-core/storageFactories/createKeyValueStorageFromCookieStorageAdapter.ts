@@ -27,11 +27,20 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 	validator?: KeyValueStorageMethodValidator,
 	setCookieOptions: CookieStorage.SetCookieOptions = {},
 ): KeyValueStorageInterface => {
+	// `setItem` and `removeItem` must use the same Path and Domain, otherwise the
+	// browser treats them as different cookies and the deletion does not match.
+	const { path, domain } = {
+		...defaultSetCookieOptions,
+		...setCookieOptions,
+	};
+
 	return {
 		setItem(key, value) {
 			// Delete the cookie item first then set it. This results:
 			// SetCookie: key=;expires=1970-01-01;(path='current-path') <- remove path'ed cookies
 			// SetCookie: key=value;expires=Date.now() + 365 days;path=/;secure=true
+			// Deliberately path-less: clears a leftover cookie stored at the request's
+			// default path. The `Path=/` cookie is replaced by the `set` below.
 			cookieStorageAdapter.delete(key);
 
 			const mergedCookieOptions = {
@@ -60,11 +69,6 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 			return value;
 		},
 		removeItem(key) {
-			const { path, domain } = {
-				...defaultSetCookieOptions,
-				...setCookieOptions,
-			};
-
 			// Delete the cookie with the same Path and Domain used by `setItem`.
 			// Without them, the browser uses the current request path as the cookie
 			// path, and the cookie set with `Path=/` is not removed.
