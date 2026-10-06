@@ -1181,4 +1181,65 @@ describe('DataStore sync engine', () => {
 			expect(error.errorType).toBe('Unauthorized');
 		});
 	});
+
+	describe('stopping while sync queries are in progress', () => {
+		/**
+		 * Regression test for `DataStore.stop()` hanging forever.
+		 *
+		 * Real-world scenario: the user logs out (app calls `DataStore.stop()`)
+		 * while the initial sync is still downloading data, e.g. because a sync
+		 * query keeps failing and being retried.
+		 *
+		 * What used to happen:
+		 * 1. `stop()` terminates the sync queries, so they never report
+		 *    `SYNC_QUERIES_READY`.
+		 * 2. The sync engine's startup job was still waiting for exactly that
+		 *    message, and it did not listen for termination.
+		 * 3. `stop()` waits for every background job to finish, so it waited
+		 *    for that startup job forever.
+		 *
+		 * The fix (`onTerminate.then(_reject)` in `SyncEngine.start()`) lets the
+		 * startup job give up as soon as `stop()` is called.
+		 */
+		test('stop() resolves while a sync query is still retrying', async () => {
+			let syncPostsRequests = 0;
+			graphqlService.intercept = (request, next) => {
+				if (request.query.includes('syncPosts')) {
+					syncPostsRequests++;
+					// retryable error, so initial sync never becomes ready.
+					throw {
+						data: { syncPosts: null },
+						errors: [
+							{
+								path: ['syncPosts'],
+								data: null,
+								errorType: 'MappingTemplate',
+								errorInfo: null,
+								locations: [{ line: 2, column: 3, sourceName: null }],
+								message: 'Transformation too large',
+							},
+						],
+					};
+				} else {
+					return next();
+				}
+			};
+
+			while (syncPostsRequests === 0) {
+				await pause(10);
+			}
+
+			const result = await Promise.race([
+				DataStore.stop().then(() => 'stopped'),
+				pause(3000).then(() => 'timed out'),
+			]);
+
+			expect(result).toBe('stopped');
+
+			// DataStore should be usable again after stopping.
+			graphqlService.intercept = (request, next) => next();
+			await DataStore.start();
+			await waitForSyncQueriesReady();
+		});
+	});
 });
