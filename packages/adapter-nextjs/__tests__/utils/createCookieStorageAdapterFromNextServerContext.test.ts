@@ -117,14 +117,23 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store', () => {
 			result.delete(mockKey);
-			expect(mockDeleteFunc).toHaveBeenCalledWith(mockKey);
+			expect(mockDeleteFunc).toHaveBeenCalledWith({ name: mockKey });
 		});
 
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store with a encoded cookie name', () => {
 			result.delete(mockKeyWithEncoding);
-			expect(mockDeleteFunc).toHaveBeenCalledWith(
-				encodeURIComponent(mockKeyWithEncoding),
-			);
+			expect(mockDeleteFunc).toHaveBeenCalledWith({
+				name: encodeURIComponent(mockKeyWithEncoding),
+			});
+		});
+
+		it('deletes cookie with the specified path and domain', () => {
+			result.delete(mockKey, { path: '/', domain: 'example.com' });
+			expect(mockDeleteFunc).toHaveBeenCalledWith({
+				name: mockKey,
+				path: '/',
+				domain: 'example.com',
+			});
 		});
 
 		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
@@ -270,6 +279,14 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			);
 		});
 
+		it('deletes cookie with the specified path and domain', () => {
+			adapter.delete(mockKey, { path: '/', domain: 'example.com' });
+			expect(mockAppend).toHaveBeenCalledWith(
+				'Set-Cookie',
+				`${mockKey}=;Domain=example.com;Expires=${DATE_IN_THE_PAST.toUTCString()};Path=/`,
+			);
+		});
+
 		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
 			mockIsServerSideAuthAllowedCookie.mockReturnValueOnce(false);
 			const testCookieName =
@@ -343,14 +360,25 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store', () => {
 			result.delete(mockKey);
-			expect(mockNextCookiesFuncReturn.delete).toHaveBeenCalledWith(mockKey);
+			expect(mockNextCookiesFuncReturn.delete).toHaveBeenCalledWith({
+				name: mockKey,
+			});
 		});
 
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store with a encoded cookie name', () => {
 			result.delete(mockKeyWithEncoding);
-			expect(mockNextCookiesFuncReturn.delete).toHaveBeenCalledWith(
-				encodeURIComponent(mockKeyWithEncoding),
-			);
+			expect(mockNextCookiesFuncReturn.delete).toHaveBeenCalledWith({
+				name: encodeURIComponent(mockKeyWithEncoding),
+			});
+		});
+
+		it('deletes cookie with the specified path and domain', () => {
+			result.delete(mockKey, { path: '/', domain: 'example.com' });
+			expect(mockNextCookiesFuncReturn.delete).toHaveBeenCalledWith({
+				name: mockKey,
+				path: '/',
+				domain: 'example.com',
+			});
 		});
 
 		test('set() and delete() methods do NOT take effects when ignoreNonServerSideCookies is passed as true and the cookie is not one of the server-side auth cookie', async () => {
@@ -427,10 +455,17 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				`key3=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
 			);
 
+			result.delete('key4', { path: '/' });
+			expect(appendHeaderSpy).toHaveBeenCalledWith(
+				'Set-Cookie',
+				`key4=;Expires=${DATE_IN_THE_PAST.toUTCString()};Path=/`,
+			);
+
 			expect(response.getHeader('Set-Cookie')).toEqual([
 				'key3=value3;',
 				'key4=value4;HttpOnly',
 				'key3=;Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+				'key4=;Expires=Thu, 01 Jan 1970 00:00:00 GMT;Path=/',
 			]);
 		});
 
