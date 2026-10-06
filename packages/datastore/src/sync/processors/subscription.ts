@@ -423,10 +423,22 @@ class SubscriptionProcessor {
 															}[]
 														).map(({ message }) => message);
 
+														// AppSync reports a null for a non-nullable field when the
+														// external mutation's selection set is missing one of the
+														// fields DataStore subscribes to. Explain that, since the raw
+														// GraphQL message doesn't say what to fix.
+														const missingFieldHint = messages.some(message =>
+															/^Cannot return null for non-nullable type/.test(
+																message,
+															),
+														)
+															? ' Seems we do not have all the fields returned that we need. If you are updating a model outside of DataStore, make sure your mutation returns all the fields as part of its query.'
+															: '';
+
 														logger.warn(
 															`Skipping incoming subscription. Messages: ${messages.join(
 																'\n',
-															)}`,
+															)}${missingFieldHint}`,
 														);
 
 														this.drainBuffer();
