@@ -84,7 +84,10 @@ const collectContextData = async (): Promise<Record<string, string>> => {
 	};
 
 	if (Platform.OS === 'ios') {
-		contextData.DeviceName = await getDeviceName().catch(() => undefined);
+		// getDeviceName throws synchronously when the native module is not linked.
+		contextData.DeviceName = await Promise.resolve()
+			.then(() => getDeviceName())
+			.catch(() => undefined);
 	}
 
 	return Object.fromEntries(
@@ -114,6 +117,10 @@ const getPlatformData = (): Record<string, string | undefined> => {
 		};
 	}
 
+	// Amplify Swift also sends the utsname machine id (in PhoneType and the
+	// fingerprint), ApplicationName, ApplicationVersion and ThirdPartyDeviceId
+	// (identifierForVendor). None of these are readable from JS without native
+	// code, so they are omitted here.
 	if (Platform.OS === 'ios') {
 		const osVersion = String(Platform.Version);
 		const buildType = __DEV__ ? 'debug' : 'release';

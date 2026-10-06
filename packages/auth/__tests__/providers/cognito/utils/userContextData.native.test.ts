@@ -65,6 +65,15 @@ describe('getUserContextData (React Native)', () => {
 		mockGetItem.mockResolvedValue(null);
 		mockSetItem.mockResolvedValue(undefined);
 		mockGetDeviceName.mockResolvedValue('Test’s iPhone');
+		jest.spyOn(Date, 'now').mockReturnValue(1790000000123);
+		jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(420);
+		jest.spyOn(Intl, 'DateTimeFormat').mockReturnValue({
+			resolvedOptions: () => ({ locale: 'en-GB' }),
+		} as Intl.DateTimeFormat);
+	});
+
+	afterEach(() => {
+		jest.restoreAllMocks();
 	});
 
 	it('returns signed iOS context data', async () => {
@@ -82,7 +91,7 @@ describe('getUserContextData (React Native)', () => {
 		expect(payload).toEqual({
 			username: params.username,
 			userPoolId: params.userPoolId,
-			timestamp: expect.stringMatching(/^\d+$/),
+			timestamp: '1790000000123',
 			contextData: expect.objectContaining({
 				Platform: 'iOS',
 				DeviceId: 'generated-device-id',
@@ -93,7 +102,8 @@ describe('getUserContextData (React Native)', () => {
 				DeviceFingerprint: 'Apple/iPhone/-/-:18.0/-/-:-/release',
 				ScreenHeightPixels: '844',
 				ScreenWidthPixels: '390',
-				ClientTimezone: expect.stringMatching(/^[+-]\d{2}:\d{2}$/),
+				ClientTimezone: '-07:00',
+				DeviceLanguage: 'en-GB',
 			}),
 		});
 	});
@@ -174,6 +184,64 @@ describe('getUserContextData (React Native)', () => {
 
 		expect(decode(result.EncodedData).payload.contextData).not.toHaveProperty(
 			'DeviceName',
+		);
+	});
+
+	it('reports an iPad', async () => {
+		Object.assign(mockPlatform, { OS: 'ios', Version: '18.0', isPad: true });
+
+		const result = await loadGetUserContextData()(params);
+
+		expect(decode(result.EncodedData).payload.contextData).toEqual(
+			expect.objectContaining({
+				PhoneType: 'iPad',
+				DeviceFingerprint: 'Apple/iPad/-/-:18.0/-/-:-/release',
+			}),
+		);
+	});
+
+	it.each([
+		[420, '-07:00'],
+		[-330, '+05:30'],
+		[0, '+00:00'],
+		[570, '-09:30'],
+	])(
+		'formats a timezone offset of %i minutes as %s',
+		async (offset, expected) => {
+			Object.assign(mockPlatform, { OS: 'ios', Version: '18.0' });
+			(Date.prototype.getTimezoneOffset as jest.Mock).mockReturnValue(offset);
+
+			const result = await loadGetUserContextData()(params);
+
+			expect(
+				decode(result.EncodedData).payload.contextData.ClientTimezone,
+			).toBe(expected);
+		},
+	);
+
+	it('omits the device name when the native module is not linked', async () => {
+		Object.assign(mockPlatform, { OS: 'ios', Version: '18.0' });
+		mockGetDeviceName.mockImplementation(() => {
+			throw new Error('not linked');
+		});
+
+		const result = await loadGetUserContextData()(params);
+		const { contextData } = decode(result.EncodedData).payload;
+
+		expect(contextData).not.toHaveProperty('DeviceName');
+		expect(contextData.DeviceId).toBe('generated-device-id');
+	});
+
+	it('retries loading the device id after a storage failure', async () => {
+		Object.assign(mockPlatform, { OS: 'ios', Version: '18.0' });
+		mockGetItem.mockRejectedValueOnce(new Error('storage unavailable'));
+		const getUserContextData = loadGetUserContextData();
+
+		expect(await getUserContextData(params)).toBeUndefined();
+		const result = await getUserContextData(params);
+
+		expect(decode(result.EncodedData).payload.contextData.DeviceId).toBe(
+			'generated-device-id',
 		);
 	});
 
