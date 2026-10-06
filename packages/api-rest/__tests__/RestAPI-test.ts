@@ -174,18 +174,18 @@ describe('Rest API test', () => {
 			const spyonRequest = jest
 				.spyOn(RestClient.prototype as any, '_request')
 				.mockResolvedValueOnce({});
-			await api.get('apiName', 'path', {});
+			await api.get('apiName', '/path', {});
 
 			expect(spyonRequest).toBeCalledWith(
 				{
 					data: null,
 					headers: { Authorization: 'mytoken' },
-					host: 'www.amazonaws.compath',
+					host: 'www.amazonaws.com',
 					method: 'GET',
-					path: '/',
+					path: '/path',
 					responseType: 'json',
 					signerServiceInfo: undefined,
-					url: 'https://www.amazonaws.compath/',
+					url: 'https://www.amazonaws.com/path',
 					timeout: 0,
 					cancelToken: tokenMock,
 				},
@@ -1070,6 +1070,117 @@ describe('Rest API test', () => {
 			expect.assertions(1);
 			await api.head('apiName', 'path', { init: 'init' });
 			expect(spyon4).toBeCalled();
+		});
+	});
+
+	describe('path resolution test', () => {
+		const configWithEndpoint = (endpoint: string) => ({
+			API: {
+				endpoints: [{ name: 'apiName', endpoint, region: 'us-east-1' }],
+			},
+		});
+
+		test.each([
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'.other.example/items',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'@other.example/items',
+			],
+			['https://abc.execute-api.us-east-1.amazonaws.com', ':8443/items'],
+			['https://abc.execute-api.us-east-1.amazonaws.com', '\t.other.example'],
+			['/', '/other.example/items'],
+			['/', '\\other.example/items'],
+			['http', 's:/other.example/items'],
+			['', 'https://other.example/items'],
+			[' https://abc.execute-api.us-east-1.amazonaws.com', '.other.example/x'],
+			['https:/abc.execute-api.us-east-1.amazonaws.com', '.other.example/x'],
+			['https:abc.execute-api.us-east-1.amazonaws.com', '.other.example/x'],
+			['https:///abc.execute-api.us-east-1.amazonaws.com', '.other.example/x'],
+			['https://abc.execute-api.us-east-1.amazonaws.com', '\n.other.example/x'],
+			['/', '//other.example/x'],
+			['capacitor://localhost', '@other.example/x'],
+			['https://example.com', ':pass@example.com/x'],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'\u3002other.example/x',
+			],
+		])(
+			'rejects endpoint %j with path %j resolving to a different origin',
+			async (endpoint, path) => {
+				const api = new API({});
+				api.configure(configWithEndpoint(endpoint));
+				const spyon = jest.spyOn(RestClient.prototype, 'get');
+
+				await expect(api.get('apiName', path, {})).rejects.toBe(
+					'Path for API apiName must resolve under the configured endpoint'
+				);
+				expect(spyon).not.toHaveBeenCalled();
+			}
+		);
+
+		test.each([
+			['https://abc.execute-api.us-east-1.amazonaws.com', '/items'],
+			['https://abc.execute-api.us-east-1.amazonaws.com', '?q=1'],
+			['https://abc.execute-api.us-east-1.amazonaws.com', '#x'],
+			// For special schemes `\` is a path separator, so the host is unchanged.
+			['https://abc.execute-api.us-east-1.amazonaws.com', '\\other.example/x'],
+			['https://abc.execute-api.us-east-1.amazonaws.com', '?@other.example'],
+			['HTTPS://abc.execute-api.us-east-1.amazonaws.com', '/items'],
+			['capacitor://localhost', '/items'],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com/prod',
+				'.other.example',
+			],
+			['https://abc.execute-api.us-east-1.amazonaws.com/', 'items'],
+			['https://example.com', '//other.example/items'],
+			['//example.com/api', '/items'],
+			['/api', '/items'],
+			['endpoint', 'path'],
+		])('allows endpoint %j with path %j', async (endpoint, path) => {
+			const api = new API({});
+			api.configure(configWithEndpoint(endpoint));
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'get')
+				.mockImplementationOnce(() => Promise.resolve());
+
+			await api.get('apiName', path, {});
+
+			expect(spyon).toBeCalledWith(
+				expect.objectContaining({ endpoint: endpoint + path }),
+				expect.anything()
+			);
+		});
+
+		test.each(['get', 'post', 'put', 'patch', 'del', 'head'])(
+			'%s rejects a path resolving to a different origin',
+			async method => {
+				const api = new API({});
+				api.configure(
+					configWithEndpoint('https://abc.execute-api.us-east-1.amazonaws.com')
+				);
+				const spyon = jest.spyOn(RestClient.prototype, method as any);
+
+				await expect(
+					api[method]('apiName', '.other.example/items', {})
+				).rejects.toBe(
+					'Path for API apiName must resolve under the configured endpoint'
+				);
+				expect(spyon).not.toHaveBeenCalled();
+			}
+		);
+
+		test('rejects when the configured endpoint is missing', async () => {
+			const api = new API({});
+			api.configure({ API: { endpoints: [{ name: 'apiName' }] } });
+
+			await expect(
+				api.get('apiName', 'https://other.example/items', {})
+			).rejects.toBe(
+				'Path for API apiName must resolve under the configured endpoint'
+			);
 		});
 	});
 
