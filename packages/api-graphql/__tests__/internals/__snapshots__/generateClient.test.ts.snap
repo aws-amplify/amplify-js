@@ -391,6 +391,119 @@ exports[`generateClient custom client and request headers CRUD with custom reque
 ]
 `;
 
+exports[`generateClient custom operations with selectionSet custom query with selectionSet generates custom selection set 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: String!) {
+  echoTodo(id: $id) {
+    id
+    name
+  }
+}
+",
+          "variables": {
+            "id": "todo-123",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations with selectionSet custom query with undefined selectionSet falls back to default selection set 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: String!) {
+  echoTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "todo-123",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations with selectionSet custom query without selectionSet generates default selection set 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: String!) {
+  echoTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "todo-123",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
 exports[`generateClient graphql default auth default iam produces expected signingInfo 1`] = `
 [
   [
