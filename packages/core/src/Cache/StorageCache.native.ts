@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { loadAsyncStorage } from '@aws-amplify/react-native';
-
 import { ConsoleLogger } from '../Logger';
+import { LazyAsyncStorage } from '../storage/LazyAsyncStorage.native';
 
 import { defaultConfig } from './constants';
 import { StorageCacheCommon } from './StorageCacheCommon';
@@ -11,7 +10,7 @@ import { Cache, CacheConfig } from './types';
 import { getCurrentSizeKey, getCurrentTime } from './utils';
 
 const logger = new ConsoleLogger('StorageCache');
-const AsyncStorage = loadAsyncStorage();
+const AsyncStorage = new LazyAsyncStorage();
 
 /*
  * Customized cache which based on the AsyncStorage with LRU implemented
