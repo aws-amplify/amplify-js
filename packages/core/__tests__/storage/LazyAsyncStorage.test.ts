@@ -3,7 +3,7 @@
 
 import { loadAsyncStorage } from '@aws-amplify/react-native';
 
-import { LazyAsyncStorage } from '../../src/storage/LazyAsyncStorage.native';
+import { LazyAsyncStorage } from '../../src/storage/LazyAsyncStorage';
 
 jest.mock('@aws-amplify/react-native', () => ({
 	loadAsyncStorage: jest.fn(),

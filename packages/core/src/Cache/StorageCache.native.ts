@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '../Logger';
-import { LazyAsyncStorage } from '../storage/LazyAsyncStorage.native';
+import { LazyAsyncStorage } from '../storage/LazyAsyncStorage';
 
 import { defaultConfig } from './constants';
 import { StorageCacheCommon } from './StorageCacheCommon';

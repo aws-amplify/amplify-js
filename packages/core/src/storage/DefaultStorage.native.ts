@@ -3,7 +3,7 @@
 
 import { KeyValueStorageInterface } from '../types';
 
-import { LazyAsyncStorage } from './LazyAsyncStorage.native';
+import { LazyAsyncStorage } from './LazyAsyncStorage';
 
 const MEMORY_KEY_PREFIX = '@MemoryStorage:';
 
