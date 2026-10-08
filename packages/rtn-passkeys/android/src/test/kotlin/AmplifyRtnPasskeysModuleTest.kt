@@ -18,7 +18,7 @@ import androidx.credentials.exceptions.publickeycredential.GetPublicKeyCredentia
 
 import com.amazonaws.amplify.rtnpasskeys.AmplifyRtnPasskeysModule
 
-import com.facebook.react.bridge.JSONArguments
+import com.amazonaws.amplify.rtnpasskeys.JsonConversion
 import com.facebook.react.bridge.Promise
 
 import com.facebook.react.bridge.ReactApplicationContext
@@ -29,13 +29,14 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
+import io.mockk.unmockkObject
 import io.mockk.verify
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -68,9 +69,15 @@ class AmplifyRtnPasskeysModuleTest {
 		mockkObject(CredentialManager)
 		every { CredentialManager.create(any()) } returns credentialManager
 
-		// setup JSONArguments
-		mockkStatic(JSONArguments::class)
-		every { JSONArguments.fromJSONObject(any()) } returns readableMap
+		// setup JsonConversion
+		mockkObject(JsonConversion)
+		every { JsonConversion.fromJSONObject(any()) } returns readableMap
+	}
+
+	@After
+	fun teardown() {
+		// JsonConversion is a singleton; don't leak the stub into other test classes.
+		unmockkObject(JsonConversion)
 	}
 
 	@Test
