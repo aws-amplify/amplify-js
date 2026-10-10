@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
-	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
 
 import { getRegionFromUserPoolId } from '../../../../foundation/parsers';
@@ -17,12 +16,12 @@ import { createGetUserClient } from '../../../../foundation/factories/serviceCli
 import { createCognitoUserPoolEndpointResolver } from '../../factories';
 
 export const fetchUserAttributes = async (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 ): Promise<FetchUserAttributesOutput> => {
-	const authConfig = amplify.getConfig().Auth?.Cognito;
+	const authConfig = amplify.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
-	const { tokens } = await fetchAuthSession(amplify, {
+	const { tokens } = await amplify.fetchAuthSession({
 		forceRefresh: false,
 	});
 	assertAuthTokens(tokens);

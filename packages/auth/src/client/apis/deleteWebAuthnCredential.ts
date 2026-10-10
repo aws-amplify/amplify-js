@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { getGlobalContext } from '@aws-amplify/core';
 
 import { DeleteWebAuthnCredentialException } from '../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { DeleteWebAuthnCredentialInput } from '../../foundation/types';
@@ -20,5 +20,8 @@ import { deleteWebAuthnCredential as deleteWebAuthnCredentialFoundation } from '
 export async function deleteWebAuthnCredential(
 	input: DeleteWebAuthnCredentialInput,
 ): Promise<void> {
-	return deleteWebAuthnCredentialFoundation(Amplify, input);
+	// Resolve the global AmplifyContext fresh per operation so facade-only
+	// configuration is honored (the core `Amplify` singleton is never
+	// configured under the new facade).
+	return deleteWebAuthnCredentialFoundation(getGlobalContext(), input);
 }

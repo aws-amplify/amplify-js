@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import {
 	ApiInput,
@@ -30,7 +30,7 @@ import { isIamAuthApplicableForRest } from '../../utils/isIamAuthApplicable';
 import { transferHandler } from './transferHandler';
 
 const publicHandler = (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	options: ApiInput<RestApiOptionsBase>,
 	method: string,
 ) => {
@@ -91,28 +91,28 @@ const publicHandler = (
 	);
 };
 
-export const get = (amplify: AmplifyClassV6, input: GetInput): GetOperation =>
+export const get = (amplify: AmplifyContext, input: GetInput): GetOperation =>
 	publicHandler(amplify, input, 'GET');
 
 export const post = (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: PostInput,
 ): PostOperation => publicHandler(amplify, input, 'POST');
 
-export const put = (amplify: AmplifyClassV6, input: PutInput): PutOperation =>
+export const put = (amplify: AmplifyContext, input: PutInput): PutOperation =>
 	publicHandler(amplify, input, 'PUT');
 
 export const del = (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: DeleteInput,
 ): DeleteOperation => publicHandler(amplify, input, 'DELETE');
 
 export const head = (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: HeadInput,
 ): HeadOperation => publicHandler(amplify, input, 'HEAD');
 
 export const patch = (
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: PatchInput,
 ): PatchOperation => publicHandler(amplify, input, 'PATCH');

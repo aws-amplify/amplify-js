@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	identifyUser,
@@ -37,10 +42,15 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		initializeInAppMessaging();
 		mockgetInAppMessagingUserAgentString.mockReturnValue(userAgentValue);
 		mockResolveConfig.mockReturnValue(config);
 		mockResolveCredentials.mockResolvedValue(credentials);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	beforeEach(() => {
@@ -101,5 +111,35 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 			userProfile: {},
 		};
 		await expect(identifyUser(input)).rejects.toBeDefined();
+	});
+
+	it('passes through parameters when called with explicit context', async () => {
+		const ctx = createMockAmplifyContext({
+			Notifications: {
+				InAppMessaging: { Pinpoint: { appId: 'app-id', region: 'region' } },
+			},
+		});
+		const input: IdentifyUserInput = {
+			userId: 'user-id',
+			userProfile: {
+				customProperties: {
+					hobbies: ['biking', 'climbing'],
+				},
+				email: 'email',
+				name: 'name',
+				plan: 'plan',
+			},
+		};
+		await identifyUser(ctx, input);
+		expect(mockResolveConfig).toHaveBeenCalledWith(ctx);
+		expect(mockResolveCredentials).toHaveBeenCalledWith(ctx);
+		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
+			...input,
+			...credentials,
+			...config,
+			channelType: CHANNEL_TYPE,
+			category: CATEGORY,
+			userAgentValue,
+		});
 	});
 });

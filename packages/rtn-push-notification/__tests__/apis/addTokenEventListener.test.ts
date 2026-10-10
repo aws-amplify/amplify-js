@@ -17,7 +17,7 @@ describe('addTokenEventListener', () => {
 	const mockAddListenerNative = nativeEventEmitter.addListener as jest.Mock;
 
 	afterEach(() => {
-		mockAddListenerNative.mockClear();
+		mockAddListenerNative.mockReset();
 	});
 
 	it('calls the native addTokenEventListener', () => {

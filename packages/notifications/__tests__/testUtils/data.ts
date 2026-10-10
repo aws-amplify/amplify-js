@@ -312,6 +312,13 @@ export const simplePushMessage: PushNotificationMessage = {
 };
 
 export const pushToken = 'foo-bar';
+
+export const customerProfilesConfig = {
+	endpoint: 'https://abcd1234.execute-api.us-east-1.amazonaws.com/prod',
+	region: 'us-east-1',
+};
+
+export const accessToken = 'access-token';
 export const pinpointCampaign = {
 	campaign_id: 'campaign-id',
 	campaign_activity_id: 'campaign-activity-id',

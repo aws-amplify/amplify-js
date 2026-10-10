@@ -8,6 +8,7 @@ import {
 	USER_AGENT_HEADER,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
+import { AmplifyContext } from '@aws-amplify/core';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 import { DEFAULT_KEEP_ALIVE_TIMEOUT, MESSAGE_TYPES } from '../constants';
@@ -28,6 +29,27 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	additionalHeaders?: CustomHeaders;
 	additionalCustomHeaders?: Record<string, string>;
 	authToken?: string;
+	/**
+	 * Optional AmplifyContext for per-request credential resolution.
+	 * When provided, this ctx is used for WebSocket auth header generation
+	 * instead of the global context. Scoped to the connection/subscription
+	 * lifecycle, NOT stored on the provider instance (providers are singletons).
+	 */
+	ctx?: AmplifyContext;
+	/**
+	 * Optional one-shot callback invoked when the server ACKs this subscription.
+	 * Invoked alongside (never replacing) the internal `subscriptionReadyCallback`.
+	 * @param subscriptionId - the AppSync subscription id assigned to this subscribe call
+	 */
+	onSubscriptionReady?(subscriptionId: string): void;
+	/**
+	 * Optional one-shot callback invoked when this subscription fails (subscribe
+	 * error, start-ack timeout, or connection init failure). Invoked alongside
+	 * (never replacing) the internal `subscriptionFailedCallback`.
+	 * @param subscriptionId - the AppSync subscription id assigned to this subscribe call
+	 * @param error - the error that caused the failure, when available
+	 */
+	onSubscriptionError?(subscriptionId: string, error?: unknown): void;
 }
 
 interface DataObject extends Record<string, unknown> {
@@ -84,6 +106,7 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 			variables,
 			apiKey,
 			region,
+			ctx,
 		} = options;
 		const data = {
 			query,
@@ -92,15 +115,18 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 		const serializedData = JSON.stringify(data);
 
 		const headers = {
-			...(await awsRealTimeHeaderBasedAuth({
-				apiKey,
-				appSyncGraphqlEndpoint,
-				authenticationType,
-				payload: serializedData,
-				canonicalUri: '',
-				region,
-				additionalCustomHeaders,
-			})),
+			...(await awsRealTimeHeaderBasedAuth(
+				{
+					apiKey,
+					appSyncGraphqlEndpoint,
+					authenticationType,
+					payload: serializedData,
+					canonicalUri: '',
+					region,
+					additionalCustomHeaders,
+				},
+				ctx,
+			)),
 			...libraryConfigHeaders,
 			...additionalCustomHeaders,
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),

@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext } from '@aws-amplify/core';
+import { resolveCtxArgs } from '@aws-amplify/core/internals/utils';
+
 import {
 	DownloadDataInput,
 	DownloadDataOutput,
@@ -9,6 +12,22 @@ import {
 } from '../types';
 
 import { downloadData as downloadDataInternal } from './internal/downloadData';
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `DownloadDataWithPathInput` object.
+ */
+export function downloadData(
+	ctx: AmplifyContext,
+	input: DownloadDataWithPathInput,
+): DownloadDataWithPathOutput;
+/**
+ * @param ctx - The AmplifyContext to operate on.
+ * @param input - The `DownloadDataInput` object.
+ */
+export function downloadData(
+	ctx: AmplifyContext,
+	input: DownloadDataInput,
+): DownloadDataOutput;
 
 /**
  * Download S3 object data to memory
@@ -77,8 +96,10 @@ export function downloadData(
  *```
  */
 export function downloadData(input: DownloadDataInput): DownloadDataOutput;
-export function downloadData(
-	input: DownloadDataInput | DownloadDataWithPathInput,
-) {
-	return downloadDataInternal(input);
+// Overload signatures above are the public contract; the impl is intentionally untyped and shape is enforced by resolveCtxArgs.
+export function downloadData(...args: any[]) {
+	const [ctx, input] =
+		resolveCtxArgs<[DownloadDataInput | DownloadDataWithPathInput]>(args);
+
+	return downloadDataInternal(ctx, input);
 }

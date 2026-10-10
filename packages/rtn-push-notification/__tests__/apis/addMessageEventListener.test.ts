@@ -21,7 +21,7 @@ describe('addMessageEventListener', () => {
 
 	afterEach(() => {
 		mockNormalizeNativeMessage.mockReset();
-		mockAddListenerNative.mockClear();
+		mockAddListenerNative.mockReset();
 	});
 
 	it('calls the native addMessageEventListener', () => {

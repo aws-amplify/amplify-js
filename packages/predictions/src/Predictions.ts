@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyContext, isAmplifyContext } from '@aws-amplify/core';
+import { assertOptionalCtxArg } from '@aws-amplify/core/internals/utils';
+
 import {
 	AmazonAIConvertPredictionsProvider,
 	AmazonAIIdentifyPredictionsProvider,
@@ -23,10 +26,32 @@ import {
 	TranslateTextOutput,
 } from './types';
 
+/**
+ * Facade class that delegates predictions operations to sub-providers.
+ *
+ * Exported publicly (alongside the default `Predictions` singleton) so consumers
+ * can construct an instance with an explicit `AmplifyContext` — enabling
+ * per-request context injection in server-side / multi-tenant scenarios.
+ */
 export class PredictionsClass {
-	private convertProvider = new AmazonAIConvertPredictionsProvider();
-	private identifyProvider = new AmazonAIIdentifyPredictionsProvider();
-	private interpretProvider = new AmazonAIInterpretPredictionsProvider();
+	private convertProvider: AmazonAIConvertPredictionsProvider;
+	private identifyProvider: AmazonAIIdentifyPredictionsProvider;
+	private interpretProvider: AmazonAIInterpretPredictionsProvider;
+
+	constructor(ctx?: AmplifyContext) {
+		// Reject a defined-but-unbranded value passed in the context position
+		// with a typed error before resolving the (optional) explicit context.
+		assertOptionalCtxArg(ctx);
+
+		const resolvedCtx = isAmplifyContext(ctx) ? ctx : undefined;
+		this.convertProvider = new AmazonAIConvertPredictionsProvider(resolvedCtx);
+		this.identifyProvider = new AmazonAIIdentifyPredictionsProvider(
+			resolvedCtx,
+		);
+		this.interpretProvider = new AmazonAIInterpretPredictionsProvider(
+			resolvedCtx,
+		);
+	}
 
 	public getModuleName() {
 		return 'Predictions';

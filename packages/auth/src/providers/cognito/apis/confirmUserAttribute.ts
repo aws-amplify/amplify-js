@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -17,6 +18,11 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createVerifyUserAttributeClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function confirmUserAttribute(
+	ctx: AmplifyContext,
+	input: ConfirmUserAttributeInput,
+): Promise<void>;
+
 /**
  * Confirms a user attribute with the confirmation code.
  *
@@ -28,8 +34,10 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  */
 export async function confirmUserAttribute(
 	input: ConfirmUserAttributeInput,
-): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+): Promise<void>;
+export async function confirmUserAttribute(...args: any[]): Promise<void> {
+	const [ctx, input] = resolveCtxArgs<[ConfirmUserAttributeInput]>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { confirmationCode, userAttributeKey } = input;
@@ -37,7 +45,7 @@ export async function confirmUserAttribute(
 		!!confirmationCode,
 		AuthValidationErrorCode.EmptyConfirmUserAttributeCode,
 	);
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await ctx.fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const verifyUserAttribute = createVerifyUserAttributeClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({

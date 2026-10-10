@@ -1,16 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { MESSAGE_TYPES } from '../src/Providers/constants';
 import * as constants from '../src/Providers/constants';
 
-import { delay, FakeWebSocketInterface } from './helpers';
-import { ConnectionState as CS } from '../src/types/PubSub';
+import { delay, FakeWebSocketInterface, replaceConstant } from './helpers';
+import { ConnectionState as CS, CONTROL_MSG } from '../src/types/PubSub';
 
 import { AWSAppSyncEventProvider } from '../src/Providers/AWSAppSyncEventsProvider';
+import * as authHeadersModule from '../src/Providers/AWSWebSocketProvider/authHeaders';
 
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
@@ -48,6 +50,15 @@ jest.mock('@aws-amplify/core', () => {
 		fetchAuthSession: (_request: any, _options: any) => {
 			return Promise.resolve(session);
 		},
+		getGlobalContext: () => ({
+			resourcesConfig: {},
+			libraryOptions: {},
+			token: Object.freeze({ value: Symbol('testContextToken') }),
+			fetchAuthSession: async () => session,
+			clearCredentials: async () => undefined,
+			getTokens: async () => undefined,
+			[original.AMPLIFY_CONTEXT_BRAND]: true,
+		}),
 		Amplify: {
 			Auth: {
 				fetchAuthSession: async () => session,
@@ -269,6 +280,114 @@ describe('AppSyncEventProvider', () => {
 					);
 				});
 
+				test('a subscribe_error with errorType "Unauthorized" (util.unauthorized) fails only that subscription and does NOT close the shared socket', async () => {
+					expect.assertions(2);
+
+					// Do not call through: we only want to observe whether the provider
+					// initiates a socket close, not drive the reconnect machinery.
+					const socketCloseSpy = jest
+						.spyOn(fakeWebSocketInterface.webSocket, 'close')
+						.mockImplementation(() => {});
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const errorSpy = jest.fn();
+					observer.subscribe({
+						error: errorSpy,
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+
+					// A per-subscription authorization denial: AppSync's util.unauthorized()
+					// surfaces as an errorType "Unauthorized" subscribe_error frame.
+					await fakeWebSocketInterface?.sendDataMessage({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR,
+						errors: [
+							{
+								errorType: 'Unauthorized',
+								message: 'You are not authorized to make this call.',
+							},
+						],
+					});
+
+					// The denied subscription's observable errors out (terminal to just it)
+					expect(errorSpy).toHaveBeenCalledWith(
+						expect.objectContaining({
+							errors: [
+								expect.objectContaining({
+									message:
+										'Connection failed: Unauthorized: You are not authorized to make this call.',
+								}),
+							],
+						}),
+					);
+
+					// The shared socket must stay open so sibling subscriptions survive
+					expect(socketCloseSpy).not.toHaveBeenCalledWith(
+						1000,
+						'Auth error - reconnecting',
+					);
+				});
+
+				test('a subscribe_error whose message contains "Token expired" does NOT close the shared socket', async () => {
+					expect.assertions(2);
+
+					const socketCloseSpy = jest
+						.spyOn(fakeWebSocketInterface.webSocket, 'close')
+						.mockImplementation(() => {});
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const errorSpy = jest.fn();
+					observer.subscribe({
+						error: errorSpy,
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+
+					// Incidental "Token expired" text on a per-subscription error frame
+					// must not be classified as a connection-level credentials failure.
+					await fakeWebSocketInterface?.sendDataMessage({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR,
+						errors: [
+							{
+								errorType: 'AuthorizationError',
+								message: 'Token expired for this channel',
+							},
+						],
+					});
+
+					// The denied subscription's observable errors out (terminal to just it)
+					expect(errorSpy).toHaveBeenCalledWith(
+						expect.objectContaining({
+							errors: [
+								expect.objectContaining({
+									message:
+										'Connection failed: AuthorizationError: Token expired for this channel',
+								}),
+							],
+						}),
+					);
+
+					// The shared socket must stay open so sibling subscriptions survive
+					expect(socketCloseSpy).not.toHaveBeenCalledWith(
+						1000,
+						'Auth error - reconnecting',
+					);
+				});
+
 				test('subscription observer error is not triggered when a connection is formed and a retriable connection_error data message is received', async () => {
 					expect.assertions(2);
 
@@ -354,6 +473,279 @@ describe('AppSyncEventProvider', () => {
 						type: MESSAGE_TYPES.DATA,
 						event: JSON.parse(event),
 					});
+				});
+
+				test('onSubscriptionReady is invoked with the subscription id on subscription ack', async () => {
+					expect.assertions(1);
+					const onSubscriptionReady = jest.fn();
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						onSubscriptionReady,
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+
+					expect(onSubscriptionReady).toHaveBeenCalledWith(
+						fakeWebSocketInterface.webSocket.subscriptionId,
+					);
+				});
+
+				test('onSubscriptionError is invoked with the subscription id and error on EVENT_SUBSCRIBE_ERROR', async () => {
+					expect.assertions(2);
+					const onSubscriptionError = jest.fn();
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						onSubscriptionError,
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+
+					// A subscribe failure (no start ack precedes it)
+					await fakeWebSocketInterface?.sendDataMessage({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR,
+						errors: [
+							{
+								errorType: 'AuthorizationError',
+								message: 'Not authorized to access channel',
+							},
+						],
+					});
+
+					expect(onSubscriptionError).toHaveBeenCalledTimes(1);
+					expect(onSubscriptionError).toHaveBeenCalledWith(
+						fakeWebSocketInterface.webSocket.subscriptionId,
+						expect.objectContaining({
+							message: expect.stringContaining('Connection failed:'),
+						}),
+					);
+				});
+
+				test('onSubscriptionError is invoked with the start-ack timeout error when the server never ACKs', async () => {
+					expect.assertions(1);
+					const onSubscriptionError = jest.fn();
+
+					// Shorten START_ACK_TIMEOUT so the timeout fires quickly without
+					// fake timers. The provider reads the constant live off the module.
+					await replaceConstant('START_ACK_TIMEOUT', 20, async () => {
+						const observer = provider.subscribe({
+							appSyncGraphqlEndpoint: 'ws://localhost:8080',
+							onSubscriptionError,
+						});
+
+						observer.subscribe({
+							next: () => {},
+							error: () => {},
+						});
+
+						// Connect but never send the start ack, so the start-ack timeout
+						// fires and _timeoutStartSubscriptionAck surfaces the error.
+						await fakeWebSocketInterface?.standardConnectionHandshake();
+
+						// Wait past the shortened START_ACK_TIMEOUT.
+						await delay(80);
+
+						expect(onSubscriptionError).toHaveBeenCalledWith(
+							fakeWebSocketInterface.webSocket.subscriptionId,
+							expect.objectContaining({
+								message: expect.stringContaining('start ack timeout'),
+							}),
+						);
+					});
+				});
+
+				test('onSubscriptionError is invoked when the initial connection fails with a non-retryable error, and the subscription is cleaned up (no leaked observer-map entry)', async () => {
+					expect.assertions(3);
+					const onSubscriptionError = jest.fn();
+
+					fakeWebSocketInterface.webSocket.readyState = WebSocket.OPEN;
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						onSubscriptionError,
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.readyForUse;
+					await fakeWebSocketInterface?.triggerOpen();
+
+					// A non-retriable connection_error drives _startSubscription's catch
+					// -> _logStartSubscriptionError, which surfaces onSubscriptionError.
+					await Promise.resolve(
+						fakeWebSocketInterface?.sendDataMessage({
+							type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
+							errors: [
+								{
+									errorType: 'UnauthorizedException', // - non-retriable
+									errorCode: 401,
+								},
+							],
+						}),
+					);
+
+					await delay(1);
+
+					expect(onSubscriptionError).toHaveBeenCalledWith(
+						expect.any(String),
+						expect.objectContaining({
+							message: expect.stringContaining('Connection failed'),
+						}),
+					);
+
+					// Regression guard for the _logStartSubscriptionError ordering fix.
+					// On this connect-init failure path the subscription is still
+					// PENDING and subscriptionFailedCallback is not yet set. Hoisting
+					// the subscriptionFailedCallback read/invocation above
+					// observer.error (as a prior edit did) read `undefined`, so nothing
+					// ever rejected the promise that _cleanupSubscription awaits via
+					// _waitForSubscriptionToBeConnected — the wait hung,
+					// _removeSubscriptionObserver never ran, and the
+					// subscriptionObserverMap entry leaked. With the correct ordering,
+					// observer.error()'s synchronous teardown re-points
+					// subscriptionFailedCallback to that promise's reject and the
+					// AFTER-observer.error invocation drives cleanup to completion.
+					// The subscription id passed to onSubscriptionError is the map key.
+					const subscriptionId = onSubscriptionError.mock.calls[0][0];
+					const observerMap = (provider as any).subscriptionObserverMap as Map<
+						string,
+						unknown
+					>;
+					expect(observerMap.has(subscriptionId)).toBe(false);
+					// Only one subscription was created in this test, so a clean map
+					// proves nothing leaked.
+					expect(observerMap.size).toBe(0);
+				});
+
+				test('an INVALID/unreachable endpoint rejects the subscription readiness signal via _connectWebSocket -> _logStartSubscriptionError (no hang)', async () => {
+					expect.assertions(1);
+
+					// Reproduce the events layer's `ready` wiring (see
+					// internals/events/index.ts): a one-shot readiness promise resolved
+					// by onSubscriptionReady and rejected by onSubscriptionError. This is
+					// exactly what backs `channel.subscribe(...).ready`. We assert it here
+					// at the provider level because the events public API connects EAGERLY
+					// in events.connect() (awaited before any subscribe), so an invalid
+					// endpoint rejects events.connect() and `ready` is never created on
+					// that path. The subscribe-driven _connectWebSocket failure that
+					// _logStartSubscriptionError handles — the path this comment/test
+					// guards — is reached when subscribe() itself drives the connect, as
+					// below.
+					let settled = false;
+					let resolveReady!: (value: { subscriptionId: string }) => void;
+					let rejectReady!: (reason?: unknown) => void;
+					const ready = new Promise<{ subscriptionId: string }>(
+						(resolve, reject) => {
+							resolveReady = resolve;
+							rejectReady = reject;
+						},
+					);
+					// Avoid unhandled-rejection noise before the assertion reads it.
+					ready.catch(() => undefined);
+
+					fakeWebSocketInterface.webSocket.readyState = WebSocket.OPEN;
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						onSubscriptionReady: (subscriptionId: string) => {
+							if (!settled) {
+								settled = true;
+								resolveReady({ subscriptionId });
+							}
+						},
+						onSubscriptionError: (_subscriptionId: string, error?: unknown) => {
+							if (!settled) {
+								settled = true;
+								rejectReady(
+									error ?? new Error('Subscription failed before ready'),
+								);
+							}
+						},
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.readyForUse;
+					await fakeWebSocketInterface?.triggerOpen();
+
+					// A non-retriable connection_error during the connect handshake makes
+					// _initiateHandshake reject -> NonRetryableError aborts the retry ->
+					// _connectWebSocket rejects -> _startSubscription's catch calls
+					// _logStartSubscriptionError, which surfaces onSubscriptionError. This
+					// is how an INVALID/unreachable/unauthorized endpoint manifests.
+					await Promise.resolve(
+						fakeWebSocketInterface?.sendDataMessage({
+							type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
+							errors: [
+								{
+									errorType: 'UnauthorizedException', // - non-retriable
+									errorCode: 401,
+								},
+							],
+						}),
+					);
+
+					// `ready` MUST reject with the REAL connect error (not hang, not a
+					// generic reason). If this path ever regressed to a hang, this
+					// assertion would time out at the default jest timeout and fail.
+					await expect(ready).rejects.toThrow(
+						'Connection failed: UnauthorizedException',
+					);
+				});
+
+				test('SUBSCRIPTION_ACK Hub event payload includes the subscription id', async () => {
+					expect.assertions(1);
+					const ackPayloads: any[] = [];
+					const unsubscribeHub = Hub.listen('api', ({ payload }: any) => {
+						if (payload.event === CONTROL_MSG.SUBSCRIPTION_ACK) {
+							ackPayloads.push(payload.data);
+						}
+					});
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					observer.subscribe({
+						next: () => {},
+						error: () => {},
+					});
+
+					try {
+						await fakeWebSocketInterface?.standardConnectionHandshake();
+						await fakeWebSocketInterface?.startAckMessage({
+							connectionTimeoutMs: 100,
+						});
+
+						expect(ackPayloads[0]).toEqual(
+							expect.objectContaining({
+								id: fakeWebSocketInterface.webSocket.subscriptionId,
+							}),
+						);
+					} finally {
+						unsubscribeHub();
+					}
 				});
 
 				test('socket is disconnected after .close() is called', async () => {
@@ -599,6 +991,289 @@ describe('AppSyncEventProvider', () => {
 					},
 				}),
 			).rejects.toThrow('No auth token specified');
+		});
+	});
+
+	describe('publish error-frame correlation (issue #14946)', () => {
+		let provider: AWSAppSyncEventProvider;
+		let reachabilityObserver: Observer<{ online: boolean }>;
+		let messageListeners: EventListener[];
+		let capturedPublishId: string | undefined;
+
+		beforeEach(() => {
+			// Set the network to "online" for these tests
+			jest
+				.spyOn(Reachability.prototype, 'networkMonitor')
+				.mockImplementationOnce(
+					() =>
+						new Observable(observer => {
+							reachabilityObserver = observer;
+						}),
+				)
+				// Twice because we subscribe to get the initial state then again to monitor reachability
+				.mockImplementationOnce(
+					() =>
+						new Observable(observer => {
+							reachabilityObserver = observer;
+						}),
+				);
+
+			provider = new AWSAppSyncEventProvider();
+
+			messageListeners = [];
+			capturedPublishId = undefined;
+
+			// Minimal controllable socket: it records the 'message' listener the
+			// provider registers for the publish and captures the id of the frame
+			// it sends, so the test can replay arbitrary server frames and assert
+			// how the publish promise correlates them. (The shared
+			// FakeWebSocketInterface no-ops addEventListener, so it cannot exercise
+			// the publish listener path.)
+			const controllableSocket = {
+				onclose: (_event: CloseEvent) => {},
+				onerror: (_event: Event) => {},
+				addEventListener: (type: string, listener: EventListener) => {
+					if (type === 'message') {
+						messageListeners.push(listener);
+					}
+				},
+				removeEventListener: (type: string, listener: EventListener) => {
+					if (type === 'message') {
+						messageListeners = messageListeners.filter(l => l !== listener);
+					}
+				},
+				send: (data: string) => {
+					capturedPublishId = JSON.parse(String(data)).id;
+				},
+				close: () => {
+					controllableSocket.onclose(new CloseEvent('close'));
+				},
+			};
+
+			Object.defineProperty(provider, 'socketStatus', {
+				value: constants.SOCKET_STATUS.READY,
+			});
+			Object.defineProperty(provider, 'awsRealTimeSocket', {
+				value: controllableSocket,
+				writable: true,
+				configurable: true,
+			});
+		});
+
+		afterEach(async () => {
+			provider?.close();
+		});
+
+		const deliverFrame = (frame: Record<string, unknown>) => {
+			const event = new MessageEvent('message', {
+				data: JSON.stringify(frame),
+			});
+			messageListeners.forEach(listener => listener(event));
+		};
+
+		const waitForPublishSent = async () => {
+			for (let i = 0; i < 200 && capturedPublishId === undefined; i++) {
+				await delay(5);
+			}
+			if (capturedPublishId === undefined) {
+				throw new Error('publish frame was never sent');
+			}
+		};
+
+		test('a pending publish is not rejected by an unrelated subscription error frame', async () => {
+			expect.assertions(1);
+
+			const pub = provider.publish({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				query: 'events/allowed-channel',
+				variables: { some: 'data' },
+				authenticationType: 'iam',
+				region: 'us-east-1',
+			});
+
+			// Wait until the publish frame has been sent and its id captured.
+			await waitForPublishSent();
+
+			// An error frame for a DIFFERENT operation id (e.g. a subscribe_error
+			// on an unrelated channel) arrives while this publish is in flight.
+			// It must not settle this publish's promise.
+			deliverFrame({
+				id: 'unrelated-subscription-id',
+				type: MESSAGE_TYPES.EVENT_SUBSCRIBE_ERROR,
+				errors: [
+					{
+						errorType: 'AuthorizationError',
+						message: 'Not authorized to access channel',
+					},
+				],
+			});
+
+			// The correlated publish_success then arrives for this publish.
+			deliverFrame({
+				id: capturedPublishId,
+				type: MESSAGE_TYPES.EVENT_PUBLISH_ACK,
+			});
+
+			// The publish was accepted, so the promise must resolve — the
+			// unrelated error frame must not have rejected it.
+			await expect(pub).resolves.toBeUndefined();
+		});
+
+		test('a pending publish is still rejected by an error frame correlated to its own operation id', async () => {
+			expect.assertions(1);
+
+			const pub = provider.publish({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				query: 'events/denied-channel',
+				variables: { some: 'data' },
+				authenticationType: 'iam',
+				region: 'us-east-1',
+			});
+
+			// Wait until the publish frame has been sent and its id captured.
+			await waitForPublishSent();
+
+			// A genuine publish_error frame correlated to THIS publish's operation
+			// id arrives. (AppSync Events emits publish_error for a failed publish;
+			// a subscribe_error would never legitimately carry a publish's id.)
+			// The id-correlation guard must not suppress it: a matching-id error
+			// must retain the original rejection behavior so genuine publish
+			// failures still surface to the caller.
+			deliverFrame({
+				id: capturedPublishId,
+				type: 'publish_error',
+				errors: [
+					{
+						errorType: 'AuthorizationError',
+						message: 'Not authorized to access channel',
+					},
+				],
+			});
+
+			// The correlated error frame must reject the publish promise with the
+			// aggregated error types.
+			await expect(pub).rejects.toThrow('Publish errors: AuthorizationError');
+		});
+
+		test('a pending publish is not settled by an id-less error frame, and a subsequent correlated publish_success still resolves it', async () => {
+			expect.assertions(1);
+
+			const pub = provider.publish({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				query: 'events/allowed-channel',
+				variables: { some: 'data' },
+				authenticationType: 'iam',
+				region: 'us-east-1',
+			});
+
+			// Wait until the publish frame has been sent and its id captured.
+			await waitForPublishSent();
+
+			// An error frame with NO operation `id` (e.g. a connection-level error)
+			// arrives while this publish is in flight. AppSync Events guarantees a
+			// publish_error carries the operation `id`, so an id-less error frame is
+			// not this publish's terminal response and must not settle its promise.
+			deliverFrame({
+				type: 'publish_error',
+				errors: [
+					{
+						errorType: 'InternalServerError',
+						message: 'Something went wrong',
+					},
+				],
+			});
+
+			// The correlated publish_success then arrives for this publish.
+			deliverFrame({
+				id: capturedPublishId,
+				type: MESSAGE_TYPES.EVENT_PUBLISH_ACK,
+			});
+
+			// The id-less error frame must not have settled the promise, so the
+			// correlated success resolves it.
+			await expect(pub).resolves.toBeUndefined();
+		});
+	});
+
+	describe('ctx propagation', () => {
+		let fakeWebSocketInterface: FakeWebSocketInterface;
+		let provider: AWSAppSyncEventProvider;
+		let authSpy: jest.SpyInstance;
+
+		beforeEach(() => {
+			fakeWebSocketInterface = new FakeWebSocketInterface();
+			provider = new AWSAppSyncEventProvider();
+
+			Object.defineProperty(provider, 'socketStatus', {
+				value: constants.SOCKET_STATUS.CLOSED,
+			});
+
+			jest.spyOn(provider as any, '_getNewWebSocket').mockImplementation(() => {
+				fakeWebSocketInterface.newWebSocket();
+				return fakeWebSocketInterface.webSocket as WebSocket;
+			});
+
+			authSpy = jest.spyOn(authHeadersModule, 'awsRealTimeHeaderBasedAuth');
+		});
+
+		afterEach(async () => {
+			provider?.close();
+			await fakeWebSocketInterface?.closeInterface();
+			fakeWebSocketInterface?.teardown();
+			authSpy.mockRestore();
+		});
+
+		test('when ctx is supplied to connect, awsRealTimeHeaderBasedAuth uses that ctx', async () => {
+			const mockSession = {
+				tokens: { accessToken: { toString: () => 'per-request-token' } },
+				credentials: {
+					accessKeyId: 'per-request-key',
+					secretAccessKey: 'per-request-secret',
+				},
+			};
+			const explicitCtx = createMockAmplifyContext(
+				{},
+				{ fetchAuthSession: jest.fn().mockResolvedValue(mockSession) },
+			);
+
+			const connectPromise = provider.connect({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				authenticationType: 'apiKey',
+				apiKey: 'da2-test',
+				region: 'us-east-1',
+				ctx: explicitCtx,
+			});
+
+			await fakeWebSocketInterface?.readyForUse;
+			await fakeWebSocketInterface?.triggerOpen();
+			await fakeWebSocketInterface?.sendDataMessage({
+				type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
+			});
+			await connectPromise;
+
+			// awsRealTimeHeaderBasedAuth is called for the connection handshake
+			expect(authSpy).toHaveBeenCalled();
+			expect(authSpy.mock.calls[0][1]).toBe(explicitCtx);
+		});
+
+		test('when ctx is undefined, awsRealTimeHeaderBasedAuth falls back to global context', async () => {
+			const connectPromise = provider.connect({
+				appSyncGraphqlEndpoint: 'ws://localhost:8080',
+				authenticationType: 'apiKey',
+				apiKey: 'da2-test',
+				region: 'us-east-1',
+			});
+
+			await fakeWebSocketInterface?.readyForUse;
+			await fakeWebSocketInterface?.triggerOpen();
+			await fakeWebSocketInterface?.sendDataMessage({
+				type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
+			});
+			await connectPromise;
+
+			expect(authSpy).toHaveBeenCalled();
+			// ctx should be undefined — authHeaders.ts falls back to getGlobalContext()
+			expect(authSpy.mock.calls[0][1]).toBeUndefined();
 		});
 	});
 });

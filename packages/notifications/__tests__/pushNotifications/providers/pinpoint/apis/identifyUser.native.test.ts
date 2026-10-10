@@ -1,10 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import {
 	getEndpointId,
 	updateEndpoint,
 } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	clearGlobalContext,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import { assertIsInitialized } from '../../../../../src/pushNotifications/errors/errorHelpers';
 import { identifyUser } from '../../../../../src/pushNotifications/providers/pinpoint/apis/identifyUser.native';
@@ -47,10 +52,15 @@ describe('identifyUser (native)', () => {
 	const mockUpdateEndpoint = updateEndpoint as jest.Mock;
 
 	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
 		mockGetChannelType.mockReturnValue(channelType);
 		mockGetPushNotificationUserAgentString.mockReturnValue(userAgentValue);
 		mockResolveConfig.mockReturnValue(pinpointConfig);
 		mockResolveCredentials.mockResolvedValue(credentials);
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
 	});
 
 	afterEach(() => {

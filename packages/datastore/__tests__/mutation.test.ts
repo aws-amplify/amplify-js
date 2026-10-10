@@ -199,9 +199,8 @@ describe('MutationProcessor', () => {
 			await mutationProcessor.resume();
 			expect(mockRestPost).toHaveBeenCalledWith(
 				expect.objectContaining({
-					Auth: expect.any(Object),
-					configure: expect.any(Function),
-					getConfig: expect.any(Function),
+					resourcesConfig: expect.any(Object),
+					fetchAuthSession: expect.any(Function),
 				}),
 				expect.objectContaining({
 					url: new URL(

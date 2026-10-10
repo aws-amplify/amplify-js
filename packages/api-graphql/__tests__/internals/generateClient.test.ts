@@ -419,7 +419,10 @@ describe('generateClient', () => {
 
 				// Request headers should overwrite client headers:
 				expect(spy).toHaveBeenCalledWith(
-					expect.any(AmplifyClassV6),
+					expect.objectContaining({
+						resourcesConfig: expect.any(Object),
+						fetchAuthSession: expect.any(Function),
+					}),
 					expect.objectContaining({
 						options: expect.objectContaining({
 							headers: expect.not.objectContaining({

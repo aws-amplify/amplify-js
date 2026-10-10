@@ -1,10 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+import { AmplifyContext } from '@aws-amplify/core';
 
 import { readFile } from '../utils/readFile';
 import { toBase64 } from '../utils/toBase64';
@@ -24,7 +21,7 @@ import { uploadData as uploadDataInternal } from '../../providers/s3/apis/intern
  * Server-side `uploadData` is intended for use in SSR contexts such as
  * Next.js Route Handlers and Server Actions.
  *
- * @param contextSpec - The isolated server context.
+ * @param ctx - The resolved `AmplifyContext` to operate on.
  * @param input - A `UploadDataWithPathInput` object.
  *
  * @returns An `UploadDataServerWithPathOutput` task. Await the `result`
@@ -53,7 +50,7 @@ import { uploadData as uploadDataInternal } from '../../providers/s3/apis/intern
  * ```
  */
 export function uploadData(
-	contextSpec: AmplifyServer.ContextSpec,
+	ctx: AmplifyContext,
 	input: UploadDataWithPathInput,
 ): UploadDataServerWithPathOutput;
 
@@ -65,7 +62,7 @@ export function uploadData(
  * operation to upload when the payload is less than 5MB. Otherwise, uses
  * multipart upload to upload the payload.
  *
- * @param contextSpec - The isolated server context.
+ * @param ctx - The resolved `AmplifyContext` to operate on.
  * @param input - A `UploadDataInput` object.
  *
  * @returns An `UploadDataServerOutput` task. Await the `result` promise to
@@ -75,12 +72,12 @@ export function uploadData(
  * @throws StorageValidationErrorCode when API call parameters are invalid.
  */
 export function uploadData(
-	contextSpec: AmplifyServer.ContextSpec,
+	ctx: AmplifyContext,
 	input: UploadDataInput,
 ): UploadDataServerOutput;
 
 export function uploadData(
-	contextSpec: AmplifyServer.ContextSpec,
+	ctx: AmplifyContext,
 	input: UploadDataInput | UploadDataWithPathInput,
 ): UploadDataServerOutput | UploadDataServerWithPathOutput {
 	// The internal uploadData returns an UploadTask which has pause/resume. On
@@ -89,7 +86,7 @@ export function uploadData(
 	// object still exposes them as no-ops (delegated to createUploadTask).
 	return uploadDataInternal(
 		{
-			amplify: getAmplifyServerContext(contextSpec).amplify,
+			amplify: ctx,
 			readFile,
 			toBase64,
 		},

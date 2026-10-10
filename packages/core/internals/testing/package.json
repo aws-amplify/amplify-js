@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/core/internals/testing",
+	"types": "../../dist/esm/testing/index.d.ts",
+	"main": "../../dist/cjs/testing/index.js",
+	"module": "../../dist/esm/testing/index.mjs",
+	"react-native": "../../dist/cjs/testing/index.js"
+}

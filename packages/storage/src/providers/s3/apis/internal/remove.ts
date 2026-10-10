@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -28,15 +28,15 @@ import { RemoveInput as RemoveWithPathInputWithAdvancedOptions } from '../../../
 import { CanceledError } from '../../../../errors/CanceledError';
 
 export function remove(
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: RemoveInput,
 ): RemoveOperation<RemoveOutput>;
 export function remove(
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: RemoveWithPathInputWithAdvancedOptions,
 ): RemoveOperation<RemoveWithPathOutput>;
 export function remove(
-	amplify: AmplifyClassV6,
+	amplify: AmplifyContext,
 	input: RemoveInput | RemoveWithPathInputWithAdvancedOptions,
 ): RemoveOperation<RemoveOutput | RemoveWithPathOutput> {
 	return createAbortableTask(executeRemove(amplify, input));
@@ -44,7 +44,7 @@ export function remove(
 
 const executeRemove =
 	(
-		amplify: AmplifyClassV6,
+		amplify: AmplifyContext,
 		input: RemoveInput | RemoveWithPathInputWithAdvancedOptions,
 	) =>
 	async (abortController: AbortController) => {

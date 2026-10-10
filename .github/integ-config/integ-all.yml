@@ -872,6 +872,13 @@ tests:
     sample_name: [storageApp]
     spec: storage
     browser: *minimal_browser_list
+  - test_name: integ_react_storage_local_context
+    desc: 'Local AmplifyContext auth + storage'
+    framework: react
+    category: storage
+    sample_name: [local-context]
+    spec: local-context
+    browser: *minimal_browser_list
   - test_name: integ_react_storage_multipart_progress
     desc: 'React Storage Multi-Part Upload with Progress'
     framework: react

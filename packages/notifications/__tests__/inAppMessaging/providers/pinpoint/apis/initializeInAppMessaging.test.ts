@@ -1,8 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { Hub } from '@aws-amplify/core';
-import { sessionListener } from '@aws-amplify/core/internals/utils';
+import {
+	clearGlobalContext,
+	sessionListener,
+	setGlobalContext,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	addEventListener,
@@ -10,14 +15,28 @@ import {
 } from '../../../../../src/eventListeners';
 import { initializeInAppMessaging } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 
-jest.mock('@aws-amplify/core');
+jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
+	Hub: { listen: jest.fn() },
+}));
 jest.mock('../../../../../src/eventListeners');
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	sessionListener: { addStateChangeListener: jest.fn() },
+}));
 
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockAddEventListener = addEventListener as jest.Mock;
 
 describe('initializeInAppMessaging', () => {
+	beforeAll(() => {
+		setGlobalContext(createMockAmplifyContext());
+	});
+
+	afterAll(() => {
+		clearGlobalContext();
+	});
+
 	beforeEach(() => {
 		mockNotifyEventListeners.mockClear();
 	});

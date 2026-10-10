@@ -42,6 +42,7 @@ const validAuthConfig: ResourcesConfig = {
 
 jest.mock('../../../src/providers/cognito/utils/oauth/inflightPromise', () => ({
 	addInflightPromise: jest.fn(),
+	armInflightDeadline: jest.fn(),
 }));
 
 const currentDate = new Date();
@@ -143,11 +144,27 @@ describe('TokenOrchestrator', () => {
 
 		it('Should call addInflightPromise when OAuth is inflight', async () => {
 			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
-			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
+			(oAuthStore.loadOAuthInFlightDeadline as jest.Mock).mockResolvedValue(
+				Date.now() + 60_000,
+			);
 
 			const tokens = await tokenOrchestrator.getTokens();
 
 			expect(addInflightPromise).toHaveBeenCalledWith(expect.any(Function));
+			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
+		});
+
+		it('Should not block when the inflight OAuth blocking deadline has passed', async () => {
+			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+			// An absent or expired deadline is reported as `undefined` by the store.
+			(oAuthStore.loadOAuthInFlightDeadline as jest.Mock).mockResolvedValue(
+				undefined,
+			);
+			mockAddInflightPromise.mockClear();
+
+			const tokens = await tokenOrchestrator.getTokens();
+
+			expect(addInflightPromise).not.toHaveBeenCalled();
 			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
 		});
 	});

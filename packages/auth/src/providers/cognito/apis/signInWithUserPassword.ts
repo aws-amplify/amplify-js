@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -28,7 +28,7 @@ import {
 	setActiveSignInState,
 } from '../../../client/utils/store/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { tokenOrchestrator } from '../tokenProvider';
+import { resolveTokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { retryOnResourceNotFoundException } from '../utils/retryOnResourceNotFoundException';
 import { getNewDeviceMetadata } from '../utils/getNewDeviceMetadata';
@@ -38,6 +38,7 @@ import { resetAutoSignIn } from './autoSignIn';
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
  *
+ * @param ctx - The AmplifyContext
  * @param input - The SignInWithUserPasswordInput object
  * @returns SignInWithUserPasswordOutput
  * @throws service: {@link InitiateAuthException } - Cognito service error thrown during the sign-in process.
@@ -46,10 +47,11 @@ import { resetAutoSignIn } from './autoSignIn';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithUserPassword(
+	ctx: AmplifyContext,
 	input: SignInWithUserPasswordInput,
 ): Promise<SignInWithUserPasswordOutput> {
 	const { username, password, options } = input;
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
 		authFlowType: 'USER_PASSWORD_AUTH',
@@ -64,6 +66,9 @@ export async function signInWithUserPassword(
 		!!password,
 		AuthValidationErrorCode.EmptySignInPassword,
 	);
+	// Resolve the per-context orchestrator ONCE at the entry point so every step
+	// of the flow uses the context's configured orchestrator.
+	const tokenOrchestrator = resolveTokenOrchestrator(ctx);
 
 	try {
 		const {
@@ -86,20 +91,23 @@ export async function signInWithUserPassword(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens({
-				...AuthenticationResult,
-				username: activeUsername,
-				NewDeviceMetadata: await getNewDeviceMetadata({
-					userPoolId: authConfig.userPoolId,
-					userPoolEndpoint: authConfig.userPoolEndpoint,
-					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
-					accessToken: AuthenticationResult.AccessToken,
-				}),
-				signInDetails,
-			});
+			await cacheCognitoTokens(
+				{
+					...AuthenticationResult,
+					username: activeUsername,
+					NewDeviceMetadata: await getNewDeviceMetadata({
+						userPoolId: authConfig.userPoolId,
+						userPoolEndpoint: authConfig.userPoolEndpoint,
+						newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+						accessToken: AuthenticationResult.AccessToken,
+					}),
+					signInDetails,
+				},
+				tokenOrchestrator,
+			);
 			resetActiveSignInState();
 
-			await dispatchSignedInHubEvent();
+			await dispatchSignedInHubEvent(ctx);
 
 			resetAutoSignIn();
 
@@ -109,7 +117,7 @@ export async function signInWithUserPassword(
 			};
 		}
 
-		return getSignInResult({
+		return getSignInResult(ctx, {
 			challengeName: retiredChallengeName as ChallengeName,
 			challengeParameters: retriedChallengeParameters as ChallengeParameters,
 		});

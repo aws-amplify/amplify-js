@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, OAuthConfig } from '@aws-amplify/core';
+import { AmplifyContext, OAuthConfig } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	isBrowser,
+	resolveCtxArgs,
 	urlSafeEncode,
 } from '@aws-amplify/core/internals/utils';
 
@@ -30,6 +31,11 @@ import { createOAuthError } from '../utils/oauth/createOAuthError';
 import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
 import { OpenAuthSession } from '../../../utils/types';
 
+export async function signInWithRedirect(
+	ctx: AmplifyContext,
+	input?: SignInWithRedirectInput,
+): Promise<void>;
+
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
  *
@@ -40,17 +46,20 @@ import { OpenAuthSession } from '../../../utils/types';
  */
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput,
-): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+): Promise<void>;
+export async function signInWithRedirect(...args: any[]): Promise<void> {
+	const [ctx, input] =
+		resolveCtxArgs<[SignInWithRedirectInput | undefined]>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	oAuthStore.setAuthConfig(authConfig);
 
 	if (!input?.options?.prompt) {
-		await assertUserNotAuthenticated();
+		await assertUserNotAuthenticated(ctx);
 	}
 
-	let provider = 'COGNITO'; // Default
+	let provider: string | undefined = 'COGNITO'; // Default
 	let idpIdentifier: string | undefined;
 
 	if (typeof input?.provider === 'string') {
@@ -59,6 +68,13 @@ export async function signInWithRedirect(
 		provider = input.provider.custom;
 	} else if (input?.provider?.idpIdentifier) {
 		({ idpIdentifier } = input.provider);
+	} else if (input?.options?.prompt === 'NONE') {
+		// `identity_provider` acts as a provider selector, so pinning it to the
+		// default `COGNITO` would restrict a silent `prompt=none` attempt to
+		// native Cognito sessions and fail with `login_required` for users whose
+		// existing session came from a federated IdP. Omitting it lets Cognito
+		// resume whichever session is already active.
+		provider = undefined;
 	}
 
 	return oauthSignIn({
@@ -89,7 +105,7 @@ const oauthSignIn = async ({
 	authSessionOpener,
 }: {
 	oauthConfig: OAuthConfig;
-	provider: string;
+	provider?: string;
 	idpIdentifier?: string;
 	clientId: string;
 	customState?: string;
@@ -127,7 +143,7 @@ const oauthSignIn = async ({
 	// Add either identity_provider or idp_identifier, but not both
 	if (idpIdentifier) {
 		params.append('idp_identifier', idpIdentifier);
-	} else {
+	} else if (provider) {
 		params.append('identity_provider', provider);
 	}
 

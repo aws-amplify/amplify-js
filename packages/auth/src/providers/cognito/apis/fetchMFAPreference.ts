@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
+	resolveCtxArgs,
 } from '@aws-amplify/core/internals/utils';
 
 import { FetchMFAPreferenceOutput } from '../types';
@@ -16,6 +17,10 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { createGetUserClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 
+export async function fetchMFAPreference(
+	ctx: AmplifyContext,
+): Promise<FetchMFAPreferenceOutput>;
+
 /**
  * Fetches the preferred MFA setting and enabled MFA settings for the user.
  *
@@ -24,11 +29,15 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
  * and settings.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function fetchMFAPreference(): Promise<FetchMFAPreferenceOutput> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+export async function fetchMFAPreference(): Promise<FetchMFAPreferenceOutput>;
+export async function fetchMFAPreference(
+	...args: any[]
+): Promise<FetchMFAPreferenceOutput> {
+	const [ctx] = resolveCtxArgs<[]>(args);
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await ctx.fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const getUser = createGetUserClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({

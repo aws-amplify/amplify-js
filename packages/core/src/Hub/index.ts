@@ -82,6 +82,14 @@ export class HubClass {
 		ampSymbol?: symbol,
 	): void;
 
+	dispatch<Channel extends AmplifyChannel>(
+		channel: Channel,
+		payload: HubPayload<AmplifyEventData[Channel]>,
+		source?: string,
+		ampSymbol?: symbol,
+		crossTab?: boolean,
+	): void;
+
 	dispatch(
 		channel: string,
 		payload: HubPayload,
@@ -97,6 +105,7 @@ export class HubClass {
 		payload: HubPayload<EventData>,
 		source?: string,
 		ampSymbol?: symbol,
+		crossTab?: boolean,
 	): void {
 		if (
 			typeof channel === 'string' &&
@@ -113,6 +122,7 @@ export class HubClass {
 
 		const capsule: HubCapsule<Channel | string, EventData> = {
 			channel,
+			crossTab,
 			payload: { ...payload },
 			source,
 			patternInfo: [],
@@ -140,6 +150,21 @@ export class HubClass {
 		listenerName?: string,
 	): StopListenerCallback;
 
+	// the crosstab option is only available for the 'auth' channel
+	listen<Channel extends AmplifyChannel>(
+		channel: Channel,
+		callback: HubCallback<Channel, AmplifyEventData[Channel]>,
+		options?: {
+			listenerName?: string;
+			/**
+			 * `auth` channel only; the listener receives BOTH same-tab and
+			 * cross-tab events. A listener without this flag receives only
+			 * same-tab events.
+			 */
+			enableCrossTabEvents?: boolean;
+		},
+	): StopListenerCallback;
+
 	listen<EventData extends EventDataMap>(
 		channel: string,
 		callback: HubCallback<string, EventData>,
@@ -152,9 +177,17 @@ export class HubClass {
 	>(
 		channel: Channel,
 		callback: HubCallback<Channel, EventData>,
-		listenerName = 'noname',
+		options:
+			| string
+			| { listenerName?: string; enableCrossTabEvents?: boolean } = {
+			listenerName: 'noname',
+		},
 	): StopListenerCallback {
-		let cb: HubCallback<string, EventDataMap>;
+		let cb: HubCallback;
+		const o: { listenerName: string; enableCrossTabEvents: boolean } =
+			typeof options === 'string'
+				? { listenerName: options, enableCrossTabEvents: false }
+				: { listenerName: 'noname', enableCrossTabEvents: false, ...options };
 		if (typeof callback !== 'function') {
 			throw new AmplifyError({
 				name: NO_HUBCALLBACK_PROVIDED_EXCEPTION,
@@ -162,7 +195,7 @@ export class HubClass {
 			});
 		} else {
 			// Needs to be casted as a more generic type
-			cb = callback as HubCallback<string, EventDataMap>;
+			cb = callback as HubCallback;
 		}
 		let holder = this.listeners.get(channel);
 
@@ -172,7 +205,8 @@ export class HubClass {
 		}
 
 		holder.push({
-			name: listenerName,
+			name: o.listenerName,
+			crossTab: o.enableCrossTabEvents,
 			callback: cb,
 		});
 
@@ -184,10 +218,22 @@ export class HubClass {
 	private _toListeners<Channel extends AmplifyChannel | string>(
 		capsule: HubCapsule<Channel, EventDataMap | AmplifyEventData[Channel]>,
 	) {
-		const { channel, payload } = capsule;
+		const { channel, payload, crossTab } = capsule;
 		const holder = this.listeners.get(channel);
 		if (holder) {
-			holder.forEach(listener => {
+			const eligibleListeners = holder.filter(listener => {
+				// Cross-tab dispatch: only cross-tab listeners on the 'auth'
+				// channel are eligible (cross-tab events are auth-only).
+				if (crossTab) {
+					return !!listener.crossTab && channel === 'auth';
+				}
+
+				// Same-tab dispatch: every listener is eligible — cross-tab
+				// listeners form a superset and therefore ALSO receive same-tab
+				// events, while plain listeners receive same-tab events only.
+				return true;
+			});
+			eligibleListeners.forEach(listener => {
 				logger.debug(`Dispatching to ${channel} with `, payload);
 				try {
 					listener.callback(capsule);

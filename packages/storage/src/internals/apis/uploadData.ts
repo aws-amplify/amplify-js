@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import {
+	AmplifyContext,
+	getGlobalContext,
+	isAmplifyContext,
+} from '@aws-amplify/core';
 
 import { readFile } from '../../client/utils/readFile';
 import { toBase64 } from '../../client/utils/toBase64';
@@ -12,11 +16,30 @@ import { uploadData as uploadDataInternal } from '../../providers/s3/apis/intern
 /**
  * @internal
  */
-export const uploadData = (input: UploadDataInput) => {
+export function uploadData(
+	ctx: AmplifyContext,
+	input: UploadDataInput,
+): UploadDataOutput;
+/**
+ * @internal
+ */
+export function uploadData(input: UploadDataInput): UploadDataOutput;
+export function uploadData(
+	ctxOrInput: AmplifyContext | UploadDataInput,
+	maybeInput?: UploadDataInput,
+): UploadDataOutput {
+	// Resolve the optional leading context. The global context is resolved at
+	// CALL time (never cached) so single-arg callers follow live configuration.
+	const [ctx, input]: [AmplifyContext, UploadDataInput] = isAmplifyContext(
+		ctxOrInput,
+	)
+		? [ctxOrInput, maybeInput as UploadDataInput]
+		: [getGlobalContext(), ctxOrInput];
+
 	const { data, path, options } = input;
 
 	return uploadDataInternal(
-		{ amplify: Amplify, readFile, toBase64 },
+		{ amplify: ctx, readFile, toBase64 },
 		{
 			path,
 			data,
@@ -40,4 +63,4 @@ export const uploadData = (input: UploadDataInput) => {
 		// Type casting is necessary because `uploadDataInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.
 	) as UploadDataOutput;
-};
+}

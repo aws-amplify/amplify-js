@@ -1,4 +1,4 @@
-import { Amplify } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
@@ -9,18 +9,23 @@ import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
 import { createRespondToAuthChallengeClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 
 import { getMockError } from './testUtils/data';
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
-jest.mock('@aws-amplify/core', () => ({
-	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
-}));
 jest.mock('../../../src/client/utils/store');
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
 jest.mock('../../../src/providers/cognito/factories');
+
+const mockCtx = createMockAmplifyContext({
+	Auth: {
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+			identityPoolId: 'us-west-2:xxxxxx',
+		},
+	},
+});
 
 describe('confirmSignIn API error path cases:', () => {
 	const challengeName = 'SELECT_MFA_TYPE';
@@ -34,7 +39,6 @@ describe('confirmSignIn API error path cases:', () => {
 	);
 
 	beforeAll(() => {
-		setUpGetConfig(Amplify);
 		mockStoreGetState.mockReturnValue({
 			username,
 			challengeName,
@@ -56,7 +60,7 @@ describe('confirmSignIn API error path cases:', () => {
 	it('confirmSignIn API should throw an error when challengeResponse is empty', async () => {
 		expect.assertions(2);
 		try {
-			await confirmSignIn({ challengeResponse: '' });
+			await confirmSignIn(mockCtx, { challengeResponse: '' });
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptyChallengeResponse);
@@ -66,7 +70,7 @@ describe('confirmSignIn API error path cases:', () => {
 	it('should throw an error when sign-in step is CONTINUE_SIGN_IN_WITH_MFA_SELECTION and challengeResponse is not "SMS", "TOTP", or "EMAIL"', async () => {
 		expect.assertions(2);
 		try {
-			await confirmSignIn({ challengeResponse: 'NO_SMS' });
+			await confirmSignIn(mockCtx, { challengeResponse: 'NO_SMS' });
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.IncorrectMFAMethod);
@@ -81,7 +85,7 @@ describe('confirmSignIn API error path cases:', () => {
 			);
 		});
 		try {
-			await confirmSignIn({ challengeResponse: 'TOTP' });
+			await confirmSignIn(mockCtx, { challengeResponse: 'TOTP' });
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
@@ -99,7 +103,7 @@ describe('confirmSignIn API error path cases:', () => {
 		});
 
 		try {
-			await confirmSignIn({
+			await confirmSignIn(mockCtx, {
 				challengeResponse: 'SMS',
 			});
 		} catch (err: any) {

@@ -1,54 +1,24 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	IdentifyUserInput,
-	OnNotificationOpenedInput,
-	OnNotificationReceivedInBackgroundInput,
-	OnNotificationReceivedInForegroundInput,
-	OnTokenReceivedInput,
-	RequestPermissionsInput,
-	SetBadgeCountInput,
-} from './inputs';
-import {
-	GetBadgeCountOutput,
-	GetLaunchNotificationOutput,
-	GetPermissionStatusOutput,
-	OnNotificationOpenedOutput,
-	OnNotificationReceivedInBackgroundOutput,
-	OnNotificationReceivedInForegroundOutput,
-	OnTokenReceivedOutput,
-	RequestPermissionsOutput,
-} from './outputs';
+import { AmplifyContext } from '@aws-amplify/core';
 
-export type GetBadgeCount = () => Promise<void | GetBadgeCountOutput>;
+import { IdentifyUserInput } from './inputs';
 
-export type GetLaunchNotification = () => Promise<GetLaunchNotificationOutput>;
+export {
+	GetBadgeCount,
+	GetLaunchNotification,
+	GetPermissionStatus,
+	InitializePushNotifications,
+	OnNotificationOpened,
+	OnNotificationReceivedInBackground,
+	OnNotificationReceivedInForeground,
+	OnTokenReceived,
+	RequestPermissions,
+	SetBadgeCount,
+} from '../../shared/types';
 
-export type GetPermissionStatus = () => Promise<GetPermissionStatusOutput>;
-
-export type IdentifyUser = (input: IdentifyUserInput) => Promise<void>;
-
-export type InitializePushNotifications = () => void;
-
-export type RequestPermissions = (
-	input?: RequestPermissionsInput,
-) => Promise<RequestPermissionsOutput>;
-
-export type SetBadgeCount = (input: SetBadgeCountInput) => void;
-
-export type OnNotificationOpened = (
-	input: OnNotificationOpenedInput,
-) => OnNotificationOpenedOutput;
-
-export type OnNotificationReceivedInBackground = (
-	input: OnNotificationReceivedInBackgroundInput,
-) => OnNotificationReceivedInBackgroundOutput;
-
-export type OnNotificationReceivedInForeground = (
-	input: OnNotificationReceivedInForegroundInput,
-) => OnNotificationReceivedInForegroundOutput;
-
-export type OnTokenReceived = (
-	input: OnTokenReceivedInput,
-) => OnTokenReceivedOutput;
+export interface IdentifyUser {
+	(ctx: AmplifyContext, input: IdentifyUserInput): Promise<void>;
+	(input: IdentifyUserInput): Promise<void>;
+}

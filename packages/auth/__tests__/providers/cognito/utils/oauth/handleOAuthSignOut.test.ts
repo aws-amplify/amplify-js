@@ -24,6 +24,7 @@ describe('handleOAuthSignOut', () => {
 	};
 	// assert mocks
 	const mockCompleteOAuthSignOut = completeOAuthSignOut as jest.Mock;
+	const mockClearCredentials = jest.fn();
 	const mockOAuthSignOutRedirect = oAuthSignOutRedirect as jest.Mock;
 	// create mocks
 	const mockStore = {
@@ -37,6 +38,7 @@ describe('handleOAuthSignOut', () => {
 		mockStore.loadOAuthSignIn.mockReset();
 		mockTokenOrchestrator.getOAuthMetadata.mockReset();
 		mockCompleteOAuthSignOut.mockClear();
+		mockClearCredentials.mockClear();
 		mockOAuthSignOutRedirect.mockClear();
 	});
 
@@ -50,9 +52,14 @@ describe('handleOAuthSignOut', () => {
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
+			mockClearCredentials,
 		);
 
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(
+			mockStore,
+			mockTokenOrchestrator,
+			mockClearCredentials,
+		);
 		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 			cognitoConfig,
 			false,
@@ -73,9 +80,14 @@ describe('handleOAuthSignOut', () => {
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
+			mockClearCredentials,
 		);
 
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(
+			mockStore,
+			mockTokenOrchestrator,
+			mockClearCredentials,
+		);
 		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 			cognitoConfig,
 			false,
@@ -93,9 +105,14 @@ describe('handleOAuthSignOut', () => {
 			mockStore,
 			mockTokenOrchestrator,
 			undefined,
+			mockClearCredentials,
 		);
 
-		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(
+			mockStore,
+			mockTokenOrchestrator,
+			mockClearCredentials,
+		);
 		expect(mockOAuthSignOutRedirect).not.toHaveBeenCalled();
 	});
 });

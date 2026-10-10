@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAccessLevel } from '@aws-amplify/core';
 
 import { headObject } from '../../../../../src/providers/s3/utils/client/s3data';
 import { getProperties } from '../../../../../src/providers/s3/apis/internal/getProperties';
@@ -16,20 +17,11 @@ import './testUtils';
 import { BucketInfo } from '../../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
-jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
-		return { debug: jest.fn() };
-	}),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
 const mockHeadObject = headObject as jest.MockedFunction<typeof headObject>;
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = jest.mocked(Amplify.getConfig);
+const mockGetConfig = jest.fn();
+// Live getter delegates to mockGetConfig so per-test config variance works.
+const mockCtx = createMockAmplifyContext({ getConfig: mockGetConfig });
+const mockFetchAuthSession = jest.mocked(mockCtx.fetchAuthSession);
 
 const bucket = 'bucket';
 const region = 'region';
@@ -56,7 +48,7 @@ const expectedResult = {
 
 describe('getProperties with key', () => {
 	const getPropertiesWrapper = (input: GetPropertiesInput) =>
-		getProperties(Amplify, input);
+		getProperties(mockCtx, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -243,7 +235,7 @@ describe('getProperties with key', () => {
 
 describe('Happy cases: With path', () => {
 	const getPropertiesWrapper = (input: GetPropertiesWithPathInput) =>
-		getProperties(Amplify, input);
+		getProperties(mockCtx, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -415,7 +407,7 @@ describe('Happy cases: With path', () => {
 
 describe(`getProperties with path and Expected Bucket Owner`, () => {
 	const getPropertiesWrapper = (input: GetPropertiesWithPathInput) =>
-		getProperties(Amplify, input);
+		getProperties(mockCtx, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,

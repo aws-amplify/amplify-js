@@ -103,6 +103,7 @@ export function assertDeviceMetadata(
 
 export const OAuthStorageKeys = {
 	inflightOAuth: 'inflightOAuth',
+	inflightOAuthDeadline: 'inflightOAuthDeadline',
 	oauthSignIn: 'oauthSignIn',
 	oauthPKCE: 'oauthPKCE',
 	oauthState: 'oauthState',
@@ -111,6 +112,16 @@ export const OAuthStorageKeys = {
 export interface OAuthStore {
 	setAuthConfig(authConfigParam: CognitoUserPoolConfig): void;
 	loadOAuthInFlight(): Promise<boolean>;
+	/**
+	 * Returns the timestamp (epoch ms) until which token consumers should block
+	 * on the inflight OAuth flow, or `undefined` when there is nothing to block
+	 * on (no flow in flight, or its blocking deadline has passed).
+	 *
+	 * Optional so that custom {@link OAuthStore} implementations written before
+	 * this method existed keep compiling; callers must treat its absence as
+	 * "no deadline available".
+	 */
+	loadOAuthInFlightDeadline?(): Promise<number | undefined>;
 	storeOAuthInFlight(inflight: boolean): Promise<void>;
 	loadOAuthSignIn(): Promise<{
 		isOAuthSignIn: boolean;

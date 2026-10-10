@@ -1,4 +1,7 @@
-import type { AmplifyClassV6 } from '@aws-amplify/core';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { resolveApiUrl } from '../../src/utils';
 import {
@@ -8,17 +11,15 @@ import {
 } from '../../src/errors';
 
 const mkAmplify = (endpoint = 'https://example.com/api', apiName = 'myAPI') =>
-	({
-		getConfig: () => ({
-			API: {
-				REST: {
-					[apiName]: {
-						endpoint,
-					},
+	createMockAmplifyContext({
+		API: {
+			REST: {
+				[apiName]: {
+					endpoint,
 				},
 			},
-		}),
-	}) as unknown as AmplifyClassV6;
+		},
+	});
 
 describe('resolveApiUrl', () => {
 	beforeEach(() => {
@@ -93,5 +94,76 @@ describe('resolveApiUrl', () => {
 		expect(url.toString()).toEqual(
 			'https://example.com/api/rest?baz=2&foo=bar',
 		);
+	});
+
+	describe('origin validation', () => {
+		it.each([
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'.other.example/items',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'@other.example/items',
+			],
+			['https://abc.execute-api.us-east-1.amazonaws.com', ':8443/items'],
+			['https://example.com', '.other.example'],
+			['/', '/other.example/items'],
+			['capacitor://localhost', '@other.example/items'],
+			['capacitor://localhost', '.other.example/items'],
+			['http://localhost:3000', ':8443/items'],
+			['https://example.com', ':pass@example.com/x'],
+		])(
+			'rejects endpoint %s with path %s resolving to a different origin',
+			(endpoint, path) => {
+				expect(() => resolveApiUrl(mkAmplify(endpoint), 'myAPI', path)).toThrow(
+					expect.objectContaining({
+						name: RestApiValidationErrorCode.InvalidPath,
+						...validationErrorMap[RestApiValidationErrorCode.InvalidPath],
+					}),
+				);
+			},
+		);
+
+		it('reports an endpoint that fails to parse as InvalidApiName', () => {
+			expect(() =>
+				resolveApiUrl(mkAmplify('https://'), 'myAPI', '/items'),
+			).toThrow(
+				expect.objectContaining({
+					name: RestApiValidationErrorCode.InvalidApiName,
+					recoverySuggestion: expect.stringContaining('Got https://'),
+				}),
+			);
+		});
+
+		it.each([
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'/items',
+				'https://abc.execute-api.us-east-1.amazonaws.com/items',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com/prod',
+				'.other.example',
+				'https://abc.execute-api.us-east-1.amazonaws.com/prod.other.example',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com/',
+				'items',
+				'https://abc.execute-api.us-east-1.amazonaws.com/items',
+			],
+			[
+				'https://example.com',
+				'//other.example/x',
+				'https://example.com//other.example/x',
+			],
+			['https://example.com', '?q=1', 'https://example.com/?q=1'],
+			['capacitor://localhost', '/items', 'capacitor://localhost/items'],
+			['/api', '/items', 'http://localhost/api/items'],
+		])('allows endpoint %s with path %s', (endpoint, path, expected) => {
+			expect(
+				resolveApiUrl(mkAmplify(endpoint), 'myAPI', path).toString(),
+			).toEqual(expected);
+		});
 	});
 });

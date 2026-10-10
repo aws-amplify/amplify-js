@@ -1,12 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
+import { createMockAmplifyContext } from '@aws-amplify/core/internals/testing';
 
 import { AnalyticsError } from '../../../../src/errors';
 import { resolveCredentials } from '../../../../src/providers/pinpoint/utils';
-
-jest.mock('@aws-amplify/core');
 
 describe('Analytics Pinpoint Provider Util: resolveCredentials', () => {
 	const credentials = {
@@ -16,8 +14,9 @@ describe('Analytics Pinpoint Provider Util: resolveCredentials', () => {
 		},
 		identityId: 'identity-id',
 	};
+	const mockCtx = createMockAmplifyContext();
 	// assert mocks
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+	const mockFetchAuthSession = mockCtx.fetchAuthSession as jest.Mock;
 
 	beforeEach(() => {
 		mockFetchAuthSession.mockReset();
@@ -25,7 +24,7 @@ describe('Analytics Pinpoint Provider Util: resolveCredentials', () => {
 
 	it('resolves required credentials', async () => {
 		mockFetchAuthSession.mockResolvedValue(credentials);
-		expect(await resolveCredentials()).toStrictEqual(credentials);
+		expect(await resolveCredentials(mockCtx)).toStrictEqual(credentials);
 	});
 
 	it('throws if credentials are missing', async () => {
@@ -33,6 +32,8 @@ describe('Analytics Pinpoint Provider Util: resolveCredentials', () => {
 			...credentials,
 			credentials: undefined,
 		});
-		await expect(resolveCredentials()).rejects.toBeInstanceOf(AnalyticsError);
+		await expect(resolveCredentials(mockCtx)).rejects.toBeInstanceOf(
+			AnalyticsError,
+		);
 	});
 });

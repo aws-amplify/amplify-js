@@ -1,5 +1,124 @@
 # Change Log
 
+## 6.22.1
+
+### Patch Changes
+
+- Updated dependencies [[`58609d9`](https://github.com/aws-amplify/amplify-js/commit/58609d9e0f6be2600551e8b128bb112c9cf5d333), [`dd20d26`](https://github.com/aws-amplify/amplify-js/commit/dd20d261b135229ad242bb5c1da96f9c01def7d9)]:
+  - @aws-amplify/core@6.19.2
+  - @aws-amplify/api@6.4.2
+  - @aws-amplify/datastore@5.1.13
+
+## 6.22.0
+
+### Minor Changes
+
+- [#14954](https://github.com/aws-amplify/amplify-js/pull/14954) [`a5e8df2`](https://github.com/aws-amplify/amplify-js/commit/a5e8df2cac13ab5ceb6c54260cef23b116b8dae4) Thanks [@soberm](https://github.com/soberm)! - feat(events): resolve subscription readiness via `channel.subscribe().ready` and add subscription id to the SUBSCRIPTION_ACK Hub event
+
+### Patch Changes
+
+- [#14948](https://github.com/aws-amplify/amplify-js/pull/14948) [`d8f5356`](https://github.com/aws-amplify/amplify-js/commit/d8f5356d31464c8f1f5e8b0a6a7b0ec800b8d110) Thanks [@bobbor](https://github.com/bobbor)! - fix(auth): support user-pool sign-in through a local `createAmplifyContext()` without `Amplify.configure()`
+
+  Makes a locally created `AmplifyContext` (`createAmplifyContext()`, without calling `Amplify.configure()`) usable end-to-end for Cognito user-pool auth:
+  - `Amplify.getConfig()` again returns an empty config (`{}`) with a warning before `configure()` instead of throwing `NoAmplifyContextError`, restoring the released 6.20.0 contract that the explicit-AmplifyContext migration (#14931) unintentionally changed.
+  - Cognito sign-in, `fetchAuthSession`, and the device APIs now resolve the per-context token orchestrator at the flow entry point (falling back to the global singleton for the `Amplify.configure()` path), so tokens persist to and are read from the same per-context store. The global `Amplify.configure()` path is unchanged.
+  - Known limitation: OAuth (`signInWithRedirect`) sign-in tokens still cache to the **global** orchestrator, because OAuth completion runs after a full-page redirect via `enableOAuthListener`, at which point no `AmplifyContext` survives — so a local `createAmplifyContext()` that initiates `signInWithRedirect` cannot read its OAuth tokens back per-context. This fix covers user-pool (non-redirect) sign-in.
+
+- Updated dependencies [[`d8f5356`](https://github.com/aws-amplify/amplify-js/commit/d8f5356d31464c8f1f5e8b0a6a7b0ec800b8d110)]:
+  - @aws-amplify/auth@6.21.1
+  - @aws-amplify/core@6.19.1
+  - @aws-amplify/api@6.4.1
+  - @aws-amplify/datastore@5.1.12
+
+## 6.21.0
+
+### Minor Changes
+
+- [#14931](https://github.com/aws-amplify/amplify-js/pull/14931) [`736d81d`](https://github.com/aws-amplify/amplify-js/commit/736d81d694b1df633e519881f73d1a942d6ccbe6) Thanks [@bobbor](https://github.com/bobbor)! - feat: explicit AmplifyContext support across all categories.
+
+  Adds context-first overloads (`fn(ctx, input)`) to category APIs alongside the existing
+  singleton-based forms, a public `createAmplifyContext(resourcesConfig, libraryOptions?)`
+  factory for isolated per-request/per-tenant contexts, per-request context isolation in
+  `@aws-amplify/adapter-nextjs` SSR, typed misuse errors (`InvalidAmplifyContextError`,
+  `NoAmplifyContextError`), and a shared testing entry (`@aws-amplify/core/internals/testing`).
+
+  Backward compatible: existing application code — including pre-context SSR
+  `operation: (contextSpec) => fetchAuthSession(contextSpec)` — compiles and behaves
+  unchanged via deprecated type aliases. Includes two api-graphql bug fixes: SSR request
+  clients now honor client-level options (previously silently dropped), and events error
+  messages accurately describe failures.
+
+  Compatibility surface and version guidance:
+  - Resources config is now deep-frozen after `Amplify.configure()` and
+    `createAmplifyContext()` (previously frozen only at the top level). Code that mutated
+    a nested config field post-configure — always unsupported — now throws in strict mode
+    instead of silently succeeding.
+  - Deprecated `AmplifyServer` type aliases (`Context`, `ContextSpec`, `ContextToken`,
+    `RunOperationWithContext`) and functional `createAmplifyServerContext` /
+    `getAmplifyServerContext` / `destroyAmplifyServerContext` shims are restored on the
+    internals/adapter-core entries so previously published `@aws-amplify/adapter-nextjs`
+    versions keep working. They will be removed in the next major.
+  - Peer minimums are raised (`@aws-amplify/core` to `^6.19.0` across category packages;
+    `aws-amplify` to `^6.21.0` for `@aws-amplify/adapter-nextjs`) to guard against
+    version-skewed installs going forward. Note this guard only applies when the
+    dependency tree is re-resolved: existing lockfiles, `npm ci`, and installs with
+    `--legacy-peer-deps` (or yarn classic's warn-only peers) are not re-checked, and
+    already-published category versions still declare the older range. Mixing an older
+    scoped category package (e.g. `@aws-amplify/auth` ≤ 6.x pinned to `core ^6.16.2`)
+    with a newer core is unsupported — keep directly installed `@aws-amplify/*` category
+    packages on the same release line as `aws-amplify`.
+
+### Patch Changes
+
+- Updated dependencies [[`736d81d`](https://github.com/aws-amplify/amplify-js/commit/736d81d694b1df633e519881f73d1a942d6ccbe6), [`eda0afa`](https://github.com/aws-amplify/amplify-js/commit/eda0afae7006b437902ad332803831da970abd38), [`b44e018`](https://github.com/aws-amplify/amplify-js/commit/b44e01830793e8a1b3a4a0d27a9eb155ac72c9b3), [`4661401`](https://github.com/aws-amplify/amplify-js/commit/46614015534d5d2080b2da4887ec020cb15bcea8), [`556185e`](https://github.com/aws-amplify/amplify-js/commit/556185e769418f450cd11d2d8b31daf4c7961b0c)]:
+  - @aws-amplify/core@6.19.0
+  - @aws-amplify/auth@6.21.0
+  - @aws-amplify/storage@6.17.0
+  - @aws-amplify/analytics@7.2.0
+  - @aws-amplify/api@6.4.0
+  - @aws-amplify/notifications@2.2.0
+  - @aws-amplify/datastore@5.1.11
+
+## 6.20.0
+
+### Minor Changes
+
+- [#14866](https://github.com/aws-amplify/amplify-js/pull/14866) [`bcdc02b`](https://github.com/aws-amplify/amplify-js/commit/bcdc02ba2a1b9b8e6ab8b384a4586cf9605b41c1) Thanks [@soberm](https://github.com/soberm)! - feat(notifications): add Amazon Connect Customer Profiles push notifications provider
+
+  Push Notifications can now be delivered through Amazon Connect Customer Profiles via the new `aws-amplify/push-notifications/customer-profiles` sub-path export. The provider ships `identifyUser`, `initializePushNotifications`, `registerDevice`, and `removeDevice` alongside the transport-agnostic badge, permission, launch-notification, and notification/token listener APIs, with SigV4-signed device registration and client-side user-profile validation. `Amplify.configure` accepts the corresponding `amazon_connect` notifications configuration from `amplify_outputs.json`.
+
+  Device registration follows the signed-in principal: `initializePushNotifications` registers the device when a push token is received and re-registers it on sign-in so an existing registration is re-homed to the authenticated principal. Because de-registration is authorized against the calling principal, applications should await `removeDevice()` before `signOut()` to stop delivery to a device.
+
+  The default `aws-amplify/push-notifications` entry point emits a one-time `ConsoleLogger` notice at runtime directing customers to the Customer Profiles sub-path, since that entry point is backed by Amazon Pinpoint and AWS ends support for Amazon Pinpoint on October 30, 2026. Both changes are backwards compatible: existing exports keep their names, types, and signatures.
+
+### Patch Changes
+
+- Updated dependencies [[`bcdc02b`](https://github.com/aws-amplify/amplify-js/commit/bcdc02ba2a1b9b8e6ab8b384a4586cf9605b41c1)]:
+  - @aws-amplify/core@6.18.0
+  - @aws-amplify/notifications@2.1.0
+  - @aws-amplify/api@6.3.29
+  - @aws-amplify/datastore@5.1.10
+
+## 6.19.0
+
+### Minor Changes
+
+- [#14854](https://github.com/aws-amplify/amplify-js/pull/14854) [`eed1462`](https://github.com/aws-amplify/amplify-js/commit/eed1462e44ba54667828d779207d9f2eaea9cad7) Thanks [@soberm](https://github.com/soberm)! - feat(analytics): add configureAutoTrack support for Kinesis and Kinesis Firehose providers
+
+- [#14867](https://github.com/aws-amplify/amplify-js/pull/14867) [`aaeb630`](https://github.com/aws-amplify/amplify-js/commit/aaeb630870119a9b55d24e3e55c17287eb911e93) Thanks [@soberm](https://github.com/soberm)! - feat(core): add optional onStateChange telemetry hook to ServiceWorker.register(); deprecate implicit Pinpoint auto-recording of SW lifecycle events (opt-in, backwards compatible)
+
+### Patch Changes
+
+- [#14877](https://github.com/aws-amplify/amplify-js/pull/14877) [`49d9e82`](https://github.com/aws-amplify/amplify-js/commit/49d9e82c5e9df3066046db4ce91aab1ca3db99e5) Thanks [@soberm](https://github.com/soberm)! - feat(analytics): warn on deprecated default (Pinpoint) exports
+
+  The default (Amazon Pinpoint) Analytics APIs (`record`, `identifyUser`, `configureAutoTrack`, `flushEvents`) now emit a one-time `ConsoleLogger` deprecation warning at runtime, pointing customers to the supported sub-path exports (`aws-amplify/analytics/kinesis`, `aws-amplify/analytics/kinesis-firehose`, `aws-amplify/analytics/personalize`). AWS ends support for Amazon Pinpoint on October 30, 2026. This is non-breaking: types and signatures are preserved.
+
+- Updated dependencies [[`eed1462`](https://github.com/aws-amplify/amplify-js/commit/eed1462e44ba54667828d779207d9f2eaea9cad7), [`49d9e82`](https://github.com/aws-amplify/amplify-js/commit/49d9e82c5e9df3066046db4ce91aab1ca3db99e5), [`9a3041c`](https://github.com/aws-amplify/amplify-js/commit/9a3041c9fdb19ecead6c62b89c29f0b4854ac65c), [`aaeb630`](https://github.com/aws-amplify/amplify-js/commit/aaeb630870119a9b55d24e3e55c17287eb911e93)]:
+  - @aws-amplify/analytics@7.1.0
+  - @aws-amplify/datastore@5.1.9
+  - @aws-amplify/core@6.17.0
+  - @aws-amplify/api@6.3.28
+
 ## 6.18.0
 
 ### Minor Changes

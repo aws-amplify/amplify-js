@@ -28,6 +28,8 @@ export enum StorageValidationErrorCode {
 	InvalidCustomEndpoint = 'InvalidCustomEndpoint',
 	ForcePathStyleEndpointNotSupported = 'ForcePathStyleEndpointNotSupported',
 	DnsIncompatibleBucketName = 'DnsIncompatibleBucketName',
+	NoS3Config = 'NoS3Config',
+	NoAuthConfig = 'NoAuthConfig',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -106,5 +108,11 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.DnsIncompatibleBucketName]: {
 		message: `The bucket name isn't DNS compatible.`,
+	},
+	[StorageValidationErrorCode.NoS3Config]: {
+		message: 'Storage S3 configuration is missing.',
+	},
+	[StorageValidationErrorCode.NoAuthConfig]: {
+		message: 'Auth Cognito configuration is missing.',
 	},
 };

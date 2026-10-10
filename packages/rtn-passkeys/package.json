@@ -34,7 +34,7 @@
 		"prepare:ios": "cd ./example && npx pod-install",
 		"prepare:android": "cd ./example && echo \"{}\" > amplify_outputs.json",
 		"test": "echo 'no-op'",
-		"test:ios": "xcodebuild test -quiet -workspace example/ios/AmplifyRtnPasskeysExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 16' -scheme AmplifyRtnPasskeys-Unit-tests",
+		"test:ios": "xcodebuild test -quiet -workspace example/ios/AmplifyRtnPasskeysExample.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 17' -scheme AmplifyRtnPasskeys-Unit-tests",
 		"test:android": "cd ./example/android && ./gradlew test -i",
 		"typecheck": "tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",

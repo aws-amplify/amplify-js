@@ -3,10 +3,10 @@
 
 export { createMessageEventRecorder } from './createMessageEventRecorder';
 export { getAnalyticsEvent } from './getAnalyticsEvent';
-export { getChannelType } from './getChannelType';
 export {
+	getChannelType,
 	getInflightDeviceRegistration,
 	rejectInflightDeviceRegistration,
 	resolveInflightDeviceRegistration,
-} from './inflightDeviceRegistration';
+} from '../../shared/utils';
 export { resolveConfig } from './resolveConfig';

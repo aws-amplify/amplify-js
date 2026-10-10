@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyContext } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
@@ -16,6 +16,7 @@ import {
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { createCognitoUserPoolEndpointResolver } from '../../../providers/cognito/factories';
 import { cacheCognitoTokens } from '../../../providers/cognito/tokenProvider/cacheTokens';
+import { resolveTokenOrchestrator } from '../../../providers/cognito/tokenProvider';
 import { dispatchSignedInHubEvent } from '../../../providers/cognito/utils/dispatchSignedInHubEvent';
 import { setActiveSignInState, signInStore } from '../../../client/utils/store';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -30,9 +31,10 @@ import { getNewDeviceMetadata } from '../../../providers/cognito/utils/getNewDev
 import { WebAuthnSignInResult } from './types';
 
 export async function handleWebAuthnSignInResult(
+	ctx: AmplifyContext,
 	challengeParameters: ChallengeParameters,
 ): Promise<WebAuthnSignInResult> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = ctx.resourcesConfig.Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { username, signInSession, signInDetails, challengeName } =
 		signInStore.getState();
@@ -89,19 +91,22 @@ export async function handleWebAuthnSignInResult(
 	});
 
 	if (authenticationResult) {
-		await cacheCognitoTokens({
-			...authenticationResult,
-			username,
-			NewDeviceMetadata: await getNewDeviceMetadata({
-				userPoolId: authConfig.userPoolId,
-				userPoolEndpoint: authConfig.userPoolEndpoint,
-				newDeviceMetadata: authenticationResult.NewDeviceMetadata,
-				accessToken: authenticationResult.AccessToken,
-			}),
-			signInDetails,
-		});
+		await cacheCognitoTokens(
+			{
+				...authenticationResult,
+				username,
+				NewDeviceMetadata: await getNewDeviceMetadata({
+					userPoolId: authConfig.userPoolId,
+					userPoolEndpoint: authConfig.userPoolEndpoint,
+					newDeviceMetadata: authenticationResult.NewDeviceMetadata,
+					accessToken: authenticationResult.AccessToken,
+				}),
+				signInDetails,
+			},
+			resolveTokenOrchestrator(ctx),
+		);
 		signInStore.dispatch({ type: 'RESET_STATE' });
-		await dispatchSignedInHubEvent();
+		await dispatchSignedInHubEvent(ctx);
 
 		return {
 			isSignedIn: true,

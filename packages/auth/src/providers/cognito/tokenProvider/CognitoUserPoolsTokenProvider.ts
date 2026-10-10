@@ -24,6 +24,7 @@ export class CognitoUserPoolsTokenProvider
 	constructor() {
 		this.authTokenStore = new DefaultTokenStore();
 		this.authTokenStore.setKeyValueStorage(defaultStorage);
+		this.authTokenStore.setupNotify();
 		this.tokenOrchestrator = new TokenOrchestrator();
 		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
 		this.tokenOrchestrator.setTokenRefresher(refreshAuthTokens);
@@ -35,6 +36,15 @@ export class CognitoUserPoolsTokenProvider
 
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void {
 		this.authTokenStore.setKeyValueStorage(keyValueStorage);
+	}
+
+	/**
+	 * Tears down the cross-tab storage listener held by the underlying token
+	 * store. Intended for tests, HMR, and micro-frontend teardown; safe no-op
+	 * when notify was never set up.
+	 */
+	teardownNotify(): void {
+		this.authTokenStore.teardownNotify();
 	}
 
 	setClientMetadataProvider(

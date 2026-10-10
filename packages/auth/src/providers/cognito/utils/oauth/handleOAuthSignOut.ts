@@ -15,13 +15,14 @@ export const handleOAuthSignOut = async (
 	store: DefaultOAuthStore,
 	tokenOrchestrator: TokenOrchestrator,
 	redirectUrl: string | undefined,
+	clearCredentials: () => Promise<void>,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn } = await store.loadOAuthSignIn();
 	const oauthMetadata = await tokenOrchestrator.getOAuthMetadata();
 
 	// Clear everything before attempting to visted logout endpoint since the current application
 	// state could be wiped away on redirect
-	await completeOAuthSignOut(store);
+	await completeOAuthSignOut(store, tokenOrchestrator, clearCredentials);
 
 	// The isOAuthSignIn flag is propagated by the oAuthToken store which manages oauth keys in local storage only.
 	// These keys are used to determine if a user is in an inflight or signedIn oauth states.

@@ -1,14 +1,29 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ConsoleLogger } from '../Logger';
 import { PlatformNotSupportedError } from '../errors';
-import { KeyValueStorageInterface } from '../types';
+import { KeyValueStorageEvent, KeyValueStorageInterface } from '../types';
+import { isBrowser } from '../utils';
+
+const logger = new ConsoleLogger('KeyValueStorage');
 
 /**
  * @internal
  */
 export class KeyValueStorage implements KeyValueStorageInterface {
 	storage?: Storage;
+	listeners?: Set<(e: KeyValueStorageEvent) => Promise<void>>;
+
+	/**
+	 * The bound `window` 'storage' event handler. It is created lazily on the
+	 * first successful browser subscription and cleared once the last listener
+	 * unsubscribes. Instances that never subscribe therefore carry no
+	 * function-valued own property, which keeps two structurally-identical
+	 * storage instances deep-equal for consumers that compare by value (e.g.
+	 * Jest's `toHaveBeenCalledWith`).
+	 */
+	private storageListener?: (event: StorageEvent) => void;
 
 	constructor(storage?: Storage) {
 		this.storage = storage;
@@ -54,5 +69,65 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	async clear() {
 		if (!this.storage) throw new PlatformNotSupportedError();
 		this.storage.clear();
+	}
+
+	/**
+	 * This is used to allow listening for changes
+	 * @param {function} listener - the function called on storage change
+	 * @returns {function} an unsubscribe function that removes the listener. The
+	 * underlying `window` 'storage' event listener is attached lazily on the
+	 * first subscription and detached once the last listener unsubscribes. In
+	 * non-browser (SSR/native) environments nothing is attached and the returned
+	 * unsubscribe function is a safe no-op.
+	 */
+	addListener(
+		listener: (ev: KeyValueStorageEvent) => Promise<void>,
+	): () => void {
+		const listeners = (this.listeners ??= new Set());
+		listeners.add(listener);
+
+		// Lazily attach the cross-tab 'storage' listener on the first subscription.
+		if (isBrowser() && listeners.size === 1) {
+			// Create the handler lazily (and only in a browser) so instances that
+			// never subscribe keep no function-valued own property. The same
+			// reference is reused for detach on last-unsubscribe.
+			const storageListener = (e: StorageEvent) => {
+				// Only react to events for this instance's backing store. Without
+				// this guard a localStorage-backed instance and a
+				// sessionStorage-backed instance would react to each other's
+				// 'storage' events, since both share the single window listener.
+				if (e.storageArea !== this.storage) {
+					return;
+				}
+				this.listeners?.forEach(l => {
+					// A listener may be async and reject; isolate each call so one
+					// rejecting listener neither aborts the others nor surfaces as an
+					// unhandled promise rejection.
+					Promise.resolve(
+						l({
+							key: e.key,
+							oldValue: e.oldValue,
+							newValue: e.newValue,
+						}),
+					).catch(error => {
+						logger.error('Error in storage event listener', error);
+					});
+				});
+			};
+			this.storageListener = storageListener;
+			window.addEventListener('storage', storageListener, false);
+		}
+
+		return () => {
+			listeners.delete(listener);
+			const { storageListener } = this;
+			// Detach once the last subscriber unsubscribes — real teardown, not
+			// just pruning the set. Guarding on the stored handler keeps repeated
+			// unsubscribe calls idempotent.
+			if (isBrowser() && listeners.size === 0 && storageListener) {
+				window.removeEventListener('storage', storageListener, false);
+				this.storageListener = undefined;
+			}
+		};
 	}
 }
