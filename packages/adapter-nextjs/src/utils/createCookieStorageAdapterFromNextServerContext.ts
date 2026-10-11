@@ -103,11 +103,14 @@ const createCookieStorageAdapterFromNextRequestAndNextResponse = (
 			}
 			mutableCookieStore.set(ensureEncodedForJSCookie(name), value, options);
 		},
-		delete(name) {
+		delete(name, options) {
 			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 				return;
 			}
-			mutableCookieStore.delete(ensureEncodedForJSCookie(name));
+			mutableCookieStore.delete({
+				name: ensureEncodedForJSCookie(name),
+				...options,
+			});
 		},
 	};
 };
@@ -155,13 +158,13 @@ const createCookieStorageAdapterFromNextCookies = async (
 		}
 	};
 
-	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
+	const deleteFunc: CookieStorage.Adapter['delete'] = (name, options) => {
 		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 			return;
 		}
 
 		try {
-			cookieStore.delete(ensureEncodedForJSCookie(name));
+			cookieStore.delete({ name: ensureEncodedForJSCookie(name), ...options });
 		} catch {
 			// no-op
 		}
@@ -228,13 +231,12 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 				serializeCookie(name, value, options),
 			);
 		},
-		delete(name) {
+		delete(name, options) {
 			if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 				return;
 			}
 
-			const encodedName = ensureEncodedForJSCookie(name);
-			const setCookieValue = `${encodedName}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`;
+			const setCookieValue = serializeDeleteCookie(name, options);
 			const existingValues = getExistingSetCookieValues(
 				response.getHeader('Set-Cookie'),
 			);
@@ -261,17 +263,12 @@ const createMutableCookieStoreFromHeaders = (
 
 		headers.append('Set-Cookie', serializeCookie(name, value, options));
 	};
-	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
+	const deleteFunc: CookieStorage.Adapter['delete'] = (name, options) => {
 		if (shouldIgnoreCookie(ignoreNonServerSideCookies, name)) {
 			return;
 		}
 
-		headers.append(
-			'Set-Cookie',
-			`${ensureEncodedForJSCookie(
-				name,
-			)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
-		);
+		headers.append('Set-Cookie', serializeDeleteCookie(name, options));
 	};
 
 	return {
@@ -279,6 +276,16 @@ const createMutableCookieStoreFromHeaders = (
 		delete: deleteFunc,
 	};
 };
+
+const serializeDeleteCookie = (
+	name: string,
+	options?: CookieStorage.DeleteCookieOptions,
+): string =>
+	serializeCookie(name, '', {
+		expires: DATE_IN_THE_PAST,
+		domain: options?.domain,
+		path: options?.path,
+	});
 
 const getExistingSetCookieValues = (
 	values: number | string | string[] | undefined,

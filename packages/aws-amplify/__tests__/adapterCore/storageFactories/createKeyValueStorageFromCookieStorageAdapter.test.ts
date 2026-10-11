@@ -100,7 +100,10 @@ describe('keyValueStorage', () => {
 			it('should remove item', async () => {
 				const testKey = 'testKey';
 				keyValueStorage.removeItem(testKey);
-				expect(mockCookiesStorageAdapter.delete).toHaveBeenCalledWith(testKey);
+				expect(mockCookiesStorageAdapter.delete).toHaveBeenCalledWith(testKey, {
+					path: '/',
+					domain: undefined,
+				});
 			});
 
 			it('should clear', async () => {
@@ -132,6 +135,20 @@ describe('keyValueStorage', () => {
 						...defaultSetCookieOptions,
 						...testSetCookieOptions,
 					},
+				);
+			});
+
+			it('removes item with the path and domain from setCookieOptions', async () => {
+				const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
+					mockCookiesStorageAdapter,
+					undefined,
+					{ domain: 'example.com', path: '/app', httpOnly: true },
+				);
+
+				keyValueStorage.removeItem('testKey');
+				expect(mockCookiesStorageAdapter.delete).toHaveBeenCalledWith(
+					'testKey',
+					{ path: '/app', domain: 'example.com' },
 				);
 			});
 
