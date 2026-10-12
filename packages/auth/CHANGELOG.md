@@ -1,5 +1,11 @@
 # Change Log
 
+## 6.21.2
+
+### Patch Changes
+
+- [#14979](https://github.com/aws-amplify/amplify-js/pull/14979) [`85fff37`](https://github.com/aws-amplify/amplify-js/commit/85fff37022120beca6f15a50d0270112956ac284) Thanks [@osama-rizk](https://github.com/osama-rizk)! - fix(auth): get a guest identityId instead of reusing the signed-in user's identityId when tokens were cleared without signing out
+
 ## 6.21.1
 
 ### Patch Changes

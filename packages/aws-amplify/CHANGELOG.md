@@ -1,5 +1,20 @@
 # Change Log
 
+## 6.22.2
+
+### Patch Changes
+
+- [#14977](https://github.com/aws-amplify/amplify-js/pull/14977) [`c3cbb32`](https://github.com/aws-amplify/amplify-js/commit/c3cbb32eaaf37f9fb104e6a7dd23edef913aebfe) Thanks [@osama-rizk](https://github.com/osama-rizk)! - Delete server-side auth cookies with the same Path and Domain they were set with
+  - `@aws-amplify/core`: `CookieStorage.Adapter.delete()` accepts optional `DeleteCookieOptions` (`path`, `domain`).
+  - `aws-amplify`: the cookie-backed key-value storage passes the `path` and `domain` used by `setItem` when it removes an item.
+  - `@aws-amplify/adapter-nextjs`: the server cookie adapters include `Path` and `Domain` in the cookie deletion, so auth cookies are removed on `/_next/data`, nested-route and API-route requests.
+
+- Updated dependencies [[`c3cbb32`](https://github.com/aws-amplify/amplify-js/commit/c3cbb32eaaf37f9fb104e6a7dd23edef913aebfe), [`9f9eed5`](https://github.com/aws-amplify/amplify-js/commit/9f9eed5181cc313adf6b894cc9338d3dbb9a6e32), [`85fff37`](https://github.com/aws-amplify/amplify-js/commit/85fff37022120beca6f15a50d0270112956ac284)]:
+  - @aws-amplify/core@6.19.3
+  - @aws-amplify/datastore@5.1.14
+  - @aws-amplify/auth@6.21.2
+  - @aws-amplify/api@6.4.3
+
 ## 6.22.1
 
 ### Patch Changes
