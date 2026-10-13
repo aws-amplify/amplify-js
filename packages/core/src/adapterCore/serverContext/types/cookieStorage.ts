@@ -114,6 +114,10 @@ export declare namespace CookieStorage {
 		>
 	>;
 
+	export type DeleteCookieOptions = Partial<
+		Pick<CookieSerializeOptions, 'domain' | 'path'>
+	>;
+
 	export type Cookie = {
 		name: string;
 		value?: string;
@@ -142,7 +146,9 @@ export declare namespace CookieStorage {
 		/**
 		 * Delete a cookie from the storage.
 		 * @param name The name of the cookie.
+		 * @param [options] The `Path` and `Domain` the cookie was set with. A
+		 * cookie can only be deleted with the same `Path` and `Domain`.
 		 */
-		delete(name: string): void;
+		delete(name: string, options?: DeleteCookieOptions): void;
 	}
 }

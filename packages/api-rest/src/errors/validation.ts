@@ -5,6 +5,7 @@ import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
 
 export enum RestApiValidationErrorCode {
 	InvalidApiName = 'InvalidApiName',
+	InvalidPath = 'InvalidPath',
 }
 
 export const validationErrorMap: AmplifyErrorMap<RestApiValidationErrorCode> = {
@@ -12,5 +13,11 @@ export const validationErrorMap: AmplifyErrorMap<RestApiValidationErrorCode> = {
 		message: 'API name is invalid.',
 		recoverySuggestion:
 			'Check if the API name matches the one in your configuration or `aws-exports.js`',
+	},
+	[RestApiValidationErrorCode.InvalidPath]: {
+		message:
+			'API path does not resolve to the same protocol, host and userinfo as the configured endpoint.',
+		recoverySuggestion:
+			'Make sure the path is relative to the configured endpoint (for example `/items`) and does not change its host, port, or protocol.',
 	},
 };
