@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.5.22...@aws-amplify/api-rest@3.5.23) (2026-10-13)
+
+### Bug Fixes
+
+- **api-rest:** require REST request URLs to resolve to the configured endpoint origin (v5) ([#14969](https://github.com/aws-amplify/amplify-js/issues/14969)) ([71c5e87](https://github.com/aws-amplify/amplify-js/commit/71c5e87146c788a38af746cd2a66544d2a256904))
+
 ## [3.5.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.5.21...@aws-amplify/api-rest@3.5.22) (2026-09-01)
 
 ### Bug Fixes

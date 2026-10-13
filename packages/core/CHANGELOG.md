@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.8.19...@aws-amplify/core@5.8.20) (2026-10-13)
+
+### Bug Fixes
+
+- **@aws-amplify/core:** bump tslib to ^2.1.0 to guarantee \_\_spreadArray at runtime ([#14884](https://github.com/aws-amplify/amplify-js/issues/14884)) ([48fb116](https://github.com/aws-amplify/amplify-js/commit/48fb116a8e07691287134bc0f904b60165304926))
+
 ## [5.8.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.8.18...@aws-amplify/core@5.8.19) (2026-09-01)
 
 ### Bug Fixes
