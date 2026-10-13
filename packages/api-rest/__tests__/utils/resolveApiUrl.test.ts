@@ -96,11 +96,80 @@ describe('resolveApiUrl', () => {
 		);
 	});
 
+	describe('origin validation', () => {
+		it.each([
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'.other.example/items',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'@other.example/items',
+			],
+			['https://abc.execute-api.us-east-1.amazonaws.com', ':8443/items'],
+			['https://example.com', '.other.example'],
+			['/', '/other.example/items'],
+			['capacitor://localhost', '@other.example/items'],
+			['capacitor://localhost', '.other.example/items'],
+			['http://localhost:3000', ':8443/items'],
+			['https://example.com', ':pass@example.com/x'],
+		])(
+			'rejects endpoint %s with path %s resolving to a different origin',
+			(endpoint, path) => {
+				expect(() => resolveApiUrl(mkAmplify(endpoint), 'myAPI', path)).toThrow(
+					expect.objectContaining({
+						name: RestApiValidationErrorCode.InvalidPath,
+						...validationErrorMap[RestApiValidationErrorCode.InvalidPath],
+					}),
+				);
+			},
+		);
+
+		it('reports an endpoint that fails to parse as InvalidApiName', () => {
+			expect(() =>
+				resolveApiUrl(mkAmplify('https://'), 'myAPI', '/items'),
+			).toThrow(
+				expect.objectContaining({
+					name: RestApiValidationErrorCode.InvalidApiName,
+					recoverySuggestion: expect.stringContaining('Got https://'),
+				}),
+			);
+		});
+
+		it.each([
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com',
+				'/items',
+				'https://abc.execute-api.us-east-1.amazonaws.com/items',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com/prod',
+				'.other.example',
+				'https://abc.execute-api.us-east-1.amazonaws.com/prod.other.example',
+			],
+			[
+				'https://abc.execute-api.us-east-1.amazonaws.com/',
+				'items',
+				'https://abc.execute-api.us-east-1.amazonaws.com/items',
+			],
+			[
+				'https://example.com',
+				'//other.example/x',
+				'https://example.com//other.example/x',
+			],
+			['https://example.com', '?q=1', 'https://example.com/?q=1'],
+			['capacitor://localhost', '/items', 'capacitor://localhost/items'],
+			['/api', '/items', 'http://localhost/api/items'],
+		])('allows endpoint %s with path %s', (endpoint, path, expected) => {
+			expect(
+				resolveApiUrl(mkAmplify(endpoint), 'myAPI', path).toString(),
+			).toEqual(expected);
+		});
+	});
 	it('resolves the URL when URL.canParse is not available', () => {
 		expect.assertions(2);
 
 		jest.isolateModules(() => {
-			// e.g. Safari before 17 does not implement URL.canParse
 			jest.doMock('@aws-amplify/core/internals/utils', () => {
 				const actual = jest.requireActual('@aws-amplify/core/internals/utils');
 				class AmplifyUrl extends actual.AmplifyUrl {}
@@ -124,4 +193,5 @@ describe('resolveApiUrl', () => {
 			).toEqual('http://localhost/api/rest');
 		});
 	});
+
 });
