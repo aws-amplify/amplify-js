@@ -193,5 +193,4 @@ describe('resolveApiUrl', () => {
 			).toEqual('http://localhost/api/rest');
 		});
 	});
-
 });
