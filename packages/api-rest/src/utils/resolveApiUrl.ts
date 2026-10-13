@@ -21,6 +21,7 @@ import {
  * 3. Merge the query parameters from path and the queryParameter argument which is taken from the public REST API
  *   options.
  * 4. Validating the resulting URL string.
+ * 5. Validating the resulting URL has the same protocol, host and userinfo as the configured endpoint.
  *
  * @internal
  */
@@ -32,29 +33,49 @@ export const resolveApiUrl = (
 ): URL => {
 	const urlStr = amplify.resourcesConfig?.API?.REST?.[apiName]?.endpoint;
 	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
+	let endpointUrl: URL;
 	try {
-		let url: URL;
-		// Avoid URL.canParse here: older browsers such as Safari < 17 lack it
-		try {
-			url = new AmplifyUrl(urlStr + path);
-		} catch {
-			url = new AmplifyUrl(urlStr + path, location?.origin);
-		}
-
-		if (queryParams) {
-			const mergedQueryParams = new AmplifyUrlSearchParams(url.searchParams);
-			Object.entries(queryParams).forEach(([key, value]) => {
-				mergedQueryParams.set(key, value);
-			});
-			url.search = new AmplifyUrlSearchParams(mergedQueryParams).toString();
-		}
-
-		return url;
+		endpointUrl = parseUrl(urlStr);
 	} catch (error) {
 		throw new RestApiError({
 			name: RestApiValidationErrorCode.InvalidApiName,
 			...validationErrorMap[RestApiValidationErrorCode.InvalidApiName],
 			recoverySuggestion: `Please make sure the REST endpoint URL is a valid URL string. Got ${urlStr}`,
 		});
+	}
+	let url: URL;
+	try {
+		url = parseUrl(urlStr + path);
+	} catch (error) {
+		throw new RestApiError({
+			name: RestApiValidationErrorCode.InvalidPath,
+			...validationErrorMap[RestApiValidationErrorCode.InvalidPath],
+		});
+	}
+	// Compare protocol, host and userinfo rather than `origin`, which is the opaque "null" for non-special schemes.
+	assertValidationError(
+		url.protocol === endpointUrl.protocol &&
+			url.host === endpointUrl.host &&
+			url.username === endpointUrl.username &&
+			url.password === endpointUrl.password,
+		RestApiValidationErrorCode.InvalidPath,
+	);
+
+	if (queryParams) {
+		const mergedQueryParams = new AmplifyUrlSearchParams(url.searchParams);
+		Object.entries(queryParams).forEach(([key, value]) => {
+			mergedQueryParams.set(key, value);
+		});
+		url.search = new AmplifyUrlSearchParams(mergedQueryParams).toString();
+	}
+
+	return url;
+};
+
+const parseUrl = (urlStr: string): URL => {
+	try {
+		return new AmplifyUrl(urlStr);
+	} catch {
+		return new AmplifyUrl(urlStr, location?.origin);
 	}
 };
