@@ -54,29 +54,64 @@ jobs:
           echo "Active Xcode: $(xcode-select -p)"
       - name: Ensure iPhone 15 simulator exists
         # The 'iPhone 15' device name is required by detox config in the samples
-        # repo. If the runner image doesn't ship one, create it with the newest
-        # available iOS runtime. Passkeys tests handle their own sim (iOS 17.4).
+        # repo. The macos-15 image does not ship an 'iPhone 15' device, so create
+        # one on the iOS runtime bundled with the selected Xcode (iOS 18.5 for
+        # Xcode 16.4). The image also preinstalls iOS 26.x runtimes for Xcode 26,
+        # so "newest runtime" is not deterministic: it picked iOS 26.2 under
+        # Xcode 16.4. Fallback order: runtime matching the Xcode simulator SDK,
+        # then newest preinstalled iOS 18.x, then newest iOS runtime (warning).
+        # Passkeys tests handle their own sim (iOS 17.4).
         if: ${{ !contains(inputs.test_name, 'integ_rn_ios_passkeys') }}
+        timeout-minutes: 5
         run: |
-          if xcrun simctl list devices available | grep -q '"iPhone 15"'; then
-            echo "iPhone 15 simulator already available."
+          RUNTIMES=$(xcrun simctl list runtimes available | grep -oE 'com\.apple\.CoreSimulator\.SimRuntime\.iOS-[0-9]+-[0-9]+' | sort -t- -k2,2n -k3,3n)
+          SDK_VERSION=$(xcrun --sdk iphonesimulator --show-sdk-version)
+          echo "Xcode simulator SDK: iOS $SDK_VERSION"
+          echo "Available iOS runtimes:"
+          echo "$RUNTIMES"
+          WANTED="com.apple.CoreSimulator.SimRuntime.iOS-$(echo "$SDK_VERSION" | tr '.' '-')"
+          if echo "$RUNTIMES" | grep -qx "$WANTED"; then
+            RUNTIME="$WANTED"
           else
-            echo "iPhone 15 simulator not found — creating one."
-            # Pick the newest iOS runtime available on this image
-            RUNTIME=$(xcrun simctl list runtimes iOS | grep -oE 'com\.apple\.CoreSimulator\.SimRuntime\.iOS-[0-9]+-[0-9]+' | sort -V | tail -n1)
+            RUNTIME=$(echo "$RUNTIMES" | grep -E 'iOS-18-[0-9]+$' | tail -n1)
             if [ -z "$RUNTIME" ]; then
-              echo "::error::No iOS runtime found. Cannot create simulator."
-              exit 1
+              RUNTIME=$(echo "$RUNTIMES" | tail -n1)
             fi
-            echo "Using runtime: $RUNTIME"
+            echo "::warning::No runtime matching iOS $SDK_VERSION. Falling back to: ${RUNTIME:-none}"
+          fi
+          if [ -z "$RUNTIME" ]; then
+            echo "::error::No iOS runtime found. Cannot create simulator."
+            exit 1
+          fi
+          echo "Using runtime: $RUNTIME"
+          EXISTING=$(xcrun simctl list devices available -j | jq -r --arg rt "$RUNTIME" '.devices[$rt] // [] | map(select(.name == "iPhone 15")) | .[0].udid // empty')
+          if [ -n "$EXISTING" ]; then
+            echo "iPhone 15 simulator already available on $RUNTIME: $EXISTING"
+          else
             xcrun simctl create "iPhone 15" "com.apple.CoreSimulator.SimDeviceType.iPhone-15" "$RUNTIME"
             echo "iPhone 15 simulator created successfully."
           fi
-      - name: Download iOS platform and create simulator
+      - name: Ensure iOS 17.4 runtime and create simulator
+        # Passkeys tests run on an iOS 17.4 simulator. The macos-15 image only
+        # preinstalls iOS 18.5/18.6 and 26.x runtimes, so 17.4 (~7 GB) is
+        # downloaded when missing (about 2.5 minutes on recent runs). Skip the
+        # download if the runtime is already present, and cap the step so a slow
+        # download fails fast instead of consuming the job timeout.
         if: ${{ contains(inputs.test_name, 'integ_rn_ios_passkeys') }}
+        timeout-minutes: 20
         run: |
-          xcodebuild -downloadPlatform iOS -buildVersion 17.4
-          xcrun simctl create "iPhone 15" "com.apple.CoreSimulator.SimDeviceType.iPhone-15" "com.apple.CoreSimulator.SimRuntime.iOS-17-4"
+          RUNTIME="com.apple.CoreSimulator.SimRuntime.iOS-17-4"
+          if xcrun simctl list runtimes available | grep -q "$RUNTIME"; then
+            echo "iOS 17.4 runtime already installed."
+          else
+            echo "iOS 17.4 runtime not installed. Downloading."
+            xcodebuild -downloadPlatform iOS -buildVersion 17.4
+          fi
+          if ! xcrun simctl list runtimes available | grep -q "$RUNTIME"; then
+            echo "::error::iOS 17.4 runtime is not available after download."
+            exit 1
+          fi
+          xcrun simctl create "iPhone 15" "com.apple.CoreSimulator.SimDeviceType.iPhone-15" "$RUNTIME"
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
@@ -93,6 +128,7 @@ jobs:
         shell: bash
       - name: Install CocoaPods
         # Retry to guard against transient network failures (CDN/specs fetch)
+        timeout-minutes: 15
         run: |
           for i in 1 2 3; do
             echo "pod install attempt $i"
@@ -148,6 +184,8 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Detox Build
+        # Full React Native iOS build; observed 14-22 minutes on macos-15-large.
+        timeout-minutes: 40
         run: |
           detox build -c ios.sim.debug
         env:
@@ -161,7 +199,14 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Detox run
+        # --forceExit (passed through to Jest): after a failed attempt Jest has
+        # reported "Jest did not exit one second after the test run has
+        # completed" and then hung until the 120-minute job timeout, so the
+        # retry loop never ran again. The step timeout caps all attempts
+        # (4 attempts x ~11 minutes on the slowest suites) so a hang cannot
+        # consume the rest of the job.
+        timeout-minutes: 45
         run: |
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --forceExit' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
