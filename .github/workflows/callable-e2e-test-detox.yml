@@ -32,9 +32,26 @@ jobs:
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
       - name: Set Xcode version
+        # Xcode 16.4 is the default on the macos-15 image and bundles the
+        # iOS 18.5 simulator runtime with the preinstalled "iPhone 16" devices,
+        # so no simulator runtime download is needed. If a runner image update
+        # removes 16.4, fall back to the newest Xcode 16.x instead of failing on
+        # a missing path; fail loudly if no Xcode 16.x is present.
         run: |
-          sudo xcode-select -s /Applications/Xcode_16.4.app
+          XCODE_PATH="/Applications/Xcode_16.4.app"
+          if [ ! -d "$XCODE_PATH" ]; then
+            echo "::warning::Xcode_16.4.app not found. Available Xcode installations:"
+            ls -d /Applications/Xcode_*.app 2>/dev/null || echo "  (none found)"
+            XCODE_PATH=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -n1)
+            if [ -z "$XCODE_PATH" ]; then
+              echo "::error::No Xcode 16.x found in /Applications. Cannot proceed."
+              exit 1
+            fi
+            echo "Falling back to: $XCODE_PATH"
+          fi
+          sudo xcode-select -s "$XCODE_PATH"
           xcodebuild -version
+          echo "Simulator SDK: iOS $(xcrun --sdk iphonesimulator --show-sdk-version)"
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
@@ -48,6 +65,7 @@ jobs:
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
         shell: bash
       - name: Install CocoaPods
+        timeout-minutes: 15
         run: |
           cd ios && pod install
         working-directory: ${{ inputs.working_directory }}
@@ -74,6 +92,8 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Detox Build
+        # Full React Native iOS build; observed 13-15 minutes on macos-15-large.
+        timeout-minutes: 30
         run: |
           detox build -c ios.sim.debug
         env:
@@ -82,8 +102,13 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Detox run
+        # --forceExit (passed through to Jest): failed attempts have logged
+        # "Jest did not exit one second after the test run has completed",
+        # which can stall the retry loop until the job timeout. The step
+        # timeout caps all retry attempts so they cannot consume the whole job.
+        timeout-minutes: 45
         run: |
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --record-logs all --take-screenshots failing --artifacts-location ./artifacts' -n 3
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --forceExit --record-logs all --take-screenshots failing --artifacts-location ./artifacts' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Upload Detox artifacts
