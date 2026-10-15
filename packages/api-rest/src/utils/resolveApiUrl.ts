@@ -72,7 +72,10 @@ export const resolveApiUrl = (
 	return url;
 };
 
-const parseUrl = (urlStr: string): URL =>
-	AmplifyUrl.canParse(urlStr)
-		? new AmplifyUrl(urlStr)
-		: new AmplifyUrl(urlStr, location?.origin);
+const parseUrl = (urlStr: string): URL => {
+	try {
+		return new AmplifyUrl(urlStr);
+	} catch {
+		return new AmplifyUrl(urlStr, location?.origin);
+	}
+};
