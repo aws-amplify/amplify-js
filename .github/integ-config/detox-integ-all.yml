@@ -1,7 +1,9 @@
 - test_name: 'integ_rn_ios_storage'
   working_directory: amplify-js-samples-staging/samples/react-native/storage/StorageApp
+  timeout_minutes: 90
 - test_name: 'integ_rn_ios_storage_multipart_progress'
   working_directory: amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
+  timeout_minutes: 90
 - test_name: 'integ_rn_ios_device_tracking'
   working_directory: amplify-js-samples-staging/samples/react-native/auth/deviceTracking
   timeout_minutes: 120
