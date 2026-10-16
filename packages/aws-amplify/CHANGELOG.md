@@ -1,5 +1,13 @@
 # Change Log
 
+## 6.22.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @aws-amplify/api@6.4.4
+  - @aws-amplify/datastore@5.1.15
+
 ## 6.22.2
 
 ### Patch Changes
