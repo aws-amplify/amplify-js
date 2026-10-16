@@ -363,7 +363,11 @@ class SyncProcessor {
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>,
 	): Observable<SyncModelPage> {
-		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
+		const {
+			maxRecordsToSync: defaultMaxRecordsToSync,
+			syncPageSize: defaultSyncPageSize,
+			perModelSyncConfig,
+		} = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
 		const observable = new Observable<SyncModelPage>(observer => {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
@@ -393,6 +397,12 @@ class SyncProcessor {
 
 							let recordsReceived = 0;
 							const filter = this.graphqlFilterFromPredicate(modelDefinition);
+
+							const modelSyncConfig = perModelSyncConfig?.get(modelDefinition);
+							const syncPageSize =
+								modelSyncConfig?.syncPageSize ?? defaultSyncPageSize;
+							const maxRecordsToSync =
+								modelSyncConfig?.maxRecordsToSync ?? defaultMaxRecordsToSync;
 
 							const parents = this.schema.namespaces[
 								namespace
