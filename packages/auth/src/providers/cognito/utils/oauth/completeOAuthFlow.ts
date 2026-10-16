@@ -17,6 +17,7 @@ import { createOAuthError } from './createOAuthError';
 import { resolveAndClearInflightPromises } from './inflightPromise';
 import { validateState } from './validateState';
 import { oAuthStore } from './oAuthStore';
+import { getOAuthBaseUrl } from './getOAuthBaseUrl';
 
 export const completeOAuthFlow = async ({
 	currentUrl,
@@ -93,7 +94,8 @@ const handleCodeFlow = async ({
 	// may throw error is being caught in attemptCompleteOAuthFlow.ts
 	const validatedState = await validateState(state);
 
-	const oAuthTokenEndpoint = 'https://' + domain + '/oauth2/token';
+	const baseUrl = getOAuthBaseUrl(domain);
+	const oAuthTokenEndpoint = `${baseUrl}/oauth2/token`;
 
 	// TODO(v6): check hub events
 	// dispatchAuthEvent(
