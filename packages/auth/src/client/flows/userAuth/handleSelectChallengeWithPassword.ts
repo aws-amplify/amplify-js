@@ -40,7 +40,7 @@ export async function handleSelectChallengeWithPassword(
 		PASSWORD: password,
 	};
 
-	const userContextData = getUserContextData({
+	const userContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
