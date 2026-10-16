@@ -318,6 +318,7 @@ export function buildSubscriptionGraphQLOperation(
 	isOwnerAuthorization: boolean,
 	ownerField: string,
 	filterArg = false,
+	customVariables?: Record<string, any>,
 ): [TransformerMutationType, string, string] {
 	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
@@ -336,6 +337,33 @@ export function buildSubscriptionGraphQLOperation(
 	if (isOwnerAuthorization) {
 		docArgs.push(`$${ownerField}: String!`);
 		opArgs.push(`${ownerField}: $${ownerField}`);
+	}
+
+	if (customVariables) {
+		const VALID_VAR_NAME = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
+
+		Object.keys(customVariables).forEach(varName => {
+			if (!VALID_VAR_NAME.test(varName)) {
+				logger.warn(
+					`Invalid GraphQL variable name '${varName}' in subscriptionVariables. Skipping.`,
+				);
+
+				return;
+			}
+
+			if (
+				customVariables[varName] === null ||
+				customVariables[varName] === undefined
+			) {
+				return;
+			}
+
+			const varType = Array.isArray(customVariables[varName])
+				? '[String]'
+				: 'String';
+			docArgs.push(`$${varName}: ${varType}`);
+			opArgs.push(`${varName}: $${varName}`);
+		});
 	}
 
 	const docStr = docArgs.length ? `(${docArgs.join(',')})` : '';
@@ -960,4 +988,66 @@ export function getIdentifierValue(
 	const idOrPk = pkFieldNames.map(f => model[f]).join(IDENTIFIER_KEY_SEPARATOR);
 
 	return idOrPk;
+}
+
+const RESERVED_SUBSCRIPTION_VARIABLE_NAMES = new Set([
+	'input',
+	'condition',
+	'filter',
+	'owner',
+	'limit',
+	'nextToken',
+	'sortDirection',
+]);
+
+export function processSubscriptionVariables(
+	model: SchemaModel,
+	operation: TransformerMutationType,
+	modelVariables:
+		| Record<string, any>
+		| ((operation: TransformerMutationType) => Record<string, any>)
+		| undefined,
+): Record<string, any> | undefined {
+	if (!modelVariables) {
+		return undefined;
+	}
+
+	let vars: Record<string, any>;
+
+	if (typeof modelVariables === 'function') {
+		try {
+			vars = modelVariables(operation);
+		} catch (error) {
+			logger.warn(
+				`Error evaluating subscriptionVariables function for model ${model.name}:`,
+				error,
+			);
+
+			return undefined;
+		}
+	} else {
+		vars = modelVariables;
+	}
+
+	if (vars === null || typeof vars !== 'object' || Array.isArray(vars)) {
+		logger.warn(
+			`subscriptionVariables must be an object for model ${model.name}`,
+		);
+
+		return undefined;
+	}
+
+	const result: Record<string, any> = {};
+
+	for (const [key, value] of Object.entries(vars)) {
+		if (RESERVED_SUBSCRIPTION_VARIABLE_NAMES.has(key)) {
+			logger.warn(
+				`Ignoring reserved GraphQL variable name '${key}' in subscription variables`,
+			);
+		} else {
+			result[key] = value;
+		}
+	}
+
+	return Object.keys(result).length > 0 ? result : undefined;
 }
