@@ -1,5 +1,11 @@
 # Change Log
 
+## 4.7.2
+
+### Patch Changes
+
+- [#14964](https://github.com/aws-amplify/amplify-js/pull/14964) [`6b68b55`](https://github.com/aws-amplify/amplify-js/commit/6b68b558c0be783e821383cd63e78421d5cb85ce) Thanks [@gagan-baghel](https://github.com/gagan-baghel)! - fix(api-rest): resolve REST API URLs in browsers that don't implement `URL.canParse`, instead of failing with "API name is invalid"
+
 ## 4.7.1
 
 ### Patch Changes

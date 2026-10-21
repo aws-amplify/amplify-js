@@ -1,5 +1,13 @@
 # Change Log
 
+## 5.1.15
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @aws-amplify/api@6.4.4
+  - @aws-amplify/api-graphql@4.10.3
+
 ## 5.1.14
 
 ### Patch Changes
