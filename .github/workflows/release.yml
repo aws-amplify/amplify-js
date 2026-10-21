@@ -20,7 +20,7 @@ on:
       - hotfix
       # Branch naming pattern: feat/{PREID}/whatever
       # Example: feat/alpha/main, feat/beta/my-feature, feat/rc/test
-      - feat/preid/whatever
+      - feat/trusted-pub/test
 
 jobs:
   latest:
