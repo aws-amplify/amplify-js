@@ -1,0 +1,16 @@
+name: Ensure npm supports trusted publishing
+description: Upgrades npm to a version that supports trusted publishing (OIDC) if the installed version is too old.
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Ensure npm supports trusted publishing
+      shell: bash
+      run: |
+        # npm trusted publishing (OIDC) requires npm >= 11.5.1
+        NPM_VERSION=$(npm --version)
+        echo "npm version: $NPM_VERSION"
+        if ! node -e 'const [a, b, c] = process.argv[1].split(".").map(Number); process.exit(a > 11 || (a === 11 && (b > 5 || (b === 5 && c >= 1))) ? 0 : 1)' "$NPM_VERSION"; then
+          npm install -g npm@^11.5.1
+          npm --version
+        fi

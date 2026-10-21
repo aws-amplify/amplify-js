@@ -1,21 +1,14 @@
 name: Release Preid
 
-# Concurrency control to prevent multiple preid releases running simultaneously
-# Cancels in-progress releases when new commits are pushed
-concurrency:
-  group: push-release-${{ github.ref }}
-  cancel-in-progress: true
-
 # Permissions required for publishing packages
 permissions:
   contents: write
 
+# Called from release.yml on pushes to feat/{PREID}/whatever branches
+# Branch naming pattern: feat/{PREID}/whatever
+# Example: feat/alpha/main, feat/beta/my-feature, feat/rc/test
 on:
-  push:
-    branches:
-      # Branch naming pattern: feat/{PREID}/whatever
-      # Example: feat/alpha/main, feat/beta/my-feature, feat/rc/test
-      - feat/preid/whatever
+  workflow_call:
 
 jobs:
   # Job 1: Parse preid from branch name
@@ -59,6 +52,10 @@ jobs:
       - parse-preid
       - validate-preid
     if: github.repository_owner == 'aws-amplify'
+    # Job-level permissions replace workflow-level ones; id-token is required for npm trusted publishing (OIDC)
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -68,13 +65,15 @@ jobs:
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
 
+      - name: Ensure npm supports trusted publishing
+        uses: ./amplify-js/.github/actions/ensure-npm-trusted-publishing
+
       - name: Publish to @preid
-        uses: changesets/action@aba318e9165b45b7948c60273e0b72fce0a64eb9 # v1.4.7
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
         with:
           cwd: ./amplify-js
           publish: yarn publish:preid
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           PREID: ${{ needs.parse-preid.outputs.preid }}
