@@ -54,7 +54,7 @@ export async function handleUserAuthFlow({
 	session,
 }: HandleUserAuthFlowInput) {
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,

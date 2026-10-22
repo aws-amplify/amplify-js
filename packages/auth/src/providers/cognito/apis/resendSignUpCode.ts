@@ -51,7 +51,7 @@ export async function resendSignUpCode(
 	const { userPoolClientId, userPoolId, userPoolEndpoint } = authConfig;
 	const clientMetadata = input.options?.clientMetadata;
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,

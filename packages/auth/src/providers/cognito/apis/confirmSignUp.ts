@@ -61,7 +61,7 @@ export async function confirmSignUp(
 		AuthValidationErrorCode.EmptyConfirmSignUpCode,
 	);
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
