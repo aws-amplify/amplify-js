@@ -11,6 +11,10 @@ jobs:
   deploy:
     name: Publish to Amplify Package
     runs-on: ubuntu-latest
+    # Pushes the release commit, tags and API docs; id-token for npm trusted publishing.
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -22,6 +26,9 @@ jobs:
 
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Ensure npm supports trusted publishing
+        uses: ./amplify-js/.github/actions/ensure-npm-trusted-publishing
 
       - name: Run npm publish
         uses: ./amplify-js/.github/actions/npm-publish
@@ -56,18 +63,29 @@ jobs:
   # amazon-cognito-identity-js is a v5-only package with no newer major line, so its
   # `latest` dist-tag must track the v5 release. This is specific to the v5 LTS line:
   # gate on target so it cannot regress `latest` if this workflow is reused for another
-  # LTS branch (see the TODO in push-lts-release.yml).
+  # LTS branch (see the TODO in release.yml).
   set-latest-tag:
     name: Point amazon-cognito-identity-js latest at the v5 release
     needs: deploy
     if: github.repository_owner == 'aws-amplify' && inputs.target == 'v5-stable'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           path: amplify-js
           ref: ${{ inputs.target }}
+
+      - name: Setup node
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
+
+      - name: Ensure npm supports trusted publishing
+        uses: ./amplify-js/.github/actions/ensure-npm-trusted-publishing
 
       - name: Set amazon-cognito-identity-js latest dist-tag
         working-directory: ./amplify-js
