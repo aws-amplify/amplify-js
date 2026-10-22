@@ -5,6 +5,7 @@ import { syncSessionStorage } from '@aws-amplify/core';
 
 import { CognitoAuthSignInDetails } from '../../../providers/cognito/types';
 import { ChallengeName } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { getAuthSessionValidity } from '../../../providers/cognito/utils/getAuthSessionValidity';
 
 import { Reducer, Store } from './types';
 
@@ -24,9 +25,6 @@ type SignInAction =
 	| { type: 'SET_SIGN_IN_SESSION'; value?: string }
 	| { type: 'RESET_STATE' };
 
-// Minutes until stored session invalidates is defaulted to 3 minutes
-// to maintain parity with Amazon Cognito user pools API behavior
-const MS_TO_EXPIRY = 3 * 60 * 1000;
 const TGT_STATE = 'CognitoSignInState';
 const SIGN_IN_STATE_KEYS = {
 	username: `${TGT_STATE}.username`,
@@ -166,7 +164,7 @@ export const persistSignInState = ({
 		// Updates expiry when session is passed
 		syncSessionStorage.setItem(
 			SIGN_IN_STATE_KEYS.expiry,
-			String(Date.now() + MS_TO_EXPIRY),
+			String(Date.now() + getAuthSessionValidity()),
 		);
 	}
 };
