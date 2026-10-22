@@ -20,7 +20,7 @@ runs:
         '; then
           echo "npm $CURRENT already supports trusted publishing"
         else
-          echo "Upgrading npm $CURRENT to ^$REQUIRED"
-          npm install -g "npm@^$REQUIRED"
+          echo "Upgrading npm $CURRENT to $REQUIRED"
+          npm install -g "npm@$REQUIRED"
         fi
         npm --version

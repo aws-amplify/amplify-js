@@ -17,10 +17,16 @@ on:
         required: false
         default: true
 
-# Ceiling for the called workflows; each job narrows this further.
-permissions:
-  contents: write
-  id-token: write
+# Every job declares its own permissions, granting only what it needs. For
+# jobs that call a reusable workflow, the caller job's permissions are the
+# ceiling for the called workflow.
+permissions: {}
+
+# One group for push and manual runs, so a recovery publish can never overlap a
+# release. Runs queue rather than cancel: cancelling during publish is never safe.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   e2e:
@@ -33,10 +39,6 @@ jobs:
     if: github.event_name == 'push'
     needs:
       - e2e
-    concurrency:
-      # group name unique for push to push-latest-release
-      group: push-lts-release-${{ github.ref }}
-      cancel-in-progress: true
     permissions:
       contents: write
       id-token: write
@@ -67,32 +69,19 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    concurrency:
-      group: manual-v5-recover-publish
-      cancel-in-progress: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           path: amplify-js
           ref: v5-stable
-          token: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
-          # Full history so lerna can read all git tags.
-          fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
 
       - name: Ensure npm supports trusted publishing
         uses: ./amplify-js/.github/actions/ensure-npm-trusted-publishing
-
-      - name: Set github commit user
-        env:
-          GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
-          GITHUB_USER: ${{ vars.GH_USER }}
-        run: |
-          git config --global user.email "$GITHUB_EMAIL"
-          git config --global user.name "$GITHUB_USER"
 
       - name: Report packages missing from npm
         working-directory: ./amplify-js
