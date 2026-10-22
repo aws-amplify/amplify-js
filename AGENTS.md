@@ -20,22 +20,22 @@ Do **not** add new features here — feature work targets `main`.
 
 ## Environment
 
-| Requirement | Version |
-|---|---|
-| Node.js | 24 (used by CI) |
-| Yarn | 1.22.x |
+| Requirement | Version         |
+| ----------- | --------------- |
+| Node.js     | 24 (used by CI) |
+| Yarn        | 1.22.x          |
 
 ## Setup & Build Commands (MANDATORY: use `yarn`)
 
 **Always drive builds/tests/lint through `yarn`. NEVER invoke `tsc`, `eslint`, `jest`, `lerna`, `npx`, or `tsx` directly** — the workspace scripts wire up the correct config and topological order.
 
 ```bash
-# One-time setup (bootstrap is REQUIRED on this branch)
+# One-time setup
 yarn setup-dev            # yarn && yarn bootstrap && yarn link-all && yarn build
 
 # Or step by step:
 yarn                      # install
-yarn bootstrap            # lerna bootstrap (links cross-package deps)
+yarn bootstrap            # alias for yarn install (Yarn workspaces link cross-package deps)
 yarn build                # lerna run build + duplicate check
 
 # Test
@@ -96,24 +96,25 @@ Prefer running the full `yarn test` / `yarn build` for final confirmation.
 
 ## CI Checks (must pass before merge)
 
-| Check | Validates |
-|---|---|
-| `unit-tests` | Jest suites across packages |
-| `bundle-size-tests` | Tree-shaken footprint (size-limit) |
-| `license-test` | License headers present |
-| `github-actions-test` | CI config validity |
+| Check                 | Validates                          |
+| --------------------- | ---------------------------------- |
+| `unit-tests`          | Jest suites across packages        |
+| `bundle-size-tests`   | Tree-shaken footprint (size-limit) |
+| `license-test`        | License headers present            |
+| `github-actions-test` | CI config validity                 |
 
 The `ci - Unit and Bundle tests have passed` gate turns green only when all above pass.
 
 ## Do / Don't Summary
 
 **Do**
-- Run `yarn bootstrap` after install (Lerna linking)
+
 - Use conventional commit messages (they drive versioning)
 - Target PRs at `v5-stable`
 - Keep license headers
 
 **Don't**
+
 - Add changesets (this branch has none — versioning is Lerna/conventional-commits)
 - Add new features (maintenance branch)
 - Run `lerna`/`tsc`/`jest`/`eslint` directly — go through `yarn` scripts

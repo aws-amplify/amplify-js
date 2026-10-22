@@ -6,7 +6,7 @@
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
 		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
-		"bootstrap": "lerna bootstrap",
+		"bootstrap": "yarn install",
 		"test": "lerna run test --stream && yarn test:license && yarn test:github-actions",
 		"test:size": "lerna run test:size --no-bail",
 		"test:duplicates": "./scripts/duplicates-yarn.sh",
@@ -81,7 +81,7 @@
 		"jest-config": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
 		"json-loader": "^0.5.7",
-		"lerna": "^6.6.1",
+		"lerna": "^9.0.7",
 		"license-check-and-add": "^4.0.5",
 		"prettier": "^2.4.1",
 		"pretty-quick": "^1.11.1",
