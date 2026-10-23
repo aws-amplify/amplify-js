@@ -40,6 +40,7 @@ runs:
         TARGET: ${{ inputs.target }}
         PREID_PREFIX: ${{ inputs.preid || '' }}
       run: |
+        # Token fallback; lerna uses npm trusted publishing (OIDC) when the job grants id-token: write.
         echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
         export PREID_HASH_SUFFIX=$(echo $GH_SHA | cut -c -7 | sed 's/^/\./')
         git status

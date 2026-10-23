@@ -1,0 +1,26 @@
+name: Ensure npm supports trusted publishing
+description: Upgrade the npm CLI when it is older than the version needed for npm trusted publishing (OIDC), including OIDC for `npm dist-tag`.
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Ensure npm >= 11.21.0
+      shell: bash
+      run: |
+        # npm publish exchanges the GitHub OIDC token from npm 11.5.1 and
+        # npm dist-tag from 11.21.0. The runner's Node 24 ships an older npm.
+        REQUIRED=11.21.0
+        CURRENT=$(npm --version)
+        if REQUIRED="$REQUIRED" CURRENT="$CURRENT" node -e '
+          const parse = v => v.split(".").map(n => parseInt(n, 10));
+          const [a, b] = [parse(process.env.CURRENT), parse(process.env.REQUIRED)];
+          for (let i = 0; i < 3; i++) {
+            if (a[i] !== b[i]) process.exit(a[i] > b[i] ? 0 : 1);
+          }
+        '; then
+          echo "npm $CURRENT already supports trusted publishing"
+        else
+          echo "Upgrading npm $CURRENT to $REQUIRED"
+          npm install -g "npm@$REQUIRED"
+        fi
+        npm --version
