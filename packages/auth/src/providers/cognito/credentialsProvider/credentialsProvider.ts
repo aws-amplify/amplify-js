@@ -22,7 +22,7 @@ import { createCognitoIdentityPoolEndpointResolver } from '../factories';
 
 import { IdentityIdStore } from './types';
 import { cognitoIdentityIdProvider } from './IdentityIdProvider';
-import { formLoginsMap } from './utils';
+import { formLoginsMap, isUnusableGuestIdentityIdError } from './utils';
 
 const logger = new ConsoleLogger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
@@ -41,6 +41,11 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	};
 
 	private _nextCredentialsRefresh = 0;
+
+	private _guestRecovery?: {
+		failedIdentityId: string;
+		promise: Promise<CredentialsAndIdentityId>;
+	};
 
 	async clearCredentialsAndIdentityId(): Promise<void> {
 		logger.debug('Clearing out credentials and identityId');
@@ -84,12 +89,78 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this.clearCredentials();
 		}
 		if (!isAuthenticated) {
-			return this.getGuestCredentials(identityId, authConfig.Cognito);
+			return this.getGuestCredentialsWithRecovery(
+				identityId,
+				authConfig.Cognito,
+			);
 		} else {
 			assertIdTokenInAuthTokens(tokens);
 
 			return this.credsForOIDCTokens(authConfig.Cognito, tokens, identityId);
 		}
+	}
+
+	/**
+	 * Gets guest credentials. If Cognito rejects the stored identityId because
+	 * the identityId itself can't be used (for example, it was deleted or it is
+	 * linked to a login), clears it, gets a new guest identityId from GetId and
+	 * tries once more. A second failure is thrown.
+	 *
+	 * Concurrent calls that fail with the same identityId share one recovery,
+	 * and a call that fails after another call has already recovered returns
+	 * the new credentials, so only one new identityId is created.
+	 */
+	private async getGuestCredentialsWithRecovery(
+		identityId: string,
+		authConfig: CognitoIdentityPoolConfig,
+	): Promise<CredentialsAndIdentityId> {
+		try {
+			return await this.getGuestCredentials(identityId, authConfig);
+		} catch (error) {
+			if (!isUnusableGuestIdentityIdError(error)) {
+				throw error;
+			}
+			if (
+				this._credentialsAndIdentityId &&
+				!this.isPastTTL() &&
+				this._credentialsAndIdentityId.isAuthenticatedCreds === false &&
+				this._credentialsAndIdentityId.identityId !== identityId
+			) {
+				return this._credentialsAndIdentityId;
+			}
+			if (this._guestRecovery?.failedIdentityId !== identityId) {
+				const promise = this.recoverGuestCredentials(
+					authConfig,
+					error as AuthError,
+				).finally(() => {
+					if (this._guestRecovery?.promise === promise) {
+						this._guestRecovery = undefined;
+					}
+				});
+				this._guestRecovery = { failedIdentityId: identityId, promise };
+			}
+
+			return this._guestRecovery.promise;
+		}
+	}
+
+	private async recoverGuestCredentials(
+		authConfig: CognitoIdentityPoolConfig,
+		error: AuthError,
+	): Promise<CredentialsAndIdentityId> {
+		logger.warn(
+			`The stored identityId can't be used for guest access (${error.name}). Getting a new guest identityId.`,
+		);
+		await this.clearCredentialsAndIdentityId();
+		// Don't load the identityId from the store again: on the server, the
+		// cookie storage keeps returning the request's cookie after it's removed.
+		const newIdentityId = await cognitoIdentityIdProvider({
+			authConfig,
+			identityIdStore: this._identityIdStore,
+			forceNewIdentityId: true,
+		});
+
+		return this.getGuestCredentials(newIdentityId, authConfig);
 	}
 
 	private async getGuestCredentials(
