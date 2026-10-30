@@ -42,6 +42,11 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 	private _nextCredentialsRefresh = 0;
 
+	private _guestRecovery?: {
+		failedIdentityId: string;
+		promise: Promise<CredentialsAndIdentityId>;
+	};
+
 	async clearCredentialsAndIdentityId(): Promise<void> {
 		logger.debug('Clearing out credentials and identityId');
 		this._credentialsAndIdentityId = undefined;
@@ -100,6 +105,10 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	 * the identityId itself can't be used (for example, it was deleted or it is
 	 * linked to a login), clears it, gets a new guest identityId from GetId and
 	 * tries once more. A second failure is thrown.
+	 *
+	 * Concurrent calls that fail with the same identityId share one recovery,
+	 * and a call that fails after another call has already recovered returns
+	 * the new credentials, so only one new identityId is created.
 	 */
 	private async getGuestCredentialsWithRecovery(
 		identityId: string,
@@ -111,20 +120,47 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			if (!isUnusableGuestIdentityIdError(error)) {
 				throw error;
 			}
-			logger.warn(
-				`The stored identityId can't be used for guest access (${(error as AuthError).name}). Getting a new guest identityId.`,
-			);
-			await this.clearCredentialsAndIdentityId();
-			// Don't load the identityId from the store again: on the server, the
-			// cookie storage keeps returning the request's cookie after it's removed.
-			const newIdentityId = await cognitoIdentityIdProvider({
-				authConfig,
-				identityIdStore: this._identityIdStore,
-				forceNewIdentityId: true,
-			});
+			if (
+				this._credentialsAndIdentityId &&
+				!this.isPastTTL() &&
+				this._credentialsAndIdentityId.isAuthenticatedCreds === false &&
+				this._credentialsAndIdentityId.identityId !== identityId
+			) {
+				return this._credentialsAndIdentityId;
+			}
+			if (this._guestRecovery?.failedIdentityId !== identityId) {
+				const promise = this.recoverGuestCredentials(
+					authConfig,
+					error as AuthError,
+				).finally(() => {
+					if (this._guestRecovery?.promise === promise) {
+						this._guestRecovery = undefined;
+					}
+				});
+				this._guestRecovery = { failedIdentityId: identityId, promise };
+			}
 
-			return this.getGuestCredentials(newIdentityId, authConfig);
+			return this._guestRecovery.promise;
 		}
+	}
+
+	private async recoverGuestCredentials(
+		authConfig: CognitoIdentityPoolConfig,
+		error: AuthError,
+	): Promise<CredentialsAndIdentityId> {
+		logger.warn(
+			`The stored identityId can't be used for guest access (${error.name}). Getting a new guest identityId.`,
+		);
+		await this.clearCredentialsAndIdentityId();
+		// Don't load the identityId from the store again: on the server, the
+		// cookie storage keeps returning the request's cookie after it's removed.
+		const newIdentityId = await cognitoIdentityIdProvider({
+			authConfig,
+			identityIdStore: this._identityIdStore,
+			forceNewIdentityId: true,
+		});
+
+		return this.getGuestCredentials(newIdentityId, authConfig);
 	}
 
 	private async getGuestCredentials(

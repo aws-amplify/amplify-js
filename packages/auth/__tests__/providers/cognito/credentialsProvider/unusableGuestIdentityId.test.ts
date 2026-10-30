@@ -222,6 +222,73 @@ describe('guest credentials with an unusable stored identityId', () => {
 		);
 	});
 
+	describe('concurrent calls', () => {
+		// Holds each GetCredentialsForIdentity call for the stored identityId so
+		// the test decides when it fails.
+		const heldFailures: (() => void)[] = [];
+		const waitForHeldFailures = async (count: number) => {
+			while (heldFailures.length < count) {
+				await new Promise(resolve => setTimeout(resolve, 0));
+			}
+		};
+
+		beforeEach(() => {
+			heldFailures.length = 0;
+			mockGetCredentialsForIdentity.mockImplementation(
+				async (_config, { IdentityId }) => {
+					if (IdentityId === storedIdentityId) {
+						await new Promise<void>(resolve => heldFailures.push(resolve));
+						throw resourceNotFound();
+					}
+
+					return credentialsFor(IdentityId);
+				},
+			);
+		});
+
+		it('gets one new identityId when the calls fail at the same time', async () => {
+			const { storage, items } = createBrowserStorage({
+				[identityIdKey]: storedIdentityId,
+			});
+			const provider = createProvider(storage);
+
+			const first = fetchGuestCredentials(provider);
+			const second = fetchGuestCredentials(provider);
+			await waitForHeldFailures(2);
+			heldFailures.forEach(fail => {
+				fail();
+			});
+			const results = await Promise.all([first, second]);
+
+			expect(results.map(result => result?.identityId)).toEqual([
+				newIdentityId,
+				newIdentityId,
+			]);
+			expect(mockGetId).toHaveBeenCalledTimes(1);
+			expect(items.get(identityIdKey)).toBe(newIdentityId);
+		});
+
+		it('reuses the new identityId when a call fails after another call has recovered', async () => {
+			const { storage, items } = createBrowserStorage({
+				[identityIdKey]: storedIdentityId,
+			});
+			const provider = createProvider(storage);
+
+			const first = fetchGuestCredentials(provider);
+			const second = fetchGuestCredentials(provider);
+			await waitForHeldFailures(2);
+			heldFailures[0]();
+			const firstResult = await first;
+			heldFailures[1]();
+			const secondResult = await second;
+
+			expect(firstResult?.identityId).toBe(newIdentityId);
+			expect(secondResult?.identityId).toBe(newIdentityId);
+			expect(mockGetId).toHaveBeenCalledTimes(1);
+			expect(items.get(identityIdKey)).toBe(newIdentityId);
+		});
+	});
+
 	it('throws the retry error and does not retry again when the new identityId also fails', async () => {
 		mockGetCredentialsForIdentity.mockImplementation(async () => {
 			throw resourceNotFound();
