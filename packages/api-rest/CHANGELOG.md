@@ -1,5 +1,13 @@
 # Change Log
 
+## 4.7.1
+
+### Patch Changes
+
+- [#14968](https://github.com/aws-amplify/amplify-js/pull/14968) [`88f2d79`](https://github.com/aws-amplify/amplify-js/commit/88f2d79878df66754caf85b7c409df912739f53d) Thanks [@osama-rizk](https://github.com/osama-rizk)! - fix(api-rest): require REST request URLs to resolve to the configured endpoint origin
+
+  REST API calls whose `path` would change the configured endpoint's host, port, or protocol (for example, a path without a leading `/` on an endpoint that has no trailing path) now reject with an `InvalidPath` validation error instead of sending the request to the resulting URL.
+
 ## 4.7.0
 
 ### Minor Changes

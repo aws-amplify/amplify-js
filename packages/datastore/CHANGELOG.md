@@ -1,5 +1,15 @@
 # Change Log
 
+## 5.1.14
+
+### Patch Changes
+
+- [#14960](https://github.com/aws-amplify/amplify-js/pull/14960) [`9f9eed5`](https://github.com/aws-amplify/amplify-js/commit/9f9eed5181cc313adf6b894cc9338d3dbb9a6e32) Thanks [@nghiatranhnl](https://github.com/nghiatranhnl)! - fix(datastore): prevent `DataStore.stop()` and `DataStore.clear()` from hanging when called before the initial sync is ready
+
+- Updated dependencies []:
+  - @aws-amplify/api@6.4.3
+  - @aws-amplify/api-graphql@4.10.2
+
 ## 5.1.13
 
 ### Patch Changes

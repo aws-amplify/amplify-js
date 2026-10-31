@@ -1,25 +1,22 @@
 name: Release Unstable
 
-# Concurrency control to prevent multiple unstable releases running simultaneously
-# Cancels in-progress releases when new commits are pushed
-concurrency:
-  group: push-release-${{ github.ref }}
-  cancel-in-progress: true
-
 # Permissions required for publishing packages
 permissions:
   contents: write
 
+# Called from release.yml on pushes to main
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
 
 jobs:
   # Job 1: Publish unstable packages
   unstable-release:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'aws-amplify'
+    # Job-level permissions replace workflow-level ones; id-token is required for npm trusted publishing (OIDC)
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -29,10 +26,8 @@ jobs:
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
 
-      - name: Configure npm authentication
-        run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Ensure npm supports trusted publishing
+        uses: ./amplify-js/.github/actions/ensure-npm-trusted-publishing
 
       - name: Publish to @unstable
         working-directory: ./amplify-js

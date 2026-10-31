@@ -1,0 +1,58 @@
+name: Release
+
+# Single entry point for all npm publishes.
+#
+# npm trusted publishing (OIDC) validates the filename of the top-level (caller) workflow, not the
+# reusable workflow that runs `npm publish`. All npm publishes must therefore originate from this file,
+# which dispatches to the release-* reusable workflows based on the pushed branch.
+
+# Permissions required for creating git tags, pushing changes, creating PRs, and requesting an OIDC
+# token for npm trusted publishing. Called workflows can only use permissions granted here.
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+on:
+  push:
+    branches:
+      - main
+      - hotfix
+      # Branch naming pattern: feat/{PREID}/whatever
+      # Example: feat/alpha/main, feat/beta/my-feature, feat/rc/test
+      - feat/preid/whatever
+
+jobs:
+  latest:
+    if: github.ref_name == 'main'
+    # Prevent concurrent releases to avoid race conditions
+    concurrency:
+      group: release-latest-${{ github.ref }}
+      cancel-in-progress: false
+    uses: ./.github/workflows/release-latest.yml
+    secrets: inherit
+
+  unstable:
+    if: github.ref_name == 'main'
+    # Concurrency control to prevent multiple unstable releases running simultaneously
+    # Cancels in-progress releases when new commits are pushed
+    concurrency:
+      group: release-unstable-${{ github.ref }}
+      cancel-in-progress: true
+    uses: ./.github/workflows/release-unstable.yml
+    secrets: inherit
+
+  hotfix:
+    if: github.ref_name == 'hotfix'
+    uses: ./.github/workflows/release-hotfix.yml
+    secrets: inherit
+
+  preid:
+    if: startsWith(github.ref_name, 'feat/')
+    # Concurrency control to prevent multiple preid releases running simultaneously
+    # Cancels in-progress releases when new commits are pushed
+    concurrency:
+      group: release-preid-${{ github.ref }}
+      cancel-in-progress: true
+    uses: ./.github/workflows/release-preid.yml
+    secrets: inherit
