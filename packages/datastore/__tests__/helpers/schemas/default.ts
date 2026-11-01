@@ -1020,7 +1020,7 @@ export function testSchema(): Schema {
 					},
 				},
 				syncable: true,
-				pluralName: 'Posts',
+				pluralName: 'PostUnis',
 				attributes: [
 					{
 						type: 'model',
