@@ -11,7 +11,7 @@ const logger = new ConsoleLogger('ExpoSQLiteDatabase');
 /*
 
 Note:
-This adapter requires expo-sqlite 13.0+ with the modern async API.
+This adapter requires expo-sqlite 14.0+, where the async API is the default export.
 The legacy WebSQL-style API is not supported to ensure performance
 and future compatibility as WebSQL has been deprecated.
 
@@ -39,7 +39,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 
 				if (!SQLite.openDatabaseAsync) {
 					throw new Error(
-						'ExpoSQLiteAdapter requires expo-sqlite 13.0+ with async API. ' +
+						'ExpoSQLiteAdapter requires expo-sqlite 14.0+ with async API. ' +
 							'Please upgrade expo-sqlite or use the regular SQLiteAdapter instead.',
 					);
 				}
@@ -69,20 +69,10 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 			logger.debug('Clearing database');
 			await this.closeDB();
 
-			// Delete database file using expo-file-system
-			// expo-sqlite doesn't provide a deleteDatabase method like react-native-sqlite-storage
-			const FileSystem = require('expo-file-system');
-			let deleteAsync;
-
-			// Try to use the modern deleteAsync from expo-file-system/legacy first
-			// Fall back to main FileSystem.deleteAsync for older versions
-			try {
-				({ deleteAsync } = require('expo-file-system/legacy'));
-			} catch {
-				({ deleteAsync } = FileSystem);
-			}
-
-			await deleteAsync(`${FileSystem.documentDirectory}SQLite/${DB_NAME}`);
+			// Use the expo-sqlite delete, not a file path. From expo-sqlite 58.0.0
+			// it also removes the -wal and -shm files.
+			const SQLite = require('expo-sqlite');
+			await SQLite.deleteDatabaseAsync(DB_NAME);
 			logger.debug('Database cleared');
 		} catch (error) {
 			logger.warn('Error clearing the database.', error);

@@ -9,14 +9,11 @@ const mockDb = {
 };
 
 const mockOpenDatabaseAsync = jest.fn().mockResolvedValue(mockDb);
+const mockDeleteDatabaseAsync = jest.fn().mockResolvedValue(undefined);
 
 jest.mock('expo-sqlite', () => ({
 	openDatabaseAsync: mockOpenDatabaseAsync,
-}));
-
-jest.mock('expo-file-system', () => ({
-	documentDirectory: '/mock/documents/',
-	deleteAsync: jest.fn().mockResolvedValue(undefined),
+	deleteDatabaseAsync: mockDeleteDatabaseAsync,
 }));
 
 import ExpoSQLiteDatabase from '../src/ExpoSQLiteAdapter/ExpoSQLiteDatabase';
@@ -34,9 +31,7 @@ describe('ExpoSQLiteDatabase', () => {
 	describe('init', () => {
 		it('opens database via openDatabaseAsync', async () => {
 			await db.init();
-			expect(mockOpenDatabaseAsync).toHaveBeenCalledWith(
-				'AmplifyDatastore',
-			);
+			expect(mockOpenDatabaseAsync).toHaveBeenCalledWith('AmplifyDatastore');
 		});
 
 		it('applies WAL pragma after opening', async () => {
@@ -44,6 +39,17 @@ describe('ExpoSQLiteDatabase', () => {
 			expect(mockDb.execAsync).toHaveBeenCalledWith(
 				'PRAGMA journal_mode = WAL;',
 			);
+		});
+
+		it('still opens when the WAL pragma fails', async () => {
+			mockDb.execAsync.mockRejectedValueOnce(new Error('pragma failed'));
+			await expect(db.init()).resolves.toBeUndefined();
+			await expect(db.get('SELECT 1', [])).resolves.toBeUndefined();
+		});
+
+		it('rethrows when openDatabaseAsync fails', async () => {
+			mockOpenDatabaseAsync.mockRejectedValueOnce(new Error('open failed'));
+			await expect(db.init()).rejects.toThrow('open failed');
 		});
 
 		it('only opens once on repeated init calls', async () => {
@@ -59,7 +65,7 @@ describe('ExpoSQLiteDatabase', () => {
 			delete SQLite.openDatabaseAsync;
 
 			const freshDb = new ExpoSQLiteDatabase();
-			await expect(freshDb.init()).rejects.toThrow('expo-sqlite 13.0+');
+			await expect(freshDb.init()).rejects.toThrow('expo-sqlite 14.0+');
 
 			// Restore for other tests
 			SQLite.openDatabaseAsync = original;
@@ -84,6 +90,26 @@ describe('ExpoSQLiteDatabase', () => {
 				'Database not initialized',
 			);
 		});
+
+		it('batchQuery throws if not initialized', async () => {
+			await expect(db.batchQuery()).rejects.toThrow('Database not initialized');
+		});
+
+		it('batchSave throws if not initialized', async () => {
+			await expect(db.batchSave()).rejects.toThrow('Database not initialized');
+		});
+
+		it('selectAndDelete throws if not initialized', async () => {
+			await expect(
+				db.selectAndDelete(['SELECT 1', []], ['DELETE', []]),
+			).rejects.toThrow('Database not initialized');
+		});
+
+		it('createSchema throws if not initialized', async () => {
+			await expect(
+				db.createSchema(['CREATE TABLE t (id TEXT)']),
+			).rejects.toThrow('Database not initialized');
+		});
 	});
 
 	describe('get', () => {
@@ -92,9 +118,7 @@ describe('ExpoSQLiteDatabase', () => {
 		it('delegates to getFirstAsync', async () => {
 			const row = { id: '1', field1: 'value' };
 			mockDb.getFirstAsync.mockResolvedValueOnce(row);
-			const result = await db.get('SELECT * FROM Model WHERE id = ?', [
-				'1',
-			]);
+			const result = await db.get('SELECT * FROM Model WHERE id = ?', ['1']);
 			expect(mockDb.getFirstAsync).toHaveBeenCalledWith(
 				'SELECT * FROM Model WHERE id = ?',
 				['1'],
@@ -233,13 +257,23 @@ describe('ExpoSQLiteDatabase', () => {
 	describe('clear', () => {
 		beforeEach(async () => db.init());
 
-		it('closes db and deletes file', async () => {
+		it('closes the database, then deletes it with deleteDatabaseAsync', async () => {
 			await db.clear();
-			expect(mockDb.closeAsync).toHaveBeenCalled();
-			const FileSystem = require('expo-file-system');
-			expect(FileSystem.deleteAsync).toHaveBeenCalledWith(
-				'/mock/documents/SQLite/AmplifyDatastore',
+			expect(mockDb.closeAsync).toHaveBeenCalledTimes(1);
+			expect(mockDeleteDatabaseAsync).toHaveBeenCalledWith('AmplifyDatastore');
+			expect(mockDb.closeAsync.mock.invocationCallOrder[0]).toBeLessThan(
+				mockDeleteDatabaseAsync.mock.invocationCallOrder[0],
 			);
+			await expect(db.get('SELECT 1', [])).rejects.toThrow(
+				'Database not initialized',
+			);
+		});
+
+		it('reopens the database and rethrows when the delete fails', async () => {
+			mockDeleteDatabaseAsync.mockRejectedValueOnce(new Error('delete failed'));
+			await expect(db.clear()).rejects.toThrow('delete failed');
+			expect(mockOpenDatabaseAsync).toHaveBeenCalledTimes(2);
+			await expect(db.get('SELECT 1', [])).resolves.toBeUndefined();
 		});
 	});
 });
