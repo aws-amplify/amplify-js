@@ -5,10 +5,12 @@ import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-clie
 
 import { listCallerAccessGrants } from '../../../src/internals/apis/listCallerAccessGrants';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../../src/providers/s3/utils/client/s3control';
+import { ListCallerAccessGrantsOutputWithOwner } from '../../../src/providers/s3/utils/client/s3control/s3agPreviewTypes';
 
 jest.mock('../../../src/providers/s3/utils/client/s3control');
 
-const mockAccountId = '1234567890';
+const mockAccountId = '123456789012';
+const mockCrossAccountId = '111122223333';
 const mockRegion = 'us-foo-2';
 const mockCredentials = {
 	accessKeyId: 'key',
@@ -134,5 +136,114 @@ describe('listCallerAccessGrants', () => {
 			},
 		]);
 		expect(nextToken).toBeUndefined();
+	});
+
+	describe('instanceScope (S3 Access Grants cross-account sharing)', () => {
+		it('should pass InstanceScope through to the client when provided', async () => {
+			expect.assertions(1);
+			jest.mocked(listCallerAccessGrantsClient).mockResolvedValue({
+				NextToken: undefined,
+				CallerAccessGrantsList: [],
+				$metadata: {},
+			});
+			await listCallerAccessGrants({
+				accountId: mockAccountId,
+				region: mockRegion,
+				credentialsProvider: mockCredentialsProvider,
+				instanceScope: 'ALL',
+			});
+			expect(listCallerAccessGrantsClient).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({ InstanceScope: 'ALL' }),
+			);
+		});
+
+		it('should default InstanceScope to undefined (SELF behavior) when omitted', async () => {
+			expect.assertions(1);
+			jest.mocked(listCallerAccessGrantsClient).mockResolvedValue({
+				NextToken: undefined,
+				CallerAccessGrantsList: [],
+				$metadata: {},
+			});
+			await listCallerAccessGrants({
+				accountId: mockAccountId,
+				region: mockRegion,
+				credentialsProvider: mockCredentialsProvider,
+			});
+			expect(listCallerAccessGrantsClient).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({ InstanceScope: undefined }),
+			);
+		});
+
+		it('should surface the owner accountId parsed from the grant instance ARN', async () => {
+			expect.assertions(1);
+			const mockOutput: ListCallerAccessGrantsOutputWithOwner = {
+				NextToken: undefined,
+				CallerAccessGrantsList: [
+					{
+						GrantScope: 's3://cross-account-bucket/*',
+						Permission: 'READ',
+						AccessGrantsInstanceArn: `arn:aws:s3:us-east-1:${mockCrossAccountId}:access-grants/default`,
+					},
+				],
+				$metadata: {},
+			};
+			jest.mocked(listCallerAccessGrantsClient).mockResolvedValue(mockOutput);
+			const { locations } = await listCallerAccessGrants({
+				accountId: mockAccountId,
+				region: mockRegion,
+				credentialsProvider: mockCredentialsProvider,
+				instanceScope: 'ALL',
+			});
+
+			expect(locations[0]).toEqual({
+				scope: 's3://cross-account-bucket/*',
+				type: 'BUCKET',
+				permission: 'READ',
+				accountId: mockCrossAccountId,
+			});
+		});
+
+		it('should leave accountId undefined for a grant with no instance ARN', async () => {
+			expect.assertions(1);
+			jest.mocked(listCallerAccessGrantsClient).mockResolvedValue({
+				NextToken: undefined,
+				CallerAccessGrantsList: [
+					{ GrantScope: 's3://bucket/*', Permission: 'READ' },
+				],
+				$metadata: {},
+			});
+			const { locations } = await listCallerAccessGrants({
+				accountId: mockAccountId,
+				region: mockRegion,
+				credentialsProvider: mockCredentialsProvider,
+			});
+
+			expect(locations[0].accountId).toBeUndefined();
+		});
+
+		it('should leave accountId undefined for a malformed instance ARN', async () => {
+			expect.assertions(1);
+			const mockOutput: ListCallerAccessGrantsOutputWithOwner = {
+				NextToken: undefined,
+				CallerAccessGrantsList: [
+					{
+						GrantScope: 's3://bucket/*',
+						Permission: 'READ',
+						AccessGrantsInstanceArn: 'not-an-arn',
+					},
+				],
+				$metadata: {},
+			};
+			jest.mocked(listCallerAccessGrantsClient).mockResolvedValue(mockOutput);
+			const { locations } = await listCallerAccessGrants({
+				accountId: mockAccountId,
+				region: mockRegion,
+				credentialsProvider: mockCredentialsProvider,
+			});
+
+			expect(locations[0].accountId).toBeUndefined();
+		});
 	});
 });

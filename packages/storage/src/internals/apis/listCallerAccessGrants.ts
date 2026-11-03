@@ -7,6 +7,7 @@ import { ResponseMetadata } from '@aws-amplify/core/dist/esm/types';
 
 import { logger } from '../../utils';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../providers/s3/utils/client/s3control';
+import { ListCallerAccessGrantsEntryWithOwner } from '../../providers/s3/utils/client/s3control/s3agPreviewTypes';
 import { StorageError } from '../../errors/StorageError';
 import { getStorageUserAgentValue } from '../../providers/s3/utils/userAgent';
 import { LocationType } from '../types/common';
@@ -28,6 +29,7 @@ export const listCallerAccessGrants = async (
 		nextToken,
 		pageSize,
 		customEndpoint,
+		instanceScope,
 	} = input;
 
 	logger.debug(`listing available locations from account ${input.accountId}`);
@@ -59,6 +61,7 @@ export const listCallerAccessGrants = async (
 				NextToken: nextToken,
 				MaxResults: pageSize ?? MAX_PAGE_SIZE,
 				AllowedByApplication: true,
+				InstanceScope: instanceScope,
 			},
 		);
 
@@ -70,6 +73,13 @@ export const listCallerAccessGrants = async (
 				scope: grant.GrantScope,
 				permission: grant.Permission!,
 				type: parseGrantType(grant.GrantScope!),
+				// Owner account for the per-location expectedBucketOwner.
+				// TODO(S3AG-preview): at GA, drop the cast once
+				// AccessGrantsInstanceArn is on the generated grant entry.
+				accountId: parseAccountIdFromInstanceArn(
+					(grant as ListCallerAccessGrantsEntryWithOwner)
+						.AccessGrantsInstanceArn,
+				),
 			};
 		}) ?? [];
 
@@ -77,6 +87,18 @@ export const listCallerAccessGrants = async (
 		locations: accessGrants,
 		nextToken: NextToken,
 	};
+};
+
+// Extracts the account id segment from an S3 Access Grants instance ARN, e.g.
+// `arn:aws:s3:us-east-1:123456789012:access-grants/default` -> `123456789012`.
+// Returns undefined for a missing or malformed ARN so same-account grants carry
+// no owner and fall back to the adapter-wide account id.
+const parseAccountIdFromInstanceArn = (
+	instanceArn?: string,
+): string | undefined => {
+	const accountId = instanceArn?.split(':')[4];
+
+	return accountId && /^\d{12}$/.test(accountId) ? accountId : undefined;
 };
 
 const parseGrantType = (grantScope: string): LocationType => {

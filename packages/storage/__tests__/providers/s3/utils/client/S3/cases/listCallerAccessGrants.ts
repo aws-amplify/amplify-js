@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { listCallerAccessGrants } from '../../../../../../../src/providers/s3/utils/client/s3control';
+import { ListCallerAccessGrantsOutputWithOwner } from '../../../../../../../src/providers/s3/utils/client/s3control/s3agPreviewTypes';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -14,6 +15,8 @@ const MOCK_ACCOUNT_ID = 'accountId';
 const MOCK_NEXT_TOKEN = 'nextToken';
 const MOCK_APP_ARN = 'appArn';
 const MOCK_GRANT_SCOPE = 's3://my-bucket/path/to/object.md';
+const MOCK_GRANT_ARN =
+	'arn:aws:s3:us-east-1:111122223333:access-grants/default';
 const MOCK_PERMISSION = 'READWRITE';
 
 // API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_control_ListAccessGrants.html
@@ -202,9 +205,91 @@ const listCallerAccessGrantsErrorCase: ApiFunctionalTestCase<
 	},
 ];
 
+// Asserts InstanceScope is serialized as the `instanceScope` query param.
+const listCallerAccessGrantsWithInstanceScope: ApiFunctionalTestCase<
+	typeof listCallerAccessGrants
+> = [
+	'happy case',
+	'listCallerAccessGrants with InstanceScope=ALL',
+	listCallerAccessGrants,
+	defaultConfig,
+	{
+		AccountId: MOCK_ACCOUNT_ID,
+		GrantScope: 's3://my-bucket/path/to/',
+		InstanceScope: 'ALL',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/caller/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F&instanceScope=ALL',
+		}),
+	}),
+	{
+		status: 200,
+		headers: {
+			...DEFAULT_RESPONSE_HEADERS,
+		},
+		body: '',
+	},
+	expect.objectContaining({
+		/** skip validating response */
+	}) as any,
+];
+
+// Asserts the owning instance ARN is deserialized onto each grant entry.
+const listCallerAccessGrantsDeserializesOwnerArn: ApiFunctionalTestCase<
+	typeof listCallerAccessGrants
+> = [
+	'happy case',
+	'listCallerAccessGrants deserializes AccessGrantsInstanceArn',
+	listCallerAccessGrants,
+	defaultConfig,
+	{
+		AccountId: MOCK_ACCOUNT_ID,
+		GrantScope: 's3://my-bucket/path/to/',
+		InstanceScope: 'ALL',
+	},
+	expect.objectContaining({
+		method: 'GET',
+	}),
+	{
+		status: 200,
+		headers: {
+			...DEFAULT_RESPONSE_HEADERS,
+		},
+		body: `
+		<?xml version="1.0" encoding="UTF-8"?>
+		<ListCallerAccessGrantsResult>
+			<NextToken>${MOCK_NEXT_TOKEN}</NextToken>
+			<CallerAccessGrantsList>
+				<AccessGrant>
+						<ApplicationArn>${MOCK_APP_ARN}</ApplicationArn>
+						<GrantScope>${MOCK_GRANT_SCOPE}</GrantScope>
+						<Permission>${MOCK_PERMISSION}</Permission>
+						<AccessGrantsInstanceArn>${MOCK_GRANT_ARN}</AccessGrantsInstanceArn>
+				</AccessGrant>
+			</CallerAccessGrantsList>
+		</ListCallerAccessGrantsResult>
+	`,
+	},
+	{
+		$metadata: expect.objectContaining(expectedMetadata),
+		CallerAccessGrantsList: [
+			{
+				ApplicationArn: MOCK_APP_ARN,
+				GrantScope: MOCK_GRANT_SCOPE,
+				Permission: MOCK_PERMISSION,
+				AccessGrantsInstanceArn: MOCK_GRANT_ARN,
+			},
+		],
+		NextToken: MOCK_NEXT_TOKEN,
+	} as ListCallerAccessGrantsOutputWithOwner,
+];
+
 export default [
 	listCallerAccessGrantsHappyCaseSingleGrant,
 	listCallerAccessGrantsHappyCaseMultipleGrants,
 	listCallerAccessGrantsHappyCaseCustomEndpoint,
 	listCallerAccessGrantsErrorCase,
+	listCallerAccessGrantsWithInstanceScope,
+	listCallerAccessGrantsDeserializesOwnerArn,
 ];

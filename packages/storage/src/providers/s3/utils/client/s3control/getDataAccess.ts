@@ -27,8 +27,13 @@ import type {
 	GetDataAccessCommandOutput,
 } from './types';
 import { defaultConfig, parseXmlError } from './base';
+import { InstanceScope } from './s3agPreviewTypes';
 
-export type GetDataAccessInput = GetDataAccessCommandInput;
+export type GetDataAccessInput = GetDataAccessCommandInput & {
+	// TODO(S3AG-preview): at GA, drop this intersection once
+	// InstanceScope exists in the generated GetDataAccessCommandInput.
+	InstanceScope?: InstanceScope;
+};
 
 export type GetDataAccessOutput = GetDataAccessCommandOutput;
 
@@ -45,6 +50,7 @@ const getDataAccessSerializer = (
 		privilege: input.Privilege,
 		target: input.Target,
 		targetType: input.TargetType,
+		instanceScope: input.InstanceScope,
 	});
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
