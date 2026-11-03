@@ -167,11 +167,13 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		identityId: string,
 		authConfig: CognitoIdentityPoolConfig,
 	): Promise<CredentialsAndIdentityId> {
-		// Return existing in-memory cached credentials only if it exists, is not past it's lifetime and is unauthenticated credentials
+		// Return existing in-memory cached credentials only if it exists, is not past it's lifetime, is unauthenticated credentials
+		// and belongs to the requested identityId
 		if (
 			this._credentialsAndIdentityId &&
 			!this.isPastTTL() &&
-			this._credentialsAndIdentityId.isAuthenticatedCreds === false
+			this._credentialsAndIdentityId.isAuthenticatedCreds === false &&
+			this._credentialsAndIdentityId.identityId === identityId
 		) {
 			logger.info(
 				'returning stored credentials as they neither past TTL nor expired.',

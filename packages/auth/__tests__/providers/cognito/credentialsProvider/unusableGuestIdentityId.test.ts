@@ -287,6 +287,42 @@ describe('guest credentials with an unusable stored identityId', () => {
 			expect(mockGetId).toHaveBeenCalledTimes(1);
 			expect(items.get(identityIdKey)).toBe(newIdentityId);
 		});
+
+		it('returns credentials for the recovered identityId when another call cached a different identity during the recovery', async () => {
+			const otherIdentityId = 'us-east-1:00000000-0000-0000-0000-000000000003';
+			const heldGetId: (() => void)[] = [];
+			mockGetId
+				.mockImplementationOnce(async () => {
+					await new Promise<void>(resolve => heldGetId.push(resolve));
+
+					return { IdentityId: newIdentityId };
+				})
+				.mockResolvedValueOnce({ IdentityId: otherIdentityId });
+			const { storage, items } = createBrowserStorage({
+				[identityIdKey]: storedIdentityId,
+			});
+			const provider = createProvider(storage);
+
+			const recovering = fetchGuestCredentials(provider);
+			await waitForHeldFailures(1);
+			heldFailures[0]();
+			while (heldGetId.length < 1) {
+				await new Promise(resolve => setTimeout(resolve, 0));
+			}
+			// starts after the recovery cleared the store, so it gets its own
+			// identityId and caches its credentials while the recovery waits on GetId
+			const other = await fetchGuestCredentials(provider);
+			heldGetId[0]();
+			const recovered = await recovering;
+
+			expect(other?.identityId).toBe(otherIdentityId);
+			expect(recovered?.identityId).toBe(newIdentityId);
+			expect(mockGetCredentialsForIdentity).toHaveBeenLastCalledWith(
+				{ region: 'us-east-1' },
+				{ IdentityId: newIdentityId },
+			);
+			expect(items.get(identityIdKey)).toBe(recovered?.identityId);
+		});
 	});
 
 	it('throws the retry error and does not retry again when the new identityId also fails', async () => {

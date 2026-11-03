@@ -121,6 +121,14 @@ describe('credentialsProvider', () => {
 			});
 
 			test('in-memory guest creds are returned if not expired and not past TTL', async () => {
+				// Cognito returns the requested identityId, which the cache is keyed on
+				mockGetCredentialsForIdentity.mockReset();
+				mockGetCredentialsForIdentity.mockImplementation(
+					async (_config, { IdentityId }) => ({
+						...authAPITestParams.CredentialsForIdentityIdResult,
+						IdentityId,
+					}),
+				);
 				await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: false,
 					authConfig: validAuthConfig.Auth!,
