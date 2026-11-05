@@ -17,6 +17,8 @@ import { formLoginsMap } from './utils';
  * Provides a Cognito identityId
  *
  * @param tokens - The AuthTokens received after SignIn
+ * @param forceNewIdentityId - Skip the stored identityId and get one from
+ *  Cognito's GetId API. The stored identityId is replaced with the result.
  * @returns string
  * @throws configuration exceptions: `InvalidIdentityPoolIdException`
  *  - Auth errors that may arise from misconfiguration.
@@ -26,15 +28,19 @@ export async function cognitoIdentityIdProvider({
 	tokens,
 	authConfig,
 	identityIdStore,
+	forceNewIdentityId = false,
 }: {
 	tokens?: AuthTokens;
 	authConfig: CognitoIdentityPoolConfig;
 	identityIdStore: IdentityIdStore;
+	forceNewIdentityId?: boolean;
 }): Promise<string> {
 	identityIdStore.setAuthConfig({ Cognito: authConfig });
 
 	// will return null only if there is no identityId cached or if there is an error retrieving it
-	let identityId: Identity | null = await identityIdStore.loadIdentityId();
+	let identityId: Identity | null = forceNewIdentityId
+		? null
+		: await identityIdStore.loadIdentityId();
 
 	// A primary identityId belongs to a signed-in user and cannot be used for
 	// guest access. It can be left in memory when the tokens are cleared without
