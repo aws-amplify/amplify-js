@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { loadAsyncStorage } from '@aws-amplify/react-native';
-
 import { KeyValueStorageInterface } from '../types';
+
+import { LazyAsyncStorage } from './LazyAsyncStorage';
 
 const MEMORY_KEY_PREFIX = '@MemoryStorage:';
 
@@ -11,11 +11,7 @@ const MEMORY_KEY_PREFIX = '@MemoryStorage:';
  * @internal
  */
 export class DefaultStorage implements KeyValueStorageInterface {
-	private asyncStorage: ReturnType<typeof loadAsyncStorage>;
-
-	constructor() {
-		this.asyncStorage = loadAsyncStorage();
-	}
+	private asyncStorage = new LazyAsyncStorage();
 
 	/**
 	 * This is used to set a specific item in storage
