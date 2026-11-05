@@ -23,6 +23,7 @@ import {
 	completeOAuthFlow,
 	generateCodeVerifier,
 	generateState,
+	getOAuthBaseUrl,
 	getRedirectUrl,
 	handleFailure,
 	oAuthStore,
@@ -161,7 +162,8 @@ const oauthSignIn = async ({
 
 	// Using URL object is not supported in React Native as the `search` property is read-only
 	// See: https://github.com/facebook/react-native/blob/main/packages/react-native/Libraries/Blob/URL.js
-	const oAuthUrl = `https://${domain}/oauth2/authorize?${params.toString()}`;
+	const baseUrl = getOAuthBaseUrl(domain);
+	const oAuthUrl = `${baseUrl}/oauth2/authorize?${params.toString()}`;
 
 	// this will only take effect in the following scenarios:
 	// 1. the user cancels the OAuth flow on web via back button, and
