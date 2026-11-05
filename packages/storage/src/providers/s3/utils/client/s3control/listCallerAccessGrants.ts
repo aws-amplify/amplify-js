@@ -28,6 +28,7 @@ import type {
 	ListCallerAccessGrantsCommandOutput,
 } from './types';
 import { defaultConfig, parseXmlError } from './base';
+import { InstanceScope } from './s3agPreviewTypes';
 
 export type ListCallerAccessGrantsInput = Pick<
 	ListCallerAccessGrantsCommandInput,
@@ -36,7 +37,11 @@ export type ListCallerAccessGrantsInput = Pick<
 	| 'GrantScope'
 	| 'NextToken'
 	| 'MaxResults'
->;
+> & {
+	// TODO(S3AG-preview): at GA, add 'InstanceScope' to the Pick above
+	// and drop this intersection once it exists in the generated command input.
+	InstanceScope?: InstanceScope;
+};
 
 export type ListCallerAccessGrantsOutput = ListCallerAccessGrantsCommandOutput;
 
@@ -52,6 +57,7 @@ const listCallerAccessGrantsSerializer = (
 		maxResults: input.MaxResults,
 		nextToken: input.NextToken,
 		allowedByApplication: input.AllowedByApplication,
+		instanceScope: input.InstanceScope,
 	});
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
@@ -104,6 +110,7 @@ const deserializeCallerAccessGrant = (output: any) =>
 				'Permission',
 			),
 		],
+		AccessGrantsInstanceArn: 'AccessGrantsInstanceArn',
 	});
 
 export const listCallerAccessGrants = composeServiceApi(

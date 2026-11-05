@@ -16,6 +16,7 @@ import {
 	RemoveWithPathInput,
 	UploadDataWithPathInput,
 } from '../../providers/s3';
+import { InstanceScope } from '../../providers/s3/utils/client/s3control/s3agPreviewTypes';
 
 import { CredentialsProvider, ListLocationsInput } from './credentials';
 import { Permission, PrefixType, Privilege } from './common';
@@ -28,6 +29,7 @@ export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 	credentialsProvider: CredentialsProvider;
 	customEndpoint?: string;
 	region: string;
+	instanceScope?: InstanceScope;
 }
 
 /**
@@ -43,6 +45,7 @@ export interface GetDataAccessInput {
 	privilege?: Privilege;
 	region: string;
 	scope: string;
+	instanceScope?: InstanceScope;
 }
 
 export interface AdvancedOptions {

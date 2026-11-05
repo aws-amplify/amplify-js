@@ -130,4 +130,27 @@ describe('getDataAccess', () => {
 
 		expect(result.scope).toEqual(MOCK_OBJECT_SCOPE);
 	});
+
+	describe('instanceScope (S3 Access Grants cross-account sharing)', () => {
+		it('should pass InstanceScope through to the client when provided', async () => {
+			expect.assertions(1);
+			await getDataAccess({
+				...sharedGetDataAccessParams,
+				instanceScope: 'ALL',
+			});
+			expect(getDataAccessClientMock).toHaveBeenCalledWith(
+				expect.any(Object),
+				expect.objectContaining({ InstanceScope: 'ALL' }),
+			);
+		});
+
+		it('should default InstanceScope to undefined (SELF) when omitted', async () => {
+			expect.assertions(1);
+			await getDataAccess(sharedGetDataAccessParams);
+			expect(getDataAccessClientMock).toHaveBeenCalledWith(
+				expect.any(Object),
+				expect.objectContaining({ InstanceScope: undefined }),
+			);
+		});
+	});
 });
