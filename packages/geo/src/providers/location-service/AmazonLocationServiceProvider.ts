@@ -309,6 +309,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const searchByPlaceIdInput: GetPlaceCommandInput = {
 			PlaceId: placeId,
 			IndexName: options?.searchIndexName || this._config.searchIndices.default,
+			...(options?.language && { Language: options.language }),
 		};
 		const command = new GetPlaceCommand(searchByPlaceIdInput);
 
