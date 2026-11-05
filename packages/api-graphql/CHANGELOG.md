@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.10.3
+
+### Patch Changes
+
+- Updated dependencies [[`6b68b55`](https://github.com/aws-amplify/amplify-js/commit/6b68b558c0be783e821383cd63e78421d5cb85ce)]:
+  - @aws-amplify/api-rest@4.7.2
+
 ## 4.10.2
 
 ### Patch Changes
