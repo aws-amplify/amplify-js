@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import SQLite from 'react-native-sqlite-storage';
+import type * as SQLiteModule from 'react-native-sqlite-storage';
 import { ConsoleLogger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
 
@@ -9,10 +9,33 @@ import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 
 const logger = new ConsoleLogger('SQLiteDatabase');
 
-SQLite.enablePromise(true);
+// react-native-sqlite-storage is an optional peer, and the package root also
+// exports ExpoSQLiteAdapter. Load it on first use, so an Expo app does not need it.
+let SQLite: typeof SQLiteModule | undefined;
 
-if (ConsoleLogger.LOG_LEVEL === 'DEBUG') {
-	SQLite.DEBUG(true);
+function loadSQLite(): typeof SQLiteModule {
+	if (!SQLite) {
+		let loaded: typeof SQLiteModule;
+		try {
+			loaded = require('react-native-sqlite-storage');
+		} catch (error) {
+			logger.error('Failed to load react-native-sqlite-storage', error);
+			throw new Error(
+				'SQLiteAdapter requires react-native-sqlite-storage. ' +
+					'Install it, or use ExpoSQLiteAdapter with expo-sqlite.',
+			);
+		}
+
+		loaded.enablePromise(true);
+
+		if (ConsoleLogger.LOG_LEVEL === 'DEBUG') {
+			loaded.DEBUG(true);
+		}
+
+		SQLite = loaded;
+	}
+
+	return SQLite;
 }
 
 /*
@@ -29,12 +52,12 @@ get the result of an `executeSql` command inside of a transaction
 */
 
 class SQLiteDatabase implements CommonSQLiteDatabase {
-	private db: SQLite.SQLiteDatabase;
+	private db: SQLiteModule.SQLiteDatabase;
 
 	public async init(): Promise<void> {
 		// only open database once.
 		if (!this.db) {
-			this.db = await SQLite.openDatabase({
+			this.db = await loadSQLite().openDatabase({
 				name: DB_NAME,
 				location: 'default',
 			});
@@ -48,7 +71,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	public async clear(): Promise<void> {
 		await this.closeDB();
 		logger.debug('Deleting database');
-		await SQLite.deleteDatabase({ name: DB_NAME, location: 'default' });
+		await loadSQLite().deleteDatabase({ name: DB_NAME, location: 'default' });
 		logger.debug('Database deleted');
 	}
 
