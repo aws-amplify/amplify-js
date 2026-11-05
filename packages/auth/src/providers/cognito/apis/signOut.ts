@@ -158,6 +158,12 @@ async function globalSignOut(
 		logger.debug(
 			'Global signOut error caught but will proceed with token removal',
 		);
+		// GlobalSignOut requires the access token to carry the
+		// `aws.cognito.signin.user.admin` scope, which tokens issued through the
+		// hosted UI or federated sign-in often lack. Fall back to revoking the
+		// current refresh token (when the session is revocable) so it can no
+		// longer be used to refresh the session.
+		await clientSignOut(cognitoConfig, tokenOrchestrator);
 	}
 }
 

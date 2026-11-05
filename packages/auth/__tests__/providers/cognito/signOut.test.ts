@@ -254,7 +254,7 @@ describe('signOut', () => {
 			expectSignOut().toComplete();
 		});
 
-		it('should still perform global sign out if token revoke fails', async () => {
+		it('should complete sign out when global sign out fails', async () => {
 			mockGlobalSignOut.mockRejectedValue(new Error());
 
 			await signOut(mockCtx, { global: true });
@@ -262,7 +262,42 @@ describe('signOut', () => {
 			expect(loggerDebugSpy).toHaveBeenCalledWith(
 				expect.stringContaining('Global signOut error caught'),
 			);
-			expect(mockGetRegionFromUserPoolId).toHaveBeenCalledTimes(1);
+			// once for GlobalSignOut, once for the RevokeToken fallback
+			expect(mockGetRegionFromUserPoolId).toHaveBeenCalledTimes(2);
+			expectSignOut().toComplete();
+		});
+
+		it('should fall back to revoking the refresh token when global sign out is rejected', async () => {
+			const notAuthorized = new Error(
+				'Access Token does not have required scopes',
+			);
+			notAuthorized.name = 'NotAuthorizedException';
+			mockGlobalSignOut.mockRejectedValue(notAuthorized);
+
+			await signOut(mockCtx, { global: true });
+
+			expect(mockGlobalSignOut).toHaveBeenCalledTimes(1);
+			expect(mockRevokeToken).toHaveBeenCalledWith(
+				{ region },
+				{ ClientId: cognitoConfig.userPoolClientId, Token: refreshToken },
+			);
+			expect(loggerDebugSpy).not.toHaveBeenCalledWith(
+				expect.stringContaining('Client signOut error caught'),
+			);
+			expectSignOut().toComplete();
+		});
+
+		it('should not revoke the refresh token when global sign out is rejected on an irrevocable session', async () => {
+			mockLoadTokens.mockResolvedValue({
+				...cognitoAuthTokens,
+				accessToken: {},
+			});
+			mockGlobalSignOut.mockRejectedValue(new Error());
+
+			await signOut(mockCtx, { global: true });
+
+			expect(mockGlobalSignOut).toHaveBeenCalledTimes(1);
+			expect(mockRevokeToken).not.toHaveBeenCalled();
 			expectSignOut().toComplete();
 		});
 	});
