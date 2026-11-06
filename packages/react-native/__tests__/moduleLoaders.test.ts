@@ -78,6 +78,123 @@ describe('Module Loaders', () => {
 				'Ensure `@react-native-async-storage/async-storage` is installed and linked.',
 			);
 		});
+
+		describe('with the async-storage v3 API', () => {
+			const mockV3Storage = {
+				getItem: jest.fn(),
+				setItem: jest.fn(),
+				removeItem: jest.fn(),
+				clear: jest.fn(),
+				getAllKeys: jest.fn(),
+				getMany: jest.fn(),
+				setMany: jest.fn(),
+				removeMany: jest.fn(),
+			};
+			const mockError = new Error('native failure');
+			let asyncStorage: any;
+
+			beforeEach(() => {
+				jest.resetAllMocks();
+				jest.doMock('@react-native-async-storage/async-storage', () => ({
+					default: mockV3Storage,
+				}));
+
+				const {
+					loadAsyncStorage,
+				} = require('../src/moduleLoaders/loadAsyncStorage');
+				asyncStorage = loadAsyncStorage();
+			});
+
+			it('should forward the methods shared with the earlier API', async () => {
+				mockV3Storage.getItem.mockResolvedValue('value');
+				mockV3Storage.getAllKeys.mockResolvedValue(['key']);
+
+				await expect(asyncStorage.getItem('key')).resolves.toBe('value');
+				await expect(asyncStorage.getAllKeys()).resolves.toEqual(['key']);
+				await asyncStorage.setItem('key', 'value');
+				await asyncStorage.removeItem('key');
+				await asyncStorage.clear();
+
+				expect(mockV3Storage.getItem).toHaveBeenCalledWith('key');
+				expect(mockV3Storage.setItem).toHaveBeenCalledWith('key', 'value');
+				expect(mockV3Storage.removeItem).toHaveBeenCalledWith('key');
+				expect(mockV3Storage.clear).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return multiGet pairs in the requested key order', async () => {
+				mockV3Storage.getMany.mockResolvedValue({ a: '1', c: '3', b: null });
+
+				await expect(asyncStorage.multiGet(['c', 'a', 'b'])).resolves.toEqual([
+					['c', '3'],
+					['a', '1'],
+					['b', null],
+				]);
+			});
+
+			it('should return null for a key missing from the getMany result', async () => {
+				mockV3Storage.getMany.mockResolvedValue({});
+
+				await expect(asyncStorage.multiGet(['a'])).resolves.toEqual([
+					['a', null],
+				]);
+			});
+
+			it('should implement multiSet with setMany', async () => {
+				mockV3Storage.setMany.mockResolvedValue(undefined);
+				const callback = jest.fn();
+
+				await asyncStorage.multiSet(
+					[
+						['a', '1'],
+						['b', '2'],
+					],
+					callback,
+				);
+
+				expect(mockV3Storage.setMany).toHaveBeenCalledWith({ a: '1', b: '2' });
+				expect(callback).toHaveBeenCalledWith();
+			});
+
+			it('should implement multiRemove with removeMany', async () => {
+				mockV3Storage.removeMany.mockResolvedValue(undefined);
+				const callback = jest.fn();
+
+				await asyncStorage.multiRemove(['a', 'b'], callback);
+
+				expect(mockV3Storage.removeMany).toHaveBeenCalledWith(['a', 'b']);
+				expect(callback).toHaveBeenCalledWith();
+			});
+
+			it('should not require a callback', async () => {
+				mockV3Storage.setMany.mockResolvedValue(undefined);
+				mockV3Storage.removeMany.mockRejectedValue(mockError);
+
+				await expect(
+					asyncStorage.multiSet([['a', '1']]),
+				).resolves.toBeUndefined();
+				await expect(asyncStorage.multiRemove(['a'])).rejects.toBe(mockError);
+			});
+
+			it('should report multiSet failures to the callback and the promise', async () => {
+				mockV3Storage.setMany.mockRejectedValue(mockError);
+				const callback = jest.fn();
+
+				await expect(
+					asyncStorage.multiSet([['a', '1']], callback),
+				).rejects.toBe(mockError);
+				expect(callback).toHaveBeenCalledWith([mockError]);
+			});
+
+			it('should report multiRemove failures to the callback and the promise', async () => {
+				mockV3Storage.removeMany.mockRejectedValue(mockError);
+				const callback = jest.fn();
+
+				await expect(asyncStorage.multiRemove(['a'], callback)).rejects.toBe(
+					mockError,
+				);
+				expect(callback).toHaveBeenCalledWith([mockError]);
+			});
+		});
 	});
 
 	describe('loadNetInfo', () => {
