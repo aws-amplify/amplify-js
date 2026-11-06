@@ -722,14 +722,15 @@ tests:
   #   amplifyjs_dir: true
 
   # ANALYTICS
-  - test_name: integ_react_analytics_pinpoint
-    desc: 'Test record and identifyUser calls for pinpoint'
-    framework: react
-    category: analytics
-    sample_name: [pinpoint-test]
-    spec: pinpoint
-    # Temp fix:
-    browser: *minimal_browser_list
+  # DISABLED: Amazon Pinpoint reached end of support on October 31, 2026.
+  # - test_name: integ_react_analytics_pinpoint
+  #   desc: 'Test record and identifyUser calls for pinpoint'
+  #   framework: react
+  #   category: analytics
+  #   sample_name: [pinpoint-test]
+  #   spec: pinpoint
+  #   # Temp fix:
+  #   browser: *minimal_browser_list
 
   - test_name: integ_react_analytics_personalize_auth
     desc: 'Test record API for Personalize with authenticated user'
@@ -928,13 +929,14 @@ tests:
     browser: [chrome] # firefox issues with secure cookies in cypress, manual testing works fine
 
   # INAPPMESSAGING
-  - test_name: integ_in_app_messaging
-    desc: 'React InApp Messaging'
-    framework: react
-    category: in-app-messaging
-    sample_name: [in-app-messaging-app]
-    spec: in-app-messaging
-    browser: *minimal_browser_list
+  # DISABLED: In-App Messaging is backed by Amazon Pinpoint, which reached end of support on October 31, 2026.
+  # - test_name: integ_in_app_messaging
+  #   desc: 'React InApp Messaging'
+  #   framework: react
+  #   category: in-app-messaging
+  #   sample_name: [in-app-messaging-app]
+  #   spec: in-app-messaging
+  #   browser: *minimal_browser_list
 
   # - test_name: integ_duplicate_packages
   #   desc: 'Duplicate Package Errors'
