@@ -193,6 +193,64 @@ describe('Predictions convert provider test', () => {
 				predictionsProvider.convert(validTranslateTextInput),
 			).rejects.toMatch('error');
 		});
+		describe('translation options', () => {
+			const convertAndGetCommandInput = async (input: TranslateTextInput) => {
+				const ctx = createMockAmplifyContext({
+					Predictions: { convert: options },
+				});
+				(ctx.fetchAuthSession as jest.Mock).mockResolvedValue({
+					credentials,
+					identityId,
+				});
+				const predictionsProvider = new AmazonAIConvertPredictionsProvider(ctx);
+				await predictionsProvider.convert(input);
+
+				return (TranslateClient.prototype.send as jest.Mock).mock.lastCall[0]
+					.input;
+			};
+
+			beforeEach(() => {
+				resetTranslateMock();
+			});
+
+			test('sends the options to Amazon Translate as settings', async () => {
+				const commandInput = await convertAndGetCommandInput({
+					translateText: {
+						...validTranslateTextInput.translateText,
+						options: {
+							brevity: 'ON',
+							formality: 'FORMAL',
+							profanity: 'MASK',
+						},
+					},
+				});
+
+				expect(commandInput.Settings).toEqual({
+					Brevity: 'ON',
+					Formality: 'FORMAL',
+					Profanity: 'MASK',
+				});
+			});
+
+			test('sends only the options that are provided', async () => {
+				const commandInput = await convertAndGetCommandInput({
+					translateText: {
+						...validTranslateTextInput.translateText,
+						options: { formality: 'INFORMAL' },
+					},
+				});
+
+				expect(commandInput.Settings).toEqual({ Formality: 'INFORMAL' });
+			});
+
+			test('does not send settings when options are not provided', async () => {
+				const commandInput = await convertAndGetCommandInput(
+					validTranslateTextInput,
+				);
+
+				expect(commandInput.Settings).toBeUndefined();
+			});
+		});
 	});
 
 	describe('convertTextToSpeech tests', () => {

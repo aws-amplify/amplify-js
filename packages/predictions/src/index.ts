@@ -16,5 +16,6 @@ export {
 	TextToSpeechInput,
 	TextToSpeechOutput,
 	TranslateTextInput,
+	TranslateTextOptions,
 	TranslateTextOutput,
 } from './types';
