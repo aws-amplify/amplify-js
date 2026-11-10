@@ -1093,9 +1093,15 @@ export type ModelAuthModes = Record<
 	Record<ModelOperation, GraphQLAuthMode[]>
 >;
 
+export interface PerModelSyncConfig {
+	syncPageSize?: number;
+	maxRecordsToSync?: number;
+}
+
 export type SyncExpression = Promise<{
 	modelConstructor: any;
 	conditionProducer(c?: any): any;
+	syncConfig?: PerModelSyncConfig;
 }>;
 
 /*
@@ -1156,6 +1162,7 @@ type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
  *
  * @param modelConstructor The Model from the schema.
  * @param conditionProducer A function that builds a condition object that can describe how to filter the model.
+ * @param syncConfig Optional per-model sync configuration (e.g., `syncPageSize`, `maxRecordsToSync`).
  * @returns An sync expression object that can be attached to the DataStore `syncExpressions` configuration property.
  */
 export async function syncExpression<
@@ -1164,13 +1171,16 @@ export async function syncExpression<
 >(
 	modelConstructor: PersistentModelConstructor<T>,
 	conditionProducer: ConditionProducer<T, A>,
+	syncConfig?: PerModelSyncConfig,
 ): Promise<{
 	modelConstructor: PersistentModelConstructor<T>;
 	conditionProducer: ConditionProducer<T, A>;
+	syncConfig?: PerModelSyncConfig;
 }> {
 	return {
 		modelConstructor,
 		conditionProducer,
+		syncConfig,
 	};
 }
 
