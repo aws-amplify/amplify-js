@@ -13,7 +13,7 @@ import { GenerateServerClientParams, V6ClientSSRRequest } from '../types';
  * import config from './amplifyconfiguration.json';
  * import { listPosts } from './graphql/queries';
  *
- * const client = generateServerClient({ config });
+ * const client = generateClient({ config });
  *
  * const result = await runWithAmplifyServerContext({
  *   nextServerContext: { request, response },
