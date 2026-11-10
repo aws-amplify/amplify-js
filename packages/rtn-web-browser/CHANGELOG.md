@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.5.0
+
+### Minor Changes
+
+- [#14966](https://github.com/aws-amplify/amplify-js/pull/14966) [`50eccce`](https://github.com/aws-amplify/amplify-js/commit/50eccce3099dc6060fdea507a9be49077a873b38) Thanks [@osama-rizk](https://github.com/osama-rizk)! - chore: raise the minimum supported React Native version to 0.81
+
+  Minimum supported react-native is now 0.81 (aligned with the oldest Expo SDK still supported, SDK 54). Per the Amplify maintenance policy this is shipped as a minor.
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
