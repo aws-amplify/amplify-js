@@ -8,6 +8,7 @@ import { openAuthSession } from '../../../../utils';
 import { OpenAuthSessionResult } from '../../../../utils/types';
 
 import { getRedirectUrl } from './getRedirectUrl';
+import { getOAuthBaseUrl } from './getOAuthBaseUrl';
 
 export const oAuthSignOutRedirect = async (
 	authConfig: CognitoUserPoolConfig,
@@ -18,7 +19,8 @@ export const oAuthSignOutRedirect = async (
 	const { loginWith, userPoolClientId } = authConfig;
 	const { domain, redirectSignOut } = loginWith.oauth;
 	const signoutUri = getRedirectUrl(redirectSignOut, redirectUrl);
-	const oAuthLogoutEndpoint = `https://${domain}/logout?${Object.entries({
+	const baseUrl = getOAuthBaseUrl(domain);
+	const oAuthLogoutEndpoint = `${baseUrl}/logout?${Object.entries({
 		client_id: userPoolClientId,
 		logout_uri: encodeURIComponent(signoutUri),
 	})
