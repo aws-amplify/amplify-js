@@ -30,14 +30,17 @@ export const fetchTransferHandler: TransferHandler<
 			credentials: withCrossDomainCredentials ? 'include' : 'same-origin',
 		});
 	} catch (e) {
-		if (e instanceof TypeError) {
-			throw new AmplifyError({
-				name: AmplifyErrorCode.NetworkError,
-				message: 'A network error has occurred.',
-				underlyingError: e,
-			});
+		if (e instanceof Error && e.name === 'AbortError') {
+			throw e;
 		}
-		throw e;
+		// Fetch only rejects for aborts and network failures. HTTP error responses resolve
+		// normally. Browsers typically throw TypeError, while React Native throws Error
+		// objects for network failures.
+		throw new AmplifyError({
+			name: AmplifyErrorCode.NetworkError,
+			message: 'A network error has occurred.',
+			underlyingError: e,
+		});
 	}
 
 	const responseHeaders: Record<string, string> = {};
