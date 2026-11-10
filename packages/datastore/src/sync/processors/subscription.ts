@@ -426,7 +426,7 @@ class SubscriptionProcessor {
 														logger.warn(
 															`Skipping incoming subscription. Messages: ${messages.join(
 																'\n',
-															)}`,
+															)}\n\nThis can happen if a mutation was performed outside of DataStore (e.g. a direct GraphQL mutation to AppSync) without requesting all the fields DataStore needs to sync. If you are updating this model outside of DataStore, make sure your mutation's selection set includes every field. Learn more: https://docs.amplify.aws/lib/datastore/sync/`,
 														);
 
 														this.drainBuffer();
