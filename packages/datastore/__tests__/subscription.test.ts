@@ -683,6 +683,54 @@ describe('error handler', () => {
 		});
 	}, 500);
 
+	test('warns with the missing-fields hint when a non-nullable field is null', async () => {
+		window['LOG_LEVEL'] = 'WARN';
+		const warn = jest.spyOn(console, 'warn');
+		const rawMessage =
+			"Cannot return null for non-nullable type: 'String' within parent 'Model' (/onCreateModel/name)";
+		mockObservable = new Observable(observer => {
+			observer.next({
+				data: {},
+				errors: [{ message: rawMessage }],
+			});
+		});
+
+		const subscription = subscriptionProcessor.start();
+		subscription[0].subscribe({ error: () => null });
+		await new Promise(resolve => setTimeout(resolve, 0));
+
+		expect(warn).toHaveBeenCalledWith(
+			expect.stringContaining(`Skipping incoming subscription. Messages: ${rawMessage}`),
+		);
+		expect(warn).toHaveBeenCalledWith(
+			expect.stringContaining('make sure your mutation returns all the fields'),
+		);
+		warn.mockRestore();
+	});
+
+	test('does not add the missing-fields hint for other GraphQL errors', async () => {
+		window['LOG_LEVEL'] = 'WARN';
+		const warn = jest.spyOn(console, 'warn');
+		mockObservable = new Observable(observer => {
+			observer.next({
+				data: {},
+				errors: [{ message: 'Some unrelated GraphQL error' }],
+			});
+		});
+
+		const subscription = subscriptionProcessor.start();
+		subscription[0].subscribe({ error: () => null });
+		await new Promise(resolve => setTimeout(resolve, 0));
+
+		expect(warn).toHaveBeenCalledWith(
+			expect.stringContaining('Skipping incoming subscription. Messages: Some unrelated GraphQL error'),
+		);
+		expect(warn).not.toHaveBeenCalledWith(
+			expect.stringContaining('make sure your mutation returns all the fields'),
+		);
+		warn.mockRestore();
+	});
+
 	async function instantiateSubscriptionProcessor({
 		errorHandler = () => null,
 	}) {
