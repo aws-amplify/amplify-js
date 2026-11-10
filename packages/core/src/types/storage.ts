@@ -29,6 +29,7 @@ export interface CookieStorageData {
 	expires?: number;
 	secure?: boolean;
 	sameSite?: SameSite;
+	partitioned?: boolean;
 }
 
 export interface SyncStorage {
