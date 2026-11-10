@@ -110,6 +110,7 @@ describe('parseAmplifyOutputs tests', () => {
 				auth: {
 					user_pool_id: 'us-east-1:',
 					user_pool_client_id: 'xxxx',
+					auth_session_validity: 15,
 					aws_region: 'us-east-1',
 					identity_pool_id: 'test',
 					oauth: {
@@ -162,6 +163,7 @@ describe('parseAmplifyOutputs tests', () => {
 						},
 						userPoolClientId: 'xxxx',
 						userPoolId: 'us-east-1:',
+						authSessionValidity: 15,
 						loginWith: {
 							email: true,
 							phone: false,

@@ -137,6 +137,7 @@ export interface AuthIdentityPoolConfig {
 		userPoolClientId?: never;
 		userPoolId?: never;
 		userPoolEndpoint?: never;
+		authSessionValidity?: never;
 		loginWith?: never;
 		signUpVerificationMethod?: never;
 		userAttributes?: never;
@@ -179,6 +180,12 @@ export interface CognitoUserPoolConfig {
 	 * Use this field to specify a custom endpoint for the Amazon Cognito user pool. Ensure this endpoint is correct and valid.
 	 */
 	userPoolEndpoint?: string;
+	/**
+	 * Auth session duration in minutes for Cognito API challenge flows.
+	 * This should match the user pool app client's AuthSessionValidity setting.
+	 * Valid values are from 3 to 15 minutes.
+	 */
+	authSessionValidity?: number;
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {
 		oauth?: OAuthConfig;
