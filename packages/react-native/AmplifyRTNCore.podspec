@@ -15,6 +15,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/aws-amplify/amplify-js.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift,c}"
+  s.resource_bundles = { "AmplifyRTNCore_privacy" => ["ios/PrivacyInfo.xcprivacy"] }
 
   s.dependency "React-Core"
 

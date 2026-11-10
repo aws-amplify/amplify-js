@@ -52,7 +52,7 @@ export async function handleSelectChallengeWithPasswordSRP(
 		SRP_A: authenticationHelper.A.toString(16),
 	};
 
-	const userContextData = getUserContextData({
+	const userContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
