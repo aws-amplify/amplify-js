@@ -143,10 +143,16 @@ export class AmazonAIConvertPredictionsProvider {
 				action: PredictionsAction.Convert,
 			}),
 		});
+		const translateOptions = input.translateText?.options;
 		const translateTextCommand = new TranslateTextCommand({
 			SourceLanguageCode: sourceLanguageCode,
 			TargetLanguageCode: targetLanguageCode,
 			Text: input.translateText?.source?.text,
+			Settings: translateOptions && {
+				Brevity: translateOptions.brevity,
+				Formality: translateOptions.formality,
+				Profanity: translateOptions.profanity,
+			},
 		});
 		const data = await this.translateClient.send(translateTextCommand);
 
