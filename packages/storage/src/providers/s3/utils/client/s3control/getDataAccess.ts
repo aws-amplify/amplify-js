@@ -45,6 +45,7 @@ const getDataAccessSerializer = (
 		privilege: input.Privilege,
 		target: input.Target,
 		targetType: input.TargetType,
+		instanceScope: input.InstanceScope,
 	});
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();

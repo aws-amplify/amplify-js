@@ -36,6 +36,7 @@ export type ListCallerAccessGrantsInput = Pick<
 	| 'GrantScope'
 	| 'NextToken'
 	| 'MaxResults'
+	| 'InstanceScope'
 >;
 
 export type ListCallerAccessGrantsOutput = ListCallerAccessGrantsCommandOutput;
@@ -52,6 +53,7 @@ const listCallerAccessGrantsSerializer = (
 		maxResults: input.MaxResults,
 		nextToken: input.NextToken,
 		allowedByApplication: input.AllowedByApplication,
+		instanceScope: input.InstanceScope,
 	});
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
@@ -104,6 +106,7 @@ const deserializeCallerAccessGrant = (output: any) =>
 				'Permission',
 			),
 		],
+		AccessGrantsInstanceArn: 'AccessGrantsInstanceArn',
 	});
 
 export const listCallerAccessGrants = composeServiceApi(
