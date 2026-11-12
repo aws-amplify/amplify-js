@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { defaultStorage } from '@aws-amplify/core';
+import { Hub, defaultStorage } from '@aws-amplify/core';
 
 import { TokenOrchestrator } from '../../../../../src/providers/cognito/tokenProvider/TokenOrchestrator';
 import { AUTH_KEY_PREFIX } from '../../../../../src/providers/cognito/tokenProvider/constants';
@@ -11,6 +11,8 @@ import {
 } from '../../../../../src/providers/cognito/utils/signInWithRedirectStore';
 import { oAuthStore } from '../../../../../src/providers/cognito/utils/oauth/oAuthStore';
 import { resolveAndClearInflightPromises } from '../../../../../src/providers/cognito/utils/oauth/inflightPromise';
+import { attemptCompleteOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/attemptCompleteOAuthFlow';
+import { AuthTokenStore } from '../../../../../src/providers/cognito/tokenProvider/types';
 
 // Registers the browser-only side effects at module load — including the
 // cross-tab storage listener that releases parked token consumers when the
@@ -69,17 +71,129 @@ const park = (orchestrator: TokenOrchestrator) => {
 	return { promise, isSettled: () => settled };
 };
 
+interface HeldRead {
+	started: Promise<void>;
+	deliver(): void;
+	fail(error: unknown): void;
+}
+
+const heldReads: HeldRead[] = [];
+
+// Holds the next `count` reads of the deadline key at the storage boundary.
+// Each read captures the stored value when it starts and returns it only when
+// delivered, like a slow storage backend.
+const holdDeadlineReads = (count: number) => {
+	const getItem = defaultStorage.getItem.bind(defaultStorage);
+	const holds = Array.from({ length: count }, () => {
+		let markStarted!: () => void;
+		let settle!: (read: () => Promise<string | null>) => void;
+		const value = new Promise<() => Promise<string | null>>(resolve => {
+			settle = resolve;
+		});
+		let captured: string | null = null;
+		const held: HeldRead & { start(value: string | null): void } = {
+			started: new Promise<void>(resolve => {
+				markStarted = resolve;
+			}),
+			start(storedValue) {
+				captured = storedValue;
+				markStarted();
+			},
+			deliver: () => {
+				settle(async () => captured);
+			},
+			fail: error => {
+				settle(() => Promise.reject(error));
+			},
+		};
+
+		return { held, value };
+	});
+	const pending = [...holds];
+	jest.spyOn(defaultStorage, 'getItem').mockImplementation(async key => {
+		const next = key === deadlineKey ? pending.shift() : undefined;
+		if (!next) {
+			return getItem(key);
+		}
+		next.held.start(window.localStorage.getItem(key));
+
+		return (await next.value)();
+	});
+	heldReads.push(...holds.map(({ held }) => held));
+
+	return holds.map(({ held }) => held);
+};
+
+const oauthConfig = {
+	Cognito: {
+		...authConfig.Cognito,
+		loginWith: {
+			oauth: {
+				domain: 'auth.example.com',
+				redirectSignIn: ['http://localhost/'],
+				redirectSignOut: ['http://localhost/'],
+				responseType: 'code' as const,
+				scopes: ['openid'],
+			},
+		},
+	},
+};
+
+const priorTokens = {
+	accessToken: {
+		payload: { exp: Math.floor(Date.now() / 1000) + 3600 },
+		toString: () => 'prior-access-token',
+	},
+	idToken: {
+		payload: { exp: Math.floor(Date.now() / 1000) + 3600 },
+		toString: () => 'prior-id-token',
+	},
+	clockDrift: 0,
+};
+
+const createSignedInOrchestrator = () => {
+	const orchestrator = createOrchestrator();
+	orchestrator.setAuthTokenStore({
+		loadTokens: async () => priorTokens,
+		getLastAuthUser: async () => 'prior-user',
+	} as unknown as AuthTokenStore);
+
+	return orchestrator;
+};
+
+const listenForRedirectFailure = () => {
+	const errors: Error[] = [];
+	const stop = Hub.listen('auth', ({ payload }) => {
+		const { event, data } = payload as {
+			event: string;
+			data?: { error?: Error };
+		};
+		if (event === 'signInWithRedirect_failure' && data?.error) {
+			errors.push(data.error);
+		}
+	});
+
+	return { errors, stop };
+};
+
 describe('inflight OAuth blocking deadline', () => {
 	beforeEach(() => {
 		jest.useFakeTimers();
 		window.localStorage.clear();
+		oAuthStore.setAuthConfig(authConfig.Cognito as any);
 	});
 
 	afterEach(async () => {
-		// Drain any parked waiters and clear the singleton backstop timer so
+		// Drain any parked waiters and clear their backstop timers so
 		// module-level state never leaks between tests.
 		resolveAndClearInflightPromises();
+		heldReads.splice(0).forEach(held => {
+			held.deliver();
+		});
 		await drainMicrotasks();
+		resolveAndClearInflightPromises();
+		jest.restoreAllMocks();
+		window.history.replaceState({}, '', '/');
 		jest.clearAllTimers();
 		jest.useRealTimers();
 	});
@@ -250,10 +364,9 @@ describe('inflight OAuth blocking deadline', () => {
 	});
 
 	it('blocks on a new flow parked on the SAME orchestrator right after a release', async () => {
-		// Pins the fix for the post-release hole: `this.inflightPromise` is reset
-		// by the resolver itself, so a caller arriving for a NEW flow immediately
-		// after a release must get a fresh park — not a stale, already-resolved
-		// promise that would let it skip blocking.
+		// A caller arriving for a NEW flow immediately after a release must get
+		// a fresh park — not a stale, already-resolved promise that would let it
+		// skip blocking.
 		await oAuthStore.storeOAuthInFlight(true);
 		const orchestrator = createOrchestrator();
 
@@ -272,5 +385,196 @@ describe('inflight OAuth blocking deadline', () => {
 
 		await jest.advanceTimersByTimeAsync(OAUTH_INFLIGHT_TTL_MS + 1);
 		await second.promise;
+	});
+	describe('when the redirect completes while a deadline read is pending', () => {
+		it.each([
+			{
+				failure: 'an invalid origin',
+				url: '/',
+				redirectSignIn: ['https://elsewhere.example.com/'],
+				message: /different origin/,
+			},
+			{
+				failure: 'a denied sign-in',
+				url: '/?error=access_denied&error_description=denied',
+				redirectSignIn: ['http://localhost/'],
+				message: /denied/,
+			},
+			{
+				failure: 'a cancelled sign-in',
+				url: '/',
+				redirectSignIn: ['http://localhost/'],
+				message: /cancelled/,
+			},
+			{
+				failure: 'a state mismatch',
+				url: '/?code=test-code&state=unexpected-state',
+				redirectSignIn: ['http://localhost/'],
+				message: /validating the state/,
+			},
+		])(
+			'releases every waiter on $failure, and the next flow still blocks',
+			async ({ url, redirectSignIn, message }) => {
+				await oAuthStore.storeOAuthInFlight(true);
+				await defaultStorage.setItem(stateKey, 'expected-state');
+				window.history.replaceState({}, '', url);
+				const failures = listenForRedirectFailure();
+				const reads = holdDeadlineReads(3);
+
+				const sessions = [1, 2, 3].map(() =>
+					createSignedInOrchestrator().getTokens(),
+				);
+				await Promise.all(reads.map(read => read.started));
+
+				await attemptCompleteOAuthFlow({
+					...oauthConfig.Cognito,
+					loginWith: {
+						oauth: { ...oauthConfig.Cognito.loginWith.oauth, redirectSignIn },
+					},
+				});
+				failures.stop();
+				reads.forEach(read => {
+					read.deliver();
+				});
+
+				const tokens = await Promise.all(sessions);
+				expect(tokens.map(session => String(session?.accessToken))).toEqual([
+					'prior-access-token',
+					'prior-access-token',
+					'prior-access-token',
+				]);
+				expect(failures.errors).toHaveLength(1);
+				expect(failures.errors[0].message).toMatch(message);
+				expect(window.localStorage.getItem(inflightKey)).toBeNull();
+
+				await oAuthStore.storeOAuthInFlight(true);
+				const next = park(createOrchestrator());
+				await drainMicrotasks();
+				expect(next.isSettled()).toBe(false);
+				await jest.advanceTimersByTimeAsync(OAUTH_INFLIGHT_TTL_MS + 1);
+				await next.promise;
+			},
+		);
+
+		it('releases a waiter on a flag written by a legacy library version', async () => {
+			window.localStorage.setItem(inflightKey, 'true');
+			window.history.replaceState({}, '', '/');
+			const [read] = holdDeadlineReads(1);
+
+			const session = createSignedInOrchestrator().getTokens();
+			await read.started;
+			await attemptCompleteOAuthFlow(oauthConfig.Cognito);
+			read.deliver();
+
+			expect(String((await session)?.accessToken)).toBe('prior-access-token');
+		});
+
+		it('releases waiters even when clearing the flow state fails', async () => {
+			await oAuthStore.storeOAuthInFlight(true);
+			const cleanupError = new Error('storage unavailable');
+			jest.spyOn(defaultStorage, 'removeItem').mockRejectedValue(cleanupError);
+			const waiter = park(createOrchestrator());
+			await drainMicrotasks();
+
+			await expect(
+				attemptCompleteOAuthFlow({
+					...oauthConfig.Cognito,
+					loginWith: {
+						oauth: {
+							...oauthConfig.Cognito.loginWith.oauth,
+							redirectSignIn: ['https://elsewhere.example.com/'],
+						},
+					},
+				}),
+			).rejects.toBe(cleanupError);
+			await waiter.promise;
+		});
+	});
+
+	describe('when a deadline read finishes after its waiter was released', () => {
+		it('does not arm a backstop for the released waiter', async () => {
+			await oAuthStore.storeOAuthInFlight(true);
+			const [read] = holdDeadlineReads(1);
+			const released = park(createOrchestrator());
+			await read.started;
+
+			resolveAndClearInflightPromises();
+			await released.promise;
+			read.deliver();
+			await drainMicrotasks();
+
+			expect(jest.getTimerCount()).toBe(0);
+		});
+
+		it('leaves a newer waiter parked when the read then fails', async () => {
+			await oAuthStore.storeOAuthInFlight(true);
+			const [read] = holdDeadlineReads(1);
+			const released = park(createOrchestrator());
+			await read.started;
+
+			resolveAndClearInflightPromises();
+			await released.promise;
+			const newer = park(createOrchestrator());
+			read.fail(new Error('late storage failure'));
+			await drainMicrotasks();
+
+			expect(newer.isSettled()).toBe(false);
+			await jest.advanceTimersByTimeAsync(OAUTH_INFLIGHT_TTL_MS + 1);
+			await newer.promise;
+		});
+
+		it('rejects with the original error when the first read fails while waiting', async () => {
+			await oAuthStore.storeOAuthInFlight(true);
+			const readError = new Error('storage unavailable');
+			const [read] = holdDeadlineReads(1);
+			const failing = createOrchestrator().waitForInflightOAuth();
+			await read.started;
+			const sibling = park(createOrchestrator());
+			await drainMicrotasks();
+
+			read.fail(readError);
+
+			await expect(failing).rejects.toBe(readError);
+			expect(sibling.isSettled()).toBe(false);
+		});
+	});
+
+	describe("when a waiter's deadline re-check is stale", () => {
+		it.each([
+			{
+				outcome: 'reports an expired deadline',
+				settle: (read: HeldRead) => {
+					read.deliver();
+				},
+			},
+			{
+				outcome: 'fails',
+				settle: (read: HeldRead) => {
+					read.fail(new Error('storage unavailable'));
+				},
+			},
+		])(
+			'releases only that waiter when the re-check $outcome',
+			async ({ settle }) => {
+				await oAuthStore.storeOAuthInFlight(true);
+				const stale = park(createOrchestrator());
+				await drainMicrotasks();
+				const [recheck] = holdDeadlineReads(1);
+
+				await jest.advanceTimersByTimeAsync(OAUTH_INFLIGHT_TTL_MS);
+				await recheck.started;
+				await oAuthStore.storeOAuthInFlight(true);
+				const fresh = park(createOrchestrator());
+				await drainMicrotasks();
+
+				settle(recheck);
+				await stale.promise;
+				await drainMicrotasks();
+
+				expect(fresh.isSettled()).toBe(false);
+				await jest.advanceTimersByTimeAsync(OAUTH_INFLIGHT_TTL_MS + 1);
+				await fresh.promise;
+			},
+		);
 	});
 });
