@@ -11,7 +11,13 @@ const LINKING_ERROR =
 	'- You rebuilt the app after installing the package\n' +
 	'- You are not using Expo Go\n';
 
-export const nativeModule: RTNCore = NativeModules.AmplifyRTNCore
+/**
+ * Whether the `AmplifyRTNCore` native module is linked into the app. When it
+ * isn't, the APIs in this package fall back to JavaScript implementations.
+ */
+export const isNativeModuleLinked = !!NativeModules.AmplifyRTNCore;
+
+export const nativeModule: RTNCore = isNativeModuleLinked
 	? NativeModules.AmplifyRTNCore
 	: new Proxy(
 			{},
