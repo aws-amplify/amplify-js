@@ -87,8 +87,8 @@ export const listCallerAccessGrants = async (
 
 // Extracts the account id segment from an S3 Access Grants instance ARN, e.g.
 // `arn:aws:s3:us-east-1:123456789012:access-grants/default` -> `123456789012`.
-// Returns undefined for a missing or malformed ARN so same-account grants carry
-// no owner and fall back to the adapter-wide account id.
+// Returns undefined for a missing or malformed ARN; callers then fall back to
+// their own default account id.
 const parseAccountIdFromInstanceArn = (
 	instanceArn?: string,
 ): string | undefined => {
