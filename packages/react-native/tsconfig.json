@@ -6,7 +6,17 @@
 		"paths": {
 			"@aws-amplify/react-native": ["./src/index"]
 		},
-		"jsx": "react"
+		"jsx": "react",
+		"lib": [
+			"dom",
+			"dom.iterable",
+			"es2017",
+			"esnext.asynciterable",
+			"es2018.asyncgenerator",
+			"es2019",
+			"es2020.promise",
+			"es2020.bigint"
+		]
 	},
 	"include": ["./src", "example"]
 }
