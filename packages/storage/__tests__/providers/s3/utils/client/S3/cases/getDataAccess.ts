@@ -168,9 +168,41 @@ const getDataAccessErrorCaseInvalidCustomEndpoint: ApiFunctionalTestCase<
 	},
 ];
 
+// Asserts InstanceScope is serialized as the `instanceScope` query param.
+const getDataAccessWithInstanceScope: ApiFunctionalTestCase<
+	typeof getDataAccess
+> = [
+	'happy case',
+	'getDataAccess with InstanceScope=ALL',
+	getDataAccess,
+	defaultConfig,
+	{
+		AccountId: MOCK_ACCOUNT_ID,
+		Target: 's3://my-bucket/path/to/object.md',
+		Permission: 'READWRITE',
+		InstanceScope: 'ALL',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/dataaccess?permission=READWRITE&target=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2Fobject.md&instanceScope=ALL',
+		}),
+	}),
+	{
+		status: 200,
+		headers: {
+			...DEFAULT_RESPONSE_HEADERS,
+		},
+		body: '',
+	},
+	expect.objectContaining({
+		/** skip validating response */
+	}) as any,
+];
+
 export default [
 	getDataAccessHappyCase,
 	getDataAccessHappyCaseCustomEndpoint,
 	getDataAccessErrorCase,
 	getDataAccessErrorCaseInvalidCustomEndpoint,
+	getDataAccessWithInstanceScope,
 ];
