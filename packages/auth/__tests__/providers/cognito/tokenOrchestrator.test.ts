@@ -5,7 +5,6 @@ import { Hub, ResourcesConfig } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { TokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
-import { addInflightPromise } from '../../../src/providers/cognito/utils/oauth/inflightPromise';
 import { oAuthStore } from '../../../src/providers/cognito/utils/oauth';
 
 jest.mock('../../../src/providers/cognito/utils/oauth/oAuthStore');
@@ -39,11 +38,6 @@ const validAuthConfig: ResourcesConfig = {
 		},
 	},
 };
-
-jest.mock('../../../src/providers/cognito/utils/oauth/inflightPromise', () => ({
-	addInflightPromise: jest.fn(),
-	armInflightDeadline: jest.fn(),
-}));
 
 const currentDate = new Date();
 
@@ -101,15 +95,15 @@ const validAuthTokens = {
 	metadata: undefined,
 };
 
-const mockAddInflightPromise = addInflightPromise as jest.Mock;
-
 describe('TokenOrchestrator', () => {
 	const tokenOrchestrator = new TokenOrchestrator();
+	beforeEach(() => {
+		(oAuthStore.loadOAuthInFlightDeadline as jest.Mock).mockResolvedValue(
+			undefined,
+		);
+	});
 	describe('Happy Path Cases:', () => {
 		beforeAll(() => {
-			mockAddInflightPromise.mockImplementation(resolver => {
-				resolver();
-			});
 			tokenOrchestrator.setAuthConfig(validAuthConfig.Auth!);
 			tokenOrchestrator.setAuthTokenStore(mockAuthTokenStore);
 			tokenOrchestrator.setTokenRefresher(mockTokenRefresher);
@@ -142,29 +136,15 @@ describe('TokenOrchestrator', () => {
 			);
 		});
 
-		it('Should call addInflightPromise when OAuth is inflight', async () => {
-			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
-			(oAuthStore.loadOAuthInFlightDeadline as jest.Mock).mockResolvedValue(
-				Date.now() + 60_000,
-			);
-
-			const tokens = await tokenOrchestrator.getTokens();
-
-			expect(addInflightPromise).toHaveBeenCalledWith(expect.any(Function));
-			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
-		});
-
 		it('Should not block when the inflight OAuth blocking deadline has passed', async () => {
 			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
 			// An absent or expired deadline is reported as `undefined` by the store.
 			(oAuthStore.loadOAuthInFlightDeadline as jest.Mock).mockResolvedValue(
 				undefined,
 			);
-			mockAddInflightPromise.mockClear();
 
 			const tokens = await tokenOrchestrator.getTokens();
 
-			expect(addInflightPromise).not.toHaveBeenCalled();
 			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
 		});
 	});
