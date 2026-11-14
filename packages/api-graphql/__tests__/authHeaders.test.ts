@@ -117,3 +117,70 @@ describe('awsRealTimeHeaderBasedAuth context resolution', () => {
 		);
 	});
 });
+
+describe('awsRealTimeHeaderBasedAuth explicit Authorization for token auth modes', () => {
+	const createSessionCtx = () =>
+		createMockAmplifyContext(
+			{},
+			{
+				fetchAuthSession: jest.fn().mockResolvedValue({
+					tokens: { accessToken: { toString: () => 'session-access-token' } },
+				}),
+			},
+		);
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		clearGlobalContext();
+	});
+
+	it.each(['oidc', 'userPool'] as const)(
+		'%s auth sends the Authorization header provided by the caller (e.g. `authToken`)',
+		async authenticationType => {
+			const ctx = createSessionCtx();
+
+			const result = await awsRealTimeHeaderBasedAuth(
+				{
+					authenticationType,
+					appSyncGraphqlEndpoint,
+					region: 'us-east-1',
+					canonicalUri: '/connect',
+					payload: '{}',
+					additionalCustomHeaders: { Authorization: 'caller-provided-token' },
+				},
+				ctx,
+			);
+
+			expect(result).toEqual({
+				Authorization: 'caller-provided-token',
+				host: 'example.appsync-api.us-east-1.amazonaws.com',
+			});
+			expect(ctx.fetchAuthSession).not.toHaveBeenCalled();
+		},
+	);
+
+	it.each(['oidc', 'userPool'] as const)(
+		'%s auth falls back to the session access token when no Authorization header is provided',
+		async authenticationType => {
+			const ctx = createSessionCtx();
+
+			const result = await awsRealTimeHeaderBasedAuth(
+				{
+					authenticationType,
+					appSyncGraphqlEndpoint,
+					region: 'us-east-1',
+					canonicalUri: '/connect',
+					payload: '{}',
+					additionalCustomHeaders: { 'x-other-header': 'value' },
+				},
+				ctx,
+			);
+
+			expect(result).toEqual({
+				Authorization: 'session-access-token',
+				host: 'example.appsync-api.us-east-1.amazonaws.com',
+			});
+			expect(ctx.fetchAuthSession).toHaveBeenCalledTimes(1);
+		},
+	);
+});
