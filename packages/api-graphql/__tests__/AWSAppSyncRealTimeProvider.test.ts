@@ -392,6 +392,50 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
+				test.each(['oidc', 'userPool'] as const)(
+					'%s subscription sends the explicit authToken in the connection handshake',
+					async authenticationType => {
+						expect.assertions(2);
+
+						const newSocketSpy = jest
+							.spyOn(provider as any, '_getNewWebSocket')
+							.mockImplementation(() => {
+								fakeWebSocketInterface.newWebSocket();
+								return fakeWebSocketInterface.webSocket;
+							});
+
+						provider
+							.subscribe({
+								appSyncGraphqlEndpoint:
+									'https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql',
+								authenticationType,
+								// differs from the session access token ('test') mocked above
+								authToken: 'my-explicit-auth-token',
+							})
+							.subscribe({ error: () => {} });
+
+						await fakeWebSocketInterface.readyForUse;
+
+						const [, [, headerSubprotocol]] = newSocketSpy.mock.calls[0] as [
+							string,
+							string[],
+						];
+						const handshakeHeader = JSON.parse(
+							Buffer.from(
+								headerSubprotocol.replace(/^header-/, ''),
+								'base64url',
+							).toString(),
+						);
+
+						expect(handshakeHeader.Authorization).toBe(
+							'my-explicit-auth-token',
+						);
+						expect(handshakeHeader.host).toBe(
+							'testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com',
+						);
+					},
+				);
+
 				test('subscription fails when onerror triggered while waiting for onopen', async () => {
 					expect.assertions(1);
 					provider
