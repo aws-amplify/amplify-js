@@ -20,6 +20,7 @@ export interface AmplifyOutputsAuthProperties {
 	authentication_flow_type?: string;
 	user_pool_id: string;
 	user_pool_client_id: string;
+	auth_session_validity?: number;
 	identity_pool_id?: string;
 	password_policy?: {
 		min_length: number;
