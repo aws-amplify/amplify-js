@@ -513,6 +513,32 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 		});
 
+		test('should search using given options including language', async () => {
+			const locationProvider = new AmazonLocationServiceProvider(
+				awsConfigGeoV4.Geo,
+				mockCtx,
+			);
+
+			const searchOptions = {
+				searchIndexName: 'geoJSSearchCustomExample',
+				language: 'fr',
+			};
+			const results = await locationProvider.searchByPlaceId(
+				testPlaceId,
+				searchOptions,
+			);
+
+			expect(results).toEqual(testResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const { input } = spyon.mock.calls[0][0];
+			expect(input).toEqual({
+				PlaceId: testPlaceId,
+				IndexName: searchOptions.searchIndexName,
+				Language: searchOptions.language,
+			});
+		});
+
 		test('should fail if PlaceId as input is empty string', async () => {
 			const locationProvider = new AmazonLocationServiceProvider(
 				awsConfigGeoV4.Geo,

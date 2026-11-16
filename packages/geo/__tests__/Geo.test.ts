@@ -343,6 +343,25 @@ describe('Geo', () => {
 			});
 		});
 
+		test('should search using given options including language', async () => {
+			const geo = new GeoClass(mockCtx);
+
+			const searchOptions = {
+				searchIndexName: 'geoJSSearchCustomExample',
+				language: 'es',
+			};
+			const results = await geo.searchByPlaceId(testPlaceId, searchOptions);
+			expect(results).toEqual(testResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const { input } = spyon.mock.calls[0][0];
+			expect(input).toEqual({
+				PlaceId: testPlaceId,
+				IndexName: searchOptions.searchIndexName,
+				Language: searchOptions.language,
+			});
+		});
+
 		test('should fail if there is no provider', async () => {
 			const geo = new GeoClass(mockCtx);
 			geo.removePluggable('AmazonLocationService');
