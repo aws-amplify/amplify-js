@@ -9,3 +9,4 @@ export { handleFailure } from './handleFailure';
 export { completeOAuthFlow } from './completeOAuthFlow';
 export { oAuthStore } from './oAuthStore';
 export { validateState } from './validateState';
+export { getOAuthBaseUrl } from './getOAuthBaseUrl';

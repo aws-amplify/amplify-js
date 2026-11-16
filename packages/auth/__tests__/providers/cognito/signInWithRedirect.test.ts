@@ -164,6 +164,27 @@ describe('signInWithRedirect', () => {
 		);
 	});
 
+	it('preserves http scheme for local emulator domain', async () => {
+		const emulatorCtx = createMockAmplifyContext({
+			Auth: {
+				Cognito: {
+					...mockAuthConfigWithOAuth.Auth.Cognito,
+					loginWith: {
+						oauth: {
+							...mockAuthConfigWithOAuth.Auth.Cognito.loginWith.oauth,
+							domain: 'http://localhost:4566',
+						},
+					},
+				},
+			},
+		});
+		await signInWithRedirect(emulatorCtx);
+		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
+		expect(oauthUrl).toStrictEqual(
+			'http://localhost:4566/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=COGNITO&scope=phone+email+openid+profile+aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256',
+		);
+	});
+
 	it('uses custom provider when specified', async () => {
 		const expectedCustomProvider = 'PieAuth';
 		await signInWithRedirect(mockCtx, {
