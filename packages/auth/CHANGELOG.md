@@ -1,5 +1,17 @@
 # Change Log
 
+## 6.22.0
+
+### Minor Changes
+
+- [#15017](https://github.com/aws-amplify/amplify-js/pull/15017) [`9e01896`](https://github.com/aws-amplify/amplify-js/commit/9e01896b2f4346c10e980afe7bcd1d68207f7502) Thanks [@maxence-lefebvre](https://github.com/maxence-lefebvre)! - fix(auth): release token consumers when a redirect sign-in fails during their inflight OAuth deadline read, and stop a stale deadline re-check from releasing waiters of a newer flow
+
+### Patch Changes
+
+- [#15009](https://github.com/aws-amplify/amplify-js/pull/15009) [`2d7d7cb`](https://github.com/aws-amplify/amplify-js/commit/2d7d7cb08ed1158fffb88a30ea39d77d838c17d8) Thanks [@soberm](https://github.com/soberm)! - fix(auth): revoke the refresh token when global sign out cannot complete
+
+- [#14999](https://github.com/aws-amplify/amplify-js/pull/14999) [`7829a19`](https://github.com/aws-amplify/amplify-js/commit/7829a19c1e546357faf9c83090a60d76dfc10459) Thanks [@osama-rizk](https://github.com/osama-rizk)! - fix(auth): get a new guest identityId when the stored one can't be used for guest access (deleted, linked to a login, or malformed), instead of failing on every `fetchAuthSession()` call
+
 ## 6.21.2
 
 ### Patch Changes
