@@ -45,6 +45,19 @@ describe('CookieStorage', () => {
 			expect(cookieExpires.expires).toBe(200);
 		});
 
+		it('Has a partitioned value', () => {
+			const defaultCookie = new CookieStorage({
+				domain: cookieStorageDomain,
+			});
+			expect(defaultCookie.partitioned).toBe(false);
+
+			const partitionedCookie = new CookieStorage({
+				domain: cookieStorageDomain,
+				partitioned: true,
+			});
+			expect(partitionedCookie.partitioned).toBe(true);
+		});
+
 		describe('Setters and getters', () => {
 			const cookieStoreData = { path: '/', domain: cookieStorageDomain };
 			const cookieStore = new CookieStorage(cookieStoreData);
@@ -68,6 +81,18 @@ describe('CookieStorage', () => {
 				await testCookieStore.clear();
 				expect(await testCookieStore.getItem('testKey2')).not.toEqual(
 					tempReference,
+				);
+			});
+
+			it('passes partitioned option to setItem', async () => {
+				const partitionedStore = new CookieStorage({
+					path: '/',
+					domain: cookieStorageDomain,
+					partitioned: true,
+				});
+				await partitionedStore.setItem('partitionedKey', 'partitionedValue');
+				expect(await partitionedStore.getItem('partitionedKey')).toBe(
+					'partitionedValue',
 				);
 			});
 		});

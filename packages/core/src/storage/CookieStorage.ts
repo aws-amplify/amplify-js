@@ -15,9 +15,10 @@ export class CookieStorage implements KeyValueStorageInterface {
 	expires?: number;
 	sameSite?: SameSite;
 	secure?: boolean;
+	partitioned?: boolean;
 
 	constructor(data: CookieStorageData = {}) {
-		const { path, domain, expires, sameSite, secure } = data;
+		const { path, domain, expires, sameSite, secure, partitioned } = data;
 		this.domain = domain;
 		this.path = path || '/';
 		this.expires = Object.prototype.hasOwnProperty.call(data, 'expires')
@@ -26,6 +27,9 @@ export class CookieStorage implements KeyValueStorageInterface {
 		this.secure = Object.prototype.hasOwnProperty.call(data, 'secure')
 			? secure
 			: true;
+		this.partitioned = Object.prototype.hasOwnProperty.call(data, 'partitioned')
+			? partitioned
+			: false;
 
 		if (Object.prototype.hasOwnProperty.call(data, 'sameSite')) {
 			if (!sameSite || !['strict', 'lax', 'none'].includes(sameSite)) {
@@ -69,6 +73,7 @@ export class CookieStorage implements KeyValueStorageInterface {
 			domain: this.domain,
 			secure: this.secure,
 			...(this.sameSite && { sameSite: this.sameSite }),
+			...(this.partitioned && { partitioned: this.partitioned }),
 		};
 	}
 }
