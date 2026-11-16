@@ -57,11 +57,13 @@ export const waitForInflightOAuth = (
 		};
 
 		inflightPromises.add(release);
-		readDeadline().then(checkDeadline, error => {
-			if (inflightPromises.delete(release)) {
-				reject(error);
-			}
-		});
+		readDeadline()
+			.then(checkDeadline, error => {
+				if (inflightPromises.delete(release)) {
+					reject(error);
+				}
+			})
+			.catch(release);
 	});
 
 export const resolveAndClearInflightPromises = (): void => {
