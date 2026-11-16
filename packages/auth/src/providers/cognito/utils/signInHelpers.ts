@@ -101,7 +101,7 @@ export async function handleCustomChallenge({
 		challengeResponses.DEVICE_KEY = deviceMetadata.deviceKey;
 	}
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
@@ -283,7 +283,7 @@ export async function handleSelectMFATypeChallenge({
 		ANSWER: mapMfaType(challengeResponse),
 	};
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
@@ -328,7 +328,7 @@ export async function handleCompleteNewPasswordChallenge({
 		USERNAME: username,
 	};
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
@@ -376,7 +376,7 @@ export async function handleUserPasswordAuthFlow(
 		authParameters.DEVICE_KEY = deviceMetadata.deviceKey;
 	}
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
@@ -456,7 +456,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 		authParameters.DEVICE_KEY = deviceMetadata.deviceKey;
 	}
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
@@ -516,7 +516,7 @@ export async function handleCustomSRPAuthFlow(
 		CHALLENGE_NAME: 'SRP_A',
 	};
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
@@ -1009,7 +1009,7 @@ export async function handleMFAChallenge({
 		challengeResponses.DEVICE_KEY = deviceMetadata.deviceKey;
 	}
 
-	const userContextData = getUserContextData({
+	const userContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,

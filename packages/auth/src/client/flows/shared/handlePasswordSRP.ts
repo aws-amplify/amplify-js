@@ -69,7 +69,7 @@ export async function handlePasswordSRP({
 		authParameters.PREFERRED_CHALLENGE = preferredChallenge;
 	}
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,

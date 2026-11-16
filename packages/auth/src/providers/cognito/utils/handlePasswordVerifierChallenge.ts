@@ -67,7 +67,7 @@ export async function handlePasswordVerifierChallenge(
 		challengeResponses.DEVICE_KEY = deviceMetadata.deviceKey;
 	}
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,

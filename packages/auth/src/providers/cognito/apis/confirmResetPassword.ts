@@ -58,7 +58,7 @@ export async function confirmResetPassword(...args: any[]): Promise<void> {
 	);
 	const metadata = input.options?.clientMetadata;
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,

@@ -86,7 +86,7 @@ export async function signUp(...args: any[]): Promise<SignUpOutput> {
 		ClientMetadata: clientMetadata,
 		ValidationData: validationData && toAttributeType(validationData),
 		ClientId: userPoolClientId,
-		UserContextData: getUserContextData({
+		UserContextData: await getUserContextData({
 			username,
 			userPoolId,
 			userPoolClientId,
