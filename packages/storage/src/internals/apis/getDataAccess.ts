@@ -43,6 +43,7 @@ export const getDataAccess = async (
 			Permission: input.permission,
 			TargetType: targetType,
 			DurationSeconds: DEFAULT_CRED_TTL,
+			InstanceScope: input.instanceScope,
 		},
 	);
 

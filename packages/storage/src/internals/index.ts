@@ -21,6 +21,7 @@ export {
 	UploadDataInput,
 	DownloadDataInput,
 } from './types/inputs';
+export type { InstanceScope } from '../providers/s3/utils/client/s3control/types';
 export {
 	GetDataAccessOutput,
 	ListCallerAccessGrantsOutput,

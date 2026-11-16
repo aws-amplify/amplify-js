@@ -28,6 +28,7 @@ export const listCallerAccessGrants = async (
 		nextToken,
 		pageSize,
 		customEndpoint,
+		instanceScope,
 	} = input;
 
 	logger.debug(`listing available locations from account ${input.accountId}`);
@@ -59,6 +60,7 @@ export const listCallerAccessGrants = async (
 				NextToken: nextToken,
 				MaxResults: pageSize ?? MAX_PAGE_SIZE,
 				AllowedByApplication: true,
+				InstanceScope: instanceScope,
 			},
 		);
 
@@ -70,6 +72,10 @@ export const listCallerAccessGrants = async (
 				scope: grant.GrantScope,
 				permission: grant.Permission!,
 				type: parseGrantType(grant.GrantScope!),
+				// Owner account for the per-location expectedBucketOwner.
+				ownerAccountId: parseAccountIdFromInstanceArn(
+					grant.AccessGrantsInstanceArn,
+				),
 			};
 		}) ?? [];
 
@@ -77,6 +83,18 @@ export const listCallerAccessGrants = async (
 		locations: accessGrants,
 		nextToken: NextToken,
 	};
+};
+
+// Extracts the account id segment from an S3 Access Grants instance ARN, e.g.
+// `arn:aws:s3:us-east-1:123456789012:access-grants/default` -> `123456789012`.
+// Returns undefined for a missing or malformed ARN; callers then fall back to
+// their own default account id.
+const parseAccountIdFromInstanceArn = (
+	instanceArn?: string,
+): string | undefined => {
+	const accountId = instanceArn?.split(':')[4];
+
+	return accountId && /^\d{12}$/.test(accountId) ? accountId : undefined;
 };
 
 const parseGrantType = (grantScope: string): LocationType => {
