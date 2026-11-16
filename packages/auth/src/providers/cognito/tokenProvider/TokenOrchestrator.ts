@@ -18,10 +18,7 @@ import {
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { oAuthStore } from '../utils/oauth/oAuthStore';
-import {
-	addInflightPromise,
-	armInflightDeadline,
-} from '../utils/oauth/inflightPromise';
+import { waitForInflightOAuth } from '../utils/oauth/inflightPromise';
 import { ClientMetadata, CognitoAuthSignInDetails } from '../types';
 
 import {
@@ -38,60 +35,19 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	clientMetadataProvider?: ClientMetadataProvider;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
-	inflightPromise: Promise<void> | undefined;
+	// when there is valid oauth config and there is an inflight oauth flow, try
+	// to block async calls that require fetching tokens before the oauth flow completes
+	// e.g. getCurrentUser, fetchAuthSession etc.
+	// Read-time evaluation of the blocking deadline: absent flag, an
+	// expired deadline, or a flag value other than 'true' all mean
+	// "do not block". An abandoned flow in another tab can therefore
+	// never park token consumers indefinitely.
+	// (`loadOAuthInFlightDeadline` is optional on the OAuthStore
+	// interface for custom-implementation compatibility, but this
+	// singleton is always the concrete DefaultOAuthStore, which
+	// implements it.)
 	waitForInflightOAuth: () => Promise<void> = isBrowser()
-		? async () => {
-				// Read-time evaluation of the blocking deadline: absent flag, an
-				// expired deadline, or a flag value other than 'true' all mean
-				// "do not block". An abandoned flow in another tab can therefore
-				// never park token consumers indefinitely.
-				// (`loadOAuthInFlightDeadline` is optional on the OAuthStore
-				// interface for custom-implementation compatibility, but this
-				// singleton is always the concrete DefaultOAuthStore, which
-				// implements it.)
-				const deadline = await oAuthStore.loadOAuthInFlightDeadline();
-				if (deadline === undefined) {
-					return;
-				}
-
-				if (this.inflightPromise) {
-					// Keep the backstop aligned with the current deadline for waiters
-					// piggybacking on the existing park.
-					armInflightDeadline(deadline, () =>
-						oAuthStore.loadOAuthInFlightDeadline(),
-					);
-
-					return this.inflightPromise;
-				}
-
-				// when there is valid oauth config and there is an inflight oauth flow, try
-				// to block async calls that require fetching tokens before the oauth flow completes
-				// e.g. getCurrentUser, fetchAuthSession etc.
-
-				this.inflightPromise = new Promise<void>(resolve => {
-					// Invariant: `this.inflightPromise` is owned by the park lifecycle —
-					// created here and reset by the very resolver that releases it
-					// (drained by the backstop timer, the cross-tab listener, or
-					// in-process completion). Resetting BEFORE resolving closes the
-					// post-release hole where a caller for a NEW flow could observe a
-					// stale, already-resolved promise and skip blocking on it.
-					addInflightPromise(() => {
-						this.inflightPromise = undefined;
-						resolve();
-					});
-					// Arm the deadline backstop in the same synchronous step as the
-					// park: it releases this waiter even when the cross-tab release
-					// fired between the deadline read above and this park (that storage
-					// event never re-fires), when storage events are unavailable
-					// (Safari private mode), or when the flow is simply never
-					// completed anywhere.
-					armInflightDeadline(deadline, () =>
-						oAuthStore.loadOAuthInFlightDeadline(),
-					);
-				});
-
-				return this.inflightPromise;
-			}
+		? () => waitForInflightOAuth(() => oAuthStore.loadOAuthInFlightDeadline())
 		: async () => {
 				// no-op for non-browser environments
 			};
@@ -151,10 +107,6 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			return null;
 		}
 		await this.waitForInflightOAuth();
-		// NOTE: `this.inflightPromise` is reset by the resolver registered in
-		// `waitForInflightOAuth` (co-located with the release), NOT here — a reset
-		// here could clobber a newer flow's park created between the release and
-		// this line resuming.
 		tokens = await this.getTokenStore().loadTokens();
 		const username = await this.getTokenStore().getLastAuthUser();
 

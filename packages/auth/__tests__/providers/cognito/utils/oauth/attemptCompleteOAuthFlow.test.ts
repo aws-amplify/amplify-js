@@ -35,13 +35,6 @@ jest.mock(
 	}),
 );
 
-jest.mock(
-	'../../../../../src/providers/cognito/utils/oauth/inflightPromise',
-	() => ({
-		addInflightPromise: jest.fn(),
-	}),
-);
-
 const mockAssertOAuthConfig = assertOAuthConfig as jest.Mock;
 const mockAssertTokenProviderConfig = assertTokenProviderConfig as jest.Mock;
 const mockCompleteOAuthFlow = completeOAuthFlow as jest.Mock;
