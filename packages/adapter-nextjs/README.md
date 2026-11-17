@@ -1,4 +1,4 @@
-This package contains the AWS Amplify Next.js Adapter. For more information on using Next.js in your application please reference the [Amplify Dev Center](https://docs.amplify.aws/javascript/build-a-backend/server-side-rendering/nextjs/).
+This package contains the AWS Amplify Next.js Adapter. For more information on using Next.js in your application please reference the [Amplify Dev Center](https://docs.amplify.aws/javascript/frontend/server-side-rendering/).
 
 ### Licensing Note
 Although this repository is released and licensed under the Apache License (see [LICENSE](./LICENSE)), its devDependencies transitively use the third party [sharp](https://sharp.pixelplumbing.com/) project.
