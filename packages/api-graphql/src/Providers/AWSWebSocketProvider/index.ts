@@ -1040,6 +1040,7 @@ export abstract class AWSWebSocketProvider {
 			}
 
 			let ackOk = false;
+			const socket = this.awsRealTimeSocket;
 
 			this.awsRealTimeSocket.onerror = error => {
 				this.logger.debug(`WebSocket error ${JSON.stringify(error)}`);
@@ -1089,6 +1090,17 @@ export abstract class AWSWebSocketProvider {
 
 			const checkAckOk = (targetAckOk: boolean) => {
 				if (!targetAckOk) {
+					// Abandon this socket before the retry opens a new one. Its handlers act on
+					// the provider, so a late close or ack of this socket must not reach the new one.
+					socket.onmessage = null;
+					socket.onerror = null;
+					socket.onclose = null;
+					if (socket.readyState === WebSocket.OPEN) {
+						socket.close(3001);
+					}
+					if (this.awsRealTimeSocket === socket) {
+						this.awsRealTimeSocket = undefined;
+					}
 					this.connectionStateMonitor.record(
 						CONNECTION_CHANGE.CONNECTION_FAILED,
 					);

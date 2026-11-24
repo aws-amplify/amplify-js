@@ -1122,6 +1122,34 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 				});
 
+				test('connection init timeout closes the socket and detaches its handlers', async () => {
+					expect.assertions(4);
+
+					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+						const observer = provider.subscribe({
+							appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						});
+
+						observer.subscribe({ error: () => {} });
+
+						await fakeWebSocketInterface?.readyForUse;
+						const socket = fakeWebSocketInterface.webSocket;
+						const closeSpy = jest.spyOn(socket, 'close');
+						await fakeWebSocketInterface?.triggerOpen();
+						socket.readyState = WebSocket.OPEN;
+
+						// Wait past the ack timeout, but not until the retry opens the socket again
+						await delay(40);
+
+						// The timed-out socket is closed, so a late close event cannot reach the
+						// provider and clear the keep-alive check of the next socket
+						expect(closeSpy).toHaveBeenCalledWith(3001);
+						expect(socket.onclose).toBeNull();
+						expect(socket.onmessage).toBeNull();
+						expect(socket.onerror).toBeNull();
+					});
+				});
+
 				describe('constructed against the different auth interfaces', () => {
 					test('authenticating with API_KEY', async () => {
 						expect.assertions(1);
