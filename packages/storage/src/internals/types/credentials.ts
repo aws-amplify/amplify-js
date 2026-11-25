@@ -80,6 +80,14 @@ export interface LocationAccess extends CredentialsLocation {
 	 * * OBJECT: `'s3://<bucket>/<prefix-with-path>/<object>'`
 	 */
 	readonly type: LocationType;
+	/**
+	 * The AWS account id that owns the S3 Access Grants instance this grant
+	 * belongs to, parsed from the grant's `AccessGrantsInstanceArn`. Undefined
+	 * when the response has no parseable instance ARN. Used downstream as the
+	 * per-location `expectedBucketOwner`, on the basis that a location's bucket
+	 * is owned by the account that owns its Access Grants instance.
+	 */
+	readonly ownerAccountId?: string;
 }
 
 /**

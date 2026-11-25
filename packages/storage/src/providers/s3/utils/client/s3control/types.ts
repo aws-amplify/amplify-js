@@ -7,6 +7,10 @@
 
 import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
 
+declare const InstanceScope: {
+	readonly ALL: 'ALL';
+	readonly SELF: 'SELF';
+};
 declare const Permission: {
 	readonly READ: 'READ';
 	readonly READWRITE: 'READWRITE';
@@ -118,6 +122,21 @@ export interface GetDataAccessRequest {
 	 * @public
 	 */
 	TargetType?: S3PrefixType;
+	/**
+	 * <p>The scope of S3 Access Grants instances to search for a grant matching the requested S3 URI path.</p>
+	 *          <ul>
+	 *             <li>
+	 *                <p>
+	 *                   <code>SELF</code> – Searches only the instance of the Amazon Web Services account ID in the request.</p>
+	 *             </li>
+	 *             <li>
+	 *                <p>
+	 *                   <code>ALL</code> – Searches the instance of the Amazon Web Services account ID in the request and all instances shared with the caller's account through Amazon Web Services Resource Access Manager (RAM).</p>
+	 *             </li>
+	 *          </ul>
+	 * @public
+	 */
+	InstanceScope?: InstanceScope;
 }
 /**
  * @public
@@ -133,6 +152,11 @@ export interface GetDataAccessResult {
 	 * @public
 	 */
 	MatchedGrantTarget?: string;
+	/**
+	 * <p>The Amazon Resource Name (ARN) of the S3 Access Grants instance containing the grant that matched the requested S3 URI path.</p>
+	 * @public
+	 */
+	MatchedInstanceArn?: string;
 }
 /**
  * @public
@@ -151,7 +175,7 @@ export interface ListCallerAccessGrantsCommandOutput
 		__MetadataBearer {}
 /**
  * <p>Part of <code>ListCallerAccessGrantsResult</code>. Each entry includes the
- *          permission level (READ, WRITE, or READWRITE) and the grant scope of the access grant. If the grant also includes an application ARN, the grantee can only access the S3 data through this application.</p>
+ *          permission level (READ, WRITE, or READWRITE) and the grant scope of the access grant. Each entry also includes the ARN of the S3 Access Grants instance in which the grant was created. If the grant also includes an application ARN, the grantee can only access the S3 data through this application.</p>
  * @public
  */
 export interface ListCallerAccessGrantsEntry {
@@ -184,6 +208,11 @@ export interface ListCallerAccessGrantsEntry {
 	 * @public
 	 */
 	ApplicationArn?: string;
+	/**
+	 * <p>The Amazon Resource Name (ARN) of the S3 Access Grants instance in which the grant was created.</p>
+	 * @public
+	 */
+	AccessGrantsInstanceArn?: string;
 }
 /**
  * @public
@@ -214,6 +243,21 @@ export interface ListCallerAccessGrantsRequest {
 	 * @public
 	 */
 	AllowedByApplication?: boolean;
+	/**
+	 * <p>The scope of S3 Access Grants instances to list grants from.</p>
+	 *          <ul>
+	 *             <li>
+	 *                <p>
+	 *                   <code>SELF</code> – Lists grants from the instance of the Amazon Web Services account ID in the request.</p>
+	 *             </li>
+	 *             <li>
+	 *                <p>
+	 *                   <code>ALL</code> – Lists grants from the instance of the Amazon Web Services account ID in the request and all instances shared with the caller's account through Amazon Web Services Resource Access Manager (RAM).</p>
+	 *             </li>
+	 *          </ul>
+	 * @public
+	 */
+	InstanceScope?: InstanceScope;
 }
 /**
  * @public
@@ -230,6 +274,10 @@ export interface ListCallerAccessGrantsResult {
 	 */
 	CallerAccessGrantsList?: ListCallerAccessGrantsEntry[];
 }
+/**
+ * @public
+ */
+export type InstanceScope = (typeof InstanceScope)[keyof typeof InstanceScope];
 /**
  * @public
  */
