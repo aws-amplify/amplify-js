@@ -97,4 +97,16 @@ describe('getCookieValuesFromRequest', () => {
 			]),
 		).toEqual({ legacy: 'José', malformed: '100%', partial: '%E4%B8' });
 	});
+
+	it('keeps the rest of a value that contains a raw `=`', () => {
+		const mockRequest = {
+			headers: {
+				get: jest.fn().mockReturnValue('legacy=a=b=c; other=value'),
+			},
+		} as unknown as Request;
+
+		expect(
+			getCookieValuesFromRequest(mockRequest, ['legacy', 'other']),
+		).toEqual({ legacy: 'a=b=c', other: 'value' });
+	});
 });
