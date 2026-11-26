@@ -11,6 +11,7 @@ import {
 	replaceConstant,
 } from '../__tests__/helpers';
 import { ConnectionState as CS } from '../src/types/PubSub';
+import { CONNECTION_CHANGE } from '../src/utils/ConnectionStateMonitor';
 
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
 import { isCustomDomain } from '../src/Providers/AWSWebSocketProvider/appsyncUrl';
@@ -1228,7 +1229,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					test('a late close of a socket that got a retryable connection_error does not reach the retry socket, and its ack timer does not fire', async () => {
 						newSocketEachCall();
 
-						await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+						// The ack timeout is longer than the retry delay, as in production, so the
+						// retry socket connects before the ack timer of the first socket is due
+						await replaceConstant('CONNECTION_INIT_TIMEOUT', 1000, async () => {
 							await replaceConstant('MAX_DELAY_MS', 5000, async () => {
 								const observer = provider.subscribe({
 									appSyncGraphqlEndpoint: 'ws://localhost:8080',
@@ -1238,6 +1241,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								await fakeWebSocketInterface.readyForUse;
 								const socketA = fakeWebSocketInterface.webSocket;
 								await openSocket();
+								const recordSpy = jest.spyOn(
+									(provider as any).connectionStateMonitor,
+									'record',
+								);
 								await fakeWebSocketInterface.sendMessage(
 									new MessageEvent(MESSAGE_TYPES.GQL_CONNECTION_ERROR, {
 										data: JSON.stringify({
@@ -1251,11 +1258,26 @@ describe('AWSAppSyncRealTimeProvider', () => {
 									}),
 								);
 
-								// connectBThenTouchA waits past the ack timeout of socket A too
 								await connectBThenTouchA(socketA);
+								const keepAliveId = (provider as any)
+									.keepAliveHeartbeatIntervalId;
+
+								// Wait past the time when the ack timer of socket A was due
+								await delay(1100);
+
+								expect(recordSpy).not.toHaveBeenCalledWith(
+									CONNECTION_CHANGE.CONNECTION_FAILED,
+								);
+								expect((provider as any).keepAliveHeartbeatIntervalId).toBe(
+									keepAliveId,
+								);
+								expect(
+									fakeWebSocketInterface.observedConnectionStates,
+								).not.toContain(CS.ConnectedPendingDisconnect);
+								recordSpy.mockRestore();
 							});
 						});
-					});
+					}, 10_000);
 
 					test('close() during the handshake resolves when the ack times out before the close event', async () => {
 						await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
