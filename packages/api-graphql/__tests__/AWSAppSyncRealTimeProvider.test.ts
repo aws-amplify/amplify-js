@@ -1025,6 +1025,167 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
+				describe('connection retry after a connection init timeout', () => {
+					// Allow exactly one retry: attempt 1 backs off 200-300 ms, attempt 2 would back off 400+ ms
+					const retryMaxDelayMs = 300;
+
+					let newWebSocketSpy: jest.SpyInstance;
+
+					beforeEach(() => {
+						newWebSocketSpy = jest.spyOn(
+							fakeWebSocketInterface,
+							'newWebSocket',
+						);
+					});
+
+					const waitForSocketCount = async (count: number) => {
+						// Fail fast with a clear message instead of hanging until the Jest timeout
+						const deadline = Date.now() + retryMaxDelayMs + 500;
+						while (newWebSocketSpy.mock.calls.length < count) {
+							if (Date.now() > deadline) {
+								throw new Error(
+									`Expected ${count} WebSocket(s) to be opened, but saw ${newWebSocketSpy.mock.calls.length}`,
+								);
+							}
+							await delay(5);
+						}
+					};
+
+					const subscribeAndTimeOutFirstAttempt = async () => {
+						const observer = provider.subscribe({
+							appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						});
+						observer.subscribe({ error: () => {} });
+
+						// The first socket opens but never receives a connection_ack
+						await fakeWebSocketInterface.readyForUse;
+						await fakeWebSocketInterface.triggerOpen();
+						await fakeWebSocketInterface.waitUntilConnectionStateIn([
+							CS.Disconnected,
+						]);
+
+						// The retry opens a new socket
+						await waitForSocketCount(2);
+					};
+
+					const completeHandshake = async () => {
+						await fakeWebSocketInterface.triggerOpen();
+						await fakeWebSocketInterface.handShakeMessage();
+						await fakeWebSocketInterface.startAckMessage();
+						await fakeWebSocketInterface.keepAlive();
+						await fakeWebSocketInterface.waitUntilConnectionStateIn([
+							CS.Connected,
+							CS.ConnectedPendingDisconnect,
+						]);
+					};
+
+					test('reports Connected when the retry succeeds', async () => {
+						await replaceConstant('MAX_DELAY_MS', retryMaxDelayMs, async () => {
+							await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+								await subscribeAndTimeOutFirstAttempt();
+								await completeHandshake();
+
+								expect(
+									fakeWebSocketInterface.hubConnectionListener
+										.currentConnectionState,
+								).toBe(CS.Connected);
+								expect(fakeWebSocketInterface.observedConnectionStates).toEqual(
+									[
+										CS.Disconnected,
+										CS.Connecting,
+										CS.Disconnected,
+										CS.Connecting,
+										CS.Connected,
+									],
+								);
+							});
+						});
+					});
+
+					test('reconnects when the retried socket is later closed by the server', async () => {
+						await replaceConstant('MAX_DELAY_MS', retryMaxDelayMs, async () => {
+							await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+								await subscribeAndTimeOutFirstAttempt();
+								await completeHandshake();
+
+								await fakeWebSocketInterface.triggerClose();
+								expect(
+									fakeWebSocketInterface.hubConnectionListener
+										.currentConnectionState,
+								).toBe(CS.ConnectionDisrupted);
+
+								// The reconnect opens a third socket and recovers
+								await waitForSocketCount(3);
+								await completeHandshake();
+								expect(
+									fakeWebSocketInterface.hubConnectionListener
+										.currentConnectionState,
+								).toBe(CS.Connected);
+							});
+						});
+					});
+
+					test('reports Disconnected when every attempt times out', async () => {
+						await replaceConstant('MAX_DELAY_MS', retryMaxDelayMs, async () => {
+							await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+								await subscribeAndTimeOutFirstAttempt();
+
+								// The retry socket opens but never receives a connection_ack either
+								await fakeWebSocketInterface.triggerOpen();
+								// Outlast the connection init timeout and any further backoff
+								await delay(retryMaxDelayMs + 50);
+
+								expect(newWebSocketSpy).toHaveBeenCalledTimes(2);
+								expect(
+									fakeWebSocketInterface.hubConnectionListener
+										.currentConnectionState,
+								).toBe(CS.Disconnected);
+								expect(fakeWebSocketInterface.observedConnectionStates).toEqual(
+									[
+										CS.Disconnected,
+										CS.Connecting,
+										CS.Disconnected,
+										CS.Connecting,
+										CS.Disconnected,
+									],
+								);
+							});
+						});
+					});
+
+					test('reports ConnectionDisrupted when every attempt closes before opening', async () => {
+						await replaceConstant('MAX_DELAY_MS', retryMaxDelayMs, async () => {
+							const observer = provider.subscribe({
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+							});
+							observer.subscribe({ error: () => {} });
+
+							// Each socket is closed by the server before it opens. This
+							// path records CLOSED, not CONNECTION_FAILED, so the intent
+							// to connect is kept and the reconnect monitor stays armed.
+							await fakeWebSocketInterface.readyForUse;
+							await fakeWebSocketInterface.triggerClose();
+							await waitForSocketCount(2);
+							await fakeWebSocketInterface.triggerClose();
+							// Outlast any further backoff
+							await delay(retryMaxDelayMs + 50);
+
+							expect(newWebSocketSpy).toHaveBeenCalledTimes(2);
+							expect(
+								fakeWebSocketInterface.hubConnectionListener
+									.currentConnectionState,
+							).toBe(CS.ConnectionDisrupted);
+							expect(fakeWebSocketInterface.observedConnectionStates).toEqual([
+								CS.Disconnected,
+								CS.Connecting,
+								CS.ConnectionDisrupted,
+								CS.Connecting,
+								CS.ConnectionDisrupted,
+							]);
+						});
+					});
+				});
+
 				test('failure to ack before timeout', async () => {
 					expect.assertions(1);
 

@@ -251,6 +251,10 @@ export abstract class AWSWebSocketProvider {
 		const { additionalCustomHeaders } =
 			await additionalHeadersFromOptions(options);
 
+		// Intentionally kept alongside the per-attempt record in
+		// _establishConnection: this one covers building the auth headers before
+		// the first attempt. The connection state observable drops the repeated
+		// Connecting.
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
 		await this._initializeWebSocketConnection({
 			apiKey,
@@ -1142,6 +1146,10 @@ export abstract class AWSWebSocketProvider {
 		subprotocol: string,
 	) => {
 		this.logger.debug(`Establishing WebSocket connection to ${awsRealTimeUrl}`);
+		// Record the intent to connect on every attempt. A failed attempt records
+		// CONNECTION_FAILED, which would otherwise leave a successful retry in
+		// ConnectedPendingDisconnect.
+		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
 		try {
 			await this._openConnection(awsRealTimeUrl, subprotocol);
 			await this._initiateHandshake();
