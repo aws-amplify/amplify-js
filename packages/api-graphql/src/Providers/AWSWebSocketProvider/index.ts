@@ -1142,6 +1142,10 @@ export abstract class AWSWebSocketProvider {
 		subprotocol: string,
 	) => {
 		this.logger.debug(`Establishing WebSocket connection to ${awsRealTimeUrl}`);
+		// Record the intent to connect on every attempt. A failed attempt records
+		// CONNECTION_FAILED, which would otherwise leave a successful retry in
+		// ConnectedPendingDisconnect.
+		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
 		try {
 			await this._openConnection(awsRealTimeUrl, subprotocol);
 			await this._initiateHandshake();
