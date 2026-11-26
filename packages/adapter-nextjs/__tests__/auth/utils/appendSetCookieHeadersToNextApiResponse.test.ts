@@ -1,3 +1,6 @@
+import { IncomingMessage, ServerResponse } from 'node:http';
+import { Socket } from 'node:net';
+
 import { CookieStorage } from 'aws-amplify/adapter-core';
 import { NextApiResponse } from 'next';
 
@@ -97,6 +100,27 @@ describe('appendSetCookieHeadersToNextApiResponse', () => {
 			3,
 			'Set-Cookie',
 			'amplify%3Dauth&token=token3;',
+		);
+	});
+
+	it('does not throw for a non-Latin-1 LastAuthUser value on a real ServerResponse', () => {
+		// a real Node.js ServerResponse runs `validateHeaderValue`, which rejects
+		// characters that are invalid in an HTTP header value
+		const response = new ServerResponse(
+			new IncomingMessage(new Socket()),
+		) as unknown as NextApiResponse;
+		const cookies = [
+			{
+				name: 'CognitoIdentityServiceProvider.clientId.LastAuthUser',
+				value: '用户',
+			},
+		];
+
+		expect(() => {
+			appendSetCookieHeadersToNextApiResponse(response, cookies);
+		}).not.toThrow();
+		expect(response.getHeader('Set-Cookie')).toBe(
+			`CognitoIdentityServiceProvider.clientId.LastAuthUser=${encodeURIComponent('用户')};`,
 		);
 	});
 });

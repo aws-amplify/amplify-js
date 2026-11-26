@@ -63,4 +63,38 @@ describe('getCookieValuesFromRequest', () => {
 				'token-value',
 		});
 	});
+
+	it('decodes percent-encoded cookie values', () => {
+		const mockRequest = {
+			headers: {
+				get: jest
+					.fn()
+					.mockReturnValue(
+						`LastAuthUser=${encodeURIComponent('用户')}; other=${encodeURIComponent('josé✓')}`,
+					),
+			},
+		} as unknown as Request;
+
+		expect(
+			getCookieValuesFromRequest(mockRequest, ['LastAuthUser', 'other']),
+		).toEqual({ LastAuthUser: '用户', other: 'josé✓' });
+	});
+
+	it('returns legacy unencoded and malformed values as-is', () => {
+		const mockRequest = {
+			headers: {
+				get: jest
+					.fn()
+					.mockReturnValue('legacy=José; malformed=100%; partial=%E4%B8'),
+			},
+		} as unknown as Request;
+
+		expect(
+			getCookieValuesFromRequest(mockRequest, [
+				'legacy',
+				'malformed',
+				'partial',
+			]),
+		).toEqual({ legacy: 'José', malformed: '100%', partial: '%E4%B8' });
+	});
 });

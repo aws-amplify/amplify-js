@@ -17,7 +17,7 @@ export const getCookieValuesFromRequest = <CookieNames extends string[]>(
 		.split(';')
 		.map(cookie => cookie.trim().split('='))
 		.reduce<Record<string, string>>((result, [key, value]) => {
-			result[key] = value;
+			result[key] = value && decodeCookieValue(value);
 
 			return result;
 		}, {});
@@ -32,4 +32,15 @@ export const getCookieValuesFromRequest = <CookieNames extends string[]>(
 	}
 
 	return result as Partial<Record<CookieNames[number], string | undefined>>;
+};
+
+// Cookie values are written percent-encoded (see `serializeCookie`). Values
+// written raw by older versions, or that contain a stray `%`, are returned
+// as-is.
+const decodeCookieValue = (value: string): string => {
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
 };

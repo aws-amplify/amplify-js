@@ -41,6 +41,28 @@ describe('serializeCookie', () => {
 		expect(serializeCookie('cookie|name', 'value')).toBe('cookie|name=value;');
 	});
 
+	it('should percent-encode non-ASCII cookie values so the header is ASCII-only', () => {
+		const values = ['用户', 'josé✓', 'ユーザー', 'cafe\u0301'];
+
+		for (const value of values) {
+			const serialized = serializeCookie('LastAuthUser', value);
+
+			expect(serialized).toBe(`LastAuthUser=${encodeURIComponent(value)};`);
+			// every char must fit in a ByteString / pass Node's header validation
+			expect(/^[\x20-\x7E]*$/.test(serialized)).toBe(true);
+			expect(decodeURIComponent(serialized.split('=')[1].slice(0, -1))).toBe(
+				value,
+			);
+		}
+	});
+
+	it('should leave JWT-like and empty values unchanged', () => {
+		const jwtLike = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InUifQ.abc-DEF_123';
+
+		expect(serializeCookie('token', jwtLike)).toBe(`token=${jwtLike};`);
+		expect(serializeCookie('token', '')).toBe('token=;');
+	});
+
 	it('should serialize cookie with options', () => {
 		const options: CookieStorage.SetCookieOptions = {
 			domain: 'example.com',

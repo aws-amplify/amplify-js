@@ -58,4 +58,21 @@ describe('appendSetCookieHeaders', () => {
 		expect(setCookieHeaders[1]).toContain('amplify%20auth%20token=token2;');
 		expect(setCookieHeaders[2]).toContain('amplify%3Dauth&token=token3;');
 	});
+
+	it('does not throw for a non-Latin-1 LastAuthUser value', () => {
+		const headers = new Headers();
+		const cookies = [
+			{
+				name: 'CognitoIdentityServiceProvider.clientId.LastAuthUser',
+				value: '用户',
+			},
+		];
+
+		expect(() => {
+			appendSetCookieHeaders(headers, cookies);
+		}).not.toThrow();
+		expect(headers.get('Set-Cookie')).toBe(
+			`CognitoIdentityServiceProvider.clientId.LastAuthUser=${encodeURIComponent('用户')};`,
+		);
+	});
 });
