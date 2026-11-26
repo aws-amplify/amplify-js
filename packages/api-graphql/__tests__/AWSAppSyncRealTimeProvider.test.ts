@@ -1039,7 +1039,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 
 					const waitForSocketCount = async (count: number) => {
+						// Fail fast with a clear message instead of hanging until the Jest timeout
+						const deadline = Date.now() + retryMaxDelayMs + 500;
 						while (newWebSocketSpy.mock.calls.length < count) {
+							if (Date.now() > deadline) {
+								throw new Error(
+									`Expected ${count} WebSocket(s) to be opened, but saw ${newWebSocketSpy.mock.calls.length}`,
+								);
+							}
 							await delay(5);
 						}
 					};
@@ -1143,6 +1150,38 @@ describe('AWSAppSyncRealTimeProvider', () => {
 									],
 								);
 							});
+						});
+					});
+
+					test('reports ConnectionDisrupted when every attempt closes before opening', async () => {
+						await replaceConstant('MAX_DELAY_MS', retryMaxDelayMs, async () => {
+							const observer = provider.subscribe({
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+							});
+							observer.subscribe({ error: () => {} });
+
+							// Each socket is closed by the server before it opens. This
+							// path records CLOSED, not CONNECTION_FAILED, so the intent
+							// to connect is kept and the reconnect monitor stays armed.
+							await fakeWebSocketInterface.readyForUse;
+							await fakeWebSocketInterface.triggerClose();
+							await waitForSocketCount(2);
+							await fakeWebSocketInterface.triggerClose();
+							// Outlast any further backoff
+							await delay(retryMaxDelayMs + 50);
+
+							expect(newWebSocketSpy).toHaveBeenCalledTimes(2);
+							expect(
+								fakeWebSocketInterface.hubConnectionListener
+									.currentConnectionState,
+							).toBe(CS.ConnectionDisrupted);
+							expect(fakeWebSocketInterface.observedConnectionStates).toEqual([
+								CS.Disconnected,
+								CS.Connecting,
+								CS.ConnectionDisrupted,
+								CS.Connecting,
+								CS.ConnectionDisrupted,
+							]);
 						});
 					});
 				});

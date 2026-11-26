@@ -251,6 +251,10 @@ export abstract class AWSWebSocketProvider {
 		const { additionalCustomHeaders } =
 			await additionalHeadersFromOptions(options);
 
+		// Intentionally kept alongside the per-attempt record in
+		// _establishConnection: this one covers building the auth headers before
+		// the first attempt. The connection state observable drops the repeated
+		// Connecting.
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
 		await this._initializeWebSocketConnection({
 			apiKey,
