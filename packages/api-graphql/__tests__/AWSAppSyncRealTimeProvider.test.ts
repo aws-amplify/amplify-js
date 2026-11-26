@@ -1175,7 +1175,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						const keepAliveId = (provider as any).keepAliveHeartbeatIntervalId;
 						expect(keepAliveId).toBeDefined();
-						const states = fakeWebSocketInterface.observedConnectionStates.length;
+						const states =
+							fakeWebSocketInterface.observedConnectionStates.length;
 						const registerSpy = jest.spyOn(
 							provider as any,
 							'_registerWebsocketHandlers',
@@ -1192,9 +1193,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						expect(fakeWebSocketInterface.observedConnectionStates.length).toBe(
 							states,
 						);
-						expect(fakeWebSocketInterface.currentConnectionState).toBe(
-							CS.Connected,
-						);
+						expect(
+							fakeWebSocketInterface.observedConnectionStates[states - 1],
+						).toBe(CS.Connected);
 						registerSpy.mockRestore();
 					};
 

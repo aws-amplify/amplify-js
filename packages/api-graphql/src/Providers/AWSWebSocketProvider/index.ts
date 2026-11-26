@@ -1043,6 +1043,11 @@ export abstract class AWSWebSocketProvider {
 			// The ack timer of this handshake. Each way the handshake settles clears it, so a
 			// late timer cannot record a failure while the next socket is healthy.
 			let ackTimeoutId: ReturnType<typeof setTimeout> | undefined;
+			const clearAckTimeout = () => {
+				if (ackTimeoutId !== undefined) {
+					clearTimeout(ackTimeoutId);
+				}
+			};
 
 			const onError = (error: Event) => {
 				this.logger.debug(`WebSocket error ${JSON.stringify(error)}`);
@@ -1050,7 +1055,7 @@ export abstract class AWSWebSocketProvider {
 
 			const onClose = (event: CloseEvent) => {
 				this.logger.debug(`WebSocket closed ${event.reason}`);
-				clearTimeout(ackTimeoutId);
+				clearAckTimeout();
 				this._closeSocket();
 				reject(new Error(JSON.stringify(event)));
 			};
@@ -1096,7 +1101,7 @@ export abstract class AWSWebSocketProvider {
 				const connectionTimeoutMs = this._extractConnectionTimeout(data);
 
 				if (type === MESSAGE_TYPES.GQL_CONNECTION_ACK) {
-					clearTimeout(ackTimeoutId);
+					clearAckTimeout();
 					this._registerWebsocketHandlers(connectionTimeoutMs);
 					resolve('Connected to AWS AppSyncRealTime');
 
@@ -1105,7 +1110,7 @@ export abstract class AWSWebSocketProvider {
 
 				if (type === MESSAGE_TYPES.GQL_CONNECTION_ERROR) {
 					const { errorType, errorCode } = this._extractErrorCodeAndType(data);
-					clearTimeout(ackTimeoutId);
+					clearAckTimeout();
 					abandonSocket();
 
 					// TODO(Eslint): refactor to reject an Error object instead of a plain object
