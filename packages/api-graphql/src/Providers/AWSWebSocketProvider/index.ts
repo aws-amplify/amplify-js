@@ -1040,14 +1040,18 @@ export abstract class AWSWebSocketProvider {
 			}
 
 			const socket = this.awsRealTimeSocket;
-			// The ack timer of this handshake. Each way the handshake settles clears it, so a
-			// late timer cannot record a failure while the next socket is healthy.
-			let ackTimeoutId: ReturnType<typeof setTimeout> | undefined;
-			const clearAckTimeout = () => {
-				if (ackTimeoutId !== undefined) {
-					clearTimeout(ackTimeoutId);
-				}
-			};
+			// The ack timer of this handshake starts before the handlers, so each way the
+			// handshake settles can clear it. Then a late timer cannot record a failure
+			// while the next socket is healthy.
+			const ackTimeoutId = setTimeout(() => {
+				abandonSocket();
+				this.connectionStateMonitor.record(CONNECTION_CHANGE.CONNECTION_FAILED);
+				reject(
+					new Error(
+						`Connection timeout: ack from AWSAppSyncRealTime was not received after ${CONNECTION_INIT_TIMEOUT} ms`,
+					),
+				);
+			}, CONNECTION_INIT_TIMEOUT);
 
 			const onError = (error: Event) => {
 				this.logger.debug(`WebSocket error ${JSON.stringify(error)}`);
@@ -1055,7 +1059,7 @@ export abstract class AWSWebSocketProvider {
 
 			const onClose = (event: CloseEvent) => {
 				this.logger.debug(`WebSocket closed ${event.reason}`);
-				clearAckTimeout();
+				clearTimeout(ackTimeoutId);
 				this._closeSocket();
 				reject(new Error(JSON.stringify(event)));
 			};
@@ -1101,7 +1105,7 @@ export abstract class AWSWebSocketProvider {
 				const connectionTimeoutMs = this._extractConnectionTimeout(data);
 
 				if (type === MESSAGE_TYPES.GQL_CONNECTION_ACK) {
-					clearAckTimeout();
+					clearTimeout(ackTimeoutId);
 					this._registerWebsocketHandlers(connectionTimeoutMs);
 					resolve('Connected to AWS AppSyncRealTime');
 
@@ -1110,7 +1114,7 @@ export abstract class AWSWebSocketProvider {
 
 				if (type === MESSAGE_TYPES.GQL_CONNECTION_ERROR) {
 					const { errorType, errorCode } = this._extractErrorCodeAndType(data);
-					clearAckTimeout();
+					clearTimeout(ackTimeoutId);
 					abandonSocket();
 
 					// TODO(Eslint): refactor to reject an Error object instead of a plain object
@@ -1127,16 +1131,6 @@ export abstract class AWSWebSocketProvider {
 				type: MESSAGE_TYPES.GQL_CONNECTION_INIT,
 			};
 			socket.send(JSON.stringify(gqlInit));
-
-			ackTimeoutId = setTimeout(() => {
-				abandonSocket();
-				this.connectionStateMonitor.record(CONNECTION_CHANGE.CONNECTION_FAILED);
-				reject(
-					new Error(
-						`Connection timeout: ack from AWSAppSyncRealTime was not received after ${CONNECTION_INIT_TIMEOUT} ms`,
-					),
-				);
-			}, CONNECTION_INIT_TIMEOUT);
 		});
 	}
 
