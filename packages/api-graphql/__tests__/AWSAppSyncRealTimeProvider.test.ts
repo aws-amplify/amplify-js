@@ -1122,31 +1122,171 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 				});
 
-				test('connection init timeout closes the socket and detaches its handlers', async () => {
-					expect.assertions(4);
+				describe('a handshake that fails before the retry', () => {
+					// Each call opens a new fake socket, so the test can tell socket A from socket B
+					const newSocketEachCall = () => {
+						let calls = 0;
+						jest
+							.spyOn(provider as any, '_getNewWebSocket')
+							.mockImplementation(() => {
+								if (calls++ > 0) {
+									fakeWebSocketInterface.resetWebsocket();
+								}
+								fakeWebSocketInterface.newWebSocket();
 
-					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
-						const observer = provider.subscribe({
-							appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								return fakeWebSocketInterface.webSocket as WebSocket;
+							});
+					};
+
+					const nextSocket = async (previous: WebSocket) => {
+						while (fakeWebSocketInterface.webSocket === previous) {
+							await delay(10);
+						}
+						await fakeWebSocketInterface.readyForUse;
+
+						return fakeWebSocketInterface.webSocket;
+					};
+
+					const openSocket = async () => {
+						await fakeWebSocketInterface.triggerOpen();
+						fakeWebSocketInterface.webSocket.readyState = WebSocket.OPEN;
+					};
+
+					const ack = () =>
+						new MessageEvent(MESSAGE_TYPES.GQL_CONNECTION_ACK, {
+							data: JSON.stringify({
+								type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
+								payload: { connectionTimeoutMs: 100_000 },
+							}),
 						});
 
-						observer.subscribe({ error: () => {} });
+					// Socket B acks and starts the subscription, then the test sends a late
+					// close and a late ack on socket A through the handlers that A has now
+					const connectBThenTouchA = async (socketA: WebSocket) => {
+						const socketB = await nextSocket(socketA);
+						await openSocket();
+						expect((provider as any).awsRealTimeSocket).toBe(socketB);
 
-						await fakeWebSocketInterface?.readyForUse;
-						const socket = fakeWebSocketInterface.webSocket;
-						const closeSpy = jest.spyOn(socket, 'close');
-						await fakeWebSocketInterface?.triggerOpen();
-						socket.readyState = WebSocket.OPEN;
+						await fakeWebSocketInterface.handShakeMessage();
+						await fakeWebSocketInterface.startAckMessage();
+						await fakeWebSocketInterface.waitUntilConnectionStateIn([
+							CS.Connected,
+						]);
 
-						// Wait past the ack timeout, but not until the retry opens the socket again
+						const keepAliveId = (provider as any).keepAliveHeartbeatIntervalId;
+						expect(keepAliveId).toBeDefined();
+						const states = fakeWebSocketInterface.observedConnectionStates.length;
+						const registerSpy = jest.spyOn(
+							provider as any,
+							'_registerWebsocketHandlers',
+						);
+
+						socketA.onclose?.(new CloseEvent('close', {}));
+						socketA.onmessage?.(ack());
 						await delay(40);
 
-						// The timed-out socket is closed, so a late close event cannot reach the
-						// provider and clear the keep-alive check of the next socket
-						expect(closeSpy).toHaveBeenCalledWith(3001);
-						expect(socket.onclose).toBeNull();
-						expect(socket.onmessage).toBeNull();
-						expect(socket.onerror).toBeNull();
+						expect((provider as any).keepAliveHeartbeatIntervalId).toBe(
+							keepAliveId,
+						);
+						expect(registerSpy).not.toHaveBeenCalled();
+						expect(fakeWebSocketInterface.observedConnectionStates.length).toBe(
+							states,
+						);
+						expect(fakeWebSocketInterface.currentConnectionState).toBe(
+							CS.Connected,
+						);
+						registerSpy.mockRestore();
+					};
+
+					test('a late close or ack of a socket whose ack timed out does not reach the retry socket', async () => {
+						newSocketEachCall();
+
+						await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+							await replaceConstant('MAX_DELAY_MS', 5000, async () => {
+								const observer = provider.subscribe({
+									appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								});
+								observer.subscribe({ error: () => {} });
+
+								await fakeWebSocketInterface.readyForUse;
+								const socketA = fakeWebSocketInterface.webSocket;
+								const closeA = jest.spyOn(socketA, 'close');
+								await openSocket();
+
+								// Wait past the ack timeout of socket A
+								await delay(40);
+
+								expect(closeA).toHaveBeenCalledTimes(1);
+								expect(closeA).toHaveBeenCalledWith(3001);
+								expect((provider as any).awsRealTimeSocket).toBeUndefined();
+
+								await connectBThenTouchA(socketA);
+							});
+						});
+					});
+
+					test('a late close of a socket that got a retryable connection_error does not reach the retry socket, and its ack timer does not fire', async () => {
+						newSocketEachCall();
+
+						await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+							await replaceConstant('MAX_DELAY_MS', 5000, async () => {
+								const observer = provider.subscribe({
+									appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								});
+								observer.subscribe({ error: () => {} });
+
+								await fakeWebSocketInterface.readyForUse;
+								const socketA = fakeWebSocketInterface.webSocket;
+								await openSocket();
+								await fakeWebSocketInterface.sendMessage(
+									new MessageEvent(MESSAGE_TYPES.GQL_CONNECTION_ERROR, {
+										data: JSON.stringify({
+											type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
+											payload: {
+												errors: [
+													{ errorType: 'InternalFailure', errorCode: 500 },
+												],
+											},
+										}),
+									}),
+								);
+
+								// connectBThenTouchA waits past the ack timeout of socket A too
+								await connectBThenTouchA(socketA);
+							});
+						});
+					});
+
+					test('close() during the handshake resolves when the ack times out before the close event', async () => {
+						await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+							const observer = provider.subscribe({
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+							});
+							observer.subscribe({ error: () => {} });
+
+							await fakeWebSocketInterface.readyForUse;
+							const socket = fakeWebSocketInterface.webSocket;
+							await openSocket();
+
+							// The socket goes to CLOSING, and its close event comes later
+							jest.spyOn(socket, 'close').mockImplementation(() => {
+								socket.readyState = WebSocket.CLOSING;
+							});
+							let closed = false;
+							const closing = provider.close().then(() => {
+								closed = true;
+							});
+
+							// The ack timer fires while the close is pending
+							await delay(40);
+							expect(closed).toBe(false);
+
+							socket.onclose?.(new CloseEvent('close', {}));
+							await closing;
+
+							expect(closed).toBe(true);
+							expect((provider as any).awsRealTimeSocket).toBeUndefined();
+						});
 					});
 				});
 
