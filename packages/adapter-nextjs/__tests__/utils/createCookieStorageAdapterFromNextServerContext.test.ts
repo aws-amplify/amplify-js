@@ -541,6 +541,32 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			]);
 		});
 
+		it('writes a non-Latin-1 LastAuthUser value without throwing (token refresh)', async () => {
+			const request = new IncomingMessage(new Socket());
+			const response = new ServerResponse(request);
+			const lastAuthUserKey =
+				'CognitoIdentityServiceProvider.clientId.LastAuthUser';
+
+			Object.defineProperty(request, 'cookies', {
+				get() {
+					return {};
+				},
+			});
+
+			const result = await createCookieStorageAdapterFromNextServerContext({
+				request: request as any,
+				response,
+			});
+
+			// `TokenStore.storeTokens` rewrites LastAuthUser when tokens refresh
+			expect(() => {
+				result.set(lastAuthUserKey, '用户', { httpOnly: true });
+			}).not.toThrow();
+			expect(response.getHeader('Set-Cookie')).toBe(
+				`${lastAuthUserKey}=${encodeURIComponent('用户')};HttpOnly`,
+			);
+		});
+
 		it('does not add duplicate cookies when the cookies are defined in the response Set-Cookie headers', async () => {
 			const mockExistingSetCookieValues = [
 				'CognitoIdentityServiceProvider.1234.accessToken=1234;Path=/',

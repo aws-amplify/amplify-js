@@ -10,7 +10,10 @@ export const serializeCookie = (
 	value: string,
 	options?: CookieStorage.SetCookieOptions,
 ): string =>
-	`${ensureEncodedForJSCookie(name)}=${value};${options ? serializeSetCookieOptions(options) : ''}`;
+	// Values are percent-encoded, as js-cookie (client side) and
+	// `NextResponse.cookies.set` do, so non-ASCII values (e.g. a Cognito username
+	// like `用户`) don't break the `Set-Cookie` header and round-trip on read.
+	`${ensureEncodedForJSCookie(name)}=${encodeURIComponent(value)};${options ? serializeSetCookieOptions(options) : ''}`;
 
 const serializeSetCookieOptions = (
 	options: CookieStorage.SetCookieOptions,

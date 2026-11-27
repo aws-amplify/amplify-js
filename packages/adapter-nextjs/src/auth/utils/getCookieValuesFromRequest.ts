@@ -13,11 +13,20 @@ export const getCookieValuesFromRequest = <CookieNames extends string[]>(
 		return {};
 	}
 
-	const cookieValues: Record<string, string> = cookieHeader
+	const cookieValues: Record<string, string | undefined> = cookieHeader
 		.split(';')
-		.map(cookie => cookie.trim().split('='))
-		.reduce<Record<string, string>>((result, [key, value]) => {
-			result[key] = value;
+		.map((cookie): [string, string | undefined] => {
+			// Split on the first `=` only, so a raw `=` inside a value written by
+			// an older version is kept.
+			const trimmed = cookie.trim();
+			const separatorIndex = trimmed.indexOf('=');
+
+			return separatorIndex === -1
+				? [trimmed, undefined]
+				: [trimmed.slice(0, separatorIndex), trimmed.slice(separatorIndex + 1)];
+		})
+		.reduce<Record<string, string | undefined>>((result, [key, value]) => {
+			result[key] = value && decodeCookieValue(value);
 
 			return result;
 		}, {});
@@ -32,4 +41,16 @@ export const getCookieValuesFromRequest = <CookieNames extends string[]>(
 	}
 
 	return result as Partial<Record<CookieNames[number], string | undefined>>;
+};
+
+// Cookie values are written percent-encoded (see `serializeCookie`). Values
+// written raw by older versions, or that contain a stray `%`, are returned
+// as-is. A legacy raw value that happens to be valid percent-encoding (for
+// example `a%41`) is decoded (to `aA`); this is unlikely for real usernames.
+const decodeCookieValue = (value: string): string => {
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
 };
