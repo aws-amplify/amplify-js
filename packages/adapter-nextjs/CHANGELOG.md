@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.8.2
+
+### Patch Changes
+
+- [#15028](https://github.com/aws-amplify/amplify-js/pull/15028) [`d0a5663`](https://github.com/aws-amplify/amplify-js/commit/d0a566305d69bc05c3a02dbe69eb9d70d5c948df) Thanks [@osama-rizk](https://github.com/osama-rizk)! - fix(adapter-nextjs): encode cookie values so non-Latin-1 usernames can sign in
+
 ## 1.8.1
 
 ### Patch Changes
