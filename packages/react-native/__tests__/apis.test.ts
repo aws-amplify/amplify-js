@@ -15,6 +15,7 @@ jest.mock('react-native', () => ({
 }));
 
 jest.mock('../src/nativeModule', () => ({
+	isNativeModuleLinked: true,
 	nativeModule: {
 		computeModPow: jest.fn(),
 		computeS: jest.fn(),
