@@ -664,4 +664,31 @@ describe('BackgroundProcessManager', () => {
 		unblock?.();
 		await close;
 	});
+
+	test('close() resolves after timeout even if jobs never complete', async () => {
+		const manager = new BackgroundProcessManager();
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+		manager.add(
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			() => new Promise<void>(() => {}),
+			'hanging job',
+		);
+
+		const start = Date.now();
+		await manager.close();
+		const elapsed = Date.now() - start;
+
+		expect(manager.isClosed).toBe(true);
+		expect(manager.length).toBe(0);
+		// should resolve around the 10s internal timeout, not hang forever
+		expect(elapsed).toBeLessThan(15_000);
+		expect(warnSpy).toHaveBeenCalledWith(
+			expect.stringContaining('timed out'),
+			expect.arrayContaining(['hanging job']),
+		);
+
+		warnSpy.mockRestore();
+	}, 20_000);
 });
