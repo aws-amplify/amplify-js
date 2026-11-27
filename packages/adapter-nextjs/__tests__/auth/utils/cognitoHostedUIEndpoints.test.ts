@@ -39,6 +39,21 @@ describe('cognitoHostedUIEndpoints', () => {
 			`https://id.amazoncognito.com/logout?${urlSearchParamsForCreateLogoutEndpoint.toString()}`,
 			['id.amazoncognito.com', urlSearchParamsForCreateLogoutEndpoint],
 		],
+		[
+			'createAuthorizeEndpoint',
+			`http://localhost:4566/oauth2/authorize?${urlSearchParamsForCreateAuthorizeEndpoint.toString()}`,
+			['http://localhost:4566', urlSearchParamsForCreateAuthorizeEndpoint],
+		],
+		[
+			'createTokenEndpoint',
+			'http://localhost:4566/oauth2/token',
+			['http://localhost:4566'],
+		],
+		[
+			'createLogoutEndpoint',
+			`http://localhost:4566/logout?${urlSearchParamsForCreateLogoutEndpoint.toString()}`,
+			['http://localhost:4566', urlSearchParamsForCreateLogoutEndpoint],
+		],
 	] as [keyof typeof cognitoHostedUIEndpoints, string, any][];
 
 	test.each(testCase)(

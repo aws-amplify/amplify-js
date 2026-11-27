@@ -65,4 +65,24 @@ describe('oAuthSignOutRedirect', () => {
 			true,
 		);
 	});
+
+	it('should support http emulator domain without prepending https', async () => {
+		const emulatorAuthConfig = {
+			...authConfig,
+			loginWith: {
+				oauth: {
+					...authConfig.loginWith.oauth,
+					domain: 'http://localhost:4566',
+				},
+			},
+		};
+
+		await oAuthSignOutRedirect(emulatorAuthConfig);
+
+		expect(mockOpenAuthSession).toHaveBeenCalledWith(
+			`http://localhost:4566/logout?client_id=${userPoolClientId}&logout_uri=${encodedSignOutRedirectUrl}`,
+			emulatorAuthConfig.loginWith.oauth.redirectSignOut,
+			false,
+		);
+	});
 });
