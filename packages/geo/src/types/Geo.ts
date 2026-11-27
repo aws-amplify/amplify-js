@@ -61,6 +61,7 @@ export interface SearchByCoordinatesOptions {
 
 export interface searchByPlaceIdOptions {
 	searchIndexName?: string;
+	language?: string;
 }
 
 // Geometry object for Place points
