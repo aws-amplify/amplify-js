@@ -1,5 +1,12 @@
 # Change Log
 
+## 6.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`909a7a1`](https://github.com/aws-amplify/amplify-js/commit/909a7a1234eddd53f4ce7132ad6a73d101ab1927)]:
+  - @aws-amplify/storage@6.18.0
+
 ## 6.2.0
 
 ### Minor Changes

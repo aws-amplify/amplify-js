@@ -1,5 +1,14 @@
 # Change Log
 
+## 4.10.3
+
+### Patch Changes
+
+- [#15029](https://github.com/aws-amplify/amplify-js/pull/15029) [`c08112f`](https://github.com/aws-amplify/amplify-js/commit/c08112f4b82157b7a1cd6c106298ad227019cf29) Thanks [@osama-rizk](https://github.com/osama-rizk)! - fix(api-graphql): report `Connected` instead of `ConnectedPendingDisconnect` when a real-time connection succeeds on a retry after a connection ack timeout, so a later disconnect triggers an automatic reconnect
+
+- Updated dependencies [[`6b68b55`](https://github.com/aws-amplify/amplify-js/commit/6b68b558c0be783e821383cd63e78421d5cb85ce)]:
+  - @aws-amplify/api-rest@4.7.2
+
 ## 4.10.2
 
 ### Patch Changes
