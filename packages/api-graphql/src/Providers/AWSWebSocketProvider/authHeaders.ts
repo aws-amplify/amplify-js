@@ -23,8 +23,22 @@ type AWSAppSyncRealTimeAuthInput =
 
 const awsAuthTokenHeader = async (
 	resolveCtx: () => AmplifyContext,
-	{ host }: AWSAppSyncRealTimeAuthInput,
+	{ host, additionalCustomHeaders }: AWSAppSyncRealTimeAuthInput,
 ) => {
+	/**
+	 * An explicit `Authorization` header (e.g. from the operation-level
+	 * `authToken`) takes precedence over the session token, matching how the
+	 * HTTP request path and the subscription start message already merge
+	 * headers. Without this, the connection handshake would still send the
+	 * session access token and AppSync would reject it.
+	 */
+	if (additionalCustomHeaders?.Authorization) {
+		return {
+			Authorization: additionalCustomHeaders.Authorization,
+			host,
+		};
+	}
+
 	const session = await resolveCtx().fetchAuthSession();
 
 	return {
