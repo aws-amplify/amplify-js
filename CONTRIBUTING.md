@@ -205,7 +205,7 @@ Passing unit tests are only necessary if you’re looking to contribute a pull r
 
 #### Verdaccio
 
-Verdaccio is a lightweight private npm proxy registry built in Node.js. Install [Verdaccio](https://verdaccio.org/docs/en/installation). You can setup Verdaccio to publish packages locally to test the changes.
+Verdaccio is a lightweight private npm proxy registry built in Node.js. Install [Verdaccio](https://www.verdaccio.org/docs/installation/). You can setup Verdaccio to publish packages locally to test the changes.
 
 To publish in Verdaccio, start a Verdaccio instance and then,
 
