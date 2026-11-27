@@ -87,7 +87,22 @@ export interface TranslateTextInput {
 			language?: string;
 		};
 		targetLanguage?: string;
+		options?: TranslateTextOptions;
 	};
+}
+
+/**
+ * Settings that customize a translation. Amazon Translate supports each setting
+ * only for some languages. See:
+ * https://docs.aws.amazon.com/translate/latest/dg/customizing-translations.html
+ */
+export interface TranslateTextOptions {
+	/** Shortens the translation when set to `ON`. */
+	brevity?: 'ON';
+	/** The level of formality of the translation. */
+	formality?: 'FORMAL' | 'INFORMAL';
+	/** Masks profane words and phrases in the translation when set to `MASK`. */
+	profanity?: 'MASK';
 }
 
 export interface TranslateTextOutput {
