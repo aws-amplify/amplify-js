@@ -40,6 +40,18 @@ export const completeOAuthFlow = async ({
 	const errorMessage = urlParams.searchParams.get('error_description');
 
 	if (error) {
+		const storedState = await oAuthStore.loadOAuthState();
+		if (storedState && isCustomState(storedState)) {
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'customOAuthState',
+					data: urlSafeDecode(getCustomState(storedState)),
+				},
+				'Auth',
+				AMPLIFY_SYMBOL,
+			);
+		}
 		throw createOAuthError(errorMessage ?? error);
 	}
 
