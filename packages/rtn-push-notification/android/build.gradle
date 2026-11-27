@@ -23,7 +23,16 @@ buildscript {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+// AGP 9 ships built-in Kotlin support and registers the `kotlin` extension
+// itself. Applying the Kotlin plugin on top of it fails configuration with
+// "Cannot add extension with name 'kotlin'". Asking for the extension covers
+// every way built-in Kotlin can be turned on -- the global default, the
+// android.builtInKotlin property, and the per-module com.android.built-in-kotlin
+// plugin -- without reading an AGP version number.
+if (project.extensions.findByName('kotlin') == null) {
+    apply plugin: 'kotlin-android'
+}
+
 apply plugin: 'kotlinx-serialization'
 
 def getExtOrDefault(prop) {
