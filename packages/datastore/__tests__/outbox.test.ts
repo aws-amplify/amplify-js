@@ -131,7 +131,7 @@ describe('Outbox tests', () => {
 			expect(head.modelId).toEqual(modelId);
 			expect(head.operation).toEqual(TransformerMutationType.UPDATE);
 			expect(modelData.field1).toEqual('another value');
-			const modelDefinition = getModelDefinition(last);
+			const modelDefinition = getModelDefinition(Model);
 			const mutationsForModel = await outbox.getForModel(
 				s,
 				last,
@@ -155,7 +155,7 @@ describe('Outbox tests', () => {
 
 		await outbox.enqueue(Storage, await createMutationEvent(updatedModel3));
 
-		const modelDefinition = getModelDefinition(last);
+		const modelDefinition = getModelDefinition(Model);
 
 		// model2 should get deleted when model3 is enqueued, so we're expecting to see
 		// 2 items in the queue for this Model total (including the in progress record - updatedModel1)
@@ -243,7 +243,7 @@ describe('Outbox tests', () => {
 			expect(head.operation).toEqual(TransformerMutationType.UPDATE);
 			expect(modelData.field1).toEqual('another value');
 
-			const modelDefinition = getModelDefinition(last);
+			const modelDefinition = getModelDefinition(Model);
 			const mutationsForModel = await outbox.getForModel(
 				s,
 				last,
@@ -259,7 +259,7 @@ describe('Outbox tests', () => {
 		});
 
 		await outbox.enqueue(Storage, await createMutationEvent(updatedModel2));
-		const modelDefinition = getModelDefinition(last);
+		const modelDefinition = getModelDefinition(Model);
 
 		// 2 items in the queue for this Model total (including the in progress record - updatedModel1)
 		const mutationsForModel = await outbox.getForModel(
@@ -348,6 +348,168 @@ describe('Outbox tests', () => {
 			expect(headData.optionalField1).toEqual(optionalField1);
 		});
 	});
+
+	it('Should NOT sync the _version across different model types with the same ID', async () => {
+		// Mutations for different model types that share a primary key value
+		// must not receive each other's _version.
+
+		// Earlier tests leave mutations in the outbox. Drain it so that the
+		// update below is the head and its response reaches the version sync.
+		await Storage.runExclusive(async s => {
+			while (await outbox.peek(s)) {
+				await outbox.dequeue(s);
+			}
+		});
+
+		const model1 = new Model({
+			field1: 'model1 value',
+			dateCreated: new Date().toISOString(),
+		});
+
+		await DataStore.save(model1);
+
+		const updatedModel1 = Model.copyOf(model1, updated => {
+			updated.field1 = 'updated model1 value';
+		});
+
+		const mutationEvent1 = await createMutationEvent(updatedModel1);
+		await outbox.enqueue(Storage, mutationEvent1);
+
+		// Insert a mutation for a different model type sharing the same modelId
+		const MutationEventConstructor = syncClasses[
+			'MutationEvent'
+		] as PersistentModelConstructor<MutationEvent>;
+
+		await Storage.save(
+			new MutationEventConstructor({
+				id: 'diff-model-mutation',
+				model: 'DifferentModel',
+				modelId: model1.id,
+				operation: TransformerMutationType.UPDATE,
+				data: JSON.stringify({
+					id: model1.id,
+					someField: 'different model value',
+					_version: 5,
+				}),
+				condition: JSON.stringify(null),
+			}),
+		);
+
+		const response1 = {
+			...updatedModel1,
+			_version: 20,
+			_lastChangedAt: Date.now(),
+			_deleted: false,
+		};
+
+		await Storage.runExclusive(async s => {
+			await processMutationResponse(
+				s,
+				response1,
+				TransformerMutationType.UPDATE,
+			);
+
+			const allMutations = await s.query(MutationEventConstructor);
+			const differentModelMutations = allMutations.filter(
+				m => m.model === 'DifferentModel',
+			);
+
+			expect(differentModelMutations.length).toBeGreaterThan(0);
+
+			const differentModelData = JSON.parse(
+				differentModelMutations[0].data,
+			);
+			expect(differentModelData._version).toEqual(5);
+		});
+	});
+
+	it('Should NOT merge an enqueued mutation into a pending mutation of a different model type with the same ID', async () => {
+		const model1 = new Model({
+			field1: 'model1 value',
+			dateCreated: new Date().toISOString(),
+		});
+
+		await DataStore.save(model1);
+
+		const MutationEventConstructor = syncClasses[
+			'MutationEvent'
+		] as PersistentModelConstructor<MutationEvent>;
+
+		const differentModelData = {
+			id: model1.id,
+			someField: 'different model value',
+			_version: 5,
+		};
+
+		await Storage.save(
+			new MutationEventConstructor({
+				id: 'diff-model-pending-enqueue',
+				model: 'DifferentModel',
+				modelId: model1.id,
+				operation: TransformerMutationType.UPDATE,
+				data: JSON.stringify(differentModelData),
+				condition: JSON.stringify(null),
+			}),
+		);
+
+		const updatedModel1 = Model.copyOf(model1, updated => {
+			updated.field1 = 'updated model1 value';
+		});
+
+		await outbox.enqueue(Storage, await createMutationEvent(updatedModel1));
+
+		await Storage.runExclusive(async s => {
+			const mutationsForId = (await s.query(MutationEventConstructor)).filter(
+				m => m.modelId === model1.id,
+			);
+
+			expect(mutationsForId.map(m => m.model).sort()).toEqual([
+				'DifferentModel',
+				'Model',
+			]);
+
+			const differentModelMutation = mutationsForId.find(
+				m => m.model === 'DifferentModel',
+			)!;
+			expect(JSON.parse(differentModelMutation.data)).toEqual(
+				differentModelData,
+			);
+		});
+	});
+
+	it('Should NOT return pending mutations of a different model type with the same ID from Outbox.getForModel', async () => {
+		const model1 = new Model({
+			field1: 'model1 value',
+			dateCreated: new Date().toISOString(),
+		});
+
+		await DataStore.save(model1);
+
+		const MutationEventConstructor = syncClasses[
+			'MutationEvent'
+		] as PersistentModelConstructor<MutationEvent>;
+
+		await Storage.save(
+			new MutationEventConstructor({
+				id: 'diff-model-pending-get',
+				model: 'DifferentModel',
+				modelId: model1.id,
+				operation: TransformerMutationType.UPDATE,
+				data: JSON.stringify({ id: model1.id, _version: 5 }),
+				condition: JSON.stringify(null),
+			}),
+		);
+
+		await Storage.runExclusive(async s => {
+			const mutations = await outbox.getForModel(
+				s,
+				model1,
+				getModelDefinition(Model),
+			);
+
+			expect(mutations).toEqual([]);
+		});
+	});
 });
 
 // performs all the required dependency injection
@@ -415,6 +577,6 @@ async function processMutationResponse(
 
 	const modelConstructor = Model as unknown as PersistentModelConstructor<any>;
 	const model = modelInstanceCreator(modelConstructor, record);
-	const modelDefinition = getModelDefinition(model);
+	const modelDefinition = getModelDefinition(modelConstructor);
 	await merger.merge(storage, model, modelDefinition);
 }
