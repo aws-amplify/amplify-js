@@ -119,7 +119,7 @@ async function handleDevicePasswordVerifier(
 		DEVICE_KEY: deviceKey,
 	} as Record<string, string>;
 
-	const UserContextData = getUserContextData({
+	const UserContextData = await getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
