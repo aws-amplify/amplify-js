@@ -72,6 +72,9 @@
 		"lex-v1",
 		"lex-v2"
 	],
+	"engines": {
+		"node": ">=18"
+	},
 	"dependencies": {
 		"@aws-sdk/client-lex-runtime-service": "^3.1012.0",
 		"@aws-sdk/client-lex-runtime-v2": "^3.1012.0",
